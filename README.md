@@ -4,7 +4,7 @@
 
 <!-- 아래는 추후 배포 시 사용합니다. -->
 <!-- [![]...](링크) -->
-[![]([https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.nexon.bluearchive](https://cdn.mos.cms.futurecdn.net/fFoCAtq7MbZqFk3wGvVbtd.jpg))
+
 
 
 
