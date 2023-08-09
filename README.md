@@ -2,12 +2,7 @@
 <!-- 아래는 추후 배포 시 사용합니다. -->
 <!-- [![]...](링크) -->
 
-
-
-
-
-
-<!-- [<img width=100% height=100% alt="프로젝트 이름" src="https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.nexon.bluearchive](https://cdn.mos.cms.futurecdn.net/fFoCAtq7MbZqFk3wGvVbtd.jpg">](https://www.youtube.com/watch?v={유튜브 비디오 ID}) -->
+<!-- [<img width=100% height=100% alt="프로젝트 이름" src="https://im.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.nexon.bluearchive](https://cdn.mos.cms.futurecdn.net/fFoCAtq7MbZqFk3wGvVbtd.jpg">](https://www.youtube.com/watch?v={유튜브 비디오 ID}) -->
 <!-- https://www.youtube.com/watch?v=6eLQ-EPrnqM -->
 <!--                               v={유튜브 비디오 ID} -->
 <!-- 비디오의 경우 데모 시연의 느낌으로 스토리보드를 기획하세요. *구현한 콘텐츠가 어떻게 동작하는지를 보여주는 것*에 초점을 맞추며, 어떤 기술을 사용했네~ 어떻게 구현했네 이런 얘기는 일절 적지 않습니다. -->
