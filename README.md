@@ -21,8 +21,8 @@
 
 # 참여자
 <!-- [github 유저이름](github 프로필 링크) -->
-- [Mati-as](https://github.com/Mati-as)
-- [Jung](https://github.com/ChoiSeonMun)
+<!-- [Mati-as](https://github.com/Mati-as)>
+
   
 
 ---
