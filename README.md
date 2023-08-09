@@ -7,7 +7,8 @@
 <!--                               v={유튜브 비디오 ID} -->
 <!-- 비디오의 경우 데모 시연의 느낌으로 스토리보드를 기획하세요. *구현한 콘텐츠가 어떻게 동작하는지를 보여주는 것*에 초점을 맞추며, 어떤 기술을 사용했네~ 어떻게 구현했네 이런 얘기는 일절 적지 않습니다. -->
 <!-- 기술에 관련된 얘기는 서류에서 얘기하는 겁니다. -->
-![프로젝트 이름](https://cdn.mos.cms.futurecdn.net/fFoCAtq7MbZqFk3wGvVbtd.jpg)
+
+![프로젝트 이름](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
 ---
 
