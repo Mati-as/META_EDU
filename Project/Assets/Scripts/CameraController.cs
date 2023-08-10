@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour
       
 
 
-        Debug.Log($"window is opend? : {windowController.isWindowStartOpening}");
+        
         if (windowController.isWindowStartOpening)
         {
 

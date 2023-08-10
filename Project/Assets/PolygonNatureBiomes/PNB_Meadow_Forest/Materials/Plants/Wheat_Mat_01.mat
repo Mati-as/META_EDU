@@ -12,7 +12,8 @@ Material:
   m_ValidKeywords:
   - LOD_FADE_CROSSFADE
   m_InvalidKeywords:
-  - _FLATCOLOURSWITCH_ON
+  - _EMISSION
+  - _FLIPBOOKBLENDING_OFF
   - _LEAFFLATCOLOURSWITCH_ON
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -24,6 +25,10 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AmbientOcclusion:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -92,7 +97,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 5d033024d3ab21b4da30f94288acd38f, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -129,6 +134,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SnowTexture:
         m_Texture: {fileID: 2800000, guid: 5f36e0d7b3dd1724aad2f9a9dc18bf97, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture1:
@@ -171,20 +180,50 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 0
     - _Big_Wave: 10
     - _Big_WindAmount: 1.22
     - _Big_Windspeed: 1.84
+    - _Blend: 0
+    - _BlendOp: 0
     - _BumpScale: 1
+    - _CameraFadingEnabled: 0
+    - _CameraFarFadeDistance: 2
+    - _CameraNearFadeDistance: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _ColorMode: 0
     - _ColourNoiseLargeScale: 0.124
     - _ColourNoiseScale: 0.108
-    - _ColourNoiseSmallScale: 0.335
-    - _Cutoff: 0.5
+    - _ColourNoiseSmallScale: 0.244
+    - _Cull: 2
+    - _Cutoff: 0.04
+    - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DistortionBlend: 0.5
+    - _DistortionEnabled: 0
+    - _DistortionStrength: 1
+    - _DistortionStrengthScaled: 0.1
     - _DstBlend: 0
     - _EmissiveAmount: 0
+    - _EnvironmentReflections: 1
     - _FlatColourSwitch: 1
+    - _FlipbookBlending: 0
+    - _FlipbookMode: 0
     - _Float0: 0.5
     - _Float1: 0.05
     - _FrostingFalloff: 1
@@ -211,8 +250,8 @@ Material:
     - _LeafMetallic: 0
     - _LeafNoiseAmount: 0.371
     - _LeafNoiseScale: 1
-    - _LeafNormalAmount: 0.5
-    - _LeafSmoothness: 0.2
+    - _LeafNormalAmount: 0.138
+    - _LeafSmoothness: 0.24
     - _Metallic: 0.132
     - _Mode: 0
     - _NormalAmount: 0.5
@@ -220,14 +259,20 @@ Material:
     - _PanningSpeed: 0.007
     - _PanningSpeed1: 0.127
     - _Parallax: 0.02
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Small_Wave: 2.1
     - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
     - _SnowFalloff: 1
     - _SnowHeight: 1
     - _SnowSwitch: 0
+    - _SoftParticlesEnabled: 0
+    - _SoftParticlesFarFadeDistance: 1
+    - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Surface: 0
     - _Tiling: 1
     - _Tint_Tiling: 0.5
     - _TotalWindAmount: 0.5
@@ -245,6 +290,7 @@ Material:
     - _WindNoiseScale2: 0.5
     - _WindWorldScale: 0.08
     - _WindWorldScale1: 0.001
+    - _WorkflowMode: 1
     - _Y_multiplier: -0.5
     - _ZWrite: 1
     - __dirty: 0
@@ -259,7 +305,10 @@ Material:
     - _tempNoise: 0.29
     - _worldScale: 0.67
     m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColour: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
+    - _CameraFadeParams: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissive2Colour: {r: 0, g: 0, b: 0, a: 0}
@@ -272,6 +321,8 @@ Material:
     - _LeafNoiseLargeColour: {r: 0.4627451, g: 0.43369895, b: 0.13234511, a: 0}
     - _LeafTint: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
     - _SnowColour: {r: 1, g: 1, b: 1, a: 0}
+    - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Tint: {r: 0, g: 0, b: 0, a: 0}
     - _TrunkBaseColour: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
     - _TrunkEmissiveColour: {r: 0, g: 0, b: 0, a: 0}
