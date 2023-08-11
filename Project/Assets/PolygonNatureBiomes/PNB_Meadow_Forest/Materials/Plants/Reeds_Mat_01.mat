@@ -2,17 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 8
+  serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Reeds_Mat_01
   m_Shader: {fileID: 4800000, guid: 6697e1f185bc8b840a2f02567abf15b5, type: 3}
-  m_ValidKeywords:
-  - LOD_FADE_CROSSFADE
-  m_InvalidKeywords:
-  - _EMISSION
+  m_ShaderKeywords: 
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -170,8 +167,8 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
+    - _AlphaCutoff: 0.5
     - _Big_Wave: 10
     - _Big_WindAmount: 1.22
     - _Big_Windspeed: 1.84
@@ -202,8 +199,8 @@ Material:
     - _LOD_FADE_CROSSFADE: 1
     - _LOD_FADE_CROSSFADE1: 1
     - _LOD_FADE_CROSSFADE2: 1
-    - _LOD_FADE_CROSSFADE_in: 1
-    - _LOD_FADE_CROSSFADE_out: 1
+    - _LOD_FADE_CROSSFADE_in: 0
+    - _LOD_FADE_CROSSFADE_out: 0
     - _LeafBigNoiseAmount: 0.098
     - _LeafBigNoiseScale: 1.03
     - _LeafFlatColourSwitch: 0
@@ -211,7 +208,7 @@ Material:
     - _LeafNoiseAmount: 0.371
     - _LeafNoiseScale: 1
     - _LeafNormalAmount: 0.5
-    - _LeafSmoothness: 0.24
+    - _LeafSmoothness: 0.2
     - _Metallic: 0.132
     - _Mode: 0
     - _NormalAmount: 0.5

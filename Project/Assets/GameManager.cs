@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+
+    public float gamestartTime;
+    public static bool IsGameStarted;
+    private float elapsedTime;
+
     Vector3 m_vecMouseDownPos;
 
     void Update()
     {
+        elapsedTime += Time.deltaTime;
+        if(gamestartTime < elapsedTime)
+        {
+            IsGameStarted = true;
+        }
+
+
 #if UNITY_EDITOR
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0))
