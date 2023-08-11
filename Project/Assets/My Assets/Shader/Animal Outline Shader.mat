@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Golem Shader Graph
+  m_Name: Animal Outline Shader
   m_Shader: {fileID: -6465566751694194690, guid: 2a2a5422d7e60da498061ee5febbb81c,
     type: 3}
   m_ValidKeywords: []
@@ -55,22 +55,24 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaThreshold: 0.381
-    - _Brightness: 0.01
+    - _AlphaThreshold: 0.812
+    - _Brightness: 0
     - _BrightnessOffset: 0.12
-    - _FresenelPower: 7.61
+    - _FresenelPower: 38.55
+    - _FresnelPower: 60
     - _GlowPartSize: 0
     - _Metallic: 0
-    - _NormalDepth: 3.26
+    - _NormalDepth: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ShowingPart: 1.53
+    - _ShowingPart: 2.79
     - _Smooth: 0
     m_Colors:
     - _Albedo: {r: 0, g: 0, b: 0, a: 1}
-    - _Brigness_color: {r: 1, g: 0.8035657, b: 0.4481132, a: 0}
-    - _EmmisionColor: {r: 76.8654, g: 66.63497, b: 45.32158, a: 0}
+    - _Brigness_color: {r: 1, g: 1, b: 1, a: 0}
+    - _EmmisionColor: {r: 1.4980392, g: 1.1283139, b: 0, a: 0}
     - _GlowSpawningColor: {r: 1.8722377, g: 1.6337922, b: 1.6337922, a: 0}
+    - _emissionColor: {r: 4, g: 3.3566115, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7128002657263079035
 MonoBehaviour:
