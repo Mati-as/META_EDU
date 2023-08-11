@@ -42,8 +42,12 @@ public class GameManager : MonoBehaviour
         }
         if (IsGameStarted)
         {
-            SelectObject();
-            MoveAnimalByName(selectedAnimal);
+            selectedAnimal = SelectObject();
+            if(selectedAnimal != null)
+            {
+                MoveAnimalByName(selectedAnimal);
+            }
+         
         }
        
     }
@@ -52,12 +56,13 @@ public class GameManager : MonoBehaviour
     /// 오브젝트를 선택하는 함수 입니다. 
     /// Linked lIst를 활용해 자료를 검색하고 해당하는 메세지를 카메라 및, 게임 다음 동작에 전달합니다. 
     /// </summary>
-    private void SelectObject()
+    private string SelectObject()
     {
 
 #if UNITY_EDITOR
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0))
+
 #else
         // 터치 시
         if (Input.touchCount > 0)
@@ -78,10 +83,10 @@ public class GameManager : MonoBehaviour
             // 광선으로 충돌된 collider를 hit에 넣습니다.
             if (Physics.Raycast(ray, out hit))
             {
-              
+
                 selectedAnimal = hit.collider.name;
-                
-                MoveAnimalByName(selectedAnimal);
+                return selectedAnimal;
+
                 /*
                 // 어떤 오브젝트인지 로그를 찍습니다.
                 Debug.Log(hit.collider.name);
@@ -109,7 +114,9 @@ public class GameManager : MonoBehaviour
 
                 */
             }
+            else return null;
         }
+        else return null;
     }
     
     public float movingTimeSec;

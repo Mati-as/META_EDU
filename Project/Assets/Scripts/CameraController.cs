@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
 
     [SerializeField]
     private WindowController windowController;
-    private float lerp;
+
 
     void Start()
     {
@@ -49,7 +49,7 @@ public class CameraController : MonoBehaviour
             float t = Mathf.Clamp01(elapsedTime / movingTimeSec);
             t = Lerp2D.EaseInQuad(0, 1, t);
 
-            lerp = Lerp2D.EaseInQuad(0, 1, t);
+          
             transform.position = Vector3.Lerp(transform.position, _playStartCamPoint.position, t);
         }
     }
