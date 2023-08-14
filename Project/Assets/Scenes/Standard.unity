@@ -139,7 +139,6 @@ GameObject:
   m_Component:
   - component: {fileID: 21510312}
   - component: {fileID: 21510314}
-  - component: {fileID: 21510313}
   m_Layer: 0
   m_Name: 'Cow Glow Shader '
   m_TagString: Untagged
@@ -162,20 +161,6 @@ Transform:
   m_Father: {fileID: 8197752401703723373}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &21510313
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 21510311}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -1380309156457952532, guid: b0f3b6fc66ea0bf42adb87a59961ba0f, type: 3}
 --- !u!137 &21510314
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -2585,8 +2570,9 @@ MonoBehaviour:
   swan: {fileID: 1256271436778817461}
   chicken: {fileID: 2650704538670273686}
   AnimalMovePosition: {fileID: 999284522}
-  gamestartTime: 5
-  movingTimeSec: 4
+  gamestartTime: 3
+  movingTimeSec: 3
+  waitingTime: 3
 --- !u!4 &995674702
 Transform:
   m_ObjectHideFlags: 0

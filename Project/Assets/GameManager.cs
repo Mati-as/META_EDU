@@ -1,8 +1,7 @@
-using System.Collections;
+
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -36,27 +35,38 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         elapsedTime += Time.deltaTime;
-        if(gamestartTime < elapsedTime)
+
+        if (gamestartTime < elapsedTime && !IsGameStarted)
         {
             IsGameStarted = true;
         }
+
         if (IsGameStarted)
         {
-            selectedAnimal = SelectObject();
-            if(selectedAnimal != null)
+            CheckMovable();
+            Debug.Log($"isMovable: {isMovable}");
+            SelectObject();
+
+
+            if (selectedAnimal != null)
             {
-                MoveAnimalByName(selectedAnimal);
+
+                SetAnimal(selectedAnimal);
+                // 동물의 움직임이 시작됨을 표시
             }
-         
+
+            ContinueMovingAnimal();
+
         }
-       
+
+
     }
 
     /// <summary>
     /// 오브젝트를 선택하는 함수 입니다. 
     /// Linked lIst를 활용해 자료를 검색하고 해당하는 메세지를 카메라 및, 게임 다음 동작에 전달합니다. 
     /// </summary>
-    private string SelectObject()
+    private void SelectObject()
     {
 
 #if UNITY_EDITOR
@@ -73,7 +83,7 @@ public class GameManager : MonoBehaviour
             m_vecMouseDownPos = Input.mousePosition;
 #else
             m_vecMouseDownPos = Input.GetTouch(0).position;
-            if(Input.GetTouch(0).phase != TouchPhase.Began)
+            if (Input.GetTouch(0).phase != TouchPhase.Began)
                 return;
 #endif
             // 카메라에서 스크린에 마우스 클릭 위치를 통과하는 광선을 반환합니다.
@@ -83,70 +93,69 @@ public class GameManager : MonoBehaviour
             // 광선으로 충돌된 collider를 hit에 넣습니다.
             if (Physics.Raycast(ray, out hit))
             {
-
-                selectedAnimal = hit.collider.name;
-                return selectedAnimal;
-
-                /*
-                // 어떤 오브젝트인지 로그를 찍습니다.
-                Debug.Log(hit.collider.name);
-
-                // 오브젝트 별로 코드를 작성할 수 있습니다.
-                if (hit.collider.name == "Cow")
+                if (hit.collider.name != null)
                 {
-                    Debug.Log("소");
-                    selectedAnimal = hit.collider.name;
-                }
-               
-            
-            else if (hit.collider.name == "Horse")
-                {
-                    Debug.Log("말");
-                    selectedAnimal = hit.collider.name;
-                }
-               
-            else if (hit.collider.name == "Pig")
-                Debug.Log("돼지");
-            else if (hit.collider.name == "Swan")
-                Debug.Log("백조");
-            else if (hit.collider.name == "Chicken")
-                Debug.Log("닭");
 
-                */
+                    selectedAnimal = hit.collider.name;
+                    elapsedTime = 0;
+                    
+                }
+
+
             }
-            else return null;
+
         }
-        else return null;
+
     }
-    
-    public float movingTimeSec;
-    private bool isMoveStart = false;
-    private Transform defaultAnimalPosition;
-    public void MoveAnimalByName(string animalName)
-    {
-        if (!isMoveStart)
-        {
-            isMoveStart = true;
-            elapsedTime = 0f;
-        }
-        if (animalDict.TryGetValue(animalName, out GameObject animalObj))
-        {
-            defaultAnimalPosition = animalObj.transform;
-            Debug.Log($"{selectedAnimal} is Moving!");
-            elapsedTime += Time.deltaTime;
-                // Lerp의 t값을 계산 (0 ~ 1 사이)
-                float t = Mathf.Clamp01(elapsedTime / movingTimeSec);
-                t = Lerp2D.EaseInQuad(0, 1, t);
-            animalObj.transform.position = Vector3.Lerp(defaultAnimalPosition.position, AnimalMovePosition.position, t);
 
-            if(elapsedTime > movingTimeSec)
-            {
-                isMoveStart = false;
-            }
+    public float movingTimeSec;
+    public float waitingTime;
+    private bool isMovable;
+
+    private GameObject defaultAnimalPosition; // 동물 이동의 시작위치 지정.
+
+
+    public void CheckMovable()
+    {
+        if (elapsedTime < movingTimeSec)
+        {
+            isMovable = false;
         }
         else
         {
-            Debug.LogWarning("No animal with that name found!");
+            isMovable = true;
+        }
+
+
+    }
+
+    public void ContinueMovingAnimal()
+    {
+        if (isMovable == false)
+        {
+            Debug.Log($"{selectedAnimal} is Moving!");
+
+            float t = Mathf.Clamp01(elapsedTime / movingTimeSec);
+            // Lerp2D.EaseInQuad 함수에 대한 정의가 누락되어 있어 직접 t 값을 사용합니다.
+            if (defaultAnimalPosition != null)
+            {
+                defaultAnimalPosition.transform.position = Vector3.Lerp(defaultAnimalPosition.transform.position, AnimalMovePosition.position, t);
+            }
+        }
+
+
+    }
+
+    public void SetAnimal(string animalName)
+    {
+        if (animalDict.TryGetValue(animalName, out GameObject animalObj))
+        {
+            if (animalObj != null)
+            {
+                defaultAnimalPosition = animalObj;
+            }
+
+
         }
     }
 }
