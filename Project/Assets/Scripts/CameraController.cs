@@ -32,12 +32,13 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         transform.position = _introStartCamPoint.position;
+        transform.LookAt(_playStartCamPoint);
     }
 
     void Update()
     {
-      
 
+     
 
         
         if (windowController.isWindowStartOpening)

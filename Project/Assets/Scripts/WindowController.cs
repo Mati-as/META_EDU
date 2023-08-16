@@ -13,7 +13,7 @@ public class WindowController : MonoBehaviour
     [Space(10f)]
     private float elapsed;
     public float _waitingTime;
-    public float _waitingTimeRemaining;
+    private float _waitingTimeRemaining;
     public float _windowOpeningSpeed;
     public bool isWindowStartOpening;
 
