@@ -42,10 +42,6 @@ public class GameManager : MonoBehaviour
         animalDict.Add(nameof(horse), horse);
         animalDict.Add(nameof(swan), swan);
         animalDict.Add(nameof(chicken), chicken);
-        animalDict.Add(nameof(cow), cow);
-        animalDict.Add(nameof(pig), pig);
-        animalDict.Add(nameof(swan), swan);
-        animalDict.Add(nameof(chicken), chicken);
         animalDict.Add(nameof(goat), goat);
         animalDict.Add(nameof(raccoon), raccoon);
         animalDict.Add(nameof(deer), deer);
