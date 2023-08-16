@@ -5,31 +5,53 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public Dictionary<string, GameObject> animalDict = new Dictionary<string, GameObject>();
-
-    public GameObject cow;
-    public GameObject horse;
-    public GameObject pig;
-    public GameObject swan;
-    public GameObject chicken;
-
-    public Transform AnimalMovePosition; //when user corrects an answer.
-
-    private string selectedAnimal;
-
+    [Header("Game Start Setting")]
+    [Space(10f)]
     public float gamestartTime;
     public static bool IsGameStarted;
+    private string selectedAnimal;
     private float elapsedTime;
-
+    public Transform AnimalMovePosition; //when user corrects an answer.
     Vector3 m_vecMouseDownPos;
+
+    [Space(30f)]
+
+    [Header("Game Objects(Animal) Setting")]
+    [Space(10f)]
+ 
+
+    public GameObject cow;
+    public GameObject pig;
+    public GameObject horse;
+    public GameObject swan;
+    public GameObject chicken;
+    public GameObject goat;
+    public GameObject raccoon;
+    public GameObject deer;
+    public GameObject fox;
+    public GameObject giraffe;
+
+    public Dictionary<string, GameObject> animalDict = new Dictionary<string, GameObject>();
+
+
 
     private void Awake()
     {
-        animalDict.Add("Cow", cow);
-        animalDict.Add("Horse", horse);
-        animalDict.Add("Pig", pig);
-        animalDict.Add("Swan", swan);
-        animalDict.Add("Chicken", chicken);
+        animalDict.Add(nameof(cow), cow);
+        animalDict.Add(nameof(pig), pig);
+        animalDict.Add(nameof(horse), horse);
+        animalDict.Add(nameof(swan), swan);
+        animalDict.Add(nameof(chicken), chicken);
+        animalDict.Add(nameof(cow), cow);
+        animalDict.Add(nameof(pig), pig);
+        animalDict.Add(nameof(swan), swan);
+        animalDict.Add(nameof(chicken), chicken);
+        animalDict.Add(nameof(goat), goat);
+        animalDict.Add(nameof(raccoon), raccoon);
+        animalDict.Add(nameof(deer), deer);
+        animalDict.Add(nameof(fox), fox);
+        animalDict.Add(nameof(giraffe), giraffe);
+
     }
 
     void Update()
@@ -98,7 +120,7 @@ public class GameManager : MonoBehaviour
 
                     selectedAnimal = hit.collider.name;
                     elapsedTime = 0;
-                    
+
                 }
 
 
