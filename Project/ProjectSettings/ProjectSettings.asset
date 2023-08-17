@@ -75,7 +75,7 @@ PlayerSettings:
   androidMinimumWindowHeight: 300
   androidFullscreenMode: 1
   defaultIsNativeResolution: 1
-  macRetinaSupport: 1
+  macRetinaSupport: 0
   runInBackground: 0
   captureSingleScreen: 0
   muteOtherAudioSources: 0
@@ -91,7 +91,7 @@ PlayerSettings:
   resizableWindow: 0
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
-  gpuSkinning: 1
+  gpuSkinning: 0
   xboxPIXTextureCapture: 0
   xboxEnableAvatar: 0
   xboxEnableKinect: 0
@@ -499,9 +499,14 @@ PlayerSettings:
       m_Height: 720
       m_Kind: 1
       m_SubKind: 
-  m_BuildTargetBatching: []
+  m_BuildTargetBatching:
+  - m_BuildTarget: Standalone
+    m_StaticBatching: 0
+    m_DynamicBatching: 1
   m_BuildTargetShaderSettings: []
-  m_BuildTargetGraphicsJobs: []
+  m_BuildTargetGraphicsJobs:
+  - m_BuildTarget: WindowsStandaloneSupport
+    m_GraphicsJobs: 0
   m_BuildTargetGraphicsJobMode: []
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: iOSSupport
@@ -510,6 +515,9 @@ PlayerSettings:
   - m_BuildTarget: AndroidPlayer
     m_APIs: 150000000b000000
     m_Automatic: 1
+  - m_BuildTarget: MacStandaloneSupport
+    m_APIs: 10000000
+    m_Automatic: 0
   m_BuildTargetVRSettings: []
   m_DefaultShaderChunkSizeInMB: 16
   m_DefaultShaderChunkCount: 0
@@ -524,7 +532,10 @@ PlayerSettings:
   m_BuildTargetGroupLightmapEncodingQuality:
   - m_BuildTarget: Android
     m_EncodingQuality: 1
-  m_BuildTargetGroupLightmapSettings: []
+  m_BuildTargetGroupLightmapSettings:
+  - m_BuildTarget: Standalone
+    m_TextureStreamingEnabled: 0
+    m_TextureStreamingPriority: 0
   m_BuildTargetNormalMapEncoding:
   - m_BuildTarget: Android
     m_Encoding: 1
