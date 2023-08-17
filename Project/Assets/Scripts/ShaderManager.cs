@@ -30,7 +30,7 @@ public class ShaderManager : MonoBehaviour
     void Start()
     {
         tempColor = inPlayColor;
-        startColor *= 0;
+        
         _animalMaterial.SetColor("_emissionColor", startColor);
     }
 

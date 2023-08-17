@@ -11,13 +11,14 @@ public class MoonAndSunController : MonoBehaviour
     
 
 
-    public Transform inPlayPosition;
+    public Transform _inPlayPosition;
+    public Transform _defaultPosition;
 
-    
 
-    void Start()
+
+    void Awake()
     {
-        
+        transform.position = _defaultPosition.position;
     }
 
     // Update is called once per frame
@@ -36,7 +37,7 @@ public class MoonAndSunController : MonoBehaviour
                 t = Lerp2D.EaseInQuad(0, 1, t);
 
                 
-                transform.position = Vector3.Lerp(transform.position, inPlayPosition.position, t);
+                transform.position = Vector3.Lerp(transform.position, _inPlayPosition.position, t);
             }
         }
     }
