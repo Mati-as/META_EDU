@@ -13,6 +13,7 @@ public class DragonflyController : MonoBehaviour
     public Transform upperPosition;
 
     private readonly int _dragonflyFly = Shader.PropertyToID("fly");
+    private string upper = "upper";
     
     private float _elapsedTime;
 
@@ -21,6 +22,7 @@ public class DragonflyController : MonoBehaviour
     private bool _isReadyToGetBack;
 
     private Transform[] _landingPositions;
+    private Transform[] _moveAwayPositions;
     
     public Transform landingPositionA;   
     public Transform landingPositionB;   
@@ -29,12 +31,19 @@ public class DragonflyController : MonoBehaviour
     public Transform landingPositionE;   
     public Transform landingPositionF;   
 
+    public Transform moveAwayPositionA;   
+    public Transform moveAwayPositionB;   
+    public Transform moveAwayPositionC;
+    public Transform moveAwayPositionD;
+    public Transform moveAwayPositionE;   
+ 
     
     private void Awake()
     {
         _currentLandingPosition = transform;
         
         _landingPositions = new Transform[6];
+        _moveAwayPositions = new Transform[5];
 
         _landingPositions[0] = landingPositionA;
         _landingPositions[1] = landingPositionB;
@@ -42,6 +51,13 @@ public class DragonflyController : MonoBehaviour
         _landingPositions[3] = landingPositionD;
         _landingPositions[4] = landingPositionE;
         _landingPositions[5] = landingPositionF;
+
+        _moveAwayPositions[0] = moveAwayPositionA;
+        _moveAwayPositions[1] = moveAwayPositionB;
+        _moveAwayPositions[2] = moveAwayPositionC;
+        _moveAwayPositions[3] = moveAwayPositionD;
+        _moveAwayPositions[4] = moveAwayPositionE;
+     
         
         _animator = GetComponent<Animator>();
 
@@ -55,18 +71,22 @@ public class DragonflyController : MonoBehaviour
     private void Update()
     {
         _elapsedTime += Time.deltaTime;
-
+        CheckReadyToGetBack();
+        
+        
+        
         if (Input.GetMouseButtonDown(0))
         {
-            _elapsedTime = 0f;
             CheckClickedAndAnimateDragonfly();
         }
 
         if (_isClicked)
         {
             MoveUpToDisappear();
-            if (_isReadyToGetBack) LandToGround();
         }
+        else LandToGround();
+        
+       
     }
 
     /// <summary>
@@ -76,9 +96,12 @@ public class DragonflyController : MonoBehaviour
   
     private void MoveUpToDisappear()
     {
-        CheckReadyToGetBack();
-        var t = Mathf.Clamp01(_elapsedTime / movingTimeSec);
-        transform.position = Vector3.Lerp(_currentLandingPosition.transform.position, upperPosition.position, t);
+        Vector3 direction = _moveAwayPositions[_moveAwayPositionIndex].position - transform.position; 
+        direction.y = 0; 
+        Quaternion rotation = Quaternion.LookRotation(direction); 
+        Debug.Log("move up");
+        var t = _elapsedTime / movingTimeSec;
+        transform.position = Vector3.Lerp(transform.position, _moveAwayPositions[_moveAwayPositionIndex].position, t);
     }
 
     /// <summary>
@@ -87,29 +110,56 @@ public class DragonflyController : MonoBehaviour
     private void CheckReadyToGetBack()
     {
         _isReadyToGetBack = _elapsedTime > waitTimeToGetBack;
-        _isClicked = _elapsedTime > waitTimeToGetBack;
+      
     }
 
     public float moveSpeed;
 
-    private int randomPositionIndex;
+    private int _landPositionIndex;
+    private int _moveAwayPositionIndex;
+    
     private void LandToGround()
     {
-        transform.position = Vector3.Lerp(upperPosition.position,_landingPositions[randomPositionIndex].position ,
-            Time.deltaTime * moveSpeed);
+        Debug.Log("dragonfly is landing again.");
+        var t = (_elapsedTime / movingTimeSec);
+        transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position, t);
+        
+        Vector3 direction = _landingPositions[_landPositionIndex].position - transform.position; 
+        direction.y = 0; 
+        Quaternion rotation = Quaternion.LookRotation(direction); 
+        transform.rotation = rotation;
+        
+       
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag(upper))
+        {
+            _isClicked = false;
+            _elapsedTime = 0f;
+        }
+        
+        
     }
 
     private void CheckClickedAndAnimateDragonfly()
     {
         System.Diagnostics.Debug.Assert(Camera.main != null, "Camera.main != null");
+        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.collider.name != _dragonflyName) return;
 
-            randomPositionIndex = UnityEngine.Random.Range(0, 6); // 수정된 부분
+            
+            if (hit.collider.name != _dragonflyName) return;
+            _elapsedTime = 0f;
+
+            _landPositionIndex = UnityEngine.Random.Range(0, 6); 
+            _moveAwayPositionIndex = UnityEngine.Random.Range(0, 5); 
         
             _animator.SetBool(_dragonflyFly, true);
         
