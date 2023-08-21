@@ -10,7 +10,7 @@ namespace UnityEngine.PostProcessing
             High = 0,
             Low = 2
         }
-
+        
         public enum SSRReflectionBlendType
         {
             PhysicallyBased,

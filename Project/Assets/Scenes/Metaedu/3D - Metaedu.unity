@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.727571, g: 0.30560642, b: 0.35795882, a: 1}
+  m_IndirectSpecularColor: {r: 0.7276311, g: 0.30568472, b: 0.35801184, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -743,7 +743,6 @@ GameObject:
   - component: {fileID: 612935350}
   - component: {fileID: 612935353}
   - component: {fileID: 612935354}
-  - component: {fileID: 612935355}
   - component: {fileID: 612935356}
   m_Layer: 0
   m_Name: main cam
@@ -868,23 +867,6 @@ MonoBehaviour:
   _moveSpeed: 3
   movingTimeSec: 15
   windowController: {fileID: 111328327117924908}
---- !u!114 &612935355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 612935349}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: 1caef67cfcdd18445baffd1811e84115, type: 2}
-  isGlobal: 1
-  blendDistance: 0
-  weight: 0.505
-  priority: 0
 --- !u!114 &612935356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2785,10 +2767,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a475c131ada7f6449f21f41b3cc842e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _leftWindow: {fileID: 4760814238189031}
-  _rightWindow: {fileID: 4304296892884799}
-  _waitingTime: 3
-  _windowOpeningSpeed: 60
+  leftWindow: {fileID: 4760814238189031}
+  rightWindow: {fileID: 4304296892884799}
+  waitingTime: 3
+  windowOpeningSpeed: 60
   isWindowStartOpening: 0
 --- !u!1 &120006039311426879
 GameObject:

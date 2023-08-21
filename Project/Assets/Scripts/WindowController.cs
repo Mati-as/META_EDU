@@ -2,44 +2,34 @@ using UnityEngine;
 
 public class WindowController : MonoBehaviour
 {
-    [Header("Window")]
-    [Space(10f)]
-    public Transform _leftWindow;  //y decreasing process to open window forward.
-    public Transform _rightWindow; //y increase process to open window forward.
+    [Header("Window")] [Space(10f)] public Transform leftWindow; //y decreasing process to open window forward.
+    public Transform rightWindow; //y increase process to open window forward.
 
-    [Space(30f)]
+    [Space(30f)] [Header("Camera Positions")] [Space(10f)]
+    private float _elapsed;
 
-    [Header("Camera Positions")]
-    [Space(10f)]
-    private float elapsed;
-    public float _waitingTime;
+    public float waitingTime;
     private float _waitingTimeRemaining;
-    public float _windowOpeningSpeed;
+    public float windowOpeningSpeed;
     public bool isWindowStartOpening;
 
 
     void Start()
     {
-
     }
 
 
-  
-    
-
- 
-    void Update()
+    private void Update()
     {
-        elapsed += Time.deltaTime;
-        _waitingTimeRemaining = _waitingTime - elapsed;
+        _elapsed += Time.deltaTime;
+        _waitingTimeRemaining = waitingTime - _elapsed;
 
-        if (elapsed > _waitingTimeRemaining)
+        if (_elapsed > _waitingTimeRemaining)
         {
-            isWindowStartOpening = true; 
+            isWindowStartOpening = true;
 
-            _leftWindow.eulerAngles += Vector3.down * _windowOpeningSpeed * Time.deltaTime;
-            _rightWindow.eulerAngles += Vector3.up * _windowOpeningSpeed * Time.deltaTime;
+            leftWindow.eulerAngles += Vector3.down * (windowOpeningSpeed * Time.deltaTime);
+            rightWindow.eulerAngles += Vector3.up * (windowOpeningSpeed * Time.deltaTime);
         }
-
     }
 }
