@@ -10,16 +10,17 @@ public class DragonflyController : MonoBehaviour
 
     private bool _isClicked;
     private Transform _currentLandingPosition;
-    public Transform upperPosition;
 
-    private readonly int _dragonflyFly = Shader.PropertyToID("fly");
+
+    private readonly int _dragonflyFly = Animator.StringToHash("fly");
     private string upper = "upper";
-    
+    private string dragonfly = "dragonfly";
+
     private float _elapsedTime;
+    private float _randomSpeed;
 
     public float movingTimeSec;
-    public float waitTimeToGetBack;
-    private bool _isReadyToGetBack;
+   
 
     private Transform[] _landingPositions;
     private Transform[] _moveAwayPositions;
@@ -71,9 +72,8 @@ public class DragonflyController : MonoBehaviour
     private void Update()
     {
         _elapsedTime += Time.deltaTime;
-        CheckReadyToGetBack();
-        
-        
+    
+       
         
         if (Input.GetMouseButtonDown(0))
         {
@@ -101,17 +101,13 @@ public class DragonflyController : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(direction); 
         Debug.Log("move up");
         var t = _elapsedTime / movingTimeSec;
-        transform.position = Vector3.Lerp(transform.position, _moveAwayPositions[_moveAwayPositionIndex].position, t);
+        transform.position = Vector3.Lerp(transform.position, _moveAwayPositions[_moveAwayPositionIndex].position, t * moveSpeed * _randomSpeed);
     }
 
     /// <summary>
     ///     잠자리가 준비되었는지 체크하는 함수.
     /// </summary>
-    private void CheckReadyToGetBack()
-    {
-        _isReadyToGetBack = _elapsedTime > waitTimeToGetBack;
-      
-    }
+ 
 
     public float moveSpeed;
 
@@ -122,13 +118,12 @@ public class DragonflyController : MonoBehaviour
     {
         Debug.Log("dragonfly is landing again.");
         var t = (_elapsedTime / movingTimeSec);
-        transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position, t);
+        transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position, t * moveSpeed * _randomSpeed);
         
         Vector3 direction = _landingPositions[_landPositionIndex].position - transform.position; 
         direction.y = 0; 
         Quaternion rotation = Quaternion.LookRotation(direction); 
         transform.rotation = rotation;
-        
        
     }
 
@@ -138,9 +133,16 @@ public class DragonflyController : MonoBehaviour
         {
             _isClicked = false;
             _elapsedTime = 0f;
+            _animator.SetBool(_dragonflyFly, false);
         }
-        
-        
+
+        if (other.CompareTag(dragonfly))
+        {
+            _isClicked = false;
+            _landPositionIndex = UnityEngine.Random.Range(0, 6);
+        }
+
+
     }
 
     private void CheckClickedAndAnimateDragonfly()
@@ -159,8 +161,11 @@ public class DragonflyController : MonoBehaviour
             _elapsedTime = 0f;
 
             _landPositionIndex = UnityEngine.Random.Range(0, 6); 
-            _moveAwayPositionIndex = UnityEngine.Random.Range(0, 5); 
-        
+            _moveAwayPositionIndex = UnityEngine.Random.Range(0, 5);
+
+            _randomSpeed = UnityEngine.Random.Range(0.8f, 2);
+
+
             _animator.SetBool(_dragonflyFly, true);
         
             _currentLandingPosition.position = transform.position;
