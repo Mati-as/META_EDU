@@ -138,8 +138,9 @@ public class DragonflyController : MonoBehaviour
 
         if (other.CompareTag(dragonfly))
         {
-            _isClicked = false;
             _landPositionIndex = UnityEngine.Random.Range(0, 6);
+            _isClicked = false;
+            
         }
 
 
