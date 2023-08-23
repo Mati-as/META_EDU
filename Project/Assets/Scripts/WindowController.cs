@@ -5,16 +5,17 @@ public class WindowController : MonoBehaviour
     [Header("Window")] [Space(10f)] public Transform leftWindow; //y decreasing process to open window forward.
     public Transform rightWindow; //y increase process to open window forward.
 
-    [Space(30f)] [Header("Camera Positions")] [Space(10f)]
-    private float _elapsed;
-
     public float waitingTime;
-    private float _waitingTimeRemaining;
     public float windowOpeningSpeed;
     public bool isWindowStartOpening;
 
+    [Space(30f)] [Header("Camera Positions")] [Space(10f)]
+    private float _elapsed;
 
-    void Start()
+    private float _waitingTimeRemaining;
+
+
+    private void Start()
     {
     }
 

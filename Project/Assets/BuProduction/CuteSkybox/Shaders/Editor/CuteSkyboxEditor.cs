@@ -1,22 +1,22 @@
+using System;
+using UnityEditor;
+using UnityEngine;
+
 namespace BuProduction.CuteSkybox.Editor
 {
-    using System;
-    using UnityEngine;
-    using UnityEditor;
-
     public class CuteSkyboxEditor : ShaderGUI
     {
-        private static string ENABLE_BUTTON = "Enable";
-        private static string DISABLE_BUTTON = "Disable";
-        private static string BUTTON_DESCRIPTION = "moon direction handle";
+        private static readonly string ENABLE_BUTTON = "Enable";
+        private static readonly string DISABLE_BUTTON = "Disable";
+        private static readonly string BUTTON_DESCRIPTION = "moon direction handle";
 
         private static bool _isGizmoEnabled;
         private static CuteSkyboxEditor _instance;
-        private static Action<SceneView> _cachedSceneGUI => OnSceneGUIDelegate;
-        private MaterialEditor _currentMaterialEditor;
-        private MaterialProperty[] _currentMaterialProperties;
 
         private Quaternion _cachedRotation;
+        private MaterialEditor _currentMaterialEditor;
+        private MaterialProperty[] _currentMaterialProperties;
+        private static Action<SceneView> _cachedSceneGUI => OnSceneGUIDelegate;
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
@@ -25,16 +25,16 @@ namespace BuProduction.CuteSkybox.Editor
             _currentMaterialProperties = properties;
             EditorGUILayout.BeginVertical("Box");
             EditorGUILayout.LabelField("Cubemap Properties", EditorStyles.boldLabel);
-            MaterialProperty cubemapToggle = FindProperty("_CUBEMAP", properties);
+            var cubemapToggle = FindProperty("_CUBEMAP", properties);
             materialEditor.ShaderProperty(cubemapToggle, "Cubemap");
             if (cubemapToggle.floatValue == 1)
             {
-                MaterialProperty alphaCubemap = FindProperty("_EnableAlphaCubemap", properties);
-                MaterialProperty cloudsOverAlphaCubemap = FindProperty("_CloudsOverAlphaCubemap", properties);
-                MaterialProperty cubemapTexture = FindProperty("_CubemapTexture", properties);
-                MaterialProperty cubemapOffset = FindProperty("_CubeMapOffset", properties);
-                MaterialProperty cubemapRotation = FindProperty("_CubeMapRotation", properties);
-                
+                var alphaCubemap = FindProperty("_EnableAlphaCubemap", properties);
+                var cloudsOverAlphaCubemap = FindProperty("_CloudsOverAlphaCubemap", properties);
+                var cubemapTexture = FindProperty("_CubemapTexture", properties);
+                var cubemapOffset = FindProperty("_CubeMapOffset", properties);
+                var cubemapRotation = FindProperty("_CubeMapRotation", properties);
+
                 materialEditor.ShaderProperty(alphaCubemap, "Enable Alpha Cubemap");
                 materialEditor.ShaderProperty(cloudsOverAlphaCubemap, "Clouds Over Alpha Cubemap");
                 materialEditor.ShaderProperty(cubemapTexture, "CubemapTexture");
@@ -47,31 +47,31 @@ namespace BuProduction.CuteSkybox.Editor
 
             EditorGUILayout.BeginVertical("Box");
             EditorGUILayout.LabelField("Global Color Properties", EditorStyles.boldLabel);
-            MaterialProperty skyColor = FindProperty("_SkyColor", properties);
-            MaterialProperty skyPower = FindProperty("_SkyPower", properties);
+            var skyColor = FindProperty("_SkyColor", properties);
+            var skyPower = FindProperty("_SkyPower", properties);
             materialEditor.ShaderProperty(skyColor, "Sky Color");
             materialEditor.ShaderProperty(skyPower, "Sky Power");
 
-            MaterialProperty horizonColor = FindProperty("_HorizonColor", properties);
-            MaterialProperty horizonOffset = FindProperty("_HorizonOffset", properties);
+            var horizonColor = FindProperty("_HorizonColor", properties);
+            var horizonOffset = FindProperty("_HorizonOffset", properties);
             materialEditor.ShaderProperty(horizonColor, "Horizon Color");
             materialEditor.ShaderProperty(horizonOffset, "Horizon Offset");
 
-            MaterialProperty groundColor = FindProperty("_GroundColor", properties);
-            MaterialProperty groundPower = FindProperty("_GroundPower", properties);
+            var groundColor = FindProperty("_GroundColor", properties);
+            var groundPower = FindProperty("_GroundPower", properties);
             materialEditor.ShaderProperty(groundColor, "Ground Color");
             materialEditor.ShaderProperty(groundPower, "Ground Power");
             EditorGUILayout.EndVertical();
 
             // Sun properties
-            MaterialProperty sunToggle = FindProperty("_SUN", properties);
-            MaterialProperty enableSunTextureToggle = FindProperty("_EnableSunTexture", properties);
-            MaterialProperty sunTexture = FindProperty("_SunTexture", properties);
-            MaterialProperty sunTextureRotation = FindProperty("_SunTextureRotation", properties);
-            MaterialProperty sunColor = FindProperty("_SunColor", properties);
-            MaterialProperty sunRadius = FindProperty("_SunRadius", properties);
-            MaterialProperty sunHardness = FindProperty("_SunHardness", properties);
-            MaterialProperty sunHeightOffsetDirection = FindProperty("_SunHeightOffsetDirection", properties);
+            var sunToggle = FindProperty("_SUN", properties);
+            var enableSunTextureToggle = FindProperty("_EnableSunTexture", properties);
+            var sunTexture = FindProperty("_SunTexture", properties);
+            var sunTextureRotation = FindProperty("_SunTextureRotation", properties);
+            var sunColor = FindProperty("_SunColor", properties);
+            var sunRadius = FindProperty("_SunRadius", properties);
+            var sunHardness = FindProperty("_SunHardness", properties);
+            var sunHeightOffsetDirection = FindProperty("_SunHeightOffsetDirection", properties);
 
 
             EditorGUILayout.BeginVertical("Box");
@@ -96,14 +96,14 @@ namespace BuProduction.CuteSkybox.Editor
 
 
             // Moon properties
-            MaterialProperty moonToggle = FindProperty("_MOON", properties);
-            MaterialProperty enableMoonTextureToggle = FindProperty("_EnableMoonTexture", properties);
-            MaterialProperty moonTexture = FindProperty("_MoonTexture", properties);
-            MaterialProperty moonTextureRotation = FindProperty("_MoonTextureRotation", properties);
-            MaterialProperty moonDirection = FindProperty("_MoonDirection", properties);
-            MaterialProperty moonColor = FindProperty("_MoonColor", properties);
-            MaterialProperty moonRadius = FindProperty("_MoonRadius", properties);
-            MaterialProperty moonHardness = FindProperty("_MoonHardness", properties);
+            var moonToggle = FindProperty("_MOON", properties);
+            var enableMoonTextureToggle = FindProperty("_EnableMoonTexture", properties);
+            var moonTexture = FindProperty("_MoonTexture", properties);
+            var moonTextureRotation = FindProperty("_MoonTextureRotation", properties);
+            var moonDirection = FindProperty("_MoonDirection", properties);
+            var moonColor = FindProperty("_MoonColor", properties);
+            var moonRadius = FindProperty("_MoonRadius", properties);
+            var moonHardness = FindProperty("_MoonHardness", properties);
 
             EditorGUILayout.BeginVertical("Box");
             EditorGUILayout.LabelField("Moon Properties", EditorStyles.boldLabel);
@@ -116,6 +116,7 @@ namespace BuProduction.CuteSkybox.Editor
                     materialEditor.ShaderProperty(moonTexture, "Moon Texture");
                     materialEditor.ShaderProperty(moonTextureRotation, "Moon Texture Rotation");
                 }
+
                 GUI.enabled = false;
                 materialEditor.ShaderProperty(moonDirection, "Moon Direction");
                 GUI.enabled = true;
@@ -147,16 +148,16 @@ namespace BuProduction.CuteSkybox.Editor
             EditorGUILayout.EndVertical();
 
             // Star properties
-            MaterialProperty starToggle = FindProperty("_STARS", properties);
-            MaterialProperty starRotationToggle = FindProperty("_STARROTATION", properties);
-            MaterialProperty starTexture = FindProperty("_StarTexture", properties);
-            MaterialProperty starColor = FindProperty("_StarColor", properties);
-            MaterialProperty starSize = FindProperty("_StarSize", properties);
-            MaterialProperty starOffset = FindProperty("_StarOffset", properties);
-            MaterialProperty starDensity = FindProperty("_StarDensity", properties);
-            MaterialProperty starRotationSpeed = FindProperty("_StarRotationSpeed", properties);
-            MaterialProperty starBlinkSpeed = FindProperty("_StarBlinkSpeed", properties);
-            MaterialProperty starBlinkContrast = FindProperty("_StarBlinkContrast", properties);
+            var starToggle = FindProperty("_STARS", properties);
+            var starRotationToggle = FindProperty("_STARROTATION", properties);
+            var starTexture = FindProperty("_StarTexture", properties);
+            var starColor = FindProperty("_StarColor", properties);
+            var starSize = FindProperty("_StarSize", properties);
+            var starOffset = FindProperty("_StarOffset", properties);
+            var starDensity = FindProperty("_StarDensity", properties);
+            var starRotationSpeed = FindProperty("_StarRotationSpeed", properties);
+            var starBlinkSpeed = FindProperty("_StarBlinkSpeed", properties);
+            var starBlinkContrast = FindProperty("_StarBlinkContrast", properties);
 
 
             EditorGUILayout.BeginVertical("Box");
@@ -182,7 +183,7 @@ namespace BuProduction.CuteSkybox.Editor
             EditorGUILayout.EndVertical();
 
 
-            MaterialProperty cloudState = FindProperty("_CLOUDSTATE", properties);
+            var cloudState = FindProperty("_CLOUDSTATE", properties);
 
 
             EditorGUILayout.BeginVertical("Box");
@@ -190,13 +191,13 @@ namespace BuProduction.CuteSkybox.Editor
             materialEditor.ShaderProperty(cloudState, "Clouds");
             if (cloudState.floatValue != 2)
             {
-                MaterialProperty cloudcolor = FindProperty("_CloudColor", properties);
-                MaterialProperty cloudTexture1 = FindProperty("_CloudTexture1", properties);
-                MaterialProperty cloudSpeed1 = FindProperty("_CloudSpeed1", properties);
-                MaterialProperty cloudScale1 = FindProperty("_CloudScale1", properties);
-                MaterialProperty cloudHorizonGradient = FindProperty("_CloudHorizonGradient", properties);
-                MaterialProperty cloudHorizonOffset = FindProperty("_CloudHorizonOffset", properties);
-                MaterialProperty cloudMoveAngle = FindProperty("_CloudMoveAngle", properties);
+                var cloudcolor = FindProperty("_CloudColor", properties);
+                var cloudTexture1 = FindProperty("_CloudTexture1", properties);
+                var cloudSpeed1 = FindProperty("_CloudSpeed1", properties);
+                var cloudScale1 = FindProperty("_CloudScale1", properties);
+                var cloudHorizonGradient = FindProperty("_CloudHorizonGradient", properties);
+                var cloudHorizonOffset = FindProperty("_CloudHorizonOffset", properties);
+                var cloudMoveAngle = FindProperty("_CloudMoveAngle", properties);
 
                 materialEditor.ShaderProperty(cloudcolor, "Cloud Color");
                 materialEditor.ShaderProperty(cloudTexture1, "Cloud Texture 1");
@@ -205,9 +206,9 @@ namespace BuProduction.CuteSkybox.Editor
 
                 if (cloudState.floatValue == 1)
                 {
-                    MaterialProperty cloudTexture2 = FindProperty("_CloudTexture2", properties);
-                    MaterialProperty cloudSpeed2 = FindProperty("_CloudSpeed2", properties);
-                    MaterialProperty cloudScale2 = FindProperty("_CloudScale2", properties);
+                    var cloudTexture2 = FindProperty("_CloudTexture2", properties);
+                    var cloudSpeed2 = FindProperty("_CloudSpeed2", properties);
+                    var cloudScale2 = FindProperty("_CloudScale2", properties);
 
                     materialEditor.ShaderProperty(cloudTexture2, "Cloud Texture 2");
                     materialEditor.ShaderProperty(cloudSpeed2, "Cloud Speed 2");
@@ -237,20 +238,21 @@ namespace BuProduction.CuteSkybox.Editor
                 _isGizmoEnabled = false;
                 return;
             }
-            
-            
+
+
             EditorGUI.BeginChangeCheck();
 
-            MaterialProperty moonPosition = FindProperty("_MoonDirection", _instance._currentMaterialProperties);
+            var moonPosition = FindProperty("_MoonDirection", _instance._currentMaterialProperties);
             //MaterialProperty moonRotation = FindProperty("_MoonRotation", _currentMaterialProperties);
 
 
             // if (moonPosition.vectorValue.magnitude <= 0f)
             //     moonPosition.vectorValue = Vector3.up;
             // else
-                moonPosition.vectorValue = moonPosition.vectorValue.normalized;
+            moonPosition.vectorValue = moonPosition.vectorValue.normalized;
 
-            _instance._cachedRotation = Quaternion.LookRotation(moonPosition.vectorValue, _instance._cachedRotation * Vector3.up);
+            _instance._cachedRotation =
+                Quaternion.LookRotation(moonPosition.vectorValue, _instance._cachedRotation * Vector3.up);
             _instance._cachedRotation = Handles.RotationHandle(_instance._cachedRotation, Vector3.zero);
             Handles.PositionHandle(Vector3.zero, _instance._cachedRotation);
 

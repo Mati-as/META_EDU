@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+
 public class FPSCounter : MonoBehaviour
 {
-    public TMP_Text fpsText;  // Text ´ë½Å TMP_Text¸¦ »ç¿ë
+    public TMP_Text fpsText; // Text ï¿½ï¿½ï¿½ TMP_Textï¿½ï¿½ ï¿½ï¿½ï¿½
     private float deltaTime;
 
-    void Update()
+    private void Update()
     {
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float fps = 1.0f / deltaTime;
+        var fps = 1.0f / deltaTime;
         fpsText.text = string.Format("{0:0.0} fps", fps);
     }
 }

@@ -1,26 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class CameraRotation : MonoBehaviour {
-
+public class CameraRotation : MonoBehaviour
+{
     public Transform target;
     public float rotationSpeed;
     public float distance;
     public float heightOffset;
     public float y;
 
-    float x;
+    private float x;
 
-    void Update () {
+    private void Update()
+    {
         if (target == null)
             return;
 
         x += rotationSpeed;
 
-        Quaternion rotation = Quaternion.Euler(y, x, 0);
-        Vector3 awayVector = new Vector3(0, 0, -distance);
-        Vector3 position = rotation * awayVector + target.position + Vector3.up * heightOffset;
+        var rotation = Quaternion.Euler(y, x, 0);
+        var awayVector = new Vector3(0, 0, -distance);
+        var position = rotation * awayVector + target.position + Vector3.up * heightOffset;
 
         transform.rotation = rotation;
         transform.position = position;

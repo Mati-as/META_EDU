@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RotateMoveCamera : MonoBehaviour
 {
-    public GameObject Camera = null;
+    public GameObject Camera;
     public float minX = -360.0f;
     public float maxX = 360.0f;
 
@@ -13,13 +12,13 @@ public class RotateMoveCamera : MonoBehaviour
     public float sensX = 100.0f;
     public float sensY = 100.0f;
 
-    float rotationY = 0.0f;
-    float rotationX = 0.0f;
+    private float MouseX;
+    private float MouseY;
+    private float rotationX;
 
-    float MouseX;
-    float MouseY;
+    private float rotationY;
 
-    void Update()
+    private void Update()
     {
         var x = Input.GetAxis("Mouse X");
         var y = Input.GetAxis("Mouse Y");
@@ -32,25 +31,30 @@ public class RotateMoveCamera : MonoBehaviour
             MouseY = y;
             Camera.transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
         }
+
         if (Input.GetKey(KeyCode.W))
-        { // al precionar la tecla.W))
-            transform.Translate(new Vector3(0, 0, 0.1f)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
+        {
+            // al precionar la tecla.W))
+            transform.Translate(new Vector3(0, 0,
+                0.1f)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
         }
-        else {
+        else
+        {
             if (Input.GetKey(KeyCode.S))
-            {
-                transform.Translate(new Vector3(0, 0, -0.1f)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
-            }
+                transform.Translate(new Vector3(0, 0,
+                    -0.1f)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
         }
+
         if (Input.GetKey(KeyCode.D))
         {
-            transform.Translate(new Vector3(0.1f, 0, 0)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
+            transform.Translate(new Vector3(0.1f, 0,
+                0)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
         }
-        else {
+        else
+        {
             if (Input.GetKey(KeyCode.A))
-            {
-                transform.Translate(new Vector3(-0.1f, 0, 0)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
-            }
+                transform.Translate(new Vector3(-0.1f, 0,
+                    0)); //cambiar posision.trasladar (aun nuevo vector(usando estas codenadas)
         }
-        }
+    }
 }
