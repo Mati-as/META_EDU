@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     public float waitingTime;
 
-    public Dictionary<string, GameObject> animalDict = new();
+    public Dictionary<string, GameObject> animalDictionary = new();
 
     private GameObject defaultAnimalPosition; // 동물 이동의 시작위치 지정.
     private float elapsedTime;
@@ -45,6 +45,10 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     [Space(10f)]
     public int TARGET_FRAME = 30;
+    
+    // 게임 플레이 로직 
+    private bool isCorrected; 
+    
 
     private void Awake()
     {
@@ -54,12 +58,7 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = TARGET_FRAME;
 
     }
-
-    private void Start()
-    {
-
-       
-    }
+    
 
     private void Update()
     {
@@ -113,7 +112,7 @@ public class GameManager : MonoBehaviour
 
             // 광선으로 충돌된 collider를 hit에 넣습니다.
             if (Physics.Raycast(ray, out hit))
-                if (hit.collider.name != null)
+                if (animalDictionary.ContainsKey(hit.collider.name))
                 {
                     selectedAnimal = hit.collider.name;
                     elapsedTime = 0;
@@ -166,7 +165,7 @@ public class GameManager : MonoBehaviour
 
     public void SetAnimal(string animalName)
     {
-        if (animalDict.TryGetValue(animalName, out var animalObj))
+        if (animalDictionary.TryGetValue(animalName, out var animalObj))
             if (animalObj != null)
                 defaultAnimalPosition = animalObj;
     }
@@ -181,16 +180,16 @@ public class GameManager : MonoBehaviour
 
     private void SetAnimalIntoDictionary()
     {
-        animalDict.Add(nameof(cow), cow);
-        animalDict.Add(nameof(pig), pig);
-        animalDict.Add(nameof(horse), horse);
-        animalDict.Add(nameof(swan), swan);
-        animalDict.Add(nameof(chicken), chicken);
-        animalDict.Add(nameof(goat), goat);
-        animalDict.Add(nameof(raccoon), raccoon);
-        animalDict.Add(nameof(deer), deer);
-        animalDict.Add(nameof(fox), fox);
-        animalDict.Add(nameof(giraffe), giraffe);
+        animalDictionary.Add(nameof(cow), cow);
+        animalDictionary.Add(nameof(pig), pig);
+        animalDictionary.Add(nameof(horse), horse);
+        animalDictionary.Add(nameof(swan), swan);
+        animalDictionary.Add(nameof(chicken), chicken);
+        animalDictionary.Add(nameof(goat), goat);
+        animalDictionary.Add(nameof(raccoon), raccoon);
+        animalDictionary.Add(nameof(deer), deer);
+        animalDictionary.Add(nameof(fox), fox);
+        animalDictionary.Add(nameof(giraffe), giraffe);
     }
 
     private void SetResolution(int width, int height)
