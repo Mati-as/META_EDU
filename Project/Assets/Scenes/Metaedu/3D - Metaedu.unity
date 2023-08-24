@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.010791558, g: 0.00588227, b: 0.025988525, a: 1}
+  m_IndirectSpecularColor: {r: 0.023032065, g: 0.012197786, b: 0.027087871, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -384,6 +384,37 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.000102221966, y: 2.7807052, z: -0.40730655}
     m_Extent: {x: 0.8312743, y: 2.9649026, z: 2.2583256}
   m_DirtyAABB: 0
+--- !u!1 &56892769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 56892770}
+  m_Layer: 0
+  m_Name: animal lookat position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &56892770
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56892769}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -42.32}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 973661794}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &57876745
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,7 +446,7 @@ Transform:
   - {fileID: 1765975588}
   - {fileID: 2146572993}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &104600481
 GameObject:
@@ -1337,7 +1368,7 @@ MonoBehaviour:
   _introStartCamPoint: {fileID: 104600482}
   _playStartCamPoint: {fileID: 395536454}
   _moveSpeed: 3
-  movingTimeSec: 1
+  movingTimeSec: 10
   windowController: {fileID: 111328327117924908}
 --- !u!114 &612935356
 MonoBehaviour:
@@ -1671,10 +1702,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 973661793}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.13, y: -13, z: 28.6}
+  m_LocalPosition: {x: -17.13, y: -11.2, z: 27.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 56892770}
   m_Father: {fileID: 867924471}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1829,7 +1861,7 @@ Transform:
   m_Children:
   - {fileID: 612237381}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1131053017
 GameObject:
@@ -2528,7 +2560,7 @@ Transform:
   m_Children:
   - {fileID: 395536454}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 5.22, z: 0}
 --- !u!1 &1644008759
 GameObject:
@@ -2633,6 +2665,8 @@ MonoBehaviour:
   deer: {fileID: 768799792327209792}
   fox: {fileID: 2879805902735891838}
   giraffe: {fileID: 8486078135403387479}
+  lookAtPosition: {fileID: 56892770}
+  rotationSpeed: 3
   movingTimeSec: 10
   waitingTime: 3
   TARGET_FRAME: 30
@@ -2804,7 +2838,7 @@ Transform:
   - {fileID: 4490375469077037}
   - {fileID: 915789487}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1989413339
 GameObject:
@@ -2829,8 +2863,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1989413339}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 184.51239, y: 58.110786, z: 98.75561}
+  m_LocalRotation: {x: -0.3265011, y: -0.5754445, z: 0.26833415, w: 0.7001839}
+  m_LocalPosition: {x: -61.140984, y: 188.74692, z: 86.435425}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2838,8 +2872,8 @@ Transform:
   - {fileID: 987781632}
   - {fileID: 1131053018}
   - {fileID: 140771894}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 2137151444}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1993560778
 GameObject:
@@ -2867,7 +2901,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993560778}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -35.79, y: -7.3, z: 7.82}
+  m_LocalPosition: {x: -35.8, y: -3.7, z: 4.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3114,7 +3148,7 @@ Transform:
   - {fileID: 9119591018832707821}
   - {fileID: 1585842946}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -1.598}
 --- !u!1 &2137151442
 GameObject:
@@ -3129,7 +3163,7 @@ GameObject:
   - component: {fileID: 2137151445}
   - component: {fileID: 2137151446}
   m_Layer: 0
-  m_Name: directional light
+  m_Name: lights
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3147,7 +3181,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.1
+  m_Intensity: 1.16
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3204,14 +3238,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2137151442}
-  m_LocalRotation: {x: 0.41136786, y: 0.2077261, z: -0.09686427, w: 0.8821813}
+  m_LocalRotation: {x: 0.3265011, y: 0.5754445, z: -0.26833415, w: 0.7001839}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1989413340}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: 26.5, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: 78.83, z: 0}
 --- !u!114 &2137151445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3281,10 +3316,10 @@ MonoBehaviour:
   inPlayBgColor: {r: 0, g: 0, b: 0, a: 0}
   colorChangingSpeed: 0.6
   TimingToBeChanged: 6
-  waitTime: 5
+  waitTime: 7
   animalMaterial: {fileID: 2100000, guid: 8e8661e038368d7439eb9685608b9899, type: 2}
-  startColor: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
-  inPlayColor: {r: 1, g: 0.93733996, b: 0, a: 0}
+  startColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 0}
+  inPlayColor: {r: 0, g: 1, b: 0.742964, a: 0}
   fresnelSpeed: 1.6
   minFresnelPower: 9
   maxFresnelPower: 15
@@ -3766,7 +3801,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 768799792327209792}
   m_LocalRotation: {x: -0.20222712, y: 0.32575747, z: 0.124142244, w: 0.91519123}
-  m_LocalPosition: {x: -8.652, y: -8.696, z: -12.499}
+  m_LocalPosition: {x: -9.1, y: -8.75, z: -12.12}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19146,7 +19181,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7859896132670118104}
   m_LocalRotation: {x: -0.110073976, y: 0.95231557, z: -0.019100979, w: 0.28392613}
-  m_LocalPosition: {x: -7.962, y: -8.885, z: -17.187}
+  m_LocalPosition: {x: -8.6, y: -9.1, z: -17.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

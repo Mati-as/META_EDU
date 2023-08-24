@@ -34,7 +34,7 @@ public class InstructionUI : MonoBehaviour
     {
        
             tmpText.text = ""; // 초기화
-            yield return new WaitForSeconds(11f); // 1초 대기
+            yield return new WaitForSeconds(13 f); // 1초 대기
 
             int strTypingLength = str.GetTypingLength(); // 최대 타이핑 수 구함
             for (int i = 0; i <= strTypingLength; i++)

@@ -53,6 +53,8 @@ public class ShaderManager : MonoBehaviour
 
     private void Start()
     {
+       SetFresnelPower(500f);
+       
         SetAnimalOutlineColor(startColor);
 
         SetSkyColor(defaultSkyColor);
@@ -87,12 +89,17 @@ public class ShaderManager : MonoBehaviour
 
                 var currentAnimalOutlineColor = Color.Lerp(startColor, inPlayColor, _lerpProgress);
                 SetAnimalOutlineColor(currentAnimalOutlineColor);
+                
+                
+                //fresnel power 9~15 -> 
+                var currentFresnel = Mathf.Clamp(12 + 3 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
+                    minFresnelPower, maxFresnelPower);
+                SetFresnelPower(currentFresnel);
+                
+                
             }
 
-            //fresnel power 9~15 -> 
-            var currentFresnel = Mathf.Clamp(12 + 3 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed),
-                minFresnelPower, maxFresnelPower);
-            SetFresnelPower(currentFresnel);
+           
         }
     }
 

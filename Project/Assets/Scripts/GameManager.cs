@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -27,15 +28,16 @@ public class GameManager : MonoBehaviour
     public GameObject fox;
     public GameObject giraffe;
 
-    [Header("Animal Movement Setting")]
-    [Space(10f)]
+    [Header("Animal Movement Setting")] [Space(10f)]
+    public Transform lookAtPosition;
+    public float rotationSpeed;
+    [Space(15f)]
     public float movingTimeSec;
-
     public float waitingTime;
 
     public Dictionary<string, GameObject> animalDictionary = new();
 
-    private GameObject defaultAnimalPosition; // 동물 이동의 시작위치 지정.
+    private GameObject selectedAnimalGameObject; // 동물 이동의 시작위치 지정.
     private float elapsedTime;
     private bool isMovable;
     private Vector3 m_vecMouseDownPos;
@@ -153,10 +155,19 @@ public class GameManager : MonoBehaviour
             Debug.Log($"{selectedAnimal} is Moving!");
 
             var t = Mathf.Clamp01(elapsedTime / movingTimeSec);
-            // Lerp2D.EaseInQuad 함수에 대한 정의가 누락되어 있어 직접 t 값을 사용합니다.
-            if (defaultAnimalPosition != null)
-                defaultAnimalPosition.transform.position = Vector3.Lerp(defaultAnimalPosition.transform.position,
+            
+            if (selectedAnimalGameObject != null)
+            {
+                selectedAnimalGameObject.transform.position = Vector3.Lerp(selectedAnimalGameObject.transform.position,
                     AnimalMovePosition.position, t);
+                
+                Vector3 directionToTarget = lookAtPosition.position - selectedAnimalGameObject.transform.position;
+                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+                selectedAnimalGameObject.transform.rotation = Quaternion.Slerp(selectedAnimalGameObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+             
+            
+            
         }
     }
 
@@ -164,7 +175,7 @@ public class GameManager : MonoBehaviour
     {
         if (animalDictionary.TryGetValue(animalName, out var animalObj))
             if (animalObj != null)
-                defaultAnimalPosition = animalObj;
+                selectedAnimalGameObject = animalObj;
     }
 
     private void ReloadCurrentScene()
