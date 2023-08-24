@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     [Header("Game Objects(Animal) Setting")]
     [Space(10f)]
     public GameObject cow;
-
     public GameObject pig;
     public GameObject horse;
     public GameObject swan;
