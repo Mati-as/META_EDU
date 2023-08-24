@@ -24,7 +24,6 @@ Material:
   m_Shader: {fileID: 4800000, guid: 1110424dc5788734dae5c308db107874, type: 3}
   m_ValidKeywords:
   - _CLOUDSTATE_TWOLAYER
-  - _CUBEMAP
   - _STARROTATION
   - _STARS
   - _SUN
@@ -164,7 +163,7 @@ Material:
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
     - _CLOUDSTATE: 1
-    - _CUBEMAP: 1
+    - _CUBEMAP: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _CloudHorizonGradient: 0.008
@@ -183,7 +182,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EnableAlphaCubemap: 1
+    - _EnableAlphaCubemap: 0
     - _EnableMoonTexture: 1
     - _EnableSunTexture: 1
     - _EnvironmentReflections: 1
@@ -191,8 +190,8 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _GroundPower: 0.579
-    - _HorizonOffset: -0.68
+    - _GroundPower: 0.484
+    - _HorizonOffset: 0.31
     - _MOON: 0
     - _Metallic: 0
     - _MoonHardness: 0.897
@@ -206,7 +205,7 @@ Material:
     - _STARROTATION: 1
     - _STARS: 1
     - _SUN: 1
-    - _SkyPower: 0.499
+    - _SkyPower: 0.8
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -214,10 +213,10 @@ Material:
     - _SrcBlendAlpha: 1
     - _StarBlinkContrast: 0.611
     - _StarBlinkSpeed: 0.248
-    - _StarDensity: 0.25
+    - _StarDensity: 0.842
     - _StarOffset: 0.34
     - _StarRotationSpeed: -0.09
-    - _StarSize: 0.13
+    - _StarSize: 0.169
     - _SunHardness: 1
     - _SunHeightOffsetDirection: -0.223
     - _SunRadius: 0.515
@@ -227,14 +226,14 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _CloudColor: {r: 2.297397, g: 1.5756787, b: 1.4174938, a: 1}
+    - _CloudColor: {r: 4.0949597, g: 2.1090317, b: 0.367001, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0, g: 0.008599156, b: 0.34117648, a: 1}
-    - _HorizonColor: {r: 1, g: 0.64110065, b: 0.4669811, a: 1}
+    - _HorizonColor: {r: 0, g: 0, b: 0, a: 0}
     - _MoonColor: {r: 1.5077938, g: 0.9562391, b: 0.92362237, a: 1}
     - _MoonDirection: {r: -0.031712946, g: 0.6636417, b: 0.7473781, a: 0}
-    - _SkyColor: {r: 0.7122642, g: 0.74177545, b: 1, a: 1}
+    - _SkyColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _StarColor: {r: 1.1486983, g: 1.1486983, b: 1.1486983, a: 1}
     - _SunColor: {r: 6.9305296, g: 0.8345665, b: 0.6894245, a: 1}

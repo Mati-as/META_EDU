@@ -69,13 +69,11 @@ public class GameManager : MonoBehaviour
         {
             CheckMovable();
             
-
             //두 함수 중 동물 선택 로직은 하나로 정합니다. (클릭O or 클릭X)
 
             SelectObject();
             //SelectObjectWithoutClick();
-
-
+            
             if (selectedAnimal != null) SetAnimal(selectedAnimal);
             // 동물의 움직임이 시작됨을 표시
             ContinueMovingAnimal();
