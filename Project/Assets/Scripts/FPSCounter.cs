@@ -10,6 +10,6 @@ public class FPSCounter : MonoBehaviour
     {
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
         var fps = 1.0f / deltaTime;
-        fpsText.text = string.Format("{0:0.0} fps", fps);
+        fpsText.text =  string.Format("{0:0.0} fps", fps);
     }
 }
