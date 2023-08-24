@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,12 +7,15 @@ public class GameManager : MonoBehaviour
 {
     public static bool IsGameStarted;
 
-    [Header("Game Start Setting")] [Space(10f)]
+    [Header("Game Start Setting")]
+    [Space(10f)]
     public float gamestartTime;
 
     public Transform AnimalMovePosition; //when user corrects an answer.
 
-    [Space(30f)] [Header("Game Objects(Animal) Setting")] [Space(10f)]
+    [Space(30f)]
+    [Header("Game Objects(Animal) Setting")]
+    [Space(10f)]
     public GameObject cow;
 
     public GameObject pig;
@@ -24,7 +28,8 @@ public class GameManager : MonoBehaviour
     public GameObject fox;
     public GameObject giraffe;
 
-    [Header("Animal Movement Setting")] [Space(10f)]
+    [Header("Animal Movement Setting")]
+    [Space(10f)]
     public float movingTimeSec;
 
     public float waitingTime;
@@ -37,18 +42,23 @@ public class GameManager : MonoBehaviour
     private Vector3 m_vecMouseDownPos;
     private string selectedAnimal;
 
+    [Header("Game Settings")]
+    [Space(10f)]
+    public int TARGET_FRAME = 30;
+
     private void Awake()
     {
-        animalDict.Add(nameof(cow), cow);
-        animalDict.Add(nameof(pig), pig);
-        animalDict.Add(nameof(horse), horse);
-        animalDict.Add(nameof(swan), swan);
-        animalDict.Add(nameof(chicken), chicken);
-        animalDict.Add(nameof(goat), goat);
-        animalDict.Add(nameof(raccoon), raccoon);
-        animalDict.Add(nameof(deer), deer);
-        animalDict.Add(nameof(fox), fox);
-        animalDict.Add(nameof(giraffe), giraffe);
+        SetResolution(1920, 1080);
+        SetAnimalIntoDictionary();
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = TARGET_FRAME;
+
+    }
+
+    private void Start()
+    {
+
+       
     }
 
     private void Update()
@@ -60,8 +70,12 @@ public class GameManager : MonoBehaviour
         if (IsGameStarted)
         {
             CheckMovable();
-            Debug.Log($"isMovable: {isMovable}");
+            
+
+            //두 함수 중 동물 선택 로직은 하나로 정합니다. (클릭O or 클릭X)
+
             SelectObject();
+            //SelectObjectWithoutClick();
 
 
             if (selectedAnimal != null) SetAnimal(selectedAnimal);
@@ -107,6 +121,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Ray ray;
+    private RaycastHit hitInfo;
+    public LayerMask interactableLayer; 
+    private void SelectObjectWithoutClick()
+    {
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
+        {
+
+           
+            Debug.Log("Mouse over: " + hitInfo.collider.gameObject.name);
+            if (hitInfo.collider.name != null)
+            {
+                selectedAnimal = hitInfo.collider.name;
+                elapsedTime = 0;
+            }
+
+        }
+
+    }
     public void CheckMovable()
     {
         if (elapsedTime < movingTimeSec)
@@ -142,5 +177,24 @@ public class GameManager : MonoBehaviour
 
         // 해당 인덱스의 씬을 다시 로드합니다.
         SceneManager.LoadScene(currentSceneIndex);
+    }
+
+    private void SetAnimalIntoDictionary()
+    {
+        animalDict.Add(nameof(cow), cow);
+        animalDict.Add(nameof(pig), pig);
+        animalDict.Add(nameof(horse), horse);
+        animalDict.Add(nameof(swan), swan);
+        animalDict.Add(nameof(chicken), chicken);
+        animalDict.Add(nameof(goat), goat);
+        animalDict.Add(nameof(raccoon), raccoon);
+        animalDict.Add(nameof(deer), deer);
+        animalDict.Add(nameof(fox), fox);
+        animalDict.Add(nameof(giraffe), giraffe);
+    }
+
+    private void SetResolution(int width, int height)
+    {
+        Screen.SetResolution(width, height, Screen.fullScreen);
     }
 }

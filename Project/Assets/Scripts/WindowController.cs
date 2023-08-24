@@ -13,7 +13,7 @@ public class WindowController : MonoBehaviour
     private float _elapsed;
 
     private float _waitingTimeRemaining;
-
+    private float _deactivateOffset = 2;
 
     private void Start()
     {
@@ -32,5 +32,9 @@ public class WindowController : MonoBehaviour
             leftWindow.eulerAngles += Vector3.down * (windowOpeningSpeed * Time.deltaTime);
             rightWindow.eulerAngles += Vector3.up * (windowOpeningSpeed * Time.deltaTime);
         }
+        if (_elapsed > _waitingTimeRemaining + _deactivateOffset) Deactivate();
+
     }
+
+    private void Deactivate() => gameObject.SetActive(false);
 }
