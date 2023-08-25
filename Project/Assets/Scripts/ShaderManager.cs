@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -24,6 +25,7 @@ public class ShaderManager : MonoBehaviour
     public float waitTime;
 
     [FormerlySerializedAs("_animalMaterial")]
+    private int defaultFresnel = 5000;
     public Material animalMaterial;
 
     public Color startColor;
@@ -53,10 +55,8 @@ public class ShaderManager : MonoBehaviour
 
     private void Start()
     {
-       SetFresnelPower(500f);
-       
+       SetFresnelPower(defaultFresnel);
         SetAnimalOutlineColor(startColor);
-
         SetSkyColor(defaultSkyColor);
         SetHorizonColor(defaultHorizonColor);
         
@@ -101,6 +101,13 @@ public class ShaderManager : MonoBehaviour
 
            
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        SetAnimalOutlineColor(startColor);
+        SetSkyColor(defaultSkyColor);
+        SetHorizonColor(defaultHorizonColor);
     }
 
 

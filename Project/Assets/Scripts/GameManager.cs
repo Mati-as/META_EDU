@@ -6,9 +6,13 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    public static bool IsGameStarted;
+
+    [Header("Game Settings")] [Space(10f)]
+    public int TARGET_FRAME;
+    
 
     [Header("Game Start Setting")]
+    public static bool IsGameStarted;
     [Space(10f)]
     public float gamestartTime;
 
@@ -43,9 +47,7 @@ public class GameManager : MonoBehaviour
     private Vector3 m_vecMouseDownPos;
     private string selectedAnimal;
 
-    [Header("Game Settings")]
-    [Space(10f)]
-    public int TARGET_FRAME = 30;
+   
     
     // 게임 플레이 로직 
     private bool isCorrected; 
