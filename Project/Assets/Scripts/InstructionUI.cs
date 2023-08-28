@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class InstructionUI : MonoBehaviour
 {
     
-    private string testString = "말의 그림자를 찾아보세요";
+    private string testString = "강아지의 그림자를 찾아보세요";
     private TMP_Text tmpText;
 
     private void Awake()

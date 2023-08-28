@@ -21,16 +21,12 @@ public class GameManager : MonoBehaviour
     [Space(30f)]
     [Header("Game Objects(Animal) Setting")]
     [Space(10f)]
-    public GameObject cow;
-    public GameObject pig;
-    public GameObject horse;
-    public GameObject swan;
-    public GameObject chicken;
-    public GameObject goat;
-    public GameObject raccoon;
-    public GameObject deer;
-    public GameObject fox;
-    public GameObject giraffe;
+    public GameObject parrot;
+    public GameObject dog;
+    public GameObject mouse;
+    public GameObject rabbit;
+    public GameObject cat;
+   
 
     [Header("Animal Movement Setting")] [Space(10f)]
     public Transform lookAtPosition;
@@ -190,16 +186,13 @@ public class GameManager : MonoBehaviour
 
     private void SetAnimalIntoDictionary()
     {
-        animalDictionary.Add(nameof(cow), cow);
-        animalDictionary.Add(nameof(pig), pig);
-        animalDictionary.Add(nameof(horse), horse);
-        animalDictionary.Add(nameof(swan), swan);
-        animalDictionary.Add(nameof(chicken), chicken);
-        animalDictionary.Add(nameof(goat), goat);
-        animalDictionary.Add(nameof(raccoon), raccoon);
-        animalDictionary.Add(nameof(deer), deer);
-        animalDictionary.Add(nameof(fox), fox);
-        animalDictionary.Add(nameof(giraffe), giraffe);
+       
+        animalDictionary.Add(nameof(cat), cat);
+        animalDictionary.Add(nameof(rabbit), rabbit);
+        animalDictionary.Add(nameof(dog), dog);
+        animalDictionary.Add(nameof(parrot), parrot);
+        animalDictionary.Add(nameof(mouse), mouse);
+    
     }
 
     private void SetResolution(int width, int height)

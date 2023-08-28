@@ -52,15 +52,14 @@ public class ShaderManager : MonoBehaviour
     private float _elapsedTime;
     private float _lerpProgress; // 추가된 변수
 
-
-    private void Start()
+    private void Awake()
     {
-       SetFresnelPower(defaultFresnel);
-        SetAnimalOutlineColor(startColor);
+        SetAnimalOutlineColor(inPlayColor);
+        SetFresnelPower(defaultFresnel);
         SetSkyColor(defaultSkyColor);
         SetHorizonColor(defaultHorizonColor);
-        
     }
+
 
     private void Update()
     {
@@ -91,8 +90,8 @@ public class ShaderManager : MonoBehaviour
                 SetAnimalOutlineColor(currentAnimalOutlineColor);
                 
                 
-                //fresnel power 9~15 -> 
-                var currentFresnel = Mathf.Clamp(12 + 3 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
+                //fresnel power 4~8 -> 
+                var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
                     minFresnelPower, maxFresnelPower);
                 SetFresnelPower(currentFresnel);
                 
