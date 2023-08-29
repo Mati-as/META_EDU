@@ -33,13 +33,15 @@ public class GameManager : MonoBehaviour
     [Space(10f)]
     public Transform AnimalMovePosition; //when user corrects an answer.
 
-    [Space(30f)] [Header("Game Objects(Animal) Setting")] [Space(10f)]
-    public GameObject parrot;
-    public GameObject dog;
-    public GameObject mouse;
-    public GameObject rabbit;
-    public GameObject cat;
+    [Space(30f)] [Header("Game Objects(Animal) Setting")]
+
     public GameObject tortoise;
+
+    public GameObject rabbit;
+    public GameObject dog;
+    public GameObject parrot;
+    public GameObject mouse;
+    public GameObject cat;
 
 
     [Header("Animal Movement Setting")] [Space(10f)]
@@ -267,15 +269,19 @@ public class GameManager : MonoBehaviour
         // 해당 인덱스의 씬을 다시 로드합니다.
         SceneManager.LoadScene(currentSceneIndex);
     }
-
+    
+    
+    
+    private List<GameObject> animalList = new List<GameObject>();
     private void SetAnimalIntoDictionary()
     {
-        animalDictionary.Add(nameof(tortoise),tortoise);
-        animalDictionary.Add(nameof(cat), cat);
-        animalDictionary.Add(nameof(rabbit), rabbit);
-        animalDictionary.Add(nameof(dog), dog);
-        animalDictionary.Add(nameof(parrot), parrot);
-        animalDictionary.Add(nameof(mouse), mouse);
+        
+        animalList.Add(tortoise);
+        animalList.Add(cat);
+        animalList.Add(rabbit);
+        animalList.Add(dog);
+        animalList.Add(parrot);
+        animalList.Add(mouse);
     }
 
     private void SetResolution(int width, int height)
@@ -297,9 +303,9 @@ public class GameManager : MonoBehaviour
     private void MoveOutOfScreen()
     {
         
-        foreach (GameObject gameobj in animalDictionary.Values)
+        foreach (GameObject gameobj in animalList)
         {
-            if (_randomeIndex % 2 == 1)
+            if (_randomeIndex % 2 == 0)
             {  
                 gameobj.transform.position = Vector3.Lerp(gameobj.transform.position,
                     moveOutPositionA.position, moveOutSpeed *Time.deltaTime);
@@ -313,6 +319,38 @@ public class GameManager : MonoBehaviour
             _randomeIndex++;
 
         }
+    }
+    private List<GameObject> selectedAnimals = new List<GameObject>();
+    private List<GameObject> tempAnimals;
+    public void SelectRandomThreeAnimals()
+    {
+        tempAnimals = new List<GameObject>(animalList); 
+        for (int i = 0; i < 3; i++)
+        {
+            int randomIndex = Random.Range(0, tempAnimals.Count);
+            selectedAnimals.Add(tempAnimals[randomIndex]);
+            tempAnimals.RemoveAt(randomIndex);
+        }
+    }
+
+    public float moveInSpeed;
+    public void StartRound()
+    {
+        SelectRandomThreeAnimals();
+        
+            selectedAnimals[0].transform.position =  
+            Vector3.Lerp(   selectedAnimals[0].transform.position,
+                playPositionA.position, moveInSpeed * Time.deltaTime);
+            
+            
+            selectedAnimals[1].transform.position = playPositionB.position;
+            Vector3.Lerp(   selectedAnimals[1].transform.position,
+                playPositionB.position, moveInSpeed * Time.deltaTime);
+            
+            selectedAnimals[2].transform.position = playPositionC.position;
+            Vector3.Lerp(   selectedAnimals[2].transform.position,
+                playPositionC.position, moveInSpeed * Time.deltaTime);
+        
     }
 
 }

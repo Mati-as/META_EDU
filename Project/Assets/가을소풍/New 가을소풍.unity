@@ -3469,26 +3469,27 @@ MonoBehaviour:
   moveOutPositionA: {fileID: 708648314}
   moveOutPositionB: {fileID: 1686643423}
   AnimalMovePosition: {fileID: 799759534}
-  parrot: {fileID: 7629896987026432022}
-  dog: {fileID: 6843802015737794766}
-  mouse: {fileID: 8858668346158117892}
-  rabbit: {fileID: 5164627934438932177}
-  cat: {fileID: 1532612335396840209}
   tortoise: {fileID: 5349727453897288389}
+  rabbit: {fileID: 5164627934438932177}
+  dog: {fileID: 6843802015737794766}
+  parrot: {fileID: 7629896987026432022}
+  mouse: {fileID: 8858668346158117892}
+  cat: {fileID: 1532612335396840209}
   lookAtPosition: {fileID: 799759534}
   rotationSpeed: 1
   movingTimeSec: 7
   waitingTime: 2
   newSize: 2
   sizeIncreasingSpeed: 0.81
-  playPositionA: {fileID: 0}
-  playPositionB: {fileID: 0}
-  playPositionC: {fileID: 0}
+  playPositionA: {fileID: 1819704548}
+  playPositionB: {fileID: 385406597}
+  playPositionC: {fileID: 1546803506}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 2147483647
-  correctReactionOffset: 0
-  moveOutSpeed: 1.13
+  correctReactionOffset: 2
+  moveOutSpeed: 0.83
+  moveInSpeed: 0.12
 --- !u!4 &436187385
 Transform:
   m_ObjectHideFlags: 0
@@ -5401,7 +5402,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 708648313}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.84, y: 1.64, z: 10.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10403,7 +10404,7 @@ GameObject:
   - component: {fileID: 1535141418}
   - component: {fileID: 1535141420}
   - component: {fileID: 1535141419}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11684,7 +11685,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1686643422}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -23.559937, y: 0, z: 11.859863}
+  m_LocalPosition: {x: -10.88, y: -0.25, z: 19.57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16684,7 +16685,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5349727452490806025}
   - component: {fileID: 5349727452490806026}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16755,7 +16756,7 @@ GameObject:
   - component: {fileID: 5349727453897288386}
   - component: {fileID: 5349727453897288388}
   - component: {fileID: 5349727453897288385}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: tortoise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17752,7 +17753,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786123}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: tail.01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17768,7 +17769,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786131}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: leg.F.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17784,7 +17785,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786133}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17800,7 +17801,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786135}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17816,7 +17817,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786137}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: leg.B.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17832,7 +17833,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786139}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17848,7 +17849,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786141}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: leg.F.L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17864,7 +17865,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8509738446219786143}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: leg.B.R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
