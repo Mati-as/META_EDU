@@ -34,6 +34,7 @@ public class LightDimmer : MonoBehaviour
     {
         if (GameManager.IsGameStarted)
         {
+            
             elapsed += Time.deltaTime;
             if (elapsed > spotlightWaitTime) spotlight.enabled = true;
 

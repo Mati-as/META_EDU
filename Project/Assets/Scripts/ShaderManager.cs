@@ -63,6 +63,36 @@ public class ShaderManager : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.IsGameStarted)
+        {
+            ChangeAnimalOutlineColor();
+            ChangedSkyColor();
+        }
+    }
+
+    private void ChangeAnimalOutlineColor()
+    {
+        _elapsedTime += Time.deltaTime;
+
+        if (_elapsedTime > waitTime)
+        {
+            _lerpProgress += Time.deltaTime * animalColorChangeSpeed; // 진행도 업데이트
+            _brightness = Mathf.Lerp(minBrightness, maxBrightness, _lerpProgress);
+
+            var currentAnimalOutlineColor = Color.Lerp(startColor, inPlayColor, _lerpProgress);
+            SetAnimalOutlineColor(currentAnimalOutlineColor);
+                
+                
+            //fresnel power 4~8 -> 
+            var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
+                minFresnelPower, maxFresnelPower);
+            SetFresnelPower(currentFresnel);
+            
+        }
+    }
+
+    private void ChangedSkyColor()
+    {
         _elapsedTimeForBg += Time.deltaTime;
         fresnelElapsedTime += Time.deltaTime;
 
@@ -76,32 +106,7 @@ public class ShaderManager : MonoBehaviour
             var currentHorizonColor = Color.Lerp(defaultHorizonColor, inPlayBgColor, _progress);
             SetHorizonColor(currentHorizonColor);
         }
-
-        if (GameManager.IsGameStarted)
-        {
-            _elapsedTime += Time.deltaTime;
-
-            if (_elapsedTime > waitTime)
-            {
-                _lerpProgress += Time.deltaTime * animalColorChangeSpeed; // 진행도 업데이트
-                _brightness = Mathf.Lerp(minBrightness, maxBrightness, _lerpProgress);
-
-                var currentAnimalOutlineColor = Color.Lerp(startColor, inPlayColor, _lerpProgress);
-                SetAnimalOutlineColor(currentAnimalOutlineColor);
-                
-                
-                //fresnel power 4~8 -> 
-                var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
-                    minFresnelPower, maxFresnelPower);
-                SetFresnelPower(currentFresnel);
-                
-                
-            }
-
-           
-        }
     }
-
     private void OnApplicationQuit()
     {
         SetAnimalOutlineColor(startColor);

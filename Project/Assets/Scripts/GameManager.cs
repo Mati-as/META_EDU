@@ -1,38 +1,32 @@
 using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Game Settings")] [Space(10f)] public int TARGET_FRAME;
 
-    [Header("Game Settings")] [Space(10f)]
-    public int TARGET_FRAME;
-    
 
-    [Header("Game Start Setting")]
-    public static bool IsGameStarted;
-    [Space(10f)]
-    public float gamestartTime;
+    [Header("Game Start Setting")] public static bool IsGameStarted;
+    [Space(10f)] public float gamestartTime;
 
     public Transform AnimalMovePosition; //when user corrects an answer.
 
-    [Space(30f)]
-    [Header("Game Objects(Animal) Setting")]
-    [Space(10f)]
+    [Space(30f)] [Header("Game Objects(Animal) Setting")] [Space(10f)]
     public GameObject parrot;
+
     public GameObject dog;
     public GameObject mouse;
     public GameObject rabbit;
     public GameObject cat;
-   
+
 
     [Header("Animal Movement Setting")] [Space(10f)]
     public Transform lookAtPosition;
+
     public float rotationSpeed;
-    [Space(15f)]
-    public float movingTimeSec;
+    [Space(15f)] public float movingTimeSec;
     public float waitingTime;
 
     public Dictionary<string, GameObject> animalDictionary = new();
@@ -43,21 +37,42 @@ public class GameManager : MonoBehaviour
     private Vector3 m_vecMouseDownPos;
     private string selectedAnimal;
 
-   
+    [Header("Animal Size Setting")] [Space(10f)]
+  
+    public float newSize;
     
-    // 게임 플레이 로직 
-    private bool isCorrected; 
-    
+    public float sizeIncreasingSpeed;
+    private float _defaultSize;
 
+    [Header("Game Play Setting")] [Space(10f)]
+
+    public Transform playPositionA;
+    public Transform playPositionB;
+    public Transform playPositionC;
+
+    public static bool isPlayStared;
+    public static bool isCameraArrivedToPlay;
+
+
+ 
+    
+    private float _elapsedForNextRound; 
+    public float playWaitTime; // gamestarted time과 구분해서 사용.  
+    // 게임 플레이 로직 
+    private bool isCorrected;
+    private int correctAnim = Animator.StringToHash("corrected");
+    
     private void Awake()
     {
+        _defaultSize = dog.transform.localScale.z;
+
+        
         SetResolution(1920, 1080);
         SetAnimalIntoDictionary();
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = TARGET_FRAME;
-
     }
-    
+
 
     private void Update()
     {
@@ -67,16 +82,27 @@ public class GameManager : MonoBehaviour
 
         if (IsGameStarted)
         {
-            CheckMovable();
             
-            //두 함수 중 동물 선택 로직은 하나로 정합니다. (클릭O or 클릭X)
+            _elapsedForNextRound += Time.deltaTime;
 
+            if (_elapsedForNextRound > playWaitTime)
+            {
+                isPlayStared = true; 
+            }
+                
+            
+            //두 함수 중 동물 선택 로직은 두가지 중 하나로 정합니다. (클릭O or 클릭X)
+            CheckMovable();
             SelectObject();
             //SelectObjectWithoutClick();
-            
-            if (selectedAnimal != null) SetAnimal(selectedAnimal);
             // 동물의 움직임이 시작됨을 표시
-            ContinueMovingAnimal();
+            if (selectedAnimal != null)
+            { 
+               
+                SetAnimal(selectedAnimal);
+                ContinueMovingAnimal();
+                IncreaseScale();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene();
@@ -112,60 +138,87 @@ public class GameManager : MonoBehaviour
                 if (animalDictionary.ContainsKey(hit.collider.name))
                 {
                     selectedAnimal = hit.collider.name;
+                    
+                    //moving에서의 lerp
                     elapsedTime = 0;
+                    
+                    //sizeIncrease()의 lerp
+                    _currentLerp = 0;
                 }
         }
     }
 
     private Ray ray;
     private RaycastHit hitInfo;
-    public LayerMask interactableLayer; 
+    public LayerMask interactableLayer;
+
     private void SelectObjectWithoutClick()
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
         {
-
-           
             Debug.Log("Mouse over: " + hitInfo.collider.gameObject.name);
             if (hitInfo.collider.name != null)
             {
                 selectedAnimal = hitInfo.collider.name;
                 elapsedTime = 0;
             }
-
         }
-
     }
+
     public void CheckMovable()
     {
         if (elapsedTime < movingTimeSec)
             isMovable = false;
         else
             isMovable = true;
+        
     }
 
+    private float _currentLerp;
+    private float lerp;
+
+    private void IncreaseScale()
+    {
+        
+        _currentLerp += sizeIncreasingSpeed * Time.deltaTime;
+
+        lerp =
+            Lerp2D.EaseInBounce(
+                _defaultSize, newSize,
+                _currentLerp);
+
+
+        selectedAnimalGameObject.transform.localScale = Vector3.one * lerp;
+    }
+
+
+    /// <summary>
+    ///     마우스로 선택 된 동물을 이동시키는 함수 입니다.
+    ///     선택된 동물이 이동 시, 다른 동물들은 선택될 수 없도록 추가 로직이 필요합니다.
+    /// </summary>
     public void ContinueMovingAnimal()
     {
         if (isMovable == false)
         {
-            Debug.Log($"{selectedAnimal} is Moving!");
-
             var t = Mathf.Clamp01(elapsedTime / movingTimeSec);
-            
+
             if (selectedAnimalGameObject != null)
             {
-                selectedAnimalGameObject.transform.position = Vector3.Lerp(selectedAnimalGameObject.transform.position,
+                selectedAnimalGameObject.transform.position = 
+                    Vector3.Lerp(selectedAnimalGameObject.transform.position,
                     AnimalMovePosition.position, t);
-                
-                Vector3 directionToTarget = lookAtPosition.position - selectedAnimalGameObject.transform.position;
-                Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-                selectedAnimalGameObject.transform.rotation = Quaternion.Slerp(selectedAnimalGameObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+                var directionToTarget = 
+                    lookAtPosition.position - selectedAnimalGameObject.transform.position;
+              
+                var targetRotation = 
+                    Quaternion.LookRotation(directionToTarget);
+                selectedAnimalGameObject.transform.rotation = 
+                    Quaternion.Slerp(
+                    selectedAnimalGameObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
-             
-            
-            
         }
     }
 
@@ -186,17 +239,26 @@ public class GameManager : MonoBehaviour
 
     private void SetAnimalIntoDictionary()
     {
-       
         animalDictionary.Add(nameof(cat), cat);
         animalDictionary.Add(nameof(rabbit), rabbit);
         animalDictionary.Add(nameof(dog), dog);
         animalDictionary.Add(nameof(parrot), parrot);
         animalDictionary.Add(nameof(mouse), mouse);
-    
     }
 
     private void SetResolution(int width, int height)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
     }
+
+    public float correctReactionOffset; //정답을 맞추고 동물의 애니메이션 걸리기 시간. 
+    // IEnumerator SetAnimation()
+    // {
+    //     yield return new WaitForSeconds(correctReactionOffset);
+    //     Animator animator = selectedAnimalGameObject.GetComponent<Animator>();
+    //     animator.SetBool(correctAnim,true);
+    //     yield return new WaitForNextFrameUnit;
+    // }
+
 }
+

@@ -38,10 +38,10 @@ public class ClickEvent : MonoBehaviour
             
             if (distance < radius)
             {
-                // 거리에 따라 각속도 조절
-                var distanceFactor = 1f - (distance / radius); // 0(원의 바깥쪽)에서 1(원의 중심)까지의 값
+              
+                var distanceFactor = 1f - (distance / radius); 
 
-                // 일단 각속도를 조절하는 코드만 중점적으로 다룹니다.
+               
                 var randomAngularVelocity = Random.Range(-10f * rotationPower * distanceFactor, 10f * rotationPower * distanceFactor);
         
                 particles[i].angularVelocity = randomAngularVelocity;

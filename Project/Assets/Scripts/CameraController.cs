@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -39,4 +41,15 @@ public class CameraController : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, _playStartCamPoint.position, t);
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("camera"))
+        {
+            GameManager.isCameraArrivedToPlay = true;
+            Debug.Log("Cam Arrived.");
+        }
+    }
+
+ 
 }
