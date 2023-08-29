@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     public static bool isGameFinished;
     public float finishAnimSeconds;
 
+    public static string answer;
+
     [Space(10f)]
     public Transform moveOutPositionA;
     public Transform moveOutPositionB;
@@ -52,7 +54,7 @@ public class GameManager : MonoBehaviour
     public float waitingTime;
 
     public Dictionary<string, GameObject> animalDictionary = new();
-
+    private List<GameObject> animalList = new List<GameObject>();
     private GameObject selectedAnimalGameObject; // 동물 이동의 시작위치 지정.
     private float elapsedTime;
     private bool isMovable;
@@ -121,6 +123,8 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("라운드 시작!");
                 isRoundStarted = true; 
+                
+                StartRound();
             }
                 
             
@@ -272,9 +276,15 @@ public class GameManager : MonoBehaviour
     
     
     
-    private List<GameObject> animalList = new List<GameObject>();
+
     private void SetAnimalIntoDictionary()
     {
+        animalDictionary.Add(nameof(tortoise),tortoise);
+        animalDictionary.Add(nameof(cat),cat);
+        animalDictionary.Add(nameof(rabbit),rabbit);
+        animalDictionary.Add(nameof(dog),dog);
+        animalDictionary.Add(nameof(parrot),parrot);
+        animalDictionary.Add(nameof(mouse),mouse);
         
         animalList.Add(tortoise);
         animalList.Add(cat);
@@ -331,6 +341,9 @@ public class GameManager : MonoBehaviour
             selectedAnimals.Add(tempAnimals[randomIndex]);
             tempAnimals.RemoveAt(randomIndex);
         }
+        int randomAnswer = Random.Range(0, tempAnimals.Count);
+
+        answer = tempAnimals[randomAnswer].name;
     }
 
     public float moveInSpeed;
@@ -343,11 +356,11 @@ public class GameManager : MonoBehaviour
                 playPositionA.position, moveInSpeed * Time.deltaTime);
             
             
-            selectedAnimals[1].transform.position = playPositionB.position;
+            selectedAnimals[1].transform.position =
             Vector3.Lerp(   selectedAnimals[1].transform.position,
                 playPositionB.position, moveInSpeed * Time.deltaTime);
             
-            selectedAnimals[2].transform.position = playPositionC.position;
+            selectedAnimals[2].transform.position =
             Vector3.Lerp(   selectedAnimals[2].transform.position,
                 playPositionC.position, moveInSpeed * Time.deltaTime);
         
