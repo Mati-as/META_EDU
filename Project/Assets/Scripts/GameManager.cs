@@ -343,7 +343,7 @@ public class GameManager : MonoBehaviour
         }
         int randomAnswer = Random.Range(0, tempAnimals.Count);
 
-        answer = tempAnimals[randomAnswer].name;
+        answer = selectedAnimals[randomAnswer].name;
     }
 
     public float moveInSpeed;
