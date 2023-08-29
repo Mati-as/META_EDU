@@ -63,7 +63,7 @@ public class ShaderManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.IsGameStarted)
+        if (GameManager.isGameStarted)
         {
             ChangeAnimalOutlineColor();
             ChangedSkyColor();

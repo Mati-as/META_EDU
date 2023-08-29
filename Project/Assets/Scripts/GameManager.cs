@@ -2,24 +2,44 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")] [Space(10f)] public int TARGET_FRAME;
 
 
-    [Header("Game Start Setting")] public static bool IsGameStarted;
-    [Space(10f)] public float gamestartTime;
+    [Header("Game Start Setting")] 
+    
+    // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
+    // bool 및 seconds 사용 흐름도
+    public static bool isCameraArrivedToPlay;
+    public float gameStartWaitSeconds;
+    public static bool isGameStarted;
+    public float roundStartWaitSeconds;
+    public static bool isRoundStarted;
+    public static bool isCorrected;
+    public float correctAnimSeconds;
+    public static bool isCorrectAnimationFinished;
+    public float roundResetWaitSeconds;
+    public static bool isRoundFinished;
+    public static bool isGameFinished;
+    public float finishAnimSeconds;
 
+    [Space(10f)]
+    public Transform moveOutPositionA;
+    public Transform moveOutPositionB;
+
+    [Space(10f)]
     public Transform AnimalMovePosition; //when user corrects an answer.
 
     [Space(30f)] [Header("Game Objects(Animal) Setting")] [Space(10f)]
     public GameObject parrot;
-
     public GameObject dog;
     public GameObject mouse;
     public GameObject rabbit;
     public GameObject cat;
+    public GameObject tortoise;
 
 
     [Header("Animal Movement Setting")] [Space(10f)]
@@ -49,17 +69,17 @@ public class GameManager : MonoBehaviour
     public Transform playPositionA;
     public Transform playPositionB;
     public Transform playPositionC;
+   
 
-    public static bool isPlayStared;
-    public static bool isCameraArrivedToPlay;
+    
+    
 
 
  
     
     private float _elapsedForNextRound; 
-    public float playWaitTime; // gamestarted time과 구분해서 사용.  
-    // 게임 플레이 로직 
-    private bool isCorrected;
+    
+    // 게임 플레이 로직
     private int correctAnim = Animator.StringToHash("corrected");
     
     private void Awake()
@@ -76,18 +96,29 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        elapsedTime += Time.deltaTime;
+      
 
-        if (gamestartTime < elapsedTime && !IsGameStarted) IsGameStarted = true;
-
-        if (IsGameStarted)
+        if (isCameraArrivedToPlay)
         {
-            
+            elapsedTime += Time.deltaTime;
+            if (gameStartWaitSeconds < elapsedTime && !isGameStarted) isGameStarted = true;
+        }
+     
+
+        if (isGameStarted)
+        {
+            if (isRoundStarted == false)
+            {
+                Debug.Log("동물 스크린 밖 이동");
+                MoveOutOfScreen();
+            }
+           
             _elapsedForNextRound += Time.deltaTime;
 
-            if (_elapsedForNextRound > playWaitTime)
+            if (_elapsedForNextRound > roundStartWaitSeconds)
             {
-                isPlayStared = true; 
+                Debug.Log("라운드 시작!");
+                isRoundStarted = true; 
             }
                 
             
@@ -239,6 +270,7 @@ public class GameManager : MonoBehaviour
 
     private void SetAnimalIntoDictionary()
     {
+        animalDictionary.Add(nameof(tortoise),tortoise);
         animalDictionary.Add(nameof(cat), cat);
         animalDictionary.Add(nameof(rabbit), rabbit);
         animalDictionary.Add(nameof(dog), dog);
@@ -259,6 +291,29 @@ public class GameManager : MonoBehaviour
     //     animator.SetBool(correctAnim,true);
     //     yield return new WaitForNextFrameUnit;
     // }
+
+    private int _randomeIndex;
+    public float moveOutSpeed;
+    private void MoveOutOfScreen()
+    {
+        
+        foreach (GameObject gameobj in animalDictionary.Values)
+        {
+            if (_randomeIndex % 2 == 1)
+            {  
+                gameobj.transform.position = Vector3.Lerp(gameobj.transform.position,
+                    moveOutPositionA.position, moveOutSpeed *Time.deltaTime);
+            }
+            else
+            {
+                gameobj.transform.position = Vector3.Lerp(gameobj.transform.position,
+                    moveOutPositionB.position, moveOutSpeed *Time.deltaTime);
+            }
+
+            _randomeIndex++;
+
+        }
+    }
 
 }
 

@@ -19,7 +19,7 @@ public class MoonAndSunController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (GameManager.IsGameStarted)
+        if (GameManager.isGameStarted)
         {
             elapsedTime += Time.deltaTime;
 

@@ -32,7 +32,7 @@ public class LightDimmer : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.IsGameStarted)
+        if (GameManager.isGameStarted)
         {
             
             elapsed += Time.deltaTime;

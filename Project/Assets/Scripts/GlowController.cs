@@ -16,7 +16,7 @@ public class GlowController : MonoBehaviour
  
     void Update()
     {
-        if (GameManager.IsGameStarted)
+        if (GameManager.isGameStarted)
         {
             _elapsed += Time.deltaTime;
             if (_elapsed > waitTime)
