@@ -33,22 +33,40 @@ public class ClickEvent : MonoBehaviour
         var numParticlesAlive = particleSystem.GetParticles(particles);
         for (var i = 0; i < numParticlesAlive; i++)
         {
+            
             var distance = Vector3.Distance(position, particles[i].position);
+            
             if (distance < radius)
             {
-                var randomRotation = Random.Range(0f, 1 * rotationPower);
-                particles[i].rotation = randomRotation;
+                // 거리에 따라 각속도 조절
+                var distanceFactor = 1f - (distance / radius); // 0(원의 바깥쪽)에서 1(원의 중심)까지의 값
+
+                // 일단 각속도를 조절하는 코드만 중점적으로 다룹니다.
+                var randomAngularVelocity = Random.Range(-10f * rotationPower * distanceFactor, 10f * rotationPower * distanceFactor);
+        
+                particles[i].angularVelocity = randomAngularVelocity;
 
                 var direction = (particles[i].position - position).normalized;
-                particles[i].velocity += direction * force;
-                
-                var randomAngularVelocity =
-                    Random.Range(-10f * rotationPower, 10f * rotationPower); // 여기서 각속도 범위를 조절할 수 있습니다.
-                
-                
-                
-                particles[i].angularVelocity = randomAngularVelocity;
+                var forceMultiplier = 1.0f / (1.0f + distance); // 거리에 반비례하는 힘
+                particles[i].velocity += direction * force * forceMultiplier;
             }
+            
+            // var distance = Vector3.Distance(position, particles[i].position);
+            // if (distance < radius)
+            // {
+            //     var randomRotation = Random.Range(0f, 1 * rotationPower);
+            //     particles[i].rotation = randomRotation;
+            //
+            //     var direction = (particles[i].position - position).normalized;
+            //     particles[i].velocity += direction * force;
+            //     
+            //     var randomAngularVelocity =
+            //         Random.Range(-10f * rotationPower, 10f * rotationPower); // 여기서 각속도 범위를 조절할 수 있습니다.
+            //     
+            //     
+            //     
+            //     particles[i].angularVelocity = randomAngularVelocity;
+            // }
         }
 
 
