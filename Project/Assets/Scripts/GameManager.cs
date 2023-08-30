@@ -4,17 +4,23 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
+
+// https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
+// bool 및 seconds 사용 흐름도
 public class GameManager : MonoBehaviour
 {
-    [Header("Game Settings")] [Space(10f)] public int TARGET_FRAME;
+    [Header("Display Setting")] [Space(10f)] 
+    public int TARGET_FRAME;
 
 
+   
+    [Space(15f)]
     [Header("Game Start Setting")]
+    [Space(10f)]
 
-    // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
-    // bool 및 seconds 사용 흐름도
+    
     public static bool isCameraArrivedToPlay;
-
+    public float waitTimeForNextRound;
     public float gameStartWaitSeconds;
     public static bool isGameStarted;
     public float roundStartWaitSeconds;
@@ -95,7 +101,7 @@ public class GameManager : MonoBehaviour
     [FormerlySerializedAs("movingTimeSec")]
     public float movingTimeSecWhenCorrect;
 
-    public float waitTimeForNextRound;
+  
     private float _elapsedForNextRound;
 
     [Header("References")] [Space(10f)] public InstructionUI instructionUI;
@@ -120,15 +126,24 @@ public class GameManager : MonoBehaviour
     private readonly int RUN_ANIM = Animator.StringToHash("Run");
     private readonly int IDLE_ANIM = Animator.StringToHash("idle");
 
+    [FormerlySerializedAs("_onCorrectLightOn")]
     [Header("Events")] [Space(10f)] 
     [SerializeField]
-    private UnityEvent _onCorrectLightOn;
+    private UnityEvent _onCorrectLightOnEvent;
     // [SerializeField]
     // private UnityEvent _onCorrectLightOn;
     [SerializeField]
     private UnityEvent _onRoundFinishedLightOff;
 
-
+    [FormerlySerializedAs("_QuizMessageEvent")] [SerializeField]
+    private UnityEvent _quizMessageEvent;
+    
+    [SerializeField]
+    private UnityEvent _correctMessageEvent;
+    
+    [SerializeField]
+    private UnityEvent _messageInitializeEvent;
+    
     private void Awake()
     {
         _defaultSize = dog.transform.localScale.z;
@@ -174,12 +189,14 @@ public class GameManager : MonoBehaviour
             if (isRoundReady)
             {
                 _moveInElapsed = 0f;
+                _elapsedForNextRound = 0f;
+                StartRound();
                 Debug.Log("준비 완료");
                 
-                isRoudnFinished = false;
+               
                 isRoundStarted = true;
                 
-                StartRound();
+               
             }
 
 
@@ -192,13 +209,15 @@ public class GameManager : MonoBehaviour
                 isRoundReady = false;
               
                 
-               
+               // ~의 그림자를 맞춰보세요 재생. 
                 
                 MoveAndRotateAnimals(moveInTime, rotationSpeedInRound);
                 SelectObject();
-                PlayCorrectAnimation();
                 
-
+               
+                
+                elapsedForRoundFinished = 0f;
+                _quizMessageEvent.Invoke();
            
             }
 
@@ -208,13 +227,13 @@ public class GameManager : MonoBehaviour
                 isRoundStarted = false;
 
                 PlayCorrectAnimation();
-                _onCorrectLightOn.Invoke();
+                _onCorrectLightOnEvent.Invoke();
                 
                 elapsedForRoundFinished += Time.deltaTime;
-                if (elapsedForRoundFinished > waitTimeForRoundFinished) isRoundReady = true;
+                if (elapsedForRoundFinished > waitTimeForRoundFinished) isRoudnFinished = true;
                 
                 _moveOutElapsed = 0f;
-                _elapsedForNextRound = 0f;
+              
               
             }
 
@@ -222,11 +241,11 @@ public class GameManager : MonoBehaviour
             {  
                 isCorrected = false;
 
-                elapsedForRoundFinished = 0f;
+                Debug.Log("라운드 종료!");
                 
-              
+                MoveOutOfScreen();
                 _onRoundFinishedLightOff.Invoke();
-                
+               
                 _moveOutElapsed += Time.deltaTime;
                 _elapsedForNextRound += Time.deltaTime;
 
@@ -234,10 +253,13 @@ public class GameManager : MonoBehaviour
                
                 if (_elapsedForNextRound > waitTimeForNextRound)
                 {
+                  
+                    _messageInitializeEvent.Invoke();
                     isRoundReady = true;
+                    isRoudnFinished = false;
                 }
                 
-                MoveOutOfScreen();
+               
               
             }
         }
@@ -258,7 +280,7 @@ public class GameManager : MonoBehaviour
         if (_elapsedForInitialRound > waitTimeOfinitialRoundStart && _initialRoundIsReady == false)
         {
             _initialRoundIsReady = true;
-            isRoundReady = true;
+            isRoudnFinished = true;
         }
     }
     /// <summary>
@@ -293,6 +315,7 @@ public class GameManager : MonoBehaviour
                     selectedAnimal = hit.collider.name;
                     if (selectedAnimal == answer)
                     {
+                        isCorrected = true;
                         SetAnimal(selectedAnimal);
                         InvokeOncorrect();
                     }
@@ -308,8 +331,8 @@ public class GameManager : MonoBehaviour
 
     private void InvokeOncorrect()
     {
-        isCorrected = true;
-        _onCorrectLightOn.Invoke();
+        _correctMessageEvent.Invoke();
+        _onCorrectLightOnEvent.Invoke();
     }
 
 
@@ -454,6 +477,7 @@ public class GameManager : MonoBehaviour
         {
             _tempAnimator = gameObj.GetComponent<Animator>();
             _tempAnimator.SetBool(RUN_ANIM, false);
+            gameObj.transform.localScale = Vector3.one *_defaultSize;
         }
 
         SelectRandomThreeAnimals();

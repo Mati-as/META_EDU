@@ -43,27 +43,33 @@ public class InstructionUI : MonoBehaviour
     private UnityEvent _changeUI;
 
     
-    private void Update()
-    {
-        if (GameManager.isRoundStarted)
-        {
-            if (!GameManager.isCorrected && _isUIPlaying == false)
-            {
-                if (animalNameToKorean.TryGetValue(GameManager.answer, out var value))
-                    
-                    roundInstruction = $"{value}의 그림자를 찾아보세요";
-                
-                _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction,startTimeOffsetSeconds));
-                _isUIPlaying = true;
-            }
+   
 
-          
+    public void playOnCorrectMessage()
+    { 
+        if (_isUIPlaying == false)
+        {Debug.Log("정답문구 업데이트");
+            _isUIPlaying = true;
+        _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage,onCorrectOffsetSeconds));
         }
     }
 
-    public void playOnCorrectMessage()
+    public void PlayQuizMessage()
     {
-        _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage,onCorrectOffsetSeconds));
+       
+        if (_isUIPlaying == false)
+        { Debug.Log("퀴즈 업데이트");
+            _isUIPlaying = true;
+            roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
+            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction,startTimeOffsetSeconds));
+        }
+        
+    }
+
+    public void InitializeMessage()
+    { Debug.Log("퀴즈 초기화");
+        _isUIPlaying = false;
+        _typeInCoroutine = StartCoroutine(TypeIn(string.Empty,0));
     }
     
 

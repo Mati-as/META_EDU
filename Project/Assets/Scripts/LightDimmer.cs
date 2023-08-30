@@ -29,16 +29,16 @@ public class LightDimmer : MonoBehaviour
                 "No Light component found on this object. Please attach this script to a Directional Light.");
     }
 
-    private float elapsed;
-    public float spotlightWaitTime;
+  
+   
     private Coroutine lightCoroutine;
     private void Update()
     {
         if (GameManager.isGameStarted)
         {
             
-            elapsed += Time.deltaTime;
-            if (elapsed > spotlightWaitTime) spotlight.enabled = true;
+           
+           
 
             dirLight.intensity -= decreaseRate * Time.deltaTime; // Intensity 감소
             dirLight.intensity = Mathf.Max(dirLight.intensity, minIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
@@ -55,21 +55,57 @@ public class LightDimmer : MonoBehaviour
     public float spotMaxIntensity;
     public float spotMinIntensity;
     public float spotLightChangeSpeed;
+    private float tempLerp;
+
+    private float elapsedForLight;
+    public float lightChangeTime;
     IEnumerator  TurnOnSpotLight()
     {
-     
-            spotlight.intensity += spotLightChangeSpeed * Time.deltaTime; // Intensity 감소
-            spotlight.intensity = Mathf.Min(dirLight.intensity, spotMaxIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
+        if (elapsedForLight < 1)
+        {
+            elapsedForLight += Time.deltaTime;
+        }
+        else
+        {
+            elapsedForLight = 1;
+        }
+        
+        spotlight.enabled = true;
+        elapsedForLight += Time.deltaTime;
+        
+        var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
+            
+              // Intensity 감소
+          
+            float lerp = Lerp2D.EaseInBounce(spotlight.intensity, spotMaxIntensity,t );
+            spotlight.intensity = lerp;
+            // Intensity 값이 최소값보다 작아지지 않도록 보장
             yield return null;
 
     }
 
     IEnumerator  TurnOffSpotLight()
     {
+        spotlight.enabled = true;
+        if (elapsedForLight > 0)
+        {
+            elapsedForLight += Time.deltaTime;
+        }
+        else
+        {
+            elapsedForLight = 0;
+        }
         
-            spotlight.intensity -= spotLightChangeSpeed * Time.deltaTime; // Intensity 증가
-            spotlight.intensity = Mathf.Max(dirLight.intensity, spotMinIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
-            yield return null;
+      
+        
+        var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
+            
+        // Intensity 감소
+          
+        float lerp = Lerp2D.EaseInBounce(spotMinIntensity, spotlight.intensity,t );
+        spotlight.intensity = lerp;
+        // Intensity 값이 최소값보다 작아지지 않도록 보장
+        yield return null;
 
     }
 
@@ -81,13 +117,13 @@ public class LightDimmer : MonoBehaviour
     
     public void TurnOffSpotLightEvent()
     {
-        StopCoroutine(TurnOffSpotLight());
-        lightCoroutine = StartCoroutine(TurnOnSpotLight());
+        StopCoroutine(TurnOnSpotLight());
+        lightCoroutine = StartCoroutine(TurnOffSpotLight());
     }
     public void TurnOnSpotLightEvent()
     {
-        StopCoroutine(TurnOnSpotLight());
-        lightCoroutine = StartCoroutine(TurnOffSpotLight());
+        StopCoroutine(TurnOffSpotLight());
+        lightCoroutine = StartCoroutine(TurnOnSpotLight());
     }
     
  

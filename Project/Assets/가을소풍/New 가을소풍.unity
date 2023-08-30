@@ -2656,10 +2656,10 @@ MonoBehaviour:
   decreaseRate: 0.46
   minIntensity: 0
   spotlight: {fileID: 719557198}
-  spotlightWaitTime: 7
-  spotMaxIntensity: 400
-  spotMinIntensity: 100
-  spotLightChangeSpeed: 30
+  spotMaxIntensity: 1000
+  spotMinIntensity: 0
+  spotLightChangeSpeed: 100
+  lightChangeTime: 1.5
 --- !u!1001 &327231632
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3465,6 +3465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TARGET_FRAME: 60
+  waitTimeForNextRound: 5
   gameStartWaitSeconds: 5
   roundStartWaitSeconds: 3.8
   correctAnimSeconds: 5
@@ -3482,8 +3483,8 @@ MonoBehaviour:
   lookAtPosition: {fileID: 1195665892}
   rotationSpeed: 1
   waitingTime: 2
-  moveOutSpeed: 0.27
-  newSize: 2
+  moveOutSpeed: 0.5
+  newSize: 2.2
   sizeIncreasingSpeed: 0.9
   playPositionA: {fileID: 1819704548}
   playPositionB: {fileID: 385406597}
@@ -3491,16 +3492,15 @@ MonoBehaviour:
   moveOutTime: 4
   moveInTime: 5
   rotationSpeedInRound: 70
-  waitTimeForRoundFinished: 4
+  waitTimeForRoundFinished: 3
   AnimalMovePosition: {fileID: 799759534}
   movingTimeSecWhenCorrect: 0.9
-  waitTimeForNextRound: 5
   instructionUI: {fileID: 0}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 2147483647
   _spotLight: {fileID: 0}
-  _onCorrectLightOn:
+  _onCorrectLightOnEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 315136623}
@@ -3521,6 +3521,51 @@ MonoBehaviour:
       - m_Target: {fileID: 315136623}
         m_TargetAssemblyTypeName: LightDimmer, Assembly-CSharp
         m_MethodName: TurnOffSpotLightEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _quizMessageEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2137838707}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: PlayQuizMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _correctMessageEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2137838707}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: playOnCorrectMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _messageInitializeEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2137838707}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: InitializeMessage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16898,7 +16943,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.13
+  m_Radius: 0.4
   m_Height: 0.9149772
   m_Direction: 2
   m_Center: {x: 0, y: 0.29863143, z: 0.07295734}

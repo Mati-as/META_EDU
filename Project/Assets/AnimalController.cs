@@ -7,7 +7,7 @@ public class AnimalController : MonoBehaviour
 
     private Rigidbody rb;
     private Animator anim;
-    private int velocityID = Animator.StringToHash("Velocity");
+    
 
     void Start()
     {
@@ -18,9 +18,9 @@ public class AnimalController : MonoBehaviour
 
     void Update()
     {
-       float velocity= Mathf.Max(rb.velocity.x, rb.velocity.y);
+     
        
-       anim.SetFloat(velocityID,velocity);
+   
        
         
     }
