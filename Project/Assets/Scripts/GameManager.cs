@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
                 if (elapsedForRoundFinished > waitTimeForRoundFinished) isRoudnFinished = true;
                 
                 _moveOutElapsed = 0f;
-              
+                _previousAnswer = answer;
               
             }
 
@@ -450,6 +450,7 @@ public class GameManager : MonoBehaviour
     }
 
 
+    private string _previousAnswer;
     public void SelectRandomThreeAnimals()
     {
         Debug.Log("동물 랜덤 고르기 완료");
@@ -463,7 +464,9 @@ public class GameManager : MonoBehaviour
 
         var randomAnswer = Random.Range(0, tempAnimals.Count);
 
+       
         answer = selectedAnimals[randomAnswer].name;
+       
     }
 
 
