@@ -24,4 +24,12 @@ public class AnimalController : MonoBehaviour
        
         
     }
+    // private void OnTrigger(Collider other)
+    // {
+    //     if (other.CompareTag("isRoundReady"))
+    //     {
+    //         Debug.Log("isRoundReady");
+    //         GameManager.isRoundReady = true;
+    //     }
+    // }
 }

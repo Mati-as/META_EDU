@@ -2617,7 +2617,7 @@ Transform:
   m_Children:
   - {fileID: 719557199}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 49.800003, y: -155.36, z: 0}
 --- !u!114 &315136622
 MonoBehaviour:
@@ -2657,6 +2657,9 @@ MonoBehaviour:
   minIntensity: 0
   spotlight: {fileID: 719557198}
   spotlightWaitTime: 7
+  spotMaxIntensity: 400
+  spotMinIntensity: 100
+  spotLightChangeSpeed: 30
 --- !u!1001 &327231632
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3160,7 +3163,7 @@ GameObject:
   - component: {fileID: 385406597}
   m_Layer: 0
   m_Name: Play Position (2)
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3173,7 +3176,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385406596}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.662, y: -3.15, z: 7.72}
+  m_LocalPosition: {x: 4.54, y: -3.15, z: 8.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3463,13 +3466,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TARGET_FRAME: 60
   gameStartWaitSeconds: 5
-  roundStartWaitSeconds: 5
+  roundStartWaitSeconds: 3.8
   correctAnimSeconds: 5
   roundResetWaitSeconds: 5
   finishAnimSeconds: 5
+  waitTimeOfinitialRoundStart: 5
   moveOutPositionA: {fileID: 708648314}
   moveOutPositionB: {fileID: 1686643423}
-  AnimalMovePosition: {fileID: 799759534}
   tortoise: {fileID: 5349727453897288389}
   rabbit: {fileID: 5164627934438932177}
   dog: {fileID: 6843802015737794766}
@@ -3478,20 +3481,55 @@ MonoBehaviour:
   cat: {fileID: 1532612335396840209}
   lookAtPosition: {fileID: 1195665892}
   rotationSpeed: 1
-  movingTimeSec: 7
   waitingTime: 2
   moveOutSpeed: 0.27
   newSize: 2
-  sizeIncreasingSpeed: 0.81
+  sizeIncreasingSpeed: 0.9
   playPositionA: {fileID: 1819704548}
   playPositionB: {fileID: 385406597}
   playPositionC: {fileID: 1546803506}
+  moveOutTime: 4
+  moveInTime: 5
+  rotationSpeedInRound: 70
+  waitTimeForRoundFinished: 4
+  AnimalMovePosition: {fileID: 799759534}
+  movingTimeSecWhenCorrect: 0.9
+  waitTimeForNextRound: 5
   instructionUI: {fileID: 0}
   interactableLayer:
     serializedVersion: 2
     m_Bits: 2147483647
-  correctReactionOffset: 2
-  moveInSpeed: 0.6
+  _spotLight: {fileID: 0}
+  _onCorrectLightOn:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 315136623}
+        m_TargetAssemblyTypeName: LightDimmer, Assembly-CSharp
+        m_MethodName: TurnOnSpotLightEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onRoundFinishedLightOff:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 315136623}
+        m_TargetAssemblyTypeName: LightDimmer, Assembly-CSharp
+        m_MethodName: TurnOffSpotLightEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &436187385
 Transform:
   m_ObjectHideFlags: 0
@@ -4656,8 +4694,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616280583}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 45, y: 45, z: 45}
+  m_LocalPosition: {x: 0, y: -0.04, z: 0.02}
+  m_LocalScale: {x: 56.5335, y: 56.5335, z: 56.5335}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8858668346158118009}
@@ -5389,9 +5427,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 708648314}
+  - component: {fileID: 708648316}
+  - component: {fileID: 708648315}
   m_Layer: 0
   m_Name: Animal Side position (left) (2)
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5411,6 +5451,35 @@ Transform:
   m_Father: {fileID: 873759806}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &708648315
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708648313}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &708648316
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708648313}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &719557196
 GameObject:
   m_ObjectHideFlags: 0
@@ -5461,7 +5530,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.8349056, g: 0.86193454, b: 1, a: 1}
-  m_Intensity: 386.4
+  m_Intensity: 400
   m_Range: 887.2
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6668,7 +6737,7 @@ GameObject:
   - component: {fileID: 873759806}
   m_Layer: 0
   m_Name: Animal MoveOutPosition
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10453,8 +10522,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535141417}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 39.999996, y: 39.999996, z: 39.999996}
+  m_LocalPosition: {x: 0, y: -0, z: -0.01}
+  m_LocalScale: {x: 46.715996, y: 46.715996, z: 46.715996}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5349727453897288386}
@@ -10563,7 +10632,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1546803505}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.12, y: -3.15, z: 8.59}
+  m_LocalPosition: {x: 3.37, y: -3.15, z: 9.43}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11706,7 +11775,7 @@ GameObject:
   - component: {fileID: 1686643423}
   m_Layer: 0
   m_Name: Animal Side position (right) (1)
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11737,7 +11806,7 @@ GameObject:
   - component: {fileID: 1703860388}
   m_Layer: 0
   m_Name: Play Positions
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12619,7 +12688,7 @@ GameObject:
   - component: {fileID: 1819704548}
   m_Layer: 0
   m_Name: Play Position (1)
-  m_TagString: Untagged
+  m_TagString: isRoundReady
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12632,7 +12701,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1819704547}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.17, y: -3.15, z: 6.68}
+  m_LocalPosition: {x: 6.28, y: -3.15, z: 7.34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13969,7 +14038,7 @@ Transform:
   - {fileID: 936743612}
   - {fileID: 533171396}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2125251930
 GameObject:
@@ -14109,7 +14178,7 @@ GameObject:
   - component: {fileID: 2137838704}
   - component: {fileID: 2137838703}
   m_Layer: 5
-  m_Name: Instruction UIs
+  m_Name: UIManager (Instruction UI)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14190,7 +14259,7 @@ RectTransform:
   m_Children:
   - {fileID: 1575048079}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -14209,9 +14278,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec0535ce35547a46b604733db321562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startTimeOffset: 6
+  startTimeOffsetSeconds: 3
   textPrintingSpeed: 0.03
-  roundInstruction: 
+  onCorrectOffsetSeconds: 1
+  onCorrectMessage: "\uC815\uB2F5\uC785\uB2C8\uB2E4!"
 --- !u!23 &125633532531428086
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -14613,7 +14683,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754916184539804917}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 39.999996, y: 39.999992, z: 39.999992}
   m_ConstrainProportionsScale: 0
@@ -14621,7 +14691,7 @@ Transform:
   - {fileID: 754916184540293339}
   m_Father: {fileID: 6843802015737794771}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!4 &754916184540293337
 Transform:
   m_ObjectHideFlags: 0
@@ -14836,8 +14906,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1043024532030115159}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 45, y: 44.999996, z: 44.999996}
+  m_LocalPosition: {x: -0, y: -0.04, z: 0.02}
+  m_LocalScale: {x: 56.5335, y: 56.533493, z: 56.533493}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1043024532030083441}
@@ -15121,7 +15191,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!1 &1532612336758804996
 GameObject:
@@ -15939,7 +16009,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!4 &5164627935543077944
 Transform:
@@ -16689,7 +16759,7 @@ Transform:
   - {fileID: 1532612335396840214}
   - {fileID: 5349727453897288386}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 1.564, y: 78.011, z: -0.332}
 --- !u!114 &5322510274785882954
 MonoBehaviour:
@@ -16734,8 +16804,8 @@ Transform:
   m_GameObject: {fileID: 5349727452490806027}
   m_LocalRotation: {x: 0.0000000011641532, y: -0.000000029802322, z: -4.656613e-10,
     w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 40, y: 40, z: 40}
+  m_LocalPosition: {x: -0, y: 0, z: -0.01}
+  m_LocalScale: {x: 46.716, y: 46.716, z: 46.716}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5349727453897288386}
@@ -16882,6 +16952,7 @@ GameObject:
   - component: {fileID: 5349727453897288386}
   - component: {fileID: 5349727453897288388}
   - component: {fileID: 5349727453897288385}
+  - component: {fileID: 5349727453897288390}
   m_Layer: 6
   m_Name: tortoise
   m_TagString: Untagged
@@ -16889,6 +16960,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!54 &5349727453897288390
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5349727453897288389}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!64 &5528455398082833500
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -17086,14 +17173,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6843802014824521253}
-  m_LocalRotation: {x: -0.0000000027939675, y: -0.00210008, z: 4.6566123e-10, w: 0.9999978}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 39.999996, y: 39.999996, z: 39.999996}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6843802015737794771}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: -0.241, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6843802015737794765
 Animator:
   serializedVersion: 5
@@ -17155,8 +17242,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6843802015737794766}
-  m_LocalRotation: {x: 0.009852468, y: -0.70625204, z: 0.009874385, w: 0.707823}
-  m_LocalPosition: {x: 1.316, y: 0.032, z: 0.589}
+  m_LocalRotation: {x: 0, y: -0.71753705, z: 0, w: 0.6965204}
+  m_LocalPosition: {x: 1.316, y: 0, z: 0.589}
   m_LocalScale: {x: 0.8138, y: 0.8138, z: 0.8138}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17165,7 +17252,7 @@ Transform:
   - {fileID: 5295023903092416039}
   m_Father: {fileID: 5295023905091394660}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 1.598, y: -89.873, z: 0.004}
+  m_LocalEulerAnglesHint: {x: 0, y: -91.703, z: 0}
 --- !u!54 &6843802015737794772
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -17269,7 +17356,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 122
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!114 &7629896987026432025
 MonoBehaviour:
@@ -17797,8 +17884,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8509738446220012471}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 39.999996, y: 39.999992, z: 39.999992}
+  m_LocalPosition: {x: -0, y: 0, z: -0.01}
+  m_LocalScale: {x: 46.715996, y: 46.71599, z: 46.71599}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8509738446219786133}
@@ -18342,8 +18429,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8858668345090207064}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 45, y: 45, z: 45}
+  m_LocalPosition: {x: 0, y: -0.04, z: 0.02}
+  m_LocalScale: {x: 56.5335, y: 56.5335, z: 56.5335}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8858668346158118009}
@@ -18498,5 +18585,5 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 126
   m_CollisionDetection: 0
