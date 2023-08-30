@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
     private bool isMovable;
     private Vector3 m_vecMouseDownPos;
     private string selectedAnimal;
-    
+
     private int _randomeIndex;
     public float moveOutSpeed;
 
@@ -71,10 +71,9 @@ public class GameManager : MonoBehaviour
 
     public Transform playPositionB;
     public Transform playPositionC;
-    
 
-    [Header("References")] 
-    public InstructionUI instructionUI;
+
+    [Header("References")] public InstructionUI instructionUI;
 
     private Ray ray;
     private RaycastHit hitInfo;
@@ -83,12 +82,17 @@ public class GameManager : MonoBehaviour
     private float _elapsedForNextRound;
     private float _currentLerp;
     private float lerp;
-    
 
-    
-    
-    // 게임 플레이 로직
-    private int correctAnim = Animator.StringToHash("corrected");
+    private readonly List<GameObject> selectedAnimals = new();
+    private List<GameObject> tempAnimals;
+
+
+    // 애니메이션 로직
+    private int rollAnim = Animator.StringToHash("Roll");
+    private int clickedAnim = Animator.StringToHash("Clicked");
+    private int spinAnim = Animator.StringToHash("Spin");
+    private int runAnim = Animator.StringToHash("Run");
+
 
     private void Awake()
     {
@@ -139,7 +143,7 @@ public class GameManager : MonoBehaviour
 
             //SelectObjectWithoutClick();
             // 동물의 움직임이 시작됨을 표시
-            
+
         }
 
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene();
@@ -151,7 +155,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SelectObject()
     {
-        
+
 #if UNITY_EDITOR
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0))
@@ -167,7 +171,7 @@ public class GameManager : MonoBehaviour
             // if (Input.GetTouch(0).phase != TouchPhase.Began)
             //     return;
 #endif
-            
+
             var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
             RaycastHit hit;
 
@@ -193,7 +197,7 @@ public class GameManager : MonoBehaviour
 
 
 
-   
+
 
     public void CheckMovable()
     {
@@ -203,7 +207,7 @@ public class GameManager : MonoBehaviour
             isMovable = true;
     }
 
-    
+
 
     private void IncreaseScale()
     {
@@ -292,55 +296,42 @@ public class GameManager : MonoBehaviour
         Screen.SetResolution(width, height, Screen.fullScreen);
     }
 
-    public float correctReactionOffset; 
-    
-    
-    
-    //정답을 맞추고 동물의 애니메이션 걸리기 시간. 
-    // IEnumerator SetAnimation()
-    // {
-    //     yield return new WaitForSeconds(correctReactionOffset);
-    //     Animator animator = selectedAnimalGameObject.GetComponent<Animator>();
-    //     animator.SetBool(correctAnim,true);
-    //     yield return new WaitForNextFrameUnit;
-    // }
-    
-    /// <summary>
-    /// 마우스로 입력받는 방식이 아닌 경우 예시.
-    /// </summary>
-    // private void SelectObjectWithoutClick()
-    // {
-    //     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    //
-    //     if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
-    //     {
-    //         Debug.Log("Mouse over: " + hitInfo.collider.gameObject.name);
-    //         if (hitInfo.collider.name != null)
-    //         {
-    //             selectedAnimal = hitInfo.collider.name;
-    //             elapsedTime = 0;
-    //         }
-    //     }
-    // }
+    public float correctReactionOffset;
 
+
+
+    private Animator _tempAnimator;
 
     private void MoveOutOfScreen()
     {
-        foreach (var gameobj in animalList)
+
+        foreach (GameObject gameObj in animalList)
         {
+
+            _tempAnimator = gameObj.GetComponent<Animator>();
+            _tempAnimator.SetBool(runAnim, true);
+            
             if (_randomeIndex % 2 == 0)
-                gameobj.transform.position = Vector3.Lerp(gameobj.transform.position,
+            {
+                gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     moveOutPositionA.position, moveOutSpeed * Time.deltaTime);
+
+            }
+
             else
-                gameobj.transform.position = Vector3.Lerp(gameobj.transform.position,
+            {
+                gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     moveOutPositionB.position, moveOutSpeed * Time.deltaTime);
+
+            }
+
+
 
             _randomeIndex++;
         }
     }
 
-    private readonly List<GameObject> selectedAnimals = new();
-    private List<GameObject> tempAnimals;
+
 
     public void SelectRandomThreeAnimals()
     {
@@ -377,3 +368,37 @@ public class GameManager : MonoBehaviour
                 playPositionC.position, moveInSpeed * Time.deltaTime);
     }
 }
+
+
+
+
+
+
+
+//정답을 맞추고 동물의 애니메이션 걸리기 시간. 
+// IEnumerator SetAnimation()
+// {
+//     yield return new WaitForSeconds(correctReactionOffset);
+//     Animator animator = selectedAnimalGameObject.GetComponent<Animator>();
+//     animator.SetBool(correctAnim,true);
+//     yield return new WaitForNextFrameUnit;
+// }
+    
+/// <summary>
+/// 마우스로 입력받는 방식이 아닌 경우 예시.
+/// </summary>
+// private void SelectObjectWithoutClick()
+// {
+//     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+//
+//     if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
+//     {
+//         Debug.Log("Mouse over: " + hitInfo.collider.gameObject.name);
+//         if (hitInfo.collider.name != null)
+//         {
+//             selectedAnimal = hitInfo.collider.name;
+//             elapsedTime = 0;
+//         }
+//     }
+// }
+
