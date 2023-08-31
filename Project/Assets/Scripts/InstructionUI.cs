@@ -39,27 +39,34 @@ public class InstructionUI : MonoBehaviour
     }
 
 
-    private bool _isUIPlaying;
+    private bool _isQuizPlaying;
+    private bool _isCorrectMessagePlaying;
     private UnityEvent _changeUI;
 
+    
     
    
 
     public void playOnCorrectMessage()
-    { 
-        if (_isUIPlaying == false)
-        {Debug.Log("정답문구 업데이트");
-            _isUIPlaying = true;
-        _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage,onCorrectOffsetSeconds));
+    {
+        if (GameManager.isCorrected && _isCorrectMessagePlaying == false)
+        {
+            _isCorrectMessagePlaying = true; //중복재생 방지
+            Debug.Log("정답문구 업데이트");
+            _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage,onCorrectOffsetSeconds));
         }
+         
+        
     }
 
     public void PlayQuizMessage()
     {
-       
-        if (_isUIPlaying == false)
+        _isCorrectMessagePlaying = false;// PlayOnCorrectMessage 재생을 위한 초기화.
+        
+        
+        if (_isQuizPlaying == false && !GameManager.isCorrected)
         { Debug.Log("퀴즈 업데이트");
-            _isUIPlaying = true;
+            _isQuizPlaying = true;
             roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
             _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction,startTimeOffsetSeconds));
         }
@@ -67,8 +74,9 @@ public class InstructionUI : MonoBehaviour
     }
 
     public void InitializeMessage()
-    { Debug.Log("퀴즈 초기화");
-        _isUIPlaying = false;
+    { 
+        Debug.Log("퀴즈 초기화");
+        _isQuizPlaying = false;
         _typeInCoroutine = StartCoroutine(TypeIn(string.Empty,0));
     }
     

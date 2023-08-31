@@ -227,7 +227,9 @@ public class GameManager : MonoBehaviour
                 isRoundStarted = false;
 
                 PlayCorrectAnimation();
-                _onCorrectLightOnEvent.Invoke();
+
+                _onCorrectLightOnEvent.Invoke(); // D-Light reffering..
+                _correctMessageEvent.Invoke(); // UI Instruction referring..
                 
                 elapsedForRoundFinished += Time.deltaTime;
                 if (elapsedForRoundFinished > waitTimeForRoundFinished) isRoudnFinished = true;
@@ -254,6 +256,7 @@ public class GameManager : MonoBehaviour
                 if (_elapsedForNextRound > waitTimeForNextRound)
                 {
                   
+                    //InstructionUI 의 in
                     _messageInitializeEvent.Invoke();
                     isRoundReady = true;
                     isRoudnFinished = false;
@@ -517,6 +520,8 @@ public class GameManager : MonoBehaviour
 }
 
 
+
+//8-31 아래 코드 미사용.
 //정답을 맞추고 동물의 애니메이션 걸리기 시간. 
 // IEnumerator SetAnimation()
 // {
@@ -526,6 +531,9 @@ public class GameManager : MonoBehaviour
 //     yield return new WaitForNextFrameUnit;
 // }
 
+
+
+//8-31 아래 코드 미사용.
 /// <summary>
 /// 마우스로 입력받는 방식이 아닌 경우 예시.
 /// </summary>
