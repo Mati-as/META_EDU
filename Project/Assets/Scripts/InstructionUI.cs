@@ -22,11 +22,10 @@ public class InstructionUI : MonoBehaviour
 
     [Header("On Correct")] [Space(10f)] public float onCorrectOffsetSeconds;
     public string onCorrectMessage = "정답입니다!";
+    public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
     private void Awake()
     {
-       
-            
         animalNameToKorean.Add("tortoise", "거북이");
         animalNameToKorean.Add("cat", "고양이");
         animalNameToKorean.Add("rabbit", "토끼");
@@ -43,43 +42,57 @@ public class InstructionUI : MonoBehaviour
     private bool _isCorrectMessagePlaying;
     private UnityEvent _changeUI;
 
-    
-    
-   
 
-    public void playOnCorrectMessage()
+    public void PlayOnCorrectMessage()
     {
-        if (GameManager.isCorrected && _isCorrectMessagePlaying == false)
+        if (GameManager.isGameStarted && GameManager.isCorrected && _isCorrectMessagePlaying == false)
         {
             _isCorrectMessagePlaying = true; //중복재생 방지
             Debug.Log("정답문구 업데이트");
-            _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage,onCorrectOffsetSeconds));
+            _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
-         
-        
     }
 
     public void PlayQuizMessage()
     {
-        _isCorrectMessagePlaying = false;// PlayOnCorrectMessage 재생을 위한 초기화.
-        
-        
-        if (_isQuizPlaying == false && !GameManager.isCorrected)
-        { Debug.Log("퀴즈 업데이트");
+        _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
+
+
+        if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected)
+        {
+#if DEFINE_TEST
+            Debug.Log("퀴즈 업데이트");
+#endif
+
             _isQuizPlaying = true;
             roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
-            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction,startTimeOffsetSeconds));
+            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
-        
+    }
+
+    public void PlayFinishMessage()
+    {
+        _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
+
+
+        if (_isQuizPlaying == false && GameManager.isGameFinished)
+        {
+            _isQuizPlaying = true;
+            roundInstruction = onFinishMessage;
+            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
+        }
     }
 
     public void InitializeMessage()
-    { 
+    {
+#if DEFINE_TEST
         Debug.Log("퀴즈 초기화");
+#endif
+
         _isQuizPlaying = false;
-        _typeInCoroutine = StartCoroutine(TypeIn(string.Empty,0));
+        _typeInCoroutine = StartCoroutine(TypeIn(string.Empty, 0));
     }
-    
+
 
     public IEnumerator TypeIn(string str, float offset)
     {
@@ -99,8 +112,4 @@ public class InstructionUI : MonoBehaviour
     }
 
     private Coroutine _typeInCoroutine;
-    
-   
-    
-    
 }

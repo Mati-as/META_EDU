@@ -5,8 +5,11 @@ using UnityEngine;
 public class LightDimmer : MonoBehaviour
 {
     public float defaultAmbient;
+    public float minAmbient;
+    private float _currentAmbient;
     public float defaultIntensity;
-    public float decreaseRate; // Intensity 감소 비율
+    public float decreaseRate;
+    public float increaseRate;// Intensity 감소 비율
     public float minIntensity; // 최소 Intensity 값
 
     [SerializeField] private Light spotlight;
@@ -18,6 +21,7 @@ public class LightDimmer : MonoBehaviour
         dirLight = GetComponent<Light>();
 
         spotlight.enabled = false;
+        _currentAmbient = defaultAmbient;
         dirLight.intensity = defaultIntensity;
     }
 
@@ -32,23 +36,33 @@ public class LightDimmer : MonoBehaviour
   
    
     private Coroutine lightCoroutine;
+    private bool _isInitialized;
     private void Update()
     {
         if (GameManager.isGameStarted)
         {
-            
-           
-           
-
             dirLight.intensity -= decreaseRate * Time.deltaTime; // Intensity 감소
             dirLight.intensity = Mathf.Max(dirLight.intensity, minIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
 
-            defaultAmbient -= decreaseRate * Time.deltaTime;
-            RenderSettings.ambientIntensity = Mathf.Max(defaultAmbient, minIntensity);
+            if (_currentAmbient > 0)
+            {
+                _currentAmbient -= decreaseRate * Time.deltaTime;
+                RenderSettings.ambientIntensity = Mathf.Max(_currentAmbient,minAmbient );
+            }
+            
+           
+        }
+        
 
+        else if (GameManager.isGameFinished)
+        {
+            
+            dirLight.intensity += increaseRate * Time.deltaTime; // Intensity 감소
+            dirLight.intensity = Mathf.Min(dirLight.intensity, defaultIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
 
-
-         
+            Debug.Log($"RenderSettings.ambientIntensity: {RenderSettings.ambientIntensity}");
+            _currentAmbient += increaseRate * Time.deltaTime;
+            RenderSettings.ambientIntensity = Mathf.Min(defaultAmbient,  _currentAmbient);
         }
     }
 

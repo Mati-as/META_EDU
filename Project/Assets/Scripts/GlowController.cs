@@ -24,5 +24,10 @@ public class GlowController : MonoBehaviour
                 _meshRenderer.enabled = true;
             }
         }
+
+        if (GameManager.isGameFinished)
+        {
+            _meshRenderer.enabled = false;
+        }
     }
 }

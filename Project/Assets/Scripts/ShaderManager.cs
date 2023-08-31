@@ -16,6 +16,7 @@ public class ShaderManager : MonoBehaviour
     public float TimingToBeChanged;
     private float _elapsedTimeForBg;
     private float _progress;
+    private float _progressWhenFinished;
 
     //셰이더 파라미터 컨트롤
     private readonly int _skyColor = Shader.PropertyToID("_SkyColor");
@@ -68,6 +69,11 @@ public class ShaderManager : MonoBehaviour
             ChangeAnimalOutlineColor();
             ChangedSkyColor();
         }
+
+        if (GameManager.isGameFinished)
+        {
+            GetSkyColorBack();
+        }
     }
 
     private void ChangeAnimalOutlineColor()
@@ -107,6 +113,19 @@ public class ShaderManager : MonoBehaviour
             SetHorizonColor(currentHorizonColor);
         }
     }
+
+    private void GetSkyColorBack()
+    {
+        _progressWhenFinished += Time.deltaTime * colorChangingSpeed;
+
+        var currentColor = Color.Lerp( inPlayBgColor,defaultSkyColor, _progressWhenFinished);
+        SetSkyColor(currentColor);
+
+        var currentHorizonColor = Color.Lerp( inPlayBgColor,defaultHorizonColor, _progressWhenFinished);
+        SetHorizonColor(currentHorizonColor);
+    }
+    
+    
     private void OnApplicationQuit()
     {
         SetAnimalOutlineColor(startColor);
