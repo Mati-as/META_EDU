@@ -199,40 +199,40 @@ public class GameManager : MonoBehaviour
             
             if (isRoundReady)
             {
-                _moveInElapsed = 0f;
-                _elapsedForNextRound = 0f;
+                isRoundStarted = true;
                 
-                selectedAnimals.Clear(); // 동물 리스트 초기화. 
                 
-                StartRound();
+                // 동물 리스트 초기화. 
+                ResetAndInitializeBeforeStartingRound();
+                
+                //correct anim 관련 bool 초기화.
+                _isAnimRandomized = false; 
+                
+                //동물 애니메이션, 로컬스케일 초기화.
+                StartRound(); 
+                
+                // 리스트 랜덤구성
+                SelectRandomThreeAnimals(); 
                 Debug.Log("준비 완료");
                 
                
-                isRoundStarted = true;
-                
                
             }
 
 
             if (isRoundStarted)
             {
-                _moveInElapsed += Time.deltaTime;
+                isRoundReady = false;
+                elapsedForRoundFinished = 0f;
                 
+                
+                _moveInElapsed += Time.deltaTime;
                 Debug.Log("라운드 시작!");
               
-                isRoundReady = false;
-              
-                
-               // ~의 그림자를 맞춰보세요 재생. 
-                
                 MoveAndRotateAnimals(moveInTime, rotationSpeedInRound);
                 SelectObject();
                 
-               
-                
-                elapsedForRoundFinished = 0f;
-                _quizMessageEvent.Invoke();
-           
+                _quizMessageEvent.Invoke();   // ~의 그림자를 맞춰보세요 재생. 
             }
 
             if (isCorrected)
@@ -371,6 +371,9 @@ public class GameManager : MonoBehaviour
     ///     마우스로 선택 된 동물을 이동시키는 함수 입니다.
     ///     선택된 동물이 이동 시, 다른 동물들은 선택될 수 없도록 추가 로직이 필요합니다.
     /// </summary>
+    private Animator _selectedAnimator;
+
+    private bool _isAnimRandomized;
     public void PlayCorrectAnimation()
     {
         var t = Mathf.Clamp01(elapsedForMovingTowardMoon / movingTimeSecWhenCorrect);
@@ -378,6 +381,29 @@ public class GameManager : MonoBehaviour
 
         if (isCorrected)
         {
+            _selectedAnimator = selectedAnimalGameObject.GetComponent<Animator>();
+
+            if(_isAnimRandomized == false)
+            {
+                int randomAnimNum =Random.Range(0,3);
+                _isAnimRandomized = true;
+             
+                switch (randomAnimNum)
+                {
+                    case 0 :
+                        _selectedAnimator.SetBool(ROLL_ANIM,true);
+                        break;
+                    case 1 : 
+                        _selectedAnimator.SetBool(CLICK_ANIM,true);
+                        break;
+                    case 2 :
+                        _selectedAnimator.SetBool(SPIN_ANIM,true);
+                        break;
+                }
+            }
+            
+         
+            
             IncreaseScale();
             selectedAnimalGameObject.transform.position =
                 Vector3.Lerp(selectedAnimalGameObject.transform.position,
@@ -394,15 +420,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ResetAndInitialize()
+    /// <summary>
+    ///  각종 러프 함수 및 자료를 다음 라운드를 위해 초기화 하는 함수 입니다. 
+    /// </summary>
+    public void ResetAndInitializeBeforeStartingRound()
     {
-        answer = string.Empty;
+        _moveInElapsed = 0f;
         _elapsedForNextRound = 0f;
-        elapsedForRoundFinished = 0f;
-        
-       
-      
-        
+        selectedAnimals.Clear();
     }
 
     public void SetAnimal(string animalName)
@@ -504,6 +529,7 @@ public class GameManager : MonoBehaviour
 
 
     /// <summary>
+    /// 동물 애니메이션, 로컬스케일 초기화 합니다.
     /// 동물을 플레이 위치에 놓고 선택할 수 있도록합니다. 
     /// </summary>
     public void StartRound()
@@ -513,10 +539,13 @@ public class GameManager : MonoBehaviour
         {
             _tempAnimator = gameObj.GetComponent<Animator>();
             _tempAnimator.SetBool(RUN_ANIM, false);
+            _tempAnimator.SetBool(CLICK_ANIM, false);
+            _tempAnimator.SetBool(ROLL_ANIM, false);
+            _tempAnimator.SetBool(SPIN_ANIM, false);
             gameObj.transform.localScale = Vector3.one *_defaultSize;
         }
 
-        SelectRandomThreeAnimals();
+       
     }
 
 
@@ -524,7 +553,9 @@ public class GameManager : MonoBehaviour
     ///     동물을 회전시키는 함수 입니다.
     ///     정답을 맞추기 전, 동물이 플레이화면에 나타날때 회전하는 함수입니다.
     ///     정답을 맞춘 후 나오는 함수와 구분하여 사용합니다.
+    /// 
     /// </summary>
+    /// 
     public void MoveAndRotateAnimals(float _moveInTime, float _rotationSpeedInRound)
     {
         selectedAnimals[0].transform.position =
