@@ -125,6 +125,11 @@ public class GameManager : MonoBehaviour
     private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
     private readonly int RUN_ANIM = Animator.StringToHash("Run");
     private readonly int IDLE_ANIM = Animator.StringToHash("idle");
+    
+    
+    
+    
+    // UI 출력을 위한 Event 처리
 
     [FormerlySerializedAs("_onCorrectLightOn")]
     [Header("Events")] [Space(10f)] 
@@ -143,6 +148,12 @@ public class GameManager : MonoBehaviour
     
     [SerializeField]
     private UnityEvent _messageInitializeEvent;
+    
+    
+    
+    // 플레이상 중복 방지 및 기타 버그 방지용 로직
+  
+    
     
     private void Awake()
     {
@@ -190,6 +201,9 @@ public class GameManager : MonoBehaviour
             {
                 _moveInElapsed = 0f;
                 _elapsedForNextRound = 0f;
+                
+                selectedAnimals.Clear(); // 동물 리스트 초기화. 
+                
                 StartRound();
                 Debug.Log("준비 완료");
                 
@@ -235,7 +249,7 @@ public class GameManager : MonoBehaviour
                 if (elapsedForRoundFinished > waitTimeForRoundFinished) isRoudnFinished = true;
                 
                 _moveOutElapsed = 0f;
-                _previousAnswer = answer;
+                
               
             }
 
@@ -385,6 +399,10 @@ public class GameManager : MonoBehaviour
         answer = string.Empty;
         _elapsedForNextRound = 0f;
         elapsedForRoundFinished = 0f;
+        
+       
+      
+        
     }
 
     public void SetAnimal(string animalName)
@@ -452,25 +470,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    private string _previousAnswer;
+    private int _previousAnswer = -1; // 초기에는 중복되는 정답이 있을 수 없도록 -1로 설정합니다. 
+    private int _randomAnswer;
     public void SelectRandomThreeAnimals()
     {
-        Debug.Log("동물 랜덤 고르기 완료");
+    
+        
         tempAnimals = new List<GameObject>(animalList);
+        
         for (var i = 0; i < 3; i++)
         {
+            Debug.Log("동물 랜덤 고르기 완료");
             var randomIndex = Random.Range(0, tempAnimals.Count);
             selectedAnimals.Add(tempAnimals[randomIndex]);
             tempAnimals.RemoveAt(randomIndex);
         }
 
-        var randomAnswer = Random.Range(0, tempAnimals.Count);
+        
+        _randomAnswer = Random.Range(0, tempAnimals.Count);
 
+        while (_randomAnswer == _previousAnswer)
+        {
+            _randomAnswer = Random.Range(0, tempAnimals.Count);
+        }
+        
        
-        answer = selectedAnimals[randomAnswer].name;
-       
+        answer = selectedAnimals[_randomAnswer].name;
+        
+        _previousAnswer = _randomAnswer;
+        
     }
+    
 
 
     /// <summary>
