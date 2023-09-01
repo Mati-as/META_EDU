@@ -144,8 +144,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    [Header("References")] [Space(10f)] public InstructionUI instructionUI;
-
+    [Header("References")] [Space(10f)]
     private Ray ray;
     private RaycastHit hitInfo;
     public LayerMask interactableLayer;
@@ -153,7 +152,7 @@ public class GameManager : MonoBehaviour
 
     private float _currentLerp;
     private float lerp;
-    [SerializeField] private Light _spotLight;
+ 
 
     private readonly List<GameObject> selectedAnimals = new();
     private List<GameObject> tempAnimals;
@@ -161,7 +160,7 @@ public class GameManager : MonoBehaviour
 
     // 애니메이션 로직
     private readonly int ROLL_ANIM = Animator.StringToHash("Roll");
-    private readonly int CLICK_ANIM = Animator.StringToHash("Clicked");
+    private readonly int FLY_ANIM = Animator.StringToHash("Fly");
     private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
     private readonly int RUN_ANIM = Animator.StringToHash("Run");
     private readonly int IDLE_ANIM = Animator.StringToHash("idle");
@@ -476,7 +475,7 @@ public class GameManager : MonoBehaviour
                         _selectedAnimator.SetBool(ROLL_ANIM, true);
                         break;
                     case 1:
-                        _selectedAnimator.SetBool(CLICK_ANIM, true);
+                        _selectedAnimator.SetBool(FLY_ANIM, true);
                         break;
                     case 2:
                         _selectedAnimator.SetBool(SPIN_ANIM, true);
@@ -611,7 +610,7 @@ public class GameManager : MonoBehaviour
         {
             _tempAnimator = gameObj.GetComponent<Animator>();
             _tempAnimator.SetBool(RUN_ANIM, false);
-            _tempAnimator.SetBool(CLICK_ANIM, false);
+            _tempAnimator.SetBool(FLY_ANIM, false);
             _tempAnimator.SetBool(ROLL_ANIM, false);
             _tempAnimator.SetBool(SPIN_ANIM, false);
             gameObj.transform.localScale = Vector3.one * _defaultSize;
