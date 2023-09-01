@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81180773991d8724ab7f2d216912b564, type: 3}
   m_Name: ChromaticAberration
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.02
+    m_Value: 0
 --- !u!114 &-7092124534792364890
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -31,7 +31,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0.6
+    m_Value: 1.2
   contrast:
     m_OverrideState: 0
     m_Value: 5
@@ -42,8 +42,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   saturation:
-    m_OverrideState: 1
-    m_Value: 9
+    m_OverrideState: 0
+    m_Value: -68
 --- !u!114 &-1887216633223150654
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 899c54efeace73346a0a16faa3afe726, type: 3}
   m_Name: Vignette
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   color:
     m_OverrideState: 1
     m_Value: {r: 0, g: 0, b: 0, a: 1}
@@ -65,7 +65,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.274
+    m_Value: 0.072
   smoothness:
     m_OverrideState: 1
     m_Value: 0.241
@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   threshold:
     m_OverrideState: 1
     m_Value: 1.2
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
   m_Name: Tonemapping
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   mode:
     m_OverrideState: 1
     m_Value: 1
@@ -208,12 +208,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221518ef91623a7438a71fef23660601, type: 3}
   m_Name: WhiteBalance
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   temperature:
     m_OverrideState: 1
     m_Value: 10
   tint:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
 --- !u!114 &9026030083660731147
 MonoBehaviour:
@@ -227,13 +227,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5485954d14dfb9a4c8ead8edb0ded5b1, type: 3}
   m_Name: LiftGammaGain
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   lift:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.97275555, z: 0.9861048, w: -0.00037540786}
+    m_Value: {x: 1, y: 0.97289735, z: 0.9342387, w: -0.00037540786}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.9460329, z: 0.96796477, w: 0.0007508157}
+    m_Value: {x: 1, y: 0.9206332, z: 0.96479607, w: 0.0007508157}
   gain:
     m_OverrideState: 1
-    m_Value: {x: 0.9186613, y: 0.93573105, z: 1, w: -1.1365357e-11}
+    m_Value: {x: 1, y: 0.95200884, z: 0.94789433, w: -1.1365357e-11}

@@ -58,7 +58,7 @@ public class InstructionUI : MonoBehaviour
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
 
 
-        if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected)
+        if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected && !_isCorrectMessagePlaying)
         {
 #if DEFINE_TEST
             Debug.Log("퀴즈 업데이트");
