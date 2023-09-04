@@ -208,6 +208,10 @@ public class GameManager : MonoBehaviour
     private readonly int FLY_ANIM = Animator.StringToHash("Fly");
     private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
     private readonly int RUN_ANIM = Animator.StringToHash("Run");
+    private readonly int SELECTABLE = Animator.StringToHash("Selectable");
+    private readonly int SELECTABLE_A = Animator.StringToHash("SelectableA");
+    private readonly int SELECTABLE_B= Animator.StringToHash("SelectableB");
+   
     private readonly int IS_GAME_FINISHED_ANIM = Animator.StringToHash(("IsGameFinished"));
     
     // UI 출력을 위한 Event 처리
@@ -294,22 +298,15 @@ public class GameManager : MonoBehaviour
             // 첫 라운드 이전을 roundfinish로 설정.
 
 
-            if (isRoundReady)
+            if (isRoundReady) //1회 실행 보장.
             {
-                CheckGameFinished();
                 isRoundStarted = true;
                 
-                // 동물 리스트 초기화. 
-                ResetAndInitializeBeforeStartingRound();
-
-                //correct anim 관련 bool 초기화.
-                _isAnimRandomized = false;
-
-                //동물 애니메이션, 로컬스케일 초기화.
-                StartRound();
-
-                // 리스트 랜덤구성
-                SelectRandomThreeAnimals();
+                CheckGameFinished();
+                ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
+                _isAnimRandomized = false;  //correct anim 관련 bool 초기화.
+                StartRound(); //동물 애니메이션, 로컬스케일 초기화.
+                SelectRandomThreeAnimals();  // 리스트 랜덤구성
                 
                 Debug.Log("준비 완료");
             }
@@ -323,8 +320,8 @@ public class GameManager : MonoBehaviour
 
 
                 _moveInElapsed += Time.deltaTime;
-                
 
+                PlayInPlayAnimation();
                 MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
                 SelectObject();
 
@@ -462,9 +459,10 @@ public class GameManager : MonoBehaviour
 
             var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
             RaycastHit hit;
+            
 
 
-            if (Physics.Raycast(ray, out hit) && isCorrected == false) // 정답을 맞추지 않은 상태라면...(중복정답 방지)
+            if (Physics.Raycast(ray, out hit,Mathf.Infinity, interactableLayer) && isCorrected == false) // 정답을 맞추지 않은 상태라면...(중복정답 방지)
                 if (animalGameOjbectDictionary.ContainsKey(hit.collider.name))
                 {
                     _clickedAnimal = hit.collider.name;
@@ -523,7 +521,11 @@ public class GameManager : MonoBehaviour
         if (isCorrected)
         {
             _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
-
+            
+            _selectedAnimator.SetBool(SELECTABLE,false);
+            _selectedAnimator.SetBool(SELECTABLE_A,false);
+            _selectedAnimator.SetBool(SELECTABLE_B,false);
+            
             if (_isAnimRandomized == false)
             {
                 var randomAnimNum = Random.Range(0, 3);
@@ -655,14 +657,53 @@ public class GameManager : MonoBehaviour
         foreach (var gameObj in _animalList)
         {
             _tempAnimator = gameObj.GetComponent<Animator>();
-            _tempAnimator.SetBool(RUN_ANIM, false);
-            _tempAnimator.SetBool(FLY_ANIM, false);
-            _tempAnimator.SetBool(ROLL_ANIM, false);
-            _tempAnimator.SetBool(SPIN_ANIM, false);
+            InitializeAllAnimatorParameters(_tempAnimator);
             gameObj.transform.localScale = Vector3.one * _defaultSize;
         }
+        
+        
+       
     }
 
+    /// <summary>
+    /// 모든 애니메이션의 파라미터를 false로 초기화 합니다. 
+    /// </summary>
+    /// <param name="animator"></param>
+    private void InitializeAllAnimatorParameters(Animator animator)
+    {
+        animator.SetBool(RUN_ANIM, false);
+        animator.SetBool(FLY_ANIM, false);
+        animator.SetBool(ROLL_ANIM, false);
+        animator.SetBool(SPIN_ANIM, false);
+        animator.SetBool(SELECTABLE,false);
+        animator.SetBool(SELECTABLE_A,false);
+        animator.SetBool(SELECTABLE_B,false);
+    }
+    private int _randomInPlayAnimationNumber;
+    private void PlayInPlayAnimation()
+    {
+        foreach (var gameObj in _animalList)
+        {
+            _tempAnimator = gameObj.GetComponent<Animator>();
+            InitializeAllAnimatorParameters(_tempAnimator);
+            
+            
+            // 선택 장면 시, 애니메이션을 재생하는 방식으로 원할 경우..
+            // _tempAnimator.SetBool(SELECTABLE,true);
+            //
+            // _randomInPlayAnimationNumber = Random.Range(0, 2);
+            // if (_randomInPlayAnimationNumber == 0)
+            // {
+            //     _tempAnimator.SetBool(SELECTABLE_A,true);
+            // }
+            // else
+            // {
+            //     _tempAnimator.SetBool(SELECTABLE_B,true);
+            // }
+            // gameObj.transform.localScale = Vector3.one * _defaultSize;
+        }
+    }
+    
     
     /// <summary>
     ///     동물을 회전시키는 함수 입니다.
