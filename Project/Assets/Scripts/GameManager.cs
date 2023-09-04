@@ -169,9 +169,10 @@ public class GameManager : MonoBehaviour
     public float moveInSeconds;
     public float rotationSpeedInPlay;
     public float waitTimeBetweenRounds;
-    
-    
-    private float _elapsedForRoundFinished;
+    public float waitTimeToBeSelectable; //동물들이 들어오고 나서 선택할 수 있게 되는 시간.
+
+    private float _elapsedOfToBeSelectableWaitTime;
+    private float _elapsedOfRoundFinished;
 
     [Space(5f)] 
     [Header("On Correct Setting")] [Space(10f)] [Space(10f)]
@@ -190,20 +191,20 @@ public class GameManager : MonoBehaviour
     
     [Space(10f)] 
     [Header("References")] [Space(10f)]
+    public LayerMask playObejctInteractableLayer;
+    public LayerMask UIInteractableLayer;
+    public ParticleSystem clickParticleSystem;
+    
     private Ray ray;
     private RaycastHit hitInfo;
-    public LayerMask interactableLayer;
-
+   
 
     private float _currentLerp;
     private float lerp;
- 
-
-
-
+    
 
     // 09-01-23 애니메이션 로직 중  IDEL_ANIM 미사용.
-    // private readonly int IDLE_ANIM = Animator.StringToHash("idle"); 
+    private readonly int IDLE_ANIM = Animator.StringToHash("idle"); 
     private readonly int ROLL_ANIM = Animator.StringToHash("Roll");
     private readonly int FLY_ANIM = Animator.StringToHash("Fly");
     private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
@@ -277,6 +278,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        PlayClickOnScreenEffect();
+        
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
         {
@@ -316,14 +319,20 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("라운드 시작!");
                 isRoundReady = false;
-                _elapsedForRoundFinished = 0f;
+                _elapsedOfRoundFinished = 0f;
 
 
                 _moveInElapsed += Time.deltaTime;
+                _elapsedOfToBeSelectableWaitTime += Time.deltaTime;
 
                 PlayInPlayAnimation();
                 MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
-                SelectObject();
+
+                if (_elapsedOfToBeSelectableWaitTime > waitTimeToBeSelectable)
+                {
+                    SelectObject();
+                }
+              
 
                 _quizMessageEvent.Invoke(); // ~의 그림자를 맞춰보세요 재생. 
             }
@@ -339,8 +348,8 @@ public class GameManager : MonoBehaviour
                 _onCorrectLightOnEvent.Invoke(); // D-Light 참조 중
                 _correctMessageEvent.Invoke(); // UI Instruction 클래스 참조
                 
-                _elapsedForRoundFinished += Time.deltaTime;
-                if (_elapsedForRoundFinished > waitTimeBetweenRounds) isRoudnFinished = true;
+                _elapsedOfRoundFinished += Time.deltaTime;
+                if (_elapsedOfRoundFinished > waitTimeBetweenRounds) isRoudnFinished = true;
 
               
             }
@@ -460,10 +469,13 @@ public class GameManager : MonoBehaviour
             var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
             RaycastHit hit;
             
+          
 
 
-            if (Physics.Raycast(ray, out hit,Mathf.Infinity, interactableLayer) && isCorrected == false) // 정답을 맞추지 않은 상태라면...(중복정답 방지)
-                if (animalGameOjbectDictionary.ContainsKey(hit.collider.name))
+
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer) )
+            {
+                if (animalGameOjbectDictionary.ContainsKey(hit.collider.name)&& isCorrected == false)
                 {
                     _clickedAnimal = hit.collider.name;
                     if (_clickedAnimal == answer)
@@ -478,10 +490,36 @@ public class GameManager : MonoBehaviour
 
                     //sizeIncrease()의 lerp
                     _currentLerp = 0;
+                    
                 }
+
+              
+
+            }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
+            
+               
         }
     }
 
+    private void PlayClickOnScreenEffect()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            m_vecMouseDownPos = Input.mousePosition;
+            
+            var raySecond = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
+            RaycastHit hitSecond;
+            
+            if (Physics.Raycast(raySecond, out hitSecond, Mathf.Infinity, UIInteractableLayer) )
+            {
+                
+                Debug.Log("파티클 재생");
+                clickParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
+                clickParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
+                clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
+            }
+        }
+    }
     
     
     /// <summary>
@@ -568,9 +606,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetAndInitializeBeforeStartingRound()
     {
+        _elapsedOfToBeSelectableWaitTime = 0f;
         _moveInElapsed = 0f;
         _elapsedForNextRound = 0f;
-        _selectedAnimals.Clear();
+        _selectedAnimals.Clear();// 0,1,2 인덱스에 동물 리스트 쌓이지 않도록 초기화
     }
 
     public void SetAnimal(string animalName)
