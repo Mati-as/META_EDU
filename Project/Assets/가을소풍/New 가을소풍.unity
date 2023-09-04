@@ -1111,7 +1111,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &91749372
 PrefabInstance:
@@ -3066,7 +3066,7 @@ Transform:
   - {fileID: 1465051935}
   - {fileID: 133537570}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &363291728
 PrefabInstance:
@@ -3698,7 +3698,7 @@ Transform:
   - {fileID: 667366892}
   - {fileID: 2137838706}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &436187386
 MonoBehaviour:
@@ -5067,6 +5067,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 0.3443396, g: 0.72564495, b: 1, a: 0}
+  fresnelSpeed: 5
+  minFresnelPower: 1.5
+  maxFresnelPower: 10
   waitTime: 5
 --- !u!1001 &623586336
 PrefabInstance:
@@ -5452,12 +5456,8 @@ MonoBehaviour:
   animalMaterial: {fileID: 2100000, guid: 8e8661e038368d7439eb9685608b9899, type: 2}
   startColor: {r: 0.94509804, g: 0.87189776, b: 0.15686274, a: 0}
   inPlayColor: {r: 0.94509804, g: 0.85641295, b: 0.15686274, a: 0}
-  fresnelSpeed: 5
-  minFresnelPower: 3.5
-  maxFresnelPower: 30
   minBrightness: 0
   maxBrightness: 0
-  animalColorChangeSpeed: 0
 --- !u!1001 &668827589
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5968,7 +5968,8 @@ Transform:
   m_LocalPosition: {x: -4.2889585, y: 1.7003955, z: 8.369762}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8865792050211925192}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -23.529}
@@ -11317,6 +11318,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 0.6297538, g: 1, b: 0.2783019, a: 0}
+  fresnelSpeed: 0
+  minFresnelPower: 0
+  maxFresnelPower: 0
   waitTime: 5
 --- !u!137 &1535141420
 SkinnedMeshRenderer:
@@ -11830,6 +11835,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 1, g: 0.44682193, b: 0.25943398, a: 0}
+  fresnelSpeed: 5
+  minFresnelPower: 1.5
+  maxFresnelPower: 10
   waitTime: 5
 --- !u!1001 &1605254774
 PrefabInstance:
@@ -13227,7 +13236,7 @@ Transform:
   - {fileID: 280962498}
   - {fileID: 282190672}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1797664806
 PrefabInstance:
@@ -13760,7 +13769,7 @@ Transform:
   - {fileID: 1801090873}
   - {fileID: 1913810181}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1913810180
 GameObject:
@@ -14964,7 +14973,7 @@ PrefabInstance:
     - target: {fileID: 8726710997308672863, guid: e9a176533e6406b45892d1781c1db3bb,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8726710997308672863, guid: e9a176533e6406b45892d1781c1db3bb,
         type: 3}
@@ -15090,7 +15099,7 @@ Transform:
   - {fileID: 1087403713}
   - {fileID: 5213248183845112651}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2130829083
 PrefabInstance:
@@ -17525,6 +17534,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 1, g: 0.6868738, b: 0, a: 0}
+  fresnelSpeed: 5
+  minFresnelPower: 1.5
+  maxFresnelPower: 10
   waitTime: 5
 --- !u!1 &5295023903111823354
 GameObject:
@@ -17633,6 +17646,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 1, g: 0.4764151, b: 0.83650506, a: 0}
+  fresnelSpeed: 5
+  minFresnelPower: 1.5
+  maxFresnelPower: 10
   waitTime: 5
 --- !u!1 &5295023904713288811
 GameObject:
@@ -17742,6 +17759,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  outlineColor: {r: 0.9764231, g: 1, b: 0.19339621, a: 0}
+  fresnelSpeed: 5
+  minFresnelPower: 1.5
+  maxFresnelPower: 10
   waitTime: 5
 --- !u!1 &5295023905091394659
 GameObject:
@@ -17778,7 +17799,7 @@ Transform:
   - {fileID: 1532612335396840214}
   - {fileID: 5349727453897288386}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 1.564, y: 78.011, z: -0.332}
 --- !u!114 &5322510274785882954
 MonoBehaviour:
@@ -19615,13 +19636,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8865792050211925193}
-  m_LocalRotation: {x: 0.6922528, y: 0.14417411, z: -0.14417413, w: 0.69225264}
-  m_LocalPosition: {x: -4.3555336, y: 1.81265, z: 9.188521}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000000059604645, y: -0.000000007450581, z: -0.000000007450581,
+    w: 1}
+  m_LocalPosition: {x: -0.1939522, y: 0.36205274, z: -0.05612731}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 728137417}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8865792050211925193
 GameObject:

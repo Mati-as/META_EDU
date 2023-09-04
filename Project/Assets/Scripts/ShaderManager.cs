@@ -32,14 +32,10 @@ public class ShaderManager : MonoBehaviour
     public Color startColor;
     public Color inPlayColor;
 
-    [Space(10)] public float fresnelSpeed;
-    private float fresnelElapsedTime;
-
-    [FormerlySerializedAs("minFresnelP")] public float minFresnelPower;
-    [FormerlySerializedAs("maxFresnelP")] public float maxFresnelPower;
+   
 
     private readonly int _emissionColor = Shader.PropertyToID("_emissionColor");
-    private readonly int _fresnelPower = Shader.PropertyToID("_FresnelPower");
+   
 
     [Space(20f)] [Header("Color Settings")] [Space(10f)]
     public float minBrightness;
@@ -47,7 +43,7 @@ public class ShaderManager : MonoBehaviour
     public float maxBrightness;
 
     [FormerlySerializedAs("brightnessIncreasingSpeed")]
-    public float animalColorChangeSpeed;
+    
 
     private float _brightness;
     private float _elapsedTime;
@@ -56,7 +52,6 @@ public class ShaderManager : MonoBehaviour
     private void Awake()
     {
         SetAnimalOutlineColor(inPlayColor);
-        SetFresnelPower(defaultFresnel);
         SetSkyColor(defaultSkyColor);
         SetHorizonColor(defaultHorizonColor);
     }
@@ -66,7 +61,6 @@ public class ShaderManager : MonoBehaviour
     {
         if (GameManager.isGameStarted)
         {
-            ChangeAnimalOutlineColor();
             ChangedSkyColor();
         }
 
@@ -76,31 +70,12 @@ public class ShaderManager : MonoBehaviour
         }
     }
 
-    private void ChangeAnimalOutlineColor()
-    {
-        _elapsedTime += Time.deltaTime;
-
-        if (_elapsedTime > waitTime)
-        {
-            _lerpProgress += Time.deltaTime * animalColorChangeSpeed; // 진행도 업데이트
-            _brightness = Mathf.Lerp(minBrightness, maxBrightness, _lerpProgress);
-
-            var currentAnimalOutlineColor = Color.Lerp(startColor, inPlayColor, _lerpProgress);
-            SetAnimalOutlineColor(currentAnimalOutlineColor);
-                
-                
-            //fresnel power 4~8 -> 
-            var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
-                minFresnelPower, maxFresnelPower);
-            SetFresnelPower(currentFresnel);
-            
-        }
-    }
+    
 
     private void ChangedSkyColor()
     {
         _elapsedTimeForBg += Time.deltaTime;
-        fresnelElapsedTime += Time.deltaTime;
+       
 
         if (_elapsedTimeForBg > TimingToBeChanged)
         {
@@ -149,8 +124,5 @@ public class ShaderManager : MonoBehaviour
         animalMaterial.SetColor(_emissionColor, color);
     }
 
-    private void SetFresnelPower(float fresnelPower)
-    {
-        animalMaterial.SetFloat(_fresnelPower, fresnelPower);
-    }
+  
 }
