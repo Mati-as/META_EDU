@@ -111,7 +111,7 @@ public class DragonflyController : MonoBehaviour
         var direction = _moveAwayPositions[_moveAwayPositionIndex].position - transform.position;
         direction.y = 0;
         var rotation = Quaternion.LookRotation(direction);
-        Debug.Log("move up");
+        
         var t = _elapsedTime / movingTimeSec;
         transform.position = Vector3.Lerp(transform.position, _moveAwayPositions[_moveAwayPositionIndex].position,
             t * moveSpeed * _randomSpeed);
@@ -119,7 +119,7 @@ public class DragonflyController : MonoBehaviour
 
     private void LandToGround()
     {
-        Debug.Log("dragonfly is landing again.");
+       
         var t = _elapsedTime / movingTimeSec;
         transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
             t * moveSpeed * _randomSpeed);

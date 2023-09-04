@@ -278,7 +278,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        PlayClickOnScreenEffect();
+        
+       
         
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
@@ -293,6 +294,7 @@ public class GameManager : MonoBehaviour
 
         if (isGameStarted && isGameFinished == false)
         {
+            PlayClickOnScreenEffect();
             // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정 
             _elapsedForInitialRound += Time.deltaTime;
             CheckInitialReady();
@@ -384,10 +386,8 @@ public class GameManager : MonoBehaviour
             isGameStarted = false;
           
             
-            
             if (_elapsedForFinishMoveIn < finishedMoveInTime) _elapsedForFinishMoveIn += Time.deltaTime;
-
-           
+            
             MoveInWhenGameIsFinished();
             _finishedMessageEvent.Invoke();
         }

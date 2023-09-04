@@ -60,12 +60,10 @@ public class GlowController : MonoBehaviour
         
         if (_elapsedTime > waitTime)
         {
-            
             //fresnel power 4~8 -> 
             var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
                 minFresnelPower, maxFresnelPower);
             SetFresnelPower(currentFresnel);
-            
         }
     }
     
