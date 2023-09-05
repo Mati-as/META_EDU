@@ -339,7 +339,7 @@ public class GameManager : MonoBehaviour
 
                 
                 //동물 등장 후 특정 시간 이후에 동물 선택 가능.
-                if (_elapsedOfToBeSelectableWaitTime > waitTimeToBeSelectable)
+                if (_elapsedOfToBeSelectableWaitTime > waitTimeToBeSelectable )
                 {
                     SelectObject();
                 }
@@ -367,6 +367,7 @@ public class GameManager : MonoBehaviour
 
             if (isRoundFinished)
             {
+                InitializeAndSetTimerOnRoundFinished();
                 
 #if UNITY_EDITOR
                 Debug.Log("라운드 종료!");
@@ -391,12 +392,12 @@ public class GameManager : MonoBehaviour
 
         if (isGameFinished)
         {
-            
+            InitializeAndSetTimerOnGameFinished();
 #if UNITY_EDITOR
             Debug.Log("게임종료");
 #endif
 
-            InitializeAndSetTimerOnGameFinished();
+          
             MoveInWhenGameIsFinished();
             
             _finishedMessageEvent.Invoke();
@@ -450,6 +451,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeOnReady()
     {
+        isCorrected = false;
         isRoundStarted = true;
         _isAnimRandomized = false; //correct anim 관련 bool 초기화.
     }
@@ -516,7 +518,7 @@ public class GameManager : MonoBehaviour
     {
 #if UNITY_EDITOR
         // 마우스 클릭 시
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isCorrected)
 #else
         //        터치 시
         // if (Input.touchCount > 0)

@@ -1,51 +1,63 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DragonflyController : MonoBehaviour
 {
-    public float movingTimeSec;
+    [Header("DragonFly Movement Settings")] [Space(10f)]
+    
 
-    public Transform landingPositionA;
-    public Transform landingPositionB;
-    public Transform landingPositionC;
-    public Transform landingPositionD;
-    public Transform landingPositionE;
-    public Transform landingPositionF;
+    [SerializeField] public Transform landingPositionA;
+    [SerializeField] public Transform landingPositionB;
+    [SerializeField] public Transform landingPositionC;
+    [SerializeField] public Transform landingPositionD;
+    [SerializeField] public Transform landingPositionE;
+    [SerializeField] public Transform landingPositionF;
 
-    public Transform moveAwayPositionA;
-    public Transform moveAwayPositionB;
-    public Transform moveAwayPositionC;
-    public Transform moveAwayPositionD;
-    public Transform moveAwayPositionE;
+    [SerializeField] public Transform moveAwayPositionA;
+    [SerializeField] public Transform moveAwayPositionB;
+    [SerializeField] public Transform moveAwayPositionC;
+    [SerializeField] public Transform moveAwayPositionD;
+    [SerializeField] public Transform moveAwayPositionE;
 
-    /// <summary>
-    ///     잠자리가 준비되었는지 체크하는 함수.
-    /// </summary>
-    public float moveSpeed;
-
-
-    private readonly int _dragonflyFly = Animator.StringToHash("fly");
-    private Animator _animator;
+  
     private Transform _currentLandingPosition;
     private string _dragonflyName;
-
-    private float _elapsedTime;
-
-
+    private float _elapsedTimeForMoveUp;
     private bool _isClicked;
 
 
     private Transform[] _landingPositions;
-
     private int _landPositionIndex;
+
     private int _moveAwayPositionIndex;
     private Transform[] _moveAwayPositions;
+
     private float _randomSpeed;
-    private readonly string dragonfly = "dragonfly";
+    private readonly string DRAGONFLY = "dragonfly";
     private readonly string upper = "upper";
+    private readonly string LAND = "land";
+
+
+    [Header("DragonFly Animation Settings")] [Space(10f)] [Range(0, 20)]
+    public int minIdlePlayRandomTime;
+
+    [Range(0, 20)] public int maxIdlePlayRandomTime;
+
+    private float _elapsedTimeForIdleAnim;
+
+    private readonly int DRAGONFLY_ANIM_FLY = Animator.StringToHash("fly");
+    private readonly int LANDING = Animator.StringToHash("Landing");
+    private readonly int DRAGONFLY_ANIM_IDLE_A = Animator.StringToHash("Idle_a");
+    private readonly int DRAGONFLY_ANIM_IDLE_B = Animator.StringToHash("Idle_b");
+
+
+    private Animator _animator;
 
 
     private void Awake()
     {
+        randomNumberForFrequency = Random.Range(minIdlePlayRandomTime, maxIdlePlayRandomTime);
         _currentLandingPosition = transform;
 
         _landingPositions = new Transform[6];
@@ -76,28 +88,66 @@ public class DragonflyController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        _elapsedTime += Time.deltaTime;
-
-
+      
+        _elapsedTimeForIdleAnim += Time.deltaTime;
+    
         if (Input.GetMouseButtonDown(0)) CheckClickedAndAnimateDragonfly();
 
-        if (_isClicked)
-            MoveUpToDisappear();
+        if (_isClicked) MoveUpToDisappear();
         else LandToGround();
+        
+        PlayIdleAnim();
+    }
+
+    private bool isIdleAnimPlayable;
+    private int randomNumberForFrequency;
+
+    private void PlayIdleAnim()
+    {
+        if (_elapsedTimeForIdleAnim > randomNumberForFrequency) isIdleAnimPlayable = true;
+
+        if (isIdleAnimPlayable)
+        {
+            var randomNumberForAnimation = Random.Range(0, 2);
+
+            if (randomNumberForAnimation%2 == 0)
+                _animator.SetTrigger(DRAGONFLY_ANIM_IDLE_A);
+            else
+                _animator.SetTrigger(DRAGONFLY_ANIM_IDLE_B);
+
+
+            // initialize..
+            _elapsedTimeForIdleAnim = 0f;
+           
+            randomNumberForFrequency = Random.Range(minIdlePlayRandomTime, maxIdlePlayRandomTime);
+            isIdleAnimPlayable = false;
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag(upper))
-        {
-            _isClicked = false;
-            _elapsedTime = 0f;
-            _animator.SetBool(_dragonflyFly, false);
-        }
-
-        if (other.CompareTag(dragonfly))
+        
+        if (other.CompareTag(DRAGONFLY))
         {
             _landPositionIndex = Random.Range(0, 6);
+            _isClicked = false;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(LAND))
+        {
+#if UNITY_EDITOR
+            Debug.Log(" 잠자리 착지");
+#endif
+            _elapsedTimeForMoveUp = 0f;
+            _animator.SetBool(DRAGONFLY_ANIM_FLY, false);
+            _animator.SetTrigger(LANDING);
+        }
+
+        if (other.CompareTag(upper))
+        {
             _isClicked = false;
         }
     }
@@ -108,21 +158,28 @@ public class DragonflyController : MonoBehaviour
     /// </summary>
     private void MoveUpToDisappear()
     {
+        _elapsedTimeForMoveUp += Time.deltaTime;
+        _elapsedForMoveBack = 0f;
         var direction = _moveAwayPositions[_moveAwayPositionIndex].position - transform.position;
         direction.y = 0;
         var rotation = Quaternion.LookRotation(direction);
+        transform.rotation = rotation;
         
-        var t = _elapsedTime / movingTimeSec;
+        
         transform.position = Vector3.Lerp(transform.position, _moveAwayPositions[_moveAwayPositionIndex].position,
-            t * moveSpeed * _randomSpeed);
+            _elapsedTimeForMoveUp / moveUpTime);
     }
 
+    public float moveUpTime;
+    public float moveBackTime;
+    private float _elapsedForMoveBack;
     private void LandToGround()
     {
-       
-        var t = _elapsedTime / movingTimeSec;
+        _elapsedForMoveBack += Time.deltaTime;
+        
+        
         transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
-            t * moveSpeed * _randomSpeed);
+            _elapsedForMoveBack / moveBackTime);
 
         var direction = _landingPositions[_landPositionIndex].position - transform.position;
         direction.y = 0;
@@ -141,7 +198,7 @@ public class DragonflyController : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             if (hit.collider.name != _dragonflyName) return;
-            _elapsedTime = 0f;
+           
 
             _landPositionIndex = Random.Range(0, 6);
             _moveAwayPositionIndex = Random.Range(0, 5);
@@ -149,7 +206,7 @@ public class DragonflyController : MonoBehaviour
             _randomSpeed = Random.Range(0.8f, 2);
 
 
-            _animator.SetBool(_dragonflyFly, true);
+            _animator.SetBool(DRAGONFLY_ANIM_FLY, true);
 
             _currentLandingPosition.position = transform.position;
 

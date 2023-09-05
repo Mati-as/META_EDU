@@ -6,6 +6,7 @@ public class ParticleEventController : MonoBehaviour
     [SerializeField] public ParticleSystem particleSystemA;
 
     [SerializeField] public ParticleSystem particleSystemB;
+    [SerializeField] public ParticleSystem particleSystemC;
 
     public float force = 10.0f;
     private readonly float radius = 987654321;
@@ -31,6 +32,7 @@ public class ParticleEventController : MonoBehaviour
             
             ApplyRandomForce(center, particleSystemA);
             ApplyRandomForce(center, particleSystemB);
+            ApplyRandomForce(center, particleSystemC);
         }
         else
         {
@@ -58,8 +60,8 @@ public class ParticleEventController : MonoBehaviour
 
                 particles[i].angularVelocity = randomAngularVelocity;
 
-                
-                var forceMultiplier = 1.0f / (1.0f + distance); // 거리에 반비례하는 힘
+                float randomForce = Random.Range(1f ,3.5f);
+                var forceMultiplier =  randomForce / (1.0f + distance); // 거리에 반비례하는 힘
                 particles[i].velocity += randomDirection * force * forceMultiplier;
             }
         }
