@@ -1,14 +1,25 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 
 // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
+    private enum GameState
+    {
+        CameraArrived,
+        GameStarted,
+        RoundReady,
+        Corrected,
+        RoundFinished,
+        GameFinished
+    }
     
     [Header("Display Setting")] [Space(10f)]
     public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
@@ -24,7 +35,7 @@ public class GameManager : MonoBehaviour
     public static bool isRoundStarted { get; private set; }
     public static bool isCorrected { get; private set; }
     public static bool isGameFinished { get; private set; }
-    public static bool isRoudnFinished { get; private set; }
+    public static bool isRoundFinished { get; private set; }
     
     public static string answer { get; private set; }
 
@@ -160,7 +171,7 @@ public class GameManager : MonoBehaviour
     [Space(15f)]
     [Header("On Ready Setting")] [Space(10f)] 
     public float moveOutTime;
-    
+    public float rotationSpeedWhenMovingOut;  // 회전 속도
     
     private float _moveOutElapsed;
 
@@ -266,13 +277,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        isRoudnFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
+        isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
         _defaultSize = dog.transform.localScale.z;
         SetDefaultPositions();
     }
 
-    private bool _isRandomized;
-
+  
+    
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.
     /// </summary>
@@ -284,19 +295,17 @@ public class GameManager : MonoBehaviour
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
         {
-            _elapsedForMovingToSpotLight += Time.deltaTime;
-            if (gameStartWaitSecondsForBackgroundChange < _elapsedForMovingToSpotLight && !isGameStarted)
-            {
-                isGameStarted = true;
-            }
+            CheckPossibleToStartGame();
         }
 
 
         if (isGameStarted && isGameFinished == false)
         {
+           
             PlayClickOnScreenEffect();
-            // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정 
-            _elapsedForInitialRound += Time.deltaTime;
+           
+            
+            // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정
             CheckInitialReady();
 
 
@@ -305,74 +314,74 @@ public class GameManager : MonoBehaviour
 
             if (isRoundReady) //1회 실행 보장.
             {
-                isRoundStarted = true;
-                
+                InitializeOnReady();
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
-                _isAnimRandomized = false;  //correct anim 관련 bool 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
                 SelectRandomThreeAnimals();  // 리스트 랜덤구성
                 
+                
+#if UNITY_EDITOR
                 Debug.Log("준비 완료");
+#endif
             }
 
 
             if (isRoundStarted)
             {
+#if UNITY_EDITOR
                 Debug.Log("라운드 시작!");
-                isRoundReady = false;
-                _elapsedOfRoundFinished = 0f;
-
-
-                _moveInElapsed += Time.deltaTime;
-                _elapsedOfToBeSelectableWaitTime += Time.deltaTime;
-
+#endif
+                
+                InitializeAndSetTimerOnStarted();
                 PlayInPlayAnimation();
                 MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
 
+                
+                //동물 등장 후 특정 시간 이후에 동물 선택 가능.
                 if (_elapsedOfToBeSelectableWaitTime > waitTimeToBeSelectable)
                 {
                     SelectObject();
                 }
-              
-
-                _quizMessageEvent.Invoke(); // ~의 그림자를 맞춰보세요 재생. 
+                
+                _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
             }
 
+           
+            
             if (isCorrected)
             {
-                Debug.Log("정답!");
-                isRoundStarted = false;
-                _moveOutElapsed = 0f;
-
+                
+#if UNITY_EDITOR
+                Debug.Log("정답!");  
+#endif
+                
                 PlayCorrectAnimation();
-
+                InitializeAndSetTimerOnCorrect();
+                
+                
                 _onCorrectLightOnEvent.Invoke(); // D-Light 참조 중
                 _correctMessageEvent.Invoke(); // UI Instruction 클래스 참조
                 
-                _elapsedOfRoundFinished += Time.deltaTime;
-                if (_elapsedOfRoundFinished > waitTimeBetweenRounds) isRoudnFinished = true;
-
-              
             }
 
-            if (isRoudnFinished)
+            if (isRoundFinished)
             {
+                
+#if UNITY_EDITOR
                 Debug.Log("라운드 종료!");
-                isCorrected = false;
+#endif
                 
                 MoveOutOfScreen();
                 _onRoundFinishedLightOff.Invoke();
-
-                _moveOutElapsed += Time.deltaTime;
-                _elapsedForNextRound += Time.deltaTime;
             }
 
 
             if (_elapsedForNextRound > waitTimeForNextRound)
             {
                 isRoundReady = true;
-                isRoudnFinished = false;
+                isRoundFinished = false;
+                
                 //UI의 문구를 초기화 하는 이벤트 입니다.
                 _messageInitializeEvent.Invoke();
                 
@@ -382,13 +391,14 @@ public class GameManager : MonoBehaviour
 
         if (isGameFinished)
         {
+            
+#if UNITY_EDITOR
             Debug.Log("게임종료");
-            isGameStarted = false;
-          
-            
-            if (_elapsedForFinishMoveIn < finishedMoveInTime) _elapsedForFinishMoveIn += Time.deltaTime;
-            
+#endif
+
+            InitializeAndSetTimerOnGameFinished();
             MoveInWhenGameIsFinished();
+            
             _finishedMessageEvent.Invoke();
         }
 
@@ -401,6 +411,58 @@ public class GameManager : MonoBehaviour
 
     
     // ------------------------- ▼ 메소드 목록 ----------------------------
+    
+    private bool _isRandomized;
+
+    private void InitializeAndSetTimerOnGameFinished()
+    {
+        isGameStarted = false;
+          
+        
+        if (_elapsedForFinishMoveIn < finishedMoveInTime) _elapsedForFinishMoveIn += Time.deltaTime;
+
+    }
+
+    private void InitializeAndSetTimerOnRoundFinished()
+    {
+        isCorrected = false;
+        _moveOutElapsed += Time.deltaTime;
+        _elapsedForNextRound += Time.deltaTime;
+    }
+
+    private void InitializeAndSetTimerOnCorrect()
+    {
+        isRoundStarted = false;
+        _moveOutElapsed = 0f;
+                
+        _elapsedOfRoundFinished += Time.deltaTime;
+        if (_elapsedOfRoundFinished > waitTimeBetweenRounds) isRoundFinished = true;
+    }
+
+    private void CheckPossibleToStartGame()
+    {
+        _elapsedForMovingToSpotLight += Time.deltaTime;
+        if (gameStartWaitSecondsForBackgroundChange < _elapsedForMovingToSpotLight && !isGameStarted)
+        {
+            isGameStarted = true;
+        }
+    }
+
+    private void InitializeOnReady()
+    {
+        isRoundStarted = true;
+        _isAnimRandomized = false; //correct anim 관련 bool 초기화.
+    }
+
+    private void InitializeAndSetTimerOnStarted()
+    {
+        _moveInElapsed += Time.deltaTime;
+        _elapsedOfToBeSelectableWaitTime += Time.deltaTime;
+   
+        isRoundReady = false;
+        _elapsedOfRoundFinished = 0f;
+    }
+    
     private void SetDefaultPositions()
     {
         defalutPositions[(int)animalPosition.parrot] = parrotDefaultPosition;
@@ -437,10 +499,12 @@ public class GameManager : MonoBehaviour
 
     private void CheckInitialReady()
     {
+        _elapsedForInitialRound += Time.deltaTime;
+        
         if (_elapsedForInitialRound > waitTimeOfinitialRoundStart && _initialRoundIsReady == false)
         {
             _initialRoundIsReady = true;
-            isRoudnFinished = true;
+            isRoundFinished = true;
         }
     }
 
@@ -518,6 +582,7 @@ public class GameManager : MonoBehaviour
                 clickParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
                 clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
             }
+            SelectObject();
         }
     }
     
@@ -647,14 +712,39 @@ public class GameManager : MonoBehaviour
             _tempAnimator.SetBool(RUN_ANIM, true);
 
             if (_randomeIndex % 2 == 0)
+            {
                 gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     moveOutPositionA.position, _moveOutElapsed / moveOutTime);
 
+                RotateTowards(gameObj.transform, moveOutPositionA.position);
+            }
             else
+            {
                 gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     moveOutPositionB.position, _moveOutElapsed / moveOutTime);
+                RotateTowards(gameObj.transform, moveOutPositionB.position);
+             
+            }
             _randomeIndex++;
         }
+    }
+    
+    /// <summary>
+    /// 캐릭터가 밖으로 나갈 때, TargetPosition방향으로 회전하는 함수 입니다.
+    /// <param name ="currentPosition"> 회전 시킬 객체 </param>
+    /// <param name ="targetPosition">  바라 볼 방향</param>
+    /// </summary>
+  
+    void RotateTowards(Transform currentPosition ,Vector3 targetPosition)
+    {
+        
+        Vector3 direction = targetPosition - currentPosition.position;
+        
+       
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        
+        
+        currentPosition.rotation = Quaternion.Slerp(currentPosition.rotation, targetRotation, rotationSpeedWhenMovingOut * Time.deltaTime);
     }
     
     public void SelectRandomThreeAnimals()
@@ -707,7 +797,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 모든 애니메이션의 파라미터를 false로 초기화 합니다. 
     /// </summary>
-    /// <param name="animator"></param>
+    
     private void InitializeAllAnimatorParameters(Animator animator)
     {
         animator.SetBool(RUN_ANIM, false);
@@ -749,6 +839,8 @@ public class GameManager : MonoBehaviour
     ///     정답을 맞추기 전, 동물이 플레이화면에 나타날때 회전하는 함수입니다.
     ///     정답을 맞춘 후 나오는 함수와 구분하여 사용합니다.
     /// </summary>
+    /// <param name="출발지점 부터 도착지점까지 오는 데 걸리는 총 시간(초)"> </param>
+    /// <param name="회전 속도 (Time.delta이용)"> </param>
     public void MoveAndRotateAnimals(float _moveInTime, float _rotationSpeedInRound)
     {
         _selectedAnimals[0].transform.position =

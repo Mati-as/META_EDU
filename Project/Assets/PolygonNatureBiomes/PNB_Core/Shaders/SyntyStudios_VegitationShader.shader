@@ -4076,7 +4076,7 @@ Shader "SyntyStudios/VegitationShader"
 		
 	}
 	/*ase_lod*/
-	CustomEditor "UnityEditor.ShaderGraph.PBRMasterGUI"
+	//CustomEditor "UnityEditor.ShaderGraph.PBRMasterGUI"
 	Fallback "wiiu"
 	
 }

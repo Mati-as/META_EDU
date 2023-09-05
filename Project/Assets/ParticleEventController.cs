@@ -16,23 +16,32 @@ public class ParticleEventController : MonoBehaviour
     public float randomTime;
     private float _elapsedTime;
 
+    public static bool isWindBlowing; 
+
     private void Update()
     {
        
         _elapsedTime += Time.deltaTime;
+       
         if (_elapsedTime > randomTime)
         {
             randomDirection = new Vector3(Random.Range(-2, 2), 0 , Random.Range(-2, 2));
+            isWindBlowing = true;
             _elapsedTime = 0f;
+            
             ApplyRandomForce(center, particleSystemA);
             ApplyRandomForce(center, particleSystemB);
         }
+        else
+        {
+            isWindBlowing = false;
+        }
     }
-
-    private Vector3 randomDirection;
+    
+    public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
     private void ApplyRandomForce(Vector3 position, ParticleSystem particleSystem)
     {
-        Debug.Log("바람");
+      
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[particleSystem.main.maxParticles];
         var numParticlesAlive = particleSystem.GetParticles(particles);
         
