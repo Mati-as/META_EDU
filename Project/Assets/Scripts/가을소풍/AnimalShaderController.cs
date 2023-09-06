@@ -8,7 +8,9 @@ public class AnimalShaderController : MonoBehaviour
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
     public Color outlineColor;
-    [Space(10)]
+    
+    
+    [Space(20)] [Header("Fresnel Control")]
     public float fresnelSpeed;
     private float fresnelElapsedTime;
     public float minFresnelPower;
@@ -18,8 +20,11 @@ public class AnimalShaderController : MonoBehaviour
     public float waitTime;
     private float _elapsed;
     private SkinnedMeshRenderer _meshRenderer;
-    
-    
+
+    [Space(20)] [Header("Game Interaction Control")]
+
+    public float waitTimeForTurningOnGlow;
+    private float _elapsedForInPlayGlowOn;
     private readonly int _emissionColor = Shader.PropertyToID("_emissionColor");
     private readonly int _fresnelPower = Shader.PropertyToID("_FresnelPower");
     
@@ -36,10 +41,21 @@ public class AnimalShaderController : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.isGameStarted)
+      
+
+      
+
+  
+        if (GameManager.isRoundReady)
         {
-            _elapsed += Time.deltaTime;
-            if (_elapsed > waitTime)
+            _elapsedForInPlayGlowOn = 0f;
+        }
+
+        if (GameManager.isRoundStarted)
+        {
+            _elapsedForInPlayGlowOn += Time.deltaTime;
+            
+            if (_elapsedForInPlayGlowOn > waitTimeForTurningOnGlow)
             {
                 _meshRenderer.enabled = true;
                 ChangeAnimalOutlineColor();
@@ -48,27 +64,19 @@ public class AnimalShaderController : MonoBehaviour
 
         if (GameManager.isRoundReady)
         {
-            _meshRenderer.enabled = true;
+         
         }
-
-
+        
         if (GameManager.isCorrected)
         {
-            
+            _elapsedForInPlayGlowOn += Time.deltaTime;
+            ChangeAnimalOutlineColor();
         }
       
         if (GameManager.isRoundFinished)
         {
             _meshRenderer.enabled = false;
         }
-
-        if (GameManager.isRoundStarted)
-        {
-            _meshRenderer.enabled = true;
-            ChangeAnimalOutlineColor();
-        }
-
-   
         
         if (GameManager.isGameFinished)
         {
