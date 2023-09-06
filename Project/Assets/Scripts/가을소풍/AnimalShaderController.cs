@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AnimalShaderController : MonoBehaviour
 {
+    
+    public bool isTouchedDown;
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
     public Color outlineColor;
@@ -39,16 +42,24 @@ public class AnimalShaderController : MonoBehaviour
     }
 
 
+    private readonly string TAG_ARRIVAL= "arrival";
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(TAG_ARRIVAL))
+        {
+            isTouchedDown = true;
+            Debug.Log("Touched Down!");
+        }
+    }
+
     void Update()
     {
-      
-
-      
-
-  
+        
         if (GameManager.isRoundReady)
         {
             _elapsedForInPlayGlowOn = 0f;
+            isTouchedDown = false;
+
         }
 
         if (GameManager.isRoundStarted)

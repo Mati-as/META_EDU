@@ -202,15 +202,20 @@ public class GameManager : MonoBehaviour
     
     [Space(10f)] 
     [Header("References")] [Space(10f)]
+   
+    
+    private AnimalShaderController _animalShaderController;
+    
     public LayerMask playObejctInteractableLayer;
     public LayerMask UIInteractableLayer;
     public ParticleSystem clickParticleSystem;
     
+   
     private Ray ray;
     private RaycastHit hitInfo;
    
 
-    private float _currentLerp;
+    private float _currentSizeLerp;
     private float lerp;
     
 
@@ -451,6 +456,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeOnReady()
     {
+        _isSizeLerpInitialized = false; // 사이즈 감소 시 사용
         isCorrected = false;
         isRoundStarted = true;
         _isAnimRandomized = false; //correct anim 관련 bool 초기화.
@@ -555,7 +561,7 @@ public class GameManager : MonoBehaviour
                     _elapsedForMovingToSpotLight = 0;
 
                     //sizeIncrease()의 lerp
-                    _currentLerp = 0;
+                    _currentSizeLerp = 0;
                     
                 }
 
@@ -601,12 +607,24 @@ public class GameManager : MonoBehaviour
 
     private void IncreaseScale()
     {
-        _currentLerp += sizeIncreasingSpeed * Time.deltaTime;
+        _currentSizeLerp += sizeIncreasingSpeed * Time.deltaTime;
 
         lerp =
             Lerp2D.EaseInBounce(
                 _defaultSize, newSize,
-                _currentLerp);
+                _currentSizeLerp);
+
+
+        _selectedAnimalGameObject.transform.localScale = Vector3.one * lerp;
+    }
+    private void DecreaseScale()
+    {
+        _currentSizeLerp += sizeIncreasingSpeed * Time.deltaTime;
+
+        lerp =
+            Lerp2D.EaseInBounce(
+                 newSize,_defaultSize,
+                _currentSizeLerp);
 
 
         _selectedAnimalGameObject.transform.localScale = Vector3.one * lerp;
@@ -705,37 +723,73 @@ public class GameManager : MonoBehaviour
         _animalList.Add(parrot);
         _animalList.Add(mouse);
     }
-    
+
+   
+    private float _lerpForMovingDown;
+    public float moveDownSpeed;
+    public Transform touchDownPosition;
+    private bool _isSizeLerpInitialized;
     private void MoveOutOfScreen()
     {
+       
         foreach (var gameObj in _animalList)
         {
+            _animalShaderController = gameObj.GetComponentInChildren<AnimalShaderController>();
             if (gameObj.name != answer)
             {
                 _tempAnimator = gameObj.GetComponent<Animator>();
                 _tempAnimator.SetBool(RUN_ANIM, true);
 
-                if (_randomeIndex % 2 == 0)
+                RandomRotateAndMove(gameObj);
+            }
+            
+           
+            else if (gameObj.name == answer && !_animalShaderController.isTouchedDown)
+            {
+                _lerpForMovingDown += Time.deltaTime * moveDownSpeed;
+                gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
+                    touchDownPosition.position, _lerpForMovingDown);
+            }
+            
+            else if (gameObj.name == answer && _animalShaderController.isTouchedDown)
+            { 
+                _tempAnimator = gameObj.GetComponent<Animator>();
+                
+                if (_isSizeLerpInitialized == false)
                 {
-                    gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
-                        moveOutPositionA.position, _moveOutElapsed / moveOutTime);
-
-                    RotateTowards(gameObj.transform, moveOutPositionA.position);
+                    _isSizeLerpInitialized = true;
+                    _currentSizeLerp = 0f;
                 }
-                else
-                {
-                    gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
-                        moveOutPositionB.position, _moveOutElapsed / moveOutTime);
-                    RotateTowards(gameObj.transform, moveOutPositionB.position);
+                DecreaseScale();
+                
+                InitializeAllAnimatorParameters(_tempAnimator);
+                _tempAnimator.SetBool(RUN_ANIM, true);
+                RandomRotateAndMove(gameObj);
+              
              
-                }
             }
             _randomeIndex++;
         }
     }
-    
-    
-    
+
+
+    private void RandomRotateAndMove(GameObject gameObj)
+    {
+        if (_randomeIndex % 2 == 0)
+        {
+            gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
+                moveOutPositionA.position, _moveOutElapsed / moveOutTime);
+
+            RotateTowards(gameObj.transform, moveOutPositionA.position);
+        }
+        else
+        {
+            gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
+                moveOutPositionB.position, _moveOutElapsed / moveOutTime);
+            RotateTowards(gameObj.transform, moveOutPositionB.position);
+             
+        }
+    }
     
     
     /// <summary>

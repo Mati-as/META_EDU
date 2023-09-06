@@ -4779,6 +4779,7 @@ GameObject:
   - component: {fileID: 616280584}
   - component: {fileID: 616280585}
   - component: {fileID: 616280586}
+  - component: {fileID: 616280587}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -4876,12 +4877,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 0.3443396, g: 0.72564495, b: 1, a: 0}
   fresnelSpeed: 5
   minFresnelPower: 1.5
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+--- !u!65 &616280587
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616280583}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: -0.000000007518871, y: 0.0057196887, z: -0.0017089316}
 --- !u!1001 &623586336
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6319,7 +6334,7 @@ GameObject:
   - component: {fileID: 799759535}
   m_Layer: 0
   m_Name: Animal Spotlight Position
-  m_TagString: arrival
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6337,6 +6352,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1195665892}
+  - {fileID: 1262304348}
   m_Father: {fileID: 1801090873}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9196,6 +9212,38 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1231360612}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1262304347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1262304348}
+  m_Layer: 0
+  m_Name: Touch Down Position
+  m_TagString: arrival
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1262304348
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262304347}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.91, y: -3.23, z: 1.67}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2138556705}
+  m_Father: {fileID: 799759534}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1268868413
 GameObject:
   m_ObjectHideFlags: 0
@@ -11038,6 +11086,7 @@ GameObject:
   - component: {fileID: 1535141418}
   - component: {fileID: 1535141420}
   - component: {fileID: 1535141419}
+  - component: {fileID: 1535141421}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -11072,6 +11121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 0.6297538, g: 1, b: 0.2783019, a: 0}
   fresnelSpeed: 6
   minFresnelPower: 1
@@ -11138,6 +11188,19 @@ SkinnedMeshRenderer:
     m_Center: {x: -9.313226e-10, y: -0.0013517053, z: 0.006340117}
     m_Extent: {x: 0.008559152, y: 0.011915637, z: 0.0061759735}
   m_DirtyAABB: 0
+--- !u!65 &1535141421
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1535141417}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: -8.287412e-10, y: 0.0063401163, z: 0.001351719}
 --- !u!4 &1546208212 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5186735023777053022, guid: ac8efb728f1fb9b4092c4df591c827ca,
@@ -11357,6 +11420,7 @@ GameObject:
   - component: {fileID: 1603930772}
   - component: {fileID: 1603930773}
   - component: {fileID: 1603930775}
+  - component: {fileID: 1603930776}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -11454,12 +11518,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 1, g: 0.44682193, b: 0.25943398, a: 0}
   fresnelSpeed: 5
   minFresnelPower: 1.5
   maxFresnelPower: 10
   waitTime: 5
-  waitTimeForTurningOnGlow: 0
+  waitTimeForTurningOnGlow: 4.5
+--- !u!65 &1603930776
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603930771}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: 4.350864e-10, y: 0.0105891265, z: -0.0028035864}
 --- !u!1001 &1605254774
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13368,7 +13446,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1891754928}
   m_Layer: 0
-  m_Name: "\uCD08\uAE30 \uC704\uCE58\uAC12 \uC800\uC7A5\uC6A9 \uAC1D\uCCB4"
+  m_Name: "\uC704\uCE58 \uC815\uBCF4 \uAC1D\uCCB4"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13401,7 +13479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1913810181}
   m_Layer: 0
-  m_Name: Animal Default Positions
+  m_Name: "\uCD08\uAE30 \uC704\uCE58\uAC12 \uC800\uC7A5\uC6A9 \uAC1D\uCCB4"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14570,11 +14648,58 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8726710996663153628, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 443
+      objectReference: {fileID: 0}
     - target: {fileID: 8726710996663153629, guid: e9a176533e6406b45892d1781c1db3bb,
         type: 3}
       propertyPath: fpsText
       value: 
       objectReference: {fileID: 1214818397}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: fd501376e6b539b4387d3dadfc2abb04,
+        type: 2}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.81127626
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.9425305
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.9716981
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 877592314881560857, guid: fd501376e6b539b4387d3dadfc2abb04,
+        type: 2}
+    - target: {fileID: 8726710996663153630, guid: e9a176533e6406b45892d1781c1db3bb,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4291817720
+      objectReference: {fileID: 0}
     - target: {fileID: 8726710997308672859, guid: e9a176533e6406b45892d1781c1db3bb,
         type: 3}
       propertyPath: m_Name
@@ -14811,6 +14936,51 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2130829083}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2138556704
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2138556705}
+  - component: {fileID: 2138556706}
+  m_Layer: 0
+  m_Name: Touch Down Position Collider
+  m_TagString: arrival
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2138556705
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138556704}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.37, z: 0.00005865097}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1262304348}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2138556706
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138556704}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 0.7, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &125633532531428086
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -15317,6 +15487,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 763937807133300474, guid: 76a4380f91b46ff43aa225a8a09faf62,
         type: 3}
+      propertyPath: moveDownSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 763937807133300474, guid: 76a4380f91b46ff43aa225a8a09faf62,
+        type: 3}
       propertyPath: playPositionA
       value: 
       objectReference: {fileID: 1819704548}
@@ -15345,6 +15520,11 @@ PrefabInstance:
       propertyPath: moveOutPositionB
       value: 
       objectReference: {fileID: 1686643423}
+    - target: {fileID: 763937807133300474, guid: 76a4380f91b46ff43aa225a8a09faf62,
+        type: 3}
+      propertyPath: touchDownPosition
+      value: 
+      objectReference: {fileID: 1262304348}
     - target: {fileID: 763937807133300474, guid: 76a4380f91b46ff43aa225a8a09faf62,
         type: 3}
       propertyPath: catDefaultPosition
@@ -15903,10 +16083,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1532612335396840209}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.21
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
@@ -16718,7 +16898,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5164627934438932177}
   m_LocalRotation: {x: 0.003495489, y: -0.2505663, z: 0.013503928, w: 0.9679989}
-  m_LocalPosition: {x: -0.284, y: 0.043, z: 0.062}
+  m_LocalPosition: {x: -0.284, y: 0.028, z: 0.062}
   m_LocalScale: {x: 0.9905499, y: 0.99055, z: 0.9905499}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16790,10 +16970,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5164627934438932177}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.21
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
@@ -17194,6 +17374,7 @@ GameObject:
   - component: {fileID: 5295023903092416039}
   - component: {fileID: 5295023903092416040}
   - component: {fileID: 5295023903092416041}
+  - component: {fileID: 5295023903092416042}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -17293,12 +17474,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 0, g: 1, b: 0.72021174, a: 0}
   fresnelSpeed: 5
   minFresnelPower: 1.5
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+--- !u!65 &5295023903092416042
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5295023903092416038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: -0.000000021390965, y: 0.011265026, z: -0.0037787734}
 --- !u!1 &5295023903111823354
 GameObject:
   m_ObjectHideFlags: 0
@@ -17310,6 +17505,7 @@ GameObject:
   - component: {fileID: 5295023903111823355}
   - component: {fileID: 5295023903111823356}
   - component: {fileID: 5295023903111823357}
+  - component: {fileID: 5295023903111823358}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -17406,12 +17602,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 1, g: 0.4764151, b: 0.83650506, a: 0}
   fresnelSpeed: 5
   minFresnelPower: 1.5
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+--- !u!65 &5295023903111823358
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5295023903111823354}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: -0.00000001518173, y: 0.007111278, z: 0.00023015408}
 --- !u!1 &5295023904713288811
 GameObject:
   m_ObjectHideFlags: 0
@@ -17423,6 +17633,7 @@ GameObject:
   - component: {fileID: 5295023904713288812}
   - component: {fileID: 5295023904713288813}
   - component: {fileID: 5295023904713288814}
+  - component: {fileID: 5295023904713288815}
   m_Layer: 6
   m_Name: Glow
   m_TagString: Untagged
@@ -17520,12 +17731,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568037fa7e70ed24398ebf86a52d9a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTouchedDown: 0
   outlineColor: {r: 0.9764231, g: 1, b: 0.19339621, a: 0}
   fresnelSpeed: 5
   minFresnelPower: 1.5
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+--- !u!65 &5295023904713288815
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5295023904713288811}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Center: {x: 0.000000014030628, y: 0.01010211, z: -0.005903392}
 --- !u!1 &5295023905091394659
 GameObject:
   m_ObjectHideFlags: 0
@@ -17770,10 +17995,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5349727453897288389}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.21
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
@@ -18047,7 +18272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6843802015737794766}
   m_LocalRotation: {x: 0, y: -0.71753705, z: 0, w: 0.6965204}
-  m_LocalPosition: {x: 1.316, y: 0, z: 0.589}
+  m_LocalPosition: {x: 1.316, y: 0.031, z: 0.589}
   m_LocalScale: {x: 0.8138, y: 0.8138, z: 0.8138}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18065,10 +18290,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6843802015737794766}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.21
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
@@ -18117,7 +18342,6 @@ GameObject:
   - component: {fileID: 7629896987026432023}
   - component: {fileID: 7629896987026432018}
   - component: {fileID: 7629896987026432024}
-  - component: {fileID: 7629896987026432025}
   m_Layer: 6
   m_Name: parrot
   m_TagString: Untagged
@@ -18157,23 +18381,11 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &7629896987026432025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7629896987026432022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c37fa937dcf13a648a038ce37f84f925, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!137 &7629896987040073232
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -19332,8 +19544,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.21
-  m_Height: 0.79
+  m_Radius: 0.27
+  m_Height: 0.85
   m_Direction: 2
   m_Center: {x: 0, y: 0.24107134, z: 0.04767573}
 --- !u!4 &8858668346158118009
@@ -19383,10 +19595,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8858668346158117892}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 0.21
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
