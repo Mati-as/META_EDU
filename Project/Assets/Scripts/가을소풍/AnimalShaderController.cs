@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GlowController : MonoBehaviour
+public class AnimalShaderController : MonoBehaviour
 {
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
@@ -46,10 +46,35 @@ public class GlowController : MonoBehaviour
             }
         }
 
+        if (GameManager.isRoundReady)
+        {
+            _meshRenderer.enabled = true;
+        }
+
+
+        if (GameManager.isCorrected)
+        {
+            
+        }
+      
+        if (GameManager.isRoundFinished)
+        {
+            _meshRenderer.enabled = false;
+        }
+
+        if (GameManager.isRoundStarted)
+        {
+            _meshRenderer.enabled = true;
+            ChangeAnimalOutlineColor();
+        }
+
+   
+        
         if (GameManager.isGameFinished)
         {
             _meshRenderer.enabled = false;
         }
+
     }
     
     

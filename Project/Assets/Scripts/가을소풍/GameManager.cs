@@ -710,33 +710,39 @@ public class GameManager : MonoBehaviour
     {
         foreach (var gameObj in _animalList)
         {
-            _tempAnimator = gameObj.GetComponent<Animator>();
-            _tempAnimator.SetBool(RUN_ANIM, true);
-
-            if (_randomeIndex % 2 == 0)
+            if (gameObj.name != answer)
             {
-                gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
-                    moveOutPositionA.position, _moveOutElapsed / moveOutTime);
+                _tempAnimator = gameObj.GetComponent<Animator>();
+                _tempAnimator.SetBool(RUN_ANIM, true);
 
-                RotateTowards(gameObj.transform, moveOutPositionA.position);
-            }
-            else
-            {
-                gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
-                    moveOutPositionB.position, _moveOutElapsed / moveOutTime);
-                RotateTowards(gameObj.transform, moveOutPositionB.position);
+                if (_randomeIndex % 2 == 0)
+                {
+                    gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
+                        moveOutPositionA.position, _moveOutElapsed / moveOutTime);
+
+                    RotateTowards(gameObj.transform, moveOutPositionA.position);
+                }
+                else
+                {
+                    gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
+                        moveOutPositionB.position, _moveOutElapsed / moveOutTime);
+                    RotateTowards(gameObj.transform, moveOutPositionB.position);
              
+                }
             }
             _randomeIndex++;
         }
     }
+    
+    
+    
+    
     
     /// <summary>
     /// 캐릭터가 밖으로 나갈 때, TargetPosition방향으로 회전하는 함수 입니다.
     /// <param name ="currentPosition"> 회전 시킬 객체 </param>
     /// <param name ="targetPosition">  바라 볼 방향</param>
     /// </summary>
-  
     void RotateTowards(Transform currentPosition ,Vector3 targetPosition)
     {
         

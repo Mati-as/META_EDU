@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class ShaderManager : MonoBehaviour
+public class BackgroundShaderController : MonoBehaviour
 {
-    [Header("Background Color Settings")] [Space(10f)]
+    [Header("Skybox Color Settings")] [Space(10f)]
     public Material skyMaterial;
 
     public Color defaultSkyColor;
@@ -21,22 +21,8 @@ public class ShaderManager : MonoBehaviour
     //셰이더 파라미터 컨트롤
     private readonly int _skyColor = Shader.PropertyToID("_SkyColor");
     private readonly int _horizontalColor = Shader.PropertyToID("_HorizonColor");
-
-    [Space(20)] [Header("Animal Color Default Settings")] [Space(10f)]
-    public float waitTime;
-
-    [FormerlySerializedAs("_animalMaterial")]
-    private int defaultFresnel = 5000;
-    public Material animalMaterial;
-
-    public Color startColor;
-    public Color inPlayColor;
-
-   
-
     private readonly int _emissionColor = Shader.PropertyToID("_emissionColor");
-   
-
+    
     [Space(20f)] [Header("Color Settings")] [Space(10f)]
     public float minBrightness;
 
@@ -51,7 +37,7 @@ public class ShaderManager : MonoBehaviour
 
     private void Awake()
     {
-        SetAnimalOutlineColor(inPlayColor);
+      
         SetSkyColor(defaultSkyColor);
         SetHorizonColor(defaultHorizonColor);
     }
@@ -70,7 +56,7 @@ public class ShaderManager : MonoBehaviour
         }
     }
 
-    
+
 
     private void ChangedSkyColor()
     {
@@ -103,7 +89,6 @@ public class ShaderManager : MonoBehaviour
     
     private void OnApplicationQuit()
     {
-        SetAnimalOutlineColor(startColor);
         SetSkyColor(defaultSkyColor);
         SetHorizonColor(defaultHorizonColor);
     }
@@ -118,11 +103,6 @@ public class ShaderManager : MonoBehaviour
     {
         skyMaterial.SetColor(_horizontalColor, color);
     }
-
-    private void SetAnimalOutlineColor(Color color)
-    {
-        animalMaterial.SetColor(_emissionColor, color);
-    }
-
+    
   
 }
