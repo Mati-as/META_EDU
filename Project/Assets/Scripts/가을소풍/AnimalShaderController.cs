@@ -68,7 +68,13 @@ public class AnimalShaderController : MonoBehaviour
             
             if (_elapsedForInPlayGlowOn > waitTimeForTurningOnGlow)
             {
+                _elapsedTime += Time.deltaTime;
+                fresnelElapsedTime += Time.deltaTime;
+                
+               
                 _meshRenderer.enabled = true;
+                BrightenOutlineWithLerp();
+                SetIntensity(ColorIntensityRange);
                 ChangeAnimalOutlineColor();
             }
         }
@@ -82,6 +88,7 @@ public class AnimalShaderController : MonoBehaviour
         {
             _elapsedForInPlayGlowOn += Time.deltaTime;
             ChangeAnimalOutlineColor();
+            SetIntensity(ColorIntensityRange);
         }
       
         if (GameManager.isRoundFinished)
@@ -99,8 +106,7 @@ public class AnimalShaderController : MonoBehaviour
     
     private void ChangeAnimalOutlineColor()
     {
-        _elapsedTime += Time.deltaTime;
-        fresnelElapsedTime += Time.deltaTime;
+       
         
         if (_elapsedTime > waitTime)
         {
@@ -108,11 +114,39 @@ public class AnimalShaderController : MonoBehaviour
             var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
                 minFresnelPower, maxFresnelPower);
             SetFresnelPower(currentFresnel);
+           
         }
+        
     }
     
     private void SetFresnelPower(float fresnelPower)
     {
         _mat.SetFloat(_fresnelPower, fresnelPower);
+    }
+
+
+    private const float RGB_MAXIMUM = 255f;
+    [Range(0,RGB_MAXIMUM)]
+    public float ColorIntensityRange;
+
+    
+
+    
+  
+    private void SetIntensity(float range)
+    {
+        float t = (Mathf.Sin(fresnelElapsedTime * fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
+        Color currrentColor = Color.Lerp(outlineColor/ColorIntensityRange, outlineColor *ColorIntensityRange , t);
+        _mat.SetColor(_emissionColor, currrentColor);
+    }
+    
+    public float outlineOnSpeed;
+    private float lerp;
+    private void BrightenOutlineWithLerp()
+    {
+        lerp += Time.deltaTime * outlineOnSpeed;
+        Color color =Color.Lerp(Color.black, outlineColor, lerp);
+        
+        _mat.SetColor(_emissionColor,color);
     }
 }

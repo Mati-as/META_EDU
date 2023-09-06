@@ -2733,7 +2733,7 @@ MonoBehaviour:
   increaseRate: 1
   minIntensity: 0.01
   spotlight: {fileID: 719557198}
-  spotMaxIntensity: 1000
+  spotMaxIntensity: 350
   spotMinIntensity: 0
   spotLightChangeSpeed: 30
   lightChangeTime: 1.5
@@ -4884,6 +4884,8 @@ MonoBehaviour:
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!65 &616280587
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5621,8 +5623,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.8349056, g: 0.86193454, b: 1, a: 1}
-  m_Intensity: 400
-  m_Range: 887.2
+  m_Intensity: 250
+  m_Range: 1200
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -5679,7 +5681,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 719557196}
   m_LocalRotation: {x: -0.15706253, y: 0.00038746002, z: -0.20204607, w: 0.9666999}
-  m_LocalPosition: {x: 6.82, y: -0.69, z: -10.66}
+  m_LocalPosition: {x: 6.69, y: -1.32, z: -12.63}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11128,6 +11130,8 @@ MonoBehaviour:
   maxFresnelPower: 5
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!137 &1535141420
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
@@ -11525,6 +11529,8 @@ MonoBehaviour:
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!65 &1603930776
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17481,6 +17487,8 @@ MonoBehaviour:
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!65 &5295023903092416042
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17609,6 +17617,8 @@ MonoBehaviour:
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!65 &5295023903111823358
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17738,6 +17748,8 @@ MonoBehaviour:
   maxFresnelPower: 10
   waitTime: 5
   waitTimeForTurningOnGlow: 4.5
+  ColorIntensityRange: 1.9
+  outlineOnSpeed: 1.2
 --- !u!65 &5295023904713288815
 BoxCollider:
   m_ObjectHideFlags: 0
