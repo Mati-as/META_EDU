@@ -304,19 +304,22 @@ public class GameManager : MonoBehaviour
         }
 
 
+        //1. 게임 시작 시 ---------------------------------
         if (isGameStarted && isGameFinished == false)
         {
-           
+            // 스크린 클릭 시 파티클 효과 
             PlayClickOnScreenEffect();
-           
             
             // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정
             CheckInitialReady();
+            
+            
 
 
             // 첫 라운드 이전을 roundfinish로 설정.
 
 
+            //2. 라운드 시작 준비 완료 시 ------------------
             if (isRoundReady) //1회 실행 보장.
             {
                 InitializeOnReady();
@@ -332,6 +335,7 @@ public class GameManager : MonoBehaviour
             }
 
 
+            //3. 라운드 시작 시 ------------------
             if (isRoundStarted)
             {
 #if UNITY_EDITOR
@@ -353,7 +357,7 @@ public class GameManager : MonoBehaviour
             }
 
            
-            
+            //4. 정답 맞춘 경우 ------------------
             if (isCorrected)
             {
                 
@@ -370,6 +374,7 @@ public class GameManager : MonoBehaviour
                 
             }
 
+            //5. 라운드 끝난 경우 ------------------ -> 1 or 6
             if (isRoundFinished)
             {
                 InitializeAndSetTimerOnRoundFinished();
@@ -395,6 +400,7 @@ public class GameManager : MonoBehaviour
         }
 
 
+        //6. 모든 라운드가 끝난 경우 ------------------
         if (isGameFinished)
         {
             InitializeAndSetTimerOnGameFinished();

@@ -28,8 +28,8 @@ public class AnimalShaderController : MonoBehaviour
 
     public float waitTimeForTurningOnGlow;
     private float _elapsedForInPlayGlowOn;
-    private readonly int _emissionColor = Shader.PropertyToID("_emissionColor");
-    private readonly int _fresnelPower = Shader.PropertyToID("_FresnelPower");
+    private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
+    private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
     
     private Material _mat;
     void Awake()
@@ -37,7 +37,7 @@ public class AnimalShaderController : MonoBehaviour
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
         _mat = _meshRenderer.material; // material instance를 가져옵니다.
         _mat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
-        _mat.SetColor(_emissionColor, outlineColor);
+        _mat.SetColor(EMISSION_COLOR, outlineColor);
         _meshRenderer.enabled = false;
     }
 
@@ -121,7 +121,7 @@ public class AnimalShaderController : MonoBehaviour
     
     private void SetFresnelPower(float fresnelPower)
     {
-        _mat.SetFloat(_fresnelPower, fresnelPower);
+        _mat.SetFloat(FRESNEL_COLOR, fresnelPower);
     }
 
 
@@ -137,16 +137,16 @@ public class AnimalShaderController : MonoBehaviour
     {
         float t = (Mathf.Sin(fresnelElapsedTime * fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
         Color currrentColor = Color.Lerp(outlineColor/ColorIntensityRange, outlineColor *ColorIntensityRange , t);
-        _mat.SetColor(_emissionColor, currrentColor);
+        _mat.SetColor(EMISSION_COLOR, currrentColor);
     }
     
     public float outlineOnSpeed;
-    private float lerp;
+    private float _colorLerp;
     private void BrightenOutlineWithLerp()
     {
-        lerp += Time.deltaTime * outlineOnSpeed;
-        Color color =Color.Lerp(Color.black, outlineColor, lerp);
+        _colorLerp += Time.deltaTime * outlineOnSpeed;
+        Color color =Color.Lerp(Color.black, outlineColor, _colorLerp);
         
-        _mat.SetColor(_emissionColor,color);
+        _mat.SetColor(EMISSION_COLOR,color);
     }
 }
