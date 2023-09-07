@@ -13,7 +13,7 @@ public class WindowController : MonoBehaviour
     private float _elapsed;
 
     private float _waitingTimeRemaining;
-    private float _deactivateOffset = 2;
+    private float _deactivateOffset = 5f;
 
     private void Start()
     {
