@@ -65,7 +65,7 @@ public class InstructionUI : MonoBehaviour
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
+            roundInstruction = $"{animalNameToKorean[GameManager.answer]}";
             _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }
