@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using 가을소풍;
 
 public class AnimalShaderController : MonoBehaviour
 {
@@ -14,24 +15,21 @@ public class AnimalShaderController : MonoBehaviour
     
     
     [Space(20)] [Header("Fresnel Control")]
-    public float fresnelSpeed;
     private float fresnelElapsedTime;
-    public float minFresnelPower;
-    public float maxFresnelPower;
-    private float _elapsedTime;
-    
-    public float waitTime;
     private float _elapsed;
     private SkinnedMeshRenderer _meshRenderer;
 
     [Space(20)] [Header("Game Interaction Control")]
-
-    public float waitTimeForTurningOnGlow;
     private float _elapsedForInPlayGlowOn;
     private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
     private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
     
     private Material _mat;
+
+    [SerializeField] 
+    private AnimalShaderScriptableObject _animalShaderScriptableObject;
+    
+    
     void Awake()
     {
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
@@ -66,15 +64,15 @@ public class AnimalShaderController : MonoBehaviour
         {
             _elapsedForInPlayGlowOn += Time.deltaTime;
             
-            if (_elapsedForInPlayGlowOn > waitTimeForTurningOnGlow)
+            if (_elapsedForInPlayGlowOn > _animalShaderScriptableObject.waitTimeForTurningOnGlow)
             {
-                _elapsedTime += Time.deltaTime;
+      
                 fresnelElapsedTime += Time.deltaTime;
                 
                
                 _meshRenderer.enabled = true;
                 BrightenOutlineWithLerp();
-                SetIntensity(ColorIntensityRange);
+                SetIntensity(_animalShaderScriptableObject.colorIntensityRange);
                 ChangeAnimalOutlineColor();
             }
         }
@@ -88,7 +86,7 @@ public class AnimalShaderController : MonoBehaviour
         {
             _elapsedForInPlayGlowOn += Time.deltaTime;
             ChangeAnimalOutlineColor();
-            SetIntensity(ColorIntensityRange);
+            SetIntensity(_animalShaderScriptableObject.colorIntensityRange);
         }
       
         if (GameManager.isRoundFinished)
@@ -103,20 +101,12 @@ public class AnimalShaderController : MonoBehaviour
 
     }
     
-    
     private void ChangeAnimalOutlineColor()
     {
-       
-        
-        if (_elapsedTime > waitTime)
-        {
             //fresnel power 4~8 -> 
-            var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * fresnelSpeed - 1),
-                minFresnelPower, maxFresnelPower);
+            var currentFresnel = Mathf.Clamp(6 + 2 * Mathf.Sin(fresnelElapsedTime * _animalShaderScriptableObject.fresnelSpeed - 1),
+                _animalShaderScriptableObject.minFresnelPower, _animalShaderScriptableObject.maxFresnelPower);
             SetFresnelPower(currentFresnel);
-           
-        }
-        
     }
     
     private void SetFresnelPower(float fresnelPower)
@@ -124,19 +114,11 @@ public class AnimalShaderController : MonoBehaviour
         _mat.SetFloat(FRESNEL_COLOR, fresnelPower);
     }
 
-
-    private const float RGB_MAXIMUM = 255f;
-    [Range(0,RGB_MAXIMUM)]
-    public float ColorIntensityRange;
-
     
-
-    
-  
     private void SetIntensity(float range)
     {
-        float t = (Mathf.Sin(fresnelElapsedTime * fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
-        Color currrentColor = Color.Lerp(outlineColor/ColorIntensityRange, outlineColor *ColorIntensityRange , t);
+        float t = (Mathf.Sin(fresnelElapsedTime * _animalShaderScriptableObject.fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
+        Color currrentColor = Color.Lerp(outlineColor/range,outlineColor * range , t);
         _mat.SetColor(EMISSION_COLOR, currrentColor);
     }
     

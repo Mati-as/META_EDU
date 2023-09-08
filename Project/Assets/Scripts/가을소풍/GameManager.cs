@@ -99,8 +99,10 @@ public class GameManager : MonoBehaviour
     
     
     private float _elapsedForInitialRound;
-    
+
     [Space(30f)] [Header("Game Objects(Animal) Setting")]
+    public List<int> allAnimals;
+
     // ---------- 플레이에 필요한 동물 목록이며, 목록이 수정되는 경우 자료구조에도 추가해야됩니다. ----------
     public GameObject tortoise;
     public GameObject rabbit;
