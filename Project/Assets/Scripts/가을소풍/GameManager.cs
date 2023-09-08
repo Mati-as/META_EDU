@@ -11,15 +11,15 @@ using Random = UnityEngine.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
-    private enum GameState
-    {
-        CameraArrived,
-        GameStarted,
-        RoundReady,
-        Corrected,
-        RoundFinished,
-        GameFinished
-    }
+    // private enum GameState
+    // {
+    //     CameraArrived,
+    //     GameStarted,
+    //     RoundReady,
+    //     Corrected,
+    //     RoundFinished,
+    //     GameFinished
+    // }
     
     [Header("Display Setting")] [Space(10f)]
     public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
     private float _elapsedForInitialRound;
 
     [Space(30f)] [Header("Game Objects(Animal) Setting")]
-    public List<int> allAnimals;
+    public List<AnimalData> allAnimals;
 
     // ---------- 플레이에 필요한 동물 목록이며, 목록이 수정되는 경우 자료구조에도 추가해야됩니다. ----------
     public GameObject tortoise;

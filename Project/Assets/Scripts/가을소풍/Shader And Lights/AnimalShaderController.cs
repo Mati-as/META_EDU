@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 using 가을소풍;
 
 public class AnimalShaderController : MonoBehaviour
 {
     
-    public bool isTouchedDown;
+    private bool _isTouchedDown;
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
     public Color outlineColor;
@@ -45,7 +46,7 @@ public class AnimalShaderController : MonoBehaviour
     {
         if (other.CompareTag(TAG_ARRIVAL))
         {
-            isTouchedDown = true;
+            _isTouchedDown = true;
             Debug.Log("Touched Down!");
         }
     }
@@ -56,7 +57,7 @@ public class AnimalShaderController : MonoBehaviour
         if (GameManager.isRoundReady)
         {
             _elapsedForInPlayGlowOn = 0f;
-            isTouchedDown = false;
+            _isTouchedDown = false;
 
         }
 
@@ -122,11 +123,11 @@ public class AnimalShaderController : MonoBehaviour
         _mat.SetColor(EMISSION_COLOR, currrentColor);
     }
     
-    public float outlineOnSpeed;
+    
     private float _colorLerp;
     private void BrightenOutlineWithLerp()
     {
-        _colorLerp += Time.deltaTime * outlineOnSpeed;
+        _colorLerp += Time.deltaTime * _animalShaderScriptableObject.outlineTurningOnSpeed;
         Color color =Color.Lerp(Color.black, outlineColor, _colorLerp);
         
         _mat.SetColor(EMISSION_COLOR,color);
