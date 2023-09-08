@@ -103,19 +103,21 @@ public class GameManager : MonoBehaviour
     [Space(30f)] [Header("Game Objects(Animal) Setting")]
     public List<AnimalData> allAnimals;
 
+    private AnimalData _selectedAnimalData;
+
     // ---------- 플레이에 필요한 동물 목록이며, 목록이 수정되는 경우 자료구조에도 추가해야됩니다. ----------
-    public GameObject tortoise;
-    public GameObject rabbit;
-    public GameObject dog;
-    public GameObject parrot;
-    public GameObject mouse;
-    public GameObject cat;
+    // public GameObject tortoise;
+    // public GameObject rabbit;
+    // public GameObject dog;
+    // public GameObject parrot;
+    // public GameObject mouse;
+    // public GameObject cat;
     
     
     //(08-31-23)
     //게임 종료시 동물들이 원래 위치로 돌아 올 수 있도록 하는 디폴트 위치들 입니다.
     //동물 배치에 따라 변수명을 수정해야합니다.
-    private  Transform[] defalutPositions = new Transform[6]; // 매직넘버 가능한 수정하기
+    private Transform[] defalutPositions = new Transform[6]; // 매직넘버 가능한 수정하기
 
     public Transform parrotDefaultPosition;
     public Transform dogDefaultPosition;
@@ -201,10 +203,8 @@ public class GameManager : MonoBehaviour
     
     
     private float _elapsedForFinishMoveIn;
-    
-    [Space(10f)] 
-    [Header("References")] [Space(10f)]
-   
+
+    [Space(10f)] [Header("References")] [Space(10f)]
     
     private AnimalShaderController _animalShaderController;
     
@@ -220,18 +220,7 @@ public class GameManager : MonoBehaviour
     private float _currentSizeLerp;
     private float lerp;
     
-
-    // 09-01-23 애니메이션 로직 중  IDEL_ANIM 미사용.
-    private readonly int IDLE_ANIM = Animator.StringToHash("idle"); 
-    private readonly int ROLL_ANIM = Animator.StringToHash("Roll");
-    private readonly int FLY_ANIM = Animator.StringToHash("Fly");
-    private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
-    private readonly int RUN_ANIM = Animator.StringToHash("Run");
-    private readonly int SELECTABLE = Animator.StringToHash("Selectable");
-    private readonly int SELECTABLE_A = Animator.StringToHash("SelectableA");
-    private readonly int SELECTABLE_B= Animator.StringToHash("SelectableB");
-   
-    private readonly int IS_GAME_FINISHED_ANIM = Animator.StringToHash(("IsGameFinished"));
+    
     
     // UI 출력을 위한 Event 처리
     [Header("UI Events")] [Space(10f)] 
@@ -262,15 +251,15 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        _animalDefaultPositionsDictionary = new Dictionary<GameObject, animalPosition>
-        {
-            { parrot, animalPosition.parrot },
-            { dog, animalPosition.dog },
-            { tortoise, animalPosition.tortoise },
-            { mouse, animalPosition.mouse },
-            { rabbit, animalPosition.rabbit },
-            { cat, animalPosition.cat }
-        };
+        // _animalDefaultPositionsDictionary = new Dictionary<GameObject, animalPosition>
+        // {
+        //     { parrot, animalPosition.parrot },
+        //     { dog, animalPosition.dog },
+        //     { tortoise, animalPosition.tortoise },
+        //     { mouse, animalPosition.mouse },
+        //     { rabbit, animalPosition.rabbit },
+        //     { cat, animalPosition.cat }
+        // };
 
 
         SetResolution(1920, 1080);
@@ -279,13 +268,12 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = TARGET_FRAME;
 
 
-        SetAnimalIntoDictionaryAndList();
+        SetAndInitializedAnimals();
     }
 
     private void Start()
     {
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
-        _defaultSize = dog.transform.localScale.z;
         SetDefaultPositions();
     }
 
@@ -510,7 +498,7 @@ public class GameManager : MonoBehaviour
     private void PlayGameFinishAnimation(GameObject gameObj)
     {
         Animator animator = gameObj.GetComponent<Animator>();
-        animator.SetBool(IS_GAME_FINISHED_ANIM, true);
+        animator.SetBool(AnimalData.IS_GAME_FINISHED_ANIM, true);
     }
 
     private void CheckInitialReady()
@@ -558,10 +546,14 @@ public class GameManager : MonoBehaviour
                 if (animalGameOjbectDictionary.ContainsKey(hit.collider.name)&& isCorrected == false)
                 {
                     _clickedAnimal = hit.collider.name;
+                    
+                    //정답인 경우
                     if (_clickedAnimal == answer)
                     {
+                       
                         isCorrected = true;
-                        SetAnimal(_clickedAnimal);
+                        SetAnimalData(_clickedAnimal);
+                        
                         InvokeOncorrect();
                     }
 
@@ -613,29 +605,29 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void IncreaseScale()
+    private void IncreaseScale(GameObject gameObject ,float defaultSize, float increasedSize)
     {
         _currentSizeLerp += sizeIncreasingSpeed * Time.deltaTime;
 
         lerp =
             Lerp2D.EaseInBounce(
-                _defaultSize, newSize,
+                defaultSize, increasedSize,
                 _currentSizeLerp);
 
 
-        _selectedAnimalGameObject.transform.localScale = Vector3.one * lerp;
+        gameObject.transform.localScale = Vector3.one * lerp;
     }
-    private void DecreaseScale()
+    private void DecreaseScale(GameObject gameObject, float defaultSize, float increasedSize)
     {
         _currentSizeLerp += sizeIncreasingSpeed * Time.deltaTime;
 
         lerp =
             Lerp2D.EaseInBounce(
-                 newSize,_defaultSize,
+                increasedSize,defaultSize,
                 _currentSizeLerp);
 
 
-        _selectedAnimalGameObject.transform.localScale = Vector3.one * lerp;
+        gameObject.transform.localScale = Vector3.one * lerp;
     }
 
 
@@ -653,9 +645,9 @@ public class GameManager : MonoBehaviour
         {
             _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
             
-            _selectedAnimator.SetBool(SELECTABLE,false);
-            _selectedAnimator.SetBool(SELECTABLE_A,false);
-            _selectedAnimator.SetBool(SELECTABLE_B,false);
+            _selectedAnimator.SetBool(AnimalData.SELECTABLE,false);
+            _selectedAnimator.SetBool(AnimalData.SELECTABLE_A,false);
+            _selectedAnimator.SetBool(AnimalData.SELECTABLE_B,false);
             
             if (_isAnimRandomized == false)
             {
@@ -665,19 +657,21 @@ public class GameManager : MonoBehaviour
                 switch (randomAnimNum)
                 {
                     case 0:
-                        _selectedAnimator.SetBool(ROLL_ANIM, true);
+                        _selectedAnimator.SetBool(AnimalData.ROLL_ANIM, true);
                         break;
                     case 1:
-                        _selectedAnimator.SetBool(FLY_ANIM, true);
+                        _selectedAnimator.SetBool(AnimalData.FLY_ANIM, true);
                         break;
                     case 2:
-                        _selectedAnimator.SetBool(SPIN_ANIM, true);
+                        _selectedAnimator.SetBool(AnimalData.SPIN_ANIM, true);
                         break;
                 }
             }
 
-
-            IncreaseScale();
+           
+            IncreaseScale(_selectedAnimalGameObject,
+                _selectedAnimalData.defaultSize,_selectedAnimalData.increasedSize);
+            
             
             _selectedAnimalGameObject.transform.position =
                 Vector3.Lerp(_selectedAnimalGameObject.transform.position,
@@ -705,31 +699,30 @@ public class GameManager : MonoBehaviour
         _selectedAnimals.Clear();// 0,1,2 인덱스에 동물 리스트 쌓이지 않도록 초기화
     }
 
-    public void SetAnimal(string animalName)
+    public void SetAnimalData(string animalName)
     {
         if (animalGameOjbectDictionary.TryGetValue(animalName, out var animalObj))
+        {
             _selectedAnimalGameObject = animalObj;
+            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalData>();
+        }
+      
     }
 
     /// <summary>
     ///     딕셔너리는 클릭 시, hit.name과 딕셔너리 안의 자료를 비교할 떄 사용합니다.
     ///     리스트 자료구조는 동물의 순서를 랜덤으로 섞고 동물들을 배치할 때 사용합니다.
     /// </summary>
-    private void SetAnimalIntoDictionaryAndList()
+    private void SetAndInitializedAnimals()
     {
-        animalGameOjbectDictionary.Add(nameof(tortoise), tortoise);
-        animalGameOjbectDictionary.Add(nameof(cat), cat);
-        animalGameOjbectDictionary.Add(nameof(rabbit), rabbit);
-        animalGameOjbectDictionary.Add(nameof(dog), dog);
-        animalGameOjbectDictionary.Add(nameof(parrot), parrot);
-        animalGameOjbectDictionary.Add(nameof(mouse), mouse);
-
-        _animalList.Add(tortoise);
-        _animalList.Add(cat);
-        _animalList.Add(rabbit);
-        _animalList.Add(dog);
-        _animalList.Add(parrot);
-        _animalList.Add(mouse);
+        foreach (AnimalData animal in allAnimals)
+        {
+            animalGameOjbectDictionary.Add(animal.animalName,animal.animalPrefab);
+            
+            _animalList.Add(animal.animalPrefab);
+            
+            animal.animalPrefab.transform.localScale = Vector3.one * animal.defaultSize;
+        }
     }
 
    
@@ -746,7 +739,7 @@ public class GameManager : MonoBehaviour
             if (gameObj.name != answer)
             {
                 _tempAnimator = gameObj.GetComponent<Animator>();
-                _tempAnimator.SetBool(RUN_ANIM, true);
+                _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);
 
                 RandomRotateAndMove(gameObj);
             }
@@ -768,10 +761,11 @@ public class GameManager : MonoBehaviour
                     _isSizeLerpInitialized = true;
                     _currentSizeLerp = 0f;
                 }
-                DecreaseScale();
+                DecreaseScale(_selectedAnimalGameObject,
+                    _selectedAnimalData.increasedSize,_selectedAnimalData.defaultSize);
                 
                 InitializeAllAnimatorParameters(_tempAnimator);
-                _tempAnimator.SetBool(RUN_ANIM, true);
+                _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);
                 RandomRotateAndMove(gameObj);
               
              
@@ -870,13 +864,13 @@ public class GameManager : MonoBehaviour
     
     private void InitializeAllAnimatorParameters(Animator animator)
     {
-        animator.SetBool(RUN_ANIM, false);
-        animator.SetBool(FLY_ANIM, false);
-        animator.SetBool(ROLL_ANIM, false);
-        animator.SetBool(SPIN_ANIM, false);
-        animator.SetBool(SELECTABLE,false);
-        animator.SetBool(SELECTABLE_A,false);
-        animator.SetBool(SELECTABLE_B,false);
+        animator.SetBool(AnimalData.RUN_ANIM, false);
+        animator.SetBool(AnimalData.FLY_ANIM, false);
+        animator.SetBool(AnimalData.ROLL_ANIM, false);
+        animator.SetBool(AnimalData.SPIN_ANIM, false);
+        animator.SetBool(AnimalData.SELECTABLE,false);
+        animator.SetBool(AnimalData.SELECTABLE_A,false);
+        animator.SetBool(AnimalData.SELECTABLE_B,false);
     }
     private int _randomInPlayAnimationNumber;
     private void PlayInPlayAnimation()

@@ -8,7 +8,30 @@ using 가을소풍;
 
 public class AnimalShaderController : MonoBehaviour
 {
+    
+    //▼ Scriptable Objects 참조 부분, 스태틱 및 초기화 설정
+    [Header("Reference (Scriptable Object)")] 
+    [Space(15f)]
+    [SerializeField] 
+    private AnimalShaderScriptableObject _animalShaderScriptableObject;
+    [SerializeField] 
+    private AnimalData _animalData;
 
+    
+    //▼ Time.deltaTime이용 인스턴스.
+    private float fresnelElapsedTime;
+    private float _elapsed;
+    private float _colorLerp;
+    private float _elapsedForInPlayGlowOn;
+    
+    //▼ 쉐이더 컨트롤 및 머테리얼 할당.
+    private SkinnedMeshRenderer _meshRenderer;
+    private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
+    private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
+    private Material _mat;
+        
+    
+    //▼ 기타 
     private bool isTouchedDown;
     public bool IsTouchedDown
     {
@@ -16,33 +39,18 @@ public class AnimalShaderController : MonoBehaviour
         set { isTouchedDown = value; }
     }
     
-    [Space(20)]
-    
-    [Space(20)] [Header("Fresnel Control")]
-    private float fresnelElapsedTime;
-    private float _elapsed;
-    private SkinnedMeshRenderer _meshRenderer;
+ 
 
-    [Space(20)] [Header("Game Interaction Control")]
-    private float _elapsedForInPlayGlowOn;
-    private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
-    private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
-    
-    private Material _mat;
-
-    [SerializeField] 
-    private AnimalShaderScriptableObject _animalShaderScriptableObject;
-    
     
     void Awake()
     {
         IsTouchedDown = false;
         
-        
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
+      
         _mat = _meshRenderer.material; // material instance를 가져옵니다.
         _mat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
-        _mat.SetColor(EMISSION_COLOR, _animalShaderScriptableObject.outlineColor);
+        _mat.SetColor(EMISSION_COLOR, _animalData.outlineColor);
         _meshRenderer.enabled = false;
     }
 
@@ -59,7 +67,6 @@ public class AnimalShaderController : MonoBehaviour
 
     void Update()
     {
-        
         if (GameManager.isRoundReady)
         {
             _elapsedForInPlayGlowOn = 0f;
@@ -76,7 +83,6 @@ public class AnimalShaderController : MonoBehaviour
       
                 fresnelElapsedTime += Time.deltaTime;
                 
-               
                 _meshRenderer.enabled = true;
                 BrightenOutlineWithLerp();
                 SetIntensity(_animalShaderScriptableObject.colorIntensityRange);
@@ -108,6 +114,8 @@ public class AnimalShaderController : MonoBehaviour
 
     }
     
+    // ▼ 메소드 목록 ----------------------------
+    
     private void ChangeAnimalOutlineColor()
     {
             //fresnel power 4~8 -> 
@@ -125,16 +133,16 @@ public class AnimalShaderController : MonoBehaviour
     private void SetIntensity(float range)
     {
         float t = (Mathf.Sin(fresnelElapsedTime * _animalShaderScriptableObject.fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
-        Color currrentColor = Color.Lerp(_animalShaderScriptableObject.outlineColor/range,_animalShaderScriptableObject.outlineColor * range , t);
+        Color currrentColor = Color.Lerp(_animalData.outlineColor/range,_animalData.outlineColor * range , t);
         _mat.SetColor(EMISSION_COLOR, currrentColor);
     }
     
     
-    private float _colorLerp;
+
     private void BrightenOutlineWithLerp()
     {
         _colorLerp += Time.deltaTime * _animalShaderScriptableObject.outlineTurningOnSpeed;
-        Color color =Color.Lerp(Color.black, _animalShaderScriptableObject.outlineColor, _colorLerp);
+        Color color =Color.Lerp(Color.black, _animalData.outlineColor, _colorLerp);
         
         _mat.SetColor(EMISSION_COLOR,color);
     }
