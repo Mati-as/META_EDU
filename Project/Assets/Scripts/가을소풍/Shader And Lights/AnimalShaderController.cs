@@ -8,12 +8,15 @@ using 가을소풍;
 
 public class AnimalShaderController : MonoBehaviour
 {
+
+    private bool isTouchedDown;
+    public bool IsTouchedDown
+    {
+        get { return isTouchedDown;}
+        set { isTouchedDown = value; }
+    }
     
-    private bool _isTouchedDown;
-    
-    [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
-    public Color outlineColor;
-    
+    [Space(20)]
     
     [Space(20)] [Header("Fresnel Control")]
     private float fresnelElapsedTime;
@@ -33,10 +36,13 @@ public class AnimalShaderController : MonoBehaviour
     
     void Awake()
     {
+        IsTouchedDown = false;
+        
+        
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
         _mat = _meshRenderer.material; // material instance를 가져옵니다.
         _mat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
-        _mat.SetColor(EMISSION_COLOR, outlineColor);
+        _mat.SetColor(EMISSION_COLOR, _animalShaderScriptableObject.outlineColor);
         _meshRenderer.enabled = false;
     }
 
@@ -46,7 +52,7 @@ public class AnimalShaderController : MonoBehaviour
     {
         if (other.CompareTag(TAG_ARRIVAL))
         {
-            _isTouchedDown = true;
+            isTouchedDown = true;
             Debug.Log("Touched Down!");
         }
     }
@@ -57,7 +63,7 @@ public class AnimalShaderController : MonoBehaviour
         if (GameManager.isRoundReady)
         {
             _elapsedForInPlayGlowOn = 0f;
-            _isTouchedDown = false;
+            isTouchedDown = false;
 
         }
 
@@ -119,7 +125,7 @@ public class AnimalShaderController : MonoBehaviour
     private void SetIntensity(float range)
     {
         float t = (Mathf.Sin(fresnelElapsedTime * _animalShaderScriptableObject.fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
-        Color currrentColor = Color.Lerp(outlineColor/range,outlineColor * range , t);
+        Color currrentColor = Color.Lerp(_animalShaderScriptableObject.outlineColor/range,_animalShaderScriptableObject.outlineColor * range , t);
         _mat.SetColor(EMISSION_COLOR, currrentColor);
     }
     
@@ -128,7 +134,7 @@ public class AnimalShaderController : MonoBehaviour
     private void BrightenOutlineWithLerp()
     {
         _colorLerp += Time.deltaTime * _animalShaderScriptableObject.outlineTurningOnSpeed;
-        Color color =Color.Lerp(Color.black, outlineColor, _colorLerp);
+        Color color =Color.Lerp(Color.black, _animalShaderScriptableObject.outlineColor, _colorLerp);
         
         _mat.SetColor(EMISSION_COLOR,color);
     }

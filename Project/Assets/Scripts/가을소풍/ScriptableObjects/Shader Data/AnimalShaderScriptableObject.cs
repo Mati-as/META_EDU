@@ -18,5 +18,8 @@ namespace 가을소풍
         [SerializeField] public float waitTimeForTurningOnGlow;
         [Space(10)]
         [SerializeField] public float outlineTurningOnSpeed;
+        
+        [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
+        public Color outlineColor;
     }
 }

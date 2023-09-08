@@ -752,14 +752,14 @@ public class GameManager : MonoBehaviour
             }
             
            
-            else if (gameObj.name == answer && !_animalShaderController.isTouchedDown)
+            else if (gameObj.name == answer && !_animalShaderController.IsTouchedDown)
             {
                 _lerpForMovingDown += Time.deltaTime * moveDownSpeed;
                 gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     touchDownPosition.position, _lerpForMovingDown);
             }
             
-            else if (gameObj.name == answer && _animalShaderController.isTouchedDown)
+            else if (gameObj.name == answer && _animalShaderController.IsTouchedDown)
             { 
                 _tempAnimator = gameObj.GetComponent<Animator>();
                 
