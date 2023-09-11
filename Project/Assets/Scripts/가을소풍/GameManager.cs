@@ -28,6 +28,11 @@ public class GameManager : MonoBehaviour
     
     // 게임 시퀀스를 위한 스태틱 불 목록입니다.
     // GameManager이외에서 접근하지 않도록 처리 했습니다.
+    public static bool isAnimalPositionSet
+    {
+        get;
+        set;
+    }
     public static bool isCameraArrivedToPlay { get; set; }
     public static bool isGameStarted { get; private set; }
     private bool _initialRoundIsReady; //최초 라운드 시작 이전을 컨트롤 하기 위한 논리연산자 입니다. 
@@ -221,6 +226,20 @@ public class GameManager : MonoBehaviour
     private float lerp;
     
     
+    public static int totalAnimals;
+    public static event Action AllAnimalsInitialized;
+    private static int initializedAnimalsCount = 0;
+  
+    public static void AnimalInitialized()
+    {
+        initializedAnimalsCount++;
+        Debug.Log($"initializedAnimalsCount: {initializedAnimalsCount}");
+        if (initializedAnimalsCount == totalAnimals)
+        {
+            AllAnimalsInitialized?.Invoke();
+            Debug.Log($"Initializing Event Occured!");
+        }
+    }
     
     // UI 출력을 위한 Event 처리
     [Header("UI Events")] [Space(10f)] 
@@ -251,30 +270,15 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        // _animalDefaultPositionsDictionary = new Dictionary<GameObject, animalPosition>
-        // {
-        //     { parrot, animalPosition.parrot },
-        //     { dog, animalPosition.dog },
-        //     { tortoise, animalPosition.tortoise },
-        //     { mouse, animalPosition.mouse },
-        //     { rabbit, animalPosition.rabbit },
-        //     { cat, animalPosition.cat }
-        // };
-
-
-        SetResolution(1920, 1080);
-
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = TARGET_FRAME;
-
-
-        SetAndInitializedAnimals();
+        SetResolution(1920, 1080,TARGET_FRAME);
+        totalAnimals = allAnimals.Count;
     }
 
     private void Start()
     {
+      // 동물은 시작할 때 setActive=false됨에 주의
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
-        SetDefaultPositions();
+        SetAndInitializedAnimals();
     }
 
   
@@ -467,15 +471,15 @@ public class GameManager : MonoBehaviour
         _elapsedOfRoundFinished = 0f;
     }
     
-    private void SetDefaultPositions()
-    {
-        defalutPositions[(int)animalPosition.parrot] = parrotDefaultPosition;
-        defalutPositions[(int)animalPosition.dog] = dogDefaultPosition;
-        defalutPositions[(int)animalPosition.tortoise] = tortoiseDefaultPosition;
-        defalutPositions[(int)animalPosition.mouse] = mouseDefaultPosition;
-        defalutPositions[(int)animalPosition.rabbit] = rabbitDefaultPosition;
-        defalutPositions[(int)animalPosition.cat] = catDefaultPosition;
-    }
+    // private void SetDefaultPositions()
+    // {
+    //     defalutPositions[(int)animalPosition.parrot] = parrotDefaultPosition;
+    //     defalutPositions[(int)animalPosition.dog] = dogDefaultPosition;
+    //     defalutPositions[(int)animalPosition.tortoise] = tortoiseDefaultPosition;
+    //     defalutPositions[(int)animalPosition.mouse] = mouseDefaultPosition;
+    //     defalutPositions[(int)animalPosition.rabbit] = rabbitDefaultPosition;
+    //     defalutPositions[(int)animalPosition.cat] = catDefaultPosition;
+    // }
 
 
     /// <summary>
@@ -483,15 +487,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void MoveInWhenGameIsFinished()
     {
-        foreach (var pair in _animalDefaultPositionsDictionary)
+        foreach (var gameObject in _animalList)
         {
-            var gameObj = pair.Key;
-            var position = pair.Value;
+            AnimalData _animalData = gameObject.GetComponent<AnimalData>();
+            
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,
+                _animalData.initialPosition, _elapsedForFinishMoveIn / finishedMoveInTime);
 
-            gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
-                defalutPositions[(int)position].position, _elapsedForFinishMoveIn / finishedMoveInTime);
-
-            PlayGameFinishAnimation(gameObj);
+            PlayGameFinishAnimation(gameObject);
         }
     }
 
@@ -717,14 +720,22 @@ public class GameManager : MonoBehaviour
     {
         foreach (AnimalData animal in allAnimals)
         {
-            animalGameOjbectDictionary.Add(animal.animalName,animal.animalPrefab);
+            //생성
+            GameObject thisAnimal =  Instantiate(animal.animalPrefab, animal.initialPosition, animal.initialRotation);
             
-            _animalList.Add(animal.animalPrefab);
+            //크기 지정
+            thisAnimal.transform.localScale = Vector3.one * animal.defaultSize;
             
-            animal.animalPrefab.transform.localScale = Vector3.one * animal.defaultSize;
+            // 자료구조에 추가..
+            animalGameOjbectDictionary.Add(animal.animalName,thisAnimal);
+            
+            _animalList.Add(thisAnimal);
+
+          
         }
     }
 
+    private void Activate(GameObject gameObject) => gameObject.SetActive(true);
    
     private float _lerpForMovingDown;
     public float moveDownSpeed;
@@ -928,10 +939,12 @@ public class GameManager : MonoBehaviour
         _selectedAnimals[2].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
     }
 
-    
-    private void SetResolution(int width, int height)
+
+    private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFrame;
     }
 
     

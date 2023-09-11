@@ -5,6 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AnimalData", menuName = "AnimalData/AnimalInfo", order = int.MaxValue )]
 public class AnimalData : ScriptableObject
 {
+    [Header("Transform")] [Space(10f)]
+    [HideInInspector]
+    public Vector3 initialPosition;
+    [HideInInspector]
+    public Quaternion initialRotation;
     [Header("Name")] [Space(10f)]
     public string animalName;
     [Space(10f)] [Header("Size")] [Space(10f)]
