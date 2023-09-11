@@ -28,11 +28,7 @@ public class GameManager : MonoBehaviour
     
     // 게임 시퀀스를 위한 스태틱 불 목록입니다.
     // GameManager이외에서 접근하지 않도록 처리 했습니다.
-    public static bool isAnimalPositionSet
-    {
-        get;
-        set;
-    }
+    public static bool isAnimalTransformSet { get;set;}
     public static bool isCameraArrivedToPlay { get; set; }
     public static bool isGameStarted { get; private set; }
     private bool _initialRoundIsReady; //최초 라운드 시작 이전을 컨트롤 하기 위한 논리연산자 입니다. 
@@ -60,8 +56,8 @@ public class GameManager : MonoBehaviour
      Awake시 동물들의 위치값을 디폴트로 받아오는 방식이 유지보수가 용이하기에, 해당 방식에 대한 이슈가 해결 가능하면 
      해당 방식으로 로직을 바꿔서 사용할 수 있을 것 입니다. 
     */
-    private Dictionary<GameObject, animalPosition> _animalDefaultPositionsDictionary;
-    
+
+    // private Dictionary<GameObject, animalPosition> _animalDefaultPositionsDictionary;
     
     /*
     동물들을 배치할 때 랜덤하게 동물이름을 섞고, 이러한 결과값을 Answer에 저장하는데 사용하기 위한 List입니다.
@@ -119,29 +115,6 @@ public class GameManager : MonoBehaviour
     // public GameObject cat;
     
     
-    //(08-31-23)
-    //게임 종료시 동물들이 원래 위치로 돌아 올 수 있도록 하는 디폴트 위치들 입니다.
-    //동물 배치에 따라 변수명을 수정해야합니다.
-    private Transform[] defalutPositions = new Transform[6]; // 매직넘버 가능한 수정하기
-
-    public Transform parrotDefaultPosition;
-    public Transform dogDefaultPosition;
-    public Transform tortoiseDefaultPosition;
-    public Transform mouseDefaultPosition;
-    public Transform catDefaultPosition;
-    public Transform rabbitDefaultPosition;
-
- 
-    //디폴트 포지션 배열 인덱싱을 위한 Enum 타입 설정입니다.
-    private enum animalPosition
-    {
-        parrot,
-        dog,
-        tortoise,
-        mouse,
-        rabbit,
-        cat
-    }
     
     
     [Space(15f)] [Header("In Play Setting")] [Space(10f)]
@@ -226,20 +199,7 @@ public class GameManager : MonoBehaviour
     private float lerp;
     
     
-    public static int totalAnimals;
-    public static event Action AllAnimalsInitialized;
-    private static int initializedAnimalsCount = 0;
   
-    public static void AnimalInitialized()
-    {
-        initializedAnimalsCount++;
-        Debug.Log($"initializedAnimalsCount: {initializedAnimalsCount}");
-        if (initializedAnimalsCount == totalAnimals)
-        {
-            AllAnimalsInitialized?.Invoke();
-            Debug.Log($"Initializing Event Occured!");
-        }
-    }
     
     // UI 출력을 위한 Event 처리
     [Header("UI Events")] [Space(10f)] 
@@ -271,7 +231,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         SetResolution(1920, 1080,TARGET_FRAME);
-        totalAnimals = allAnimals.Count;
+        
+        totalAnimalCount = allAnimals.Count;
     }
 
     private void Start()
@@ -279,6 +240,7 @@ public class GameManager : MonoBehaviour
       // 동물은 시작할 때 setActive=false됨에 주의
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
         SetAndInitializedAnimals();
+        
     }
 
   
@@ -417,6 +379,23 @@ public class GameManager : MonoBehaviour
 
     
     // ------------------------- ▼ 메소드 목록 ----------------------------
+    
+    public static int totalAnimalCount;
+    public static event Action AllAnimalsInitialized;
+    private static int initializedAnimalsCount = 0;
+  
+    public static void AnimalInitialized()
+    {
+        initializedAnimalsCount++;
+        Debug.Log($"totalAnimals: {totalAnimalCount}");
+        Debug.Log($"initializedAnimalsCount: {initializedAnimalsCount}");
+        if (initializedAnimalsCount > totalAnimalCount)
+        {
+            AllAnimalsInitialized?.Invoke();
+            Debug.Log($"Initializing Event Occured!");
+        }
+    }
+    
     
     private bool _isRandomized;
 
@@ -701,7 +680,7 @@ public class GameManager : MonoBehaviour
         if (animalGameOjbectDictionary.TryGetValue(animalName, out var animalObj))
         {
             _selectedAnimalGameObject = animalObj;
-            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalData>();
+            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalController>()._animalData;
         }
       
     }
@@ -712,18 +691,22 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SetAndInitializedAnimals()
     {
-        foreach (AnimalData animal in allAnimals)
+        foreach (AnimalData animalData in allAnimals)
         {
             //생성
-            GameObject thisAnimal =  Instantiate(animal.animalPrefab, animal.initialPosition, animal.initialRotation);
+            GameObject thisAnimal =  Instantiate(animalData.animalPrefab, 
+                animalData.initialPosition, animalData.initialRotation);
 
 
-            thisAnimal.name = animal.englishName;
+            // 이름 뒤에 (Clone) 자동으로 붙는 것 제거.
+            thisAnimal.name = animalData.englishName;
+            
             //크기 지정
-            thisAnimal.transform.localScale = Vector3.one * animal.defaultSize;
+            thisAnimal.transform.localScale = Vector3.one * animalData.defaultSize;
+            Debug.Log($"animal Default Size{animalData.defaultSize}");
             
             // 자료구조에 추가..
-            animalGameOjbectDictionary.Add(animal.englishName,thisAnimal);
+            animalGameOjbectDictionary.Add(animalData.englishName,thisAnimal);
             
             _animalList.Add(thisAnimal);
 
@@ -739,7 +722,7 @@ public class GameManager : MonoBehaviour
     private bool _isSizeLerpInitialized;
     private void MoveOutOfScreen()
     {
-       
+        
         foreach (var gameObj in _animalList)
         {
             _animalShaderController = gameObj.GetComponentInChildren<AnimalShaderController>();
@@ -858,8 +841,10 @@ public class GameManager : MonoBehaviour
         foreach (var gameObj in _animalList)
         {
             _tempAnimator = gameObj.GetComponent<Animator>();
+            AnimalController _animalController = gameObj.GetComponent<AnimalController>();
+            
             InitializeAllAnimatorParameters(_tempAnimator);
-            gameObj.transform.localScale = Vector3.one * _defaultSize;
+            gameObj.transform.localScale = Vector3.one * _animalController._animalData.defaultSize;
         }
         
         

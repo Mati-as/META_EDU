@@ -583,6 +583,7 @@ GameObject:
   - component: {fileID: 7238879844223969683}
   - component: {fileID: 7238879844223969686}
   - component: {fileID: 7238879844223969684}
+  - component: {fileID: 1532612335396840218}
   m_Layer: 6
   m_Name: cat
   m_TagString: Untagged
@@ -597,9 +598,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7238879844223969682}
-  m_LocalRotation: {x: -0.011558951, y: -0.21600899, z: -0.0025573976, w: 0.9763196}
-  m_LocalPosition: {x: -8.589387, y: 0.4548709, z: 16.64864}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.01156222, y: -0.21600696, z: -0.0025580958, w: 0.97632}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.1999999, y: 1.2000002, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 233858148692198900}
@@ -607,7 +608,7 @@ Transform:
   - {fileID: 4056318563858949871}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -1.478, y: -25.821, z: 0.004}
+  m_LocalEulerAnglesHint: {x: -1.357, y: -24.951, z: 0}
 --- !u!95 &7238879844223969683
 Animator:
   serializedVersion: 5
@@ -659,3 +660,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &1532612335396840218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7238879844223969682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b1dfb3e8e4ce66429e65f865534ca50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animalData: {fileID: 11400000, guid: 09d855541ebf96f43848d362f4b0818f, type: 2}

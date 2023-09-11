@@ -7,33 +7,37 @@ public class AnimalController : MonoBehaviour
 {
     
     public AnimalData _animalData;
-
     
     void Start()
     {
         //중복 구독 방지
-        // GameManager.AllAnimalsInitialized -= OnAllAnimalsInitialized;
-        // GameManager.AllAnimalsInitialized += OnAllAnimalsInitialized;
+        GameManager.AllAnimalsInitialized -= OnAllAnimalsInitialized;
+        GameManager.AllAnimalsInitialized += OnAllAnimalsInitialized;
+
+        InitializeTransform();
+
+        // Instantiate(_animalData.animalPrefab, _animalData.initialPosition, _animalData.initialRotation);
+
     }
-    private void Awake()
+    private void OnAllAnimalsInitialized()
+    {
+        GameManager.isAnimalTransformSet = true;
+    }
+    
+    void OnDestroy()
+    {
+        GameManager.AllAnimalsInitialized -= OnAllAnimalsInitialized;
+    }
+
+    private void InitializeTransform()
     {
         _animalData.initialPosition = transform.position;
         _animalData.initialRotation = transform.rotation;
-
-        // Instantiate(_animalData.animalPrefab, _animalData.initialPosition, _animalData.initialRotation);
-        Destroy(gameObject);
-        //GameManager.AnimalInitialized();
-       
+        
+        if (GameManager.isAnimalTransformSet == false)
+        { 
+            GameManager.AnimalInitialized();
+            Destroy(gameObject);
+        }
     }
-    
-    // 이벤트 사용 로직 09/11/23 미사용 중
-    // private void OnAllAnimalsInitialized()
-    // {
-    //   
-    // }
-    //
-    // void OnDestroy()
-    // {
-    //     GameManager.AllAnimalsInitialized -= OnAllAnimalsInitialized;
-    // }
 }

@@ -36,8 +36,6 @@ public class MoonAndSunController : MonoBehaviour
     {
         if (GameManager.isGameStarted)
         {
-          
-           
             MoveUp(waitTime,movingTimeSec);
         }
 
@@ -93,7 +91,7 @@ public class MoonAndSunController : MonoBehaviour
     private float _colorLerp;
     private void SetColorIntensity(Color initialColor, Color targetColor)
     {
-        Debug.Log("달 색상 변경중");
+      
         _colorLerp += Time.deltaTime * intensityChangeSpeed;
         Color color = Color.Lerp(initialColor, targetColor, _colorLerp);
         _mat.SetColor(_ALBEDO,color); 

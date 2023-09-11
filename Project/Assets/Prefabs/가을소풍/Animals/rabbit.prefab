@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 5188285725345078534}
   - component: {fileID: 5188285725345078553}
   - component: {fileID: 5188285725345078535}
+  - component: {fileID: 5164627934438932181}
   m_Layer: 6
   m_Name: rabbit
   m_TagString: Untagged
@@ -244,9 +245,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5188285725345078533}
-  m_LocalRotation: {x: 0.0018182613, y: -0.21784961, z: 0.0004066238, w: 0.9759806}
-  m_LocalPosition: {x: -8.073013, y: 0.45943728, z: 15.550745}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.0018226241, y: -0.21785319, z: 0.00040683677, w: 0.9759798}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2000003, y: 1.1999999, z: 1.2000003}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8482167556243120108}
@@ -254,7 +255,7 @@ Transform:
   - {fileID: 5104755347869424687}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -0.239, y: 8.596, z: 1.581}
+  m_LocalEulerAnglesHint: {x: 0.214, y: -25.166, z: 0}
 --- !u!95 &5188285725345078534
 Animator:
   serializedVersion: 5
@@ -306,6 +307,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &5164627934438932181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5188285725345078533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b1dfb3e8e4ce66429e65f865534ca50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animalData: {fileID: 11400000, guid: e39fc595383606242ae1d0b5d49368fb, type: 2}
 --- !u!1 &8482167556242752456
 GameObject:
   m_ObjectHideFlags: 0
