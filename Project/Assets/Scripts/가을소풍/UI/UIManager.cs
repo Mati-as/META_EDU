@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class InstructionUI : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     private TMP_Text tmpText;
 
@@ -24,17 +24,29 @@ public class InstructionUI : MonoBehaviour
     public string onCorrectMessage = "정답입니다!";
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
+    [Header("Reference")] [Space(10f)] [SerializeField]
+    private GameManager _gameManager;
     private void Awake()
     {
-        animalNameToKorean.Add("tortoise", "거북이");
-        animalNameToKorean.Add("cat", "고양이");
-        animalNameToKorean.Add("rabbit", "토끼");
-        animalNameToKorean.Add("dog", "강아지");
-        animalNameToKorean.Add("parrot", "앵무새");
-        animalNameToKorean.Add("mouse", "쥐");
+    
+        
+        // animalNameToKorean.Add("tortoise", "거북이");
+        // animalNameToKorean.Add("cat", "고양이");
+        // animalNameToKorean.Add("rabbit", "토끼");
+        // animalNameToKorean.Add("dog", "강아지");
+        // animalNameToKorean.Add("parrot", "앵무새");
+        // animalNameToKorean.Add("mouse", "쥐");
 
         tmpText = GetComponentInChildren<TMP_Text>();
         tmpText.text = string.Empty;
+    }
+
+    private void Start()
+    {
+        foreach(AnimalData animalData in _gameManager.allAnimals)
+        {
+            animalNameToKorean.Add(animalData.englishName,animalData.koreanName);
+        }
     }
 
 
@@ -48,7 +60,9 @@ public class InstructionUI : MonoBehaviour
         if (GameManager.isGameStarted && GameManager.isCorrected && _isCorrectMessagePlaying == false)
         {
             _isCorrectMessagePlaying = true; //중복재생 방지
+#if DEFINE_TEST
             Debug.Log("정답문구 업데이트");
+#endif
             _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
     }
@@ -61,7 +75,7 @@ public class InstructionUI : MonoBehaviour
         if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected && !_isCorrectMessagePlaying)
         {
 #if DEFINE_TEST
-            Debug.Log("퀴즈 업데이트");
+            Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[GameManager.answer]}");
 #endif
 
             _isQuizPlaying = true;

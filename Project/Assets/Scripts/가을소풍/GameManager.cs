@@ -470,17 +470,6 @@ public class GameManager : MonoBehaviour
         isRoundReady = false;
         _elapsedOfRoundFinished = 0f;
     }
-    
-    // private void SetDefaultPositions()
-    // {
-    //     defalutPositions[(int)animalPosition.parrot] = parrotDefaultPosition;
-    //     defalutPositions[(int)animalPosition.dog] = dogDefaultPosition;
-    //     defalutPositions[(int)animalPosition.tortoise] = tortoiseDefaultPosition;
-    //     defalutPositions[(int)animalPosition.mouse] = mouseDefaultPosition;
-    //     defalutPositions[(int)animalPosition.rabbit] = rabbitDefaultPosition;
-    //     defalutPositions[(int)animalPosition.cat] = catDefaultPosition;
-    // }
-
 
     /// <summary>
     ///     게임이 끝나고 원래위치고 돌아오기 위해 사용합니다.
@@ -727,12 +716,14 @@ public class GameManager : MonoBehaviour
         {
             //생성
             GameObject thisAnimal =  Instantiate(animal.animalPrefab, animal.initialPosition, animal.initialRotation);
-            
+
+
+            thisAnimal.name = animal.englishName;
             //크기 지정
             thisAnimal.transform.localScale = Vector3.one * animal.defaultSize;
             
             // 자료구조에 추가..
-            animalGameOjbectDictionary.Add(animal.animalName,thisAnimal);
+            animalGameOjbectDictionary.Add(animal.englishName,thisAnimal);
             
             _animalList.Add(thisAnimal);
 

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.Serialization;
 
 
 [CreateAssetMenu(fileName = "AnimalData", menuName = "AnimalData/AnimalInfo", order = int.MaxValue )]
@@ -10,8 +10,11 @@ public class AnimalData : ScriptableObject
     public Vector3 initialPosition;
     [HideInInspector]
     public Quaternion initialRotation;
-    [Header("Name")] [Space(10f)]
-    public string animalName;
+
+    [FormerlySerializedAs("animalName")] [Header("Name")] [Space(10f)] 
+    
+    public string englishName;
+    public string koreanName;
     [Space(10f)] [Header("Size")] [Space(10f)]
     public float defaultSize; //초기 사이즈
     public float increasedSize; //정답 맞췄을 때 사이즈
