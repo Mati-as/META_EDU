@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     위 자료구조가 클릭이벤트 처리나 동물 데이터를 저장하는데 사용했다면, List형은 이러한 데이터를 편집해서 게임 
     플레이 로직에 활용하기 위해 사용되었습니다. 
     */
-    private readonly List<GameObject> _animalList = new();
+    private List<GameObject> _animalList =new();
     
    
     
@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("정답!");  
 #endif
-                
+                TouchDownColliderOnAction();
                 PlayCorrectAnimation();
                 InitializeAndSetTimerOnCorrect();
                 
@@ -374,7 +374,7 @@ public class GameManager : MonoBehaviour
     public static int totalAnimalCount;
     public static event Action AllAnimalsInitialized;
     private static int initializedAnimalsCount = 0;
-  
+    public static event Action isCorrectedEvent;
     public static void AnimalInitialized()
     {
         initializedAnimalsCount++;
@@ -386,6 +386,13 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Initializing Event Occured!");
         }
     }
+
+    private void TouchDownColliderOnAction()
+    {
+        isCorrectedEvent?.Invoke();
+    }
+    
+   
     
     
     private bool _isRandomized;
@@ -742,7 +749,6 @@ public class GameManager : MonoBehaviour
                     _isSizeLerpInitialized = true;
                     _currentSizeLerp = 0f;
                 }
-                
                 DecreaseScale(_selectedAnimalGameObject,
                     _selectedAnimalData.increasedSize,_selectedAnimalData.defaultSize);
                 
