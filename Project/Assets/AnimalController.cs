@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class AnimalController : MonoBehaviour
 {
-    [SerializeField]
-    private AnimalData _animalData;
+    
+    public AnimalData _animalData;
 
     
     void Start()

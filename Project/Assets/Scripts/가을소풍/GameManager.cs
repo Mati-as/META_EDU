@@ -487,13 +487,18 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void MoveInWhenGameIsFinished()
     {
-        foreach (var gameObject in _animalList)
+        foreach (var pair in animalGameOjbectDictionary)
         {
-            AnimalData _animalData = gameObject.GetComponent<AnimalData>();
+            // var animalName = pair.Key;
+            var gameObject = pair.Value;
+            
+            //Scriptable 오브젝트의 Monobehaviour 상속 불가능으로 인한 참조 방식 수정 
+            AnimalController _aniamalcontroller = gameObject.GetComponent<AnimalController>();
+            AnimalData _animalData = _aniamalcontroller._animalData;
             
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,
                 _animalData.initialPosition, _elapsedForFinishMoveIn / finishedMoveInTime);
-
+ 
             PlayGameFinishAnimation(gameObject);
         }
     }
@@ -821,12 +826,13 @@ public class GameManager : MonoBehaviour
         
         currentPosition.rotation = Quaternion.Slerp(currentPosition.rotation, targetRotation, rotationSpeedWhenMovingOut * Time.deltaTime);
     }
-    
+
+    public int selectableAnimalsCount;
     public void SelectRandomThreeAnimals()
     {
         _inPlayTempAnimals = new List<GameObject>(_animalList);
 
-        for (var i = 0; i < 3; i++)
+        for (var i = 0; i < selectableAnimalsCount; i++)
         {
             Debug.Log("동물 랜덤 고르기 완료");
             var randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
@@ -835,9 +841,9 @@ public class GameManager : MonoBehaviour
         }
 
 
-        _randomAnswer = Random.Range(0, _inPlayTempAnimals.Count);
+        _randomAnswer = Random.Range(0,_selectedAnimals.Count);
 
-        while (_randomAnswer == _previousAnswer) _randomAnswer = Random.Range(0, _inPlayTempAnimals.Count);
+        while (_randomAnswer == _previousAnswer) _randomAnswer = Random.Range(0,_selectedAnimals.Count);
 
 
         answer = _selectedAnimals[_randomAnswer].name;
