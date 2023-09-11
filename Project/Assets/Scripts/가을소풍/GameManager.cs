@@ -380,7 +380,7 @@ public class GameManager : MonoBehaviour
         initializedAnimalsCount++;
         Debug.Log($"totalAnimals: {totalAnimalCount}");
         Debug.Log($"initializedAnimalsCount: {initializedAnimalsCount}");
-        if (initializedAnimalsCount > totalAnimalCount)
+        if (initializedAnimalsCount >= totalAnimalCount)
         {
             AllAnimalsInitialized?.Invoke();
             Debug.Log($"Initializing Event Occured!");
