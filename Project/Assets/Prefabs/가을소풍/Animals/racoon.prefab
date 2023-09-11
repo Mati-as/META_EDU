@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2182330341451398132}
   - component: {fileID: 2182330341451398134}
   - component: {fileID: 2182330341451398135}
+  - component: {fileID: 980552347}
   m_Layer: 6
   m_Name: Glow Mesh
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 2182330341451398133}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 1.58, y: 0, z: 0}
-  m_LocalScale: {x: 44, y: 44, z: 44}
+  m_LocalScale: {x: 40, y: 40, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2182330343089005631}
@@ -111,6 +112,19 @@ MonoBehaviour:
   _animalShaderScriptableObject: {fileID: 11400000, guid: ece47247d89691d4e903d840180e4890,
     type: 2}
   _animalData: {fileID: 11400000, guid: 5c4cc7c523186dc4197866f20152524f, type: 2}
+--- !u!65 &980552347
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2182330341451398133}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.009438824, y: 0.05, z: 0.014971433}
+  m_Center: {x: -0.035909094, y: -0.0006663088, z: 0.00748468}
 --- !u!1 &2182330343089502209
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +151,7 @@ Transform:
   m_GameObject: {fileID: 2182330343089502209}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 1.58, y: 0, z: 0}
-  m_LocalScale: {x: 44, y: 44, z: 44}
+  m_LocalScale: {x: 40, y: 40, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2182330343089005631}
@@ -550,7 +564,7 @@ Transform:
   m_GameObject: {fileID: 2182330343089502237}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 44, y: 44, z: 44}
+  m_LocalScale: {x: 40, y: 40, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2182330343089005627}
@@ -586,7 +600,7 @@ Transform:
   m_GameObject: {fileID: 2182330343089502239}
   m_LocalRotation: {x: -0.013451653, y: -0.058623075, z: 0.0036932756, w: 0.9981828}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2000003, y: 1.2, z: 1.2000004}
+  m_LocalScale: {x: 1.2000004, y: 1.2, z: 1.2000004}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2182330343089005629}
@@ -639,10 +653,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 1
+  m_Radius: 0.35
+  m_Height: 0.55
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.32, z: 0}
 --- !u!54 &524462769
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -657,5 +671,5 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0

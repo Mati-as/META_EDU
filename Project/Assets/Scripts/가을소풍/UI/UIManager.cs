@@ -79,7 +79,7 @@ public class UIManager : MonoBehaviour
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[GameManager.answer]}";
+            roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
             _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }

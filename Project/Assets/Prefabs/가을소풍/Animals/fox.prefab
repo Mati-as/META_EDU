@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5481596815528985677}
   - component: {fileID: 5481596815528985667}
   - component: {fileID: 5481596815528985676}
+  - component: {fileID: 231677691}
   m_Layer: 6
   m_Name: Glow Mesh
   m_TagString: Untagged
@@ -111,6 +112,19 @@ MonoBehaviour:
   _animalShaderScriptableObject: {fileID: 11400000, guid: ece47247d89691d4e903d840180e4890,
     type: 2}
   _animalData: {fileID: 11400000, guid: 92e088a290877f44985f103a7bce2600, type: 2}
+--- !u!65 &231677691
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5481596815528985678}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.007930367, y: 0.05, z: 0.016841682}
+  m_Center: {x: -0.012975022, y: 0.0008396351, z: 0.008403546}
 --- !u!1 &5481596815952789024
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +154,7 @@ Transform:
   m_GameObject: {fileID: 5481596815952789024}
   m_LocalRotation: {x: 0.0024507781, y: -0.12349725, z: 0.00030500008, w: 0.9923419}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2000003}
+  m_LocalScale: {x: 1.2000002, y: 1.2, z: 1.2000005}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5481596815952355860}
@@ -196,7 +210,7 @@ CapsuleCollider:
   m_Radius: 0.25
   m_Height: 0.55
   m_Direction: 1
-  m_Center: {x: 0, y: 0.27, z: 0}
+  m_Center: {x: 0, y: 0.28, z: 0}
 --- !u!54 &930623711
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -211,7 +225,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!1 &5481596815952789026
 GameObject:

@@ -442,7 +442,7 @@ Transform:
   m_GameObject: {fileID: 2539679876153080028}
   m_LocalRotation: {x: -0.052006062, y: 0.2065095, z: 0.010992579, w: 0.9769997}
   m_LocalPosition: {x: 1.8602855, y: 0, z: 3.5775733}
-  m_LocalScale: {x: 1.1999999, y: 1.2, z: 1.2}
+  m_LocalScale: {x: 1.1999998, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2310896866976878467}
@@ -482,8 +482,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.31015503
-  m_Height: 0.97697103
+  m_Radius: 0.43
+  m_Height: 0.89
   m_Direction: 2
   m_Center: {x: -0.00035232306, y: 0.41419923, z: 0.09673458}
 --- !u!114 &599376417675040377
@@ -513,7 +513,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!1 &3129905847645655991
 GameObject:
@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 3129905847645655990}
   - component: {fileID: 3129905847645655984}
   - component: {fileID: 3129905847645655985}
+  - component: {fileID: 1895716386}
   m_Layer: 6
   m_Name: Glow Mesh
   m_TagString: Untagged
@@ -625,3 +626,16 @@ MonoBehaviour:
   _animalShaderScriptableObject: {fileID: 11400000, guid: ece47247d89691d4e903d840180e4890,
     type: 2}
   _animalData: {fileID: 11400000, guid: adc1e94cade60d644a9a5ade2fdc4239, type: 2}
+--- !u!65 &1895716386
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3129905847645655991}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.015618706, y: 0.05, z: 0.027659424}
+  m_Center: {x: -0.00000002205419, y: -0.005823763, z: 0.0008009304}

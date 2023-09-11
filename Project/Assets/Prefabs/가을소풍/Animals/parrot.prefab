@@ -363,6 +363,7 @@ GameObject:
   - component: {fileID: 2566162193261868314}
   - component: {fileID: 2566162193261868312}
   - component: {fileID: 2566162193261868311}
+  - component: {fileID: 1551188670}
   m_Layer: 6
   m_Name: Glow Mesh
   m_TagString: Untagged
@@ -474,8 +475,21 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.01, y: 0.01, z: 0.01}
+  m_Size: {x: 0.01, y: 0.05, z: 0.01}
   m_Center: {x: 4.350864e-10, y: 0.0105891265, z: -0.0028035864}
+--- !u!65 &1551188670
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2566162193261868316}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.012046592, y: 0.021239629, z: 0.020518243}
+  m_Center: {x: -0.000000016107487, y: 0.0105891265, z: -0.0028035785}
 --- !u!1 &5367727848595103641
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,7 +519,7 @@ Transform:
   m_GameObject: {fileID: 5367727848595103641}
   m_LocalRotation: {x: -0.011101373, y: -0.25315034, z: -0.0029051432, w: 0.9673589}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2000004, y: 1.1999998, z: 1.2000003}
+  m_LocalScale: {x: 1.2000003, y: 1.1999996, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1314158935979363903}
@@ -563,7 +577,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!114 &7629896987026432026
 MonoBehaviour:

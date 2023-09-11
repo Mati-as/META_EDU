@@ -11,6 +11,7 @@ public class AnimalData : ScriptableObject
     [HideInInspector]
     public Quaternion initialRotation;
 
+    public Vector3 animalPositionOffset;
     [FormerlySerializedAs("animalName")] [Header("Name")] [Space(10f)] 
     
     public string englishName;
@@ -32,8 +33,8 @@ public class AnimalData : ScriptableObject
    public static readonly int FLY_ANIM = Animator.StringToHash("Fly");
    public static readonly int SPIN_ANIM = Animator.StringToHash("Spin");
    public static readonly int RUN_ANIM = Animator.StringToHash("Run");
-   public static readonly int SELECTABLE = Animator.StringToHash("Selectable");
    public static readonly int SELECTABLE_A = Animator.StringToHash("SelectableA");
-   public static readonly int SELECTABLE_B= Animator.StringToHash("SelectableB");
+   public static readonly int SELECTABLE_B = Animator.StringToHash("SelectableB");
+   public static readonly int SELECTABLE_C= Animator.StringToHash("SelectableC");
    public static readonly int IS_GAME_FINISHED_ANIM = Animator.StringToHash(("IsGameFinished"));
 }

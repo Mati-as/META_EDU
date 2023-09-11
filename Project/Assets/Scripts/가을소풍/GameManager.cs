@@ -11,16 +11,7 @@ using Random = UnityEngine.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
-    // private enum GameState
-    // {
-    //     CameraArrived,
-    //     GameStarted,
-    //     RoundReady,
-    //     Corrected,
-    //     RoundFinished,
-    //     GameFinished
-    // }
-    
+   
     [Header("Display Setting")] [Space(10f)]
     public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
     
@@ -621,9 +612,9 @@ public class GameManager : MonoBehaviour
         {
             _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
             
-            _selectedAnimator.SetBool(AnimalData.SELECTABLE,false);
             _selectedAnimator.SetBool(AnimalData.SELECTABLE_A,false);
             _selectedAnimator.SetBool(AnimalData.SELECTABLE_B,false);
+            _selectedAnimator.SetBool(AnimalData.SELECTABLE_C,false);
             
             if (_isAnimRandomized == false)
             {
@@ -695,7 +686,7 @@ public class GameManager : MonoBehaviour
         {
             //생성
             GameObject thisAnimal =  Instantiate(animalData.animalPrefab, 
-                animalData.initialPosition, animalData.initialRotation);
+                animalData.initialPosition + animalData.animalPositionOffset, animalData.initialRotation);
 
 
             // 이름 뒤에 (Clone) 자동으로 붙는 것 제거.
@@ -751,6 +742,7 @@ public class GameManager : MonoBehaviour
                     _isSizeLerpInitialized = true;
                     _currentSizeLerp = 0f;
                 }
+                
                 DecreaseScale(_selectedAnimalGameObject,
                     _selectedAnimalData.increasedSize,_selectedAnimalData.defaultSize);
                 
@@ -861,9 +853,9 @@ public class GameManager : MonoBehaviour
         animator.SetBool(AnimalData.FLY_ANIM, false);
         animator.SetBool(AnimalData.ROLL_ANIM, false);
         animator.SetBool(AnimalData.SPIN_ANIM, false);
-        animator.SetBool(AnimalData.SELECTABLE,false);
         animator.SetBool(AnimalData.SELECTABLE_A,false);
         animator.SetBool(AnimalData.SELECTABLE_B,false);
+        animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
     private int _randomInPlayAnimationNumber;
     private void PlayInPlayAnimation()
@@ -900,23 +892,24 @@ public class GameManager : MonoBehaviour
     /// <param name="회전 속도 (Time.delta이용)"> </param>
     public void MoveAndRotateAnimals(float _moveInTime, float _rotationSpeedInRound)
     {
+        Vector3 offset = _selectedAnimals[0].GetComponent<AnimalController>()._animalData.animalPositionOffset;
         _selectedAnimals[0].transform.position =
             Vector3.Lerp(_selectedAnimals[0].transform.position,
-                playPositionA.position, _moveInElapsed / _moveInTime);
+                playPositionA.position + offset, _moveInElapsed / _moveInTime);
 
         _selectedAnimals[0].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
 
 
         _selectedAnimals[1].transform.position =
             Vector3.Lerp(_selectedAnimals[1].transform.position,
-                playPositionB.position, _moveInElapsed / _moveInTime);
+                playPositionB.position + offset, _moveInElapsed / _moveInTime);
 
         _selectedAnimals[1].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
 
 
         _selectedAnimals[2].transform.position =
             Vector3.Lerp(_selectedAnimals[2].transform.position,
-                playPositionC.position, _moveInElapsed / _moveInTime);
+                playPositionC.position + offset, _moveInElapsed / _moveInTime);
 
         _selectedAnimals[2].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
     }
