@@ -441,11 +441,13 @@ public class GameManager : MonoBehaviour
 
     private void InitializeAndSetTimerOnStarted()
     {
+       
         _moveInElapsed += Time.deltaTime;
         _elapsedOfToBeSelectableWaitTime += Time.deltaTime;
    
         isRoundReady = false;
         _elapsedOfRoundFinished = 0f;
+        _elapsedForMovingToTouchDownPlace = 0f;
     }
 
     /// <summary>
@@ -615,7 +617,7 @@ public class GameManager : MonoBehaviour
         var t = Mathf.Clamp01(_elapsedForMovingToSpotLight / movingTimeSecWhenCorrect);
 
 
-        if (isCorrected)
+        if (isCorrected && !touchDownPosition)
         {
             _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
             
@@ -715,9 +717,11 @@ public class GameManager : MonoBehaviour
     private void Activate(GameObject gameObject) => gameObject.SetActive(true);
    
     private float _lerpForMovingDown;
-    public float moveDownSpeed;
+    private float _elapsedForMovingToTouchDownPlace;
+    public float moveDownTime;
     public Transform touchDownPosition;
     private bool _isSizeLerpInitialized;
+    
     private void MoveOutOfScreen()
     {
         
@@ -732,10 +736,12 @@ public class GameManager : MonoBehaviour
                 RandomRotateAndMove(gameObj);
             }
             
+            
            
             else if (gameObj.name == answer && !_animalShaderController.IsTouchedDown)
             {
-                _lerpForMovingDown += Time.deltaTime * moveDownSpeed;
+                _elapsedForMovingToTouchDownPlace += Time.deltaTime;
+                _lerpForMovingDown += _elapsedForMovingToTouchDownPlace/ moveDownTime;
                 gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                     touchDownPosition.position, _lerpForMovingDown);
             }
@@ -898,25 +904,31 @@ public class GameManager : MonoBehaviour
     /// <param name="회전 속도 (Time.delta이용)"> </param>
     public void MoveAndRotateAnimals(float _moveInTime, float _rotationSpeedInRound)
     {
-        Vector3 offset = _selectedAnimals[0].GetComponent<AnimalController>()._animalData.animalPositionOffset;
-        _selectedAnimals[0].transform.position =
-            Vector3.Lerp(_selectedAnimals[0].transform.position,
-                playPositionA.position + offset, _moveInElapsed / _moveInTime);
+        
+      
+        //이동
+            _selectedAnimals[0].transform.position = new Vector3(
+                Mathf.Lerp(_selectedAnimals[0].transform.position.x, playPositionA.position.x,_moveInElapsed / _moveInTime),
+                _selectedAnimals[0].transform.position.y,
+              Mathf.Lerp(_selectedAnimals[0].transform.position.z, playPositionA.position.z, _moveInElapsed / _moveInTime)
+            );
 
+            _selectedAnimals[1].transform.position = new Vector3(
+                Mathf.Lerp(_selectedAnimals[1].transform.position.x, playPositionB.position.x, _moveInElapsed / _moveInTime),
+                _selectedAnimals[1].transform.position.y,
+                Mathf.Lerp(_selectedAnimals[1].transform.position.z, playPositionB.position.z, _moveInElapsed / _moveInTime)
+            );
+
+            _selectedAnimals[2].transform.position = new Vector3(
+                Mathf.Lerp(_selectedAnimals[2].transform.position.x, playPositionC.position.x, _moveInElapsed / _moveInTime),
+                _selectedAnimals[2].transform.position.y,
+               Mathf.Lerp(_selectedAnimals[2].transform.position.z, playPositionC.position.z, _moveInElapsed / _moveInTime)
+            );
+        
+       
+        //회전
         _selectedAnimals[0].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
-
-
-        _selectedAnimals[1].transform.position =
-            Vector3.Lerp(_selectedAnimals[1].transform.position,
-                playPositionB.position + offset, _moveInElapsed / _moveInTime);
-
         _selectedAnimals[1].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
-
-
-        _selectedAnimals[2].transform.position =
-            Vector3.Lerp(_selectedAnimals[2].transform.position,
-                playPositionC.position + offset, _moveInElapsed / _moveInTime);
-
         _selectedAnimals[2].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);
     }
 
