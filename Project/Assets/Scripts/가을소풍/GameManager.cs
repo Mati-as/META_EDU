@@ -242,41 +242,29 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        
-       
-        
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
         {
             CheckPossibleToStartGame();
         }
-
-
+        
         //1. 게임 시작 시 ---------------------------------
         if (isGameStarted && isGameFinished == false)
         {
             // 스크린 클릭 시 파티클 효과 
             PlayClickOnScreenEffect();
-            
             // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정
             CheckInitialReady();
-            
-            
-
-
             // 첫 라운드 이전을 roundfinish로 설정.
-
-
-            //2. 라운드 시작 준비 완료 시 ------------------
+            //2. 라운드 시작 준비 완료 시 ------------------------
             if (isRoundReady) //1회 실행 보장.
             {
+                OnRoundisReady();
                 InitializeOnReady();
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
                 SelectRandomThreeAnimals();  // 리스트 랜덤구성
-                
-                
 #if UNITY_EDITOR
                 Debug.Log("준비 완료");
 #endif
@@ -289,7 +277,6 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("라운드 시작!");
 #endif
-                
                 InitializeAndSetTimerOnStarted();
                 PlayInPlayAnimation();
                 MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
@@ -312,8 +299,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("정답!");  
 #endif
-                TouchDownColliderOnAction();
-                PlayCorrectAnimation();
+                MoveToSpotLigt();
                 InitializeAndSetTimerOnCorrect();
                 
                 
@@ -330,7 +316,6 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("라운드 종료!");
 #endif
-                
                 MoveOutOfScreen();
                 _onRoundFinishedLightOff.Invoke();
             }
@@ -370,12 +355,15 @@ public class GameManager : MonoBehaviour
 
 
     
-    // ------------------------- ▼ 메소드 목록 ----------------------------
+    // ------------------------- ▼ 메소드 목록 ------------------------------------------------
     
     public static int totalAnimalCount;
     public static event Action AllAnimalsInitialized;
     private static int initializedAnimalsCount = 0;
+    public static event Action isRoundReadyEvent;
     public static event Action isCorrectedEvent;
+    public static event Action isRoundFinishedEvent;
+  
     public static void AnimalInitialized()
     {
         initializedAnimalsCount++;
@@ -388,10 +376,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void TouchDownColliderOnAction()
+    public static void OnRoundisReady()
+    {
+        isRoundReadyEvent?.Invoke();
+    }
+
+    public static void OnCorrectedInvokeAnimalFunc()
     {
         isCorrectedEvent?.Invoke();
     }
+    
     
    
     
@@ -426,6 +420,7 @@ public class GameManager : MonoBehaviour
     private void CheckPossibleToStartGame()
     {
         _elapsedForMovingToSpotLight += Time.deltaTime;
+        
         if (gameStartWaitSecondsForBackgroundChange < _elapsedForMovingToSpotLight && !isGameStarted)
         {
             isGameStarted = true;
@@ -530,9 +525,11 @@ public class GameManager : MonoBehaviour
                     {
                        
                         isCorrected = true;
+                       
                         SetAnimalData(_clickedAnimal);
                         
-                        InvokeOncorrect();
+                        OnCorrectedInvokeAnimalFunc();
+                        InvokeOncorrectUI();
                     }
 
                     //moving에서의 lerp
@@ -576,12 +573,11 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 정답 맞출 시 UI에게 지시문을 플레이 하도록 하는 이벤트 발생용 함수입니다. 
     /// </summary>
-    private void InvokeOncorrect()
+    private void InvokeOncorrectUI()
     {
         _correctMessageEvent.Invoke();
         _onCorrectLightOnEvent.Invoke();
     }
-
 
     private void IncreaseScale(GameObject gameObject ,float defaultSize, float increasedSize)
     {
@@ -595,6 +591,7 @@ public class GameManager : MonoBehaviour
 
         gameObject.transform.localScale = Vector3.one * lerp;
     }
+   
     private void DecreaseScale(GameObject gameObject, float defaultSize, float increasedSize)
     {
         _currentSizeLerp += sizeIncreasingSpeed * Time.deltaTime;
@@ -613,43 +610,13 @@ public class GameManager : MonoBehaviour
     ///     마우스로 선택 된 동물을 이동시키는 함수 입니다.
     ///     선택된 동물이 이동 시, 다른 동물들은 선택될 수 없도록 추가 로직이 필요합니다.
     /// </summary>
-   
-    public void PlayCorrectAnimation()
+    public void MoveToSpotLigt()
     {
         var t = Mathf.Clamp01(_elapsedForMovingToSpotLight / movingTimeSecWhenCorrect);
-
-
+        
         if (isCorrected)
         {
-            _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
-            
-            _selectedAnimator.SetBool(AnimalData.SELECTABLE_A,false);
-            _selectedAnimator.SetBool(AnimalData.SELECTABLE_B,false);
-            _selectedAnimator.SetBool(AnimalData.SELECTABLE_C,false);
-            
-            if (_isAnimRandomized == false)
-            {
-                var randomAnimNum = Random.Range(0, 3);
-                _isAnimRandomized = true;
-
-                switch (randomAnimNum)
-                {
-                    case 0:
-                        _selectedAnimator.SetBool(AnimalData.ROLL_ANIM, true);
-                        break;
-                    case 1:
-                        _selectedAnimator.SetBool(AnimalData.FLY_ANIM, true);
-                        break;
-                    case 2:
-                        _selectedAnimator.SetBool(AnimalData.SPIN_ANIM, true);
-                        break;
-                }
-            }
-
-           
-            IncreaseScale(_selectedAnimalGameObject,
-                _selectedAnimalData.defaultSize,_selectedAnimalData.increasedSize);
-            
+           // IncreaseScale(_selectedAnimalGameObject, _selectedAnimalData.defaultSize,_selectedAnimalData.increasedSize);
             
             _selectedAnimalGameObject.transform.position =
                 Vector3.Lerp(_selectedAnimalGameObject.transform.position,
@@ -714,12 +681,10 @@ public class GameManager : MonoBehaviour
             animalGameOjbectDictionary.Add(animalData.englishName,thisAnimal);
             
             _animalList.Add(thisAnimal);
-
-          
+            
         }
     }
-
-    private void Activate(GameObject gameObject) => gameObject.SetActive(true);
+    
    
     private float _lerpForMovingDown;
     private float _elapsedForMovingToTouchDownPlace;
@@ -767,8 +732,7 @@ public class GameManager : MonoBehaviour
                 InitializeAllAnimatorParameters(_tempAnimator);
                 _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);
                 RandomRotateAndMoveOut(gameObj);
-              
-             
+                
             }
             _randomeIndex++;
         }

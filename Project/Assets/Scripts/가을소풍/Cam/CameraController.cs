@@ -31,14 +31,7 @@ public class CameraController : MonoBehaviour
     {
         if (windowController.isWindowStartOpening)
         {
-            elapsedTime += Time.deltaTime;
-
-            // Lerp의 t값을 계산 (0 ~ 1 사이)
-            var t = Mathf.Clamp01(elapsedTime / movingTimeSec);
-            t = Lerp2D.EaseInQuad(0, 1, t);
-
-
-            transform.position = Vector3.Lerp(transform.position, _playStartCamPoint.position, t);
+            MoveTowardPlayScene();
         }
     }
 
@@ -47,8 +40,19 @@ public class CameraController : MonoBehaviour
         if (other.CompareTag("camera"))
         {
             GameManager.isCameraArrivedToPlay = true;
-            Debug.Log("Cam Arrived.");
         }
+    }
+
+    private void MoveTowardPlayScene()
+    {
+        elapsedTime += Time.deltaTime;
+
+        // Lerp의 t값을 계산 (0 ~ 1 사이)
+        var t = Mathf.Clamp01(elapsedTime / movingTimeSec);
+        t = Lerp2D.EaseInQuad(0, 1, t);
+
+
+        transform.position = Vector3.Lerp(transform.position, _playStartCamPoint.position, t);
     }
 
  
