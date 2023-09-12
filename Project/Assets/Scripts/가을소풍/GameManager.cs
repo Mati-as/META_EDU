@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour
     [Space(10f)] [Header("References")] [Space(10f)]
     
     private AnimalShaderController _animalShaderController;
+    private AnimalController _animalController;
     
     public LayerMask playObejctInteractableLayer;
     public LayerMask UIInteractableLayer;
@@ -307,7 +308,7 @@ public class GameManager : MonoBehaviour
             //4. 정답 맞춘 경우 ------------------
             if (isCorrected)
             {
-                
+                isRoundStarted = false;
 #if UNITY_EDITOR
                 Debug.Log("정답!");  
 #endif
@@ -433,9 +434,10 @@ public class GameManager : MonoBehaviour
 
     private void InitializeOnReady()
     {
+        isRoundStarted = true;
+        _isAnimalSetUpright = false;
         _isSizeLerpInitialized = false; // 사이즈 감소 시 사용
         isCorrected = false;
-        isRoundStarted = true;
         _isAnimRandomized = false; //correct anim 관련 bool 초기화.
     }
 
@@ -617,7 +619,7 @@ public class GameManager : MonoBehaviour
         var t = Mathf.Clamp01(_elapsedForMovingToSpotLight / movingTimeSecWhenCorrect);
 
 
-        if (isCorrected && !touchDownPosition)
+        if (isCorrected)
         {
             _selectedAnimator = _selectedAnimalGameObject.GetComponent<Animator>();
             
@@ -689,13 +691,16 @@ public class GameManager : MonoBehaviour
     ///     딕셔너리는 클릭 시, hit.name과 딕셔너리 안의 자료를 비교할 떄 사용합니다.
     ///     리스트 자료구조는 동물의 순서를 랜덤으로 섞고 동물들을 배치할 때 사용합니다.
     /// </summary>
+    [SerializeField]
+    public GameObject animal;
     private void SetAndInitializedAnimals()
     {
         foreach (AnimalData animalData in allAnimals)
         {
             //생성
             GameObject thisAnimal =  Instantiate(animalData.animalPrefab, 
-                animalData.initialPosition + animalData.animalPositionOffset, animalData.initialRotation);
+                animalData.initialPosition + animalData.animalPositionOffset, animalData.initialRotation,
+            animal.transform);
 
 
             // 이름 뒤에 (Clone) 자동으로 붙는 것 제거.
@@ -728,17 +733,18 @@ public class GameManager : MonoBehaviour
         foreach (var gameObj in _animalList)
         {
             _animalShaderController = gameObj.GetComponentInChildren<AnimalShaderController>();
+            _animalController = gameObj.GetComponentInChildren<AnimalController>();
             if (gameObj.name != answer)
             {
                 _tempAnimator = gameObj.GetComponent<Animator>();
                 _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);
 
-                RandomRotateAndMove(gameObj);
+                RandomRotateAndMoveOut(gameObj);
             }
             
             
            
-            else if (gameObj.name == answer && !_animalShaderController.IsTouchedDown)
+            else if (gameObj.name == answer && !_animalController.IsTouchedDown)
             {
                 _elapsedForMovingToTouchDownPlace += Time.deltaTime;
                 _lerpForMovingDown += _elapsedForMovingToTouchDownPlace/ moveDownTime;
@@ -746,7 +752,7 @@ public class GameManager : MonoBehaviour
                     touchDownPosition.position, _lerpForMovingDown);
             }
             
-            else if (gameObj.name == answer && _animalShaderController.IsTouchedDown)
+            else if (gameObj.name == answer && _animalController.IsTouchedDown)
             { 
                 _tempAnimator = gameObj.GetComponent<Animator>();
                 
@@ -760,7 +766,7 @@ public class GameManager : MonoBehaviour
                 
                 InitializeAllAnimatorParameters(_tempAnimator);
                 _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);
-                RandomRotateAndMove(gameObj);
+                RandomRotateAndMoveOut(gameObj);
               
              
             }
@@ -769,7 +775,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void RandomRotateAndMove(GameObject gameObj)
+    private void RandomRotateAndMoveOut(GameObject gameObj)
     {
         if (_randomeIndex % 2 == 0)
         {
@@ -786,7 +792,18 @@ public class GameManager : MonoBehaviour
              
         }
     }
-    
+
+    /// <summary>
+    /// StandAnimalVertically, OrientAnimalUpwards, AlignAnimalUplight
+    /// </summary>
+    private bool _isAnimalSetUpright;
+    private void StandAnimalUpright(GameObject animal)
+    {
+        //FromToRotation : a축을 b축으로 -> animal.up축을 월드좌표 up축으로.
+        animal.transform.rotation = Quaternion.Euler(0,animal.transform.rotation.y,0);
+
+        Debug.Log("upright완료");
+    }
     
     /// <summary>
     /// 캐릭터가 밖으로 나갈 때, TargetPosition방향으로 회전하는 함수 입니다.
@@ -904,7 +921,16 @@ public class GameManager : MonoBehaviour
     /// <param name="회전 속도 (Time.delta이용)"> </param>
     public void MoveAndRotateAnimals(float _moveInTime, float _rotationSpeedInRound)
     {
-        
+        //y축 수직
+        if (!_isAnimalSetUpright)
+        {
+            StandAnimalUpright(_selectedAnimals[0]);
+            StandAnimalUpright(_selectedAnimals[1]);
+            StandAnimalUpright(_selectedAnimals[2]);
+            
+            _isAnimalSetUpright = true; 
+        }
+       
       
         //이동
             _selectedAnimals[0].transform.position = new Vector3(
@@ -912,7 +938,7 @@ public class GameManager : MonoBehaviour
                 _selectedAnimals[0].transform.position.y,
               Mathf.Lerp(_selectedAnimals[0].transform.position.z, playPositionA.position.z, _moveInElapsed / _moveInTime)
             );
-
+          
             _selectedAnimals[1].transform.position = new Vector3(
                 Mathf.Lerp(_selectedAnimals[1].transform.position.x, playPositionB.position.x, _moveInElapsed / _moveInTime),
                 _selectedAnimals[1].transform.position.y,
@@ -925,6 +951,7 @@ public class GameManager : MonoBehaviour
                Mathf.Lerp(_selectedAnimals[2].transform.position.z, playPositionC.position.z, _moveInElapsed / _moveInTime)
             );
         
+       
        
         //회전
         _selectedAnimals[0].transform.Rotate(0, _rotationSpeedInRound * Time.deltaTime, 0);

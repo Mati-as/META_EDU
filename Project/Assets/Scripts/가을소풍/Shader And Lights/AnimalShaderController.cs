@@ -31,20 +31,14 @@ public class AnimalShaderController : MonoBehaviour
     private Material _mat;
         
     
-    //▼ 기타 
-    private bool isTouchedDown;
-    public bool IsTouchedDown
-    {
-        get { return isTouchedDown;}
-        set { isTouchedDown = value; }
-    }
+
     
  
 
     
     void Awake()
     {
-        IsTouchedDown = false;
+       
         
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
       
@@ -55,22 +49,14 @@ public class AnimalShaderController : MonoBehaviour
     }
 
 
-    private readonly string TAG_ARRIVAL= "arrival";
-    public void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag(TAG_ARRIVAL))
-        {
-            isTouchedDown = true;
-            Debug.Log("Touched Down!");
-        }
-    }
+    
+  
 
     void Update()
     {
         if (GameManager.isRoundReady)
         {
             _elapsedForInPlayGlowOn = 0f;
-            isTouchedDown = false;
 
         }
 
