@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [Header("Common Data")] [Space(10f)] [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
 
+    //감도 향상 테스트를 위한 CLICK_REPEAT_COUNT 설정.
     [FormerlySerializedAs("clickRepeatCount")] public int CLICK_REPEAT_COUNT;
     [Header("Display Setting")] [Space(10f)]
     public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
@@ -293,10 +294,9 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                     Debug.Log("동물 선택 가능");
 #endif
-                    for (int i = 0; i < CLICK_REPEAT_COUNT; i++)
-                    {
+                   
                         SelectObject();
-                    }
+                    
                   
                 }
                 _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
@@ -519,59 +519,60 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0) && !isCorrected)
-#else
-        //        터치 시
-        // if (Input.touchCount > 0)
-#endif
         {
+            for (int i = 0; i < CLICK_REPEAT_COUNT; i++)
+            {
 #if UNITY_EDITOR
-            m_vecMouseDownPos = Input.mousePosition;
+                m_vecMouseDownPos = Input.mousePosition;
 #else
             // m_vecMouseDownPos = Input.GetTouch(0).position;
             // if (Input.GetTouch(0).phase != TouchPhase.Began)
             //     return;
 #endif
 
-            var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
-            RaycastHit hit;
+                var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
+                RaycastHit hit;
             
           
 
 
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer) )
-            {
-                if (animalGameOjbectDictionary.ContainsKey(hit.collider.name)&& isCorrected == false)
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer) )
                 {
-                    _clickedAnimal = hit.collider.name;
-                    
-                    //정답인 경우
-                    if (_clickedAnimal == answer)
+                    if (animalGameOjbectDictionary.ContainsKey(hit.collider.name)&& isCorrected == false)
                     {
-                        if (!isCorrected)
+                        _clickedAnimal = hit.collider.name;
+                    
+                        //정답인 경우
+                        if (_clickedAnimal == answer)
                         {
-                            isCorrected = true;
-                            OnCorrectedInvokeAnimalFunc();
-                        }
+                            if (!isCorrected)
+                            {
+                                isCorrected = true;
+                                OnCorrectedInvokeAnimalFunc();
+                            }
                   
-                        SetAnimalData(_clickedAnimal);
-                        InvokeOncorrectUI();
+                            SetAnimalData(_clickedAnimal);
+                            InvokeOncorrectUI();
+                        }
+
+                        //moving에서의 lerp
+                        _elapsedForMovingToSpotLight = 0;
+
+                        //sizeIncrease()의 lerp
+                        _currentSizeLerp = 0;
+                    
                     }
 
-                    //moving에서의 lerp
-                    _elapsedForMovingToSpotLight = 0;
-
-                    //sizeIncrease()의 lerp
-                    _currentSizeLerp = 0;
-                    
-                }
-
-              
-
-            }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
+                }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
             
-               
+            }
         }
+
+#else
+        //        터치 시
+        // if (Input.touchCount > 0)
+#endif
     }
 
     private void PlayClickOnScreenEffect()
