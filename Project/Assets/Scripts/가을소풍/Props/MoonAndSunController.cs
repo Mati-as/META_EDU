@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MoonAndSunController : MonoBehaviour
 {
@@ -27,10 +28,12 @@ public class MoonAndSunController : MonoBehaviour
         transform.position = _defaultPosition.position;
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
         _mat = _meshRenderer.material;
-        _defaultColor = _mat.GetColor(_ALBEDO);
+        _defaultColor = _mat.GetColor(_ALBEDO) * DEFAULT_INTENSITY;
+        _mat.SetColor(_ALBEDO,_defaultColor); 
+      
     }
 
-    public const float DEFAULT = 1f;
+    [FormerlySerializedAs("DEFAULT")] public float DEFAULT_INTENSITY;
     // Update is called once per frame
     private void Update()
     {
@@ -86,7 +89,7 @@ public class MoonAndSunController : MonoBehaviour
     }
     
     public float intensityChangeSpeed;
-    [Range(0,2)]
+    [Range(0,5)]
     public float targetIntensity;
     private float _colorLerp;
     private void SetColorIntensity(Color initialColor, Color targetColor)
