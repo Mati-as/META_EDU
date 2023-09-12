@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 
@@ -10,7 +11,10 @@ using Random = UnityEngine.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
-   
+    [Header("Common Data")] [Space(10f)] [SerializeField]
+    private ShaderAndCommon _shaderAndCommon;
+
+    [FormerlySerializedAs("clickRepeatCount")] public int CLICK_REPEAT_COUNT;
     [Header("Display Setting")] [Space(10f)]
     public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
     
@@ -235,7 +239,6 @@ public class GameManager : MonoBehaviour
         
     }
 
-  
     
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.
@@ -245,12 +248,14 @@ public class GameManager : MonoBehaviour
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
         {
-            CheckPossibleToStartGame();
+            StartGameAndInvoke();
         }
         
         //1. 게임 시작 시 ---------------------------------
         if (isGameStarted && isGameFinished == false)
         {
+          
+          
             // 스크린 클릭 시 파티클 효과 
             PlayClickOnScreenEffect();
             // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정
@@ -264,30 +269,36 @@ public class GameManager : MonoBehaviour
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
-                SelectRandomThreeAnimals();  // 리스트 랜덤구성
+                SelectRandomThreeAnimals(); ;// 리스트 랜덤구성
+              
+                
+                OnRoundStartedEvent();
 #if UNITY_EDITOR
                 Debug.Log("준비 완료");
 #endif
             }
-
-
+            
             //3. 라운드 시작 시 ------------------
             if (isRoundStarted)
-            {
+            {   //PlayInPlayAnimation();
 #if UNITY_EDITOR
                 Debug.Log("라운드 시작!");
 #endif
                 InitializeAndSetTimerOnStarted();
-                PlayInPlayAnimation();
                 MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
-
                 
-                //동물 등장 후 특정 시간 이후에 동물 선택 가능.
-                if (_elapsedOfToBeSelectableWaitTime > waitTimeToBeSelectable )
+                //동물 쉐이더 글로우가 켜질 때 선택가능.
+                if (_elapsedOfToBeSelectableWaitTime > _shaderAndCommon.waitTimeForTurningOnGlow )
                 {
-                    SelectObject();
+#if UNITY_EDITOR
+                    Debug.Log("동물 선택 가능");
+#endif
+                    for (int i = 0; i < CLICK_REPEAT_COUNT; i++)
+                    {
+                        SelectObject();
+                    }
+                  
                 }
-                
                 _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
             }
 
@@ -311,11 +322,13 @@ public class GameManager : MonoBehaviour
             //5. 라운드 끝난 경우 ------------------ -> 1 or 6
             if (isRoundFinished)
             {
-                InitializeAndSetTimerOnRoundFinished();
-                
+                IntializeAndInvokeWhenRoundFinished();
 #if UNITY_EDITOR
                 Debug.Log("라운드 종료!");
 #endif
+
+                
+                
                 MoveOutOfScreen();
                 _onRoundFinishedLightOff.Invoke();
             }
@@ -328,7 +341,6 @@ public class GameManager : MonoBehaviour
                 
                 //UI의 문구를 초기화 하는 이벤트 입니다.
                 _messageInitializeEvent.Invoke();
-                
             }
         }
 
@@ -340,8 +352,6 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log("게임종료");
 #endif
-
-          
             MoveInWhenGameIsFinished();
             
             _finishedMessageEvent.Invoke();
@@ -353,38 +363,43 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene();
     }
 
-
     
     // ------------------------- ▼ 메소드 목록 ------------------------------------------------
     
     public static int totalAnimalCount;
-    public static event Action AllAnimalsInitialized;
+    public static event Action onAllAnimalsInitialized;
     private static int initializedAnimalsCount = 0;
-    public static event Action isRoundReadyEvent;
-    public static event Action isCorrectedEvent;
-    public static event Action isRoundStartedEvent;
-    public static event Action isRoundFinishedEvent;
+    public static event Action onGameStartEvent;
+    public static event Action onRoundReadyEvent;
+    public static event Action onCorrectedEvent;
+    public static event Action onRoundStartedEvent;
+    public static event Action onRoundFinishedEvent;
+    
   
     public static void AnimalInitialized()
     {
         initializedAnimalsCount++;
-        Debug.Log($"totalAnimals: {totalAnimalCount}");
-        Debug.Log($"initializedAnimalsCount: {initializedAnimalsCount}");
+       
         if (initializedAnimalsCount >= totalAnimalCount)
         {
-            AllAnimalsInitialized?.Invoke();
+            onAllAnimalsInitialized?.Invoke();
             Debug.Log($"Initializing Event Occured!");
         }
     }
 
-    public static void OnRoundisReady()
+    public void OnRoundStartedEvent()
     {
-        isRoundReadyEvent?.Invoke();
+        onRoundStartedEvent?.Invoke();
+    }
+
+    public void OnRoundisReady()
+    {
+        onRoundReadyEvent?.Invoke();
     }
 
     public static void OnCorrectedInvokeAnimalFunc()
     {
-        isCorrectedEvent?.Invoke();
+        onCorrectedEvent?.Invoke();
     }
     
     
@@ -402,9 +417,14 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void InitializeAndSetTimerOnRoundFinished()
+    private void IntializeAndInvokeWhenRoundFinished()
     {
-        isCorrected = false;
+        if (isCorrected == true)
+        {
+            onRoundFinishedEvent?.Invoke();
+            isCorrected = false;
+        }
+      
         _moveOutElapsed += Time.deltaTime;
         _elapsedForNextRound += Time.deltaTime;
     }
@@ -418,13 +438,17 @@ public class GameManager : MonoBehaviour
         if (_elapsedOfRoundFinished > waitTimeBetweenRounds) isRoundFinished = true;
     }
 
-    private void CheckPossibleToStartGame()
+    private bool _isGameStartEventRun;
+    private void StartGameAndInvoke()
     {
         _elapsedForMovingToSpotLight += Time.deltaTime;
         
         if (gameStartWaitSecondsForBackgroundChange < _elapsedForMovingToSpotLight && !isGameStarted)
         {
             isGameStarted = true;
+            
+            onGameStartEvent?.Invoke();
+            _isGameStartEventRun = true;
         }
     }
 
@@ -524,12 +548,13 @@ public class GameManager : MonoBehaviour
                     //정답인 경우
                     if (_clickedAnimal == answer)
                     {
-                       
-                        isCorrected = true;
-                       
+                        if (!isCorrected)
+                        {
+                            isCorrected = true;
+                            OnCorrectedInvokeAnimalFunc();
+                        }
+                  
                         SetAnimalData(_clickedAnimal);
-                        
-                        OnCorrectedInvokeAnimalFunc();
                         InvokeOncorrectUI();
                     }
 
@@ -560,13 +585,12 @@ public class GameManager : MonoBehaviour
             
             if (Physics.Raycast(raySecond, out hitSecond, Mathf.Infinity, UIInteractableLayer) )
             {
-                
                 Debug.Log("파티클 재생");
                 clickParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
                 clickParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
                 clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
             }
-            SelectObject();
+           
         }
     }
     
@@ -617,6 +641,8 @@ public class GameManager : MonoBehaviour
         
         if (isCorrected)
         {
+
+            Debug.Log("MoveToSpotLight : GameManager.");
            // IncreaseScale(_selectedAnimalGameObject, _selectedAnimalData.defaultSize,_selectedAnimalData.increasedSize);
             
             _selectedAnimalGameObject.transform.position =
@@ -822,17 +848,15 @@ public class GameManager : MonoBehaviour
         Debug.Log($"현재 라운드: {roundCount}");
 #endif
 
-        foreach (var gameObj in _animalList)
-        {
-            _tempAnimator = gameObj.GetComponent<Animator>();
-            AnimalController _animalController = gameObj.GetComponent<AnimalController>();
-            
-            InitializeAllAnimatorParameters(_tempAnimator);
-            gameObj.transform.localScale = Vector3.one * _animalController._animalData.defaultSize;
-        }
-        
-        
-       
+        // animal객체로 이동.. 9/12/23
+        // foreach (var gameObj in _animalList)
+        // {
+        //     _tempAnimator = gameObj.GetComponent<Animator>();
+        //     AnimalController _animalController = gameObj.GetComponent<AnimalController>();
+        //     
+        //     InitializeAllAnimatorParameters(_tempAnimator);
+        //     gameObj.transform.localScale = Vector3.one * _animalController._animalData.defaultSize;
+        // }
     }
 
     /// <summary>
@@ -852,6 +876,7 @@ public class GameManager : MonoBehaviour
     private int _randomInPlayAnimationNumber;
     private void PlayInPlayAnimation()
     {
+   
         foreach (var gameObj in _animalList)
         {
             _tempAnimator = gameObj.GetComponent<Animator>();

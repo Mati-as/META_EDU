@@ -1,25 +1,28 @@
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
-    [CreateAssetMenu(fileName = "ShaderAndCommon", menuName = "ScriptableObjects/ShaderAndCommon", order = int.MaxValue)]
+[CreateAssetMenu(fileName = "ShaderAndCommon", menuName = "ScriptableObjects/ShaderAndCommon", order = int.MaxValue)]
     public class ShaderAndCommon : ScriptableObject
     {
 
         [Header("Fresnel Setting")]    [Space(10)]
-        [SerializeField]  public float fresnelSpeed;
-        [SerializeField] public float minFresnelPower;
-        [SerializeField] public float maxFresnelPower;
+        [Range(0,2)] [SerializeField]  public float fresnelSpeed;
+        [Range(0,10)][SerializeField] public float minFresnelPower;
+        [Range(0,10)][SerializeField] public float maxFresnelPower;
 
     
         [Space(20)] [Header("Outline Setting")]    [Space(10)]
-        [SerializeField] public float colorIntensityRange; //0~2
-        [SerializeField] public float waitTimeForTurningOnGlow;
+        [Range(0,2)][SerializeField] public float colorIntensityRange; //0~2
+        [Range(0,20)][SerializeField] public float waitTimeForTurningOnGlow;
         [Space(10)]
-        [SerializeField] public float outlineTurningOnSpeed;
+        [Range(0,1)][SerializeField] public float outlineTurningOnSpeed;
 
+        [FormerlySerializedAs("sizeIcreasingSpeed")]
         [Space(35)] [Header("Common Settings")] [Space(20)]
-        public float sizeIcreasingSpeed;
+        [Range(0,2)]public float sizeIncreasingSpeed;
+        [Range(0,2)]public float sizeDecreasingSpeed;
 
     }
 

@@ -10,8 +10,8 @@ public class PropsController : MonoBehaviour
     private void Awake()
     {
         _touchDownBoxController.enabled = false;
-        GameManager.isCorrectedEvent -= EnableCollder;
-        GameManager.isCorrectedEvent += EnableCollder;
+        GameManager.onCorrectedEvent -= EnableCollder;
+        GameManager.onCorrectedEvent += EnableCollder;
     }
 
     
@@ -22,6 +22,6 @@ public class PropsController : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.isCorrectedEvent -= EnableCollder;
+        GameManager.onCorrectedEvent -= EnableCollder;
     }
 }
