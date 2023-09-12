@@ -60,7 +60,7 @@ public class ParticleEventController : MonoBehaviour
 
                 particles[i].angularVelocity = randomAngularVelocity;
 
-                float randomForce = Random.Range(1f ,3.5f);
+                float randomForce = Random.Range(0.6f ,3.5f);
                 var forceMultiplier =  randomForce / (1.0f + distance); // 거리에 반비례하는 힘
                 particles[i].velocity += randomDirection * force * forceMultiplier;
             }
