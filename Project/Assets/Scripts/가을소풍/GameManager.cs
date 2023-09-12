@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 
@@ -26,8 +25,9 @@ public class GameManager : MonoBehaviour
     public static bool isRoundReady { get; private set; }
     public static bool isRoundStarted { get; private set; }
     public static bool isCorrected { get; private set; }
-    public static bool isGameFinished { get; private set; }
     public static bool isRoundFinished { get; private set; }
+    public static bool isGameFinished { get; private set; }
+  
     
     public static string answer { get; private set; }
 
@@ -362,6 +362,7 @@ public class GameManager : MonoBehaviour
     private static int initializedAnimalsCount = 0;
     public static event Action isRoundReadyEvent;
     public static event Action isCorrectedEvent;
+    public static event Action isRoundStartedEvent;
     public static event Action isRoundFinishedEvent;
   
     public static void AnimalInitialized()
@@ -706,9 +707,7 @@ public class GameManager : MonoBehaviour
 
                 RandomRotateAndMoveOut(gameObj);
             }
-            
-            
-           
+                
             else if (gameObj.name == answer && !_animalController.IsTouchedDown)
             {
                 _elapsedForMovingToTouchDownPlace += Time.deltaTime;
@@ -726,8 +725,8 @@ public class GameManager : MonoBehaviour
                     _isSizeLerpInitialized = true;
                     _currentSizeLerp = 0f;
                 }
-                DecreaseScale(_selectedAnimalGameObject,
-                    _selectedAnimalData.increasedSize,_selectedAnimalData.defaultSize);
+                
+               // DecreaseScale(_selectedAnimalGameObject, _selectedAnimalData.increasedSize,_selectedAnimalData.defaultSize);
                 
                 InitializeAllAnimatorParameters(_tempAnimator);
                 _tempAnimator.SetBool(AnimalData.RUN_ANIM, true);

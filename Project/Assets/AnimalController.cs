@@ -1,14 +1,19 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 public class AnimalController : MonoBehaviour
 {
     
     public AnimalData _animalData;
-   
+    [Header("Initial Setting")] [Space(10f)]
+    [Header("On GameStart")] [Space(10f)]
+    [Header("On Round Is Ready")] [Space(10f)]
+    [Header("On Round Started")] [Space(10f)]
+    [Header("On Corrected")] [Space(10f)]
+    [Header("On Round Finished")] [Space(10f)]
+    [Header("On GameFinished")] [Space(10f)]
     
     //▼ 동물 이동 로직
     private readonly string TAG_ARRIVAL= "arrival";
@@ -28,26 +33,18 @@ public class AnimalController : MonoBehaviour
     private Coroutine _coroutineB;
     private Coroutine _coroutineC;
     private Coroutine _coroutineD;
+    private Coroutine[] _coroutines;
     
     // ▼ Unity Loop  -----------------------------------------------
     private void Awake()
     {
+        _animator = GetComponent<Animator>();
         SubscribeGameManagerEvents();
     }
-    
     
     void Start()
     {
         InitializeTransform();
-    }
-    
-    private void Update()
-    {
-        if (GameManager.isRoundReady)
-        {
-            OnRoundReady();
-        }
-       
     }
     
     void OnDestroy()
@@ -60,12 +57,17 @@ public class AnimalController : MonoBehaviour
         if (other.CompareTag(TAG_ARRIVAL))
         {
             isTouchedDown = true;
+            
+#if UNITY_EDITOR
             Debug.Log("Touched Down!");
+#endif
+         
         }
     }
 
     
     // ▼ 메소드 목록 ------------------------------------------
+
 
     private void SubscribeGameManagerEvents()
     {
@@ -91,26 +93,35 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
+        
     }
 
     private void OnCorrect()
     {
         SetAnimation(_animator);
         
-        StopCoroutineWithNullCheck(_coroutine);
-        _coroutine = StartCoroutine(IncreaseScale());
+        StopCoroutineWithNullCheck(_coroutineA);
+        _coroutineA = StartCoroutine(IncreaseScale());
     }
     private void OnRoundFinished()
     {
-        StopCoroutineWithNullCheck(_coroutine);
-        _coroutine = StartCoroutine(DecreaseScale());
+#if UNITY_EDITOR
+        Debug.Log("Round Finish Animal Event Running..");
+#endif
+        InitializedAnimatorParameters(_animator);
+        
+        StopCoroutineWithNullCheck(_coroutineA);
+        _coroutineA = StartCoroutine(DecreaseScale());
     }
 
     private void StopCoroutineWithNullCheck(Coroutine coroutine)
     {
-        if (coroutine != null)
+        foreach (Coroutine cR in _coroutines)
         {
-            StopCoroutine(coroutine);
+            if (cR  != null)
+            {
+                StopCoroutine(coroutine);
+            }
         }
     }
 
@@ -133,9 +144,8 @@ public class AnimalController : MonoBehaviour
             yield return null;
         }
     }
-
-    private float lerp;
     public float sizeIncreasingSpeed;
+    private float lerp;
     private float _currentSizeLerp;
    
     IEnumerator IncreaseScale()
@@ -174,10 +184,10 @@ public class AnimalController : MonoBehaviour
             yield return null;
         }
         
-        if (_coroutine != null)
+        if (_coroutineA != null)
         {
  
-            StopCoroutine(_coroutine);
+            StopCoroutine(_coroutineA);
         }
       
     }
@@ -222,6 +232,21 @@ public class AnimalController : MonoBehaviour
                     break;
             }
         }
+    }
+
+    IEnumerator OnRoundFinishedCoroutine()
+    {
+        yield return null;
+    }
+    private void InitializedAnimatorParameters(Animator animator)
+    {
+            animator.SetBool(AnimalData.RUN_ANIM, false);
+            animator.SetBool(AnimalData.FLY_ANIM, false);
+            animator.SetBool(AnimalData.ROLL_ANIM, false);
+            animator.SetBool(AnimalData.SPIN_ANIM, false);
+            animator.SetBool(AnimalData.SELECTABLE_A,false);
+            animator.SetBool(AnimalData.SELECTABLE_B,false);
+            animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
     
     
