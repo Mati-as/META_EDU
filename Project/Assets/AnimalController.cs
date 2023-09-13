@@ -434,32 +434,32 @@ public class AnimalController : MonoBehaviour
         switch (randomAnimNum)
         {
             case 0:
-                _animator.SetBool(AnimalData.ROLL_ANIM, boolean);
+                _animator.SetBool(AnimalData.JUMP_ANIM, boolean);
                 break;
             case 1:
-                _animator.SetBool(AnimalData.ROLL_ANIM, boolean);
+                _animator.SetBool(AnimalData.SIT_ANIM, boolean);
                 break;
             case 2:
-                _animator.SetBool(AnimalData.SPIN_ANIM, boolean);
+                _animator.SetBool(AnimalData.BOUNCE_ANIM, boolean);
                 break;
         }
     }
 
     private void InitializeAnimation(bool boolean)
     {
-        _animator.SetBool(AnimalData.ROLL_ANIM, boolean);
-        _animator.SetBool(AnimalData.FLY_ANIM, boolean);
-        _animator.SetBool(AnimalData.SPIN_ANIM, boolean);
+        _animator.SetBool(AnimalData.JUMP_ANIM, boolean);
+        _animator.SetBool(AnimalData.SIT_ANIM, boolean);
+        _animator.SetBool(AnimalData.BOUNCE_ANIM, boolean);
     }
 
     IEnumerator SetRandomAnimationWhenWhenRoundStartCoroutine()
     {
         while (!GameManager.isCorrected)
         {
+            yield return GetWaitForSeconds(_animalData.animationPlayInterval);
             SetRandomAnimationWhenRoundStart(true);
             yield return GetWaitForSeconds(_animalData.animationDuration);
             InitializeAnimation(false);
-            yield return GetWaitForSeconds(_animalData.animationPlayInterval);
             
             yield return null;
         }

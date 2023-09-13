@@ -59,4 +59,7 @@ public class AnimalData : ScriptableObject
    public static readonly int SELECTABLE_B = Animator.StringToHash("SelectableB");
    public static readonly int SELECTABLE_C= Animator.StringToHash("SelectableC");
    public static readonly int IS_GAME_FINISHED_ANIM = Animator.StringToHash(("IsGameFinished"));
+   public static readonly int JUMP_ANIM = Animator.StringToHash(("Jump"));
+   public static readonly int SIT_ANIM = Animator.StringToHash(("Sit"));
+   public static readonly int BOUNCE_ANIM = Animator.StringToHash(("Bounce"));
 }
