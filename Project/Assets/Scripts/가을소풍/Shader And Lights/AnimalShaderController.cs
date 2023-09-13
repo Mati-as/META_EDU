@@ -36,7 +36,6 @@ public class AnimalShaderController : MonoBehaviour
     
 
     
- 
 
     
     void Awake()

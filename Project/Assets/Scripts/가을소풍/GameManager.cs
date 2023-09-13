@@ -583,10 +583,10 @@ public class GameManager : MonoBehaviour
                     }
 
                 }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
-            
+                _currentRepeatCount++;
             }
 
-           _currentRepeatCount++;
+          
         }
 
 #else
