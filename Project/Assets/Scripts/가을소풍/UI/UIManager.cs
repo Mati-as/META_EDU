@@ -63,7 +63,9 @@ public class UIManager : MonoBehaviour
 #if DEFINE_TEST
             Debug.Log("정답문구 업데이트");
 #endif
-            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}를 찾았어요!";
+            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}" +
+                               $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
+            
             _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
     }
@@ -127,4 +129,25 @@ public class UIManager : MonoBehaviour
     }
 
     private Coroutine _typeInCoroutine;
+    
+    // 주어진 문자가 한글 범위 내에 있고, 받침이 있다면 true를 반환합니다.
+    // 주어진 문자열의 마지막 문자가 한글 범위 내에 있고, 받침이 있다면 true를 반환합니다.
+    public string EulOrReul(string str)
+    {
+        return LastCharHasJongsung(str) ? "을" : "를";
+    }
+
+    // 주어진 문자열의 마지막 문자가 한글 범위 내에 있고, 받침이 있다면 true를 반환합니다.
+    private bool LastCharHasJongsung(string str)
+    {
+        if (string.IsNullOrEmpty(str)) return false;
+
+        char c = str[str.Length - 1];
+        if (c < '가' || c > '힣') return false;
+
+        int charCode = (int)c - 0xAC00;
+        int jong = charCode % 28;
+
+        return jong != 0;
+    }
 }
