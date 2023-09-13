@@ -17,7 +17,9 @@ public class AnimalData : ScriptableObject
     public string englishName;
     public string koreanName;
     [Space(10f)] [Header("Size")] [Space(10f)]
-    public float defaultSize; //초기 사이즈
+    [Range(0,10)]
+    public float defaultSize;//초기 사이즈
+    [Range(0,10)] 
     public float increasedSize; //정답 맞췄을 때 사이즈
 
     [Space(10f)] [Header("prefab")] [Space(10f)]
@@ -28,24 +30,28 @@ public class AnimalData : ScriptableObject
     
     [Space(20)] [Header("Position Settings")]
     
+    [HideInInspector]
     public Transform inPlayPosition;
     
     [Header("Per Status Settings")]
-    [Space(30)]
-    [Header("Initial Setting")] [Space(10f)]
-    [Header("On GameStart")] [Space(10f)]
-    [Header("On Round Is Ready")] [Space(10f)]
-    [Header("On Round Started")] [Space(10f)]
+    [Space(20)]
+    [Header("Initial Setting")] [Space(5f)]
+    [Header("On GameStart")] [Space(5f)]
+    [Header("On Round Is Ready")] [Space(5f)]
+    [Header("On Round Started")] [Space(5f)]
     public float moveInTime;
-    public float animationPlayInterval;
+    [Range(0,10)]
+    public float animationPlayIntervalMin;
+    [Range(0,10)]
+    public float animationPlayIntervalMax;
     public float animationDuration;
     public float rotationSpeedInRound;
-    [Header("On Correct")] [Space(10f)]
+    [Header("On Correct")] [Space(5f)]
     public float movingTimeSecWhenCorrect;
     public float rotationSpeedWhenCorrect;
     public static Transform SPOTLIGHT_POSITION_FOR_ANIMAL;
     public static Transform LOOK_AT_POSITION;
-    [Header("On Round Finished")] [Space(10f)]
+    [Header("On Round Finished")] [Space(5f)]
     [Header("On GameFinished")]
 
     

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40147e219a2491847b1b84d41803a3f3, type: 3}
   m_Name: reindeer Data
   m_EditorClassIdentifier: 
-  initialPosition: {x: -5.3, y: 3.4939902, z: 14.701}
+  initialPosition: {x: -5.3, y: 3.6600664, z: 14.701}
   initialRotation: {x: -0, y: 0.62953734, z: -0, w: 0.7769702}
-  animalPositionOffset: {x: 0, y: 0.17, z: 0}
+  animalPositionOffset: {x: 0, y: 0, z: 0}
   englishName: reindeer
   koreanName: "\uC0AC\uC2B4"
   defaultSize: 1.2
@@ -24,7 +24,8 @@ MonoBehaviour:
   outlineColor: {r: 0.53020704, g: 1, b: 0.18396229, a: 0}
   inPlayPosition: {fileID: 0}
   moveInTime: 4.5
-  animationPlayInterval: 5
+  animationPlayIntervalMin: 3
+  animationPlayIntervalMax: 10
   animationDuration: 0.5
   rotationSpeedInRound: 80
   movingTimeSecWhenCorrect: 3

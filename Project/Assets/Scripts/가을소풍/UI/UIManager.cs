@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     private string roundInstruction;
 
     [Header("On Correct")] [Space(10f)] public float onCorrectOffsetSeconds;
-    public string onCorrectMessage = "정답입니다!";
+    public string onCorrectMessage;
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
     [Header("Reference")] [Space(10f)] [SerializeField]
@@ -63,6 +63,7 @@ public class UIManager : MonoBehaviour
 #if DEFINE_TEST
             Debug.Log("정답문구 업데이트");
 #endif
+            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}를 찾았어요!";
             _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
     }

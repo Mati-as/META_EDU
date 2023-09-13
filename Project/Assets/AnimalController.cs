@@ -18,6 +18,8 @@ public class AnimalController : MonoBehaviour
     [Header("On Round Is Ready")] [Space(10f)]
     [Header("On Round Started")] [Space(10f)]
     private float _moveInElapsed;
+
+    private float _randomInterval;
     [Header("On Corrected")] [Space(10f)]
     private float _increaseSizeLerp;
     private float _currentSizeLerp;
@@ -452,11 +454,13 @@ public class AnimalController : MonoBehaviour
         _animator.SetBool(AnimalData.BOUNCE_ANIM, boolean);
     }
 
+    
     IEnumerator SetRandomAnimationWhenWhenRoundStartCoroutine()
     {
+        _randomInterval = Random.Range(_animalData.animationPlayIntervalMin, _animalData.animationPlayIntervalMax);
         while (!GameManager.isCorrected)
         {
-            yield return GetWaitForSeconds(_animalData.animationPlayInterval);
+            yield return GetWaitForSeconds(_randomInterval);
             SetRandomAnimationWhenRoundStart(true);
             yield return GetWaitForSeconds(_animalData.animationDuration);
             InitializeAnimation(false);
