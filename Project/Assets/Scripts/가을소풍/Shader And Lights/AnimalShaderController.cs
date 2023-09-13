@@ -30,7 +30,9 @@ public class AnimalShaderController : MonoBehaviour
     private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
     private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
     private Material _mat;
-        
+
+    
+    public static bool isGlowOn { get; private set; }
     
 
     
@@ -51,7 +53,7 @@ public class AnimalShaderController : MonoBehaviour
 
 
     
-  
+
 
     void Update()
     {
@@ -71,6 +73,7 @@ public class AnimalShaderController : MonoBehaviour
                 fresnelElapsedTime += Time.deltaTime;
                 
                 _meshRenderer.enabled = true;
+                isGlowOn = true;
                 BrightenOutlineWithLerp();
                 SetIntensity(_shaderAndCommon.colorIntensityRange);
                 ChangeAnimalOutlineColor();
@@ -92,11 +95,13 @@ public class AnimalShaderController : MonoBehaviour
         if (GameManager.isRoundFinished)
         {
             _meshRenderer.enabled = false;
+            isGlowOn = false;
         }
         
         if (GameManager.isGameFinished)
         {
             _meshRenderer.enabled = false;
+            isGlowOn = false;
         }
 
     }

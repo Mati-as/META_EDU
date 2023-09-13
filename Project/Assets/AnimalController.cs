@@ -354,6 +354,7 @@ public class AnimalController : MonoBehaviour
     }
     IEnumerator MoveAndRotate(float moveInTime, float rotationSpeedInRound)
     {
+        _moveInElapsed = 0f;
         while (GameManager.isRoundStarted)
         {
             Debug.Log("Animal is Moving...");

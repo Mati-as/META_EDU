@@ -147,10 +147,8 @@ public class GameManager : MonoBehaviour
     public float sizeIncreasingSpeed;
     private float _defaultSize;
     [Header("In Play: Game Play Positions Setting")] [Space(10f)]
-    public Transform inPlayPositionA;
-    public Transform inPlayPositionB;
-    public Transform inPlayPositionC;
-    public Transform[] inPlayPositions = new Transform[3];
+    public Transform[] inPlayPositionsWhen3 = new Transform[3];
+    public Transform[] inPlayPositionsWhen4 = new Transform[4];
 
     [Space(15f)]
     [Header("On Ready Setting")] [Space(10f)] 
@@ -282,9 +280,9 @@ public class GameManager : MonoBehaviour
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
-               
-              
-                SelectRandomThreeAnimals(); 
+
+                selectableAnimalsCount = Random.Range(3, 5);
+                SelectRandomAnimals(selectableAnimalsCount); 
                 OnRoundStartedEvent();
 #if UNITY_EDITOR
                 Debug.Log("준비 완료");
@@ -300,15 +298,14 @@ public class GameManager : MonoBehaviour
                 InitializeAndSetTimerOnStarted();
                 //MoveAndRotateAnimals(moveInSeconds, rotationSpeedInRound);
                 
+                
                 //동물 쉐이더 글로우가 켜질 때 선택가능.
-                if (_elapsedOfToBeSelectableWaitTime > _shaderAndCommon.waitTimeForTurningOnGlow )
+                if (AnimalShaderController.isGlowOn)
                 {
 #if UNITY_EDITOR
                     Debug.Log("동물 선택 가능");
 #endif
-                   
                         SelectObject();
-                    
                   
                 }
                 _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
@@ -390,10 +387,7 @@ public class GameManager : MonoBehaviour
 
     private void SetPlayPosition()
     {
-        inPlayPositions[0] = inPlayPositionA;
-        inPlayPositions[1] = inPlayPositionB;
-        inPlayPositions[2] = inPlayPositionC;
-        
+      
     }
     public static void AnimalInitialized()
     {
@@ -518,6 +512,7 @@ public class GameManager : MonoBehaviour
         animator.SetBool(AnimalData.IS_GAME_FINISHED_ANIM, true);
     }
 
+    private int _currentRepeatCount;
     private void CheckInitialReady()
     {
         _elapsedForInitialRound += Time.deltaTime;
@@ -539,7 +534,7 @@ public class GameManager : MonoBehaviour
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0) && !isCorrected)
         {
-            for (int i = 0; i < CLICK_REPEAT_COUNT; i++)
+           while( _currentRepeatCount < CLICK_REPEAT_COUNT )
             {
 #if UNITY_EDITOR
                 m_vecMouseDownPos = Input.mousePosition;
@@ -558,7 +553,7 @@ public class GameManager : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer) )
                 {
-                    if (animalGameOjbectDictionary.ContainsKey(hit.collider.name)&& isCorrected == false)
+                    if (animalGameOjbectDictionary.ContainsKey(hit.collider.name))
                     {
                         _clickedAnimal = hit.collider.name;
                     
@@ -573,19 +568,25 @@ public class GameManager : MonoBehaviour
                   
                             SetAnimalData(_clickedAnimal);
                             InvokeOncorrectUI();
+                            
+                            //moving에서의 lerp
+                            _elapsedForMovingToSpotLight = 0;
+
+                            //sizeIncrease()의 lerp
+                            _currentSizeLerp = 0;
+
+                            break;
                         }
 
-                        //moving에서의 lerp
-                        _elapsedForMovingToSpotLight = 0;
-
-                        //sizeIncrease()의 lerp
-                        _currentSizeLerp = 0;
+                       
                     
                     }
 
                 }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
             
             }
+
+           _currentRepeatCount++;
         }
 
 #else
@@ -839,19 +840,31 @@ public class GameManager : MonoBehaviour
     }
 
     public int selectableAnimalsCount;
-    public void SelectRandomThreeAnimals()
+    
+    public void SelectRandomAnimals(int animalCount)
     {
         _inPlayTempAnimals = new List<GameObject>(_animalList);
         
-        for (var i = 0; i < selectableAnimalsCount; i++)
+        for (var i = 0; i < animalCount; i++)
         {
-            Debug.Log("동물 랜덤 고르기 완료");
             var randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
             _selectedAnimals.Add(_inPlayTempAnimals[randomIndex]);
+            
             AnimalData animalData = _selectedAnimals[i].GetComponent<AnimalController>()._animalData;
             
-             animalData.inPlayPosition = inPlayPositions[i];
-             _inPlayTempAnimals.RemoveAt(randomIndex); //중복 동물 선택 방지
+            if (animalCount == 3)
+            {
+                animalData.inPlayPosition = inPlayPositionsWhen3[i];
+            }
+            else if (animalCount == 4)
+            {
+                animalData.inPlayPosition = inPlayPositionsWhen4[i];
+            }
+            
+            _inPlayTempAnimals.RemoveAt(randomIndex); //중복 동물 선택 방지
+            
+            Debug.Log("동물 랜덤 고르기 완료");
+           
         }
 
 
@@ -951,24 +964,24 @@ public class GameManager : MonoBehaviour
        
       
         //이동
-            _selectedAnimals[0].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[0].transform.position.x, inPlayPositionA.position.x,_moveInElapsed / _moveInTime),
-                _selectedAnimals[0].transform.position.y,
-              Mathf.Lerp(_selectedAnimals[0].transform.position.z, inPlayPositionA.position.z, _moveInElapsed / _moveInTime)
-            );
-          
-            _selectedAnimals[1].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[1].transform.position.x, inPlayPositionB.position.x, _moveInElapsed / _moveInTime),
-                _selectedAnimals[1].transform.position.y,
-                Mathf.Lerp(_selectedAnimals[1].transform.position.z, inPlayPositionB.position.z, _moveInElapsed / _moveInTime)
-            );
-
-            _selectedAnimals[2].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[2].transform.position.x, inPlayPositionC.position.x, _moveInElapsed / _moveInTime),
-                _selectedAnimals[2].transform.position.y,
-               Mathf.Lerp(_selectedAnimals[2].transform.position.z, inPlayPositionC.position.z, _moveInElapsed / _moveInTime)
-            );
-        
+            // _selectedAnimals[0].transform.position = new Vector3(
+            //     Mathf.Lerp(_selectedAnimals[0].transform.position.x, in4PlayPositionA.position.x,_moveInElapsed / _moveInTime),
+            //     _selectedAnimals[0].transform.position.y,
+            //   Mathf.Lerp(_selectedAnimals[0].transform.position.z, in4PlayPositionA.position.z, _moveInElapsed / _moveInTime)
+            // );
+            //
+            // _selectedAnimals[1].transform.position = new Vector3(
+            //     Mathf.Lerp(_selectedAnimals[1].transform.position.x, in4PlayPositionB.position.x, _moveInElapsed / _moveInTime),
+            //     _selectedAnimals[1].transform.position.y,
+            //     Mathf.Lerp(_selectedAnimals[1].transform.position.z, in4PlayPositionB.position.z, _moveInElapsed / _moveInTime)
+            // );
+            //
+            // _selectedAnimals[2].transform.position = new Vector3(
+            //     Mathf.Lerp(_selectedAnimals[2].transform.position.x, in4PlayPositionC.position.x, _moveInElapsed / _moveInTime),
+            //     _selectedAnimals[2].transform.position.y,
+            //    Mathf.Lerp(_selectedAnimals[2].transform.position.z, in4PlayPositionC.position.z, _moveInElapsed / _moveInTime)
+            // );
+            //
        
        
         //회전
