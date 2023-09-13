@@ -265,8 +265,6 @@ public class GameManager : MonoBehaviour
         //1. 게임 시작 시 ---------------------------------
         if (isGameStarted && isGameFinished == false)
         {
-          
-          
             // 스크린 클릭 시 파티클 효과 
             PlayClickOnScreenEffect();
             // 맨 첫번째 라운드 시작 전, 대기시간 및 로직 설정
@@ -280,7 +278,7 @@ public class GameManager : MonoBehaviour
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
-
+                
                 selectableAnimalsCount = Random.Range(3, 5);
                 SelectRandomAnimals(selectableAnimalsCount); 
                 OnRoundStartedEvent();
@@ -296,8 +294,6 @@ public class GameManager : MonoBehaviour
                 Debug.Log("라운드 시작!");
 #endif
                 InitializeAndSetTimerOnStarted();
-                //MoveAndRotateAnimals(moveInSeconds, rotationSpeedInRound);
-                
                 
                 //동물 쉐이더 글로우가 켜질 때 선택가능.
                 if (AnimalShaderController.isGlowOn)
@@ -305,13 +301,12 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                     Debug.Log("동물 선택 가능");
 #endif
-                        SelectObject();
+                        ClickOnObject();
                   
                 }
                 _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
             }
-
-           
+            
             //4. 정답 맞춘 경우 ------------------
             if (isCorrected)
             {
@@ -319,12 +314,10 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("정답!");  
 #endif
-                MoveToSpotLigt();
                 InitializeAndSetTimerOnCorrect();
                 
-                
-                _onCorrectLightOnEvent.Invoke(); // D-Light 참조 중
-                _correctMessageEvent.Invoke(); // UI Instruction 클래스 참조
+                _onCorrectLightOnEvent?.Invoke(); // D-Light 참조 중
+                _correctMessageEvent?.Invoke(); // UI Instruction 클래스 참조
                 
             }
 
@@ -335,9 +328,6 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("라운드 종료!");
 #endif
-
-                
-                
                 MoveOutOfScreen();
                 _onRoundFinishedLightOff.Invoke();
             }
@@ -409,15 +399,6 @@ public class GameManager : MonoBehaviour
     {
         onRoundReadyEvent?.Invoke();
     }
-
-    public static void OnCorrectedInvokeAnimalFunc()
-    {
-        onCorrectedEvent?.Invoke();
-    }
-    
-    
-   
-    
     
     private bool _isRandomized;
 
@@ -528,16 +509,18 @@ public class GameManager : MonoBehaviour
     ///     오브젝트를 선택하는 함수 입니다.
     ///     Linked lIst를 활용해 자료를 검색하고 해당하는 메세지를 카메라 및, 게임 다음 동작에 전달합니다.
     /// </summary>
-    private void SelectObject()
+    private void ClickOnObject()
     {
 #if UNITY_EDITOR
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0) && !isCorrected)
         {
-           while( _currentRepeatCount < CLICK_REPEAT_COUNT )
-            {
+            m_vecMouseDownPos = Input.mousePosition;
+            
+         //  while( _currentRepeatCount < CLICK_REPEAT_COUNT )
+           // {
 #if UNITY_EDITOR
-                m_vecMouseDownPos = Input.mousePosition;
+             
 #else
             // m_vecMouseDownPos = Input.GetTouch(0).position;
             // if (Input.GetTouch(0).phase != TouchPhase.Began)
@@ -546,36 +529,31 @@ public class GameManager : MonoBehaviour
 
                 var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
                 RaycastHit hit;
-            
-          
-
-
-
+                
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer) )
                 {
                     if (animalGameOjbectDictionary.ContainsKey(hit.collider.name))
                     {
+                        Debug.Log("클릭!");
                         _clickedAnimal = hit.collider.name;
-                    
                         //정답인 경우
                         if (_clickedAnimal == answer)
                         {
+                            //1회실행 보장용
                             if (!isCorrected)
                             {
+                                SetAnimalData(_clickedAnimal);
+                                InvokeOncorrectUI();
+                                onCorrectedEvent?.Invoke();
                                 isCorrected = true;
-                                OnCorrectedInvokeAnimalFunc();
                             }
-                  
-                            SetAnimalData(_clickedAnimal);
-                            InvokeOncorrectUI();
-                            
                             //moving에서의 lerp
                             _elapsedForMovingToSpotLight = 0;
 
                             //sizeIncrease()의 lerp
                             _currentSizeLerp = 0;
 
-                            break;
+                           // break;
                         }
 
                        
@@ -583,8 +561,8 @@ public class GameManager : MonoBehaviour
                     }
 
                 }// 정답을 맞추지 않은 상태라면...(중복정답 방지)
-                _currentRepeatCount++;
-            }
+               // _currentRepeatCount++;
+          //  }
 
           
         }
@@ -656,30 +634,7 @@ public class GameManager : MonoBehaviour
     ///     마우스로 선택 된 동물을 이동시키는 함수 입니다.
     ///     선택된 동물이 이동 시, 다른 동물들은 선택될 수 없도록 추가 로직이 필요합니다.
     /// </summary>
-    public void MoveToSpotLigt()
-    {
-        var t = Mathf.Clamp01(_elapsedForMovingToSpotLight / movingTimeSecWhenCorrect);
-        
-        if (isCorrected)
-        {
 
-            Debug.Log("MoveToSpotLight : GameManager.");
-           // IncreaseScale(_selectedAnimalGameObject, _selectedAnimalData.defaultSize,_selectedAnimalData.increasedSize);
-            
-            _selectedAnimalGameObject.transform.position =
-                Vector3.Lerp(_selectedAnimalGameObject.transform.position,
-                    animalMovePositionToSpotLight.position, t);
-
-            var directionToTarget =
-                lookAtPosition.position - _selectedAnimalGameObject.transform.position;
-
-            var targetRotation =
-                Quaternion.LookRotation(directionToTarget);
-            _selectedAnimalGameObject.transform.rotation =
-                Quaternion.Slerp(
-                    _selectedAnimalGameObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        }
-    }
 
     /// <summary>
     ///     각종 러프 함수 및 자료를 다음 라운드를 위해 초기화 하는 함수 입니다.
@@ -917,31 +872,6 @@ public class GameManager : MonoBehaviour
         animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
     private int _randomInPlayAnimationNumber;
-    private void PlayInPlayAnimation()
-    {
-   
-        foreach (var gameObj in _animalList)
-        {
-            _tempAnimator = gameObj.GetComponent<Animator>();
-            InitializeAllAnimatorParameters(_tempAnimator);
-            
-            
-            // 선택 장면 시, 애니메이션을 재생하는 방식으로 원할 경우..
-            // _tempAnimator.SetBool(SELECTABLE,true);
-            //
-            // _randomInPlayAnimationNumber = Random.Range(0, 2);
-            // if (_randomInPlayAnimationNumber == 0)
-            // {
-            //     _tempAnimator.SetBool(SELECTABLE_A,true);
-            // }
-            // else
-            // {
-            //     _tempAnimator.SetBool(SELECTABLE_B,true);
-            // }
-            // gameObj.transform.localScale = Vector3.one * _defaultSize;
-        }
-    }
-    
     
     /// <summary>
     ///     동물을 회전시키는 함수 입니다.

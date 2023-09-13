@@ -37,9 +37,14 @@ public class AnimalData : ScriptableObject
     [Header("On Round Is Ready")] [Space(10f)]
     [Header("On Round Started")] [Space(10f)]
     public float moveInTime;
-
+    public float animationPlayInterval;
+    public float animationDuration;
     public float rotationSpeedInRound;
-    [Header("On Corrected")] [Space(10f)]
+    [Header("On Correct")] [Space(10f)]
+    public float movingTimeSecWhenCorrect;
+    public float rotationSpeedWhenCorrect;
+    public static Transform SPOTLIGHT_POSITION_FOR_ANIMAL;
+    public static Transform LOOK_AT_POSITION;
     [Header("On Round Finished")] [Space(10f)]
     [Header("On GameFinished")]
 
