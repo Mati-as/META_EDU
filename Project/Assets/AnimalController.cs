@@ -1,14 +1,14 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 
 public class AnimalController : MonoBehaviour
 {
-    
-    [SerializeField]
-    public AnimalData _animalData;
-
+    [Header("Reference")] [Space(10f)] [SerializeField]
+    private GameManager _gameManager;
+    public AnimalData animalData;
     [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
     
@@ -16,7 +16,9 @@ public class AnimalController : MonoBehaviour
     [Header("On GameStart")] [Space(10f)]
     [Header("On Round Is Ready")] [Space(10f)]
     [Header("On Round Started")] [Space(10f)]
+    private float _moveInElapsed;
     [Header("On Corrected")] [Space(10f)]
+    private bool isAnswer;
     [Header("On Round Finished")] [Space(10f)]
     [Header("On GameFinished")] [Space(10f)]
     
@@ -31,6 +33,7 @@ public class AnimalController : MonoBehaviour
         set { isTouchedDown = value; }
     }
     
+    
     /*
      아래 코루틴 변수들은 IEnumerator 컨테이너 역할만 담당합니다.
      어떤 함수가 사용되는지는 StartCoroutine에서확인 및 디버깅 해야합니다.
@@ -44,13 +47,9 @@ public class AnimalController : MonoBehaviour
     // ▼ Unity Loop  -----------------------------------------------
     private void Awake()
     {
-        _coroutines = new Coroutine[4];
-        _coroutines[0] = _coroutineA;
-        _coroutines[1] = _coroutineB;
-        _coroutines[2] = _coroutineC;
-        _coroutines[3] = _coroutineD;
-        
+        SetCoroutine();
         SubscribeGameManagerEvents();
+      
     }
     
     void Start()
@@ -60,12 +59,7 @@ public class AnimalController : MonoBehaviour
     
     void OnDestroy()
     {
-        GameManager.onAllAnimalsInitialized -= OnOnAllAnimalsInitialized;
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
+        UnsubscribeGamaManagerEvents();
     }
     
     
@@ -74,11 +68,9 @@ public class AnimalController : MonoBehaviour
         if (other.CompareTag(TAG_ARRIVAL))
         {
             isTouchedDown = true;
-            
 #if UNITY_EDITOR
             Debug.Log("Touched Down!");
 #endif
-         
         }
     }
 
@@ -108,8 +100,18 @@ public class AnimalController : MonoBehaviour
         GameManager.onRoundStartedEvent -= OnRoundStarted;
         GameManager.onRoundStartedEvent += OnRoundStarted;
     }
+
+    private void UnsubscribeGamaManagerEvents()
+    {
+        GameManager.onAllAnimalsInitialized -= OnOnAllAnimalsInitialized;
+        GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onRoundReadyEvent -= OnRoundReady;
+        GameManager.onCorrectedEvent -= OnCorrect;
+        GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        GameManager.onRoundStartedEvent -= OnRoundStarted;
+    }
     
-    // 1. 상태 기준 분류 ------------------------------------------
+    // 1. 상태 기준 분류 ----------------------------------------------------
     private void OnOnAllAnimalsInitialized()
     {
         GameManager.isAnimalTransformSet = true;
@@ -124,48 +126,59 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
-        
+        if (animalData.inPlayPosition != null) animalData.inPlayPosition = null;
     }
-
+   
     private void OnRoundStarted()
     {
         InitialzeAllAnimatorParams(_animator);
-        gameObject.transform.localScale = Vector3.one * _animalData.defaultSize;
+        InitializeSize();
+        StandAnimalUpright();
+        
     }
 
     private void OnCorrect()
     {
+        StopCoroutineWithNullCheck(_coroutines);
+        
         if (CheckIsAnswer())
         {
             SetCorrectedAnim(_animator);
         }
         
-        
-        StopCoroutineWithNullCheck(_coroutines);
-        _coroutineA = StartCoroutine(IncreaseScale());
+        _coroutines[0] = StartCoroutine(IncreaseScale());
     }
     
     private void OnRoundFinished()
-    {
+    { 
+        StopCoroutineWithNullCheck(_coroutines);
 #if UNITY_EDITOR
         Debug.Log("Round Finish Animal Event Running..");
 #endif
         InitialzeAllAnimatorParams(_animator);
-        
-        StopCoroutineWithNullCheck(_coroutines);
-        _coroutineA = StartCoroutine(DecreaseScale());
+        _coroutines[0] = StartCoroutine(DecreaseScale());
     }
     
     
-    // 2. 코루틴 및 기타 함수 ------------------------------------------
+    // 2. 코루틴 및 기타 함수 -----------------------------------------------------------------------
 
+    private void SetCoroutine()
+    {
+        _coroutines = new Coroutine[4];
+        _coroutines[0] = _coroutineA;
+        _coroutines[1] = _coroutineB;
+        _coroutines[2] = _coroutineC;
+        _coroutines[3] = _coroutineD;
+
+    }
     /// <summary>
     /// 지금 현재 동물이 정답과 일치하는지 체크하고 bool값을 반환합니다.
     /// </summary>
-    private bool isAnswer;
+    /// 
+
     private bool CheckIsAnswer()
     {
-        if (_animalData.englishName == GameManager.answer)
+        if (animalData.englishName == GameManager.answer)
         {
             return true;
         }
@@ -187,8 +200,8 @@ public class AnimalController : MonoBehaviour
 
     private void InitializeTransform()
     {
-        _animalData.initialPosition = transform.position;
-        _animalData.initialRotation = transform.rotation;
+        animalData.initialPosition = transform.position;
+        animalData.initialRotation = transform.rotation;
         
         if (GameManager.isAnimalTransformSet == false)
         { 
@@ -196,7 +209,9 @@ public class AnimalController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    
+    private void InitializeSize() => gameObject.transform.localScale = Vector3.one * animalData.defaultSize;
+    
     IEnumerator MoveToTouchDownPlace()
     {
         while (isTouchedDown == false)
@@ -217,7 +232,7 @@ public class AnimalController : MonoBehaviour
         
         while (CheckIsAnswer() && _isDecreasingScale == false)
         {
-                IncreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
+                IncreaseScale(gameObject, animalData.defaultSize, animalData.increasedSize);
             
             yield return null;
         }
@@ -246,7 +261,7 @@ public class AnimalController : MonoBehaviour
         while (CheckIsAnswer())
         {
             _isDecreasingScale = true;
-            DecreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
+            DecreaseScale(gameObject, animalData.defaultSize, animalData.increasedSize);
             yield return null;
         }
         
@@ -314,6 +329,39 @@ public class AnimalController : MonoBehaviour
             animator.SetBool(AnimalData.SELECTABLE_A,false);
             animator.SetBool(AnimalData.SELECTABLE_B,false);
             animator.SetBool(AnimalData.SELECTABLE_C,false);
+    }
+
+    private void StartMoveAndRotateCrtine()
+    {
+        StopCoroutineWithNullCheck(_coroutines);
+        StartCoroutine(MoveAndRotate(animalData.moveInTime,animalData.rotationSpeedInRound));
+    }
+    IEnumerator MoveAndRotate(float moveInTime, float rotationSpeedInRound)
+    {
+        // AnimalData animal = _gameManager._selectedAnimals.Find
+        //     (a => a.name == animalData.englishName).GetComponent<AnimalData>();
+
+        if (animalData.inPlayPosition != null)
+        {
+            Vector3 position = animalData.inPlayPosition.position;
+            GameObject o;
+            
+            gameObject.transform.position = new Vector3(
+                Mathf.Lerp(gameObject.transform.position.x, position.x, _moveInElapsed / moveInTime),
+                (o = gameObject).transform.position.y,
+                Mathf.Lerp(o.transform.position.z, position.z, _moveInElapsed / moveInTime)
+            );
+            
+            gameObject.transform.Rotate(0, animalData.rotationSpeedInRound * Time.deltaTime, 0);
+
+            
+        }
+        
+        yield return null;
+    }
+    private void StandAnimalUpright()
+    {
+        gameObject.transform.rotation = Quaternion.Euler(0,gameObject.transform.rotation.y,0);
     }
     
     

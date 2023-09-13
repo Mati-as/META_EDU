@@ -11,6 +11,11 @@ using Random = UnityEngine.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
+
+    [Header("Debug Mode")] [Space(10f)] [SerializeField]
+    [Range(0.5f,5f)]
+    public float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
+    
     [Header("Common Data")] [Space(10f)] [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
 
@@ -66,7 +71,7 @@ public class GameManager : MonoBehaviour
     
     
     // _selectedAnimals를 직접적으로 수정하거나,변형하지 않돌독 하기위한 리스트 
-    private List<GameObject> _selectedAnimals = new();
+    public List<GameObject> _selectedAnimals = new();
     private List<GameObject> _inPlayTempAnimals; 
     
     
@@ -142,9 +147,10 @@ public class GameManager : MonoBehaviour
     public float sizeIncreasingSpeed;
     private float _defaultSize;
     [Header("In Play: Game Play Positions Setting")] [Space(10f)]
-    public Transform playPositionA;
-    public Transform playPositionB;
-    public Transform playPositionC;
+    public Transform inPlayPositionA;
+    public Transform inPlayPositionB;
+    public Transform inPlayPositionC;
+    public Transform[] inPlayPositions = new Transform[3];
 
     [Space(15f)]
     [Header("On Ready Setting")] [Space(10f)] 
@@ -156,7 +162,7 @@ public class GameManager : MonoBehaviour
     [Space(5f)] 
     [Header("In Play Setting")] [Space(10f)] private float _moveInElapsed;
     public float moveInSeconds;
-    public float rotationSpeedInPlay;
+    [FormerlySerializedAs("rotationSpeedInPlay")] public float rotationSpeedInRound;
     public float waitTimeBetweenRounds;
     public float waitTimeToBeSelectable; //동물들이 들어오고 나서 선택할 수 있게 되는 시간.
 
@@ -220,6 +226,7 @@ public class GameManager : MonoBehaviour
     private UnityEvent _finishedMessageEvent;
 
 
+    private void SetTimeScale(float speed) => Time.timeScale = speed;
     // ------------------------- ▼ 유니티 루프 ----------------------------
 
 
@@ -229,7 +236,11 @@ public class GameManager : MonoBehaviour
     {
         SetResolution(1920, 1080,TARGET_FRAME);
         
+        
+        
+        
         totalAnimalCount = allAnimals.Count;
+        SetPlayPosition();
     }
 
     private void Start()
@@ -239,13 +250,14 @@ public class GameManager : MonoBehaviour
         SetAndInitializedAnimals();
         
     }
-
     
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.
     /// </summary>
     private void Update()
     {
+        SetTimeScale(GAME_PROGRESSING_SPEED);
+            
         //카메라 도착 시 일정시간 지나면 게임 시작.
         if (isCameraArrivedToPlay && gameStartWaitSecondsForBackgroundChange > _elapsedForMovingToSpotLight)
         {
@@ -286,7 +298,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("라운드 시작!");
 #endif
                 InitializeAndSetTimerOnStarted();
-                MoveAndRotateAnimals(moveInSeconds, rotationSpeedInPlay);
+                //MoveAndRotateAnimals(moveInSeconds, rotationSpeedInRound);
                 
                 //동물 쉐이더 글로우가 켜질 때 선택가능.
                 if (_elapsedOfToBeSelectableWaitTime > _shaderAndCommon.waitTimeForTurningOnGlow )
@@ -374,8 +386,15 @@ public class GameManager : MonoBehaviour
     public static event Action onCorrectedEvent;
     public static event Action onRoundStartedEvent;
     public static event Action onRoundFinishedEvent;
-    
-  
+
+
+    private void SetPlayPosition()
+    {
+        inPlayPositions[0] = inPlayPositionA;
+        inPlayPositions[1] = inPlayPositionB;
+        inPlayPositions[2] = inPlayPositionC;
+        
+    }
     public static void AnimalInitialized()
     {
         initializedAnimalsCount++;
@@ -484,7 +503,7 @@ public class GameManager : MonoBehaviour
             
             //Scriptable 오브젝트의 Monobehaviour 상속 불가능으로 인한 참조 방식 수정 
             AnimalController _aniamalcontroller = gameObject.GetComponent<AnimalController>();
-            AnimalData _animalData = _aniamalcontroller._animalData;
+            AnimalData _animalData = _aniamalcontroller.animalData;
             
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,
                 _animalData.initialPosition, _elapsedForFinishMoveIn / finishedMoveInTime);
@@ -677,7 +696,7 @@ public class GameManager : MonoBehaviour
         if (animalGameOjbectDictionary.TryGetValue(animalName, out var animalObj))
         {
             _selectedAnimalGameObject = animalObj;
-            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalController>()._animalData;
+            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalController>().animalData;
         }
       
     }
@@ -822,7 +841,11 @@ public class GameManager : MonoBehaviour
             Debug.Log("동물 랜덤 고르기 완료");
             var randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
             _selectedAnimals.Add(_inPlayTempAnimals[randomIndex]);
-            _inPlayTempAnimals.RemoveAt(randomIndex);
+            AnimalData animalData = _selectedAnimals[0].GetComponent<AnimalData>();
+            
+             if(animalData.inPlayPosition != null) animalData.inPlayPosition=inPlayPositions[i];
+            
+             _inPlayTempAnimals.RemoveAt(randomIndex); //중복 동물 선택 방지
         }
 
 
@@ -923,21 +946,21 @@ public class GameManager : MonoBehaviour
       
         //이동
             _selectedAnimals[0].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[0].transform.position.x, playPositionA.position.x,_moveInElapsed / _moveInTime),
+                Mathf.Lerp(_selectedAnimals[0].transform.position.x, inPlayPositionA.position.x,_moveInElapsed / _moveInTime),
                 _selectedAnimals[0].transform.position.y,
-              Mathf.Lerp(_selectedAnimals[0].transform.position.z, playPositionA.position.z, _moveInElapsed / _moveInTime)
+              Mathf.Lerp(_selectedAnimals[0].transform.position.z, inPlayPositionA.position.z, _moveInElapsed / _moveInTime)
             );
           
             _selectedAnimals[1].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[1].transform.position.x, playPositionB.position.x, _moveInElapsed / _moveInTime),
+                Mathf.Lerp(_selectedAnimals[1].transform.position.x, inPlayPositionB.position.x, _moveInElapsed / _moveInTime),
                 _selectedAnimals[1].transform.position.y,
-                Mathf.Lerp(_selectedAnimals[1].transform.position.z, playPositionB.position.z, _moveInElapsed / _moveInTime)
+                Mathf.Lerp(_selectedAnimals[1].transform.position.z, inPlayPositionB.position.z, _moveInElapsed / _moveInTime)
             );
 
             _selectedAnimals[2].transform.position = new Vector3(
-                Mathf.Lerp(_selectedAnimals[2].transform.position.x, playPositionC.position.x, _moveInElapsed / _moveInTime),
+                Mathf.Lerp(_selectedAnimals[2].transform.position.x, inPlayPositionC.position.x, _moveInElapsed / _moveInTime),
                 _selectedAnimals[2].transform.position.y,
-               Mathf.Lerp(_selectedAnimals[2].transform.position.z, playPositionC.position.z, _moveInElapsed / _moveInTime)
+               Mathf.Lerp(_selectedAnimals[2].transform.position.z, inPlayPositionC.position.z, _moveInElapsed / _moveInTime)
             );
         
        
