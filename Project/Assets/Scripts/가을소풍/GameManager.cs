@@ -282,9 +282,9 @@ public class GameManager : MonoBehaviour
                 CheckGameFinished();
                 ResetAndInitializeBeforeStartingRound();  // 동물 리스트 초기화.
                 StartRound(); //동물 애니메이션, 로컬스케일 초기화.
-                SelectRandomThreeAnimals(); ;// 리스트 랜덤구성
+               
               
-                
+                SelectRandomThreeAnimals(); 
                 OnRoundStartedEvent();
 #if UNITY_EDITOR
                 Debug.Log("준비 완료");
@@ -503,7 +503,7 @@ public class GameManager : MonoBehaviour
             
             //Scriptable 오브젝트의 Monobehaviour 상속 불가능으로 인한 참조 방식 수정 
             AnimalController _aniamalcontroller = gameObject.GetComponent<AnimalController>();
-            AnimalData _animalData = _aniamalcontroller.animalData;
+            AnimalData _animalData = _aniamalcontroller._animalData;
             
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position,
                 _animalData.initialPosition, _elapsedForFinishMoveIn / finishedMoveInTime);
@@ -696,7 +696,7 @@ public class GameManager : MonoBehaviour
         if (animalGameOjbectDictionary.TryGetValue(animalName, out var animalObj))
         {
             _selectedAnimalGameObject = animalObj;
-            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalController>().animalData;
+            _selectedAnimalData  = _selectedAnimalGameObject.GetComponent<AnimalController>()._animalData;
         }
       
     }
@@ -722,7 +722,7 @@ public class GameManager : MonoBehaviour
             
             //크기 지정
             thisAnimal.transform.localScale = Vector3.one * animalData.defaultSize;
-            Debug.Log($"animal Default Size{animalData.defaultSize}");
+            
             
             // 자료구조에 추가..
             animalGameOjbectDictionary.Add(animalData.englishName,thisAnimal);
@@ -792,12 +792,19 @@ public class GameManager : MonoBehaviour
                 moveOutPositionA.position, _moveOutElapsed / moveOutTime);
 
             RotateTowards(gameObj.transform, moveOutPositionA.position);
+            
+            AnimalData animalData = gameObj.GetComponent<AnimalController>()._animalData;
+            animalData.inPlayPosition = moveOutPositionA.transform;
         }
         else
         {
             gameObj.transform.position = Vector3.Lerp(gameObj.transform.position,
                 moveOutPositionB.position, _moveOutElapsed / moveOutTime);
             RotateTowards(gameObj.transform, moveOutPositionB.position);
+            
+            AnimalData animalData = gameObj.GetComponent<AnimalController>()._animalData;
+            animalData.inPlayPosition = moveOutPositionB.transform;
+            
              
         }
     }
@@ -835,16 +842,15 @@ public class GameManager : MonoBehaviour
     public void SelectRandomThreeAnimals()
     {
         _inPlayTempAnimals = new List<GameObject>(_animalList);
-
+        
         for (var i = 0; i < selectableAnimalsCount; i++)
         {
             Debug.Log("동물 랜덤 고르기 완료");
             var randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
             _selectedAnimals.Add(_inPlayTempAnimals[randomIndex]);
-            AnimalData animalData = _selectedAnimals[0].GetComponent<AnimalData>();
+            AnimalData animalData = _selectedAnimals[i].GetComponent<AnimalController>()._animalData;
             
-             if(animalData.inPlayPosition != null) animalData.inPlayPosition=inPlayPositions[i];
-            
+             animalData.inPlayPosition = inPlayPositions[i];
              _inPlayTempAnimals.RemoveAt(randomIndex); //중복 동물 선택 방지
         }
 

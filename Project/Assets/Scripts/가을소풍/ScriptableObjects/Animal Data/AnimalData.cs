@@ -27,7 +27,7 @@ public class AnimalData : ScriptableObject
     public Color outlineColor;
     
     [Space(20)] [Header("Position Settings")]
-    [HideInInspector]
+    
     public Transform inPlayPosition;
     
     [Header("Per Status Settings")]

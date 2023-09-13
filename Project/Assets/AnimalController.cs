@@ -6,9 +6,9 @@ using Random = UnityEngine.Random;
 
 public class AnimalController : MonoBehaviour
 {
-    [Header("Reference")] [Space(10f)] [SerializeField]
-    private GameManager _gameManager;
-    public AnimalData animalData;
+    [Header("Reference")] [Space(10f)] 
+    public GameManager _gameManager;
+    public AnimalData _animalData;
     [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
     
@@ -126,15 +126,17 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
-        if (animalData.inPlayPosition != null) animalData.inPlayPosition = null;
     }
    
     private void OnRoundStarted()
     {
+        StopCoroutineWithNullCheck(_coroutines);
+        
         InitialzeAllAnimatorParams(_animator);
         InitializeSize();
         StandAnimalUpright();
-        
+        StartCoroutine(MoveAndRotate(_animalData.moveInTime,_animalData.rotationSpeedInRound));
+
     }
 
     private void OnCorrect()
@@ -153,10 +155,12 @@ public class AnimalController : MonoBehaviour
     { 
         StopCoroutineWithNullCheck(_coroutines);
 #if UNITY_EDITOR
-        Debug.Log("Round Finish Animal Event Running..");
+    
 #endif
         InitialzeAllAnimatorParams(_animator);
         _coroutines[0] = StartCoroutine(DecreaseScale());
+        
+       // if (animalData.inPlayPosition != null) animalData.inPlayPosition = null;
     }
     
     
@@ -178,7 +182,7 @@ public class AnimalController : MonoBehaviour
 
     private bool CheckIsAnswer()
     {
-        if (animalData.englishName == GameManager.answer)
+        if (_animalData.englishName == GameManager.answer)
         {
             return true;
         }
@@ -189,6 +193,7 @@ public class AnimalController : MonoBehaviour
     }
     private void StopCoroutineWithNullCheck(Coroutine[] coroutines)
     {
+        Debug.Log("코루틴 종료");
         foreach (Coroutine cR in coroutines)
         {
             if (cR  != null)
@@ -200,8 +205,8 @@ public class AnimalController : MonoBehaviour
 
     private void InitializeTransform()
     {
-        animalData.initialPosition = transform.position;
-        animalData.initialRotation = transform.rotation;
+        _animalData.initialPosition = transform.position;
+        _animalData.initialRotation = transform.rotation;
         
         if (GameManager.isAnimalTransformSet == false)
         { 
@@ -210,7 +215,7 @@ public class AnimalController : MonoBehaviour
         }
     }
     
-    private void InitializeSize() => gameObject.transform.localScale = Vector3.one * animalData.defaultSize;
+    private void InitializeSize() => gameObject.transform.localScale = Vector3.one * _animalData.defaultSize;
     
     IEnumerator MoveToTouchDownPlace()
     {
@@ -227,12 +232,12 @@ public class AnimalController : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     IEnumerator IncreaseScale()
     {
-        Debug.Log("Increasing Scale...");
+        
         _currentSizeLerp = 0f;
         
         while (CheckIsAnswer() && _isDecreasingScale == false)
         {
-                IncreaseScale(gameObject, animalData.defaultSize, animalData.increasedSize);
+                IncreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
             
             yield return null;
         }
@@ -250,23 +255,30 @@ public class AnimalController : MonoBehaviour
 
 
         gameObject.transform.localScale = Vector3.one * lerp;
+        
+        if (_coroutineA != null)
+        {
+            Debug.Log("Increase 코루틴 종료");
+            StopCoroutine(_coroutineA);
+        }
     }
 
     private bool _isDecreasingScale;
     IEnumerator DecreaseScale()
     {
-        Debug.Log("Decreasing Scale...");
+      
         _currentSizeLerp = 0f;
         _isDecreasingScale = false;
         while (CheckIsAnswer())
         {
             _isDecreasingScale = true;
-            DecreaseScale(gameObject, animalData.defaultSize, animalData.increasedSize);
+            DecreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
             yield return null;
         }
         
         if (_coroutineA != null)
         {
+            Debug.Log("Decrease 코루틴 종료");
             StopCoroutine(_coroutineA);
         }
       
@@ -277,7 +289,7 @@ public class AnimalController : MonoBehaviour
         _currentSizeLerp += _shaderAndCommon.sizeDecreasingSpeed * Time.deltaTime;
         _currentSizeLerp = Mathf.Clamp(_currentSizeLerp,0,1);
 
-        Debug.Log($"{_currentSizeLerp} <- _currentSizeLerp In Decreasing");
+       
         lerp =
             Lerp2D.EaseOutBounce(
                 increasedSize,defaultSize,
@@ -285,6 +297,11 @@ public class AnimalController : MonoBehaviour
 
 
         gameObject.transform.localScale = Vector3.one * lerp;
+        
+        if (_coroutineA != null)
+        {
+            StopCoroutine(_coroutineA);
+        }
     }
 
     private bool _isAnimRandomized;
@@ -331,33 +348,28 @@ public class AnimalController : MonoBehaviour
             animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
 
-    private void StartMoveAndRotateCrtine()
+    private void StartMoveAndRotateCoroutine()
     {
-        StopCoroutineWithNullCheck(_coroutines);
-        StartCoroutine(MoveAndRotate(animalData.moveInTime,animalData.rotationSpeedInRound));
+      
     }
     IEnumerator MoveAndRotate(float moveInTime, float rotationSpeedInRound)
     {
-        // AnimalData animal = _gameManager._selectedAnimals.Find
-        //     (a => a.name == animalData.englishName).GetComponent<AnimalData>();
-
-        if (animalData.inPlayPosition != null)
+        while (GameManager.isRoundStarted)
         {
-            Vector3 position = animalData.inPlayPosition.position;
+            Debug.Log("Animal is Moving...");
+            Vector3 position = _animalData.inPlayPosition.position;
             GameObject o;
+            _moveInElapsed += Time.deltaTime;
             
             gameObject.transform.position = new Vector3(
                 Mathf.Lerp(gameObject.transform.position.x, position.x, _moveInElapsed / moveInTime),
                 (o = gameObject).transform.position.y,
                 Mathf.Lerp(o.transform.position.z, position.z, _moveInElapsed / moveInTime)
             );
-            
-            gameObject.transform.Rotate(0, animalData.rotationSpeedInRound * Time.deltaTime, 0);
-
-            
-        }
         
-        yield return null;
+            gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);
+            yield return null;
+        }
     }
     private void StandAnimalUpright()
     {

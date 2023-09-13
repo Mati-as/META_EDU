@@ -1,0 +1,194 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &840920070250624573
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 840920070250624563}
+  - component: {fileID: 840920070250624562}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &840920070250624563
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840920070250624573}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.1275063, y: 1.4161631, z: 5.7073855}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &840920070250624562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840920070250624573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45572fcb4287414787f8385c4c69e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GAME_PROGRESSING_SPEED: 1
+  _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
+  CLICK_REPEAT_COUNT: 5
+  TARGET_FRAME: 30
+  _selectedAnimals: []
+  roundCount: 3
+  waitTimeForNextRound: 5
+  moveOutPositionA: {fileID: 0}
+  moveOutPositionB: {fileID: 0}
+  waitTimeOfinitialRoundStart: 5
+  gameStartWaitSecondsForBackgroundChange: 3
+  allAnimals:
+  - {fileID: 11400000, guid: 009a9f7b9fff75f4697c5f4e9b08950b, type: 2}
+  - {fileID: 11400000, guid: 09d855541ebf96f43848d362f4b0818f, type: 2}
+  - {fileID: 11400000, guid: 0c9a028013a2960479c3e72ee9b878cb, type: 2}
+  - {fileID: 11400000, guid: 92e088a290877f44985f103a7bce2600, type: 2}
+  - {fileID: 11400000, guid: 43a41cef0ab8fc742818ee1d96e99ff7, type: 2}
+  - {fileID: 11400000, guid: 45d0812ae08273e478e6b851e2943f96, type: 2}
+  - {fileID: 11400000, guid: 64b1e5d01fa96cb4f81bb0b5b0df6268, type: 2}
+  - {fileID: 11400000, guid: 61f4cb82a13b2c9498d96f0a8d2b2b1f, type: 2}
+  - {fileID: 11400000, guid: adc1e94cade60d644a9a5ade2fdc4239, type: 2}
+  - {fileID: 11400000, guid: e39fc595383606242ae1d0b5d49368fb, type: 2}
+  - {fileID: 11400000, guid: 210ddd9203a579742867248d5e9531ab, type: 2}
+  - {fileID: 11400000, guid: 7a05d2d107e5edb409e2534c82c3c408, type: 2}
+  - {fileID: 11400000, guid: 5c4cc7c523186dc4197866f20152524f, type: 2}
+  - {fileID: 11400000, guid: 15a77e8a2b7f5a1489cd4aaf44f9d521, type: 2}
+  lookAtPosition: {fileID: 0}
+  rotationSpeed: 1
+  waitingTime: 2
+  newSize: 2.4
+  sizeIncreasingSpeed: 1
+  inPlayPositionA: {fileID: 0}
+  inPlayPositionB: {fileID: 0}
+  inPlayPositionC: {fileID: 0}
+  inPlayPositions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  moveOutTime: 200
+  rotationSpeedWhenMovingOut: 1
+  moveInSeconds: 5.5
+  rotationSpeedInRound: 80
+  waitTimeBetweenRounds: 4.5
+  waitTimeToBeSelectable: 5.5
+  animalMovePositionToSpotLight: {fileID: 0}
+  movingTimeSecWhenCorrect: 0.9
+  finishedMoveInTime: 10
+  playObejctInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  UIInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 32
+  clickParticleSystem: {fileID: 0}
+  _onCorrectLightOnEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: LightDimmer, Assembly-CSharp
+        m_MethodName: TurnOnSpotLightEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _onRoundFinishedLightOff:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: LightDimmer, Assembly-CSharp
+        m_MethodName: TurnOffSpotLightEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _quizMessageEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: PlayQuizMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _correctMessageEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: PlayOnCorrectMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _messageInitializeEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: InitializeMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _finishedMessageEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: InstructionUI, Assembly-CSharp
+        m_MethodName: PlayFinishMessage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  animal: {fileID: 0}
+  moveDownTime: 20
+  touchDownPosition: {fileID: 0}
+  selectableAnimalsCount: 3
