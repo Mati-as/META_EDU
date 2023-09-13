@@ -25,6 +25,28 @@ public class AnimalData : ScriptableObject
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
     public Color outlineColor;
+    
+    [Space(20)] [Header("Position Settings")]
+    
+    public Transform inPlayPosition;
+    
+    [Header("Per Status Settings")]
+    [Space(30)]
+    [Header("Initial Setting")] [Space(10f)]
+    [Header("On GameStart")] [Space(10f)]
+    [Header("On Round Is Ready")] [Space(10f)]
+    [Header("On Round Started")] [Space(10f)]
+    public float moveInTime;
+    public float animationPlayInterval;
+    public float animationDuration;
+    public float rotationSpeedInRound;
+    [Header("On Correct")] [Space(10f)]
+    public float movingTimeSecWhenCorrect;
+    public float rotationSpeedWhenCorrect;
+    public static Transform SPOTLIGHT_POSITION_FOR_ANIMAL;
+    public static Transform LOOK_AT_POSITION;
+    [Header("On Round Finished")] [Space(10f)]
+    [Header("On GameFinished")]
 
     
     // 09-01-23 애니메이션 로직 중  IDEL_ANIM 미사용.
