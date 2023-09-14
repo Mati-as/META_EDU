@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
     [Header("In Play Setting")] [Space(10f)] private float _moveInElapsed;
     public float moveInSeconds;
     [FormerlySerializedAs("rotationSpeedInPlay")] public float rotationSpeedInRound;
-    public float waitTimeBetweenRounds;
+    [FormerlySerializedAs("waitTimeBetweenRounds")] public float waitTimeCorrectAnimFinish;
     public float waitTimeToBeSelectable; //동물들이 들어오고 나서 선택할 수 있게 되는 시간.
 
     private float _elapsedOfToBeSelectableWaitTime;
@@ -404,7 +404,7 @@ public class GameManager : MonoBehaviour
         _moveOutElapsed = 0f;
                 
         _elapsedOfRoundFinished += Time.deltaTime;
-        if (_elapsedOfRoundFinished > waitTimeBetweenRounds) isRoundFinished = true;
+        if (_elapsedOfRoundFinished > waitTimeCorrectAnimFinish) isRoundFinished = true;
     }
 
     private bool _isGameStartEventRun;

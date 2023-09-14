@@ -49,7 +49,7 @@ public class AnimalData : ScriptableObject
    [Header("On Correct")] [Space(5f)]
     public float movingTimeSecWhenCorrectToSpotLight;
     public float movingTimeSecWhenCorrectToTouchDownSpot;
-    public float rotationSpeedWhenCorrect;
+    public float rotationTimeWhenCorrect;
     public static Transform SPOTLIGHT_POSITION_FOR_ANIMAL;
     public static Transform LOOK_AT_POSITION;
     public static Transform TOUCH_DOWN_POSITION;

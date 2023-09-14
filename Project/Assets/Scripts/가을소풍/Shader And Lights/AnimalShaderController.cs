@@ -196,6 +196,10 @@ public class AnimalShaderController : MonoBehaviour
         while (GameManager.isCorrected || GameManager.isRoundFinished)
         {
             TurnOffOutLineWithLerp();
+            if (_colorLerp > 2 / 3f)
+            {
+                _meshRenderer.enabled = false;
+            }
             yield return null;
         }
     }

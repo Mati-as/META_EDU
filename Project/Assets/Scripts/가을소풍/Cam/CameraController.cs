@@ -19,12 +19,14 @@ public class CameraController : MonoBehaviour
 
     private float _moveSpeedLerp;
     private float elapsedTime;
+    public float Xoffset;
 
 
     private void Start()
     {
         transform.position = _introStartCamPoint.position;
         transform.LookAt(_playStartCamPoint);
+        transform.rotation *= Quaternion.Euler(Xoffset,0,0);
     }
 
     private void Update()

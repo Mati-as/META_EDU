@@ -32,8 +32,6 @@ public class PropsController : MonoBehaviour
 
     private void OnCorrect()
     {
-        DisableCollider(_hillCollider);
-        
         EnableCollider(_touchDownBoxCollider);
     }
 

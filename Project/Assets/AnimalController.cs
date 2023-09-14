@@ -68,7 +68,7 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
-        _rigidbody.GetComponent<Rigidbody>();
+      
         SetCoroutine();
         SubscribeGameManagerEvents();
        
@@ -147,8 +147,9 @@ public class AnimalController : MonoBehaviour
 
     private void OnGameStart()
     {
-        // ▼ 1회 실행. 
+        // ▼ 1회 실행.
         _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody>();
         SubscribeGameManagerEvents();
     }
 
@@ -180,13 +181,15 @@ public class AnimalController : MonoBehaviour
         // ▼ 1회 실행. 
         if (CheckIsAnswer())
         {
-            _rigidbody.isKinematic = true;
+           
             _animator.SetBool(AnimalData.RUN_ANIM,true);
         }
         
         // ▼ 코루틴.
-        _coroutines[0] = StartCoroutine(IncreaseScaleCoroutine());
-        _coroutines[1] = StartCoroutine(MoveToSpotLightCoroutine());
+       
+        _coroutines[0] = StartCoroutine(MoveToSpotLightCoroutine());
+       
+     
         
     }
     
@@ -507,7 +510,7 @@ public class AnimalController : MonoBehaviour
         while (!GameManager.isRoundFinished)
         {
             _elapsedForMovingWhenCorrect += Time.deltaTime;
-
+            
             if (CheckIsAnswer())
             {
                 if (isTouchedDown == false)
@@ -521,9 +524,11 @@ public class AnimalController : MonoBehaviour
                     MoveToSpotLight();
                     _animator.SetBool(AnimalData.RUN_ANIM,false);
                     SetCorrectedAnim(_animator);
-                    if (_isArrivedTouchDownSpot)
+                    _rigidbody.isKinematic = true;
+                    if (!_isArrivedTouchDownSpot)
                     {
-                        
+                        Debug.Log("동물 사이즈 증가 중..");
+                        _coroutines[1] = StartCoroutine(IncreaseScaleCoroutine());
                         _elapsedForMovingWhenCorrect = 0f;
                         _isArrivedTouchDownSpot = true;
                     }
@@ -538,39 +543,63 @@ public class AnimalController : MonoBehaviour
      
     }
 
-    private void MoveAndRotateToward(Transform TargetPosition, float moveTime)
+    private void MoveAndRotateToward(Transform TargetPosition,Transform lookAt, float moveTime, float rotationTime)
     {
         float t = Mathf.Clamp01(_elapsedForMovingWhenCorrect / moveTime);
+        float t2 = Mathf.Clamp01(_elapsedForMovingWhenCorrect / rotationTime);
         
         gameObject.transform.position =
             Vector3.Lerp(gameObject.transform.position,
                 TargetPosition.position, t);
 
         Vector3 directionToTarget =
-            TargetPosition.position - gameObject.transform.position;
+            lookAt.position - gameObject.transform.position;
 
         Quaternion targetRotation =
             Quaternion.LookRotation(directionToTarget);
+        
         gameObject.transform.rotation =
             Quaternion.Slerp(
                 gameObject.transform.rotation, targetRotation,
-                _animalData.rotationSpeedWhenCorrect * Time.deltaTime);
+                t2 * Time.deltaTime);
+    }
+    
+    private void MoveAndRotateTowardTouchDownPlace(Transform TargetPosition,Transform lookAt, float moveTime, float rotationTime)
+    {
+        float t = Mathf.Clamp01(_elapsedForMovingWhenCorrect / moveTime);
+        float t2 = Mathf.Clamp01(_elapsedForMovingWhenCorrect / rotationTime);
+        
+        Vector3 newPosition = Vector3.Lerp(gameObject.transform.position, TargetPosition.position, t);
+
+        // y 값을 고정하여 변경하지 않습니다.
+        newPosition.y = gameObject.transform.position.y;
+
+        gameObject.transform.position = newPosition;
+
+        Vector3 directionToTarget = lookAt.position - gameObject.transform.position;
+
+        Quaternion targetRotation =
+            Quaternion.LookRotation(directionToTarget);
+        
+        gameObject.transform.rotation =
+            Quaternion.Slerp(
+                gameObject.transform.rotation, targetRotation,
+                t2 * Time.deltaTime);
     }
 
     private void MoveToSpotLight()
     {
             Debug.Log("Moving Up To The Moon.");
-            MoveAndRotateToward(AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL,
-                _animalData.movingTimeSecWhenCorrectToSpotLight);
-        
+            MoveAndRotateToward(AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL,AnimalData.LOOK_AT_POSITION,
+                _animalData.movingTimeSecWhenCorrectToSpotLight,_animalData.rotationTimeWhenCorrect);
     }
 
     private void MoveToTouchDownSpot()
     {
         Debug.Log("Moving To Touch Down.");
     
-        MoveAndRotateToward(AnimalData.TOUCH_DOWN_POSITION,
-            _animalData.movingTimeSecWhenCorrectToTouchDownSpot);
+        MoveAndRotateTowardTouchDownPlace(AnimalData.TOUCH_DOWN_POSITION,AnimalData.LOOK_AT_POSITION,
+            _animalData.movingTimeSecWhenCorrectToTouchDownSpot,_animalData.rotationTimeWhenCorrect);
     }
     
     private float _elapsedForFinishMoveIn;
