@@ -18,6 +18,7 @@ using UnityEngine.Serialization;
         [Range(0,20)][SerializeField] public float waitTimeForTurningOnGlow;
         [Space(10)]
         [Range(0,1)][SerializeField] public float outlineTurningOnSpeed;
+        [Range(0,1)][SerializeField] public float outlineTurningOffSpeed;
 
         [FormerlySerializedAs("sizeIcreasingSpeed")]
         [Space(35)] [Header("Common Settings")] [Space(20)]

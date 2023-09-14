@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class PositionSaver : MonoBehaviour
 {
-
-    
-    public Transform spotlightPosition;
-    public Transform lookAtPosition;
+    private Transform _lookAtPosition;
+  
     
     void Start()
     {
         GameManager.onGameStartEvent += SavePosition;
+        _lookAtPosition = GetComponentInChildren<Transform>();
     }
     
     /// <summary>
@@ -20,7 +19,7 @@ public class PositionSaver : MonoBehaviour
     /// </summary>
     private void SavePosition()
     {
-        AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL = spotlightPosition;
-        AnimalData.LOOK_AT_POSITION = lookAtPosition;
+        AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL = transform;
+        AnimalData.LOOK_AT_POSITION = _lookAtPosition;
     }
 }

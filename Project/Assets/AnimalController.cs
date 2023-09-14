@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 using System.Collections.Generic;
+using UnityEditor;
 
 
 public class AnimalController : MonoBehaviour
@@ -31,7 +32,7 @@ public class AnimalController : MonoBehaviour
     private readonly string TAG_ARRIVAL= "arrival";
     private bool isTouchedDown;
     private Animator _animator;
-    
+    private Rigidbody _rigidbody;
     public bool IsTouchedDown
     {
         get { return isTouchedDown;}
@@ -62,11 +63,15 @@ public class AnimalController : MonoBehaviour
     }
     
     // ▼ Unity Loop  -----------------------------------------------
+    
+    
+    
     private void Awake()
     {
+        _rigidbody.GetComponent<Rigidbody>();
         SetCoroutine();
         SubscribeGameManagerEvents();
-      
+       
     }
     
     void Start()
@@ -90,7 +95,9 @@ public class AnimalController : MonoBehaviour
 #endif
         }
     }
+    
 
+    
     
     // ▼ 메소드 목록 ----------------------------------------------------------------------------
 
@@ -101,10 +108,6 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void SubscribeGameManagerEvents()
     {
-        // 중복 구독 방지.
-        GameManager.onAllAnimalsInitialized -= OnOnAllAnimalsInitialized;
-        GameManager.onAllAnimalsInitialized += OnOnAllAnimalsInitialized;
-
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onGameStartEvent += OnGameStart;
         
@@ -131,7 +134,6 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onAllAnimalsInitialized -= OnOnAllAnimalsInitialized;
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onRoundReadyEvent -= OnRoundReady;
         GameManager.onCorrectedEvent -= OnCorrect;
@@ -141,10 +143,7 @@ public class AnimalController : MonoBehaviour
     }
     
     // 1. 상태 기준 분류 --------------------------------------------
-    private void OnOnAllAnimalsInitialized()
-    {
-        GameManager.isAnimalTransformSet = true;
-    }
+   
 
     private void OnGameStart()
     {
@@ -176,12 +175,13 @@ public class AnimalController : MonoBehaviour
     private void OnCorrect()
     {
         // ▼ 이전 코루틴 중지.
-        
-        
+       
+      
         // ▼ 1회 실행. 
         if (CheckIsAnswer())
         {
-            SetCorrectedAnim(_animator);
+            _rigidbody.isKinematic = true;
+            _animator.SetBool(AnimalData.RUN_ANIM,true);
         }
         
         // ▼ 코루틴.
@@ -194,6 +194,8 @@ public class AnimalController : MonoBehaviour
     {
         // ▼ 1회 실행. 
         InitialzeAllAnimatorParams(_animator);
+        isTouchedDown = false;
+        _rigidbody.isKinematic = false;
         
         // ▼ 코루틴.
         _coroutines[0] = StartCoroutine(DecreaseScale());
@@ -265,11 +267,11 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void InitializeTransform()
     {
-        _animalData.initialPosition = transform.position;
-        _animalData.initialRotation = transform.rotation;
-        
         if (GameManager.isAnimalTransformSet == false)
         { 
+            _animalData.initialPosition = transform.position;
+            _animalData.initialRotation = transform.rotation;
+            
             GameManager.AnimalInitialized();
             Destroy(gameObject);
         }
@@ -493,46 +495,82 @@ public class AnimalController : MonoBehaviour
         gameObject.transform.rotation = Quaternion.Euler(0,gameObject.transform.rotation.y,0);
     }
 
-    private float _elapsedForMovingToSpotLight;
-   
+    private float _elapsedForMovingWhenCorrect;
+    private bool _isArrivedTouchDownSpot;
     IEnumerator MoveToSpotLightCoroutine()
     {
         
-        _elapsedForMovingToSpotLight = 0f;
+        _elapsedForMovingWhenCorrect = 0f;
+        _isArrivedTouchDownSpot = false;
+        isTouchedDown = false;
+        
         while (!GameManager.isRoundFinished)
         {
-            _elapsedForMovingToSpotLight += Time.deltaTime;
-            Debug.Log("Animal is Moving to Spotlight...");
+            _elapsedForMovingWhenCorrect += Time.deltaTime;
+
+            if (CheckIsAnswer())
+            {
+                if (isTouchedDown == false)
+                {
+                    _animator.SetBool(AnimalData.RUN_ANIM, true);
+                    MoveToTouchDownSpot();
+                }
+                
+                else
+                {
+                    MoveToSpotLight();
+                    _animator.SetBool(AnimalData.RUN_ANIM,false);
+                    SetCorrectedAnim(_animator);
+                    if (_isArrivedTouchDownSpot)
+                    {
+                        
+                        _elapsedForMovingWhenCorrect = 0f;
+                        _isArrivedTouchDownSpot = true;
+                    }
+                }
+            }
+           
             
-            MoveToSpotLight();
+            
             yield return null;
         }
         
      
     }
 
+    private void MoveAndRotateToward(Transform TargetPosition, float moveTime)
+    {
+        float t = Mathf.Clamp01(_elapsedForMovingWhenCorrect / moveTime);
+        
+        gameObject.transform.position =
+            Vector3.Lerp(gameObject.transform.position,
+                TargetPosition.position, t);
+
+        Vector3 directionToTarget =
+            TargetPosition.position - gameObject.transform.position;
+
+        Quaternion targetRotation =
+            Quaternion.LookRotation(directionToTarget);
+        gameObject.transform.rotation =
+            Quaternion.Slerp(
+                gameObject.transform.rotation, targetRotation,
+                _animalData.rotationSpeedWhenCorrect * Time.deltaTime);
+    }
+
     private void MoveToSpotLight()
     {
-        float t = Mathf.Clamp01(_elapsedForMovingToSpotLight / _animalData.movingTimeSecWhenCorrect);
+            Debug.Log("Moving Up To The Moon.");
+            MoveAndRotateToward(AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL,
+                _animalData.movingTimeSecWhenCorrectToSpotLight);
         
+    }
 
-        if (gameObject.name == GameManager.answer)
-        {
-            gameObject.transform.position =
-                Vector3.Lerp(gameObject.transform.position,
-                    AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL.position, t);
-
-            Vector3 directionToTarget =
-                AnimalData.LOOK_AT_POSITION.position - gameObject.transform.position;
-
-            Quaternion targetRotation =
-                Quaternion.LookRotation(directionToTarget);
-            gameObject.transform.rotation =
-                Quaternion.Slerp(
-                    gameObject.transform.rotation, targetRotation,
-                    _animalData.rotationSpeedWhenCorrect * Time.deltaTime);
-        }
-      
+    private void MoveToTouchDownSpot()
+    {
+        Debug.Log("Moving To Touch Down.");
+    
+        MoveAndRotateToward(AnimalData.TOUCH_DOWN_POSITION,
+            _animalData.movingTimeSecWhenCorrectToTouchDownSpot);
     }
     
     private float _elapsedForFinishMoveIn;

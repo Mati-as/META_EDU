@@ -46,11 +46,13 @@ public class AnimalData : ScriptableObject
     public float animationPlayIntervalMax;
     public float animationDuration;
     public float rotationSpeedInRound;
-    [Header("On Correct")] [Space(5f)]
-    public float movingTimeSecWhenCorrect;
+   [Header("On Correct")] [Space(5f)]
+    public float movingTimeSecWhenCorrectToSpotLight;
+    public float movingTimeSecWhenCorrectToTouchDownSpot;
     public float rotationSpeedWhenCorrect;
     public static Transform SPOTLIGHT_POSITION_FOR_ANIMAL;
     public static Transform LOOK_AT_POSITION;
+    public static Transform TOUCH_DOWN_POSITION;
     [Header("On Round Finished")] [Space(5f)]
     [Header("On GameFinished")]
     public float finishedMoveInTime;

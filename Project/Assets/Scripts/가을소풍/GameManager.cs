@@ -230,12 +230,12 @@ public class GameManager : MonoBehaviour
     {
         SetResolution(1920, 1080,TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
+        onAllAnimalsInitialized += SetAndInitializedAnimals;
     }
 
     private void Start()
     {
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
-        SetAndInitializedAnimals();
     }
     
     /// <summary>
@@ -367,8 +367,9 @@ public class GameManager : MonoBehaviour
        
         if (initializedAnimalsCount >= totalAnimalCount)
         {
-            onAllAnimalsInitialized?.Invoke();
+            isAnimalTransformSet = true;
             Debug.Log($"Initializing Event Occured!");
+            onAllAnimalsInitialized?.Invoke();
         }
     }
 

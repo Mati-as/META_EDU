@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40147e219a2491847b1b84d41803a3f3, type: 3}
   m_Name: cat Data
   m_EditorClassIdentifier: 
-  initialPosition: {x: -8.50057, y: 0.4097035, z: 6.3783746}
+  initialPosition: {x: -8.50057, y: 0.37799466, z: 6.3783746}
   initialRotation: {x: 0.0051445775, y: 0.5599767, z: 0.021356918, w: 0.8282171}
   animalPositionOffset: {x: 0, y: 0, z: 0}
   englishName: cat
@@ -28,5 +28,7 @@ MonoBehaviour:
   animationPlayIntervalMax: 10
   animationDuration: 0.5
   rotationSpeedInRound: 80
-  movingTimeSecWhenCorrect: 3
+  movingTimeSecWhenCorrectToSpotLight: 8
+  movingTimeSecWhenCorrectToTouchDownSpot: 8
   rotationSpeedWhenCorrect: 60
+  finishedMoveInTime: 5
