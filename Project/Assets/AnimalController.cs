@@ -95,7 +95,10 @@ public class AnimalController : MonoBehaviour
     // ▼ 메소드 목록 ----------------------------------------------------------------------------
 
  
-    //이벤트 처리 위한 구독
+    
+    /// <summary>
+    /// 이벤트 처리를 위해 GameManager Actions를 구독합니다. 
+    /// </summary>
     private void SubscribeGameManagerEvents()
     {
         // 중복 구독 방지.
@@ -116,8 +119,16 @@ public class AnimalController : MonoBehaviour
 
         GameManager.onRoundStartedEvent -= OnRoundStarted;
         GameManager.onRoundStartedEvent += OnRoundStarted;
+        
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
+    
+    /// <summary>
+    /// 게임 종료시 구독해제하여 중복 구독을 방지합니다.
+    /// 중복 구독 방지 로직은 Subscribe에도 있습니다. 
+    /// </summary>
     private void UnsubscribeGamaManagerEvents()
     {
         GameManager.onAllAnimalsInitialized -= OnOnAllAnimalsInitialized;
@@ -126,6 +137,7 @@ public class AnimalController : MonoBehaviour
         GameManager.onCorrectedEvent -= OnCorrect;
         GameManager.onRoundFinishedEvent -= OnRoundFinished;
         GameManager.onRoundStartedEvent -= OnRoundStarted;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
     }
     
     // 1. 상태 기준 분류 --------------------------------------------
@@ -192,7 +204,10 @@ public class AnimalController : MonoBehaviour
 
     private void OnGameFinished()
     {
+        // ▼ 1회 실행. 
+        InitialzeAllAnimatorParams(_animator);
         
+        _coroutines[0] = StartCoroutine((MoveInWhenGameIsFinishedCoroutine()));
     }
     
     
@@ -469,6 +484,10 @@ public class AnimalController : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// 동물의 Y축을 월드좌표 Y축에 맞게 수정합니다.
+    /// Rigidbody 동물이 다른 충돌에 의해 축이 변형될 수 있으므로 사용합니다. 
+    /// </summary>
     private void StandAnimalUpright()
     {
         gameObject.transform.rotation = Quaternion.Euler(0,gameObject.transform.rotation.y,0);
@@ -510,9 +529,30 @@ public class AnimalController : MonoBehaviour
                 Quaternion.LookRotation(directionToTarget);
             gameObject.transform.rotation =
                 Quaternion.Slerp(
-                    gameObject.transform.rotation, targetRotation, _animalData.rotationSpeedWhenCorrect * Time.deltaTime);
+                    gameObject.transform.rotation, targetRotation,
+                    _animalData.rotationSpeedWhenCorrect * Time.deltaTime);
         }
       
+    }
+    
+    private float _elapsedForFinishMoveIn;
+    IEnumerator MoveInWhenGameIsFinishedCoroutine()
+    {
+        _elapsedForFinishMoveIn = 0f;
+        
+        while (true)
+        {
+            _elapsedForFinishMoveIn += Time.deltaTime;
+            MoveInWhenGameIsFinished(_elapsedForFinishMoveIn);
+            yield return null;
+        }
+    }
+    private void MoveInWhenGameIsFinished(float elapsedTime)
+    {
+
+        transform.position = Vector3.Lerp(transform.position, _animalData.initialPosition,
+            elapsedTime / _animalData.finishedMoveInTime);
+
     }
     
     

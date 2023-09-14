@@ -53,6 +53,7 @@ public class AnimalData : ScriptableObject
     public static Transform LOOK_AT_POSITION;
     [Header("On Round Finished")] [Space(5f)]
     [Header("On GameFinished")]
+    public float finishedMoveInTime;
 
     
     // 09-01-23 애니메이션 로직 중  IDEL_ANIM 미사용.

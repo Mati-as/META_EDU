@@ -23,14 +23,6 @@ public class BackgroundShaderController : MonoBehaviour
     private readonly int _horizontalColor = Shader.PropertyToID("_HorizonColor");
     private readonly int _emissionColor = Shader.PropertyToID("_emissionColor");
     
-    [Space(20f)] [Header("Color Settings")] [Space(10f)]
-    public float minBrightness;
-
-    public float maxBrightness;
-
-    [FormerlySerializedAs("brightnessIncreasingSpeed")]
-    
-
     private float _brightness;
     private float _elapsedTime;
     private float _lerpProgress; // 추가된 변수
