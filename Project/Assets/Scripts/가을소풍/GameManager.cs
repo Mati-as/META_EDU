@@ -511,7 +511,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ClickOnObject()
     {
-#if UNITY_EDITOR
+
         // 마우스 클릭 시
         if (Input.GetMouseButtonDown(0) && !isCorrected)
         {
@@ -519,13 +519,13 @@ public class GameManager : MonoBehaviour
             
          //  while( _currentRepeatCount < CLICK_REPEAT_COUNT )
            // {
-#if UNITY_EDITOR
+
              
-#else
+
             // m_vecMouseDownPos = Input.GetTouch(0).position;
             // if (Input.GetTouch(0).phase != TouchPhase.Began)
             //     return;
-#endif
+
 
                 var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
                 RaycastHit hit;
@@ -567,10 +567,10 @@ public class GameManager : MonoBehaviour
           
         }
 
-#else
+
         //        터치 시
         // if (Input.touchCount > 0)
-#endif
+
     }
 
     private void PlayClickOnScreenEffect()
@@ -669,7 +669,7 @@ public class GameManager : MonoBehaviour
         {
             //생성
             GameObject thisAnimal =  Instantiate(animalData.animalPrefab, 
-                animalData.initialPosition + animalData.animalPositionOffset, animalData.initialRotation,
+                animalData.initialPosition , animalData.initialRotation,
             animal.transform);
 
 

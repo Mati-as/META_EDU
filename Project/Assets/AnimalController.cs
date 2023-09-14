@@ -482,8 +482,9 @@ public class AnimalController : MonoBehaviour
         _elapsedForMovingToSpotLight = 0f;
         while (!GameManager.isRoundFinished)
         {
-            Debug.Log("Animal is Moving to Spotlight...");
             _elapsedForMovingToSpotLight += Time.deltaTime;
+            Debug.Log("Animal is Moving to Spotlight...");
+            
             MoveToSpotLight();
             yield return null;
         }

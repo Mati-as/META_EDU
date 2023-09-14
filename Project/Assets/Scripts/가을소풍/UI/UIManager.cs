@@ -18,7 +18,7 @@ public class UIManager : MonoBehaviour
 
 
     public Dictionary<string, string> animalNameToKorean = new();
-    private string roundInstruction;
+    public string roundInstruction;
 
     [Header("On Correct")] [Space(10f)] public float onCorrectOffsetSeconds;
     public string onCorrectMessage;

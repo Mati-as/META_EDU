@@ -40,8 +40,6 @@ public class AnimalShaderController : MonoBehaviour
     
     void Awake()
     {
-       
-        
         _meshRenderer = GetComponent<SkinnedMeshRenderer>();
       
         _mat = _meshRenderer.material; // material instance를 가져옵니다.

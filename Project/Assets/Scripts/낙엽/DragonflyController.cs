@@ -173,18 +173,37 @@ public class DragonflyController : MonoBehaviour
     public float moveUpTime;
     public float moveBackTime;
     private float _elapsedForMoveBack;
+    private bool _isInitialLanding;
+    public int initialLandingPosition;
     private void LandToGround()
     {
         _elapsedForMoveBack += Time.deltaTime;
-        
-        
-        transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
-            _elapsedForMoveBack / moveBackTime);
 
-        var direction = _landingPositions[_landPositionIndex].position - transform.position;
-        direction.y = 0;
-        var rotation = Quaternion.LookRotation(direction);
-        transform.rotation = rotation;
+        if(_elapsedForMoveBack > 4) 
+        //맨 처음에 잠자리 끼리 부딫히지 않도록 하기위한 로직입니다. 추후 좀 더 추상화 진행 해야합니다 9/14/23
+        if (!_isInitialLanding)
+        {
+            transform.position = Vector3.Lerp(transform.position, _landingPositions[initialLandingPosition].position,
+                _elapsedForMoveBack / moveBackTime);
+
+            var direction = _landingPositions[initialLandingPosition].position - transform.position;
+            direction.y = 0;
+            var rotation = Quaternion.LookRotation(direction);
+            transform.rotation = rotation;
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
+                _elapsedForMoveBack / moveBackTime);
+
+            var direction = _landingPositions[_landPositionIndex].position - transform.position;
+            direction.y = 0;
+            var rotation = Quaternion.LookRotation(direction);
+            transform.rotation = rotation;
+        }
+        
+        
+       
     }
 
     private void CheckClickedAndAnimateDragonfly()
@@ -207,7 +226,7 @@ public class DragonflyController : MonoBehaviour
 
 
             _animator.SetBool(DRAGONFLY_ANIM_FLY, true);
-
+            _isInitialLanding = true;
             _currentLandingPosition.position = transform.position;
 
             _isClicked = true;

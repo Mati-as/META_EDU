@@ -8,10 +8,6 @@ public class FallenLeavesGM : MonoBehaviour
    private Vector3 m_vecMouseDownPos;
    public ParticleSystem clickParticleSystem;
    public LayerMask UIInteractableLayer;
-    private void Awake()
-    {
-       
-    }
 
     private void Start()
     {
