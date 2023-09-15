@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -34,6 +35,11 @@ public class ParticleEventController : MonoBehaviour
     private void Awake()
     {
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
+
+        particleSystemA.Play();
+        particleSystemB.Play();
+        particleSystemC.Play();
+            
     }
 
     private void Update()
@@ -76,7 +82,14 @@ public class ParticleEventController : MonoBehaviour
         
         
     }
-    
+
+    private void OnDestroy()
+    {
+        particleSystemA.Stop();
+        particleSystemB.Stop();
+        particleSystemC.Stop();
+    }
+
     //  메소드 목록   -----------------------
     public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
     private void ApplyRandomForce(Vector3 position, ParticleSystem particleSystem)

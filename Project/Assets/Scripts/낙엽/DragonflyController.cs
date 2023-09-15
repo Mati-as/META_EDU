@@ -78,7 +78,7 @@ public class DragonflyController : MonoBehaviour
 
 
         _animator = GetComponent<Animator>();
-
+       
         _dragonflyName = gameObject.name;
 #if DEFINE_TEST
         Debug.Log($"gameobject name is {_dragonflyName}");
@@ -90,17 +90,24 @@ public class DragonflyController : MonoBehaviour
         PlayIdleAnim();
     }
 
+    private bool _initialMoveStart;
+    
     // Update is called once per frame
     private void Update()
     {
-        _elapsedTimeForIdleAnim += Time.deltaTime;
-    
         if (Input.GetMouseButtonDown(0)) CheckClickedAndAnimateDragonfly();
         
-        if (_isClicked) MoveUpToDisappear();
-        else LandToGround();
+        if (_initialMoveStart)
+        {
+            _elapsedTimeForIdleAnim += Time.deltaTime;
+            
+            if (_isClicked) MoveUpToDisappear();
+            else LandToGround();
         
-        PlayIdleAnim();
+            PlayIdleAnim();
+        }
+     
+        
     }
 
     private bool isIdleAnimPlayable;
@@ -231,6 +238,7 @@ public class DragonflyController : MonoBehaviour
             _randomSpeed = Random.Range(0.8f, 2);
 
 
+            _initialMoveStart = true;
             _animator.SetBool(DRAGONFLY_ANIM_FLY, true);
             _isInitialLanding = true;
             _currentLandingPosition.position = transform.position;
