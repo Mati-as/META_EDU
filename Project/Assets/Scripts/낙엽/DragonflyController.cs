@@ -85,14 +85,18 @@ public class DragonflyController : MonoBehaviour
 #endif
     }
 
+    private void Start()
+    {
+        PlayIdleAnim();
+    }
+
     // Update is called once per frame
     private void Update()
     {
-      
         _elapsedTimeForIdleAnim += Time.deltaTime;
     
         if (Input.GetMouseButtonDown(0)) CheckClickedAndAnimateDragonfly();
-
+        
         if (_isClicked) MoveUpToDisappear();
         else LandToGround();
         
@@ -179,7 +183,7 @@ public class DragonflyController : MonoBehaviour
     {
         _elapsedForMoveBack += Time.deltaTime;
 
-        if(_elapsedForMoveBack > 4) 
+       
         //맨 처음에 잠자리 끼리 부딫히지 않도록 하기위한 로직입니다. 추후 좀 더 추상화 진행 해야합니다 9/14/23
         if (!_isInitialLanding)
         {
@@ -191,7 +195,9 @@ public class DragonflyController : MonoBehaviour
             var rotation = Quaternion.LookRotation(direction);
             transform.rotation = rotation;
         }
-        else
+        
+        
+        if(_elapsedForMoveBack > 4)
         {
             transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
                 _elapsedForMoveBack / moveBackTime);
