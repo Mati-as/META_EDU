@@ -60,7 +60,7 @@ public class LightDimmer : MonoBehaviour
             dirLight.intensity += increaseRate * Time.deltaTime; // Intensity 감소
             dirLight.intensity = Mathf.Min(dirLight.intensity, defaultIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
 
-            Debug.Log($"RenderSettings.ambientIntensity: {RenderSettings.ambientIntensity}");
+            
             _currentAmbient += increaseRate * Time.deltaTime;
             RenderSettings.ambientIntensity = Mathf.Min(defaultAmbient,  _currentAmbient);
         }

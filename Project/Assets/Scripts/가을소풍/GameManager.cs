@@ -105,6 +105,7 @@ public class GameManager : MonoBehaviour
     public LayerMask playObejctInteractableLayer;
     public LayerMask UIInteractableLayer;
     public ParticleSystem clickParticleSystem;
+    public ParticleSystem answerParticleSystem;
     private Ray ray;
     private RaycastHit hitInfo;
 
@@ -273,15 +274,21 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="speed"></param>
     private void SetTimeScale(float speed) => Time.timeScale = speed;
-    
-    
+
+    private void SetRandomSeed()
+    {
+        System.Random random = new System.Random((int)System.DateTime.Now.Ticks & 0x0000FFFF);
+        float value = Mathf.PerlinNoise(Time.time, 0.0f);
+    }
     
     // ------------------------- ▼ 유니티 루프 ----------------------------
     private void Awake()
     {
+        SetRandomSeed();
         SetResolution(1920, 1080,TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
         onAllAnimalsInitialized += SetAndInitializedAnimals;
+        onCorrectedEvent += PlayAnswerParticle;
         SetTwoDimensionaTransformlArray();
     }
 
@@ -424,7 +431,7 @@ public class GameManager : MonoBehaviour
             onAllAnimalsInitialized?.Invoke();
         }
     }
-
+    
 
     
     private bool _isRandomized;
@@ -552,6 +559,8 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("클릭!");
                     _clickedAnimal = hit.collider.name;
+                    
+                    
                     //정답인 경우
                     if (_clickedAnimal == answer)
                     {
@@ -562,8 +571,9 @@ public class GameManager : MonoBehaviour
                             InvokeOncorrectUI();
                             onCorrectedEvent?.Invoke();
                             isCorrected = true;
+                            
                         }
-
+                        
                         //moving에서의 lerp
                         _elapsedForMovingToSpotLight = 0;
 
@@ -573,7 +583,7 @@ public class GameManager : MonoBehaviour
                 }
         }
     }
-
+    RaycastHit hitSecond;
     private void PlayClickOnScreenEffect()
     {
         if (Input.GetMouseButtonDown(0))
@@ -581,7 +591,7 @@ public class GameManager : MonoBehaviour
             m_vecMouseDownPos = Input.mousePosition;
             
             var raySecond = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
-            RaycastHit hitSecond;
+            
             
             if (Physics.Raycast(raySecond, out hitSecond, Mathf.Infinity, UIInteractableLayer) )
             {
@@ -589,9 +599,18 @@ public class GameManager : MonoBehaviour
                 clickParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
                 clickParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
                 clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
+                
             }
            
         }
+    }
+
+    private void PlayAnswerParticle()
+    {
+        Debug.Log("정답 파티클 재생");
+        answerParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
+        answerParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
+        answerParticleSystem.Play(); // 파티클 시스템
     }
     
     
@@ -810,40 +829,46 @@ public class GameManager : MonoBehaviour
     {
         _inPlayTempAnimals = new List<GameObject>(_animalList);
         
-        for (var i = 0; i < animalCount; i++)
+        for (int animalOrder = 0; animalOrder < animalCount; animalOrder++)
         {
-            var randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
+            int randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
+           
+            //가운데 기린이 오는 것 방지.
+                while (animalOrder == 1 && _inPlayTempAnimals[randomIndex].name == "giraffe" )
+                {
+                    randomIndex = Random.Range(0, _inPlayTempAnimals.Count);
+                }
+            
+         
             _selectedAnimals.Add(_inPlayTempAnimals[randomIndex]);
-            AnimalData animalData = _selectedAnimals[i].GetComponent<AnimalController>()._animalData;
+            AnimalData animalData = _selectedAnimals[animalOrder].GetComponent<AnimalController>()._animalData;
             
             if (animalCount == 3)
             {
-                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,i,animalCount))
+                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,animalOrder,animalCount))
                 {
-                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[0,i];
+                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[0,animalOrder];
                 }
                 else
                 {
                     int randomIndexFrontOrBack = Random.Range(0, 2);
-                    randomNumberRedcord[i] = randomIndexFrontOrBack;
-                    Debug.Log($"i값과 animalCount{i}, {animalCount}");
-                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[randomIndexFrontOrBack,i];
+                    randomNumberRedcord[animalOrder] = randomIndexFrontOrBack;
+                    Debug.Log($"i값과 animalCount{animalOrder}, {animalCount}");
+                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[randomIndexFrontOrBack,animalOrder];
                 }
             }
             else if (animalCount == 4)
             {
                 
-                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,i,animalCount))
+                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,animalOrder,animalCount))
                 {
-                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[0,i];
+                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[0,animalOrder];
                 }
                 else
                 {
                     int randomIndexFrontOrBack = Random.Range(0, 2);
-                    Debug.Log($"i값과 randomIndexFrontOrBack{i}, {randomIndexFrontOrBack}");
-                    Debug.Log($"i값과 animalCount{i}, {animalCount}");
-                    randomNumberRedcord[i] = randomIndexFrontOrBack;
-                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[randomIndexFrontOrBack,i];
+                    randomNumberRedcord[animalOrder] = randomIndexFrontOrBack;
+                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[randomIndexFrontOrBack,animalOrder];
                 }
                 
                

@@ -20,6 +20,11 @@ using UnityEngine.Serialization;
         [Range(0,1)][SerializeField] public float outlineTurningOnSpeed;
         [Range(0,1)][SerializeField] public float outlineTurningOffSpeed;
 
+        [Space(20)] [Header("Outline Color Setting")] [Space(10)]
+        public Color RANODOM_COLOR_A;
+        public Color RANODOM_COLOR_B;
+        public Color RANODOM_COLOR_C;
+     
         [FormerlySerializedAs("sizeIcreasingSpeed")]
         [Space(35)] [Header("Common Settings")] [Space(20)]
         [Range(0,2)]public float sizeIncreasingSpeed;

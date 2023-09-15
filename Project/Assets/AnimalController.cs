@@ -213,6 +213,7 @@ public class AnimalController : MonoBehaviour
         InitialzeAllAnimatorParams(_animator);
         
         _coroutines[0] = StartCoroutine((MoveInWhenGameIsFinishedCoroutine()));
+        _coroutines[1] = StartCoroutine(SetRandomAnimationWhenWhenRoundStartCoroutine());
     }
     
     
@@ -604,6 +605,7 @@ public class AnimalController : MonoBehaviour
     private float _elapsedForFinishMoveIn;
     IEnumerator MoveInWhenGameIsFinishedCoroutine()
     {
+        StopCoroutineWithNullCheck(_coroutines);
         _elapsedForFinishMoveIn = 0f;
         
         while (true)
@@ -617,6 +619,9 @@ public class AnimalController : MonoBehaviour
     {
 
         transform.position = Vector3.Lerp(transform.position, _animalData.initialPosition,
+            elapsedTime / _animalData.finishedMoveInTime);
+        
+        transform.rotation = Quaternion.Lerp(transform.rotation, _animalData.initialRotation,
             elapsedTime / _animalData.finishedMoveInTime);
 
     }

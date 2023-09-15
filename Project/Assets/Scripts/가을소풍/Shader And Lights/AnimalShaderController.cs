@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 
 public class AnimalShaderController : MonoBehaviour
@@ -80,14 +82,10 @@ public class AnimalShaderController : MonoBehaviour
             }
         }
         
-        if (GameManager.isCorrected && gameObject.name != GameManager.answer)
+
+        if (GameManager.isGameFinished)
         {
-           
-                _elapsedForInPlayGlowOn += Time.deltaTime;
-                BrightenOutlineWithLerp();
-                ChangeFresnelOfAnimalOutlineColor();
-            
-            //SetIntensity(_shaderAndCommon.colorIntensityRange);
+            TurnOffOutlineMesh();
         }
     }
     
@@ -108,16 +106,17 @@ public class AnimalShaderController : MonoBehaviour
     private void OnRoundReady()
     {
         _elapsedForInPlayGlowOn = 0f;
+        StopCoroutineWithNullCheck(_coroutines);
     }
    
     private void OnRoundStarted()
     {
+      
     }
 
     private void OnCorrect()
     {
         Debug.Log("쉐이더 코루틴 동작 중...");
-        StopCoroutineWithNullCheck(_coroutines);
         _coroutines[0] = StartCoroutine(TurnOffOutLineWithLerpCoroutine());
     }
     
@@ -188,26 +187,73 @@ public class AnimalShaderController : MonoBehaviour
         
         _mat.SetColor(EMISSION_COLOR,color);
     }
-    
+
+    Color randomColorWhenOnCorrect;
+
+    private Color SetRandomColorWhenCorrectForNonAnswerAnimals()
+    {
+        //BrightenOutlineWithLerp();
+        int randomColorIndex = Random.Range(1, 4);
+        switch (randomColorIndex)
+        {
+            case 1:
+                return randomColorWhenOnCorrect =_shaderAndCommon.RANODOM_COLOR_A;
+                break;
+                        
+            case 2:
+                return  randomColorWhenOnCorrect = _shaderAndCommon.RANODOM_COLOR_B;
+                break;
+                    
+            case 3:
+                return randomColorWhenOnCorrect = _shaderAndCommon.RANODOM_COLOR_C;
+                break;
+            
+            default: 
+                return randomColorWhenOnCorrect = _shaderAndCommon.RANODOM_COLOR_C;
+                break;
+        }
+        
+       
+    }
     IEnumerator TurnOffOutLineWithLerpCoroutine()
     {
         _colorLerp = 0f;
-        
-        while (GameManager.isCorrected || GameManager.isRoundFinished)
+        randomColorWhenOnCorrect = SetRandomColorWhenCorrectForNonAnswerAnimals();
+        while (true)
         {
-            TurnOffOutLineWithLerp();
-            if (_colorLerp > 2 / 3f)
+            _colorLerp += Time.deltaTime * _shaderAndCommon.outlineTurningOffSpeed;
+
+            if (GameManager.isCorrected && _animalData.englishName == GameManager.answer)
             {
-                _meshRenderer.enabled = false;
+                TurnOffOutLineWithLerp(Color.black);
+                if (_colorLerp > 0.6f)
+                {
+                    Debug.Log("정답 맞춰서 메쉬 끄기");
+                    TurnOffOutlineMesh();
+                }
             }
+            
+            // 정답아닌 나머지 동물 컬러 결정.
+            if (GameManager.isCorrected &&  _animalData.englishName != GameManager.answer)
+            {
+              
+                TurnOffOutLineWithLerp(_shaderAndCommon.RANODOM_COLOR_A);
+                 ChangeFresnelOfAnimalOutlineColor();
+            }
+
+            if (GameManager.isRoundFinished)
+            {
+                StopCoroutineWithNullCheck(_coroutines);
+            }
+            
             yield return null;
         }
     }
     
-    private void TurnOffOutLineWithLerp()
+    private void TurnOffOutLineWithLerp(Color targerColor)
     {
-        _colorLerp += Time.deltaTime * _shaderAndCommon.outlineTurningOffSpeed;
-        Color color =Color.Lerp(_animalData.outlineColor, Color.black , _colorLerp);
+      
+        Color color =Color.Lerp(_animalData.outlineColor, targerColor , _colorLerp);
         
         _mat.SetColor(EMISSION_COLOR,color);
     }
