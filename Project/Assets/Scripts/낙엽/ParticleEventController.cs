@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class ParticleEventController : MonoBehaviour
@@ -83,13 +85,7 @@ public class ParticleEventController : MonoBehaviour
         
     }
 
-    private void OnDestroy()
-    {
-        particleSystemA.Stop();
-        particleSystemB.Stop();
-        particleSystemC.Stop();
-    }
-
+  
     //  메소드 목록   -----------------------
     public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
     private void ApplyRandomForce(Vector3 position, ParticleSystem particleSystem)
@@ -152,4 +148,9 @@ public class ParticleEventController : MonoBehaviour
         }
         particleSystem.SetParticles(particles, numParticlesAlive);
     }
+
+   
+
+ 
+
 }

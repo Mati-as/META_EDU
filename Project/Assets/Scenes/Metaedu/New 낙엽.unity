@@ -443,7 +443,7 @@ Transform:
   - {fileID: 1100085452}
   - {fileID: 1546104638}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &60908851
 GameObject:
@@ -3944,7 +3944,7 @@ Transform:
   m_Children:
   - {fileID: 753897960}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &747421363
 MonoBehaviour:
@@ -3991,12 +3991,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 749776327}
   m_LocalRotation: {x: 0.0000003163004, y: 0.7071067, z: -0.7071069, w: -0.000000324615}
-  m_LocalPosition: {x: 0, y: -0.18700004, z: 0}
+  m_LocalPosition: {x: 46.48, y: 0.64199996, z: 153.24536}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 808807067}
-  m_RootOrder: 2
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -269.98, y: -180, z: 0}
 --- !u!114 &749776330
 MonoBehaviour:
@@ -4092,8 +4092,8 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 5
-  stopAction: 0
-  cullingMode: 1
+  stopAction: 1
+  cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
@@ -4599,8 +4599,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.8325957
-      minScalar: 1.0471976
+      scalar: 1.9652407
+      minScalar: 1.0314895
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4650,7 +4650,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0.71
-    maxNumParticles: 500
+    maxNumParticles: 1000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -7693,14 +7693,14 @@ ParticleSystem:
   CollisionModule:
     enabled: 1
     serializedVersion: 4
-    type: 1
+    type: 0
     collisionMode: 0
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 0
     m_Planes:
-    - {fileID: 0}
+    - {fileID: 1050662958}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -7867,13 +7867,13 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.1
+    radiusScale: 0.04
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
-    maxCollisionShapes: 208
+      m_Bits: 1
+    maxCollisionShapes: 3
     quality: 1
-    voxelSize: 0.79
+    voxelSize: 0.7
     collisionMessages: 0
     collidesWithDynamic: 1
     interiorCollisions: 0
@@ -9395,10 +9395,7 @@ Transform:
   m_LocalPosition: {x: 46.48, y: 0.788, z: 153.24536}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4359161272649809}
-  - {fileID: 962745065}
-  - {fileID: 749776328}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -10346,6 +10343,56 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &946130875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 946130876}
+  - component: {fileID: 946130877}
+  m_Layer: 0
+  m_Name: Velocity Initializer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &946130876
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946130875}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 46.48, y: 1.562, z: 153.24536}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &946130877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946130875}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7699b5b6366836e44b4317d9105e877f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particleSystemA: {fileID: 198641516155913787}
+  particleSystemB: {fileID: 198641516155913787}
+  particleSystemC: {fileID: 962745069}
+  randomInitialSpeedMin: 0.73
+  randomInitialSpeedMax: 2.24
+  initializableRadius: 1.24
 --- !u!1 &949400312
 GameObject:
   m_ObjectHideFlags: 0
@@ -10470,12 +10517,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 962745064}
   m_LocalRotation: {x: 0.0000003163004, y: 0.7071067, z: -0.7071069, w: -0.000000324615}
-  m_LocalPosition: {x: 0, y: -0.18700004, z: 0}
+  m_LocalPosition: {x: 46.48, y: 0.64199996, z: 153.24536}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 808807067}
-  m_RootOrder: 1
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -269.98, y: -180, z: 0}
 --- !u!114 &962745066
 MonoBehaviour:
@@ -10585,8 +10632,8 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 5
-  stopAction: 0
-  cullingMode: 1
+  stopAction: 1
+  cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
@@ -11092,8 +11139,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.8325957
-      minScalar: 1.0471976
+      scalar: 1.9652407
+      minScalar: 1.0314895
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -11143,7 +11190,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0.71
-    maxNumParticles: 500
+    maxNumParticles: 1000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -14177,14 +14224,14 @@ ParticleSystem:
   CollisionModule:
     enabled: 1
     serializedVersion: 4
-    type: 1
+    type: 0
     collisionMode: 0
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 0
     m_Planes:
-    - {fileID: 0}
+    - {fileID: 1050662958}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -14351,13 +14398,13 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.1
+    radiusScale: 0.04
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
-    maxCollisionShapes: 208
+      m_Bits: 1
+    maxCollisionShapes: 3
     quality: 1
-    voxelSize: 0.79
+    voxelSize: 0.7
     collisionMessages: 0
     collidesWithDynamic: 1
     interiorCollisions: 0
@@ -15569,7 +15616,7 @@ Transform:
   - {fileID: 789460276}
   - {fileID: 513958165}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &997086630
 GameObject:
@@ -15835,6 +15882,7 @@ GameObject:
   - component: {fileID: 1050662957}
   - component: {fileID: 1050662956}
   - component: {fileID: 1050662955}
+  - component: {fileID: 1050662959}
   m_Layer: 0
   m_Name: Plane
   m_TagString: land
@@ -15914,13 +15962,29 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1050662954}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 45.224342, y: -0.088, z: 151.7738}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 46.644, y: -0.001, z: 152.973}
+  m_LocalScale: {x: 0.4078011, y: 0.4078011, z: 0.4078011}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1050662959
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1050662954}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &1052149672
 GameObject:
   m_ObjectHideFlags: 0
@@ -18284,7 +18348,7 @@ TerrainCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1510870862}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 2a8e894564c1a084c8c281571663dbdd, type: 2}
   m_Enabled: 1
   m_TerrainData: {fileID: 15600000, guid: b0bfffb6aafac1a43b5bd0c020bd296b, type: 2}
   m_EnableTreeColliders: 1
@@ -19460,7 +19524,7 @@ Transform:
   m_GameObject: {fileID: 1759458578}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 45.224342, y: 0.086, z: 151.81}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.1411, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 942332868}
@@ -19468,7 +19532,7 @@ Transform:
   - {fileID: 565093288}
   - {fileID: 1404408074}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1759975524
 GameObject:
@@ -21410,12 +21474,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1665960021250363}
   m_LocalRotation: {x: 0.0000003163004, y: 0.7071067, z: -0.7071069, w: -0.000000324615}
-  m_LocalPosition: {x: 0, y: -0.187, z: 0}
+  m_LocalPosition: {x: 46.48, y: 0.64199996, z: 153.24536}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 808807067}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -269.98, y: -180, z: 0}
 --- !u!1 &30244552420074554
 GameObject:
@@ -21485,8 +21549,8 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 5
-  stopAction: 0
-  cullingMode: 1
+  stopAction: 1
+  cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
@@ -21728,7 +21792,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.25
-      minScalar: 0.2
+      minScalar: 0.17
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -21992,8 +22056,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.8325957
-      minScalar: 1.0471976
+      scalar: 1.9652407
+      minScalar: 1.0314895
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -25086,14 +25150,14 @@ ParticleSystem:
   CollisionModule:
     enabled: 1
     serializedVersion: 4
-    type: 1
+    type: 0
     collisionMode: 0
     colliderForce: 0.01
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 0
     m_Planes:
-    - {fileID: 0}
+    - {fileID: 1050662958}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -25260,13 +25324,13 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.1
+    radiusScale: 0.04
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
-    maxCollisionShapes: 229
-    quality: 0
-    voxelSize: 0.3
+      m_Bits: 1
+    maxCollisionShapes: 3
+    quality: 1
+    voxelSize: 0.7
     collisionMessages: 0
     collidesWithDynamic: 1
     interiorCollisions: 0
@@ -26447,7 +26511,7 @@ Transform:
   m_Children:
   - {fileID: 5241599245023393257}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: -104, z: 0}
 --- !u!205 &1421579858603418759
 LODGroup:
