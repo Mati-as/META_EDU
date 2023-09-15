@@ -417,7 +417,6 @@ public class AnimalController : MonoBehaviour
         {
             MoveAndRotate(_animalData.moveInTime,_animalData.rotationSpeedInRound);
             
-            
             if (GameManager.isCorrected)
             {
                 StopCoroutineWithNullCheck(_coroutines);
@@ -433,13 +432,13 @@ public class AnimalController : MonoBehaviour
     {
        
         Vector3 position = _animalData.inPlayPosition.position;
-        GameObject o;
+        GameObject obj;
         _moveInElapsed += Time.deltaTime;
             
         gameObject.transform.position = new Vector3(
             Mathf.Lerp(gameObject.transform.position.x, position.x, _moveInElapsed / moveInTime),
-            (o = gameObject).transform.position.y,
-            Mathf.Lerp(o.transform.position.z, position.z, _moveInElapsed / moveInTime)
+            (obj = gameObject).transform.position.y,
+            Mathf.Lerp(obj.transform.position.z, position.z, _moveInElapsed / moveInTime)
         );
         
         gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);

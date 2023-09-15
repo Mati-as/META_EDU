@@ -50,8 +50,6 @@ MonoBehaviour:
   inPlayBgColor: {r: 0.090824135, g: 0.097798705, b: 0.122641504, a: 0}
   colorChangingSpeed: 2
   TimingToBeChanged: 3
-  minBrightness: 0
-  maxBrightness: 0
 --- !u!1 &1575048078
 GameObject:
   m_ObjectHideFlags: 0
@@ -87,7 +85,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -418}
+  m_AnchoredPosition: {x: 0, y: -388}
   m_SizeDelta: {x: 2000, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1575048082
@@ -243,6 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startTimeOffsetSeconds: 3
   textPrintingSpeed: 0.03
+  roundInstruction: 
   onCorrectOffsetSeconds: 0
   onCorrectMessage: "\uC815\uB2F5\uC785\uB2C8\uB2E4!"
   onFinishMessage: "\uB3D9\uBB3C\uCE5C\uAD6C\uB4E4\uC744\uBAA8\uB450 \uCC3E\uC558\uC5B4\uC694!"
@@ -360,7 +359,7 @@ MonoBehaviour:
   TARGET_FRAME: 30
   _selectedAnimals: []
   roundCount: 5
-  waitTimeForNextRound: 5
+  waitTimeForNextRound: 6.5
   moveOutPositionA: {fileID: 0}
   moveOutPositionB: {fileID: 0}
   waitTimeOfinitialRoundStart: 5
@@ -380,9 +379,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7a05d2d107e5edb409e2534c82c3c408, type: 2}
   - {fileID: 11400000, guid: 5c4cc7c523186dc4197866f20152524f, type: 2}
   - {fileID: 11400000, guid: 15a77e8a2b7f5a1489cd4aaf44f9d521, type: 2}
-  lookAtPosition: {fileID: 0}
-  rotationSpeed: 1
   waitingTime: 2
+  playObejctInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  UIInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  clickParticleSystem: {fileID: 0}
+  moveOutTime: 200
+  rotationSpeedWhenMovingOut: 1
+  moveInSeconds: 5.5
+  rotationSpeedInRound: 80
+  waitTimeCorrectAnimFinish: 5.5
+  waitTimeToBeSelectable: 5.5
   newSize: 2.4
   sizeIncreasingSpeed: 1
   inPlayPositionsWhen3:
@@ -394,22 +404,32 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  moveOutTime: 200
-  rotationSpeedWhenMovingOut: 1
-  moveInSeconds: 5.5
-  rotationSpeedInRound: 80
-  waitTimeBetweenRounds: 4.5
-  waitTimeToBeSelectable: 5.5
+  inPlayPositionsWhen3FistColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen3SecondColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen3ThirdColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen4FirstColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen4SecondColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen4ThirdColumn:
+  - {fileID: 0}
+  - {fileID: 0}
+  inPlayPositionsWhen4FourthColumn:
+  - {fileID: 0}
+  - {fileID: 0}
   animalMovePositionToSpotLight: {fileID: 0}
   movingTimeSecWhenCorrect: 0.9
+  moveDownTime: 20
+  touchDownPosition: {fileID: 0}
   finishedMoveInTime: 10
-  playObejctInteractableLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  UIInteractableLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  clickParticleSystem: {fileID: 0}
   _onCorrectLightOnEvent:
     m_PersistentCalls:
       m_Calls:
@@ -501,6 +521,4 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   animal: {fileID: 0}
-  moveDownTime: 20
-  touchDownPosition: {fileID: 0}
   selectableAnimalsCount: 3

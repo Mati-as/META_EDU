@@ -142,6 +142,57 @@ public class GameManager : MonoBehaviour
     public Transform[] inPlayPositionsWhen3 = new Transform[3];
     public Transform[] inPlayPositionsWhen4 = new Transform[4];
     
+    [FormerlySerializedAs("inPlayPositionsWhen3ArrFistColumn")]
+    [Space(10f)]
+    [Header("Animal Position Settings : When three animals are selectable...")]
+    [Space(15f)]
+    public Transform[] inPlayPositionsWhen3FistColumn = new Transform[2];
+    public Transform[] inPlayPositionsWhen3SecondColumn = new Transform[2];
+    public Transform[] inPlayPositionsWhen3ThirdColumn = new Transform[2];
+    
+    [Space(10f)]
+    [Header("Animal Position Settings : When four animals are selectable...")]
+    [Space(15f)]
+    public Transform[] inPlayPositionsWhen4FirstColumn = new Transform[2];
+    public Transform[] inPlayPositionsWhen4SecondColumn = new Transform[2];
+    public Transform[] inPlayPositionsWhen4ThirdColumn = new Transform[2];
+    public Transform[] inPlayPositionsWhen4FourthColumn = new Transform[2];
+    
+    public Transform[,] inPlayPositionsWhen3Arr = new Transform[2,3];
+    public Transform[,] inPlayPositionsWhen4Arr = new Transform[2,4];
+
+    private int[] randomNumberRedcord = new int[5]; // 모든 동물 배치가 뒤로가는 경우 방지용.
+
+
+    private void SetTwoDimensionaTransformlArray()
+    {
+        // 3마리 경우의 2D 배열
+        inPlayPositionsWhen3Arr[0,0] = inPlayPositionsWhen3FistColumn[0];
+        inPlayPositionsWhen3Arr[1,0] = inPlayPositionsWhen3FistColumn[1];
+        
+        inPlayPositionsWhen3Arr[0,1] = inPlayPositionsWhen3SecondColumn[0];
+        inPlayPositionsWhen3Arr[1,1] = inPlayPositionsWhen3SecondColumn[1];
+        
+        inPlayPositionsWhen3Arr[0,2] = inPlayPositionsWhen3ThirdColumn[0];
+        inPlayPositionsWhen3Arr[1,2] = inPlayPositionsWhen3ThirdColumn[1];
+        
+        // 4마리 경우의 2D 배열
+        inPlayPositionsWhen4Arr[0,0] = inPlayPositionsWhen4FirstColumn[0];
+        inPlayPositionsWhen4Arr[1,0] = inPlayPositionsWhen4FirstColumn[1];
+        
+        inPlayPositionsWhen4Arr[0,1] = inPlayPositionsWhen4SecondColumn[0];
+        inPlayPositionsWhen4Arr[1,1] = inPlayPositionsWhen4SecondColumn[1];
+        
+        inPlayPositionsWhen4Arr[0,2] = inPlayPositionsWhen4ThirdColumn[0];
+        inPlayPositionsWhen4Arr[1,2] = inPlayPositionsWhen4ThirdColumn[1];
+        
+        inPlayPositionsWhen4Arr[0,3] = inPlayPositionsWhen4FourthColumn[0];
+        inPlayPositionsWhen4Arr[1,3] = inPlayPositionsWhen4FourthColumn[1];
+        
+        
+    }
+    
+    
     [Space(5f)] 
     [Header("On Correct Setting")] [Space(10f)]
     public Transform animalMovePositionToSpotLight; // 정답을 맞춘 경우 움직여야 할 위치
@@ -231,6 +282,7 @@ public class GameManager : MonoBehaviour
         SetResolution(1920, 1080,TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
         onAllAnimalsInitialized += SetAndInitializedAnimals;
+        SetTwoDimensionaTransformlArray();
     }
 
     private void Start()
@@ -732,7 +784,28 @@ public class GameManager : MonoBehaviour
     }
 
     public int selectableAnimalsCount;
-    
+
+    /// <summary>
+    /// 2차원 배열을 사용한 포지션 세팅에서, 인덱스를 랜덤으로 가져옵니다.
+    /// </summary>
+    private bool CheckCurrentAnimalsAreOnBackside(int[] randomNumberRedcord ,int index, int animalCount)
+    {
+       
+        if (index < animalCount - 1 || animalCount < 3 || animalCount > randomNumberRedcord.Length)
+        {
+            return false;
+        }
+        for (int i = 1; i <= animalCount - 1; i++)
+        {
+            if (randomNumberRedcord[index - i] != 1)
+            {
+                return false;
+            }
+        }
+        return true;
+      
+        
+    }
     public void SelectRandomAnimals(int animalCount)
     {
         _inPlayTempAnimals = new List<GameObject>(_animalList);
@@ -745,11 +818,35 @@ public class GameManager : MonoBehaviour
             
             if (animalCount == 3)
             {
-                animalData.inPlayPosition = inPlayPositionsWhen3[i];
+                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,i,animalCount))
+                {
+                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[0,i];
+                }
+                else
+                {
+                    int randomIndexFrontOrBack = Random.Range(0, 2);
+                    randomNumberRedcord[i] = randomIndexFrontOrBack;
+                    Debug.Log($"i값과 animalCount{i}, {animalCount}");
+                    animalData.inPlayPosition = inPlayPositionsWhen3Arr[randomIndexFrontOrBack,i];
+                }
             }
             else if (animalCount == 4)
             {
-                animalData.inPlayPosition = inPlayPositionsWhen4[i];
+                
+                if (CheckCurrentAnimalsAreOnBackside(randomNumberRedcord,i,animalCount))
+                {
+                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[0,i];
+                }
+                else
+                {
+                    int randomIndexFrontOrBack = Random.Range(0, 2);
+                    Debug.Log($"i값과 randomIndexFrontOrBack{i}, {randomIndexFrontOrBack}");
+                    Debug.Log($"i값과 animalCount{i}, {animalCount}");
+                    randomNumberRedcord[i] = randomIndexFrontOrBack;
+                    animalData.inPlayPosition = inPlayPositionsWhen4Arr[randomIndexFrontOrBack,i];
+                }
+                
+               
             }
             
             _inPlayTempAnimals.RemoveAt(randomIndex); //중복 동물 선택 방지
