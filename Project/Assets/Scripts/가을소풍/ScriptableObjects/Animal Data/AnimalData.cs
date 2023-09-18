@@ -47,6 +47,7 @@ public class AnimalData : ScriptableObject
     public float animationDuration;
     public float rotationSpeedInRound;
    [Header("On Correct")] [Space(5f)]
+    public float correctAnimTime;
     public float movingTimeSecWhenCorrectToSpotLight;
     public float movingTimeSecWhenCorrectToTouchDownSpot;
     public float rotationTimeWhenCorrect;

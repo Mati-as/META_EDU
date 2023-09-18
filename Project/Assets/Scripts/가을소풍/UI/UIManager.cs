@@ -29,8 +29,21 @@ public class UIManager : MonoBehaviour
     private GameManager _gameManager;
     
     
+    
+    
+    /*
+    아래 코루틴 변수들은 IEnumerator 컨테이너 역할만 담당합니다.
+    어떤 함수가 사용되는지는 StartCoroutine에서확인 및 디버깅 해야합니다.
+    */
+    private Coroutine _coroutineA;
+    private Coroutine _coroutineB;
+    private Coroutine _coroutineC;
+    private Coroutine _coroutineD;
+    private Coroutine[] _coroutines;
+    
     private void Awake()
     {
+        SetCoroutine();
         SubscribeGameManagerEvents();
         tmpText = GetComponentInChildren<TMP_Text>();
         tmpText.text = string.Empty;
@@ -55,35 +68,61 @@ public class UIManager : MonoBehaviour
     private UnityEvent _changeUI;
 
 
+    
+    //---------------------------------------------------
+    private void SetCoroutine()
+    {
+        _coroutines = new Coroutine[4];
+        _coroutines[0] = _coroutineA;
+        _coroutines[1] = _coroutineB;
+        _coroutines[2] = _coroutineC;
+        _coroutines[3] = _coroutineD;
+
+    }
+    
+    private void StopCoroutineWithNullCheck(Coroutine[] coroutines)
+    {
+        Debug.Log("코루틴 종료");
+        foreach (Coroutine cR in coroutines)
+        {
+            if (cR  != null)
+            {
+                StopCoroutine(cR);
+            }
+        }
+    }
+
     public void PlayOnCorrectMessage()
     {
         if (GameManager.isGameStarted && GameManager.isCorrected && _isCorrectMessagePlaying == false)
         {
+            StopCoroutineWithNullCheck(_coroutines);
             _isCorrectMessagePlaying = true; //중복재생 방지
 #if DEFINE_TEST
-            Debug.Log("정답문구 업데이트");
+            Debug.Log("정답이에요 문구 업데이트");
 #endif
             onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}" +
                                $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
             
-            _typeInCoroutine = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
+            _coroutines[0] = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
     }
 
     public void PlayQuizMessage()
     {
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
-
+     
 
         if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected && !_isCorrectMessagePlaying)
         {
+            StopCoroutineWithNullCheck(_coroutines);
 #if DEFINE_TEST
             Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[GameManager.answer]}");
 #endif
 
             _isQuizPlaying = true;
             roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
-            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
+            _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }
 
@@ -92,11 +131,13 @@ public class UIManager : MonoBehaviour
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
 
 
+      
         if (_isQuizPlaying == false && GameManager.isGameFinished)
         {
+            StopCoroutineWithNullCheck(_coroutines);
             _isQuizPlaying = true;
             roundInstruction = onFinishMessage;
-            _typeInCoroutine = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
+            _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }
 
@@ -107,7 +148,7 @@ public class UIManager : MonoBehaviour
 #endif
 
         _isQuizPlaying = false;
-        _typeInCoroutine = StartCoroutine(TypeIn(string.Empty, 0));
+        _coroutines[0] = StartCoroutine(TypeIn(string.Empty, 0));
     }
 
 
@@ -168,6 +209,7 @@ public class UIManager : MonoBehaviour
 
     private void OnCorrect()
     {
+        
         PlayOnCorrectMessage();
     }
     

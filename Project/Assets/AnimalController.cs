@@ -369,7 +369,7 @@ public class AnimalController : MonoBehaviour
     private void SetCorrectedAnim(Animator selectedAnimator)
     {
         _isAnimRandomized = false;
-            
+             
         selectedAnimator.SetBool(AnimalData.SELECTABLE_A,false);
         selectedAnimator.SetBool(AnimalData.SELECTABLE_B,false);
         selectedAnimator.SetBool(AnimalData.SELECTABLE_C,false);
@@ -384,11 +384,13 @@ public class AnimalController : MonoBehaviour
                 case 0:
                     selectedAnimator.SetBool(AnimalData.ROLL_ANIM, true);
                     break;
+                
                 case 1:
-                    selectedAnimator.SetBool(AnimalData.FLY_ANIM, true);
-                    break;
-                case 2:
                     selectedAnimator.SetBool(AnimalData.SPIN_ANIM, true);
+                    break;
+                
+                case 2:
+                    selectedAnimator.SetBool(AnimalData.FLY_ANIM, true);
                     break;
             }
         }
@@ -400,6 +402,7 @@ public class AnimalController : MonoBehaviour
     }
     private void InitialzeAllAnimatorParams(Animator animator)
     {
+            animator.SetBool(AnimalData.SIT_ANIM, false);
             animator.SetBool(AnimalData.RUN_ANIM, false);
             animator.SetBool(AnimalData.FLY_ANIM, false);
             animator.SetBool(AnimalData.ROLL_ANIM, false);
@@ -448,7 +451,7 @@ public class AnimalController : MonoBehaviour
 
     private float elapsedForAnimationWhenRoundStart;
     
-    private void SetRandomAnimationWhenRoundStart(bool boolean)
+    private void SetRandomPlayIdleAnimationWhenRoundStart(bool boolean)
     {
         int randomAnimNum = Random.Range(0, 3);
         _isAnimRandomized = true;
@@ -469,19 +472,27 @@ public class AnimalController : MonoBehaviour
 
     private void InitializeAnimation(bool boolean)
     {
+        _animator.SetBool(AnimalData.SIT_ANIM,boolean);
         _animator.SetBool(AnimalData.JUMP_ANIM, boolean);
-        _animator.SetBool(AnimalData.SIT_ANIM, boolean);
         _animator.SetBool(AnimalData.BOUNCE_ANIM, boolean);
+        
+     
+        
     }
 
-    
+    private void InitializeCorrectAnimatin(bool boolean)
+    {
+         // _animator.SetBool(AnimalData.FLY_ANIM, boolean);
+        _animator.SetBool(AnimalData.SPIN_ANIM, boolean);
+        _animator.SetBool(AnimalData.ROLL_ANIM, boolean);
+    }
     IEnumerator SetRandomAnimationWhenWhenRoundStartCoroutine()
     {
         _randomInterval = Random.Range(_animalData.animationPlayIntervalMin, _animalData.animationPlayIntervalMax);
         while (!GameManager.isCorrected)
         {
             yield return GetWaitForSeconds(_randomInterval);
-            SetRandomAnimationWhenRoundStart(true);
+            SetRandomPlayIdleAnimationWhenRoundStart(true);
             yield return GetWaitForSeconds(_animalData.animationDuration);
             InitializeAnimation(false);
             
@@ -498,6 +509,8 @@ public class AnimalController : MonoBehaviour
         gameObject.transform.rotation = Quaternion.Euler(0,gameObject.transform.rotation.y,0);
     }
 
+
+   
     private float _elapsedForMovingWhenCorrect;
     private bool _isArrivedTouchDownSpot;
     IEnumerator MoveToSpotLightCoroutine()
@@ -523,15 +536,20 @@ public class AnimalController : MonoBehaviour
                 {
                     MoveToSpotLight();
                     _animator.SetBool(AnimalData.RUN_ANIM,false);
-                    SetCorrectedAnim(_animator);
+                   
                     _rigidbody.isKinematic = true;
                     if (!_isArrivedTouchDownSpot)
                     {
-                        Debug.Log("동물 사이즈 증가 중..");
-                        _coroutines[1] = StartCoroutine(IncreaseScaleCoroutine());
                         _elapsedForMovingWhenCorrect = 0f;
                         _isArrivedTouchDownSpot = true;
+                        
+                        SetCorrectedAnim(_animator);
+                        _coroutines[1] = StartCoroutine(IncreaseScaleCoroutine());
+                        _coroutines[2] = StartCoroutine(InitializeAnimationoroutine());
                     }
+
+                  
+
                 }
             }
            
@@ -542,6 +560,14 @@ public class AnimalController : MonoBehaviour
         
      
     }
+
+    IEnumerator InitializeAnimationoroutine()
+    {
+        yield return GetWaitForSeconds(_animalData.correctAnimTime);
+        Debug.Log("코렉트 애니메이션 중지!");
+        InitializeCorrectAnimatin(false); //fly anmation 제외 초기화 
+    }
+   
 
     private void MoveAndRotateToward(Transform TargetPosition,Transform lookAt, float moveTime, float rotationTime)
     {

@@ -337,7 +337,7 @@ public class GameManager : MonoBehaviour
                 if (AnimalShaderController.isGlowOn)
                 {
 #if UNITY_EDITOR
-                    Debug.Log("동물 선택 가능");
+                 
 #endif
                         ClickOnObject();
                 }
