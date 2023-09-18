@@ -26,17 +26,10 @@ public class UIManager : MonoBehaviour
 
     [Header("Reference")] [Space(10f)] [SerializeField]
     private GameManager _gameManager;
+    
+    
     private void Awake()
     {
-    
-        
-        // animalNameToKorean.Add("tortoise", "거북이");
-        // animalNameToKorean.Add("cat", "고양이");
-        // animalNameToKorean.Add("rabbit", "토끼");
-        // animalNameToKorean.Add("dog", "강아지");
-        // animalNameToKorean.Add("parrot", "앵무새");
-        // animalNameToKorean.Add("mouse", "쥐");
-
         tmpText = GetComponentInChildren<TMP_Text>();
         tmpText.text = string.Empty;
     }

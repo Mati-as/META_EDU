@@ -95,7 +95,11 @@ public class DragonflyController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)) CheckClickedAndAnimateDragonfly();
+        if (Input.GetMouseButtonDown(0))
+        {
+            _initialMoveStart = true;
+            CheckClickedAndAnimateDragonfly();
+        }
         
         if (_initialMoveStart)
         {
@@ -231,6 +235,7 @@ public class DragonflyController : MonoBehaviour
         {
             if (hit.collider.name != _dragonflyName) return;
            
+            Debug.Log("잠자리 선택");
 
             _landPositionIndex = Random.Range(0, 6);
             _moveAwayPositionIndex = Random.Range(0, 5);

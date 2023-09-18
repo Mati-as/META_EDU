@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     public static bool isCorrected { get; private set; }
     public static bool isRoundFinished { get; private set; }
     public static bool isGameFinished { get; private set; }
+    
+    
     private bool _isGameEventInvoked;
   
     
