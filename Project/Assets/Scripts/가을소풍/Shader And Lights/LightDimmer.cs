@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class LightDimmer : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class LightDimmer : MonoBehaviour
     public float increaseRate;// Intensity 감소 비율
     public float minIntensity; // 최소 Intensity 값
 
+    [FormerlySerializedAs("lightTurningOffTIme")] [FormerlySerializedAs("spotLightTurnOffSpeed")] public float lightTurningOffTime;
     [SerializeField] private Light spotlight;
     private Light dirLight; // Directional Light의 Light 컴포넌트
 
@@ -27,6 +29,9 @@ public class LightDimmer : MonoBehaviour
 
     private void Start()
     {
+        SubscribeGameManagerEvents();
+        
+        
         RenderSettings.ambientIntensity = defaultAmbient;
         if (dirLight == null)
             Debug.LogError(
@@ -68,58 +73,78 @@ public class LightDimmer : MonoBehaviour
 
     public float spotMaxIntensity;
     public float spotMinIntensity;
-    public float spotLightChangeSpeed;
+  
     private float tempLerp;
 
     private float elapsedForLight;
+    
     public float lightChangeTime;
     IEnumerator  TurnOnSpotLight()
     {
-        if (elapsedForLight < 1)
-        {
-            elapsedForLight += Time.deltaTime;
-        }
-        else
-        {
-            elapsedForLight = 1;
-        }
         
-        spotlight.enabled = true;
-        elapsedForLight += Time.deltaTime;
+        elapsedForLight = 0f;
         
-        var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
+        while (true)
+        {
+            if (GameManager.isCorrected)
+            {
+                elapsedForLight += Time.deltaTime;
+           
+        
+                spotlight.enabled = true;
+                elapsedForLight += Time.deltaTime;
+        
+                var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
             
-              // Intensity 감소
+                // Intensity 감소
           
-            float lerp = Lerp2D.EaseInBounce(spotlight.intensity, spotMaxIntensity,t );
-            spotlight.intensity = lerp;
-            // Intensity 값이 최소값보다 작아지지 않도록 보장
-            yield return null;
-
+                float lerp = Lerp2D.EaseInBounce(spotlight.intensity, spotMaxIntensity,t );
+                spotlight.intensity = lerp;
+                // Intensity 값이 최소값보다 작아지지 않도록 보장
+                yield return null;
+            }
+            else
+            {
+                yield return null;
+            }
+          
+            
+        }
+       
     }
 
     IEnumerator  TurnOffSpotLight()
     {
-        spotlight.enabled = true;
-        if (elapsedForLight > 0)
+
+        elapsedForLight = 0f;
+        while (true)
         {
-            elapsedForLight += Time.deltaTime;
-        }
-        else
-        {
-            elapsedForLight = 0;
-        }
+            if (GameManager.isRoundFinished)
+            {
+                spotlight.enabled = true;
+                elapsedForLight += Time.deltaTime;
         
       
         
-        var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
+                var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightTurningOffTime));
             
-        // Intensity 감소
+                // Intensity 감소
           
-        float lerp = Lerp2D.EaseInBounce(spotMinIntensity, spotlight.intensity,t );
-        spotlight.intensity = lerp;
-        // Intensity 값이 최소값보다 작아지지 않도록 보장
-        yield return null;
+                float lerp = Lerp2D.EaseInBounce(spotMaxIntensity, spotMinIntensity,t );
+                spotlight.intensity = lerp;
+                // Intensity 값이 최소값보다 작아지지 않도록 보장
+                yield return null;
+            
+                    StopCoroutine( TurnOffSpotLight());
+                
+            }
+            else
+            {
+                yield return null;
+            }
+         
+        }
+        
 
     }
 
@@ -129,6 +154,82 @@ public class LightDimmer : MonoBehaviour
         RenderSettings.ambientIntensity = defaultAmbient;
     }
     
+ 
+    
+ 
+
+
+
+
+    private void OnDestroy()
+    {
+        UnsubscribeGamaManagerEvents();
+    }
+    
+    // ---------------------------------------------------------
+
+    private void OnGameStart()
+    {
+    }
+
+    private void OnRoundReady()
+    {
+        
+    }
+    
+
+    private void OnRoundStarted()
+    {
+       
+    }
+
+    private void OnCorrect()
+    {
+        StartCoroutine(TurnOnSpotLight());
+    }
+
+    private void OnRoundFinished()
+    {
+        StartCoroutine(TurnOffSpotLight());
+    }
+
+    private void OnGameFinished()
+    {
+       
+    }
+
+    
+    private void SubscribeGameManagerEvents()
+    {
+        GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onGameStartEvent += OnGameStart;
+        
+        GameManager.onRoundReadyEvent -= OnRoundReady;
+        GameManager.onRoundReadyEvent += OnRoundReady;
+
+        GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        GameManager.onCorrectedEvent += TurnOnSpotLightEvent;
+
+        GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        GameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
+
+        GameManager.onRoundStartedEvent -= OnRoundStarted;
+        GameManager.onRoundStartedEvent += OnRoundStarted;
+        
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent += OnGameFinished;
+    }
+    
+    private void UnsubscribeGamaManagerEvents()
+    {
+        GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onRoundReadyEvent -= OnRoundReady;
+        GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        GameManager.onRoundStartedEvent -= OnRoundStarted;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+    }
+
     public void TurnOffSpotLightEvent()
     {
         StopCoroutine(TurnOnSpotLight());
@@ -139,9 +240,5 @@ public class LightDimmer : MonoBehaviour
         StopCoroutine(TurnOffSpotLight());
         lightCoroutine = StartCoroutine(TurnOnSpotLight());
     }
-    
- 
-
-   
     
 }

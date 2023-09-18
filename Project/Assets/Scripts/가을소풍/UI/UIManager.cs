@@ -94,13 +94,13 @@ public class UIManager : MonoBehaviour
 
     public void PlayOnCorrectMessage()
     {
-        if (GameManager.isGameStarted && GameManager.isCorrected && _isCorrectMessagePlaying == false)
+       
+        _isCorrectMessagePlaying = false;
+        Debug.Log("정답이에요 문구 업데이트");
+        if (_isCorrectMessagePlaying == false)
         {
-            StopCoroutineWithNullCheck(_coroutines);
+            
             _isCorrectMessagePlaying = true; //중복재생 방지
-#if DEFINE_TEST
-            Debug.Log("정답이에요 문구 업데이트");
-#endif
             onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}" +
                                $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
             
@@ -129,8 +129,7 @@ public class UIManager : MonoBehaviour
     public void PlayFinishMessage()
     {
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
-
-
+        
       
         if (_isQuizPlaying == false && GameManager.isGameFinished)
         {
@@ -209,7 +208,7 @@ public class UIManager : MonoBehaviour
 
     private void OnCorrect()
     {
-        
+        Debug.Log("OnCorrerctMessage");
         PlayOnCorrectMessage();
     }
     

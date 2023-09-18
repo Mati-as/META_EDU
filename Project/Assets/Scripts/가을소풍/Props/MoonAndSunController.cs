@@ -6,6 +6,7 @@ public class MoonAndSunController : MonoBehaviour
 {
     public float waitTime;
     public float movingTimeSec;
+    public float MovingDownSec;
 
 
     public Transform _inPlayPosition;
@@ -60,7 +61,21 @@ public class MoonAndSunController : MonoBehaviour
             }
             SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor);
         }
+        
+        if (GameManager.isGameFinished)
+        {
+            if (!_isElapseInitialized)
+            {
+                _isElapseInitialized = true;
+                elapsedTime = 0f;
+            }
+            
+
+            MoveDown(0f,MovingDownSec);
+        }
     }
+
+    private bool _isElapseInitialized;
 
     private void InitializeLerpParams(bool value)
     {
@@ -85,6 +100,21 @@ public class MoonAndSunController : MonoBehaviour
 
 
             transform.position = Vector3.Lerp(transform.position, _inPlayPosition.position, t);
+        }
+    }
+    
+    private void MoveDown(float waitTimeTotal, float movingTimeTotal)
+    {
+        elapsedTime += Time.deltaTime;
+
+        if (elapsedTime > waitTimeTotal)
+        {
+            // Lerp의 t값을 계산 (0 ~ 1 사이)
+            var t = Mathf.Clamp01(elapsedTime / movingTimeTotal);
+            t = Lerp2D.EaseInQuad(0, 1, t);
+
+
+            transform.position = Vector3.Lerp(transform.position, _defaultPosition.position, t);
         }
     }
     
