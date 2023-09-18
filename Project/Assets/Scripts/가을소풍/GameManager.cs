@@ -227,24 +227,7 @@ public class GameManager : MonoBehaviour
 
     // UI 출력을 위한 Event 처리
     [Header("UI Events")] [Space(10f)] 
-    
-    [SerializeField]
-    private UnityEvent _onCorrectLightOnEvent;
-    
-    [SerializeField] 
-    private UnityEvent _onRoundFinishedLightOff;
-    
-    [SerializeField]
-    private UnityEvent _quizMessageEvent;
 
-    [SerializeField] 
-    private UnityEvent _correctMessageEvent;
-
-    [SerializeField]
-    private UnityEvent _messageInitializeEvent;
-
-    [SerializeField]
-    private UnityEvent _finishedMessageEvent;
     
     //AnimalController 관련 이벤트 
     public static int totalAnimalCount;
@@ -358,7 +341,7 @@ public class GameManager : MonoBehaviour
 #endif
                         ClickOnObject();
                 }
-                _quizMessageEvent.Invoke(); // "~의 그림자를 맞춰보세요" UI 재생. 
+          
             }
             
             //4. 정답 맞춘 경우 ------------------
@@ -370,8 +353,6 @@ public class GameManager : MonoBehaviour
 #endif
                 InitializeAndSetTimerOnCorrect();
                 
-                _onCorrectLightOnEvent?.Invoke(); // D-Light 참조 중
-                _correctMessageEvent?.Invoke(); // UI Instruction 클래스 참조
                 
             }
 
@@ -383,7 +364,6 @@ public class GameManager : MonoBehaviour
                 Debug.Log("라운드 종료!");
 #endif
                 MoveOutOfScreen();
-                _onRoundFinishedLightOff.Invoke();
             }
 
 
@@ -393,7 +373,6 @@ public class GameManager : MonoBehaviour
                 isRoundFinished = false;
                 
                 //UI의 문구를 초기화 하는 이벤트 입니다.
-                _messageInitializeEvent.Invoke();
             }
         }
 
@@ -410,7 +389,6 @@ public class GameManager : MonoBehaviour
                 onGameFinishedEvent?.Invoke();
                 _isGameEventInvoked = true;
             }
-            _finishedMessageEvent?.Invoke();
            
         }
 
@@ -570,7 +548,6 @@ public class GameManager : MonoBehaviour
                         if (!isCorrected)
                         {
                             SetAnimalData(_clickedAnimal);
-                            InvokeOncorrectUI();
                             onCorrectedEvent?.Invoke();
                             isCorrected = true;
                             
@@ -619,11 +596,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 정답 맞출 시 UI에게 지시문을 플레이 하도록 하는 이벤트 발생용 함수입니다. 
     /// </summary>
-    private void InvokeOncorrectUI()
-    {
-        _correctMessageEvent.Invoke();
-        _onCorrectLightOnEvent.Invoke();
-    }
+ 
 
     private void IncreaseScale(GameObject gameObject ,float defaultSize, float increasedSize)
     {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using KoreanTyper;
@@ -30,6 +31,7 @@ public class UIManager : MonoBehaviour
     
     private void Awake()
     {
+        SubscribeGameManagerEvents();
         tmpText = GetComponentInChildren<TMP_Text>();
         tmpText.text = string.Empty;
     }
@@ -40,6 +42,11 @@ public class UIManager : MonoBehaviour
         {
             animalNameToKorean.Add(animalData.englishName,animalData.koreanName);
         }
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeGamaManagerEvents();
     }
 
 
@@ -143,4 +150,67 @@ public class UIManager : MonoBehaviour
 
         return jong != 0;
     }
+    
+    private void OnGameStart()
+    {
+        
+    }
+
+    private void OnRoundReady()
+    {
+        InitializeMessage();
+    }
+   
+    private void OnRoundStarted()
+    {
+        PlayQuizMessage();
+    }
+
+    private void OnCorrect()
+    {
+        PlayOnCorrectMessage();
+    }
+    
+    private void OnRoundFinished()
+    {
+        
+    }
+    
+    private void OnGameFinished()
+    {
+        PlayFinishMessage();
+    }
+    
+    
+    private void SubscribeGameManagerEvents()
+    {
+        GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onGameStartEvent += OnGameStart;
+        
+        GameManager.onRoundReadyEvent -= OnRoundReady;
+        GameManager.onRoundReadyEvent += OnRoundReady;
+
+        GameManager.onCorrectedEvent -= OnCorrect;
+        GameManager.onCorrectedEvent += OnCorrect;
+
+        GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        GameManager.onRoundFinishedEvent += OnRoundFinished;
+
+        GameManager.onRoundStartedEvent -= OnRoundStarted;
+        GameManager.onRoundStartedEvent += OnRoundStarted;
+        
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent += OnGameFinished;
+    }
+    private void UnsubscribeGamaManagerEvents()
+    {
+        GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onRoundReadyEvent -= OnRoundReady;
+        GameManager.onCorrectedEvent -= OnCorrect;
+        GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        GameManager.onRoundStartedEvent -= OnRoundStarted;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+    }
+
+
 }
