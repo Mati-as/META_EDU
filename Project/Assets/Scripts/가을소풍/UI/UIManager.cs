@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using KoreanTyper;
@@ -28,10 +29,17 @@ public class UIManager : MonoBehaviour
     [Header("Reference")] [Space(10f)] [SerializeField]
     private GameManager _gameManager;
     
-    // UI status
+    // UI status---------------------------
+     /*
+     게임 플레이와 직접적으로 연관 없는 플레이 시작 시 인트로 UI에 관련한 Status입니다.
+     Lerp, UI종료와 UI의 안의 RectTransform 객체의 움직임은 UI Status를 기준으로합니다.
+     */
+    public static event Action IntroUIFinishEvent;
     public static bool isIntroUIFinished;
+    
     public static void FinishIntroUI()
     {
+        IntroUIFinishEvent?.Invoke();
         isIntroUIFinished = true;
     }
 
