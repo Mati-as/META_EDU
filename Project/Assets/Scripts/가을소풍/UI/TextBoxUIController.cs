@@ -39,8 +39,8 @@ public class TextBoxUIController : MonoBehaviour
 
     private void Awake()
     {
-        UIManager.IntroUIFinishEvent -= OnUIFinished;
-        UIManager.IntroUIFinishEvent += OnUIFinished;
+        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
 
         _defaultPositionLf = leftAnimFirst.transform;
         _defaultPositionLs = leftAnimSecond.transform;
@@ -62,7 +62,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        UIManager.IntroUIFinishEvent -= OnUIFinished;
+        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
     }
 
     //메소드 목록 -----------------------------------------------------------
@@ -165,6 +165,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private IEnumerator LeftCoroutine()
     {
+        sinElapsed = 0f;
         while (true)
         {
             leftAnimFirst.position = MoveLikeWave(_defaultPositionLf.position,
@@ -180,6 +181,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private IEnumerator RightCoroutine()
     {
+        sinElapsed = 0f;
         while (true)
         {
             rightAnimal.position = MoveLikeWave(_defaultPositionR.position,
@@ -193,12 +195,12 @@ public class TextBoxUIController : MonoBehaviour
 
     private Vector3 MoveLikeWave(Vector3 startPosition, Vector3 arrivingPosition, float moveSpeed, float offsetA)
     {
-        t += Time.deltaTime * moveSpeed;
-        var waveOffset = Mathf.Sin(t) * offsetA;
+        sinElapsed += Time.deltaTime * moveSpeed;
+        var waveOffset = Mathf.Sin(sinElapsed) * offsetA;
         return startPosition + new Vector3(0, waveOffset, 0);
     }
 
-    private float t;
+    private float sinElapsed;
     private float t2;
 
     private Vector3 MoveDown(Vector3 startPosition, Vector3 arrivingPosition, float moveTime)
@@ -206,7 +208,7 @@ public class TextBoxUIController : MonoBehaviour
         t2 = Time.deltaTime / moveTime;
 
         float lerp;
-        lerp = Lerp2D.EaseInOutQuint(0, 1, t);
+        lerp = Lerp2D.EaseInOutQuint(0, 1, sinElapsed);
 
         return Vector3.Lerp(startPosition,
             arrivingPosition + new Vector3(0, offsetA, 0), lerp);

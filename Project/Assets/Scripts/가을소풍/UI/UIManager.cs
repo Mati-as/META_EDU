@@ -29,19 +29,46 @@ public class UIManager : MonoBehaviour
     [Header("Reference")] [Space(10f)] [SerializeField]
     private GameManager _gameManager;
     
+    
+    
     // UI status---------------------------
      /*
      게임 플레이와 직접적으로 연관 없는 플레이 시작 시 인트로 UI에 관련한 Status입니다.
      Lerp, UI종료와 UI의 안의 RectTransform 객체의 움직임은 UI Status를 기준으로합니다.
      */
-    public static event Action IntroUIFinishEvent;
-    public static bool isIntroUIFinished;
+     
+     
+    public static event Action HowToPlayUIFinishedEvent;
+    public static event Action StoryUIQuitEvent;
+    public static event Action GameFinishedUIEvent;
+    public static bool isHowToPlayUIFinished;
     
-    public static void FinishIntroUI()
+    /// <summary>
+    /// 버튼이벤트에서 컨트롤 할 예정.
+    /// </summary>
+    /// <param name="value"></param>
+    public static void SetFalseAndTriggerStartButtonEvent()
     {
-        IntroUIFinishEvent?.Invoke();
-        isIntroUIFinished = true;
+        isHowToPlayUIFinished = true;
     }
+    
+    
+    /// <summary>
+    /// UI 버튼
+    /// </summary>
+    public static void InvokeFinishIntroUI()
+    {
+        HowToPlayUIFinishedEvent?.Invoke();
+    }
+    public static void InvokeStoryUIQuitEvent()
+    {
+        StoryUIQuitEvent?.Invoke();
+    }
+    public static void InvokeGameFinishedUIEvent()
+    {
+        GameFinishedUIEvent?.Invoke();
+    }
+    
 
 
     /*

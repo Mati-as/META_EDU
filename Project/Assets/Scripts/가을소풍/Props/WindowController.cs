@@ -19,7 +19,7 @@ public class WindowController : MonoBehaviour
 
     private void Update()
     {
-        if (UIManager.isIntroUIFinished)
+        if (UIManager.isHowToPlayUIFinished)
         {
             _elapsed += Time.deltaTime;
             _waitingTimeRemaining = waitingTime - _elapsed;

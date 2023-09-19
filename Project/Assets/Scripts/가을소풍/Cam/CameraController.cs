@@ -14,7 +14,8 @@ public class CameraController : MonoBehaviour
 
     public float movingTimeSec;
 
-    [Space(30f)] [Header("Reference")] [Space(10f)] [SerializeField]
+    [Space(30f)] [Header("Reference")] [Space(10f)] 
+    [SerializeField]
     private WindowController windowController;
 
     private float _moveSpeedLerp;
