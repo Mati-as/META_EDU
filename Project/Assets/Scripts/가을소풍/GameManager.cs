@@ -289,7 +289,11 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         //디버그용 함수
-        SetTimeScale(GAME_PROGRESSING_SPEED);
+        if (isGameStarted)
+        {
+            SetTimeScale(GAME_PROGRESSING_SPEED);
+        }
+      
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene(); 
         
         //카메라 도착 시 일정시간 지나면 게임 시작.

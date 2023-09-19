@@ -30,10 +30,12 @@ public class UIManager : MonoBehaviour
     
     // UI status
     public static bool isIntroUIFinished;
-    public static void FinishIntroUI() => isIntroUIFinished = true;
-    
-    
-    
+    public static void FinishIntroUI()
+    {
+        isIntroUIFinished = true;
+    }
+
+
     /*
     아래 코루틴 변수들은 IEnumerator 컨테이너 역할만 담당합니다.
     어떤 함수가 사용되는지는 StartCoroutine에서확인 및 디버깅 해야합니다.

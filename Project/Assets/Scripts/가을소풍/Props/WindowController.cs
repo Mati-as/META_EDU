@@ -14,25 +14,26 @@ public class WindowController : MonoBehaviour
 
     private float _waitingTimeRemaining;
     private float _deactivateOffset = 5f;
-
-    private void Start()
-    {
-    }
+    
 
 
     private void Update()
     {
-        _elapsed += Time.deltaTime;
-        _waitingTimeRemaining = waitingTime - _elapsed;
-
-        if (_elapsed > _waitingTimeRemaining)
+        if (UIManager.isIntroUIFinished)
         {
-            isWindowStartOpening = true;
+            _elapsed += Time.deltaTime;
+            _waitingTimeRemaining = waitingTime - _elapsed;
 
-            leftWindow.eulerAngles += Vector3.down * (windowOpeningSpeed * Time.deltaTime);
-            rightWindow.eulerAngles += Vector3.up * (windowOpeningSpeed * Time.deltaTime);
+            if (_elapsed > _waitingTimeRemaining)
+            {
+                isWindowStartOpening = true;
+
+                leftWindow.eulerAngles += Vector3.down * (windowOpeningSpeed * Time.deltaTime);
+                rightWindow.eulerAngles += Vector3.up * (windowOpeningSpeed * Time.deltaTime);
+            }
+            if (_elapsed > _waitingTimeRemaining + _deactivateOffset) Deactivate();
         }
-        if (_elapsed > _waitingTimeRemaining + _deactivateOffset) Deactivate();
+     
 
     }
 
