@@ -11,25 +11,40 @@ using UnityEngine.Serialization;
 
 public class UIManager : MonoBehaviour
 {
-    private TMP_Text tmpText;
-
-    [FormerlySerializedAs("startTimeOffset")]
+    private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
+    private WaitForSeconds GetWaitForSeconds(float seconds)
+    {
+        if (!waitForSecondsCache.ContainsKey(seconds)) waitForSecondsCache[seconds] = new WaitForSeconds(seconds);
+        return waitForSecondsCache[seconds];
+    }
+    
+    
+    
+    [Header("Reference")]  [Space(10f)]
+    [SerializeField]
+    private StoryUIController storyUIController;
+    [SerializeField]
+    private TextBoxUIController textBoxUIController;
+    
+    [Header("Overall Settings")]  [Space(10f)]
     public float startTimeOffsetSeconds; // 게임시작후 몇 초 후 UI재생할 건지
-
     public float textPrintingSpeed;
-
-
     public Dictionary<string, string> animalNameToKorean = new();
     public string roundInstruction;
-
+  
+    [SerializeField]
+    private TMP_Text instructionTMP;
     [Header("On Correct")] [Space(10f)] public float onCorrectOffsetSeconds;
     public string onCorrectMessage;
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
-    [Header("Reference")] [Space(10f)] [SerializeField]
-    private GameManager _gameManager;
+    [FormerlySerializedAs("_gameManager")]
+    [Header("Reference")] [Space(10f)] 
+    [SerializeField]
+    private GameManager gameManager;
     
     
+
     
     // UI status---------------------------
      /*
@@ -85,13 +100,12 @@ public class UIManager : MonoBehaviour
     {
         SetCoroutine();
         SubscribeGameManagerEvents();
-        tmpText = GetComponentInChildren<TMP_Text>();
-        tmpText.text = string.Empty;
+        instructionTMP.text = string.Empty;
     }
 
     private void Start()
     {
-        foreach(AnimalData animalData in _gameManager.allAnimals)
+        foreach(AnimalData animalData in gameManager.allAnimals)
         {
             animalNameToKorean.Add(animalData.englishName,animalData.koreanName);
         }
@@ -193,14 +207,14 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator TypeIn(string str, float offset)
     {
-        tmpText.text = ""; // 초기화
+        instructionTMP.text = ""; // 초기화
         yield return new WaitForSeconds(offset); // 1초 대기
 
         var strTypingLength = str.GetTypingLength(); // 최대 타이핑 수 구함
         for (var i = 0; i <= strTypingLength; i++)
         {
             // 반복문
-            tmpText.text = str.Typing(i); // 타이핑
+            instructionTMP.text = str.Typing(i); // 타이핑
             yield return new WaitForSeconds(textPrintingSpeed);
         } // 0.03초 대기
 
@@ -233,12 +247,23 @@ public class UIManager : MonoBehaviour
     
     private void OnGameStart()
     {
-        
+        //StoryUI 비활성화 상태이기에 UI Manager가 활성화 및 해당함수 호출
+        _coroutineC =  StartCoroutine(ActivateStoryUIController());
+    }
+
+    IEnumerator ActivateStoryUIController()
+    {
+        yield return GetWaitForSeconds(storyUIController.waitTimeForSecondActivation);
+        storyUIController.gameObject.SetActive(true);
+        StopCoroutine(_coroutineC);
+        GameManager.isGameStopped = true;
     }
 
     private void OnRoundReady()
     {
         InitializeMessage();
+        
+       
     }
    
     private void OnRoundStarted()

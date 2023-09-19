@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -14,8 +15,9 @@ public class GameManager : MonoBehaviour
 
     [Header("Debug Mode")] [Space(10f)] [SerializeField]
     [Range(0.5f,5f)]
-    public float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
-    
+    [Inspectable]
+    public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
+    public float GAME_PROGRESSING_SPEED_COPY = 1;
     [Header("Common Data")] [Space(10f)] [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
 
@@ -37,6 +39,9 @@ public class GameManager : MonoBehaviour
     public static bool isCorrected { get; private set; }
     public static bool isRoundFinished { get; private set; }
     public static bool isGameFinished { get; private set; }
+    public static bool isGameStopped { get; set; }
+    private static readonly int IS_GAME_STOPPED =0;
+    
     
     
     private bool _isGameEventInvoked;
@@ -258,7 +263,10 @@ public class GameManager : MonoBehaviour
     /// 디버그용 재생속도 컨트롤 함수 입니다. 
     /// </summary>
     /// <param name="speed"></param>
-    public static void SetTimeScale(float speed) => Time.timeScale = speed;
+    public static void SetTimeScale(float speed)
+    {
+        Time.timeScale = speed;
+    } 
 
     private void SetRandomSeed()
     {
@@ -269,12 +277,16 @@ public class GameManager : MonoBehaviour
     // ------------------------- ▼ 유니티 루프 ----------------------------
     private void Awake()
     {
+      
+        SetTimeScale(1);
+        
         SetRandomSeed();
         SetResolution(1920, 1080,TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
         onAllAnimalsInitialized += SetAndInitializedAnimals;
         onCorrectedEvent += PlayAnswerParticle;
         SetTwoDimensionaTransformlArray();
+       
     }
 
     private void Start()
@@ -282,15 +294,23 @@ public class GameManager : MonoBehaviour
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
     }
     
+    
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.
     ///     Status 추가 및 대규모 로직 구성 시 FSM으로 재설계 권장
     /// </summary>
     private void Update()
     {
-        //디버그용 함수
-       
-        SetTimeScale(GAME_PROGRESSING_SPEED);
+        //디버그 및 UI용 재생속도 조정 함수
+        if (!isGameStopped)
+        {
+            SetTimeScale(GAME_PROGRESSING_SPEED_COPY);
+        }
+        else if (isGameStopped)
+        {
+            SetTimeScale(IS_GAME_STOPPED);
+        }
+        
         
       
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene(); 

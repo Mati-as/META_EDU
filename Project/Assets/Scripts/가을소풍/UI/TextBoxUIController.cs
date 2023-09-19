@@ -127,7 +127,8 @@ public class TextBoxUIController : MonoBehaviour
         if (_coroutineA != null) StopCoroutine(_coroutineA);
     }
 
-    private void OnUIFinished()
+    
+    public void OnUIFinished()
     {
         if (_coroutineA != null) StopCoroutine(_coroutineA);
         if (_coroutineB != null) StopCoroutine(_coroutineB);
