@@ -37,8 +37,6 @@ public class TextBoxUIController : MonoBehaviour
         return waitForSecondsCache[seconds];
     }
 
-    private readonly int GAME_STOP = 0;
-
     private void Awake()
     {
         UIManager.IntroUIFinishEvent -= OnUIFinished;
@@ -147,7 +145,7 @@ public class TextBoxUIController : MonoBehaviour
             MoveDownUITBox();
             yield return null;
 
-            if (GameManager.isGameStarted) gameObject.SetActive(false);
+            //if (GameManager.isGameStarted) gameObject.SetActive(false);
         }
     }
 

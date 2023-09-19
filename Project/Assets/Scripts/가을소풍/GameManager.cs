@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Debug Mode")] [Space(10f)] [SerializeField]
     [Range(0.5f,5f)]
-    public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
+    public float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
     
     [Header("Common Data")] [Space(10f)] [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
@@ -289,10 +289,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         //디버그용 함수
-        if (isGameStarted)
-        {
-            SetTimeScale(GAME_PROGRESSING_SPEED);
-        }
+       
+        SetTimeScale(GAME_PROGRESSING_SPEED);
+        
       
         if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene(); 
         
