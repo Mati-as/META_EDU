@@ -1,4 +1,4 @@
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
 using KoreanTyper;
@@ -28,6 +28,9 @@ public class UIManager : MonoBehaviour
     [Header("Reference")] [Space(10f)] [SerializeField]
     private GameManager _gameManager;
     
+    // UI status
+    public static bool isIntroUIFinished;
+    public static void FinishIntroUI() => isIntroUIFinished = true;
     
     
     

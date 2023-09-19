@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Debug Mode")] [Space(10f)] [SerializeField]
     [Range(0.5f,5f)]
-    public float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
+    public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
     
     [Header("Common Data")] [Space(10f)] [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
@@ -258,7 +258,7 @@ public class GameManager : MonoBehaviour
     /// 디버그용 재생속도 컨트롤 함수 입니다. 
     /// </summary>
     /// <param name="speed"></param>
-    private void SetTimeScale(float speed) => Time.timeScale = speed;
+    public static void SetTimeScale(float speed) => Time.timeScale = speed;
 
     private void SetRandomSeed()
     {

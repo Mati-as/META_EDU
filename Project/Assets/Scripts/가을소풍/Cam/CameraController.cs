@@ -22,6 +22,9 @@ public class CameraController : MonoBehaviour
     public float Xoffset;
 
 
+
+    private void Deactivate() => gameObject.SetActive(false);
+
     private void Start()
     {
         transform.position = _introStartCamPoint.position;
