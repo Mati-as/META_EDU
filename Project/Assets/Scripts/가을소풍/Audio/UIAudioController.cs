@@ -8,6 +8,9 @@ public class UIAudioController : MonoBehaviour
     public AudioClip correctClip;
     public AudioClip finishedClip;
 
+    // UI Audio 컨트롤
+    public Dictionary<string, AudioClip> UIAudio = new();
+   
     // 코루틴 WaitForSeconds 캐싱 자료사전
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
 
@@ -120,8 +123,8 @@ public class UIAudioController : MonoBehaviour
     private IEnumerator PlayRoundStartAudio()
     {
         yield return GetWaitForSeconds(onRoundStartWaitTime);
-        _audioSource.clip = roundStartClip;
-        _audioSource.Play();
+        //_audioSource.clip =   _audioSource.Play();
+      
       
        
     }

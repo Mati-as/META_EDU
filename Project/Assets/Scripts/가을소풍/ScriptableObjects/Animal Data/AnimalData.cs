@@ -5,14 +5,18 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "AnimalData", menuName = "AnimalData/AnimalInfo", order = int.MaxValue )]
 public class AnimalData : ScriptableObject
 {
-    [Header("Transform")] [Space(10f)]
+   
+   
+   
+    [Header("Transform")]
+    [Space(10f)]
     [HideInInspector]
     public Vector3 initialPosition;
     [HideInInspector]
     public Quaternion initialRotation;
-
+    [Space(15f)]
     public Vector3 animalPositionOffset;
-    [FormerlySerializedAs("animalName")] [Header("Name")] [Space(10f)] 
+    [Header("Name")] [Space(10f)] 
     
     public string englishName;
     public string koreanName;
