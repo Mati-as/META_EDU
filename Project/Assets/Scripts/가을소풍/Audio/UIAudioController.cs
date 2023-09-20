@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class UIAudioController : MonoBehaviour
 {
-
+    [SerializeField]
+    private StoryUIController storyUIController;
     enum UI
     {
         HowToPlayA,
@@ -45,8 +46,8 @@ public class UIAudioController : MonoBehaviour
     private Coroutine _FinishCoroutine;
 
   
-    private Coroutine uiAudioACoroutine;
-    private Coroutine uiAudioBCoroutine;
+    private Coroutine uiAudioAReadyCoroutine;
+    private Coroutine uiAudioBCorrectCoroutine;
     private Coroutine animalSoundCoroutine;
    
     private void OnEnable()
@@ -100,17 +101,16 @@ public class UIAudioController : MonoBehaviour
         if (!GameManager.isGameFinished)
         {
             Debug.Log("찾아보세요 클립재생");
-            uiAudioACoroutine = StartCoroutine(PlayUI_A_Audio());
+            uiAudioAReadyCoroutine = StartCoroutine(PlayUI_A_Audio());
         }
     }
 
     private void OnCorrect()
     {
-        if (!_isCorrectClipPlayed && !GameManager.isGameFinished)
+        if (!GameManager.isGameFinished)
         {
             Debug.Log($"앵무새를 찾았어요 , _isCorrectClipPlayed: {_isCorrectClipPlayed}");
-            _isCorrectClipPlayed = true;
-            uiAudioBCoroutine = StartCoroutine(PlayOnCorrectAudio());
+            uiAudioBCorrectCoroutine = StartCoroutine(PlayOnCorrectAudio());
         }
     }
 
@@ -120,11 +120,13 @@ public class UIAudioController : MonoBehaviour
     }
 
     private void OnGameFinished()
-    {
+    {  
+        PlayOnGameFinishedEvent();
         if (!_isFinishedClipPlayed)
         {
             _isFinishedClipPlayed = true;
             StartCoroutine(PlayOnGameFinishedAudio());
+          
         }
     }
 
@@ -133,6 +135,9 @@ public class UIAudioController : MonoBehaviour
     {
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         UIManager.SecondStoryUIActivateEvent += PlayStoryBAudio;
+        
+        UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
+        UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
         
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onGameStartEvent += OnGameStart;
@@ -156,6 +161,7 @@ public class UIAudioController : MonoBehaviour
     private void UnsubscribeGamaManagerEvents()
     {
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
+        UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
         
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onRoundReadyEvent -= OnRoundReady;
@@ -217,13 +223,13 @@ public class UIAudioController : MonoBehaviour
 
     private IEnumerator PlayOnCorrectAudio()
     {
-
-        if (uiAudioACoroutine != null)
+        _isCorrectClipPlayed = false;
+        if (uiAudioAReadyCoroutine != null)
         {
-            StopCoroutine(uiAudioACoroutine);
+            StopCoroutine(uiAudioAReadyCoroutine);
         }
       
-        _isCorrectClipPlayed = false;
+       
         
         while (true)
         {
@@ -237,6 +243,10 @@ public class UIAudioController : MonoBehaviour
                 _isCorrectClipPlayed = true;
             }
 
+            if (GameManager.isGameFinished)
+            {
+                StopCoroutine(uiAudioBCorrectCoroutine);
+            }
             yield return null;
         }
 
@@ -244,9 +254,9 @@ public class UIAudioController : MonoBehaviour
 
     private IEnumerator PlayUI_A_Audio()
     {
-        if (uiAudioBCoroutine != null)
+        if (uiAudioBCorrectCoroutine != null)
         {
-            StopCoroutine(uiAudioBCoroutine);
+            StopCoroutine(uiAudioBCorrectCoroutine);
         }
     
         _isReadyClipPlayed = false;
@@ -273,9 +283,15 @@ public class UIAudioController : MonoBehaviour
         
     }
 
+    private void PlayOnGameFinishedEvent()
+    {
+        _FinishCoroutine =StartCoroutine(PlayOnGameFinishedAudio());
+    }
+
     private IEnumerator PlayOnGameFinishedAudio()
     {
         yield return GetWaitForSeconds(onGameFinishedWaitTime);
+        storyUIController.gameObject.SetActive((true));
         _audioSource.clip = uiAudioClip[(int)UI.Finish];
         _audioSource.Play();
         

@@ -253,6 +253,10 @@ public class UIManager : MonoBehaviour
         _coroutineC =  StartCoroutine(ActivateStoryBUIController());
     }
 
+    
+    
+
+    public static event Action GameFinishUIActivateEvent;
     public static event Action SecondStoryUIActivateEvent;
     IEnumerator ActivateStoryBUIController()
     {
@@ -289,6 +293,8 @@ public class UIManager : MonoBehaviour
     private void OnGameFinished()
     {
         PlayFinishMessage();
+        GameFinishUIActivateEvent?.Invoke();
+      
     }
     
     

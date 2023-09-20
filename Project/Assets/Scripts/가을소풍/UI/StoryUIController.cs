@@ -79,7 +79,7 @@ public class StoryUIController : MonoBehaviour
         _storyUITmp.text = _secondUIMessage;
     }
 
-    public void OnGameFinished()
+    public void OnFinishUIActiavte()
     {
         _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
     }
@@ -108,14 +108,13 @@ public class StoryUIController : MonoBehaviour
         _uiAudioController._audioSource.clip
             = _uiAudioController.uiAudioClip[(int)UI.StoryA];
         _uiAudioController._audioSource.Play();
-        Activate();
 
     }
     
     IEnumerator ActivateLastStoryUICoroutine()
     {
         yield return GetWaitForSeconds(waitTimeForLastActivation);
-        Activate();
+        Debug.Log("게임종료 메세지 출력");
         _storyUITmp.text = _lastUIMessage;
     }
 
@@ -149,7 +148,13 @@ public class StoryUIController : MonoBehaviour
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
 
-        GameManager.onRoundReadyEvent -= OnRoundReady;
+        UIManager.SecondStoryUIActivateEvent -= OnRoundReady;
+        UIManager.SecondStoryUIActivateEvent += OnRoundReady;
+            
+        GameManager.onGameFinishedEvent -= OnFinishUIActiavte;
+        GameManager.onGameFinishedEvent += OnFinishUIActiavte;
+            
+        GameManager.onGameStartEvent -= OnRoundReady;
         GameManager.onRoundReadyEvent += OnRoundReady;
 
         // GameManager.onCorrectedEvent -= OnCorrect;
@@ -161,8 +166,8 @@ public class StoryUIController : MonoBehaviour
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
         // GameManager.onRoundStartedEvent += OnRoundStarted;
         //
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        // GameManager.onGameFinishedEvent -= OnGameFinished;
+        // GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
@@ -173,7 +178,7 @@ public class StoryUIController : MonoBehaviour
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;
         //     GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent -= OnFinishUIActiavte;
         // }
     }
 }

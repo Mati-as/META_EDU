@@ -77,6 +77,11 @@ public class CameraController : MonoBehaviour
         _cameraRotateCoroutine = StartCoroutine(RotateOverTime(Xoffset, rotationDuration));
     }
 
+    private void OnGameFinished()
+    {
+        _cameraRotateCoroutine = StartCoroutine(RotateOverTime(-Xoffset, rotationDuration));
+    }
+
     private Coroutine _cameraRotateCoroutine;
     public float waitTimeToRotateCamera;
 
@@ -107,6 +112,8 @@ public class CameraController : MonoBehaviour
         }
     }
 
+
+
     private void SubscribeGameManagerEvents()
     {
         GameManager.onGameStartEvent -= OnGameStart;
@@ -124,8 +131,8 @@ public class CameraController : MonoBehaviour
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
         // GameManager.onRoundStartedEvent += OnRoundStarted;
         //
-        // GameManager.onGameFinishedEvent -= OnGameFinished;
-        // GameManager.onGameFinishedEvent += OnGameFinished;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
@@ -135,6 +142,6 @@ public class CameraController : MonoBehaviour
         // GameManager.onCorrectedEvent -= OnCorrect;
         // GameManager.onRoundFinishedEvent -= OnRoundFinished;
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
-        // GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
     }
 }

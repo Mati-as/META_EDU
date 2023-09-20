@@ -5009,7 +5009,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB180\uC774 \uBC29\uBC95"
+  m_text: "\uB180\uC774\uBC29\uBC95"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ad4d1d7ac08a93c4487185e0aed66d42, type: 2}
   m_sharedMaterial: {fileID: 877592314881560857, guid: ad4d1d7ac08a93c4487185e0aed66d42,
@@ -5047,7 +5047,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 25
+  m_characterSpacing: 53.4
   m_wordSpacing: 0
   m_lineSpacing: 22.5
   m_lineSpacingMax: 0
@@ -7813,7 +7813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 41}
+  m_AnchoredPosition: {x: 0, y: 44}
   m_SizeDelta: {x: 928.65, y: 88.97336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &618004272
@@ -7875,7 +7875,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 27.06
+  m_characterSpacing: 21.6
   m_wordSpacing: 0
   m_lineSpacing: 22.5
   m_lineSpacingMax: 0
@@ -14254,7 +14254,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 146.99998, y: 0}
+  m_AnchoredPosition: {x: 147.4, y: 0}
   m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &1028144511 stripped
@@ -22271,8 +22271,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1398327835}
-  - component: {fileID: 1398327837}
   - component: {fileID: 1398327836}
+  - component: {fileID: 1398327837}
   m_Layer: 0
   m_Name: "\uC624\uB514\uC624 (Audio Controller)"
   m_TagString: Untagged
@@ -22307,6 +22307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb7f3a1522afa643ad54c12f342c72d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  storyUIController: {fileID: 8095189394567864937}
   audioAndUIData: {fileID: 11400000, guid: a58483c65a2a4bf45bb2bca88dc6a59c, type: 2}
   gameManager: {fileID: 436187384}
   uiAudioClip:
@@ -22317,11 +22318,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 39e815787d43e3549a93fea757aa5498, type: 3}
   _audioSource: {fileID: 0}
   HTPAAudioWFS: 1
-  HTPAAudioInterval: 4
+  HTPAAudioInterval: 2.8
   storyBWFS: 3
   onRoundStartWaitTime: 2.4
   onCorrectWaitTime: 0.5
-  onGameFinishedWaitTime: 2
+  onGameFinishedWaitTime: 6
 --- !u!82 &1398327837
 AudioSource:
   m_ObjectHideFlags: 0
@@ -28942,7 +28943,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -110.4, y: -58.2}
+  m_AnchoredPosition: {x: -99.6, y: -58.2}
   m_SizeDelta: {x: 35, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2012816360
