@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ public class StoryUIController : MonoBehaviour
     private TMP_Text _storyUITmp;
     
     [Header("Message Settings")]  [Space(10f)]
-    public string firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
-    public string secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요!\n친구들을 찾아볼까요?"; 
+    private readonly string _firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
+    private readonly string  _secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요! 친구들을 찾아볼까요?"; 
     
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
     private WaitForSeconds GetWaitForSeconds(float seconds)
@@ -25,9 +26,14 @@ public class StoryUIController : MonoBehaviour
     // 유니티 루프---------------------------------------------------
     private void Awake()
     {
-        _storyUITmp.text = firstUIMessage;
+      
         Deactivate();
         SubscribeGameManagerEvents();
+    }
+
+    private void Start()
+    {
+        _storyUITmp.text = _firstUIMessage;
     }
 
     private void OnDestroy()
@@ -46,14 +52,17 @@ public class StoryUIController : MonoBehaviour
   
     public void OnRoundReady()
     {
-        if (_coroutineA != null)
-        {
-            StopCoroutine(_coroutineA);
-        }
-
-        _storyUITmp.text = secondUIMessage;
+     
+        Debug.Log("UI내용 변경");
+    
     }
-
+    
+    
+    
+    public void OnGameStart()
+    {
+        _storyUITmp.text = _secondUIMessage;
+    }
 
     // 메소드 및 코루틴
     private void Activate() => gameObject.SetActive(true);
@@ -81,8 +90,8 @@ public class StoryUIController : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
-        // GameManager.onGameStartEvent -= OnGameStart;
-        // GameManager.onGameStartEvent += OnGameStart;
+        GameManager.onGameStartEvent -= OnGameStart;
+         GameManager.onGameStartEvent += OnGameStart;
 
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
@@ -105,7 +114,7 @@ public class StoryUIController : MonoBehaviour
 
     private void UnsubscribeGamaManagerEvents()
     {
-        //     GameManager.onGameStartEvent -= OnGameStart;
+        GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onRoundReadyEvent -= OnRoundReady;
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         //     GameManager.onCorrectedEvent -= OnCorrect;
