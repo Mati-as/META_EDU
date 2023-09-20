@@ -15949,7 +15949,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 300
+      scalar: 420
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -18974,8 +18974,8 @@ ParticleSystem:
     light: {fileID: 0}
     randomDistribution: 1
     color: 1
-    range: 1
-    intensity: 1
+    range: 0
+    intensity: 0
     rangeCurve:
       serializedVersion: 2
       minMaxState: 0
@@ -19031,9 +19031,9 @@ ParticleSystem:
         m_RotationOrder: 4
     intensityCurve:
       serializedVersion: 2
-      minMaxState: 0
-      scalar: 1
-      minScalar: 1
+      minMaxState: 3
+      scalar: 1000
+      minScalar: 5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -32183,12 +32183,12 @@ PrefabInstance:
     - target: {fileID: 5330025233768948264, guid: 29f4b3b7910af0a42a531635cb889a38,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5330025233768948264, guid: 29f4b3b7910af0a42a531635cb889a38,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.538
       objectReference: {fileID: 0}
     - target: {fileID: 5330025233768948264, guid: 29f4b3b7910af0a42a531635cb889a38,
         type: 3}
@@ -32234,6 +32234,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5330025233768948278, guid: 29f4b3b7910af0a42a531635cb889a38,
+        type: 3}
+      propertyPath: LightsModule.enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29f4b3b7910af0a42a531635cb889a38, type: 3}
