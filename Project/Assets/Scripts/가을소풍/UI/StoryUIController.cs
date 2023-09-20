@@ -6,8 +6,18 @@ using TMPro;
 
 public class StoryUIController : MonoBehaviour
 {
+    enum UI
+    {
+        HowToPlayA,
+        HowToPlayB,
+        StoryA,
+        StoryB,
+        Finish
+    }
     
-  
+    
+    [SerializeField]
+    private UIAudioController _uiAudioController;
 
     [SerializeField]
     private TMP_Text _storyUITmp;
@@ -95,6 +105,9 @@ public class StoryUIController : MonoBehaviour
     IEnumerator ActivateFirstStoryUICoroutine()
     {
         yield return GetWaitForSeconds(waitTimeForFirstActivation);
+        _uiAudioController._audioSource.clip
+            = _uiAudioController.uiAudioClip[(int)UI.StoryA];
+        _uiAudioController._audioSource.Play();
         Activate();
 
     }

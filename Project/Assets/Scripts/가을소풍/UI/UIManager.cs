@@ -25,6 +25,8 @@ public class UIManager : MonoBehaviour
     private StoryUIController storyUIController;
     [SerializeField]
     private TextBoxUIController textBoxUIController;
+    [SerializeField]
+    private UIAudioController uiAudioController;
     
     [Header("Overall Settings")]  [Space(10f)]
     public float startTimeOffsetSeconds; // 게임시작후 몇 초 후 UI재생할 건지
@@ -248,15 +250,17 @@ public class UIManager : MonoBehaviour
     private void OnGameStart()
     {
         //StoryUI 비활성화 상태이기에 UI Manager가 활성화 및 해당함수 호출
-        _coroutineC =  StartCoroutine(ActivateStoryUIController());
+        _coroutineC =  StartCoroutine(ActivateStoryBUIController());
     }
 
-    IEnumerator ActivateStoryUIController()
+    public static event Action SecondStoryUIActivateEvent;
+    IEnumerator ActivateStoryBUIController()
     {
         yield return GetWaitForSeconds(storyUIController.waitTimeForSecondActivation);
         storyUIController.gameObject.SetActive(true);
-        StopCoroutine(_coroutineC);
+        SecondStoryUIActivateEvent?.Invoke();
         GameManager.isGameStopped = true;
+        StopCoroutine(_coroutineC);
     }
 
     private void OnRoundReady()

@@ -5,8 +5,11 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "AnimalData", menuName = "AnimalData/AnimalInfo", order = int.MaxValue )]
 public class AnimalData : ScriptableObject
 {
-   
-   
+
+    [Header("Audio")] 
+    public AudioClip aninalSound;
+    public AudioClip UIAnimAudioA;
+    public AudioClip UIAnimAudioB;
    
     [Header("Transform")]
     [Space(10f)]
