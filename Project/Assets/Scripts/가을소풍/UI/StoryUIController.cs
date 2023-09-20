@@ -81,6 +81,8 @@ public class StoryUIController : MonoBehaviour
 
     public void OnFinishUIActiavte()
     {
+        Debug.Log("게임종료 메세지 출력");
+        _storyUITmp.text = _lastUIMessage;
         _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
     }
 
@@ -113,9 +115,8 @@ public class StoryUIController : MonoBehaviour
     
     IEnumerator ActivateLastStoryUICoroutine()
     {
-        yield return GetWaitForSeconds(waitTimeForLastActivation);
-        Debug.Log("게임종료 메세지 출력");
-        _storyUITmp.text = _lastUIMessage;
+       
+        yield return null;
     }
 
     private float t;
@@ -151,8 +152,8 @@ public class StoryUIController : MonoBehaviour
         UIManager.SecondStoryUIActivateEvent -= OnRoundReady;
         UIManager.SecondStoryUIActivateEvent += OnRoundReady;
             
-        GameManager.onGameFinishedEvent -= OnFinishUIActiavte;
-        GameManager.onGameFinishedEvent += OnFinishUIActiavte;
+        UIManager.GameFinishUIActivateEvent -= OnFinishUIActiavte;
+        UIManager.GameFinishUIActivateEvent += OnFinishUIActiavte;
             
         GameManager.onGameStartEvent -= OnRoundReady;
         GameManager.onRoundReadyEvent += OnRoundReady;
@@ -178,7 +179,7 @@ public class StoryUIController : MonoBehaviour
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;
         //     GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnFinishUIActiavte;
+        UIManager.GameFinishUIActivateEvent  -= OnFinishUIActiavte;
         // }
     }
 }

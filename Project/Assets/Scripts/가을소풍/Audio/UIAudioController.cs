@@ -121,13 +121,7 @@ public class UIAudioController : MonoBehaviour
 
     private void OnGameFinished()
     {  
-        PlayOnGameFinishedEvent();
-        if (!_isFinishedClipPlayed)
-        {
-            _isFinishedClipPlayed = true;
-            StartCoroutine(PlayOnGameFinishedAudio());
-          
-        }
+        
     }
 
 
@@ -199,7 +193,6 @@ public class UIAudioController : MonoBehaviour
 
     public void PlayStoryBAudio()
     {
-      
         _storyBCoroutine = StartCoroutine(PlayStoryAudioB());
     }
     private IEnumerator PlayStoryAudioB()
@@ -224,12 +217,13 @@ public class UIAudioController : MonoBehaviour
     private IEnumerator PlayOnCorrectAudio()
     {
         _isCorrectClipPlayed = false;
+        elapsedForAnimalSound = 0f;
+        
         if (uiAudioAReadyCoroutine != null)
         {
             StopCoroutine(uiAudioAReadyCoroutine);
         }
-      
-       
+        
         
         while (true)
         {
@@ -243,6 +237,21 @@ public class UIAudioController : MonoBehaviour
                 _isCorrectClipPlayed = true;
             }
 
+            if (_isCorrectClipPlayed)
+            {
+                elapsedForAnimalSound += Time.deltaTime;
+                
+                if (elapsedForAnimalSound > intervalForAnimalSound)
+                {
+                    if (AnimalSoundAudio[GameManager.answer] != null)
+                    {
+                        _audioSource.clip = AnimalSoundAudio[GameManager.answer];
+                        _audioSource.Play();
+                    }
+                }
+            }
+            
+            
             if (GameManager.isGameFinished)
             {
                 StopCoroutine(uiAudioBCorrectCoroutine);
@@ -252,6 +261,8 @@ public class UIAudioController : MonoBehaviour
 
     }
 
+    private float elapsedForAnimalSound;
+    public float intervalForAnimalSound;
     private IEnumerator PlayUI_A_Audio()
     {
         if (uiAudioBCorrectCoroutine != null)
@@ -272,9 +283,10 @@ public class UIAudioController : MonoBehaviour
                     _audioSource.clip = UIAudioA[GameManager.answer];
                 }
                 _audioSource.Play();
-
                 _isReadyClipPlayed = true;
             }
+
+           
 
             yield return null;
         }
@@ -285,15 +297,14 @@ public class UIAudioController : MonoBehaviour
 
     private void PlayOnGameFinishedEvent()
     {
+        _audioSource.clip = uiAudioClip[(int)UI.Finish];
+        _audioSource.Play();
         _FinishCoroutine =StartCoroutine(PlayOnGameFinishedAudio());
     }
 
     private IEnumerator PlayOnGameFinishedAudio()
     {
-        yield return GetWaitForSeconds(onGameFinishedWaitTime);
-        storyUIController.gameObject.SetActive((true));
-        _audioSource.clip = uiAudioClip[(int)UI.Finish];
-        _audioSource.Play();
-        
+        yield return null;
+
     }
 }

@@ -7,6 +7,20 @@ using UnityEngine;
 
 public class TextBoxUIController : MonoBehaviour
 {
+    [Header("TextBox Frame Move Settings")] 
+   
+    [SerializeField]
+    private Transform frame;
+    [SerializeField]
+    private Transform leftPosition;
+    [SerializeField]
+    private Transform rightPosition;
+
+    private float elapsedForFrameMove;
+    public float frameMoveDuration;
+    
+        
+    [Header("TMP")]
     [SerializeField] private TMP_Text tmpBodyLeft;
     [SerializeField] private TMP_Text tmpBodyRight;
 
@@ -41,15 +55,20 @@ public class TextBoxUIController : MonoBehaviour
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
-
+        
         _defaultPositionLf = leftAnimFirst.transform;
         _defaultPositionLs = leftAnimSecond.transform;
         _defaultPositionR = rightAnimal.transform;
 
         LeftEvent -= OnLeftLetterTyping;
         RightEvent -= OnRightLetterTyping;
+        LeftEvent -= MoveFrameOnLeftEvent;
+        RightEvent -= MoveFrameOnRightEvent;
+        
         LeftEvent += OnLeftLetterTyping;
         RightEvent += OnRightLetterTyping;
+        LeftEvent += MoveFrameOnLeftEvent;
+        RightEvent += MoveFrameOnRightEvent;
 
         tmpBodyLeft.text = "";
         tmpBodyRight.text = "";
@@ -63,6 +82,10 @@ public class TextBoxUIController : MonoBehaviour
     private void OnDestroy()
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        LeftEvent -= OnLeftLetterTyping;
+        RightEvent -= OnRightLetterTyping;
+        LeftEvent -= MoveFrameOnLeftEvent;
+        RightEvent -= MoveFrameOnRightEvent;
     }
 
     //메소드 목록 -----------------------------------------------------------
@@ -76,8 +99,9 @@ public class TextBoxUIController : MonoBehaviour
 
         while (true)
         {
+           
             LeftEvent?.Invoke();
-
+            
             tmp1.text = "";
             var strTypingLength = strL.GetTypingLength(); // 최대 타이핑 수 구함
             for (var i = 0; i <= strTypingLength; i++)
@@ -100,7 +124,47 @@ public class TextBoxUIController : MonoBehaviour
             }
 
             yield return GetWaitForSeconds(textPrintingIntervalBtTwoTmps);
+            
+            
         }
+    }
+
+    private Coroutine _moveFrameCoroutine;
+    private void MoveFrameOnRightEvent()
+    {
+        _moveFrameCoroutine = 
+            StartCoroutine(MoveFrame(leftPosition, rightPosition , frameMoveDuration));
+    }
+
+    private bool _isFirstUIPlayed;
+    private void MoveFrameOnLeftEvent()
+    {
+        //첫번째 프레임의 불필요한 움직임 방지용 _isFirstUIPlayed bool활용.
+        if (_isFirstUIPlayed)
+        {
+            _moveFrameCoroutine = 
+                StartCoroutine(MoveFrame(rightPosition, leftPosition , frameMoveDuration));
+        }
+        else
+        {
+            
+            _isFirstUIPlayed = true;
+        }
+    }
+       
+
+    private IEnumerator MoveFrame(Transform start, Transform arrival, float duration)
+    {
+        elapsedForFrameMove = 0f;
+        
+        while (true)
+        {
+            elapsedForFrameMove += Time.deltaTime;
+            float lerp = Lerp2D.EaseOutQuint(0, 1, elapsedForFrameMove / duration);
+            frame.position = Vector3.Lerp(start.position, arrival.position, lerp);
+            yield return null;
+        }
+        
     }
 
 
@@ -132,6 +196,7 @@ public class TextBoxUIController : MonoBehaviour
     {
         if (_coroutineA != null) StopCoroutine(_coroutineA);
         if (_coroutineB != null) StopCoroutine(_coroutineB);
+        if (_moveFrameCoroutine != null) StopCoroutine(_moveFrameCoroutine);
 
         _coroutineC = StartCoroutine(MoveDownUIBoxCoroutine());
     }

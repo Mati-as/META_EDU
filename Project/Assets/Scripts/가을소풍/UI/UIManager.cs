@@ -184,11 +184,12 @@ public class UIManager : MonoBehaviour
 
     public void PlayFinishMessage()
     {
-        _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
-        
-      
+        Debug.Log("제시문 하단 종료 이벤트 발생!");
+
+        _isQuizPlaying = false;
         if (_isQuizPlaying == false && GameManager.isGameFinished)
         {
+            Debug.Log(" 지시문 종료");
             StopCoroutineWithNullCheck(_coroutines);
             _isQuizPlaying = true;
             roundInstruction = onFinishMessage;
@@ -209,6 +210,7 @@ public class UIManager : MonoBehaviour
 
     public IEnumerator TypeIn(string str, float offset)
     {
+        Debug.Log("제시문 하단 종료 코루틴 ....");
         instructionTMP.text = ""; // 초기화
         yield return new WaitForSeconds(offset); // 1초 대기
 
@@ -292,9 +294,18 @@ public class UIManager : MonoBehaviour
     
     private void OnGameFinished()
     {
+        StartCoroutine(InvokeFinishUI());
         PlayFinishMessage();
+    }
+
+    
+    private IEnumerator InvokeFinishUI()
+    {
+        yield return GetWaitForSeconds(storyUIController.waitTimeForFirstActivation);
+        
+        storyUIController.gameObject.SetActive(true);
         GameFinishUIActivateEvent?.Invoke();
-      
+
     }
     
     
