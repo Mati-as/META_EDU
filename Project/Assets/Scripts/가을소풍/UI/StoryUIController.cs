@@ -11,10 +11,18 @@ public class StoryUIController : MonoBehaviour
 
     [SerializeField]
     private TMP_Text _storyUITmp;
+
+    [SerializeField] 
+    private Transform playerIcon;
+    [SerializeField] 
+    private Transform playerIconDefault;
+    [SerializeField] 
+    private Transform playerIconMovePosition;
     
     [Header("Message Settings")]  [Space(10f)]
     private readonly string _firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
     private readonly string  _secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요! 친구들을 찾아볼까요?"; 
+    private readonly string  _lastUIMessage = "우와! 동물친구들을 모두 찾았어요!"; 
     
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
     private WaitForSeconds GetWaitForSeconds(float seconds)
@@ -46,10 +54,9 @@ public class StoryUIController : MonoBehaviour
     {
         Activate();
         _coroutineA = StartCoroutine(ActivateFirstStoryUICoroutine());
+        _coroutineB = StartCoroutine(MovePlayerIcon());
     }
-
-
-  
+    
     public void OnRoundReady()
     {
      
@@ -57,11 +64,14 @@ public class StoryUIController : MonoBehaviour
     
     }
     
-    
-    
     public void OnGameStart()
     {
         _storyUITmp.text = _secondUIMessage;
+    }
+
+    public void OnGameFinished()
+    {
+        _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
     }
 
     // 메소드 및 코루틴
@@ -70,6 +80,7 @@ public class StoryUIController : MonoBehaviour
 
     public float waitTimeForFirstActivation;
     public float waitTimeForSecondActivation;
+    public float waitTimeForLastActivation;
 
     private Coroutine _coroutineA;
     private Coroutine _coroutineB;
@@ -86,6 +97,35 @@ public class StoryUIController : MonoBehaviour
         yield return GetWaitForSeconds(waitTimeForFirstActivation);
         Activate();
 
+    }
+    
+    IEnumerator ActivateLastStoryUICoroutine()
+    {
+        yield return GetWaitForSeconds(waitTimeForLastActivation);
+        Activate();
+        _storyUITmp.text = _lastUIMessage;
+    }
+
+    private float t;
+    public float playerIconMoveSpeed;
+    IEnumerator MovePlayerIcon()
+    {
+        while (true)
+        {
+            t += Time.deltaTime * playerIconMoveSpeed;
+            playerIcon.position = Vector3.Lerp(playerIconDefault.position, playerIconMovePosition.position, t);
+
+            
+            if (GameManager.isCameraArrivedToPlay)
+            {
+                StopCoroutine(_coroutineA);
+                StopCoroutine(_coroutineB);
+            }
+            
+            yield return null;
+            
+            
+        }
     }
 
     private void SubscribeGameManagerEvents()
@@ -108,8 +148,8 @@ public class StoryUIController : MonoBehaviour
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
         // GameManager.onRoundStartedEvent += OnRoundStarted;
         //
-        // GameManager.onGameFinishedEvent -= OnGameFinished;
-        // GameManager.onGameFinishedEvent += OnGameFinished;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
@@ -120,7 +160,7 @@ public class StoryUIController : MonoBehaviour
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;
         //     GameManager.onRoundStartedEvent -= OnRoundStarted;
-        //     GameManager.onGameFinishedEvent -= OnGameFinished;
+        GameManager.onGameFinishedEvent -= OnGameFinished;
         // }
     }
 }

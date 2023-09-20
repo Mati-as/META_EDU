@@ -896,16 +896,7 @@ public class GameManager : MonoBehaviour
 #if DEFINE_TEST
         Debug.Log($"현재 라운드: {roundCount}");
 #endif
-
-        // animal객체로 이동.. 9/12/23
-        // foreach (var gameObj in _animalList)
-        // {
-        //     _tempAnimator = gameObj.GetComponent<Animator>();
-        //     AnimalController _animalController = gameObj.GetComponent<AnimalController>();
-        //     
-        //     InitializeAllAnimatorParameters(_tempAnimator);
-        //     gameObj.transform.localScale = Vector3.one * _animalController._animalData.defaultSize;
-        // }
+        
     }
 
     /// <summary>

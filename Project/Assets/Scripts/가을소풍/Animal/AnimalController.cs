@@ -416,10 +416,11 @@ public class AnimalController : MonoBehaviour
     IEnumerator MoveAndRotateCoroutine()
     {
         _moveInElapsed = 0f;
+        _elapsedForRotationInPlay = 0f;
         
         while (GameManager.isRoundStarted)
         {
-            MoveAndRotate(_animalData.moveInTime,_animalData.rotationSpeedInRound);
+            MoveAndRotateInPlay(_animalData.moveInTime,_animalData.rotationSpeedInRound,AnimalData.LOOK_AT_POSITION);
             
             if (GameManager.isCorrected)
             {
@@ -432,7 +433,9 @@ public class AnimalController : MonoBehaviour
        
     }
 
-    private void MoveAndRotate(float moveInTime, float rotationSpeedInRound)
+    private float _elapsedForRotationInPlay;
+   
+    private void MoveAndRotateInPlay(float moveInTime, float rotationSpeedInRound,Transform lookTarget)
     {
        
         Vector3 position = _animalData.inPlayPosition.position;
@@ -444,8 +447,22 @@ public class AnimalController : MonoBehaviour
             (obj = gameObject).transform.position.y,
             Mathf.Lerp(obj.transform.position.z, position.z, _moveInElapsed / moveInTime)
         );
+
+        Vector3 randomDirection = new Vector3(0, Random.Range(0, 2f),0);
+        Quaternion randomRotation = Quaternion.Euler(randomDirection * 90); 
+        Quaternion targetRotation =
+            Quaternion.LookRotation(-lookTarget.position) * randomRotation;
+                                   
+
+        _elapsedForRotationInPlay = Time.deltaTime;
+        float t = Mathf.Clamp01(_elapsedForRotationInPlay / _animalData.rotationTimeWhenCorrect);
         
-        gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);
+        gameObject.transform.rotation =
+            Quaternion.Slerp(
+                gameObject.transform.rotation, targetRotation,
+                t * Time.deltaTime);
+        
+        //gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);
        
     }
 
@@ -571,8 +588,9 @@ public class AnimalController : MonoBehaviour
 
     private void MoveAndRotateToward(Transform TargetPosition,Transform lookAt, float moveTime, float rotationTime)
     {
+        //Move
         float t = Mathf.Clamp01(_elapsedForMovingWhenCorrect / moveTime);
-        float t2 = Mathf.Clamp01(_elapsedForMovingWhenCorrect / rotationTime);
+       
         
         gameObject.transform.position =
             Vector3.Lerp(gameObject.transform.position,
@@ -581,6 +599,10 @@ public class AnimalController : MonoBehaviour
         Vector3 directionToTarget =
             lookAt.position - gameObject.transform.position;
 
+        //Rotate
+        float t2 = Mathf.Clamp01(_elapsedForMovingWhenCorrect / rotationTime);
+        
+        
         Quaternion targetRotation =
             Quaternion.LookRotation(directionToTarget);
         
