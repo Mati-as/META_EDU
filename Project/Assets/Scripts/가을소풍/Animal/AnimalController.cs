@@ -170,6 +170,7 @@ public class AnimalController : MonoBehaviour
         
         // ▼ 코루틴.
         _coroutines[0] = StartCoroutine(MoveAndRotateCoroutine());
+        
         _coroutines[1] = StartCoroutine(SetRandomAnimationWhenWhenRoundStartCoroutine());
     }
 
@@ -421,7 +422,6 @@ public class AnimalController : MonoBehaviour
         
         while (GameManager.isRoundStarted)
         {
-           
             MoveAndRotateInPlay(_animalData.moveInTime,0,AnimalData.LOOK_AT_POSITION);
             
             if (GameManager.isCorrected)
@@ -436,8 +436,8 @@ public class AnimalController : MonoBehaviour
     }
 
     private float _elapsedForRotationInPlay;
-    public float randomRotatableRangeMin;
-    public float randomRotatableRangeMax;
+    
+   
     
     private void MoveAndRotateInPlay(float moveInTime, float rotationSpeedInRound,Transform lookTarget)
     {
@@ -455,20 +455,13 @@ public class AnimalController : MonoBehaviour
 
         if (!_isrotated)
         {
-            Vector3 randomDirection = new Vector3(0, Random.Range(-1f, 1f) * 90,0);
-            Debug.Log($"{randomDirection}:randomDirection");
-            Quaternion randomRotation = Quaternion.Euler(randomDirection); 
+            Quaternion targetRotation = Quaternion.Euler(0, Random.Range(_gameManager.randomRotatableRangeMin, _gameManager.randomRotatableRangeMax) * 90,0);
             
-            Vector3 directionToTarget = new Vector3(0,lookTarget.position.x - gameObject.transform.position.x,0);
-            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget) * randomRotation;
-                                   
-
             _elapsedForRotationInPlay = Time.deltaTime;
             float t = Mathf.Clamp01(_elapsedForRotationInPlay / _animalData.rotationTimeWhenCorrect);
 
-            gameObject.transform.localRotation = targetRotation;
-                 
-
+            Debug.Log($"TargetRotation{targetRotation}");
+            gameObject.transform.rotation *=  targetRotation;
             _isrotated = true;
 
         }

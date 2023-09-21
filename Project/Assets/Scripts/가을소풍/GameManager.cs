@@ -110,9 +110,9 @@ public class GameManager : MonoBehaviour
 
     [Space(15f)] [Header("In Play Setting")] [Space(10f)]
 
-    [Range(-2.5f,0f)]
+    [Range(-5f,0f)]
     public float randomRotatableRangeMin;
-    [Range(0,2.5f)]
+    [Range(0,5f)]
     public float randomRotatableRangeMax;
 
     // ---------- 플레이 상황에서 쓰이는 메소드의 변수 목록입니다. 
