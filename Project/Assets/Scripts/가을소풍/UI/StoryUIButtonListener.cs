@@ -9,6 +9,8 @@ public class StoryUIButtonListener : MonoBehaviour
     [SerializeField]
     private StoryUIController _storyUIController;
 
+    [SerializeField]
+    private AudioSource _audioSource;
     private void Awake()
     {
         _button = GetComponent<Button>();
@@ -34,6 +36,7 @@ public class StoryUIButtonListener : MonoBehaviour
             _storyUIController.gameObject.SetActive(false);
         }
       
+        _audioSource.Play();
       
     }
 }

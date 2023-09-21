@@ -39,6 +39,14 @@ public class UIAudioController : MonoBehaviour
     [Space(15f)] [Header("Audio Source")] [Space(10f)]
    public AudioSource narrationAudioSource;
    public AudioSource animalSoundAudioSource;
+   public AudioSource correctSoundAudioSource;
+   public AudioSource windowOpenSoundAudioSource;
+
+   [Space(15f)] [Header("Effects Clip")] [Space(10f)]
+
+   public AudioClip windowOpenSoundClip;
+
+   public AudioClip correctedSoundClip;
     
     
     [Space(15f)] [Header("Interval/Duration Settings")] [Space(10f)]
@@ -63,6 +71,7 @@ public class UIAudioController : MonoBehaviour
     private void Awake()
     {
         SubscribeGameManagerEvents();
+        SubscribeProps();
     }
 
     private void Start()
@@ -80,9 +89,28 @@ public class UIAudioController : MonoBehaviour
     private void OnDestroy()
     {
         UnsubscribeGamaManagerEvents();
+        UnSubscribeProps();
     }
 
 //----------------------------------------------------
+
+    private void SubscribeProps()
+    {
+        WindowController.WindowOpenEvent -= OnWindowOpen;
+        WindowController.WindowOpenEvent += OnWindowOpen;
+      
+    }
+
+    private void UnSubscribeProps()
+    {
+        WindowController.WindowOpenEvent -= OnWindowOpen;
+    }
+    private void OnWindowOpen()
+    {
+        SetAndPlayAudio(windowOpenSoundAudioSource, windowOpenSoundClip);
+    }
+
+   
     private void OnGameStart()
     {
     }
@@ -109,8 +137,13 @@ public class UIAudioController : MonoBehaviour
 
     private void OnCorrect()
     {
+      
+        
         if (!GameManager.isGameFinished)
         {
+    
+            SetAndPlayAudio(correctSoundAudioSource, correctedSoundClip);
+            
             Debug.Log($"앵무새를 찾았어요 , _isCorrectClipPlayed: {_isCorrectClipPlayed}");
             uiAudioBCorrectCoroutine = StartCoroutine(PlayOnCorrectAudio());
         }

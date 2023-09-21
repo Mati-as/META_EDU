@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class HowToPlayUIButtonListener : MonoBehaviour
 {
     private Button _button;
-    
+    [SerializeField]
+    private AudioSource _audioSource;
     [SerializeField]
     private TextBoxUIController textBoxUIController;
     
@@ -30,9 +31,11 @@ public class HowToPlayUIButtonListener : MonoBehaviour
     {
         if (!_isUIPlayed)
         {
+            _audioSource.Play();
             Debug.Log("설명 끝, 스토리 UI시작.");
             textBoxUIController.OnUIFinished();
             _storyUIController.OnHowToPlayUIFinished();
+         
             _isUIPlayed = true;
         }
      

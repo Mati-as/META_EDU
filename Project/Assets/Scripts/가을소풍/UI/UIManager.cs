@@ -192,7 +192,8 @@ public class UIManager : MonoBehaviour
             Debug.Log(" 지시문 종료");
             StopCoroutineWithNullCheck(_coroutines);
             _isQuizPlaying = true;
-            roundInstruction = onFinishMessage;
+            //roundInstruction = onFinishMessage;
+            roundInstruction = string.Empty;
             _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }

@@ -110,6 +110,11 @@ public class GameManager : MonoBehaviour
 
     [Space(15f)] [Header("In Play Setting")] [Space(10f)]
 
+    [Range(-2.5f,0f)]
+    public float randomRotatableRangeMin;
+    [Range(0,2.5f)]
+    public float randomRotatableRangeMax;
+
     // ---------- 플레이 상황에서 쓰이는 메소드의 변수 목록입니다. 
     private Animator _selectedAnimator; // 정답동믈의 애니메이션을 재생하기 위한 인스턴스 입니다. 
 

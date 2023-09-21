@@ -29,8 +29,11 @@ public class TextBoxUIController : MonoBehaviour
     [SerializeField] private Transform rightAnimal;
 
 
+    [SerializeField]
     private Transform _defaultPositionLf;
+    [SerializeField]
     private Transform _defaultPositionLs;
+    [SerializeField]
     private Transform _defaultPositionR;
 
     public float waitTimeToStart;
@@ -56,9 +59,6 @@ public class TextBoxUIController : MonoBehaviour
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
         
-        _defaultPositionLf = leftAnimFirst.transform;
-        _defaultPositionLs = leftAnimSecond.transform;
-        _defaultPositionR = rightAnimal.transform;
 
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
         TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;
@@ -232,29 +232,38 @@ public class TextBoxUIController : MonoBehaviour
     private IEnumerator LeftCoroutine()
     {
         sinElapsed = 0f;
+        _comeBackElapsed = 0f;
         while (true)
         {
+            _comeBackElapsed += Time.deltaTime;
+            
             leftAnimFirst.position = MoveLikeWave(_defaultPositionLf.position,
                 _defaultPositionLf.position + new Vector3(0, offsetA, 0), waveSpeed, offsetA);
 
             leftAnimSecond.position = MoveLikeWave(_defaultPositionLs.position,
                 _defaultPositionLs.position + new Vector3(0, offsetB, 0), waveSpeed, offsetB);
 
-            //rightAnimal.position = MoveDown(rightAnimal.position, _defaultPositionR.position, 1);
+            
+            rightAnimal.position = Vector3.Lerp(rightAnimal.position, _defaultPositionR.position, _comeBackElapsed);
+            Debug.Log($"{_comeBackElapsed} :  _comeBackElapsed");
             yield return null;
         }
     }
 
+    private float _comeBackElapsed;
     private IEnumerator RightCoroutine()
     {
         sinElapsed = 0f;
+        _comeBackElapsed = 0f;
         while (true)
         {
+            _comeBackElapsed += Time.deltaTime;
+            
             rightAnimal.position = MoveLikeWave(_defaultPositionR.position,
                 _defaultPositionR.position + new Vector3(0, offsetC, 0), waveSpeed, offsetC);
 
-            //leftAnimFirst.position = MoveDown(leftAnimFirst.position, _defaultPositionLf.position, 1);
-            //leftAnimSecond.position = MoveDown(leftAnimSecond.position, _defaultPositionLs.position, 1);
+            leftAnimFirst.position = Vector3.Lerp(leftAnimFirst.position, _defaultPositionLf.position, _comeBackElapsed);
+            leftAnimSecond.position = Vector3.Lerp( leftAnimSecond.position, _defaultPositionLs.position, _comeBackElapsed);
             yield return null;
         }
     }
@@ -262,21 +271,21 @@ public class TextBoxUIController : MonoBehaviour
     private Vector3 MoveLikeWave(Vector3 startPosition, Vector3 arrivingPosition, float moveSpeed, float offsetA)
     {
         sinElapsed += Time.deltaTime * moveSpeed;
-        var waveOffset = Mathf.Sin(sinElapsed) * offsetA;
+        var waveOffset = Mathf.Sin(sinElapsed - offsetA) * offsetA;
         return startPosition + new Vector3(0, waveOffset, 0);
     }
 
     private float sinElapsed;
     private float t2;
 
-    private Vector3 MoveDown(Vector3 startPosition, Vector3 arrivingPosition, float moveTime)
-    {
-        t2 = Time.deltaTime / moveTime;
-
-        float lerp;
-        lerp = Lerp2D.EaseInOutQuint(0, 1, sinElapsed);
-
-        return Vector3.Lerp(startPosition,
-            arrivingPosition + new Vector3(0, offsetA, 0), lerp);
-    }
+    // private Vector3 MoveDown(Vector3 startPosition, Vector3 arrivingPosition, float moveTime)
+    // {
+    //     t2 = Time.deltaTime / moveTime;
+    //
+    //     float lerp;
+    //     lerp = Lerp2D.EaseInOutQuint(0, 1, sinElapsed);
+    //
+    //     return Vector3.Lerp(startPosition,
+    //         arrivingPosition + new Vector3(0, offsetA, 0), lerp);
+    // }
 }

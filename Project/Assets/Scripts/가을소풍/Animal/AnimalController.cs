@@ -420,7 +420,7 @@ public class AnimalController : MonoBehaviour
         
         while (GameManager.isRoundStarted)
         {
-            MoveAndRotateInPlay(_animalData.moveInTime,_animalData.rotationSpeedInRound,AnimalData.LOOK_AT_POSITION);
+            MoveAndRotateInPlay(_animalData.moveInTime,0,AnimalData.LOOK_AT_POSITION);
             
             if (GameManager.isCorrected)
             {
@@ -434,7 +434,9 @@ public class AnimalController : MonoBehaviour
     }
 
     private float _elapsedForRotationInPlay;
-   
+    public float randomRotatableRangeMin;
+    public float randomRotatableRangeMax;
+    
     private void MoveAndRotateInPlay(float moveInTime, float rotationSpeedInRound,Transform lookTarget)
     {
        
@@ -448,7 +450,8 @@ public class AnimalController : MonoBehaviour
             Mathf.Lerp(obj.transform.position.z, position.z, _moveInElapsed / moveInTime)
         );
 
-        Vector3 randomDirection = new Vector3(0, Random.Range(0, 2f),0);
+        
+        Vector3 randomDirection = new Vector3(0, Random.Range(-2.5f, 2.25f),0);
         Quaternion randomRotation = Quaternion.Euler(randomDirection * 90); 
         Quaternion targetRotation =
             Quaternion.LookRotation(-lookTarget.position) * randomRotation;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class WindowController : MonoBehaviour
@@ -14,9 +15,11 @@ public class WindowController : MonoBehaviour
 
     private float _waitingTimeRemaining;
     private float _deactivateOffset = 5f;
-    
 
 
+    public static event Action WindowOpenEvent;
+
+    private bool _isInvoked;
     private void Update()
     {
         if (UIManager.isHowToPlayUIFinished)
@@ -27,7 +30,13 @@ public class WindowController : MonoBehaviour
             if (_elapsed > _waitingTimeRemaining)
             {
                 isWindowStartOpening = true;
-
+                if (!_isInvoked)
+                {
+                    WindowOpenEvent?.Invoke();
+                    _isInvoked = true;
+                }
+               
+                
                 leftWindow.eulerAngles += Vector3.down * (windowOpeningSpeed * Time.deltaTime);
                 rightWindow.eulerAngles += Vector3.up * (windowOpeningSpeed * Time.deltaTime);
             }

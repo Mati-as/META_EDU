@@ -22108,6 +22108,42 @@ Transform:
   m_Father: {fileID: 1183024972}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1149177269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1149177270}
+  m_Layer: 0
+  m_Name: Right Image Default Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1149177270
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149177269}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.47773504, y: 0.3926482, z: 0.3926482}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5629262688679830262}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 69.99999, y: 10.899956}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1157782815
 GameObject:
   m_ObjectHideFlags: 0
@@ -41427,6 +41463,42 @@ Transform:
   m_Father: {fileID: 1884249045}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1928236968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1928236969}
+  m_Layer: 0
+  m_Name: Left Image Default Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1928236969
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928236968}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.47773504, y: 0.3926482, z: 0.3926482}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5629262688679830262}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -112.300026, y: -1.8000183}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1930953149
 GameObject:
   m_ObjectHideFlags: 0
@@ -53366,7 +53438,7 @@ GameObject:
   - component: {fileID: 5629262688306792353}
   - component: {fileID: 5629262688306792354}
   m_Layer: 0
-  m_Name: "\uBCF8\uBB38 \uC911\uB2E8 Left"
+  m_Name: "\uBCF8\uBB38 \uC911\uB2E8 Text Left"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53459,7 +53531,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1928236969}
+  - {fileID: 1149177270}
   m_Father: {fileID: 5629262689763021311}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -54402,16 +54476,19 @@ MonoBehaviour:
   tmpBodyLeft: {fileID: 5629262688306792354}
   tmpBodyRight: {fileID: 5629262689757021196}
   leftAnimFirst: {fileID: 619347820}
-  leftAnimSecond: {fileID: 311086854}
+  leftAnimSecond: {fileID: 619347820}
   rightAnimal: {fileID: 5629262688624838652}
+  _defaultPositionLf: {fileID: 1928236969}
+  _defaultPositionLs: {fileID: 1928236969}
+  _defaultPositionR: {fileID: 1149177270}
   waitTimeToStart: 0
   textPrintingSpeed: 0.1
   stringLeft: "\uB099\uC5FD\uC774 \uC774\uB9AC\uC800\uB9AC \uB5A8\uC5B4\uC800\uC694"
   stringRight: "\uB099\uC5FD\uC744 \uBC1F\uC73C\uBA74 \uD769\uC5B4\uC838\uC694!"
   textPrintingIntervalBtTwoTmps: 2
-  offsetA: 0.005
-  offsetB: 0.005
-  offsetC: 0.02
+  offsetA: 0.01
+  offsetB: 0.01
+  offsetC: 0.16
   waveSpeed: 5.5
   uiMoveDownPosition: {fileID: 5629262688679830262}
   uiMoveTimeTotal: 1
@@ -54545,6 +54622,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _storyUIController: {fileID: 4488060548828384222}
+  _audioSource: {fileID: 0}
 --- !u!222 &5629262689529871846
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55230,7 +55308,7 @@ GameObject:
   - component: {fileID: 5629262689757021195}
   - component: {fileID: 5629262689757021196}
   m_Layer: 0
-  m_Name: "\uBCF8\uBB38 \uC911\uB2E8 Right"
+  m_Name: "\uBCF8\uBB38 \uC911\uB2E8 Text Right"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
