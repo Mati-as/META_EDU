@@ -83,7 +83,7 @@ public class StoryUIController : MonoBehaviour
     {
         Debug.Log("게임종료 메세지 출력");
         _storyUITmp.text = _lastUIMessage;
-        _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
+      //  _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
     }
 
     // 메소드 및 코루틴

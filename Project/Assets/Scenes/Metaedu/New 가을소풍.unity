@@ -4811,8 +4811,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 436187385}
-  - component: {fileID: 436187386}
   - component: {fileID: 436187384}
+  - component: {fileID: 436187386}
   m_Layer: 0
   m_Name: "\uAC8C\uC784\uB9E4\uB2C8\uC800"
   m_TagString: Untagged
@@ -4833,16 +4833,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GAME_PROGRESSING_SPEED_COPY: 1
-  _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
-  CLICK_REPEAT_COUNT: 5
   TARGET_FRAME: 30
-  _selectedAnimals: []
-  roundCount: 3
-  waitTimeForNextRound: 6.5
-  moveOutPositionA: {fileID: 708648314}
-  moveOutPositionB: {fileID: 1686643423}
-  waitTimeOfinitialRoundStart: 5
-  gameStartWaitSecondsForBackgroundChange: 3
+  playObejctInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  UIInteractableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  clickParticleSystem: {fileID: 8865792050211925206}
+  answerParticleSystem: {fileID: 1186380942}
+  _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
   allAnimals:
   - {fileID: 11400000, guid: 009a9f7b9fff75f4697c5f4e9b08950b, type: 2}
   - {fileID: 11400000, guid: 09d855541ebf96f43848d362f4b0818f, type: 2}
@@ -4858,15 +4858,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7a05d2d107e5edb409e2534c82c3c408, type: 2}
   - {fileID: 11400000, guid: 5c4cc7c523186dc4197866f20152524f, type: 2}
   - {fileID: 11400000, guid: 15a77e8a2b7f5a1489cd4aaf44f9d521, type: 2}
+  _selectedAnimals: []
+  roundCount: 3
+  waitTimeForNextRound: 6.5
+  moveOutPositionA: {fileID: 708648314}
+  moveOutPositionB: {fileID: 1686643423}
+  waitTimeOfinitialRoundStart: 5
+  gameStartWaitSecondsForBackgroundChange: 3
   waitingTime: 2
-  playObejctInteractableLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  UIInteractableLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  clickParticleSystem: {fileID: 8865792050211925206}
-  answerParticleSystem: {fileID: 1186380942}
   moveOutTime: 200
   rotationSpeedWhenMovingOut: 1
   moveInSeconds: 5.5
@@ -4942,7 +4941,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 0.2
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -20232,9 +20231,9 @@ MonoBehaviour:
   HTPAAudioInterval: 2.8
   onRoundStartWaitTime: 2.4
   onCorrectWaitTime: 0.5
-  onGameFinishedWaitTime: 6
+  onGameFinishedWaitTime: 4
   storyBWFS: 3
-  intervalBtwAnimalSoundAndNarration: 8
+  intervalBtwAnimalSoundAndNarration: 1
 --- !u!82 &1398327837
 AudioSource:
   m_ObjectHideFlags: 0
@@ -20416,7 +20415,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.25
-  m_Pitch: 1.15
+  m_Pitch: 1.25
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -28737,6 +28736,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1207962557099909176, guid: a2b94552f3a9037469e05ccbeef60bed,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 305.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1207962557706629133, guid: a2b94552f3a9037469e05ccbeef60bed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 14.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1207962557714388091, guid: a2b94552f3a9037469e05ccbeef60bed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1974837037974274827, guid: a2b94552f3a9037469e05ccbeef60bed,
         type: 3}
       propertyPath: gameManager
@@ -28862,6 +28876,16 @@ PrefabInstance:
       propertyPath: _uiAudioController
       value: 
       objectReference: {fileID: 1398327836}
+    - target: {fileID: 6959302046065128414, guid: a2b94552f3a9037469e05ccbeef60bed,
+        type: 3}
+      propertyPath: waitTimeForLastActivation
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6959302046502993296, guid: a2b94552f3a9037469e05ccbeef60bed,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -194.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2b94552f3a9037469e05ccbeef60bed, type: 3}
 --- !u!4 &1331818983642123328

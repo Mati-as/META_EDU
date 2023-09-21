@@ -294,19 +294,19 @@ public class UIManager : MonoBehaviour
     
     private void OnGameFinished()
     {
-        StartCoroutine(InvokeFinishUI());
+        // StartCoroutine(InvokeFinishUI()); //AudioUI가 StoryUI컨트롤
         PlayFinishMessage();
     }
 
     
-    private IEnumerator InvokeFinishUI()
-    {
-        yield return GetWaitForSeconds(storyUIController.waitTimeForFirstActivation);
-        
-        storyUIController.gameObject.SetActive(true);
-        GameFinishUIActivateEvent?.Invoke();
-
-    }
+    // private IEnumerator InvokeFinishUI()
+    // {
+    //     yield return GetWaitForSeconds(storyUIController.waitTimeForFirstActivation);
+    //     
+    //     storyUIController.gameObject.SetActive(true);
+    //     GameFinishUIActivateEvent?.Invoke();
+    //
+    // }
     
     
     private void SubscribeGameManagerEvents()

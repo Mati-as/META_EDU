@@ -123,6 +123,7 @@ public class UIAudioController : MonoBehaviour
 
     private void OnGameFinished()
     {
+        PlayOnGameFinishedEvent();
     }
 
 
@@ -131,8 +132,8 @@ public class UIAudioController : MonoBehaviour
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         UIManager.SecondStoryUIActivateEvent += PlayStoryBAudio;
 
-        UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
-        UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
+        // UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
+        // UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
 
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onGameStartEvent += OnGameStart;
@@ -238,21 +239,22 @@ public class UIAudioController : MonoBehaviour
                 _isCorrectClipPlayed = true;
             }
 
-            if (!_isCorrectClipPlayed)  yield break;
+            if (!_isCorrectClipPlayed)   yield return null;
             
             elapsedForAnimalSound += Time.deltaTime;
-            if (elapsedForAnimalSound > intervalBtwAnimalSoundAndNarration
+
+            if (elapsedForAnimalSound < intervalBtwAnimalSoundAndNarration
                 || AnimalSoundAudio[GameManager.answer] == null
                 || _isAnimalSoundPlaying)
             {
-                yield break;
+                yield return null;
             }
-               
+            else
+            {
+                SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[GameManager.answer]);
+                _isAnimalSoundPlaying = true;
+            }
             
-            SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[GameManager.answer]);
-            _isAnimalSoundPlaying = true;
-
-
             if (GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
             yield return null;
         }
@@ -293,13 +295,18 @@ public class UIAudioController : MonoBehaviour
 
     private void PlayOnGameFinishedEvent()
     {
-        narrationAudioSource.clip = uiAudioClip[(int)UI.Finish];
-        narrationAudioSource.Play();
         _FinishCoroutine = StartCoroutine(PlayOnGameFinishedAudio());
     }
 
     private IEnumerator PlayOnGameFinishedAudio()
     {
-        yield return null;
+        yield return GetWaitForSeconds(onGameFinishedWaitTime);
+       
+        storyUIController.gameObject.SetActive(true);
+        storyUIController.OnFinishUIActiavte();
+        
+        narrationAudioSource.clip = uiAudioClip[(int)UI.Finish];
+        narrationAudioSource.Play();
+      
     }
 }
