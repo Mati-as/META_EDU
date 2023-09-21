@@ -412,14 +412,16 @@ public class AnimalController : MonoBehaviour
             animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
 
-   
+    private bool _isrotated;
     IEnumerator MoveAndRotateCoroutine()
     {
         _moveInElapsed = 0f;
         _elapsedForRotationInPlay = 0f;
+        _isrotated = false;
         
         while (GameManager.isRoundStarted)
         {
+           
             MoveAndRotateInPlay(_animalData.moveInTime,0,AnimalData.LOOK_AT_POSITION);
             
             if (GameManager.isCorrected)
@@ -450,21 +452,27 @@ public class AnimalController : MonoBehaviour
             Mathf.Lerp(obj.transform.position.z, position.z, _moveInElapsed / moveInTime)
         );
 
-        
-        Vector3 randomDirection = new Vector3(0, Random.Range(-2.5f, 2.25f),0);
-        Quaternion randomRotation = Quaternion.Euler(randomDirection * 90); 
-        Quaternion targetRotation =
-            Quaternion.LookRotation(-lookTarget.position) * randomRotation;
+
+        if (!_isrotated)
+        {
+            Vector3 randomDirection = new Vector3(0, Random.Range(-1f, 1f) * 90,0);
+            Debug.Log($"{randomDirection}:randomDirection");
+            Quaternion randomRotation = Quaternion.Euler(randomDirection); 
+            
+            Vector3 directionToTarget = new Vector3(0,lookTarget.position.x - gameObject.transform.position.x,0);
+            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget) * randomRotation;
                                    
 
-        _elapsedForRotationInPlay = Time.deltaTime;
-        float t = Mathf.Clamp01(_elapsedForRotationInPlay / _animalData.rotationTimeWhenCorrect);
-        
-        gameObject.transform.rotation =
-            Quaternion.Slerp(
-                gameObject.transform.rotation, targetRotation,
-                t * Time.deltaTime);
-        
+            _elapsedForRotationInPlay = Time.deltaTime;
+            float t = Mathf.Clamp01(_elapsedForRotationInPlay / _animalData.rotationTimeWhenCorrect);
+
+            gameObject.transform.localRotation = targetRotation;
+                 
+
+            _isrotated = true;
+
+        }
+
         //gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);
        
     }
