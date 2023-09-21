@@ -12,23 +12,35 @@ using Random = System.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
-    [Header("Debug Mode")] [Space(10f)] [SerializeField] [Range(0.5f, 5f)] [Inspectable]
+    [Header("Debug Mode")] [Space(10f)] 
+    [Range(0.25f, 10f)] 
+    public float GAME_PROGRESSING_SPEED_COPY = 1;
     public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
 
-    public float GAME_PROGRESSING_SPEED_COPY = 1;
-
-    [Header("Common Data")] [Space(10f)] [SerializeField]
-    private ShaderAndCommon _shaderAndCommon;
-
-    //감도 향상 테스트를 위한 CLICK_REPEAT_COUNT 설정.
-    [FormerlySerializedAs("clickRepeatCount")]
-    public int CLICK_REPEAT_COUNT;
-
+   
+    
     [Header("Display Setting")] [Space(10f)]
-    public int TARGET_FRAME; // 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
+    public int TARGET_FRAME; // 디버그 이외에 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
+    
+    // 9/21 콜라이더 디버그 완료로 CLICK_REPEAT_COUNT미사용..
+    // //감도 향상 테스트를 위한 CLICK_REPEAT_COUNT 설정. 
+    // [FormerlySerializedAs("clickRepeatCount")]
+    // public int CLICK_REPEAT_COUNT;
 
+ 
+
+    [Header("Screen Fx Settings")]  [Space(10f)] 
+    public LayerMask playObejctInteractableLayer;
+    public LayerMask UIInteractableLayer;
+    public ParticleSystem clickParticleSystem;
+    public ParticleSystem answerParticleSystem;
+    
+    
     //---------- 게임로직 및 데이터 관리의 큰 틀을 설정하는 구간 입니다. ----------
-
+    [Space(10f)] [Header("Common Data & Animal Setting")] [Space(10f)] [SerializeField]
+    private ShaderAndCommon _shaderAndCommon;
+    [Space(5f)] 
+    public List<AnimalData> allAnimals;
     // 게임 시퀀스를 위한 스태틱 불 목록입니다.
     // GameManager이외에서 접근하지 않도록 처리 했습니다.
     public static bool isAnimalTransformSet { get; set; }
@@ -67,11 +79,12 @@ public class GameManager : MonoBehaviour
     private readonly List<GameObject> _animalList = new();
 
     // _selectedAnimals를 직접적으로 수정하거나,변형하지 않도록 하기 위한 리스트 
+   [HideInInspector]
     public List<GameObject> _selectedAnimals = new();
     private List<GameObject> _inPlayTempAnimals;
 
 
-    [Space(15f)] [Header("Game Rule Setting")] [Space(10f)] [SerializeField]
+    [Space(40f)] [Header("Game Rule Setting")] [Space(10f)] [SerializeField]
     public int roundCount;
 
     private int _currentRoundCount;
@@ -90,9 +103,7 @@ public class GameManager : MonoBehaviour
 
 
     private float _elapsedForInitialRound;
-
-    [Space(30f)] [Header("Game Objects(Animal) Setting")]
-    public List<AnimalData> allAnimals;
+    
 
     private AnimalData _selectedAnimalData;
 
@@ -110,10 +121,7 @@ public class GameManager : MonoBehaviour
 
     // ---------- 정답을 맞추기 전, 플레이 상황 도입 부 및 플레이 상황에서의 설정 입니다. ----------
     [Space(15f)] public float waitingTime;
-    [Header("On Click Settings")] public LayerMask playObejctInteractableLayer;
-    public LayerMask UIInteractableLayer;
-    public ParticleSystem clickParticleSystem;
-    public ParticleSystem answerParticleSystem;
+   
     private Ray ray;
     private RaycastHit hitInfo;
 

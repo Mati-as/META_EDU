@@ -1,15 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class UIAudioController : MonoBehaviour
 {
-    [SerializeField]
-    private StoryUIController storyUIController;
-    enum UI
+    private enum UI
     {
         HowToPlayA,
         HowToPlayB,
@@ -17,18 +13,20 @@ public class UIAudioController : MonoBehaviour
         StoryB,
         Finish
     }
-    [SerializeField]
-    private AudioAndUIData audioAndUIData;
-    [SerializeField]
-    private GameManager gameManager;
+    
+    [Header("References")] [Space(10f)]
+    [SerializeField] private StoryUIController storyUIController;
+    [SerializeField] private AudioAndUIData audioAndUIData;
+    [SerializeField] private GameManager gameManager;
 
-    
+    [Space(15f)] [Header("Audio Clips")] [Space(10f)]
     public AudioClip[] uiAudioClip = new AudioClip[6];
-    
+
     // UI Audio 컨트롤
     public Dictionary<string, AudioClip> UIAudioA = new();
     public Dictionary<string, AudioClip> UIAudioB = new();
     public Dictionary<string, AudioClip> AnimalSoundAudio = new();
+
     // 코루틴 WaitForSeconds 캐싱 자료사전
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
 
@@ -38,37 +36,42 @@ public class UIAudioController : MonoBehaviour
         return waitForSecondsCache[seconds];
     }
 
-    public AudioSource _audioSource;
-
+    [Space(15f)] [Header("Audio Source")] [Space(10f)]
+   public AudioSource narrationAudioSource;
+   public AudioSource animalSoundAudioSource;
+    
+    
+    [Space(15f)] [Header("Interval/Duration Settings")] [Space(10f)]
+    public float HTPAAudioWFS;
+    public float HTPAAudioInterval;
+    public float onRoundStartWaitTime;
+    public float onCorrectWaitTime;
+    public float onGameFinishedWaitTime;
+    
     private Coroutine _howToPlayACoroutine;
     private Coroutine _howToPlayBCoroutine;
     private Coroutine _storyACoroutine;
     private Coroutine _storyBCoroutine;
     private Coroutine _FinishCoroutine;
-
-  
     private Coroutine uiAudioAReadyCoroutine;
     private Coroutine uiAudioBCorrectCoroutine;
     private Coroutine animalSoundCoroutine;
-   
     private void OnEnable()
     {
-      
     }
 
     private void Awake()
     {
         SubscribeGameManagerEvents();
-        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
     {
-        foreach (AnimalData animalData in gameManager.allAnimals)
+        foreach (var animalData in gameManager.allAnimals)
         {
-            UIAudioA.Add(animalData.englishName,animalData.UIAnimAudioA);
-            UIAudioB.Add(animalData.englishName,animalData.UIAnimAudioB);
-            AnimalSoundAudio.Add(animalData.englishName,animalData.aninalSound);
+            UIAudioA.Add(animalData.englishName, animalData.UIAnimAudioA);
+            UIAudioB.Add(animalData.englishName, animalData.UIAnimAudioB);
+            AnimalSoundAudio.Add(animalData.englishName, animalData.aninalSound);
         }
 
         _howToPlayACoroutine = StartCoroutine(PlayHowToPlayAudio());
@@ -82,7 +85,6 @@ public class UIAudioController : MonoBehaviour
 //----------------------------------------------------
     private void OnGameStart()
     {
-      
     }
 
     private void OnRoundReady()
@@ -90,7 +92,6 @@ public class UIAudioController : MonoBehaviour
         _isReadyClipPlayed = false;
         _isCorrectClipPlayed = false;
         _isFinishedClipPlayed = false;
-       
     }
 
     private bool _isReadyClipPlayed;
@@ -117,12 +118,11 @@ public class UIAudioController : MonoBehaviour
 
     private void OnRoundFinished()
     {
-     
+        animalSoundAudioSource.Stop();
     }
 
     private void OnGameFinished()
-    {  
-        
+    {
     }
 
 
@@ -130,10 +130,10 @@ public class UIAudioController : MonoBehaviour
     {
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         UIManager.SecondStoryUIActivateEvent += PlayStoryBAudio;
-        
+
         UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
         UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
-        
+
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onGameStartEvent += OnGameStart;
 
@@ -157,7 +157,7 @@ public class UIAudioController : MonoBehaviour
     {
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
-        
+
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onRoundReadyEvent -= OnRoundReady;
         GameManager.onCorrectedEvent -= OnCorrect;
@@ -167,18 +167,18 @@ public class UIAudioController : MonoBehaviour
     }
 
     private Coroutine _playFirstHtpCoroutine;
-    public float HTPAAudioWFS;
-    public float HTPAAudioInterval;
+  
+
     private IEnumerator PlayHowToPlayAudio()
     {
         yield return GetWaitForSeconds(HTPAAudioWFS);
-        _audioSource.clip = uiAudioClip[(int)UI.HowToPlayA];
-        _audioSource.Play();
-        
+        narrationAudioSource.clip = uiAudioClip[(int)UI.HowToPlayA];
+        narrationAudioSource.Play();
+
         yield return GetWaitForSeconds(HTPAAudioInterval);
-        
-        _audioSource.clip = uiAudioClip[(int)UI.HowToPlayB];
-        _audioSource.Play();
+
+        narrationAudioSource.clip = uiAudioClip[(int)UI.HowToPlayB];
+        narrationAudioSource.Play();
 
         yield return GetWaitForSeconds(HTPAAudioInterval);
         Debug.Log("첫번째HTP 오디오 종료");
@@ -187,6 +187,7 @@ public class UIAudioController : MonoBehaviour
 
 
     private Coroutine _secondStoryCoroutine;
+
     private void OnHowToPlayUIFinished()
     {
         _secondStoryCoroutine = StartCoroutine(PlayStoryAudioA());
@@ -196,116 +197,109 @@ public class UIAudioController : MonoBehaviour
     {
         _storyBCoroutine = StartCoroutine(PlayStoryAudioB());
     }
+
     private IEnumerator PlayStoryAudioB()
     {
         yield return null;
-        _audioSource.clip = uiAudioClip[(int)UI.StoryB];
-        _audioSource.Play();
+        narrationAudioSource.clip = uiAudioClip[(int)UI.StoryB];
+        narrationAudioSource.Play();
     }
 
     public float storyBWFS;
+
     private IEnumerator PlayStoryAudioA()
     {
         yield return GetWaitForSeconds(HTPAAudioWFS);
-        _audioSource.clip = uiAudioClip[(int)UI.StoryA];
-        _audioSource.Play();
+        narrationAudioSource.clip = uiAudioClip[(int)UI.StoryA];
+        narrationAudioSource.Play();
     }
-    
-    public float onRoundStartWaitTime;
-    public float onCorrectWaitTime;
-    public float onGameFinishedWaitTime;
+
+  
+    private bool _isAnimalSoundPlaying;
 
     private IEnumerator PlayOnCorrectAudio()
     {
         _isCorrectClipPlayed = false;
+        _isAnimalSoundPlaying = false;
         elapsedForAnimalSound = 0f;
-        
-        if (uiAudioAReadyCoroutine != null)
-        {
-            StopCoroutine(uiAudioAReadyCoroutine);
-        }
-        
-        
+
+        if (uiAudioAReadyCoroutine != null) StopCoroutine(uiAudioAReadyCoroutine);
+
+
         while (true)
         {
-            if(!_isCorrectClipPlayed)
+            if (!_isCorrectClipPlayed)
             {
                 yield return GetWaitForSeconds(onCorrectWaitTime);
-                if (UIAudioB[GameManager.answer] != null) 
-                    _audioSource.clip = UIAudioB[GameManager.answer];
-                _audioSource.Play();
+                
+                if (UIAudioB[GameManager.answer] != null)
+                    SetAndPlayAudio(narrationAudioSource, UIAudioB[GameManager.answer]);
 
                 _isCorrectClipPlayed = true;
             }
 
-            if (_isCorrectClipPlayed)
-            {
-                elapsedForAnimalSound += Time.deltaTime;
-                
-                if (elapsedForAnimalSound > intervalBtwAnimalSoundAndNarration)
-                {
-                    if (AnimalSoundAudio[GameManager.answer] != null)
-                    {
-                        _audioSource.clip = AnimalSoundAudio[GameManager.answer];
-                        _audioSource.Play();
-                    }
-                }
-            }
+            if (!_isCorrectClipPlayed)  yield break;
             
-            
-            if (GameManager.isGameFinished)
+            elapsedForAnimalSound += Time.deltaTime;
+            if (elapsedForAnimalSound > intervalBtwAnimalSoundAndNarration
+                || AnimalSoundAudio[GameManager.answer] == null
+                || _isAnimalSoundPlaying)
             {
-                StopCoroutine(uiAudioBCorrectCoroutine);
+                yield break;
             }
+               
+            
+            SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[GameManager.answer]);
+            _isAnimalSoundPlaying = true;
+
+
+            if (GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
             yield return null;
         }
+    }
 
+    private void SetAndPlayAudio(AudioSource audioSource, AudioClip audioClip)
+    {
+        audioSource.clip = audioClip;
+        audioSource.Play();
     }
 
     private float elapsedForAnimalSound;
-    [FormerlySerializedAs("intervalBtwAnimalsoundAndNarration")] [FormerlySerializedAs("intervalForAnimalSound")] public float intervalBtwAnimalSoundAndNarration;
+
+    [FormerlySerializedAs("intervalBtwAnimalsoundAndNarration")] [FormerlySerializedAs("intervalForAnimalSound")]
+    public float intervalBtwAnimalSoundAndNarration;
+
     private IEnumerator PlayUI_A_Audio()
     {
-        if (uiAudioBCorrectCoroutine != null)
-        {
-            StopCoroutine(uiAudioBCorrectCoroutine);
-        }
-    
+        if (uiAudioBCorrectCoroutine != null) StopCoroutine(uiAudioBCorrectCoroutine);
+
         _isReadyClipPlayed = false;
-        
+
         while (true)
         {
-            if(!_isReadyClipPlayed)
+            if (!_isReadyClipPlayed)
             {
                 Debug.Log("StoryB 재생중...");
                 yield return GetWaitForSeconds(onRoundStartWaitTime);
-                if (UIAudioA[GameManager.answer] != null)
-                {
-                    _audioSource.clip = UIAudioA[GameManager.answer];
-                }
-                _audioSource.Play();
+                if (UIAudioA[GameManager.answer] != null) narrationAudioSource.clip = UIAudioA[GameManager.answer];
+                narrationAudioSource.Play();
                 _isReadyClipPlayed = true;
             }
 
-           
 
             yield return null;
         }
-       
-        
-        
     }
 
     private void PlayOnGameFinishedEvent()
     {
-        _audioSource.clip = uiAudioClip[(int)UI.Finish];
-        _audioSource.Play();
-        _FinishCoroutine =StartCoroutine(PlayOnGameFinishedAudio());
+        narrationAudioSource.clip = uiAudioClip[(int)UI.Finish];
+        narrationAudioSource.Play();
+        _FinishCoroutine = StartCoroutine(PlayOnGameFinishedAudio());
     }
 
     private IEnumerator PlayOnGameFinishedAudio()
     {
         yield return null;
-
     }
 }
