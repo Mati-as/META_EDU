@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 
-public class FallenLeavesGM : MonoBehaviour
+public class FallenLeavesGameManager : MonoBehaviour
 {
    public int TARGET_FRAME { get; private set; }
 
+   public static int gameProgressSpeed;
    
    private Vector3 m_vecMouseDownPos;
    public ParticleSystem clickParticleSystem;
@@ -15,11 +17,7 @@ public class FallenLeavesGM : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = TARGET_FRAME;
     }
-
-
-    private void Update()
-    {
-    }
+    
     private void PlayClickOnScreenEffect()
     {
         if (Input.GetMouseButtonDown(0))

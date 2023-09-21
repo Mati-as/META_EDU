@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class UIFallenLeaveParticleController : MonoBehaviour
 {
 
-    [SerializeField] private ParticleSystem particleSystemYellow;
-    [SerializeField] private ParticleSystem particleSystemOrange;
+    [SerializeField] private ParticleSystem particleSystemYellowRight;
+    [SerializeField] private ParticleSystem particleSystemOrangeRight;
+    
+    [SerializeField] private ParticleSystem particleSystemYellowLeft;
+    [SerializeField] private ParticleSystem particleSystemOrangeLeft;
     void Start()
     {
         Subscribe();
@@ -20,13 +24,19 @@ public class UIFallenLeaveParticleController : MonoBehaviour
 
     private void OnRightUIActivate()
     {
-        particleSystemYellow.Play();
-        particleSystemOrange.Play();
+        particleSystemYellowLeft.Stop();
+        particleSystemOrangeLeft.Stop();
+        
+        particleSystemYellowRight.Play();
+        particleSystemOrangeRight.Play();
     }
     private void OnLeftUIActivate()
     {
-        particleSystemYellow.Stop();
-        particleSystemOrange.Stop();
+        particleSystemYellowRight.Stop();
+        particleSystemOrangeRight.Stop();
+        
+        particleSystemYellowLeft.Play();
+        particleSystemOrangeLeft.Play();
     }
     private void Subscribe()
     {

@@ -34,16 +34,14 @@ public class ParticleEventController : MonoBehaviour
 
     public static bool isWindBlowing;
 
+   
     private void Awake()
     {
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
+        Subscribe();
+        StopAllParticles();
 
-        particleSystemA.Play();
-        particleSystemB.Play();
-        particleSystemC.Play();
-            
     }
-
     private void Update()
     {
         _elapsedTime += Time.deltaTime;
@@ -84,9 +82,40 @@ public class ParticleEventController : MonoBehaviour
         
         
     }
+    private void OnDestroy()
+    {
+        Unsubscribe();
+    }
 
   
     //  메소드 목록   -----------------------
+    
+    private void Subscribe()
+    {
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent -= PlayAllParticles;
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent += PlayAllParticles;
+    }
+
+    private void Unsubscribe()
+    {
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent -= PlayAllParticles;
+    }
+    
+    private void PlayAllParticles()
+    {
+        particleSystemA.Play();
+        particleSystemB.Play();
+        particleSystemC.Play();
+    }
+
+    private void StopAllParticles()
+    {
+        particleSystemA.Stop();
+        particleSystemB.Stop();
+        particleSystemC.Stop();
+    }
+    
+    
     public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
     private void ApplyRandomForce(Vector3 position, ParticleSystem particleSystem)
     {

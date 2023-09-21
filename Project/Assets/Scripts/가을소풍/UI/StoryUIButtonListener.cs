@@ -19,6 +19,7 @@ public class StoryUIButtonListener : MonoBehaviour
     {
         _button.onClick.AddListener(ButtonClicked);
     }
+    
     void ButtonClicked()
     {
         //storyUI 구분을 위한 로직
