@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class UIAudioController : MonoBehaviour
 {
@@ -241,7 +242,7 @@ public class UIAudioController : MonoBehaviour
             {
                 elapsedForAnimalSound += Time.deltaTime;
                 
-                if (elapsedForAnimalSound > intervalForAnimalSound)
+                if (elapsedForAnimalSound > intervalBtwAnimalSoundAndNarration)
                 {
                     if (AnimalSoundAudio[GameManager.answer] != null)
                     {
@@ -262,7 +263,7 @@ public class UIAudioController : MonoBehaviour
     }
 
     private float elapsedForAnimalSound;
-    public float intervalForAnimalSound;
+    [FormerlySerializedAs("intervalBtwAnimalsoundAndNarration")] [FormerlySerializedAs("intervalForAnimalSound")] public float intervalBtwAnimalSoundAndNarration;
     private IEnumerator PlayUI_A_Audio()
     {
         if (uiAudioBCorrectCoroutine != null)
