@@ -4,21 +4,5 @@ using UnityEngine;
 public class ClickEvent : MonoBehaviour
 {
 
-   
-    
 
-    private void Start()
-    {
-    }
-
-    private void Update()
-    {
-        
-    }
-
-   
-
-
-
-        
-    }
+}

@@ -60,15 +60,15 @@ public class TextBoxUIController : MonoBehaviour
         _defaultPositionLs = leftAnimSecond.transform;
         _defaultPositionR = rightAnimal.transform;
 
-        LeftEvent -= OnLeftLetterTyping;
-        RightEvent -= OnRightLetterTyping;
-        LeftEvent -= MoveFrameOnLeftEvent;
-        RightEvent -= MoveFrameOnRightEvent;
+        TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
+        TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;
+        TextBoxLeftUIEvent -= MoveFrameOnTextBoxLeftUIEvent;
+        TextBoxRightUIEvent -= MoveFrameOnTextBoxRightUIEvent;
         
-        LeftEvent += OnLeftLetterTyping;
-        RightEvent += OnRightLetterTyping;
-        LeftEvent += MoveFrameOnLeftEvent;
-        RightEvent += MoveFrameOnRightEvent;
+        TextBoxLeftUIEvent += OnTextBoxLeftUILetterTyping;
+        TextBoxRightUIEvent += OnTextBoxRightUILetterTyping;
+        TextBoxLeftUIEvent += MoveFrameOnTextBoxLeftUIEvent;
+        TextBoxRightUIEvent += MoveFrameOnTextBoxRightUIEvent;
 
         tmpBodyLeft.text = "";
         tmpBodyRight.text = "";
@@ -82,16 +82,16 @@ public class TextBoxUIController : MonoBehaviour
     private void OnDestroy()
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
-        LeftEvent -= OnLeftLetterTyping;
-        RightEvent -= OnRightLetterTyping;
-        LeftEvent -= MoveFrameOnLeftEvent;
-        RightEvent -= MoveFrameOnRightEvent;
+        TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
+        TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;
+        TextBoxLeftUIEvent -= MoveFrameOnTextBoxLeftUIEvent;
+        TextBoxRightUIEvent -= MoveFrameOnTextBoxRightUIEvent;
     }
 
     //메소드 목록 -----------------------------------------------------------
 
-    public static event Action LeftEvent;
-    public static event Action RightEvent;
+    public static event Action TextBoxLeftUIEvent;
+    public static event Action TextBoxRightUIEvent;
 
     public IEnumerator TypeInCoroutine(TMP_Text tmp1, TMP_Text tmp2, string strL, string strR)
     {
@@ -100,7 +100,7 @@ public class TextBoxUIController : MonoBehaviour
         while (true)
         {
            
-            LeftEvent?.Invoke();
+            TextBoxLeftUIEvent?.Invoke();
             
             tmp1.text = "";
             var strTypingLength = strL.GetTypingLength(); // 최대 타이핑 수 구함
@@ -113,7 +113,7 @@ public class TextBoxUIController : MonoBehaviour
             yield return GetWaitForSeconds(textPrintingIntervalBtTwoTmps);
 
 
-            RightEvent?.Invoke();
+            TextBoxRightUIEvent?.Invoke();
 
             tmp2.text = "";
             var strTypingLength2 = strR.GetTypingLength();
@@ -130,14 +130,14 @@ public class TextBoxUIController : MonoBehaviour
     }
 
     private Coroutine _moveFrameCoroutine;
-    private void MoveFrameOnRightEvent()
+    private void MoveFrameOnTextBoxRightUIEvent()
     {
         _moveFrameCoroutine = 
             StartCoroutine(MoveFrame(leftPosition, rightPosition , frameMoveDuration));
     }
 
     private bool _isFirstUIPlayed;
-    private void MoveFrameOnLeftEvent()
+    private void MoveFrameOnTextBoxLeftUIEvent()
     {
         //첫번째 프레임의 불필요한 움직임 방지용 _isFirstUIPlayed bool활용.
         if (_isFirstUIPlayed)
@@ -178,14 +178,14 @@ public class TextBoxUIController : MonoBehaviour
     private Coroutine _coroutineB;
     private Coroutine _coroutineC;
 
-    private void OnLeftLetterTyping()
+    private void OnTextBoxLeftUILetterTyping()
     {
         Debug.Log("UI Animal Is Moving..");
         _coroutineA = StartCoroutine(LeftCoroutine());
         if (_coroutineB != null) StopCoroutine(_coroutineB);
     }
 
-    private void OnRightLetterTyping()
+    private void OnTextBoxRightUILetterTyping()
     {
         _coroutineB = StartCoroutine(RightCoroutine());
         if (_coroutineA != null) StopCoroutine(_coroutineA);
