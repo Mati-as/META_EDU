@@ -95,20 +95,24 @@ public class DragonflyController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+      
+        
+        
         if (Input.GetMouseButtonDown(0))
         {
-            _initialMoveStart = true;
             CheckClickedAndAnimateDragonfly();
         }
         
         if (_initialMoveStart)
         {
-            _elapsedTimeForIdleAnim += Time.deltaTime;
-            
             if (_isClicked) MoveUpToDisappear();
             else LandToGround();
         
             PlayIdleAnim();
+        }
+        else
+        {
+            LandToGround();
         }
      
         
@@ -156,6 +160,7 @@ public class DragonflyController : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log(" 잠자리 착지");
 #endif
+            _initialMoveStart = true;
             _elapsedTimeForMoveUp = 0f;
             _animator.SetBool(DRAGONFLY_ANIM_FLY, false);
             _animator.SetTrigger(LANDING);
@@ -208,7 +213,7 @@ public class DragonflyController : MonoBehaviour
         }
         
         
-        if(_elapsedForMoveBack > 4)
+        else if(_elapsedForMoveBack > 4)
         {
             transform.position = Vector3.Lerp(transform.position, _landingPositions[_landPositionIndex].position,
                 _elapsedForMoveBack / moveBackTime);
