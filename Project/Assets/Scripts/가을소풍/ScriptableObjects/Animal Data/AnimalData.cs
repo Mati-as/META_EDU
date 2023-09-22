@@ -44,6 +44,10 @@ public class AnimalData : ScriptableObject
     [Space(20)]
     [Header("Initial Setting")] [Space(5f)]
     [Header("On GameStart")] [Space(5f)]
+    [Range(-200f,0f)]
+    public float randomRotatableRangeMin;
+    [Range(0,200f)]
+    public float randomRotatableRangeMax;
     [Header("On Round Is Ready")] [Space(5f)]
     [Header("On Round Started")] [Space(5f)]
     public float moveInTime;

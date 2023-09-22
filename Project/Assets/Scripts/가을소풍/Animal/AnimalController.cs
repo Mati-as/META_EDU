@@ -8,8 +8,8 @@ using UnityEditor;
 
 public class AnimalController : MonoBehaviour
 {
-    [Header("Reference")] [Space(10f)] 
-    public GameManager _gameManager;
+   
+   
     public AnimalData _animalData;
     [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
@@ -18,6 +18,8 @@ public class AnimalController : MonoBehaviour
     [Header("On GameStart")] [Space(10f)]
     [Header("On Round Is Ready")] [Space(10f)]
     [Header("On Round Started")] [Space(10f)]
+   
+    
     private float _moveInElapsed;
 
     private float _randomInterval;
@@ -156,10 +158,12 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
+       
     }
    
     private void OnRoundStarted()
     {
+       
         // ▼ 이전 코루틴 중지.
         StopCoroutineWithNullCheck(_coroutines);
         
@@ -167,10 +171,10 @@ public class AnimalController : MonoBehaviour
         InitialzeAllAnimatorParams(_animator);
         InitializeSize();
         StandAnimalUpright();
-        
+        RotateAnimal();
+      
         // ▼ 코루틴.
         _coroutines[0] = StartCoroutine(MoveAndRotateCoroutine());
-        
         _coroutines[1] = StartCoroutine(SetRandomAnimationWhenWhenRoundStartCoroutine());
     }
 
@@ -413,12 +417,28 @@ public class AnimalController : MonoBehaviour
             animator.SetBool(AnimalData.SELECTABLE_C,false);
     }
 
+
+    private void RotateAnimal()
+    {
+        float randomRotation = 
+            Random.Range(_animalData.randomRotatableRangeMin,
+                _animalData.randomRotatableRangeMax);
+            
+       
+        StandAnimalUpright(gameObject);
+        transform.rotation =  Quaternion.Euler(0, randomRotation, 0);;
+       
+        
+        Debug.Log($"TargetRotation  {randomRotation}");
+    }
     private bool _isrotated;
     IEnumerator MoveAndRotateCoroutine()
     {
         _moveInElapsed = 0f;
         _elapsedForRotationInPlay = 0f;
-        _isrotated = false;
+       
+          
+        
         
         while (GameManager.isRoundStarted)
         {
@@ -453,18 +473,7 @@ public class AnimalController : MonoBehaviour
         );
 
 
-        if (!_isrotated)
-        {
-            Quaternion targetRotation = Quaternion.Euler(0, Random.Range(_gameManager.randomRotatableRangeMin, _gameManager.randomRotatableRangeMax) * 90,0);
-            
-            _elapsedForRotationInPlay = Time.deltaTime;
-            float t = Mathf.Clamp01(_elapsedForRotationInPlay / _animalData.rotationTimeWhenCorrect);
-
-            Debug.Log($"TargetRotation{targetRotation}");
-            gameObject.transform.rotation *=  targetRotation;
-            _isrotated = true;
-
-        }
+      
 
         //gameObject.transform.Rotate(0, rotationSpeedInRound * Time.deltaTime, 0);
        
@@ -677,6 +686,20 @@ public class AnimalController : MonoBehaviour
             elapsedTime / _animalData.finishedMoveInTime);
 
     }
+    
+    private bool _isAnimalSetUpright;
+
+    /// <summary>
+    ///     StandAnimalVertically, OrientAnimalUpwards, AlignAnimalUplight
+    /// </summary>
+    private void StandAnimalUpright(GameObject animal)
+    {
+        //FromToRotation : a축을 b축으로 -> animal.up축을 월드좌표 up축으로.
+        animal.transform.rotation = Quaternion.Euler(0, animal.transform.rotation.y, 0);
+
+        Debug.Log("upright완료");
+    }
+
     
     
 }
