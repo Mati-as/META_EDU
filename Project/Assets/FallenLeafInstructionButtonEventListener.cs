@@ -11,9 +11,11 @@ public class FallenLeafInstructionButtonEventListener : MonoBehaviour
     
     private Button _button;
     private readonly int START_PLAY = 1;
+    private AudioSource _audioSource;
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _button = GetComponent<Button>();
     }
 
@@ -33,6 +35,7 @@ public class FallenLeafInstructionButtonEventListener : MonoBehaviour
             FallenLeaveStartButtonEvent?.Invoke();
             textBoxUIController.OnUIFinished();
             _isButtonClicked = true;
+            _audioSource.Play();
         }
       
     }

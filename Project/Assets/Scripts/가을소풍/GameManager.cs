@@ -110,10 +110,7 @@ public class GameManager : MonoBehaviour
 
     [Space(15f)] [Header("In Play Setting")] [Space(10f)]
 
-    [Range(-5f,0f)]
-    public float randomRotatableRangeMin;
-    [Range(0,5f)]
-    public float randomRotatableRangeMax;
+  
 
     // ---------- 플레이 상황에서 쓰이는 메소드의 변수 목록입니다. 
     private Animator _selectedAnimator; // 정답동믈의 애니메이션을 재생하기 위한 인스턴스 입니다. 
@@ -363,7 +360,6 @@ public class GameManager : MonoBehaviour
                     Debug.Log("라운드 시작!");
 #endif
                     InitializeAndSetTimerOnStarted();
-
                     //동물 쉐이더 글로우가 켜질 때 선택가능.
                     if (AnimalShaderController.isGlowOn)
                     {
@@ -485,7 +481,6 @@ public class GameManager : MonoBehaviour
     private void InitializeOnReady()
     {
         isRoundStarted = true;
-        _isAnimalSetUpright = false;
         _isSizeLerpInitialized = false; // 사이즈 감소 시 사용
         isCorrected = false;
         _isAnimRandomized = false; //correct anim 관련 bool 초기화.
@@ -762,19 +757,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    ///     StandAnimalVertically, OrientAnimalUpwards, AlignAnimalUplight
-    /// </summary>
-    private bool _isAnimalSetUpright;
-
-    private void StandAnimalUpright(GameObject animal)
-    {
-        //FromToRotation : a축을 b축으로 -> animal.up축을 월드좌표 up축으로.
-        animal.transform.rotation = Quaternion.Euler(0, animal.transform.rotation.y, 0);
-
-        Debug.Log("upright완료");
-    }
-
+ 
     /// <summary>
     ///     캐릭터가 밖으로 나갈 때, TargetPosition방향으로 회전하는 함수 입니다.
     ///     <param name="currentPosition"> 회전 시킬 객체 </param>

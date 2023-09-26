@@ -250,12 +250,15 @@ public class UIAudioController : MonoBehaviour
 
   
     private bool _isAnimalSoundPlaying;
+    public float animalSoundDuration;
+    private float _animalSoundElapsed;
 
     private IEnumerator PlayOnCorrectAudio()
     {
         _isCorrectClipPlayed = false;
         _isAnimalSoundPlaying = false;
         elapsedForAnimalSound = 0f;
+        _animalSoundElapsed = 0f;
 
         if (uiAudioAReadyCoroutine != null) StopCoroutine(uiAudioAReadyCoroutine);
 
@@ -276,6 +279,9 @@ public class UIAudioController : MonoBehaviour
             
             elapsedForAnimalSound += Time.deltaTime;
 
+            
+            
+            
             if (elapsedForAnimalSound < intervalBtwAnimalSoundAndNarration
                 || AnimalSoundAudio[GameManager.answer] == null
                 || _isAnimalSoundPlaying)
@@ -287,6 +293,19 @@ public class UIAudioController : MonoBehaviour
                 SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[GameManager.answer]);
                 _isAnimalSoundPlaying = true;
             }
+
+            
+            
+            if (_isAnimalSoundPlaying)
+            {
+                _animalSoundElapsed += Time.deltaTime;
+                
+                if (_animalSoundElapsed > animalSoundDuration)
+                {
+                    animalSoundAudioSource.Stop();
+                }
+            }
+          
             
             if (GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
             yield return null;

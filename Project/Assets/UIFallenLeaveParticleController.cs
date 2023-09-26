@@ -38,8 +38,27 @@ public class UIFallenLeaveParticleController : MonoBehaviour
         particleSystemYellowLeft.Play();
         particleSystemOrangeLeft.Play();
     }
+
+    private void StopAllParticles()
+    {
+       
+        particleSystemYellowRight.Stop();
+        particleSystemOrangeRight.Stop();
+        particleSystemYellowLeft.Stop();
+        particleSystemOrangeLeft.Stop();
+        
+        particleSystemYellowRight.Clear();
+        particleSystemOrangeRight.Clear();
+        particleSystemYellowLeft.Clear();
+        particleSystemOrangeLeft.Clear();
+
+    }
     private void Subscribe()
     {
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
+            -= StopAllParticles;
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
+            += StopAllParticles;
         TextBoxUIController.TextBoxLeftUIEvent -= OnLeftUIActivate;
         TextBoxUIController.TextBoxRightUIEvent -= OnRightUIActivate;
         TextBoxUIController.TextBoxLeftUIEvent += OnLeftUIActivate;
@@ -48,6 +67,9 @@ public class UIFallenLeaveParticleController : MonoBehaviour
 
     private void Unsubscribe()
     {
+        
+        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
+            -= StopAllParticles;
         TextBoxUIController.TextBoxLeftUIEvent -= OnLeftUIActivate;
         TextBoxUIController.TextBoxRightUIEvent -= OnRightUIActivate;
     }

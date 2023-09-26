@@ -26,8 +26,9 @@ public class MoonAndSunController : MonoBehaviour
 
     private void Start() //called only when it's activated..
     {  
-        transform.position = _defaultPosition.position;
+        
         _meshRenderer = GetComponentInChildren<MeshRenderer>();
+        transform.position = _defaultPosition.position;
         _mat = _meshRenderer.material;
         _defaultColor = _mat.GetColor(_ALBEDO) * DEFAULT_INTENSITY;
         _mat.SetColor(_ALBEDO,_defaultColor); 

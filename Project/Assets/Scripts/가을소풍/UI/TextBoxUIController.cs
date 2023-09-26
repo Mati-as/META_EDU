@@ -245,7 +245,7 @@ public class TextBoxUIController : MonoBehaviour
 
             
             rightAnimal.position = Vector3.Lerp(rightAnimal.position, _defaultPositionR.position, _comeBackElapsed);
-            
+          
             yield return null;
         }
     }

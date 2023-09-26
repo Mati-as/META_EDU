@@ -20,7 +20,8 @@ public class ParticleEventController : MonoBehaviour
 
     private Vector3 center = new Vector3(0, 0, 0);
 
-    
+    public float angularSpeedWhenStop;
+    public float forceWhenStop;
     [Header("Wind Frequency Setting")] [Space(10f)]
     [Range(0,100)]
     public float randomTimeMin;
@@ -31,9 +32,12 @@ public class ParticleEventController : MonoBehaviour
     private float _randomTime;
     
     private float _elapsedTime;
+    private float _angularStopElapse;
+    public float angularStopWaitTime;
 
     public static bool isWindBlowing;
 
+    private bool _isAngularZero;
    
     private void Awake()
     {
@@ -67,17 +71,49 @@ public class ParticleEventController : MonoBehaviour
             randomDirection = new Vector3(Random.Range(-2, 2), 0 , Random.Range(-2, 2));
             isWindBlowing = true;
            
+           
             
-            ApplyRandomForce(center, particleSystemA);
-            ApplyRandomForce(center, particleSystemB);
-            ApplyRandomForce(center, particleSystemC);
+            ApplyWindRandomForce(center, particleSystemA,randomWindAngularMin,randomWindAngularMax,
+                randomWindForceMin,randomWindForceMax);
+            ApplyWindRandomForce(center, particleSystemB,randomWindAngularMin,
+                randomWindAngularMax,randomWindForceMin,randomWindForceMax);
+            ApplyWindRandomForce(center, particleSystemC,randomWindAngularMin,
+                randomWindAngularMax,randomWindForceMin,randomWindForceMax);
             
+            
+            _angularStopElapse = 0f;
             _elapsedTime = 0f;
+            _isAngularZero = false;
             _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         }
+            
         else
         {
             isWindBlowing = false;
+        }
+
+        if (!isWindBlowing)
+        {
+            _angularStopElapse += Time.deltaTime;
+            
+            if (_angularStopElapse > angularStopWaitTime)
+            {
+                if (!_isAngularZero)
+                {
+                    Debug.Log("바람 멈추기");
+                    _isAngularZero = true;
+                    ApplyWindRandomForce(center, particleSystemA,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
+                    ApplyWindRandomForce(center, particleSystemB,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
+                    ApplyWindRandomForce(center, particleSystemC,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
+                }
+               
+            }
+        }
+        
+        
+        else if (isWindBlowing)
+        {
+            _angularStopElapse += Time.deltaTime;
         }
         
         
@@ -117,7 +153,12 @@ public class ParticleEventController : MonoBehaviour
     
     
     public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
-    private void ApplyRandomForce(Vector3 position, ParticleSystem particleSystem)
+    public float randomWindForceMax;
+    public float randomWindForceMin;
+    public float randomWindAngularMin;
+    public float randomWindAngularMax;
+    private void ApplyWindRandomForce(Vector3 position, ParticleSystem particleSystem,float angularRandomMin,
+        float angualrRandomMax,float randomForceMin, float randomForceMax)
     {
       
         
@@ -132,12 +173,12 @@ public class ParticleEventController : MonoBehaviour
             {
                 var distanceFactor = 1f - distance / radius;
 
-                var randomAngularVelocity = Random.Range(-10f * rotationPower * distanceFactor,
-                    10f * rotationPower * distanceFactor);
+                var randomAngularVelocity = Random.Range(angularRandomMin * rotationPower * distanceFactor,
+                    angualrRandomMax * rotationPower * distanceFactor);
 
                 particles[i].angularVelocity = randomAngularVelocity;
 
-                float randomForce = Random.Range(0.6f ,3.5f);
+                float randomForce = Random.Range(randomForceMin,randomForceMax);
                 var forceMultiplier =  randomForce / (1.0f + distance); // 거리에 반비례하는 힘
                 particles[i].velocity += randomDirection * force * forceMultiplier;
             }
@@ -162,7 +203,7 @@ public class ParticleEventController : MonoBehaviour
 
             if (distance < clickRadius)
             {
-                Debug.Log("클립 낙엽 무빙");
+              
                 var distanceFactor = 1f - distance / (clickRadius * 100);
 
                 var randomAngularVelocity = Random.Range(-10f * clickRotationPower * distanceFactor,
