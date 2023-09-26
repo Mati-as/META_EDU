@@ -889,6 +889,23 @@ public class GameManager : MonoBehaviour
         
         return false;
     }
+
+    
+    /// <summary>
+    /// 게임 재시작 시 각종 파라미터 초기화를 위한 함수입니다. 
+    /// </summary>
+    private void Reset()
+    {
+        isGameFinished = false;
+        isGameStarted = false;
+        isCameraArrivedToPlay = false;
+        isRoundFinished = false;
+        isRoundStarted = false;
+        isCorrected = false;
+        
+        roundCount = 0;
+        answer = null;
+    }
 }
 
 
