@@ -2,27 +2,65 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 public class LightDimmer : MonoBehaviour
 {
+    [Header("RenderSettings: Ambient")] [Space(10f)]
     public float defaultAmbient;
     public float minAmbient;
     private float _currentAmbient;
+    [Header("Directional Light Intensitiy")] [Space(10f)]
     public float defaultIntensity;
     public float decreaseRate;
     public float increaseRate;// Intensity 감소 비율
     public float minIntensity; // 최소 Intensity 값
-
-    [FormerlySerializedAs("lightTurningOffTIme")] [FormerlySerializedAs("spotLightTurnOffSpeed")] public float lightTurningOffTime;
-    [SerializeField] private Light spotlight;
+    public float lightTurningOffTime;
+    [Header("Spotlight")] [Space(10f)]
+    [SerializeField] 
+    private Light spotlight;
+    public float spotMaxIntensity;
+    public float spotMinIntensity;
+    
     private Light dirLight; // Directional Light의 Light 컴포넌트
+    private Coroutine lightCoroutine;
+    private bool _isInitialized;
+    private Coroutine _increaseAmbientAndLightIntensityCoroutine;
+    private float currentIntensity;
+    private float tempLerp;
+    private float elapsedForLight;
+    
+    private Dictionary<float, WaitForSeconds> waitForSecondsCache = new Dictionary<float, WaitForSeconds>();
+
+    private WaitForSeconds GetWaitForSeconds(float seconds)
+    {
+        if (!waitForSecondsCache.ContainsKey(seconds))
+        {
+            waitForSecondsCache[seconds] = new WaitForSeconds(seconds);
+        }
+
+        return waitForSecondsCache[seconds];
+    }
+
+    private void StopCoroutineWithNullCheck()
+    {
+        if (_increaseAmbientAndLightIntensityCoroutine != null &&
+            _decreaseAmbientAndLightIntensityCoroutine != null)
+        {
+            StopCoroutine(_increaseAmbientAndLightIntensityCoroutine);
+            StopCoroutine(_decreaseAmbientAndLightIntensityCoroutine);
+        }
+    }
 
 
     private void Awake()
     {
-        dirLight = GetComponent<Light>();
 
+        StopCoroutineWithNullCheck();
+        dirLight = GetComponent<Light>();
         spotlight.enabled = false;
+        
+        
         _currentAmbient = defaultAmbient;
         dirLight.intensity = defaultIntensity;
     }
@@ -31,23 +69,48 @@ public class LightDimmer : MonoBehaviour
     {
         SubscribeGameManagerEvents();
         
-        
         RenderSettings.ambientIntensity = defaultAmbient;
         if (dirLight == null)
             Debug.LogError(
                 "No Light component found on this object. Please attach this script to a Directional Light.");
     }
-
   
-   
-    private Coroutine lightCoroutine;
-    private bool _isInitialized;
-    private void Update()
+
+    
+
+    private Coroutine _decreaseAmbientAndLightIntensityCoroutine;
+
+    private IEnumerator IncreaseAmbientAndLightIntensity()
     {
-        if (GameManager.isGameStarted)
+        while (true)
         {
-            dirLight.intensity -= decreaseRate * Time.deltaTime; // Intensity 감소
+            dirLight.intensity += increaseRate * Time.deltaTime; // Intensity 감소
+            dirLight.intensity = Mathf.Min(dirLight.intensity, defaultIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
+            
+            _currentAmbient += increaseRate * Time.deltaTime;
+            RenderSettings.ambientIntensity = Mathf.Min(defaultAmbient,  _currentAmbient);
+        
+         
+            if (_currentAmbient > defaultAmbient)
+            {
+                StopCoroutine(_increaseAmbientAndLightIntensityCoroutine);
+            }
+            
+            yield return null;
+        }
+    }
+       
+   
+    private IEnumerator DecreaseAmbientAndLightIntensity()
+    {
+
+        currentIntensity = dirLight.intensity;
+        while (true)
+        {
+            currentIntensity -= decreaseRate * Time.deltaTime; // Intensity 감소
+            dirLight.intensity = currentIntensity;
             dirLight.intensity = Mathf.Max(dirLight.intensity, minIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
+
 
             if (_currentAmbient > 0)
             {
@@ -55,31 +118,21 @@ public class LightDimmer : MonoBehaviour
                 RenderSettings.ambientIntensity = Mathf.Max(_currentAmbient,minAmbient );
             }
             
-           
-        }
-        
-
-        else if (GameManager.isGameFinished)
-        {
+            if (currentIntensity < minIntensity)
+            {
+                Debug.Log($"Amibent 감소중지. 현재 amibient {_currentAmbient}");
+                StopCoroutine(_decreaseAmbientAndLightIntensityCoroutine);
+            }
             
-            dirLight.intensity += increaseRate * Time.deltaTime; // Intensity 감소
-            dirLight.intensity = Mathf.Min(dirLight.intensity, defaultIntensity); // Intensity 값이 최소값보다 작아지지 않도록 보장
-
-            
-            _currentAmbient += increaseRate * Time.deltaTime;
-            RenderSettings.ambientIntensity = Mathf.Min(defaultAmbient,  _currentAmbient);
+            yield return null;
         }
+      
     }
-
-    public float spotMaxIntensity;
-    public float spotMinIntensity;
-  
-    private float tempLerp;
-
-    private float elapsedForLight;
+   
+   
     
-    public float lightChangeTime;
-    IEnumerator  TurnOnSpotLight()
+    [FormerlySerializedAs("lightChangeTime")] public float lightChangingDuration;
+    IEnumerator TurnOnSpotLight()
     {
         
         elapsedForLight = 0f;
@@ -94,7 +147,7 @@ public class LightDimmer : MonoBehaviour
                 spotlight.enabled = true;
                 elapsedForLight += Time.deltaTime;
         
-                var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangeTime));
+                var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangingDuration));
             
                 // Intensity 감소
           
@@ -113,7 +166,7 @@ public class LightDimmer : MonoBehaviour
        
     }
 
-    IEnumerator  TurnOffSpotLight()
+    IEnumerator TurnOffSpotLight()
     {
 
         elapsedForLight = 0f;
@@ -156,13 +209,11 @@ public class LightDimmer : MonoBehaviour
     
  
     
- 
-
-
-
 
     private void OnDestroy()
     {
+        dirLight.intensity = defaultIntensity;
+        RenderSettings.ambientIntensity = defaultAmbient;
         UnsubscribeGamaManagerEvents();
     }
     
@@ -170,6 +221,7 @@ public class LightDimmer : MonoBehaviour
 
     private void OnGameStart()
     {
+        _decreaseAmbientAndLightIntensityCoroutine =   StartCoroutine(DecreaseAmbientAndLightIntensity());
     }
 
     private void OnRoundReady()
@@ -195,7 +247,7 @@ public class LightDimmer : MonoBehaviour
 
     private void OnGameFinished()
     {
-       
+        _increaseAmbientAndLightIntensityCoroutine = StartCoroutine(IncreaseAmbientAndLightIntensity());
     }
 
     

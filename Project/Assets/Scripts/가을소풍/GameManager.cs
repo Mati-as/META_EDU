@@ -289,9 +289,9 @@ public class GameManager : MonoBehaviour
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
     private void Awake()
-    {
+    { 
+        Reset();
         SetTimeScale(1);
-
         SetRandomSeed();
         SetResolution(1920, 1080, TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
@@ -896,14 +896,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Reset()
     {
+        _currentRoundCount = 0;
         isGameFinished = false;
         isGameStarted = false;
         isCameraArrivedToPlay = false;
         isRoundFinished = false;
         isRoundStarted = false;
         isCorrected = false;
-        
-        roundCount = 0;
         answer = null;
     }
 }
