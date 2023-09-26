@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PositionSaver : MonoBehaviour
@@ -10,8 +11,13 @@ public class PositionSaver : MonoBehaviour
     
     void Start()
     {
+        GameManager.onGameStartEvent -= SavePosition;
         GameManager.onGameStartEvent += SavePosition;
         _lookAtPosition = GetComponentInChildren<Transform>();
+    }
+    void OnDestroy()
+    {
+        GameManager.onGameStartEvent -= SavePosition;
     }
     
     /// <summary>
@@ -22,4 +28,6 @@ public class PositionSaver : MonoBehaviour
         AnimalData.SPOTLIGHT_POSITION_FOR_ANIMAL = transform;
         AnimalData.LOOK_AT_POSITION = _lookAtPosition;
     }
+
+
 }
