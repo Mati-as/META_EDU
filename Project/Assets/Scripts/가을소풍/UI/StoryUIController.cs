@@ -131,8 +131,12 @@ public class StoryUIController : MonoBehaviour
             
             if (GameManager.isCameraArrivedToPlay)
             {
-                StopCoroutine(_coroutineA);
-                StopCoroutine(_coroutineB);
+                if (_coroutineA != null && _coroutineB != null)
+                {
+                    StopCoroutine(_coroutineA);
+                    StopCoroutine(_coroutineB);
+                }
+           
             }
             
             yield return null;

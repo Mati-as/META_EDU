@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using KoreanTyper;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TextBoxUIController : MonoBehaviour
@@ -45,6 +46,8 @@ public class TextBoxUIController : MonoBehaviour
 
     public float textPrintingIntervalBtTwoTmps;
 
+    private Coroutine _typeCoroutine;
+
     // 코루틴 WaitForSeconds 캐싱 자료사전
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
 
@@ -53,7 +56,7 @@ public class TextBoxUIController : MonoBehaviour
         if (!waitForSecondsCache.ContainsKey(seconds)) waitForSecondsCache[seconds] = new WaitForSeconds(seconds);
         return waitForSecondsCache[seconds];
     }
-
+    
     private void Awake()
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
@@ -76,12 +79,20 @@ public class TextBoxUIController : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(TypeInCoroutine(tmpBodyLeft, tmpBodyRight, stringLeft, stringRight));
+        if (_typeCoroutine != null)
+        {
+            StopCoroutine(_typeCoroutine);
+        }
+        
+        _typeCoroutine =  StartCoroutine(TypeInCoroutine(tmpBodyLeft, tmpBodyRight, stringLeft, stringRight));
+       
+      
     }
 
     private void OnDestroy()
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
         TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;
         TextBoxLeftUIEvent -= MoveFrameOnTextBoxLeftUIEvent;

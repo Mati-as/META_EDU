@@ -38,9 +38,29 @@ public class ParticleEventController : MonoBehaviour
     public static bool isWindBlowing;
 
     private bool _isAngularZero;
+
+    [Header("physical parameter Setting")] [Space(10f)]
+    public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
+    public float randomWindForceMax;
+    public float randomWindForceMin;
+    public float randomWindAngularMin;
+    public float randomWindAngularMax;
+    public float clickForce = 10.0f;
+    public float clickRadius = 5.0f;
+    public float clickRotationPower;
+    
+    [Header("Sound Setting")] [Space(10f)]
+    [SerializeField] private AudioClip windBlowingSound;
+    private AudioSource _audioSource;
+    private event Action WindBlowTriggerEvent;
+    
    
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.clip = windBlowingSound;
+        _audioSource.Stop();
+        
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         Subscribe();
         StopAllParticles();
@@ -80,6 +100,7 @@ public class ParticleEventController : MonoBehaviour
             ApplyWindRandomForce(center, particleSystemC,randomWindAngularMin,
                 randomWindAngularMax,randomWindForceMin,randomWindForceMax);
             
+            _audioSource.Play();
             
             _angularStopElapse = 0f;
             _elapsedTime = 0f;
@@ -152,11 +173,7 @@ public class ParticleEventController : MonoBehaviour
     }
     
     
-    public static Vector3 randomDirection; //해바라기 방향 조정에 사용.
-    public float randomWindForceMax;
-    public float randomWindForceMin;
-    public float randomWindAngularMin;
-    public float randomWindAngularMax;
+
     private void ApplyWindRandomForce(Vector3 position, ParticleSystem particleSystem,float angularRandomMin,
         float angualrRandomMax,float randomForceMin, float randomForceMax)
     {
@@ -187,10 +204,7 @@ public class ParticleEventController : MonoBehaviour
       
     }
     
-    
-    public float clickForce = 10.0f;
-    public float clickRadius = 5.0f;
-    public float clickRotationPower;
+
 
     private void ClickEventApplyRadialForce(Vector3 position, ParticleSystem particleSystem)
     { 

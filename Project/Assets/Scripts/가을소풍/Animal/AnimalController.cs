@@ -14,11 +14,10 @@ public class AnimalController : MonoBehaviour
     [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
     
-    [Header("Initial Setting")] [Space(10f)]
-    [Header("On GameStart")] [Space(10f)]
-    [Header("On Round Is Ready")] [Space(10f)]
-    [Header("On Round Started")] [Space(10f)]
-   
+    // [Header("Initial Setting")] [Space(10f)]
+    // [Header("On GameStart")] [Space(10f)]
+    // [Header("On Round Is Ready")] [Space(10f)]
+    // [Header("On Round Started")] [Space(10f)]
     
     private float _moveInElapsed;
 
@@ -27,8 +26,8 @@ public class AnimalController : MonoBehaviour
     private float _increaseSizeLerp;
     private float _currentSizeLerp;
     private bool isAnswer;
-    [Header("On Round Finished")] [Space(10f)]
-    [Header("On GameFinished")] [Space(10f)]
+    // [Header("On Round Finished")] [Space(10f)]
+    // [Header("On GameFinished")] [Space(10f)]
     
     //▼ 동물 이동 로직
     private readonly string TAG_ARRIVAL= "arrival";
@@ -70,7 +69,7 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
-      
+        Reset();
         SetCoroutine();
         SubscribeGameManagerEvents();
        
@@ -79,6 +78,7 @@ public class AnimalController : MonoBehaviour
     void Start()
     {
         InitializeTransform();
+
     }
     
     void OnDestroy()
@@ -700,6 +700,21 @@ public class AnimalController : MonoBehaviour
         Debug.Log("upright완료");
     }
 
+
     
+    /// <summary>
+    /// 게임 재시작시 모든 파라미터를 초기화해줍니다.
+    /// </summary>
+    private void Reset()
+    {
+        _animator = GetComponent<Animator>();
+        InitialzeAllAnimatorParams(_animator);
+        if (_coroutines != null)
+        {
+            StopCoroutineWithNullCheck(_coroutines);
+        }
+      
+        
+    }
     
 }
