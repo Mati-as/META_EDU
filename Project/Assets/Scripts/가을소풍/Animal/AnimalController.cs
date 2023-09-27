@@ -9,11 +9,12 @@ using UnityEditor;
 public class AnimalController : MonoBehaviour
 {
    
-   
+    
     public AnimalData _animalData;
     [SerializeField]
     private ShaderAndCommon _shaderAndCommon;
-    
+
+    private SkinnedMeshRenderer _skinnedMeshRenderer;
     // [Header("Initial Setting")] [Space(10f)]
     // [Header("On GameStart")] [Space(10f)]
     // [Header("On Round Is Ready")] [Space(10f)]
@@ -69,6 +70,7 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
+        _skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         Reset();
         SetCoroutine();
         SubscribeGameManagerEvents();
@@ -158,7 +160,7 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
-       
+        _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
    
     private void OnRoundStarted()
@@ -216,6 +218,8 @@ public class AnimalController : MonoBehaviour
     {
         // ▼ 1회 실행. 
         InitialzeAllAnimatorParams(_animator);
+        
+        _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         
         _coroutines[0] = StartCoroutine((MoveInWhenGameIsFinishedCoroutine()));
         _coroutines[1] = StartCoroutine(SetRandomAnimationWhenWhenRoundStartCoroutine());
@@ -556,6 +560,8 @@ public class AnimalController : MonoBehaviour
             
             if (CheckIsAnswer())
             {
+                _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                
                 if (isTouchedDown == false)
                 {
                     _animator.SetBool(AnimalData.RUN_ANIM, true);

@@ -19,11 +19,17 @@ public class LightDimmer : MonoBehaviour
     [Header("Spotlight")] [Space(10f)]
     [SerializeField] 
     private Light spotlight;
+    [SerializeField] 
+    private Light spotlightDownLeft;
+    [SerializeField] 
+    private Light spotlightDownRight;
     public float spotMaxIntensity;
     public float spotMinIntensity;
     
     private Light dirLight; // Directional Light의 Light 컴포넌트
-    private Coroutine lightCoroutine;
+    private Coroutine lightCoroutineA;
+    private Coroutine lightCoroutineB;
+    private Coroutine lightCoroutineC;
     private bool _isInitialized;
     private Coroutine _increaseAmbientAndLightIntensityCoroutine;
     private float currentIntensity;
@@ -59,6 +65,8 @@ public class LightDimmer : MonoBehaviour
         StopCoroutineWithNullCheck();
         dirLight = GetComponent<Light>();
         spotlight.enabled = false;
+        spotlightDownRight.enabled = false;
+        spotlightDownLeft.enabled = false;
         
         
         _currentAmbient = defaultAmbient;
@@ -131,8 +139,9 @@ public class LightDimmer : MonoBehaviour
    
    
     
-    [FormerlySerializedAs("lightChangeTime")] public float lightChangingDuration;
-    IEnumerator TurnOnSpotLight()
+    [FormerlySerializedAs("lightChangeTime")] 
+    public float lightChangingDuration;
+    IEnumerator TurnOnSpotLight(Light light,float lightChangingDuration,float spotMaxIntensity)
     {
         
         elapsedForLight = 0f;
@@ -144,15 +153,15 @@ public class LightDimmer : MonoBehaviour
                 elapsedForLight += Time.deltaTime;
            
         
-                spotlight.enabled = true;
+                light.enabled = true;
                 elapsedForLight += Time.deltaTime;
         
                 var t =  Mathf.Min(1,Mathf.Clamp01(elapsedForLight / lightChangingDuration));
             
                 // Intensity 감소
           
-                float lerp = Lerp2D.EaseInBounce(spotlight.intensity, spotMaxIntensity,t );
-                spotlight.intensity = lerp;
+                float lerp = Lerp2D.EaseInBounce(light.intensity, spotMaxIntensity,t );
+                light.intensity = lerp;
                 // Intensity 값이 최소값보다 작아지지 않도록 보장
                 yield return null;
             }
@@ -166,7 +175,7 @@ public class LightDimmer : MonoBehaviour
        
     }
 
-    IEnumerator TurnOffSpotLight()
+    IEnumerator TurnOffSpotLight(Light light)
     {
 
         elapsedForLight = 0f;
@@ -174,7 +183,7 @@ public class LightDimmer : MonoBehaviour
         {
             if (GameManager.isRoundFinished)
             {
-                spotlight.enabled = true;
+                light.enabled = true;
                 elapsedForLight += Time.deltaTime;
         
       
@@ -184,11 +193,11 @@ public class LightDimmer : MonoBehaviour
                 // Intensity 감소
           
                 float lerp = Lerp2D.EaseInBounce(spotMaxIntensity, spotMinIntensity,t );
-                spotlight.intensity = lerp;
+                light.intensity = lerp;
                 // Intensity 값이 최소값보다 작아지지 않도록 보장
                 yield return null;
             
-                    StopCoroutine( TurnOffSpotLight());
+                    StopCoroutine( TurnOffSpotLight(light));
                 
             }
             else
@@ -237,12 +246,16 @@ public class LightDimmer : MonoBehaviour
 
     private void OnCorrect()
     {
-        StartCoroutine(TurnOnSpotLight());
+        StartCoroutine(TurnOnSpotLight(spotlight,lightChangingDuration,spotMaxIntensity));
+        StartCoroutine(TurnOnSpotLight(spotlightDownLeft,lightChangingDuration,spotMaxIntensity));
+        StartCoroutine(TurnOnSpotLight(spotlightDownRight,lightChangingDuration,spotMaxIntensity));
     }
 
     private void OnRoundFinished()
     {
-        StartCoroutine(TurnOffSpotLight());
+        StartCoroutine(TurnOffSpotLight(spotlight));
+        StartCoroutine(TurnOffSpotLight(spotlightDownLeft));
+        StartCoroutine(TurnOffSpotLight(spotlightDownRight));
     }
 
     private void OnGameFinished()
@@ -284,13 +297,23 @@ public class LightDimmer : MonoBehaviour
 
     public void TurnOffSpotLightEvent()
     {
-        StopCoroutine(TurnOnSpotLight());
-        lightCoroutine = StartCoroutine(TurnOffSpotLight());
+        StopCoroutine(TurnOnSpotLight(spotlight,lightChangingDuration,spotMaxIntensity));
+        StopCoroutine(TurnOnSpotLight(spotlightDownLeft,lightChangingDuration,spotMaxIntensity));
+        StopCoroutine(TurnOnSpotLight(spotlightDownRight,lightChangingDuration,spotMaxIntensity));
+    
+        lightCoroutineA = StartCoroutine(TurnOffSpotLight(spotlight));
+        lightCoroutineB = StartCoroutine(TurnOffSpotLight(spotlightDownLeft));
+        lightCoroutineC = StartCoroutine(TurnOffSpotLight(spotlightDownRight));
     }
     public void TurnOnSpotLightEvent()
     {
-        StopCoroutine(TurnOffSpotLight());
-        lightCoroutine = StartCoroutine(TurnOnSpotLight());
+        StopCoroutine(TurnOffSpotLight(spotlight));
+        StopCoroutine(TurnOffSpotLight(spotlightDownLeft));
+        StopCoroutine(TurnOffSpotLight(spotlightDownRight));
+        
+        lightCoroutineA = StartCoroutine(TurnOnSpotLight(spotlight,lightChangingDuration,spotMaxIntensity));
+        lightCoroutineB = StartCoroutine(TurnOnSpotLight(spotlightDownLeft,lightChangingDuration,spotMaxIntensity));
+        lightCoroutineC = StartCoroutine(TurnOnSpotLight(spotlightDownRight,lightChangingDuration,spotMaxIntensity));
     }
     
 }
