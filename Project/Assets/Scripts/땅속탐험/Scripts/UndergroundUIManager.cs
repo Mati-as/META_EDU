@@ -29,7 +29,7 @@ public class UndergroundUIManager : MonoBehaviour
     private Vector3 GB_targetVector3;
     private bool flag_num_1 = false;
     
-    
+
     private void Start()
     {
         //unirx.subscribe(기존 구독)
@@ -39,9 +39,9 @@ public class UndergroundUIManager : MonoBehaviour
             
             
         
-        GB_transform = Gameboard.GetComponent<RectTransform>();
-        Init_GBPosition();
-        Set_GBPosition(1);
+        // GB_transform = Gameboard.GetComponent<RectTransform>();
+        // Init_GBPosition();
+        // Set_GBPosition(1);
 
         //Move_BGPosition(2);
     }
@@ -130,30 +130,32 @@ public class UndergroundUIManager : MonoBehaviour
 
     public float INTRO_UI_DELAY;
     public float INTRO_UI_DELAY_SECOND;
+    public GameObject howToPlayUI;
     private void SetUIIntroUsingUniRx()
     {
-        // 첫 번째 메시지를 활성화
-        Message_Intro_Howto.SetActive(true);
-        Debug.Log("First introduction message.");
-        // 3초 대기
         Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY))
             .Do(_ => 
             {
-                // 첫 번째 메시지를 비활성화하고 두 번째 메시지를 활성화
-                Message_Intro_Howto.SetActive(false);
-                Message_Intro_Story.SetActive(true);
+                howToPlayUI.SetActive(true);
                 Debug.Log("Second introduction message.");
-            })
-            // 다시 3초 대기
-            .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY_SECOND)))
+                // 첫 번째 메시지를 비활성화하고 두 번째 메시지를 활성화
+                // Message_Intro_Howto.SetActive(false);
+                // Message_Intro_Story.SetActive(true);
+               
+            }).Subscribe(_=>Debug.Log("UI활성화")).AddTo(this); // 게임 오브젝트가 파괴되면 구독을 취소합니다.
          
-            .Subscribe(_ => 
-            {
-                // 두 번째 메시지를 비활성화
-                Message_Intro_Story.SetActive(false);
-                Move_GBPosition();
-            })
-            .AddTo(this); // 게임 오브젝트가 파괴되면 구독을 취소합니다.
+        
+        
+        // // 다시 3초 대기
+            // .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY_SECOND)))
+            //
+            // .Subscribe(_ => 
+            // {
+            //     // 두 번째 메시지를 비활성화
+            //     Message_Intro_Story.SetActive(false);
+            //     Move_GBPosition();
+            // })
+          
     }
 
     IEnumerator Set_UINextlevel()

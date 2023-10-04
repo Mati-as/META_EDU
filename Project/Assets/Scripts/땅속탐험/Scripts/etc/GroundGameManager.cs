@@ -19,9 +19,8 @@ public class GroundGameManager : MonoBehaviour
     private StateController _stateController;
     private IState _currentState;
 
-    public ReactiveProperty<BaseState.GameStateList> currentGameStatus { get; private set; }
-        = new ReactiveProperty<BaseState.GameStateList>(
-            BaseState.GameStateList.NotGameStarted);
+    public ReactiveProperty<IState.GameStateList> currentGameStatus { get; private set; }
+      
     
     
     public GameObject Animal_group;
@@ -73,6 +72,9 @@ public class GroundGameManager : MonoBehaviour
     {
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
+        
+    ReactiveProperty<IState.GameStateList> currentGameStatus = new ReactiveProperty<IState.GameStateList>(
+            IState.GameStateList.NotGameStarted);
     }
 
     void Start()
@@ -81,10 +83,8 @@ public class GroundGameManager : MonoBehaviour
         _stateController.ChangeState(new GameStart());
         _introSubject.OnNext(Unit.Default);
         
-        
         SetAnimalIntoDictionaryAndList();
         SetFootstepIntoDictionaryAndList();
-        
         
         isGameStarted = true;
         isGameFinished = false;

@@ -2,7 +2,8 @@ using System;
 
     public class GameOver : BaseState
     {
-        public GameStateList gamestate => GameStateList.GameOver;
+        public IState.GameStateList Gamestate => IState.GameStateList.GameOver;
+        
         public override void Enter()
         {
         }

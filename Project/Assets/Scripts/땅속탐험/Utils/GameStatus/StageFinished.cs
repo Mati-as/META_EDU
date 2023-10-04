@@ -2,7 +2,7 @@ using System;
 
     public class StageFinished : BaseState
     {
-        public  GameStateList gamestate => GameStateList.StageFinished;
+        public IState.GameStateList Gamestate => IState.GameStateList.StageFinished;
         public override void Enter()
         {
         }

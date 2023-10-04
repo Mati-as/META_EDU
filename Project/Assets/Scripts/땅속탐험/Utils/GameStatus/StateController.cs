@@ -5,8 +5,8 @@ namespace 땅속탐험.Utils
     public class StateController : BaseState
     {
         
-        public BaseState currentState;
-        public GameStateList currentStateInfo;
+        public IState currentState;
+        public IState.GameStateList currentStateInfo;
   
 
         public  override void Enter()
@@ -23,7 +23,7 @@ namespace 땅속탐험.Utils
             currentState?.Exit();
         }
         
-        public void ChangeState(BaseState newState)
+        public void ChangeState(IState newState)
         {
             currentState = newState;
             
