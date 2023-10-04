@@ -25,10 +25,12 @@ namespace 땅속탐험.Utils
         
         public void ChangeState(BaseState newState)
         {
+            currentState = newState;
+            
+            currentStateInfo = newState.Gamestate;
+            
             currentState?.Exit();
             currentState.Enter();
-            currentState = newState;
-            currentStateInfo = newState.Gamestate;
         }
 
        

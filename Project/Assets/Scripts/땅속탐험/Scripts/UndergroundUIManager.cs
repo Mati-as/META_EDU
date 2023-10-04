@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,18 +6,18 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using KoreanTyper;
 using UniRx;
+using System.Linq;
 
 public class UndergroundUIManager : MonoBehaviour
 {
     [SerializeField]
-    private Ground2DGameManager gameManager;
+    public GroundGameManager gameManager;
     
     public GameObject Gameboard;
     public GameObject Message_Intro_Howto;
     public GameObject Message_Intro_Story;
     public GameObject Message_Endchapter;
     public GameObject Message_Ready;
-
     public GameObject Message_Endgame;
 
 
@@ -32,10 +33,12 @@ public class UndergroundUIManager : MonoBehaviour
     private void Start()
     {
         //unirx.subscribe(기존 구독)
-        
-        
+        gameManager.OnIntroAsync
+            .Subscribe(_ => SetUIIntroUsingUniRx())
+            .AddTo(this); 
             
             
+        
         GB_transform = Gameboard.GetComponent<RectTransform>();
         Init_GBPosition();
         Set_GBPosition(1);
@@ -52,7 +55,6 @@ public class UndergroundUIManager : MonoBehaviour
                 = Vector3.Lerp(GB_transform.localPosition, GB_targetVector3, 0.5f * Time.deltaTime);
 
             float distance = Vector3.Distance(GB_transform.localPosition, GB_targetVector3);
-            Debug.Log(distance);
             if (distance < 0.01f)
             {
                 GB_transform.localPosition = GB_targetVector3;
@@ -124,6 +126,34 @@ public class UndergroundUIManager : MonoBehaviour
 
         Move_GBPosition();
         yield break;
+    }
+
+    public float INTRO_UI_DELAY;
+    public float INTRO_UI_DELAY_SECOND;
+    private void SetUIIntroUsingUniRx()
+    {
+        // 첫 번째 메시지를 활성화
+        Message_Intro_Howto.SetActive(true);
+        Debug.Log("First introduction message.");
+        // 3초 대기
+        Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY))
+            .Do(_ => 
+            {
+                // 첫 번째 메시지를 비활성화하고 두 번째 메시지를 활성화
+                Message_Intro_Howto.SetActive(false);
+                Message_Intro_Story.SetActive(true);
+                Debug.Log("Second introduction message.");
+            })
+            // 다시 3초 대기
+            .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY_SECOND)))
+         
+            .Subscribe(_ => 
+            {
+                // 두 번째 메시지를 비활성화
+                Message_Intro_Story.SetActive(false);
+                Move_GBPosition();
+            })
+            .AddTo(this); // 게임 오브젝트가 파괴되면 구독을 취소합니다.
     }
 
     IEnumerator Set_UINextlevel()

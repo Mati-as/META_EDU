@@ -25,15 +25,12 @@ public class S1_Controller : MonoBehaviour
         //chapter = 13;
         //Set_AnimalALL();    
     }
-   
-    //�� ��Ʈ�ѷ��� ���� ����
-    //�� ��Ʈ�ѷ��� ���� é��
-    //�� ��Ʈ�ѷ��� ������ é��
+    
 
     public void ActNextstep()
     {
-        Ground2DGameManager.AddStep();
-        step = Ground2DGameManager.GetStep();
+        GroundGameManager.AddStep();
+        step = GroundGameManager.GetStep();
 
         StartCoroutine(Set_Footstep(step));
         Animal_animation("Jump");
@@ -41,10 +38,10 @@ public class S1_Controller : MonoBehaviour
 
     public void ActNextchapter()
     {
-        Ground2DGameManager.AddStep();
-        Ground2DGameManager.AddChapter();
-        step = Ground2DGameManager.GetStep();
-        chapter = Ground2DGameManager.GetChapter();
+        GroundGameManager.AddStep();
+        GroundGameManager.AddChapter();
+        step = GroundGameManager.GetStep();
+        chapter = GroundGameManager.GetChapter();
 
         StartCoroutine(Set_Footstep(step));
         StartCoroutine(Set_Animal(chapter));
@@ -53,8 +50,8 @@ public class S1_Controller : MonoBehaviour
 
     public void ActNextlevel()
     {
-        Ground2DGameManager.AddLevel();
-        level = Ground2DGameManager.GetLevel();  
+        GroundGameManager.AddLevel();
+        level = GroundGameManager.GetLevel();  
 
         //�������� ���
         //isGameStarted =true
@@ -62,32 +59,32 @@ public class S1_Controller : MonoBehaviour
 
         if (level < 4)
         {
-            Ground2DGameManager.SetisRoudnFinished();
+            GroundGameManager.SetisRoudnFinished();
         }
         else
         {
             Debug.Log("END CHECK");
-            Ground2DGameManager.SetisGameFinished();
+            GroundGameManager.SetisGameFinished();
             Set_AnimalALL();
         }
 
     }
     IEnumerator Set_Footstep(int num_step)
     {
-        FootstepObj = Ground2DGameManager.GetFootstep(num_step - 1);
+        FootstepObj = GroundGameManager.GetFootstep(num_step - 1);
         FootstepObj.SetActive(false);
 
        //yield return new WaitForSeconds(1f);
 
-        FootstepObj = Ground2DGameManager.GetFootstep(num_step);
+        FootstepObj = GroundGameManager.GetFootstep(num_step);
         FootstepObj.SetActive(true);
         yield break;
     }
 
     IEnumerator Set_Animal(int num_chap)
     {
-        AnimalObj_prev = Ground2DGameManager.GetAnimal(num_chap - 1);
-        AnimalObj_next = Ground2DGameManager.GetAnimal(num_chap);
+        AnimalObj_prev = GroundGameManager.GetAnimal(num_chap - 1);
+        AnimalObj_next = GroundGameManager.GetAnimal(num_chap);
         Set_Message(AnimalObj_prev, 1, true);
         AnimalObj_next.SetActive(true);
 
@@ -117,7 +114,7 @@ public class S1_Controller : MonoBehaviour
         {
             Debug.Log("Check"+i);
                 
-            AnimalObj_next = Ground2DGameManager.GetAnimal(i);
+            AnimalObj_next = GroundGameManager.GetAnimal(i);
             AnimalObj_next.SetActive(true);
         }
     }

@@ -23,12 +23,9 @@ public class GroundGameManager : MonoBehaviour
         = new ReactiveProperty<BaseState.GameStateList>(
             BaseState.GameStateList.NotGameStarted);
     
-
     
     public GameObject Animal_group;
     public GameObject Footstep_group;
-
-    
     
     public static bool isGameStarted { get; private set; }
     private bool _initialRoundIsReady; //최초 라운드 시작 이전을 컨트롤 하기 위한 논리연산자 입니다. 
@@ -82,7 +79,7 @@ public class GroundGameManager : MonoBehaviour
     {
         _stateController = new StateController();
         _stateController.ChangeState(new GameStart());
-        
+        _introSubject.OnNext(Unit.Default);
         
         
         SetAnimalIntoDictionaryAndList();
