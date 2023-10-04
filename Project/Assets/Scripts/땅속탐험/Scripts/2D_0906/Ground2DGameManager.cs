@@ -5,12 +5,16 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using 땅속탐험.Utils;
 
 public class Ground2DGameManager : MonoBehaviour
 {
     private static Dictionary<int, GameObject> animalGameObjectList = new();
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
 
+    private StateController _stateController;
+    
+    
     public GameObject Animal_group;
     public GameObject Footstep_group;
 
@@ -52,9 +56,13 @@ public class Ground2DGameManager : MonoBehaviour
 
 
 
-    // Start is called before the first frame update
+    
     void Start()
     {
+        _stateController = new StateController();
+        _stateController.ChangeState((new GameStart()));
+        
+        
         SetAnimalIntoDictionaryAndList();
         SetFootstepIntoDictionaryAndList();
 
@@ -66,9 +74,14 @@ public class Ground2DGameManager : MonoBehaviour
         isRoundReady = true;
     }
 
-    // Update is called once per frame
+   
     void Update()
     {
+        
+        _stateController.Update();
+        
+        
+        
         if (isGameStarted && isGameFinished == false)
         {
             if (isRoundReady)
