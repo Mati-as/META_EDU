@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,25 +6,33 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UniRx;
 using 땅속탐험.Utils;
+using Unit = UniRx.Unit;
 
-public class Ground2DGameManager : MonoBehaviour
+public class GroundGameManager : MonoBehaviour
 {
+
     private static Dictionary<int, GameObject> animalGameObjectList = new();
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
-
-    private StateController _stateController;
     
+    private StateController _stateController;
+    private IState _currentState;
+
+    public ReactiveProperty<BaseState.GameStateList> currentGameStatus { get; private set; }
+        = new ReactiveProperty<BaseState.GameStateList>(
+            BaseState.GameStateList.NotGameStarted);
+    
+
     
     public GameObject Animal_group;
     public GameObject Footstep_group;
 
-    public static bool isCameraArrivedToPlay { get; set; }
+    
+    
     public static bool isGameStarted { get; private set; }
     private bool _initialRoundIsReady; //최초 라운드 시작 이전을 컨트롤 하기 위한 논리연산자 입니다. 
     public static bool isRoundReady { get; private set; }
-    public static bool isRoundStarted { get; private set; }
-    public static bool isCorrected { get; private set; }
     public static bool isGameFinished { get; private set; }
     public static bool isRoudnFinished { get; private set; }
 
@@ -39,10 +48,18 @@ public class Ground2DGameManager : MonoBehaviour
 
     //맨 마지막 예외처리 및 게임 종료 부분 구현
 
-    // UI 출력을 위한 Event 처리
-    [Header("UI Events")]
-    [Space(10f)]
-
+ 
+    private Subject<Unit> _introSubject = new Subject<Unit>();
+    public IObservable<Unit> OnIntroAsync => _introSubject;
+    
+    
+    private Subject<Unit> _endLevelSubject = new Subject<Unit>();
+    public IObservable<Unit> onEndLevelAsync => _endLevelSubject;
+    
+    
+    private Subject<Unit> _gameOverSubject = new Subject<Unit>();
+    public IObservable<Unit> onGameOverAsync => _gameOverSubject;
+    
     [SerializeField]
     private UnityEvent _IntroMessageEvent;
 
@@ -55,20 +72,23 @@ public class Ground2DGameManager : MonoBehaviour
     //private UnityEvent _messageInitializeEvent;
 
 
+    private void Awake()
+    {
+        SetResolution(1920, 1080);
+        Application.targetFrameRate = 30;
+    }
 
-    
     void Start()
     {
         _stateController = new StateController();
-        _stateController.ChangeState((new GameStart()));
+        _stateController.ChangeState(new GameStart());
+        
         
         
         SetAnimalIntoDictionaryAndList();
         SetFootstepIntoDictionaryAndList();
-
-        SetResolution(1920, 1080);
-        Application.targetFrameRate = 30;
-
+        
+        
         isGameStarted = true;
         isGameFinished = false;
         isRoundReady = true;
@@ -77,10 +97,7 @@ public class Ground2DGameManager : MonoBehaviour
    
     void Update()
     {
-        
         _stateController.Update();
-        
-        
         
         if (isGameStarted && isGameFinished == false)
         {

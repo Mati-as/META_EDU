@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using KoreanTyper;
+using UniRx;
 
-public class InstructionUI : MonoBehaviour
+public class UndergroundUIManager : MonoBehaviour
 {
-
+    [SerializeField]
+    private Ground2DGameManager gameManager;
+    
     public GameObject Gameboard;
     public GameObject Message_Intro_Howto;
     public GameObject Message_Intro_Story;
@@ -22,12 +26,16 @@ public class InstructionUI : MonoBehaviour
     //TEST
     private int GB_Listindex = 0;
     private Vector3 GB_targetVector3;
-
     private bool flag_num_1 = false;
     
     
     private void Start()
     {
+        //unirx.subscribe(기존 구독)
+        
+        
+            
+            
         GB_transform = Gameboard.GetComponent<RectTransform>();
         Init_GBPosition();
         Set_GBPosition(1);
@@ -87,24 +95,21 @@ public class InstructionUI : MonoBehaviour
         }
         else
         {
-            //��������� ��ü�� �����ֱ� ���� ����ó��
+          
             GB_targetVector3 = GB_positionList[1];
         }
     }
 
-    //������ġ 0 ����, 0~5����
+  
     public void Move_GBPosition()
     {
         flag_num_1 = true;
-        GB_Listindex++; //���� ��ġ�� �ڵ� ��ȯ�ϱ� ����
+        GB_Listindex++; 
         Set_GBPosition(GB_Listindex);
     }
 
     IEnumerator Set_UIIntro()
     {
-        //Introhowto �����ְ�
-        //Introstory �����ְ�
-        //������ ���� �غ� : ȭ�� �̵�
 
         Message_Intro_Howto.SetActive(true);
 
@@ -123,10 +128,6 @@ public class InstructionUI : MonoBehaviour
 
     IEnumerator Set_UINextlevel()
     {
-        //ȭ�� �̵�
-        //Endchapter �����ְ�
-        //Ready �����ְ�
-
         Move_GBPosition();
 
         yield return new WaitForSeconds(1f);
@@ -174,5 +175,21 @@ public class InstructionUI : MonoBehaviour
         StartCoroutine(Set_UIEndgame());
     }
 
-
+    // public IEnumerator TypeIn(string str, float offset)
+    // {
+    //     Debug.Log("제시문 하단 종료 코루틴 ....");
+    //     instructionTMP.text = ""; // 초기화
+    //     yield return new WaitForSeconds(offset); // 1초 대기
+    //
+    //     var strTypingLength = str.GetTypingLength(); // 최대 타이핑 수 구함
+    //     for (var i = 0; i <= strTypingLength; i++)
+    //     {
+    //         // 반복문
+    //         instructionTMP.text = str.Typing(i); // 타이핑
+    //         yield return new WaitForSeconds(textPrintingSpeed);
+    //     } // 0.03초 대기
+    //
+    //
+    //     yield return new WaitForNextFrameUnit();
+    // }
 }

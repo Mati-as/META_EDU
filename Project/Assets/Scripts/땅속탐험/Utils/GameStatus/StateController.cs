@@ -1,19 +1,36 @@
+using UnityEditor;
+
 namespace 땅속탐험.Utils
 {
-    public class StateController
+    public class StateController : BaseState
     {
-        private IState currentState;
+        
+        public BaseState currentState;
+        public GameStateList currentStateInfo;
+  
 
-        public void ChangeState(IState newState)
+        public  override void Enter()
         {
-            currentState?.Exit();
-            currentState = newState;
-            currentState.Enter();
+            currentState?.Enter();
         }
-
-        public void Update()
+        public override void Update()
         {
             currentState?.Update();
         }
+
+        public override void Exit()
+        {
+            currentState?.Exit();
+        }
+        
+        public void ChangeState(BaseState newState)
+        {
+            currentState?.Exit();
+            currentState.Enter();
+            currentState = newState;
+            currentStateInfo = newState.Gamestate;
+        }
+
+       
     }
 }

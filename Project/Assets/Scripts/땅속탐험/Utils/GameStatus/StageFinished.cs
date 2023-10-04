@@ -1,7 +1,8 @@
 using System;
 
-    public class OnEncountering : BaseState
+    public class StageFinished : BaseState
     {
+        public  GameStateList gamestate => GameStateList.StageFinished;
         public override void Enter()
         {
         }

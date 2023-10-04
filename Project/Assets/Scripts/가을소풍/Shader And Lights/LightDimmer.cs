@@ -255,23 +255,7 @@ public class LightDimmer : MonoBehaviour
     {
         _decreaseAmbientAndLightIntensityCoroutine =   StartCoroutine(DecreaseAmbientAndLightIntensity());
     }
-
-    // private void OnRoundReady()
-    // {
-    //     
-    // }
-    //
-    // private void OnRoundStarted()
-    // {
-    // }
-    //
-    // private void OnCorrect()
-    // {
-    // }
-    //
-    // private void OnRoundFinished()
-    // {
-    // }
+    
 
     private void OnGameFinished()
     {
@@ -283,9 +267,7 @@ public class LightDimmer : MonoBehaviour
     {
         GameManager.onGameStartEvent -= OnGameStart;
         GameManager.onGameStartEvent += OnGameStart;
-        
-        // GameManager.onRoundReadyEvent -= OnRoundReady;
-        // GameManager.onRoundReadyEvent += OnRoundReady;
+      
 
         GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
         GameManager.onCorrectedEvent += TurnOnSpotLightEvent;
@@ -293,9 +275,7 @@ public class LightDimmer : MonoBehaviour
         GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
         GameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
 
-        // GameManager.onRoundStartedEvent -= OnRoundStarted;
-        // GameManager.onRoundStartedEvent += OnRoundStarted;
-        
+    
         GameManager.onGameFinishedEvent -= OnGameFinished;
         GameManager.onGameFinishedEvent += OnGameFinished;
     }
