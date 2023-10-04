@@ -1,6 +1,6 @@
 using System;
 
-    public class OnEncountering : BaseState
+    public class StageStart : BaseState
     {
         public override void Enter()
         {

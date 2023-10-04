@@ -1,6 +1,6 @@
 using System;
 
-    public class StageStart : BaseState
+    public class GameOver : BaseState
     {
         public override void Enter()
         {
