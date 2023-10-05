@@ -17,10 +17,8 @@ public class GroundGameManager : MonoBehaviour
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
     
     private StateController _stateController;
-    private IState _currentState;
-
-    public ReactiveProperty<IState> currentState; 
-      
+    public IState currentState { get; private set; }
+    public ReactiveProperty<IState> currentStateRP; 
     
     
     public GameObject Animal_group;

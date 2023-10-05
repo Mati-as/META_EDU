@@ -17,9 +17,12 @@ public class UndergroundUIManager : MonoBehaviour
     [Header("References")]
     public GroundGameManager gameManager;
 
+    [FormerlySerializedAs("tutorialUICVSGroup")]
+    [FormerlySerializedAs("tutorialUICVGroup")]
+    [FormerlySerializedAs("tutorialUI")]
     [Space(10f)] 
     [Header("Images")]
-    public CanvasGroup tutorialUI;
+    public CanvasGroup tutorialUICvsGroup;
     
     
     // public GameObject Gameboard;
@@ -44,7 +47,8 @@ public class UndergroundUIManager : MonoBehaviour
     private void Awake()
     {
         DOTween.Init();
-        tutorialUI.DOFade(1, 5);
+        tutorialUICvsGroup.alpha = 0;
+        tutorialUICvsGroup.DOFade(1, 1);
     }
 
     private void Start()
@@ -54,7 +58,6 @@ public class UndergroundUIManager : MonoBehaviour
             Where(_=> (int)gameManager.UIintroDelayTime.Value == 3)
             .Subscribe(_ => SetUIIntroUsingUniRx())
             .AddTo(this); 
-            
         
         // GB_transform = Gameboard.GetComponent<RectTransform>();
         // Init_GBPosition();

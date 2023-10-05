@@ -36,7 +36,8 @@ public class StoryUIButtonListener : MonoBehaviour
             _storyUIController.gameObject.SetActive(false);
         }
       
-        _audioSource.Play();
+        if(_audioSource != null) _audioSource.Play();
+      
       
     }
 }

@@ -107,15 +107,20 @@ public class StoryUIController : MonoBehaviour
     IEnumerator ActivateFirstStoryUICoroutine()
     {
         yield return GetWaitForSeconds(waitTimeForFirstActivation);
-        _uiAudioController.narrationAudioSource.clip
-            = _uiAudioController.uiAudioClip[(int)UI.StoryA];
-        _uiAudioController.narrationAudioSource.Play();
+
+
+        if (_uiAudioController != null)
+        {
+            _uiAudioController.narrationAudioSource.clip
+                = _uiAudioController.uiAudioClip[(int)UI.StoryA];
+            _uiAudioController.narrationAudioSource.Play();
+        }
+  
 
     }
     
     IEnumerator ActivateLastStoryUICoroutine()
     {
-       
         yield return null;
     }
 
