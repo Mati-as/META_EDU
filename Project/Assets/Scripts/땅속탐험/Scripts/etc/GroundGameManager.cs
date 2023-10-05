@@ -19,7 +19,7 @@ public class GroundGameManager : MonoBehaviour
     private StateController _stateController;
     private IState _currentState;
 
-    public ReactiveProperty<IState.GameStateList> currentGameStatus { get; private set; }
+    public ReactiveProperty<IState> currentState; 
       
     
     
@@ -43,31 +43,8 @@ public class GroundGameManager : MonoBehaviour
     private static int level = 0;
 
     //맨 마지막 예외처리 및 게임 종료 부분 구현
-
- 
-    private Subject<Unit> _introSubject = new Subject<Unit>();
-    public IObservable<Unit> OnIntroAsync => _introSubject;
+     public ReactiveProperty<float> UIintroDelayTime;
     
-    
-    private Subject<Unit> _endLevelSubject = new Subject<Unit>();
-    public IObservable<Unit> onEndLevelAsync => _endLevelSubject;
-    
-    
-    private Subject<Unit> _gameOverSubject = new Subject<Unit>();
-    public IObservable<Unit> onGameOverAsync => _gameOverSubject;
-    
-    [SerializeField]
-    private UnityEvent _IntroMessageEvent;
-
-    [SerializeField]
-    private UnityEvent _EndofLevelMessageEvent;
-
-    [SerializeField]
-    private UnityEvent _finishedMessageEvent;
-    //[SerializeField]
-    //private UnityEvent _messageInitializeEvent;
-
-
     private void Awake()
     {
         SetResolution(1920, 1080);
@@ -81,7 +58,7 @@ public class GroundGameManager : MonoBehaviour
     {
         _stateController = new StateController();
         _stateController.ChangeState(new GameStart());
-        _introSubject.OnNext(Unit.Default);
+        //_introSubject.OnNext(Unit.Default);
         
         SetAnimalIntoDictionaryAndList();
         SetFootstepIntoDictionaryAndList();
@@ -91,9 +68,18 @@ public class GroundGameManager : MonoBehaviour
         isRoundReady = true;
     }
 
-   
+
+    private float _mainElapsedTime;
     void Update()
     {
+        _mainElapsedTime += Time.deltaTime;
+        
+        if (_mainElapsedTime > UndergroundUIManager.INTRO_UI_DELAY)
+        {
+            Debug.Log("RP: First Timer Changed.");
+            UIintroDelayTime.Value = UndergroundUIManager.INTRO_UI_DELAY;
+        }
+      
         _stateController.Update();
         
         if (isGameStarted && isGameFinished == false)
@@ -101,14 +87,14 @@ public class GroundGameManager : MonoBehaviour
             if (isRoundReady)
             {
                 Debug.Log("게임 시작");
-                _IntroMessageEvent.Invoke();
+                //_IntroMessageEvent.Invoke();
                 isRoundReady=false;
             }
 
             if (isRoudnFinished)
             {
                 Debug.Log("다음 레벨");
-                _EndofLevelMessageEvent.Invoke();
+                //_EndofLevelMessageEvent.Invoke();
                 isRoudnFinished = false;
             }
         }
@@ -117,7 +103,7 @@ public class GroundGameManager : MonoBehaviour
             Debug.Log("게임 종료");
             isGameFinished = false;
             isGameStarted = false;
-            _finishedMessageEvent.Invoke();
+           //  _finishedMessageEvent.Invoke();
         }
     }
 

@@ -23,14 +23,17 @@ namespace 땅속탐험.Utils
             currentState?.Exit();
         }
         
+        /// <summary>
+        /// 상태변경 로직, 순서 섞이지 않도록 주의
+        /// </summary>
+        /// <param name="newState"></param>
         public void ChangeState(IState newState)
         {
-            currentState = newState;
-            
-            currentStateInfo = newState.Gamestate;
-            
             currentState?.Exit();
+            currentState = newState;
+            currentStateInfo = newState.Gamestate;
             currentState.Enter();
+          
         }
 
        
