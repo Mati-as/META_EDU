@@ -42,8 +42,6 @@ public class UndergroundUIManager : MonoBehaviour
     // private bool flag_num_1 = false;
 
     
-    
-
     private void Awake()
     {
         DOTween.Init();

@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using 땅속탐험.Utils.GameStatus.UIStatus;
 
-public class StroyOutro : MonoBehaviour
+public class StroyOutro : IUIState
 {
-    // Start is called before the first frame update
-    void Start()
+    public IUIState.UIStateList UIState => IUIState.UIStateList.StoryOutro;
+    public void Enter()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Update()
+    {
+        
+    }
+
+    public void Exit()
     {
         
     }

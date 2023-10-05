@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UniRx;
+using UnityEngine.UI;
 using 땅속탐험.Utils;
 using Unit = UniRx.Unit;
 
@@ -17,19 +18,25 @@ public class GroundGameManager : MonoBehaviour
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
     
     private StateController _stateController;
-    public IState currentState { get; private set; }
-    public ReactiveProperty<IState> currentStateRP; 
+    public IState currentState { get; private set; } 
+        = new NotGameStarted();
     
-    
+    public ReactiveProperty<IState> currentStateRP;
     public GameObject Animal_group;
     public GameObject Footstep_group;
+   
+    private GameStart _gameStart;
+    private NotGameStarted _notGameStarted;
     
+    
+    
+    #region legacy 예정
     public static bool isGameStarted { get; private set; }
     private bool _initialRoundIsReady; //최초 라운드 시작 이전을 컨트롤 하기 위한 논리연산자 입니다. 
     public static bool isRoundReady { get; private set; }
     public static bool isGameFinished { get; private set; }
     public static bool isRoudnFinished { get; private set; }
-
+    #endregion
     /*
      * step -> footstep
      * chapter -> animal
@@ -41,25 +48,45 @@ public class GroundGameManager : MonoBehaviour
     private static int level = 0;
 
     //맨 마지막 예외처리 및 게임 종료 부분 구현
-     public ReactiveProperty<float> UIintroDelayTime;
-    
+    public ReactiveProperty<float> UIintroDelayTime;
+    public ReactiveProperty<bool> isStartButtonClicked;
     private void Awake()
     {
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         
-    ReactiveProperty<IState.GameStateList> currentGameStatus = new ReactiveProperty<IState.GameStateList>(
-            IState.GameStateList.NotGameStarted);
+        _gameStart = new GameStart();
+        _notGameStarted = new NotGameStarted();
+        
+        
+     ReactiveProperty<IState.GameStateList> currentGameStatus
+        =new ReactiveProperty<IState.GameStateList>
+        (IState.GameStateList.NotGameStarted);
+
+     ReactiveProperty<bool> isStartButtonClicked
+        = new ReactiveProperty<bool>(false);
+
+     currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
+     _stateController = new StateController();
     }
 
+  
     void Start()
     {
-        _stateController = new StateController();
-        _stateController.ChangeState(new GameStart());
-        //_introSubject.OnNext(Unit.Default);
+     
         
-        SetAnimalIntoDictionaryAndList();
-        SetFootstepIntoDictionaryAndList();
+        isStartButtonClicked
+            .Where(_ => isStartButtonClicked.Value)
+            .Subscribe(_ =>
+            {
+                currentStateRP.Value = _gameStart;
+                _stateController.ChangeState(_gameStart);
+            });
+        
+        //_introSubject.OnNext(Unit.Default);
+         
+        // SetAnimalIntoDictionaryAndList();
+        // SetFootstepIntoDictionaryAndList();
         
         isGameStarted = true;
         isGameFinished = false;
@@ -71,14 +98,9 @@ public class GroundGameManager : MonoBehaviour
     void Update()
     {
         _mainElapsedTime += Time.deltaTime;
-        
-        if (_mainElapsedTime > UndergroundUIManager.INTRO_UI_DELAY)
-        {
-            Debug.Log("RP: First Timer Changed.");
-            UIintroDelayTime.Value = UndergroundUIManager.INTRO_UI_DELAY;
-        }
-      
         _stateController.Update();
+        
+        
         
         if (isGameStarted && isGameFinished == false)
         {
@@ -148,7 +170,7 @@ public class GroundGameManager : MonoBehaviour
     {
         return level;
     }
-
+    
     public static void AddStep()
     {
         Step += 1;

@@ -18,26 +18,29 @@ public class GroundCameraController : MonoBehaviour
     [Header("References")] 
     [SerializeField] 
     private GroundGameManager gameManager;
+    
     [Space(20f)] [Header("Paramters")]
     public float[] cameraMovingTime;
-    [Space(20f)] [Header("Positions")] public Transform[] cameraPositions;
+    
+    [Space(20f)] [Header("Positions")]
+    public Transform[] cameraPositions;
     
     void Start()
     {
         transform.position = cameraPositions[(int)CameraState.Default].position;
 
-        gameManager.currentStateRP.Where(_ =>
-            gameManager.currentState == new GameStart()).
-            Subscribe(_ =>MoveCamera(
+        
+        gameManager.currentStateRP
+            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.GameStart)
+            .Subscribe(_ => MoveCamera(
                 cameraPositions[(int)CameraState.Story],
                 cameraMovingTime[(int)CameraState.Story]));
         
-        
     }
 
-    private void MoveCamera(Transform transform,float duration)
+    private void MoveCamera(Transform target,float duration)
     {
         Debug.Log(" tutorial 로 카메라 위치 이동");
-        transform.DOMove(transform.position, duration);
+        transform.DOMove(target.position, duration);
     }
 }

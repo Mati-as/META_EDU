@@ -8,7 +8,8 @@ namespace 땅속탐험.Utils.GameStatus.UIStatus
             Tutorial,
             StoryIntro,
             InPlay,
-            StoryOutro
+            StoryOutro,
+            Pause
         }
         public void Enter()
         {
