@@ -113,32 +113,28 @@ public class UndergroundUIManager : MonoBehaviour
     }
 
 
-
     private void OnGameStart()
     {
-      Debug.Log("UI: OnGameStart");
-        Observable.Timer(TimeSpan.FromSeconds(UIInterval))
-            .Do(_ =>
-            {
-                LeanTween.move(tutorialUIRectTransform,
-                        new Vector2(0, tutorialAwayTransfrom.position.y),
-                        3f)
-                    .setEase(LeanTweenType.easeInOutBack);
-                UpdateUI(storyUICvsGroup,_storyUITmp,_firstUIMessage);
-            }).Subscribe().AddTo(this);
+        LeanTween.move(tutorialUIRectTransform,
+                new Vector2(0, tutorialAwayTransfrom.position.y),
+                2f)
+            .setEase(LeanTweenType.easeInOutBack);
+
+        Observable.Timer(TimeSpan.FromSeconds(stagesInterval))
+            .Do(_ => UpdateUI(storyUICvsGroup, _storyUITmp, _firstUIMessage)).Subscribe().AddTo(this);
     }
 
     private void OnStageStart()
     {
        
-        Observable.Timer(TimeSpan.FromSeconds(UIInterval))
+        Observable.Timer(TimeSpan.FromSeconds(0))
             .Do(_ =>{
                 LeanTween.move(storyUIRectTransform,
                     new Vector2(0, tutorialAwayTransfrom.position.y),
                     3f).setEase(LeanTweenType.easeInOutBack);
 
                 Debug.Log("UI OnstageStart");
-                storyUICvsGroup.DOFade(0, 1);
+                storyUICvsGroup.DOFade(0, 0.5f);
             }).Subscribe().AddTo(this);
         
     }
