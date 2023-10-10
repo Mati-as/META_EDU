@@ -2,23 +2,30 @@ using UnityEditor;
 
 namespace 땅속탐험.Utils
 {
-    public class StateController : BaseState
-    {
-        
+    /// <summary>
+    /// 클래스의 상태를 관리해주는 클래스 입니다.
+    /// </summary>
+    /// <remarks>
+    /// This is a class controlling overall states.
+    /// </remarks>
+    public class StateController : IState
+    {  
         public IState currentState;
         public IState.GameStateList currentStateInfo;
-  
 
-        public  override void Enter()
+        public IState.GameStateList GameState{get;set;}
+        
+
+        public   void Enter()
         {
             currentState?.Enter();
         }
-        public override void Update()
+        public  void Update()
         {
             currentState?.Update();
         }
 
-        public override void Exit()
+        public  void Exit()
         {
             currentState?.Exit();
         }

@@ -2,10 +2,11 @@ namespace 땅속탐험.Utils
 {
     public class NotGameStarted : BaseState
     {
-        public IState.GameStateList GameState =>  IState.GameStateList.NotGameStarted;
+        
         
         public override void Enter()
         {
+            GameState = IState.GameStateList.NotGameStarted;
         }
 
         public override void Update()

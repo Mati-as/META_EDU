@@ -4,6 +4,7 @@ using System;
 public interface IState
 {
     public GameStateList GameState { get; set; }
+    
     public enum GameStateList
     {
         NotGameStarted,

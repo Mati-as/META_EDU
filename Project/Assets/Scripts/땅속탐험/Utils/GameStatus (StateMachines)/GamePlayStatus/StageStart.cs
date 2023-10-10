@@ -2,10 +2,11 @@ using System;
 
     public class StageStart : BaseState
     {
-        public IState.GameStateList Gamestate =>  IState.GameStateList.StageStart;
+     
       
         public override void Enter()
         {
+            GameState = IState.GameStateList.StageStart;
         }
 
         public override void Update()

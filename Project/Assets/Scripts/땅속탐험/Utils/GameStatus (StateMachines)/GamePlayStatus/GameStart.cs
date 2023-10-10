@@ -5,9 +5,11 @@ using UnityEngine;
 public class GameStart : BaseState
     {
         
-        public IState.GameStateList GameState =>  IState.GameStateList.GameStart;
+        
+        
         public override void Enter()
         {
+            GameState = IState.GameStateList.GameStart;
         }
 
         public override void Update()
