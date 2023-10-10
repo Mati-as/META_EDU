@@ -3,7 +3,7 @@ using System;
 
 public interface IState
 {
-    public GameStateList Gamestate { get; } 
+    public GameStateList GameState { get; set; }
     public enum GameStateList
     {
         NotGameStarted,

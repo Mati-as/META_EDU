@@ -15,6 +15,7 @@ public class GroundCameraController : MonoBehaviour
         InPlayStart,
         GameFinished
     }
+    
     [Header("References")] 
     [SerializeField] 
     private GroundGameManager gameManager;
@@ -31,7 +32,7 @@ public class GroundCameraController : MonoBehaviour
 
         
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.GameStart)
+            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ => MoveCamera(
                 cameraPositions[(int)CameraState.Story],
                 cameraMovingTime[(int)CameraState.Story]));

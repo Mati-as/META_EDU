@@ -2,25 +2,19 @@ using System;
 using UnityEngine;
 
 
-public class GameStart : MonoBehaviour, IState
+public class GameStart : BaseState
     {
         
-        public IState.GameStateList Gamestate => IState.GameStateList.GameStart;
-        public  void Enter()
-        {
-            
-        }
-
-        public void Update()
+        public IState.GameStateList GameState =>  IState.GameStateList.GameStart;
+        public override void Enter()
         {
         }
 
-        public void Exit()
+        public override void Update()
         {
         }
 
-        //구독처리
-        private void Start()
+        public override void Exit()
         {
         }
     }

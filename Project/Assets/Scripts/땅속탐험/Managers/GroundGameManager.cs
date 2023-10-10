@@ -14,19 +14,25 @@ using Unit = UniRx.Unit;
 public class GroundGameManager : MonoBehaviour
 {
 
+    private GameStart _gameStart;
+    private GameOver _gameover;
+    private StageStart _stageStart;
+    private StageFinished _stageFinished;
+    private NotGameStarted _notGameStarted;
+    
+    private StateController _stateController;
+    
+    
     private static Dictionary<int, GameObject> animalGameObjectList = new();
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
     
-    private StateController _stateController;
+   
     public IState currentState { get; private set; } 
         = new NotGameStarted();
     
-    public ReactiveProperty<IState> currentStateRP;
+   
     public GameObject Animal_group;
     public GameObject Footstep_group;
-   
-    private GameStart _gameStart;
-    private NotGameStarted _notGameStarted;
     
     
     
@@ -52,17 +58,13 @@ public class GroundGameManager : MonoBehaviour
     public ReactiveProperty<float> UIintroDelayTime;
     public ReactiveProperty<bool> isStartButtonClicked; // Tutorial Button 종료 시.. 
     public ReactiveProperty<bool> isStageStartButtonClicked;
-    private StageStart _stageStart;
+    public ReactiveProperty<IState> currentStateRP;
     private void Awake()
     {
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
-        
-        _gameStart = new GameStart();
-        _stageStart = new StageStart();
-        _notGameStarted = new NotGameStarted();
 
-        currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
+       
     
         isStartButtonClicked
         = new ReactiveProperty<bool>(false);
@@ -70,20 +72,31 @@ public class GroundGameManager : MonoBehaviour
         isStageStartButtonClicked
             = new ReactiveProperty<bool>(false);
         
-        currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
         _stateController = new StateController();
          }
 
   
     void Start()
     {
+        if (currentStateRP == null)
+        {
+             currentStateRP = new ReactiveProperty<IState>();
+        }
+       
         
-            isStartButtonClicked
+        
+        
+        isStartButtonClicked
             .Where(_ => isStartButtonClicked.Value)
             .Subscribe(_ =>
             {
-                currentStateRP.Value = _gameStart;
-                _stateController.ChangeState(_gameStart);
+                Debug.Log("게임시작");
+                
+                if (_gameStart == null)
+                {
+                    _gameStart = new GameStart();
+                }
+                SetStage(IState.GameStateList.GameStart,_gameStart);
             });
 
 
@@ -91,6 +104,11 @@ public class GroundGameManager : MonoBehaviour
             .Subscribe(_ =>
             {
                 Debug.Log("스테이지 시작");
+                
+                if (_stageStart == null)
+                {
+                    _stageStart = new StageStart();
+                }
                 SetStage(IState.GameStateList.StageStart,_stageStart);
             }); 
         
@@ -109,6 +127,8 @@ public class GroundGameManager : MonoBehaviour
     private void SetStage(IState.GameStateList stage, BaseState state)
     {
         currentStateRP.Value = state;
+        Debug.Log($"현재 상태: {currentStateRP.Value} 그리고 현재 상태의 GameState값: {currentStateRP.Value.GameState}");
+        currentStateRP.Value.GameState = stage;
         _stateController.ChangeState(state);
     }
 

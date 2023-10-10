@@ -31,7 +31,7 @@ namespace 땅속탐험.Utils
         {
             currentState?.Exit();
             currentState = newState;
-            currentStateInfo = newState.Gamestate;
+            currentStateInfo = newState.GameState;
             currentState.Enter();
           
         }

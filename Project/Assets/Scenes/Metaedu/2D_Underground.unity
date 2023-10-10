@@ -6081,11 +6081,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1118578204}
-  stagesInterval: 1
-  UIInterval: 1
+  stagesInterval: 0.5
+  UIInterval: 0.5
   tutorialUIGameObject: {fileID: 1207962558235633198}
   tutorialUICvsGroup: {fileID: 1207962558235633200}
-  tutorialTMPText: {fileID: 0}
+  tutorialTMPText: {fileID: 1207962557658083416}
   tutorialUIRectTransform: {fileID: 1207962558235633199}
   tutorialAwayTransfrom: {fileID: 877940349}
   tutorialMessage: "\uBC1C\uC790\uAD6D\uC744 \uB530\uB77C\uAC00\uBA70  \uC228\uC5B4\uC788\uB294
@@ -6102,7 +6102,7 @@ MonoBehaviour:
   playerIcon: {fileID: 0}
   playerIconDefault: {fileID: 0}
   playerIconMovePosition: {fileID: 0}
-  cameraMoveTime: 0
+  cameraMoveTime: 1
   howToPlayUI: {fileID: 1207962558235633198}
 --- !u!114 &430183923
 MonoBehaviour:
@@ -29490,7 +29490,7 @@ GameObject:
   - component: {fileID: 1207962557404732117}
   - component: {fileID: 1207962557404732116}
   m_Layer: 0
-  m_Name: "\uD14D\uC2A4\uD2B8 \uBC15\uC2A4"
+  m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29816,7 +29816,7 @@ GameObject:
   - component: {fileID: 1207962557658083417}
   - component: {fileID: 1207962557658083416}
   m_Layer: 0
-  m_Name: "\uBCF8\uBB38 \uD558\uB2E8"
+  m_Name: Tuotiral TMP Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31204,7 +31204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &5467120300952539292
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -101,12 +101,12 @@ public class UndergroundUIManager : MonoBehaviour
             .AddTo(this);
 
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.GameStart)
+            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ =>  OnGameStart())
             .AddTo(this);
         
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.StageStart)
+            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.StageStart)
             .Subscribe(_ =>  OnStageStart())
             .AddTo(this);
         
@@ -116,7 +116,7 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void OnGameStart()
     {
-      
+      Debug.Log("UI: OnGameStart");
         Observable.Timer(TimeSpan.FromSeconds(UIInterval))
             .Do(_ =>
             {
