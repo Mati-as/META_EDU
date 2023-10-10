@@ -37,6 +37,7 @@ public class GroundGameManager : MonoBehaviour
     public static bool isGameFinished { get; private set; }
     public static bool isRoudnFinished { get; private set; }
     #endregion
+   
     /*
      * step -> footstep
      * chapter -> animal
@@ -49,39 +50,51 @@ public class GroundGameManager : MonoBehaviour
 
     //맨 마지막 예외처리 및 게임 종료 부분 구현
     public ReactiveProperty<float> UIintroDelayTime;
-    public ReactiveProperty<bool> isStartButtonClicked;
+    public ReactiveProperty<bool> isStartButtonClicked; // Tutorial Button 종료 시.. 
+    public ReactiveProperty<bool> isStageStartButtonClicked;
+    private StageStart _stageStart;
     private void Awake()
     {
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         
         _gameStart = new GameStart();
+        _stageStart = new StageStart();
         _notGameStarted = new NotGameStarted();
-        
-        
-     ReactiveProperty<IState.GameStateList> currentGameStatus
-        =new ReactiveProperty<IState.GameStateList>
-        (IState.GameStateList.NotGameStarted);
 
-     ReactiveProperty<bool> isStartButtonClicked
+        currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
+    
+        isStartButtonClicked
         = new ReactiveProperty<bool>(false);
-
-     currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
-     _stateController = new StateController();
-    }
+     
+        isStageStartButtonClicked
+            = new ReactiveProperty<bool>(false);
+        
+        currentStateRP = new ReactiveProperty<IState>(_notGameStarted);
+        _stateController = new StateController();
+         }
 
   
     void Start()
     {
-     
         
-        isStartButtonClicked
+            isStartButtonClicked
             .Where(_ => isStartButtonClicked.Value)
             .Subscribe(_ =>
             {
                 currentStateRP.Value = _gameStart;
                 _stateController.ChangeState(_gameStart);
             });
+
+
+            isStageStartButtonClicked.Where(_ => isStageStartButtonClicked.Value)
+            .Subscribe(_ =>
+            {
+                Debug.Log("스테이지 시작");
+                SetStage(IState.GameStateList.StageStart,_stageStart);
+            }); 
+        
+        
         
         //_introSubject.OnNext(Unit.Default);
          
@@ -93,13 +106,17 @@ public class GroundGameManager : MonoBehaviour
         isRoundReady = true;
     }
 
+    private void SetStage(IState.GameStateList stage, BaseState state)
+    {
+        currentStateRP.Value = state;
+        _stateController.ChangeState(state);
+    }
 
     private float _mainElapsedTime;
     void Update()
     {
         _mainElapsedTime += Time.deltaTime;
         _stateController.Update();
-        
         
         
         if (isGameStarted && isGameFinished == false)

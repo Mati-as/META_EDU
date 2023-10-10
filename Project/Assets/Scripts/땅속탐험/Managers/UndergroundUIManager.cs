@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
+
 public class UndergroundUIManager : MonoBehaviour
 {
     enum UI
@@ -24,37 +25,56 @@ public class UndergroundUIManager : MonoBehaviour
     }
     
     
-    [Header("References")]
+    [Header("References")]//-------------------------------
     public GroundGameManager gameManager;
 
-    [Header("Tutorial UI Parts")]
-    [FormerlySerializedAs("tutorialUICVSGroup")]
-    [FormerlySerializedAs("tutorialUICVGroup")]
-    [FormerlySerializedAs("tutorialUI")]
-  
-    [Space(10f)] 
-    [Header("Images")]
+    [Header("Intervals")] //-------------------------------
+    public float stagesInterval;
+    public float UIInterval;
+    
+    
+    [Space(30f)]
+    
+    [Header("Tutorial UI Parts")]//-------------------------------
+    public GameObject tutorialUIGameObject;
     public CanvasGroup tutorialUICvsGroup;
-    
-    [Space(20f)][Header("StoryUIController")]
-    
-    [SerializeField]
-    private UIAudioController _uiAudioController;
+    public TMP_Text tutorialTMPText;
+    public RectTransform tutorialUIRectTransform;
+    [FormerlySerializedAs("tutorialAwayPosition")] public RectTransform tutorialAwayTransfrom;
+    [Space(10f)] [Header("Tutorial Message Settings")]
 
+    public string tutorialMessage;
+
+    [Space(30f)]
+    [Header("Story UI")] //-------------------------------
+    [Space(10f)]
+    public GameObject storyUIGameObject;
+    public CanvasGroup storyUICvsGroup;
+    public RectTransform storyUIRectTransform;
     [SerializeField]
     private TMP_Text _storyUITmp;
-
+    [SerializeField]
+    private UIAudioController _uiAudioController;
+    
+    [Space(10f)]
+    [Header("Story Message Settings")]
+    [Space(10f)]
+    
+    public string _firstUIMessage = " 땅속에는 다양한 동물친구가 살고 있어요! 저를 따라오면서 구경해볼까요?";
+    public string _lastUIMessage = "우와! 친구들을 모두 찾았어요!"; 
+     
+     [Space(30f)]
+     [Header("Audio")]  [Space(10f)]//-------------------------------
+  
+     
+     [Space(30f)]
+     [Header("etc")]  [Space(10f)]//-------------------------------
     [SerializeField] 
     private Transform playerIcon;
     [SerializeField] 
     private Transform playerIconDefault;
     [SerializeField] 
     private Transform playerIconMovePosition;
-    
-    [Header("Message Settings")]  [Space(10f)]
-    private readonly string _firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
-    private readonly string  _secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요! 친구들을 찾아볼까요?"; 
-    private readonly string  _lastUIMessage = "우와! 동물친구들을 모두 찾았어요!"; 
     
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
     private WaitForSeconds GetWaitForSeconds(float seconds)
@@ -63,106 +83,86 @@ public class UndergroundUIManager : MonoBehaviour
         return waitForSecondsCache[seconds];
     }
     
-    // public GameObject Gameboard;
-    // public GameObject Message_Intro_Howto;
-    // public GameObject Message_Intro_Story;
-    // public GameObject Message_Endchapter;
-    // public GameObject Message_Ready;
-    // public GameObject Message_Endgame;
-
-
-    // private RectTransform GB_transform;
-    // private List<Vector3> GB_positionList = new();
-    //
-    // //TEST
-    // private int GB_Listindex = 0;
-    // private Vector3 GB_targetVector3;
-    // private bool flag_num_1 = false;
-
-    
     private void Awake()
     {
+        tutorialUIGameObject.SetActive(true);
+        
         DOTween.Init();
+        storyUICvsGroup.alpha = 0;
         tutorialUICvsGroup.alpha = 0;
         tutorialUICvsGroup.DOFade(1, 1);
     }
 
     private void Start()
     {
-        //unirx.subscribe(기존 구독)
-        gameManager.UIintroDelayTime.
-            Where(_=> (int)gameManager.UIintroDelayTime.Value == 3)
+        gameManager.UIintroDelayTime
+            .Where(_=> (int)gameManager.UIintroDelayTime.Value == 3)
             .Subscribe(_ => SetUIIntroUsingUniRx())
-            .AddTo(this); 
+            .AddTo(this);
+
+        gameManager.currentStateRP
+            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.GameStart)
+            .Subscribe(_ =>  OnGameStart())
+            .AddTo(this);
         
-        // GB_transform = Gameboard.GetComponent<RectTransform>();
-        // Init_GBPosition();
-        // Set_GBPosition(1);
-        //Move_BGPosition(2);
+        gameManager.currentStateRP
+            .Where(_ => gameManager.currentStateRP.Value.Gamestate == IState.GameStateList.StageStart)
+            .Subscribe(_ =>  OnStageStart())
+            .AddTo(this);
+        
     }
 
-    void Update()
+
+
+    private void OnGameStart()
     {
-        // if (flag_num_1 == true)
-        // {
-        //     GB_transform.localPosition = GB_transform.localPosition
-        //         = Vector3.Lerp(GB_transform.localPosition, GB_targetVector3, 0.5f * Time.deltaTime);
-        //
-        //     float distance = Vector3.Distance(GB_transform.localPosition, GB_targetVector3);
-        //     if (distance < 0.01f)
-        //     {
-        //         GB_transform.localPosition = GB_targetVector3;
-        //         flag_num_1 = false;
-        //     }
-        // }
-
+      
+        Observable.Timer(TimeSpan.FromSeconds(UIInterval))
+            .Do(_ =>
+            {
+                LeanTween.move(tutorialUIRectTransform,
+                        new Vector2(0, tutorialAwayTransfrom.position.y),
+                        3f)
+                    .setEase(LeanTweenType.easeInOutBack);
+                UpdateUI(storyUICvsGroup,_storyUITmp,_firstUIMessage);
+            }).Subscribe().AddTo(this);
     }
+
+    private void OnStageStart()
+    {
+       
+        Observable.Timer(TimeSpan.FromSeconds(UIInterval))
+            .Do(_ =>{
+                LeanTween.move(storyUIRectTransform,
+                    new Vector2(0, tutorialAwayTransfrom.position.y),
+                    3f).setEase(LeanTweenType.easeInOutBack);
+
+                Debug.Log("UI OnstageStart");
+                storyUICvsGroup.DOFade(0, 1);
+            }).Subscribe().AddTo(this);
+        
+    }
+    
+    private void UpdateUI(CanvasGroup cvsGroup, TMP_Text tmptext, string message)
+    {
+        ActivateWithFadeInUI(cvsGroup);
+        ChangeUIText(tmptext,message);
+    }
+    private void ActivateWithFadeInUI(CanvasGroup cvsGroup)
+    {
+        cvsGroup.alpha = 0;
+        cvsGroup.DOFade(1, 1);
+    }
+
+    private void ChangeUIText(TMP_Text tmptext, string message)
+    {
+        tmptext.text = message;
+    }
+    
 
     [SerializeField] private float cameraMoveTime;
     private float cameraMoveElapsed;
-    private IEnumerator CameraMoveCoroutine()
-    {
-        cameraMoveElapsed = 0f;
-
-        while (true)
-        {
-            yield return null;
-           // Lerp2D.EaseInQuart()
-        }
-       
-       
-    }
-
-    private void Init_GBPosition()
-    {
-        // GB_positionList.Add(new Vector3(0, 0, 0));
-        // GB_positionList.Add(new Vector3(0, 1080, 0));
-        // GB_positionList.Add(new Vector3(-1920, 1080, 0));
-        // GB_positionList.Add(new Vector3(-3840, 1080, 0));
-        // GB_positionList.Add(new Vector3(-5760, 1080, 0));
-        //
-        // //Debug.Log(BG_positionList.Count);
-    }
-    private void Set_GBPosition(int number)
-    {
-        // if (number < GB_positionList.Count)
-        // {
-        //     GB_targetVector3 = GB_positionList[number];
-        // }
-        // else
-        // {
-        //   
-        //     GB_targetVector3 = GB_positionList[1];
-        // }
-    }
-
-  
-    public void Move_GBPosition()
-    {
-     
-    }
-
-
+    
     public static float INTRO_UI_DELAY;
     public static float INTRO_UI_DELAY_SECOND;
     public GameObject howToPlayUI;
@@ -173,29 +173,10 @@ public class UndergroundUIManager : MonoBehaviour
             {
                 howToPlayUI.SetActive(true);
                 Debug.Log("Second introduction message.");
-                // 첫 번째 메시지를 비활성화하고 두 번째 메시지를 활성화
-                // Message_Intro_Howto.SetActive(false);
-                // Message_Intro_Story.SetActive(true);
             });
         
     }
-
-    public void PlayIntroMessage()
-    {
-
-    }
-
-    public void PlayEndChapterMessage()
-    {
-        Debug.Log("END CHAPTER CHECK");
-
-    }
-
-    public void PlayFinishMessage()
-    {
-        Debug.Log("FINISH CHECK");
-     
-    }
+    
 
     
 }
