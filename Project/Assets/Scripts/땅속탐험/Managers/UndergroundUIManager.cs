@@ -9,21 +9,59 @@ using UniRx;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine.UI;
+using TMPro;
+
 
 public class UndergroundUIManager : MonoBehaviour
 {
+    enum UI
+    {
+        HowToPlayA,
+        HowToPlayB,
+        StoryA,
+        StoryB,
+        Finish
+    }
     
-  
+    
     [Header("References")]
     public GroundGameManager gameManager;
 
+    [Header("Tutorial UI Parts")]
     [FormerlySerializedAs("tutorialUICVSGroup")]
     [FormerlySerializedAs("tutorialUICVGroup")]
     [FormerlySerializedAs("tutorialUI")]
+  
     [Space(10f)] 
     [Header("Images")]
     public CanvasGroup tutorialUICvsGroup;
     
+    [Space(20f)][Header("StoryUIController")]
+    
+    [SerializeField]
+    private UIAudioController _uiAudioController;
+
+    [SerializeField]
+    private TMP_Text _storyUITmp;
+
+    [SerializeField] 
+    private Transform playerIcon;
+    [SerializeField] 
+    private Transform playerIconDefault;
+    [SerializeField] 
+    private Transform playerIconMovePosition;
+    
+    [Header("Message Settings")]  [Space(10f)]
+    private readonly string _firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
+    private readonly string  _secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요! 친구들을 찾아볼까요?"; 
+    private readonly string  _lastUIMessage = "우와! 동물친구들을 모두 찾았어요!"; 
+    
+    private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
+    private WaitForSeconds GetWaitForSeconds(float seconds)
+    {
+        if (!waitForSecondsCache.ContainsKey(seconds)) waitForSecondsCache[seconds] = new WaitForSeconds(seconds);
+        return waitForSecondsCache[seconds];
+    }
     
     // public GameObject Gameboard;
     // public GameObject Message_Intro_Howto;
@@ -121,28 +159,9 @@ public class UndergroundUIManager : MonoBehaviour
   
     public void Move_GBPosition()
     {
-        // flag_num_1 = true;
-        // GB_Listindex++; 
-        // Set_GBPosition(GB_Listindex);
+     
     }
 
-    // IEnumerator Set_UIIntro()
-    // {
-    //
-    //     Message_Intro_Howto.SetActive(true);
-    //
-    //     yield return new WaitForSeconds(3f);
-    //
-    //     Message_Intro_Howto.SetActive(false);
-    //     Message_Intro_Story.SetActive(true);
-    //
-    //     yield return new WaitForSeconds(3f);
-    //
-    //     Message_Intro_Story.SetActive(false);
-    //
-    //     Move_GBPosition();
-    //     yield break;
-    // }
 
     public static float INTRO_UI_DELAY;
     public static float INTRO_UI_DELAY_SECOND;
@@ -158,85 +177,25 @@ public class UndergroundUIManager : MonoBehaviour
                 // Message_Intro_Howto.SetActive(false);
                 // Message_Intro_Story.SetActive(true);
             });
-
-
-
-        // // 다시 3초 대기
-        // .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(INTRO_UI_DELAY_SECOND)))
-        //
-        // .Subscribe(_ => 
-        // {
-        //     // 두 번째 메시지를 비활성화
-        //     Message_Intro_Story.SetActive(false);
-        //     Move_GBPosition();
-        // })
-
+        
     }
 
-    // IEnumerator Set_UINextlevel()
-    // {
-        // Move_GBPosition();
-        //
-        // yield return new WaitForSeconds(1f);
-        //
-        // Message_Endchapter.SetActive(true);
-        //
-        // yield return new WaitForSeconds(3f);
-        //
-        // Message_Endchapter.SetActive(false);
-        // Message_Ready.SetActive(true);
-        //
-        // yield return new WaitForSeconds(3f);
-        //
-        // Message_Ready.SetActive(false);
-        //
-        // yield break;
-    // }
-    // IEnumerator Set_UIEndgame()
-    // {
-        // Message_Endgame.SetActive(true);
-        //
-        // yield return new WaitForSeconds(3f);
-        //
-        // Message_Endgame.SetActive(false);
-        //
-        // Move_GBPosition();
-        //
-        // yield break;
-    // }
     public void PlayIntroMessage()
     {
-        // Debug.Log("INTRO CHECK");
-        // StartCoroutine(Set_UIIntro());
+
     }
 
     public void PlayEndChapterMessage()
     {
         Debug.Log("END CHAPTER CHECK");
-        // StartCoroutine(Set_UINextlevel());
+
     }
 
     public void PlayFinishMessage()
     {
         Debug.Log("FINISH CHECK");
-        // StartCoroutine(Set_UIEndgame());
+     
     }
 
-    // public IEnumerator TypeIn(string str, float offset)
-    // {
-    //     Debug.Log("제시문 하단 종료 코루틴 ....");
-    //     instructionTMP.text = ""; // 초기화
-    //     yield return new WaitForSeconds(offset); // 1초 대기
-    //
-    //     var strTypingLength = str.GetTypingLength(); // 최대 타이핑 수 구함
-    //     for (var i = 0; i <= strTypingLength; i++)
-    //     {
-    //         // 반복문
-    //         instructionTMP.text = str.Typing(i); // 타이핑
-    //         yield return new WaitForSeconds(textPrintingSpeed);
-    //     } // 0.03초 대기
-    //
-    //
-    //     yield return new WaitForNextFrameUnit();
-    // }
+    
 }
