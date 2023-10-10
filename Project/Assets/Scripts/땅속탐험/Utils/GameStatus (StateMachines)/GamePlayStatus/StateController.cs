@@ -10,9 +10,7 @@ namespace 땅속탐험.Utils
     /// </remarks>
     public class StateController : IState
     {  
-        public IState currentState;
-        public IState.GameStateList currentStateInfo;
-
+        public IState currentState { get; set; }
         public IState.GameStateList GameState{get;set;}
         
 
@@ -34,13 +32,14 @@ namespace 땅속탐험.Utils
         /// 상태변경 로직, 순서 섞이지 않도록 주의
         /// </summary>
         /// <param name="newState"></param>
-        public void ChangeState(IState newState)
+        public void ChangeState(BaseState newState)
         {
             currentState?.Exit();
+            currentState?.Enter();
             currentState = newState;
-            currentStateInfo = newState.GameState;
-            currentState.Enter();
-          
+            GameState = newState.GameState;
+
+
         }
 
        

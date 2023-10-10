@@ -7,21 +7,36 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UniRx;
+using UnityEditor.VersionControl;
 using UnityEngine.UI;
 using 땅속탐험.Utils;
 using Unit = UniRx.Unit;
+using UniRx.Triggers;
 
 public class GroundGameManager : MonoBehaviour
 {
 
-    private GameStart _gameStart;
-    private GameOver _gameover;
-    private StageStart _stageStart;
-    private StageFinished _stageFinished = new StageFinished();
-    private NotGameStarted _notGameStarted = new NotGameStarted();
+    private static GameStart _gameStart;
+    private static GameOver _gameover;
+    private static StageStart _stageStart;
+    private static StageFinished _stageFinished;
+    private static NotGameStarted _notGameStarted;
+    void Init()
+    {
+        _notGameStarted = new NotGameStarted();
+        _gameStart = new GameStart();
+        _stageStart = new StageStart();
+        _stageFinished = new StageFinished();
+        _gameover = new GameOver();
+
+    }
     
     // GameManager에서만 상태컨트롤 및 상태인스턴스는 StateController만 소유.
-    private static StateController _stateController;
+    public StateController _stateController
+    {
+        get;
+        private set;
+    }
     
     
     private static Dictionary<int, GameObject> animalGameObjectList = new();
@@ -65,53 +80,46 @@ public class GroundGameManager : MonoBehaviour
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         //---------------------------------------------
-        
-        
-        
-        isStartButtonClicked
-        = new ReactiveProperty<bool>(false);
-     
-        isStageStartButtonClicked
-            = new ReactiveProperty<bool>(false);
+        isStartButtonClicked = new ReactiveProperty<bool>(false);
+        isStageStartButtonClicked = new ReactiveProperty<bool>(false);
 
-        currentStateRP = new ReactiveProperty<IState>();
-        
         _stateController = new StateController();
-        _stateController.currentState = _notGameStarted;
-        _stateController.GameState = IState.GameStateList.NotGameStarted;
         
-        currentStateRP.Value = _stateController.currentState;
-        currentStateRP.Value.GameState = _stateController.GameState;
+        Init();
+        
+        currentStateRP = new ReactiveProperty<IState>();
+
+        currentStateRP.Value = new NotGameStarted();
+        currentStateRP.Value.GameState = IState.GameStateList.NotGameStarted;
+       
+        
+        
+        
+   
+
+    
     }
 
+ 
   
     void Start()
     {
         
-        isStartButtonClicked
-            .Where(_ => isStartButtonClicked.Value)
-            .Subscribe(_ =>
+            isStartButtonClicked
+            .Subscribe(_=>
             {
                 Debug.Log("게임시작");
-                
-                if (_gameStart == null)
-                {
-                    _gameStart = new GameStart();
-                }
-                SetStage(IState.GameStateList.GameStart,_gameStart);
+                SetStage(_gameStart);
+                Debug.Log($" 현재 statecontroller의 GameState{_stateController.GameState}");
             });
 
 
-            isStageStartButtonClicked.Where(_ => isStageStartButtonClicked.Value)
+            isStageStartButtonClicked
             .Subscribe(_ =>
             {
                 Debug.Log("스테이지 시작");
                 
-                if (_stageStart == null)
-                {
-                    _stageStart = new StageStart();
-                }
-                SetStage(IState.GameStateList.StageStart,_stageStart);
+                SetStage(_stageStart);
             }); 
         
         
@@ -126,7 +134,7 @@ public class GroundGameManager : MonoBehaviour
         isRoundReady = true;
     }
 
-    private void SetStage(IState.GameStateList stage, BaseState state)
+    private void SetStage(BaseState state)
     {
         //Model Area
         _stateController.ChangeState(state);
@@ -134,17 +142,18 @@ public class GroundGameManager : MonoBehaviour
         
         
         //Rx사용을 위한 Presenter Area
-        currentStateRP.Value = _stateController.currentState;
+        
         Debug.Log($"현재 상태: {currentStateRP.Value} 그리고 현재 상태의 GameState값: {currentStateRP.Value.GameState}");
-        currentStateRP.Value.GameState = stage;
-      
+        currentStateRP.Value = state;
+        currentStateRP.Value.GameState = state.GameState;
+
     }
 
     private float _mainElapsedTime;
     void Update()
     {
         _mainElapsedTime += Time.deltaTime;
-        _stateController.Update();
+        _stateController?.Update();
         
         
         if (isGameStarted && isGameFinished == false)

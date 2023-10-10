@@ -32,7 +32,7 @@ public class GroundCameraController : MonoBehaviour
 
         
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.GameStart)
+            .Where(currentState => currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ => MoveCamera(
                 cameraPositions[(int)CameraState.Story],
                 cameraMovingTime[(int)CameraState.Story]));

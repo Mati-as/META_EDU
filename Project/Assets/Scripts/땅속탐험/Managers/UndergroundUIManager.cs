@@ -96,17 +96,17 @@ public class UndergroundUIManager : MonoBehaviour
     private void Start()
     {
         gameManager.UIintroDelayTime
-            .Where(_=> (int)gameManager.UIintroDelayTime.Value == 3)
             .Subscribe(_ => SetUIIntroUsingUniRx())
             .AddTo(this);
 
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.GameStart)
+            .Do(currentState => Debug.Log($"Current state is: {currentState.GameState}"))
+            .Where(_currentState => _currentState.GameState== IState.GameStateList.GameStart)
             .Subscribe(_ =>  OnGameStart())
             .AddTo(this);
         
         gameManager.currentStateRP
-            .Where(_ => gameManager.currentStateRP.Value.GameState == IState.GameStateList.StageStart)
+            .Where(_currentState =>_currentState.GameState == IState.GameStateList.StageStart)
             .Subscribe(_ =>  OnStageStart())
             .AddTo(this);
         

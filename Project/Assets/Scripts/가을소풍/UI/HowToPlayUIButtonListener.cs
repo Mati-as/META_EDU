@@ -6,6 +6,8 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using UniRx;
+using UniRx.Triggers;
 
 public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -46,30 +48,39 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
     }
 
     private bool _isUIPlayed;
-    void ButtonClicked()
+    private void ButtonClicked()
     {
-        if (_audioSource != null)
+  
+        if (gameManager.isStartButtonClicked.Value == false)
         {
-            _audioSource.Play();
+            gameManager.isStartButtonClicked.Value = true;
         }
-        if (!_isUIPlayed)
+        else
         {
-            _isUIPlayed = true;
+            gameManager.isStartButtonClicked.Value = false;
         }
+        // if (_audioSource != null)
+        // {
+        //     _audioSource.Play();
+        // }
+        // if (!_isUIPlayed)
+        // {
+        //     _isUIPlayed = true;
+        // }
         
-        gameManager.isStartButtonClicked.Value = true;
+      Debug.Log("startButtonClicked");
     }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("OPointerEnter");
+        
         var targetSize = _originalSizeDelta * maximizedSize;
         _buttonRectTransform.DOSizeDelta(targetSize, buttonChangeDuration);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("OPointerExit");
+     
         _buttonRectTransform.DOSizeDelta(_originalSizeDelta,buttonChangeDuration);
     }
     
