@@ -4,6 +4,7 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor;
 
 public class GroundCameraController : MonoBehaviour
 {
@@ -13,7 +14,10 @@ public class GroundCameraController : MonoBehaviour
         Default,
         Story,
         InPlayStart,
-        GameFinished
+        StageStart,
+        StageFinished,
+        GameFinished,
+        GamePaused
     }
     
     [Header("References")] 
@@ -21,9 +25,19 @@ public class GroundCameraController : MonoBehaviour
     private GroundGameManager gameManager;
     
     [Space(20f)] [Header("Paramters")]
-    public float[] cameraMovingTime;
-    
+    [NamedArrayAttribute(new string[]
+    {
+        "Default", "Story", "InPlayStart","StageFinished", "GameFinished","StageStart, StageFinished"
+        ,"GamePaused"
+    })]
+    public int[] cameraMovingTime = new int[7];
     [Space(20f)] [Header("Positions")]
+    
+    [NamedArrayAttribute(new string[]
+    {
+        "Default", "Story", "InPlayStart","StageFinished", "GameFinished","StageStart, StageFinished"
+        ,"GamePaused"
+    })]
     public Transform[] cameraPositions;
     
     void Start()
@@ -37,11 +51,40 @@ public class GroundCameraController : MonoBehaviour
                 cameraPositions[(int)CameraState.Story],
                 cameraMovingTime[(int)CameraState.Story]));
         
+        gameManager.currentStateRP
+            .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
+            .Subscribe(_ => MoveCamera(
+                cameraPositions[(int)CameraState.InPlayStart],
+                cameraMovingTime[(int)CameraState.InPlayStart]));
+        
     }
 
     private void MoveCamera(Transform target,float duration)
     {
         Debug.Log(" tutorial 로 카메라 위치 이동");
         transform.DOMove(target.position, duration);
+    }
+}
+
+public class NamedArrayAttribute : PropertyAttribute
+{
+    public readonly string[] names;
+    public NamedArrayAttribute(string[] names) { this.names = names; }
+}
+
+[CustomPropertyDrawer(typeof(NamedArrayAttribute))]
+public class NamedArrayDrawer : PropertyDrawer
+{
+    public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+    {
+        try
+        {
+            int pos = int.Parse(property.propertyPath.Split('[', ']')[1]);
+            EditorGUI.PropertyField(rect, property, new GUIContent(((NamedArrayAttribute)attribute).names[pos]));
+        }
+        catch
+        {
+            EditorGUI.PropertyField(rect, property, label);
+        }
     }
 }

@@ -88,11 +88,15 @@ public class UndergroundUIManager : MonoBehaviour
         tutorialUIGameObject.SetActive(true);
         
         DOTween.Init();
-        storyUICvsGroup.alpha = 0;
-        tutorialUICvsGroup.alpha = 0;
+        Init();
         tutorialUICvsGroup.DOFade(1, 1);
     }
 
+    private void Init()
+    {
+        storyUICvsGroup.alpha = 0;
+        tutorialUICvsGroup.alpha = 0;
+    }
     private void Start()
     {
         gameManager.UIintroDelayTime
