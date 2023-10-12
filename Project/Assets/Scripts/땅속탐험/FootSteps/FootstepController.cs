@@ -11,15 +11,15 @@ public class FootstepController : MonoBehaviour
     [Header("button info")] [Space(10f)]
     public int footstepGroupOrder;
 
-    [Header("Reference")]
+   
     [Space(10f)]
     [SerializeField]
     private FootstepManager footstepManager;
-   
-
-    [Space(20f)] [Header("Tween Parameters")]
     public float buttonChangeDuration;
     [Space(20f)]
+    
+    
+  
    
     private Button _button;
     [SerializeField]
@@ -28,10 +28,16 @@ public class FootstepController : MonoBehaviour
     private AudioSource _audioSource;
     
     private SpriteRenderer _spriteRenderer;
-
+    [Space(20f)] [Header("Tween Parameters")]
     public float maximizedSize;
     private Transform _buttonRectTransform;
     private Vector2 _originalSizeDelta;
+    
+    [Space(20f)] [Header("Reference : 마지막 버튼에만 할당할 것 (non-nullable)")] 
+    [SerializeField]
+    public GameObject animalByLastFootstep;
+    [SerializeField] public string animalNameToCall;
+   
 
     private void Awake()
     {
@@ -43,8 +49,8 @@ public class FootstepController : MonoBehaviour
     private void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        
     }
+    
 
     private void OnDestroy()
     {
@@ -55,7 +61,17 @@ public class FootstepController : MonoBehaviour
     private void OnButtonClicked()
     {
         FadeOutSprite();
-        
+
+        if (animalByLastFootstep != null && animalNameToCall != string.Empty)
+        {
+            if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
+            {
+                animalByLastFootstep.SetActive(true);
+                //tween 추가하세요
+            }
+        }
+     
+     
         if (_audioSource != null)
         {
             _audioSource.Play();
@@ -78,6 +94,7 @@ public class FootstepController : MonoBehaviour
             // Destroy(this.gameObject);
         });
     }
+    
     
     public void OnPointerEnter(PointerEventData eventData)
     {

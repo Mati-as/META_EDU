@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using UniRx;
 using UnityEngine.Serialization;
+using UnityEngine.EventSystems;
+
+
 
 public class FootstepManager : MonoBehaviour
 {
@@ -100,25 +103,35 @@ public class FootstepManager : MonoBehaviour
 
     private void Start()
     {
+        EventTrigger trigger = GetComponent<EventTrigger>();
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerClick;
+        entry.callback.AddListener((data) => { OnMouseClicked(); });
+        trigger.triggers.Add(entry);
+        
+        
+        
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
             .Subscribe(_ => firstFootstepsGroup[0].SetActive(true));
     }
     
-    void Update()
-    {
-        // 마우스 왼쪽 버튼이 눌렸을 때
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
-            {
-                // Ray가 어떤 GameObject에 충돌했다면
-                GameObject clickedObject = hit.transform.gameObject;
-                InspectObject(clickedObject);
-            }
+    public static string currentlyClickedObjectName;
+
+    public void OnMouseClicked()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            var obj = hit.transform.gameObject;
+            var clickedObject = obj;
+            var fC = obj.GetComponent<FootstepController>();
+            
+            currentlyClickedObjectName = fC.animalNameToCall;
+            InspectObject(clickedObject);
         }
     }
     
