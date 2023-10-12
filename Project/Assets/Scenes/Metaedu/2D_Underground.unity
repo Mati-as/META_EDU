@@ -213,6 +213,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3773316}
   - component: {fileID: 3773317}
+  - component: {fileID: 3773318}
+  - component: {fileID: 3773319}
   m_Layer: 0
   m_Name: foot step (11)
   m_TagString: Untagged
@@ -287,6 +289,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3773318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 9
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &3773319
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773315}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &6402816
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,6 +494,8 @@ GameObject:
   m_Component:
   - component: {fileID: 32086505}
   - component: {fileID: 32086506}
+  - component: {fileID: 32086507}
+  - component: {fileID: 32086508}
   m_Layer: 0
   m_Name: foot step (9)
   m_TagString: Untagged
@@ -533,6 +570,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &32086507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32086504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 7
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &32086508
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32086504}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.000015258789, y: -0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.4949996
 --- !u!1 &41930109
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +628,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 41930109}
   m_LocalRotation: {x: -1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: 35.13, y: -4.35, z: 0}
+  m_LocalPosition: {x: 35.33, y: -4.35, z: 0}
   m_LocalScale: {x: 0.83206, y: 0.83206, z: 0.83206}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -627,6 +697,8 @@ GameObject:
   m_Component:
   - component: {fileID: 53139569}
   - component: {fileID: 53139570}
+  - component: {fileID: 53139571}
+  - component: {fileID: 53139572}
   m_Layer: 0
   m_Name: foot step (3)
   m_TagString: Untagged
@@ -701,6 +773,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &53139571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53139568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 4
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &53139572
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53139568}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &54631503
 GameObject:
   m_ObjectHideFlags: 0
@@ -711,6 +816,8 @@ GameObject:
   m_Component:
   - component: {fileID: 54631504}
   - component: {fileID: 54631505}
+  - component: {fileID: 54631506}
+  - component: {fileID: 54631507}
   m_Layer: 0
   m_Name: foot step (4)
   m_TagString: Untagged
@@ -785,6 +892,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &54631506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54631503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 6
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &54631507
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 54631503}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.000015258789}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &55016771
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,6 +935,8 @@ GameObject:
   m_Component:
   - component: {fileID: 55016772}
   - component: {fileID: 55016773}
+  - component: {fileID: 55016774}
+  - component: {fileID: 55016775}
   m_Layer: 0
   m_Name: foot step (15)
   m_TagString: Untagged
@@ -869,6 +1011,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &55016774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55016771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 11
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &55016775
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55016771}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000038146973, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &58721479
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,6 +1772,8 @@ GameObject:
   m_Component:
   - component: {fileID: 99488554}
   - component: {fileID: 99488555}
+  - component: {fileID: 99488556}
+  - component: {fileID: 99488557}
   m_Layer: 0
   m_Name: foot step (4)
   m_TagString: Untagged
@@ -1671,6 +1848,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &99488556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 99488553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 4
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &99488557
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 99488553}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &103904471
 GameObject:
   m_ObjectHideFlags: 0
@@ -2216,6 +2426,8 @@ GameObject:
   m_Component:
   - component: {fileID: 128755969}
   - component: {fileID: 128755970}
+  - component: {fileID: 128755971}
+  - component: {fileID: 128755972}
   m_Layer: 0
   m_Name: foot step (7)
   m_TagString: Untagged
@@ -2290,6 +2502,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &128755971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128755968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 7
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &128755972
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128755968}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000019073486}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &129928450
 GameObject:
   m_ObjectHideFlags: 0
@@ -3202,6 +3447,8 @@ GameObject:
   m_Component:
   - component: {fileID: 176747729}
   - component: {fileID: 176747730}
+  - component: {fileID: 176747731}
+  - component: {fileID: 176747732}
   m_Layer: 0
   m_Name: foot step (6)
   m_TagString: Untagged
@@ -3276,6 +3523,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &176747731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176747728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 7
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &176747732
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176747728}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.0000060796738}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &186325945
 GameObject:
   m_ObjectHideFlags: 0
@@ -3513,6 +3793,8 @@ GameObject:
   m_Component:
   - component: {fileID: 199792474}
   - component: {fileID: 199792475}
+  - component: {fileID: 199792476}
+  - component: {fileID: 199792477}
   m_Layer: 0
   m_Name: foot step (5)
   m_TagString: Untagged
@@ -3587,6 +3869,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &199792476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199792473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 2
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &199792477
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199792473}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000019073486, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &201160021
 GameObject:
   m_ObjectHideFlags: 0
@@ -4386,6 +4701,8 @@ GameObject:
   m_Component:
   - component: {fileID: 251612251}
   - component: {fileID: 251612252}
+  - component: {fileID: 251612253}
+  - component: {fileID: 251612254}
   m_Layer: 0
   m_Name: foot step (15)
   m_TagString: Untagged
@@ -4460,6 +4777,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &251612253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251612250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 11
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &251612254
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251612250}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000004172325, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.4949996
 --- !u!1 &254052947
 GameObject:
   m_ObjectHideFlags: 0
@@ -4585,6 +4935,8 @@ GameObject:
   m_Component:
   - component: {fileID: 276709700}
   - component: {fileID: 276709701}
+  - component: {fileID: 276709702}
+  - component: {fileID: 276709703}
   m_Layer: 0
   m_Name: foot step (9)
   m_TagString: Untagged
@@ -4659,6 +5011,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &276709702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276709699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 5
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &276709703
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 276709699}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.4949996
 --- !u!1 &280164696
 GameObject:
   m_ObjectHideFlags: 0
@@ -4883,6 +5268,8 @@ GameObject:
   m_Component:
   - component: {fileID: 304348138}
   - component: {fileID: 304348139}
+  - component: {fileID: 304348140}
+  - component: {fileID: 304348141}
   m_Layer: 0
   m_Name: foot step (11)
   m_TagString: Untagged
@@ -4957,6 +5344,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &304348140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304348137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 10
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &304348141
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304348137}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000076293945, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &304900779
 GameObject:
   m_ObjectHideFlags: 0
@@ -6292,7 +6712,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 359756488}
   m_LocalRotation: {x: -1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: 13.66, y: -22.42, z: -2.23}
+  m_LocalPosition: {x: 12.2, y: -21.72, z: -2.23}
   m_LocalScale: {x: 0.92045, y: 0.92045, z: 0.92045}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7436,6 +7856,8 @@ GameObject:
   m_Component:
   - component: {fileID: 435386676}
   - component: {fileID: 435386677}
+  - component: {fileID: 435386678}
+  - component: {fileID: 435386679}
   m_Layer: 0
   m_Name: foot step (6)
   m_TagString: Untagged
@@ -7510,6 +7932,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &435386678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435386675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 3
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &435386679
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435386675}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000009536743, y: 0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &436767854
 GameObject:
   m_ObjectHideFlags: 0
@@ -8191,6 +8646,8 @@ GameObject:
   m_Component:
   - component: {fileID: 482250695}
   - component: {fileID: 482250696}
+  - component: {fileID: 482250697}
+  - component: {fileID: 482250698}
   m_Layer: 0
   m_Name: foot step (4)
   m_TagString: Untagged
@@ -8265,6 +8722,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &482250697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482250694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 1
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &482250698
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482250694}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.000005722046}
+  serializedVersion: 2
+  m_Radius: 2.4950004
 --- !u!1 &487443889
 GameObject:
   m_ObjectHideFlags: 0
@@ -8582,6 +9072,8 @@ GameObject:
   m_Component:
   - component: {fileID: 527391547}
   - component: {fileID: 527391548}
+  - component: {fileID: 527391549}
+  - component: {fileID: 527391550}
   m_Layer: 0
   m_Name: foot step (16)
   m_TagString: Untagged
@@ -8656,6 +9148,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &527391549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527391546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 11
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &527391550
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527391546}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000019073486, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &529107100
 GameObject:
   m_ObjectHideFlags: 0
@@ -8852,8 +9377,10 @@ GameObject:
   m_Component:
   - component: {fileID: 534558009}
   - component: {fileID: 534558010}
+  - component: {fileID: 534558011}
+  - component: {fileID: 534558012}
   m_Layer: 0
-  m_Name: foot step (15)
+  m_Name: foot step (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8926,6 +9453,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &534558011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534558008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 12
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &534558012
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534558008}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.000015258789, y: 0.0000019073486}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &536413909
 GameObject:
   m_ObjectHideFlags: 0
@@ -9013,8 +9573,10 @@ GameObject:
   m_Component:
   - component: {fileID: 543896775}
   - component: {fileID: 543896776}
+  - component: {fileID: 543896777}
+  - component: {fileID: 543896778}
   m_Layer: 0
-  m_Name: foot step (17)
+  m_Name: foot step (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9087,6 +9649,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &543896777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543896774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 12
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &543896778
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543896774}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.000009536743}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &544912774
 GameObject:
   m_ObjectHideFlags: 0
@@ -9750,6 +10345,8 @@ GameObject:
   m_Component:
   - component: {fileID: 624444504}
   - component: {fileID: 624444505}
+  - component: {fileID: 624444506}
+  - component: {fileID: 624444507}
   m_Layer: 0
   m_Name: foot step (8)
   m_TagString: Untagged
@@ -9824,6 +10421,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &624444506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624444503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 8
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &624444507
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624444503}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.000005722046, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &631006269
 GameObject:
   m_ObjectHideFlags: 0
@@ -10863,6 +11493,8 @@ GameObject:
   m_Component:
   - component: {fileID: 708195978}
   - component: {fileID: 708195979}
+  - component: {fileID: 708195980}
+  - component: {fileID: 708195981}
   m_Layer: 0
   m_Name: foot step (12)
   m_TagString: Untagged
@@ -10937,6 +11569,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &708195980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708195977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 10
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &708195981
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708195977}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &708317838
 GameObject:
   m_ObjectHideFlags: 0
@@ -11355,6 +12020,8 @@ GameObject:
   m_Component:
   - component: {fileID: 748984067}
   - component: {fileID: 748984068}
+  - component: {fileID: 748984069}
+  - component: {fileID: 748984070}
   m_Layer: 0
   m_Name: foot step (2)
   m_TagString: Untagged
@@ -11429,6 +12096,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &748984069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748984066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 6
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &748984070
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748984066}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000076293945, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &752359653
 GameObject:
   m_ObjectHideFlags: 0
@@ -11635,7 +12335,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 765972079}
   m_LocalRotation: {x: -1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: 16.06, y: -5.96, z: 0}
+  m_LocalPosition: {x: 18.13, y: -5.96, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12123,7 +12823,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 844775940}
   m_LocalRotation: {x: -1, y: 0, z: 0, w: 0}
-  m_LocalPosition: {x: 6.82, y: -9.59, z: 0}
+  m_LocalPosition: {x: 6.82, y: -9.08, z: 0}
   m_LocalScale: {x: 0.8469156, y: 0.8469156, z: 0.8469156}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12924,6 +13624,8 @@ GameObject:
   m_Component:
   - component: {fileID: 898306112}
   - component: {fileID: 898306113}
+  - component: {fileID: 898306114}
+  - component: {fileID: 898306115}
   m_Layer: 0
   m_Name: foot step (2)
   m_TagString: Untagged
@@ -12998,6 +13700,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &898306114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898306111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 1
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &898306115
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898306111}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.4950008
 --- !u!1 &902986865
 GameObject:
   m_ObjectHideFlags: 0
@@ -13187,7 +13922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1118578204}
-  cameraMovingTime: 000000000000000000000000000000000000000000000000ffffffff
+  cameraMovingTime: 03000000030000000300000003000000030000000300000003000000
   cameraPositions:
   - {fileID: 1858365010}
   - {fileID: 1098858022}
@@ -13532,6 +14267,8 @@ GameObject:
   m_Component:
   - component: {fileID: 969696227}
   - component: {fileID: 969696228}
+  - component: {fileID: 969696229}
+  - component: {fileID: 969696230}
   m_Layer: 0
   m_Name: foot step (4)
   m_TagString: Untagged
@@ -13606,6 +14343,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &969696229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969696226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 2
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &969696230
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969696226}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &972144524
 GameObject:
   m_ObjectHideFlags: 0
@@ -14219,6 +14989,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1024495568}
   - component: {fileID: 1024495569}
+  - component: {fileID: 1024495570}
+  - component: {fileID: 1024495571}
   m_Layer: 0
   m_Name: foot step (6)
   m_TagString: Untagged
@@ -14293,6 +15065,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1024495570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024495567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 8
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1024495571
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024495567}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000019073486, y: 0.000030517578}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1024521640
 GameObject:
   m_ObjectHideFlags: 0
@@ -14303,6 +15108,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1024521641}
   - component: {fileID: 1024521642}
+  - component: {fileID: 1024521643}
+  - component: {fileID: 1024521644}
   m_Layer: 0
   m_Name: foot step (3)
   m_TagString: Untagged
@@ -14377,6 +15184,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1024521643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024521640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 3
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1024521644
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024521640}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000009536743, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1027501620
 GameObject:
   m_ObjectHideFlags: 0
@@ -16623,6 +17463,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1178021057}
   - component: {fileID: 1178021058}
+  - component: {fileID: 1178021059}
+  - component: {fileID: 1178021060}
   m_Layer: 0
   m_Name: foot step (3)
   m_TagString: Untagged
@@ -16697,6 +17539,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1178021059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178021056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 1
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1178021060
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178021056}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000076293945, y: 0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.4950004
 --- !u!1 &1178259377
 GameObject:
   m_ObjectHideFlags: 0
@@ -17318,6 +18193,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1206065841}
   - component: {fileID: 1206065842}
+  - component: {fileID: 1206065843}
+  - component: {fileID: 1206065844}
   m_Layer: 0
   m_Name: foot step (5)
   m_TagString: Untagged
@@ -17392,6 +18269,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1206065843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206065840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 6
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1206065844
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206065840}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.4950001
 --- !u!1 &1246919650
 GameObject:
   m_ObjectHideFlags: 0
@@ -17892,6 +18802,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1280297766}
   - component: {fileID: 1280297767}
+  - component: {fileID: 1280297768}
+  - component: {fileID: 1280297769}
   m_Layer: 0
   m_Name: foot step (5)
   m_TagString: Untagged
@@ -17966,6 +18878,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1280297768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280297765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 3
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1280297769
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280297765}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000009536743, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1284261326
 GameObject:
   m_ObjectHideFlags: 0
@@ -18302,6 +19247,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1298069376}
   - component: {fileID: 1298069377}
+  - component: {fileID: 1298069378}
+  - component: {fileID: 1298069379}
   m_Layer: 0
   m_Name: foot step (5)
   m_TagString: Untagged
@@ -18376,6 +19323,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1298069378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298069375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 4
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1298069379
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298069375}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000019073486}
+  serializedVersion: 2
+  m_Radius: 2.4950001
 --- !u!1 &1298211067
 GameObject:
   m_ObjectHideFlags: 0
@@ -18386,6 +19366,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1298211068}
   - component: {fileID: 1298211069}
+  - component: {fileID: 1298211070}
+  - component: {fileID: 1298211071}
   m_Layer: 0
   m_Name: foot step (8)
   m_TagString: Untagged
@@ -18460,6 +19442,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1298211070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298211067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 7
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1298211071
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298211067}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000019073486}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1305934175
 GameObject:
   m_ObjectHideFlags: 0
@@ -18873,6 +19888,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1332024021}
   - component: {fileID: 1332024022}
+  - component: {fileID: 1332024023}
+  - component: {fileID: 1332024024}
   m_Layer: 0
   m_Name: foot step (14)
   m_TagString: Untagged
@@ -18947,6 +19964,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1332024023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332024020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 10
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1332024024
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1332024020}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000076293945, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1333063787
 GameObject:
   m_ObjectHideFlags: 0
@@ -19632,6 +20682,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1381188985}
   - component: {fileID: 1381188986}
+  - component: {fileID: 1381188987}
+  - component: {fileID: 1381188988}
   m_Layer: 0
   m_Name: foot step (7)
   m_TagString: Untagged
@@ -19706,6 +20758,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1381188987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381188984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 5
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1381188988
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381188984}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1387857975
 GameObject:
   m_ObjectHideFlags: 0
@@ -20065,6 +21150,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1415756342}
   - component: {fileID: 1415756343}
+  - component: {fileID: 1415756344}
+  - component: {fileID: 1415756345}
   m_Layer: 0
   m_Name: foot step (9)
   m_TagString: Untagged
@@ -20139,6 +21226,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1415756344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415756341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 8
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1415756345
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415756341}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000060796738, y: -0.000015258789}
+  serializedVersion: 2
+  m_Radius: 2.4950001
 --- !u!1 &1420569600
 GameObject:
   m_ObjectHideFlags: 0
@@ -20481,6 +21601,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1445902443}
   - component: {fileID: 1445902444}
+  - component: {fileID: 1445902445}
+  - component: {fileID: 1445902446}
   m_Layer: 0
   m_Name: foot step (2)
   m_TagString: Untagged
@@ -20555,6 +21677,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1445902445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445902442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 4
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1445902446
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445902442}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1452601338
 GameObject:
   m_ObjectHideFlags: 0
@@ -20762,6 +21917,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1477798723}
   - component: {fileID: 1477798724}
+  - component: {fileID: 1477798725}
+  - component: {fileID: 1477798726}
   m_Layer: 0
   m_Name: foot step (3)
   m_TagString: Untagged
@@ -20836,6 +21993,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1477798725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1477798722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 2
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1477798726
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1477798722}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1484236064
 GameObject:
   m_ObjectHideFlags: 0
@@ -23183,8 +24373,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1567040316}
   - component: {fileID: 1567040317}
+  - component: {fileID: 1567040318}
+  - component: {fileID: 1567040319}
   m_Layer: 0
-  m_Name: foot step (16)
+  m_Name: foot step (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23257,6 +24449,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1567040318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567040315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 12
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1567040319
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567040315}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.000005722046}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1572522201
 GameObject:
   m_ObjectHideFlags: 0
@@ -23857,6 +25082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73fea6954f921254fb88c19a40d67c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 1118578204}
   firstFootstepsGroup:
   - {fileID: 2093042749}
   - {fileID: 898306111}
@@ -23899,8 +25125,8 @@ MonoBehaviour:
   - {fileID: 1415756341}
   ninthFootstepsGroup:
   - {fileID: 3773315}
-  - {fileID: 3773315}
   - {fileID: 1729283873}
+  - {fileID: 1784907063}
   - {fileID: 1903847407}
   tenthFootstepsGroup:
   - {fileID: 304348137}
@@ -23927,6 +25153,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1632096655}
   - component: {fileID: 1632096656}
+  - component: {fileID: 1632096657}
+  - component: {fileID: 1632096658}
   m_Layer: 0
   m_Name: foot step (3)
   m_TagString: Untagged
@@ -24001,6 +25229,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1632096657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632096654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 6
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1632096658
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632096654}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0000076293945, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1640854980
 GameObject:
   m_ObjectHideFlags: 0
@@ -24977,6 +26238,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1729283874}
   - component: {fileID: 1729283875}
+  - component: {fileID: 1729283876}
+  - component: {fileID: 1729283877}
   m_Layer: 0
   m_Name: foot step (12)
   m_TagString: Untagged
@@ -25051,6 +26314,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1729283876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729283873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 9
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1729283877
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729283873}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1730107998
 GameObject:
   m_ObjectHideFlags: 0
@@ -26286,6 +27582,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1775337209}
   - component: {fileID: 1775337210}
+  - component: {fileID: 1775337211}
+  - component: {fileID: 1775337212}
   m_Layer: 0
   m_Name: foot step (7)
   m_TagString: Untagged
@@ -26360,6 +27658,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1775337211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775337208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 8
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1775337212
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775337208}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.000009536743, y: 0.000030517578}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1784907063
 GameObject:
   m_ObjectHideFlags: 0
@@ -26370,6 +27701,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1784907064}
   - component: {fileID: 1784907065}
+  - component: {fileID: 1784907066}
+  - component: {fileID: 1784907067}
   m_Layer: 0
   m_Name: foot step (14)
   m_TagString: Untagged
@@ -26444,6 +27777,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1784907066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784907063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 9
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1784907067
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784907063}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1787771976
 GameObject:
   m_ObjectHideFlags: 0
@@ -27909,8 +29275,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1821461996}
   - component: {fileID: 1821461997}
+  - component: {fileID: 1821461998}
+  - component: {fileID: 1821461999}
   m_Layer: 0
-  m_Name: foot step (19)
+  m_Name: foot step (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27983,6 +29351,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1821461998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821461995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 12
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1821461999
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821461995}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0000038146973, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.4950006
 --- !u!1 &1826674785
 GameObject:
   m_ObjectHideFlags: 0
@@ -28162,6 +29563,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1837560263}
   - component: {fileID: 1837560264}
+  - component: {fileID: 1837560265}
+  - component: {fileID: 1837560266}
   m_Layer: 0
   m_Name: foot step (2)
   m_TagString: Untagged
@@ -28236,6 +29639,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1837560265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837560262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 2
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1837560266
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837560262}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1839351902
 GameObject:
   m_ObjectHideFlags: 0
@@ -28283,6 +29719,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1842176494}
   - component: {fileID: 1842176495}
+  - component: {fileID: 1842176496}
+  - component: {fileID: 1842176497}
   m_Layer: 0
   m_Name: foot step (6)
   m_TagString: Untagged
@@ -28357,6 +29795,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1842176496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842176493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 5
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1842176497
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1842176493}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1858365009
 GameObject:
   m_ObjectHideFlags: 0
@@ -28398,6 +29869,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1870776111}
   - component: {fileID: 1870776112}
+  - component: {fileID: 1870776113}
+  - component: {fileID: 1870776114}
   m_Layer: 0
   m_Name: foot step (4)
   m_TagString: Untagged
@@ -28472,6 +29945,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1870776113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870776110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 3
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1870776114
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870776110}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1890864733
 GameObject:
   m_ObjectHideFlags: 0
@@ -28649,6 +30155,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1903847408}
   - component: {fileID: 1903847409}
+  - component: {fileID: 1903847410}
+  - component: {fileID: 1903847411}
   m_Layer: 0
   m_Name: foot step (13)
   m_TagString: Untagged
@@ -28723,6 +30231,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1903847410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903847407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 9
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1903847411
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903847407}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.4949996
 --- !u!1 &1910611988
 GameObject:
   m_ObjectHideFlags: 0
@@ -29573,6 +31114,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1940482912}
   - component: {fileID: 1940482913}
+  - component: {fileID: 1940482914}
+  - component: {fileID: 1940482915}
   m_Layer: 0
   m_Name: foot step (17)
   m_TagString: Untagged
@@ -29647,6 +31190,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1940482914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1940482911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 11
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1940482915
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1940482911}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.000002861023, y: 0.000015258789}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1942368314
 GameObject:
   m_ObjectHideFlags: 0
@@ -29657,6 +31233,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1942368315}
   - component: {fileID: 1942368316}
+  - component: {fileID: 1942368317}
+  - component: {fileID: 1942368318}
   m_Layer: 0
   m_Name: foot step (8)
   m_TagString: Untagged
@@ -29731,6 +31309,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1942368317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942368314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 5
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &1942368318
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942368314}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000076293945}
+  serializedVersion: 2
+  m_Radius: 2.495
 --- !u!1 &1948522259
 GameObject:
   m_ObjectHideFlags: 0
@@ -30206,7 +31817,7 @@ PrefabInstance:
     - target: {fileID: -7552582706839291426, guid: a32af9930ba587645a1d1e2297ce2dca,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -23.57
+      value: -22.71
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: a32af9930ba587645a1d1e2297ce2dca,
         type: 3}
@@ -30697,6 +32308,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2007919854}
   - component: {fileID: 2007919855}
+  - component: {fileID: 2007919856}
+  - component: {fileID: 2007919857}
   m_Layer: 0
   m_Name: foot step (13) B
   m_TagString: Untagged
@@ -30771,6 +32384,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2007919856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2007919853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 10
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &2007919857
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2007919853}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.000002861023}
+  serializedVersion: 2
+  m_Radius: 2.4950006
 --- !u!1 &2009989417
 GameObject:
   m_ObjectHideFlags: 0
@@ -31955,6 +33601,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2093042750}
   - component: {fileID: 2093042751}
+  - component: {fileID: 2093042752}
+  - component: {fileID: 2093042753}
   m_Layer: 0
   m_Name: foot step (1)
   m_TagString: Untagged
@@ -32029,6 +33677,39 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2093042752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093042749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3016725fb0cb1f4793caffab5ae775d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepGroupOrder: 1
+  footstepManager: {fileID: 1631272214}
+  buttonChangeDuration: 1
+  _audioSource: {fileID: 0}
+  maximizedSize: 1.2
+--- !u!58 &2093042753
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093042749}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.0000038146973}
+  serializedVersion: 2
+  m_Radius: 2.4950004
 --- !u!1 &2105631843
 GameObject:
   m_ObjectHideFlags: 0
