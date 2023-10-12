@@ -15,6 +15,10 @@ public class GroundCameraController : MonoBehaviour
         Story,
         InPlayStart,
         StageStart,
+        FirstPage,
+        SecondPage,
+        ThirdPage,
+        FourthPage,
         StageFinished,
         GameFinished,
         GamePaused
@@ -23,22 +27,28 @@ public class GroundCameraController : MonoBehaviour
     [Header("References")] 
     [SerializeField] 
     private GroundGameManager gameManager;
+
+    [SerializeField] private FootstepManager footstepManager;
     
     [Space(20f)] [Header("Paramters")]
     [NamedArrayAttribute(new string[]
     {
-        "Default", "Story", "InPlayStart","StageFinished", "GameFinished","StageStart, StageFinished"
-        ,"GamePaused"
+        "Default", "Story", "InPlayStart","StageStart",
+        "FirstPage","SecondPage","ThirdPage","FourthPage",
+        "StageFinished", "GameFinished","StageStart"
+        ,"StageFinished","GamePaused"
     })]
-    public int[] cameraMovingTime = new int[7];
+    public int[] cameraMovingTime = new int[20];
     [Space(20f)] [Header("Positions")]
     
     [NamedArrayAttribute(new string[]
     {
-        "Default", "Story", "InPlayStart","StageFinished", "GameFinished","StageStart, StageFinished"
-        ,"GamePaused"
+        "Default", "Story", "InPlayStart","StageStart",
+        "FirstPage","SecondPage","ThirdPage","FourthPage",
+        "StageFinished", "GameFinished","StageStart",
+        "StageFinished","GamePaused"
     })]
-    public Transform[] cameraPositions;
+    public Transform[] cameraPositions = new Transform[20];
     
     void Start()
     {
@@ -47,21 +57,51 @@ public class GroundCameraController : MonoBehaviour
         
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.GameStart)
-            .Subscribe(_ => MoveCamera(
-                cameraPositions[(int)CameraState.Story],
-                cameraMovingTime[(int)CameraState.Story]));
+            .Subscribe(_ =>
+            {
+                MoveCamera(
+                    cameraPositions[(int)CameraState.Story],
+                    cameraMovingTime[(int)CameraState.Story]);
+            });
         
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
-            .Subscribe(_ => MoveCamera(
-                cameraPositions[(int)CameraState.InPlayStart],
-                cameraMovingTime[(int)CameraState.InPlayStart]));
+            .Subscribe(_ =>
+            {
+                MoveCamera(
+                    cameraPositions[(int)CameraState.InPlayStart],
+                    cameraMovingTime[(int)CameraState.InPlayStart]);
+            });
+
+        footstepManager.finishPageTriggerProperty
+            .Where(finishpage => finishpage == true)
+            .Subscribe(_ => 
+            {
+                int calculatedIndex = FootstepManager.currentFootstepGroupOrder / 3 + (int)CameraState.FirstPage;
         
+                if (calculatedIndex >= cameraPositions.Length)
+                {
+                    Debug.LogError($"cameraPositions 배열의 범위를 초과했습니다. 인덱스: {calculatedIndex}, 배열 크기: {cameraPositions.Length}");
+                    return;
+                }
+        
+                if (cameraPositions[calculatedIndex] == null)
+                {
+                    Debug.LogError($"cameraPositions[{calculatedIndex}]는 null입니다.");
+                    return;
+                }
+
+                MoveCamera(cameraPositions[calculatedIndex], cameraMovingTime[calculatedIndex]);
+                footstepManager.finishPageTriggerProperty.Value = false;
+
+                Debug.Log($"현재 페이지{(CameraState)(FootstepManager.currentFootstepGroupOrder / 3 + (int)CameraState.FirstPage)}");
+            });
+       
+
     }
 
     private void MoveCamera(Transform target,float duration)
     {
-        Debug.Log(" tutorial 로 카메라 위치 이동");
         transform.DOMove(target.position, duration);
     }
 }

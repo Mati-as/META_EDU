@@ -27,46 +27,60 @@ public class FootstepController : MonoBehaviour
     [Header("Audio")] 
     private AudioSource _audioSource;
     
+    private SpriteRenderer _spriteRenderer;
 
     public float maximizedSize;
     private Transform _buttonRectTransform;
     private Vector2 _originalSizeDelta;
 
-    public static event Action OnButtionClicked;
     private void Awake()
     {
-        
-  
+        FootstepManager.OnFootstepClicked -= OnButtonClicked;
+        FootstepManager.OnFootstepClicked += OnButtonClicked;
     }
-
+  
 
     private void Start()
     {
-       
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        
+    }
+
+    private void OnDestroy()
+    {
+        FootstepManager.OnFootstepClicked -= OnButtonClicked;
     }
 
     private bool _isUIPlayed;
-    private void ButtonClicked()
+    private void OnButtonClicked()
     {
-
-        FootstepManager.currentFootstepGroupOrder = footstepGroupOrder;
-        OnButtionClicked?.Invoke();
+        FadeOutSprite();
         
-        // if (_audioSource != null)
-        // {
-        //     _audioSource.Play();
-        // }
-        // if (!_isUIPlayed)
-        // {
-        //     _isUIPlayed = true;
-        // }
+        if (_audioSource != null)
+        {
+            _audioSource.Play();
+        }
+        if (!_isUIPlayed)
+        {
+            _isUIPlayed = true;
+        }
         
-        Debug.Log("startButtonClicked");
+        Debug.Log("footstep Cliceked");
+    }
+    private void FadeOutSprite()
+    {
+       
+        _spriteRenderer.DOFade(0, 1f).OnComplete(() => 
+        {
+          
+            this.gameObject.SetActive(false);
+            
+            // Destroy(this.gameObject);
+        });
     }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        
         var targetSize = _originalSizeDelta * maximizedSize;
         //_buttonRectTransform.DOSizeDelta(targetSize, buttonChangeDuration);
     }

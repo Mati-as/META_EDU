@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UniRx;
+using UnityEngine.Serialization;
 
 public class FootstepManager : MonoBehaviour
 {
@@ -81,21 +82,18 @@ public class FootstepManager : MonoBehaviour
         "1st", "2nd", "3rd", "4th"
     })]
     public GameObject[] twelfthFootstepsGroup  = new GameObject[4];
-
-
     private static readonly int TOTAL_FOOTSTEP_GROUP_COUNT = 12;
     private GameObject[][] _footstepGameObjGroups = new GameObject[TOTAL_FOOTSTEP_GROUP_COUNT][];
 
+
+    [FormerlySerializedAs("finishPageToggleProperty")] public  ReactiveProperty<bool> finishPageTriggerProperty;
     public static int currentFootstepGroupOrder { get; set; }
    
     public static int currentFootstepIndexOrder { get; private set; }
-
     
     private void Awake()
     {
-        FootstepController.OnButtionClicked -= DoNext;
-        FootstepController.OnButtionClicked += DoNext;
-        
+        finishPageTriggerProperty = new ReactiveProperty<bool>(false);
         SetTransformArray();
         Initialize();
     }
@@ -123,6 +121,9 @@ public class FootstepManager : MonoBehaviour
             }
         }
     }
+    
+    
+    public static event Action OnFootstepClicked;
     void InspectObject(GameObject obj)
     {
      
@@ -131,15 +132,13 @@ public class FootstepManager : MonoBehaviour
         FootstepController footstepController = obj.GetComponent<FootstepController>();
         if (footstepController != null)
         {
-           
+            currentFootstepGroupOrder = footstepController.footstepGroupOrder - 1;
+              
+            OnFootstepClicked?.Invoke();
+            DoNext();
         }
     }
     
-
-    private void OnDestroy()
-    {
-        FootstepController.OnButtionClicked -= DoNext;
-    }
 
     private void SetTransformArray()
     {
@@ -175,38 +174,97 @@ public class FootstepManager : MonoBehaviour
     }
     private void DoNext()
     {
+        if (currentFootstepIndexOrder < _footstepGameObjGroups[currentFootstepGroupOrder].Length - 1)
+        {
+            OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
+            Debug.Log("OnOtherElementImplemented");
+        }
+        else
+        {  
+            Debug.Log($"currentFootstepGroupOrder : {currentFootstepGroupOrder}");
+            OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
+            Debug.Log("OnLastElementImplemented");
+        }
+        
+        // 10/12/23 순회로직의 경우에는 아래 로직을 사용할 것 
         // foreach (GameObject[] group in _footstepGameObjGroups)
         // {
         
-            foreach (GameObject obj in _footstepGameObjGroups[currentFootstepGroupOrder])
-            {
+            // foreach (GameObject obj in _footstepGameObjGroups[currentFootstepGroupOrder])
+            // {
                
                 // 현재 원소가 마지막 원소인 경우
-                if (obj == _footstepGameObjGroups[currentFootstepGroupOrder]
-                        [_footstepGameObjGroups[currentFootstepGroupOrder].Length - 1])
-                {
-                    OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-                }
-                else
-                {
-                    OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-                }
+                // if (obj == _footstepGameObjGroups[currentFootstepGroupOrder]
+                //         [_footstepGameObjGroups[currentFootstepGroupOrder].Length - 1])
+                // {
+                //     OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
+                //     ActivateNextFootstepGroup();
+                // }
+                // else
+                // {
+                //     OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
+                // }
                 
-            }
+            // }
         // }
     }
     
+    /// <summary>
+    ///  current Footstep이 사라지는 로직(fade 및 SetActive(false) 되는 로직은
+    /// 각 인스턴스화 된 footstepController 스크립트에서 컨트롤합니다.
+    /// </summary>
+    /// <param name="objGroup"></param>
     void OnLastElementImplemented(GameObject[] objGroup)
     {
-        objGroup[currentFootstepIndexOrder].SetActive(false);
-        currentFootstepIndexOrder = 0;
+        ActivateNextGroupOfFootsteps();
+        if (currentFootstepGroupOrder != 0 && currentFootstepGroupOrder % 3 == 0)
+        {
+            pageFinishToggle();
+        }
+
+    }
+
+    private void pageFinishToggle()
+    {
+        Debug.Log("페이지 전환");
+        finishPageTriggerProperty.Value = true;
+    }
+
+    void ActivateNextGroupOfFootsteps()
+    {
+        if (currentFootstepGroupOrder < 12 - 1)
+        {
+            currentFootstepGroupOrder++;
+            _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
+            currentFootstepIndexOrder = 0;
+        }
+        else
+        {
+            Debug.Log("game Finished!");
+            currentFootstepGroupOrder++;//화면전환용
+            pageFinishToggle();
+            
+        }
+        
     }
     
+    
+    /// <summary>
+    /// current Footstep이 사라지는 로직(fade 및 SetActive(false) 되는 로직은
+    /// 각 인스턴스화 된 footstepController 스크립트에서 컨트롤합니다.
+    /// </summary>
+    /// <param name="objGroup"></param>
     void OnOtherElementImplemented(GameObject[] objGroup)
     {
-        objGroup[currentFootstepIndexOrder].SetActive(false);
-        objGroup[currentFootstepIndexOrder + 1].SetActive(true);
         currentFootstepIndexOrder++;
+        if (currentFootstepIndexOrder < objGroup.Length)
+        {
+            objGroup[currentFootstepIndexOrder].SetActive(true);
+        }
+        else
+        {
+            OnLastElementImplemented(objGroup);
+        }
     }
     
 }
