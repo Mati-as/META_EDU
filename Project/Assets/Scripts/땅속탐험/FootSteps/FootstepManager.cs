@@ -131,6 +131,7 @@ public class FootstepManager : MonoBehaviour
     
     private void Awake()
     {
+        LeanTween.init(2000);
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
         SetTransformArray();
         Initialize();
