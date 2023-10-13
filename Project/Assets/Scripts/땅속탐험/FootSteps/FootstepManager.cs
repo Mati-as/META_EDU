@@ -4,86 +4,121 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
-
-
+#if UNITY_EDITOR 
+using MyCustomizedEditor;
+#endif
 
 public class FootstepManager : MonoBehaviour
 {
+   
     [Header("Reference")] [SerializeField] private GroundGameManager gameManager;
+    [SerializeField]
+    private GroundFootStepData _groundFootStepData;
+    public GroundFootStepData GetGroundFootStepData()
+    {
+        return _groundFootStepData;
+    }
     [Space(10)]
     [Header("Footstep Positions")]
+   
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] firstFootstepsGroup    = new GameObject[4]; 
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
+
     public GameObject[] secondFootstepsGroup   = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] thirdFootstepsGroup    = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] fourthFootstepsGroup   = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] fifthFootstepsGroup    = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] sixthFootstepsGroup    = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] seventhFootstepsGroup  = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] eighthFootstepsGroup   = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] ninthFootstepsGroup    = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] tenthFootstepsGroup    = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] eleventhFootstepsGroup = new GameObject[4];
     [Space(10)]
+#if UNITY_EDITOR 
     [NamedArrayAttribute(new string[]
     {
         "1st", "2nd", "3rd", "4th"
     })]
+#endif
     public GameObject[] twelfthFootstepsGroup  = new GameObject[4];
     private static readonly int TOTAL_FOOTSTEP_GROUP_COUNT = 12;
     private GameObject[][] _footstepGameObjGroups = new GameObject[TOTAL_FOOTSTEP_GROUP_COUNT][];
@@ -254,9 +289,15 @@ public class FootstepManager : MonoBehaviour
         else
         {
             Debug.Log("game Finished!");
-            currentFootstepGroupOrder++;//화면전환용
+           
+            currentFootstepGroupOrder++;
+            
+            //화면전환용
             pageFinishToggle();
             
+            //state전환용
+            gameManager.isGameFinishedRP.Value = true;
+
         }
         
     }

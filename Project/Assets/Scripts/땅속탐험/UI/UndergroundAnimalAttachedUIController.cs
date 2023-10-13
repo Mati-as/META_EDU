@@ -7,7 +7,9 @@ using DG.Tweening;
 using KoreanTyper;
 using Unity.VisualScripting;
 
-
+#if UNITY_EDITOR 
+using MyCustomizedEditor;
+#endif
 public class UndergroundAnimalAttachedUIController : MonoBehaviour
 {
    enum messageID
@@ -30,7 +32,8 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    
    private TMP_Text _tmp;
    private GameObject UIGameObj;
-   private Vector3 _initialLocation;
+   private Vector3 _textBoxInitialPosition;
+
    private Coroutine _typingCoroutine;
    [Header("UI parts")]
    public float textPrintingSpeed;
@@ -40,48 +43,56 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
 
    private Vector3 _maximizedSizeVec;
    [Space(10)]
+#if UNITY_EDITOR 
    [NamedArrayAttribute(new string[]
    {
       "scale", "move", "3rd", "4th"
    })]
+#endif
+ 
    public float[] durations  = new float[4];
    
+   
+#if UNITY_EDITOR 
    [NamedArrayAttribute(new string[]
    {
       "initialOffset", "messagePlayingTime", "intervalBetweenFirstMessageAndSecond", "4th"
    })]
+#endif
    public float[] waitTimes  = new float[4];
    
     
-   [Space(10)]
+
+#if UNITY_EDITOR 
    [NamedArrayAttribute(new string[]
    {
       "OnEnable", "OnNextAnimal", "3rd", "4th"
    })]
+#endif
  
    [TextArea]
    private string OnNext;
    public string[] messages  = new string[4];
 
    void Awake()
-   {
+   {  
+      //초기위치 정보 저장 후, 부모객체 위치로 이동 및 OnEnable에서 다시 UI재생위치로 이동.
+      UIGameObj = transform.GetChild(transform.childCount - 1).gameObject;
+      _textBoxInitialPosition = UIGameObj.transform.position;
+      UIGameObj.transform.position = gameObject.transform.position;
+   
+      gameObject.transform.localScale = Vector3.zero;
+      
+      
       _maximizedSizeVec = maximizedSize * Vector3.one;
       
       _tmp = GetComponentInChildren<TMP_Text>();
       _tmp.text = $"{gameObject.name} 찾았다!";
        
-      
-      //초기위치 정보 저장 후, 부모객체 위치로 이동 및 OnEnable에서 다시 UI재생위치로 이동.
-      UIGameObj = transform.GetChild(transform.childCount - 1).gameObject;
-      _initialLocation = UIGameObj.transform.position;
-      UIGameObj.transform.position = gameObject.transform.position;
-       
    }
-   
-   
+    
    void Start()
    {
-     
       gameObject.SetActive(false);
    }
 
@@ -99,18 +110,26 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
          return;
       }
       
+      //animal control section;
+      LeanTween.scale(gameObject,  Vector3.one, durations[(int)tweenParam.Scale])
+         .setEaseInOutBounce();
+        
       
       
+      //AttachedUI control section;
       _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-      LeanTween.move(UIGameObj, _initialLocation, durations[(int)tweenParam.Move]);
-      
+      LeanTween.move(UIGameObj, _textBoxInitialPosition, durations[(int)tweenParam.Move]);
       LeanTween.scale(UIGameObj, _maximizedSizeVec, durations[(int)tweenParam.Scale])
          .setEaseInOutBounce()
-         .setOnComplete(()=>  
-            LeanTween.delayedCall
+         .setOnComplete(() =>
+            {
+               Debug.Log("sizeIncreasing Function worked");
+               LeanTween.delayedCall
                (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
-               ,PlayNextMessageAnim)
+                  , PlayNextMessageAnim);
+            }
+         
          );
       
    }
@@ -121,7 +140,15 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    private void PlayNextMessageAnim()
    {
       StopCoroutine(_typingCoroutine);
-      _tmp.text = "다음 동물친구를 \n 찾아보자!";
+      if (gameObject.name != "여우")
+      {
+         _tmp.text = "다음 동물친구를 \n 찾아보자!";
+      }
+      else
+      {  
+         _tmp.text = "친구들을 \n 모두 찾았어!";
+      }
+    
          
          //messages[(int)messageID.OnNextAnimal];
       _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));

@@ -52,6 +52,8 @@ public class UndergroundUIManager : MonoBehaviour
     public CanvasGroup storyUICvsGroup;
     public RectTransform storyUIRectTransform;
     [SerializeField]
+    private RectTransform _storyUIInitialRectPos;
+    [SerializeField]
     private TMP_Text _storyUITmp;
     [SerializeField]
     private UIAudioController _uiAudioController;
@@ -86,7 +88,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void Awake()
     {
         tutorialUIGameObject.SetActive(true);
-        
+        _storyUIInitialRectPos = storyUIRectTransform;  
         DOTween.Init();
         Init();
         tutorialUICvsGroup.DOFade(1, 1);
@@ -114,9 +116,22 @@ public class UndergroundUIManager : MonoBehaviour
             .Subscribe(_ =>  OnStageStart())
             .AddTo(this);
         
+        gameManager.currentStateRP
+            .Where(_currentState =>_currentState.GameState == IState.GameStateList.GameOver)
+            .Delay(TimeSpan.FromSeconds(7.5f))
+            .Subscribe(_ =>  OnGameOver())
+            .AddTo(this);
+        
     }
 
 
+    private void OnGameOver()
+    {
+        Debug.Log("종료UI표출");
+        LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
+            .setEase(LeanTweenType.easeInOutBack);
+        UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
+    }
     private void OnGameStart()
     {
         LeanTween.move(tutorialUIRectTransform,

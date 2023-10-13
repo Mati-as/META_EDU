@@ -3,7 +3,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 
 public class FootstepController : MonoBehaviour
@@ -11,12 +14,14 @@ public class FootstepController : MonoBehaviour
     [Header("button info")] [Space(10f)]
     public int footstepGroupOrder;
 
+    private CapsuleCollider _collider;
    
     [Space(10f)]
     [SerializeField]
     private FootstepManager footstepManager;
     public float buttonChangeDuration;
     [Space(20f)]
+    private GroundFootStepData _groundFootStepData;
     
     
   
@@ -37,20 +42,67 @@ public class FootstepController : MonoBehaviour
     [SerializeField]
     public GameObject animalByLastFootstep;
     [SerializeField] public string animalNameToCall;
-   
 
+
+    private Vector3 _defaultSize;
     private void Awake()
     {
+        _defaultSize = transform.localScale;
+        
         FootstepManager.OnFootstepClicked -= OnButtonClicked;
         FootstepManager.OnFootstepClicked += OnButtonClicked;
+        _collider = GetComponent<CapsuleCollider>();
     }
   
 
     private void Start()
     {
+        _groundFootStepData = footstepManager.GetGroundFootStepData();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        UpScale();
+    }
+
+    private LTDescr upscaleAnim;
+
+    private void UpScale()
+    {
+       
+        if (!_isClicked)
+        {
+            Debug.Log("사이즈증가중");
+            transform.localScale = _defaultSize;
+            LeanTween.scale(gameObject,
+                    _defaultSize * _groundFootStepData.scaleUpSize,
+                    _groundFootStepData.sizeChangeDuration)
+                .setEase(LeanTweenType.easeOutBounce)
+                .setOnComplete(() =>
+                {
+                    DownScale();
+                });
+        }
+  
     }
     
+
+    private void DownScale()
+    {
+        
+        if (!_isClicked)
+        {
+            Debug.Log("사이즈감소중");
+            transform.localScale = _defaultSize * _groundFootStepData.scaleUpSize;
+           
+            LeanTween.scale(gameObject,
+                    _defaultSize * _groundFootStepData.defaultFootstepSize,
+                    _groundFootStepData.sizeChangeDuration)
+                .setEase(LeanTweenType.easeOutBounce)
+                .setOnComplete(()=>
+                {
+                    UpScale();
+                });
+        }
+ 
+    }
 
     private void OnDestroy()
     {
@@ -58,37 +110,63 @@ public class FootstepController : MonoBehaviour
     }
 
     private bool _isUIPlayed;
+    private bool _isClicked =false;
     private void OnButtonClicked()
     {
-        FadeOutSprite();
-
-        if (animalByLastFootstep != null && animalNameToCall != string.Empty)
-        {
-            if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
+            //중복클릭 방지용 콜라이더 비활성화.
+            _collider.enabled = false;
+            
+            
+            FadeOutSprite();
+            // LeanTween.cancel(gameObject);
+            // transform.localScale = _defaultSize;
+            // LeanTween.scale(gameObject, Vector3.zero,  1f)
+            //     .setEase(LeanTweenType.easeShake)
+            //     .setOnComplete(() =>
+            //     {
+            //         _isClicked = false;
+            //         transform.localScale = _defaultSize;
+            //         UpScale();
+            //     } );
+           
+            if (animalByLastFootstep != null && animalNameToCall != string.Empty)
             {
-                animalByLastFootstep.SetActive(true);
-                //tween 추가하세요
+                if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
+                {
+                  
+                    animalByLastFootstep.SetActive(true);
+                    //tween 추가하세요
+                }
             }
-        }
-     
-     
-        if (_audioSource != null)
-        {
-            _audioSource.Play();
-        }
-        if (!_isUIPlayed)
-        {
-            _isUIPlayed = true;
-        }
         
-        Debug.Log("footstep Cliceked");
+            if (_audioSource != null)
+            {
+                _audioSource.Play();
+            }
+            if (!_isUIPlayed)
+            {
+                _isUIPlayed = true;
+            }
+        
+            Debug.Log("The footstep's been Clicked");
+        
+     
     }
+
+    private void OnEnable()
+    {
+     
+        _collider.enabled = true;
+    }
+
+
     private void FadeOutSprite()
     {
        
-        _spriteRenderer.DOFade(0, 1f).OnComplete(() => 
+        _spriteRenderer.DOFade(0, 0.85f).OnComplete(() =>
         {
-          
+            _collider.enabled = true;
+            UpScale();
             this.gameObject.SetActive(false);
             
             // Destroy(this.gameObject);

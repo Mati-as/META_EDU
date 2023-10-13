@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -5,6 +6,10 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
+#if UNITY_EDITOR
+using MyCustomizedEditor;
+#endif
+
 
 public class GroundCameraController : MonoBehaviour
 {
@@ -23,6 +28,8 @@ public class GroundCameraController : MonoBehaviour
         GameFinished,
         GamePaused
     }
+
+    public float pageChangeInterval;
     
     [Header("References")] 
     [SerializeField] 
@@ -30,6 +37,7 @@ public class GroundCameraController : MonoBehaviour
 
     [SerializeField] private FootstepManager footstepManager;
     
+#if UNITY_EDITOR
     [Space(20f)] [Header("Paramters")]
     [NamedArrayAttribute(new string[]
     {
@@ -38,9 +46,13 @@ public class GroundCameraController : MonoBehaviour
         "StageFinished", "GameFinished","StageStart"
         ,"StageFinished","GamePaused"
     })]
-    public int[] cameraMovingTime = new int[20];
+#endif
+
+    public float[] cameraMovingTime = new float[20];
     [Space(20f)] [Header("Positions")]
     
+    
+#if UNITY_EDITOR
     [NamedArrayAttribute(new string[]
     {
         "Default", "Story", "InPlayStart","StageStart",
@@ -48,6 +60,8 @@ public class GroundCameraController : MonoBehaviour
         "StageFinished", "GameFinished","StageStart",
         "StageFinished","GamePaused"
     })]
+#endif
+
     public Transform[] cameraPositions = new Transform[20];
     
     void Start()
@@ -75,6 +89,7 @@ public class GroundCameraController : MonoBehaviour
 
         footstepManager.finishPageTriggerProperty
             .Where(finishpage => finishpage == true)
+            .Delay(TimeSpan.FromSeconds(pageChangeInterval))
             .Subscribe(_ => 
             {
                 int calculatedIndex = FootstepManager.currentFootstepGroupOrder / 3 + (int)CameraState.FirstPage;
@@ -106,25 +121,4 @@ public class GroundCameraController : MonoBehaviour
     }
 }
 
-public class NamedArrayAttribute : PropertyAttribute
-{
-    public readonly string[] names;
-    public NamedArrayAttribute(string[] names) { this.names = names; }
-}
 
-[CustomPropertyDrawer(typeof(NamedArrayAttribute))]
-public class NamedArrayDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-    {
-        try
-        {
-            int pos = int.Parse(property.propertyPath.Split('[', ']')[1]);
-            EditorGUI.PropertyField(rect, property, new GUIContent(((NamedArrayAttribute)attribute).names[pos]));
-        }
-        catch
-        {
-            EditorGUI.PropertyField(rect, property, label);
-        }
-    }
-}
