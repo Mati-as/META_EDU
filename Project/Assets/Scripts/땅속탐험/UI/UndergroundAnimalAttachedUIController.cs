@@ -129,7 +129,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
                (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
                   , PlayNextMessageAnim);
             }
-         
+               
          );
       
    }
