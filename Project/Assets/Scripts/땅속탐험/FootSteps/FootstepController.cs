@@ -43,6 +43,8 @@ public class FootstepController : MonoBehaviour
     public GameObject animalByLastFootstep;
     [SerializeField] public string animalNameToCall;
 
+    
+    
 
     private Vector3 _defaultSize;
     private void Awake()
@@ -59,6 +61,7 @@ public class FootstepController : MonoBehaviour
     {
         _groundFootStepData = footstepManager.GetGroundFootStepData();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteRenderer.DOFade(0, 0.05f);
         UpScale();
     }
 
@@ -69,7 +72,7 @@ public class FootstepController : MonoBehaviour
        
         if (!_isClicked)
         {
-            Debug.Log("사이즈증가중");
+            _spriteRenderer.DOFade(1, 2.0f);
             transform.localScale = _defaultSize;
             LeanTween.scale(gameObject,
                     _defaultSize * _groundFootStepData.scaleUpSize,
@@ -89,7 +92,6 @@ public class FootstepController : MonoBehaviour
         
         if (!_isClicked)
         {
-            Debug.Log("사이즈감소중");
             transform.localScale = _defaultSize * _groundFootStepData.scaleUpSize;
            
             LeanTween.scale(gameObject,
@@ -118,22 +120,12 @@ public class FootstepController : MonoBehaviour
             
             
             FadeOutSprite();
-            // LeanTween.cancel(gameObject);
-            // transform.localScale = _defaultSize;
-            // LeanTween.scale(gameObject, Vector3.zero,  1f)
-            //     .setEase(LeanTweenType.easeShake)
-            //     .setOnComplete(() =>
-            //     {
-            //         _isClicked = false;
-            //         transform.localScale = _defaultSize;
-            //         UpScale();
-            //     } );
-           
+       
             if (animalByLastFootstep != null && animalNameToCall != string.Empty)
             {
                 if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
                 {
-                  
+                   Debug.Log("동물 소환");
                     animalByLastFootstep.SetActive(true);
                     //tween 추가하세요
                 }
@@ -153,16 +145,21 @@ public class FootstepController : MonoBehaviour
      
     }
 
+   
+    private Tweener _fadeInTweener; 
+    
+
     private void OnEnable()
     {
-     
+      
+        _fadeInTweener = _spriteRenderer.DOFade(1, 0.85f);
         _collider.enabled = true;
     }
 
 
     private void FadeOutSprite()
     {
-       
+        _fadeInTweener.Kill();
         _spriteRenderer.DOFade(0, 0.85f).OnComplete(() =>
         {
             _collider.enabled = true;

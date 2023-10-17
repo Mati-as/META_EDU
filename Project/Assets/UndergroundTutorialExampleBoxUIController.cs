@@ -53,7 +53,8 @@ public class UndergroundTutorialExampleBoxUIController : MonoBehaviour
    
    rightOriginalPosition = rightRectTransform.anchoredPosition;
     originalPosition = leftRectTransform.anchoredPosition;
-   
+
+    _dustDeafultPosition = dustPosition.anchoredPosition;
   }
 
   
@@ -74,6 +75,8 @@ public class UndergroundTutorialExampleBoxUIController : MonoBehaviour
 
   void MoveRabbitToTarget()
   {
+    
+    MoveDust();
     LeanTween.move(rightRectTransform, rigtMoveTarget1.anchoredPosition, 1f)
       .setOnComplete(() => 
       {
@@ -86,6 +89,8 @@ public class UndergroundTutorialExampleBoxUIController : MonoBehaviour
   }
   void MoveKidsToTarget()
   {
+    
+    MoveBackDust();
     LeanTween.move(leftRectTransform, target1.anchoredPosition, 1f)
       .setOnComplete(() => 
       {
@@ -96,9 +101,11 @@ public class UndergroundTutorialExampleBoxUIController : MonoBehaviour
  
   void MoveToTarget2()
   {
+    
     LeanTween.move(leftRectTransform, target2.anchoredPosition, 1f)
       .setOnComplete(() =>
       {
+        
         Invoke("MoveToOriginalPosition", 1f); // 1초 뒤에 MoveToOriginalPosition 호출
       });
   }
@@ -106,5 +113,20 @@ public class UndergroundTutorialExampleBoxUIController : MonoBehaviour
   void MoveToOriginalPosition()
   {
     LeanTween.move(leftRectTransform, originalPosition, 1f);
+  }
+
+
+  public RectTransform dustPosition;
+ 
+  public RectTransform dustTargetPosition;
+  private Vector3 _dustDeafultPosition;
+  private void MoveDust()
+  {
+    LeanTween.move(dustPosition, dustTargetPosition.anchoredPosition, 1f);
+  }
+
+  private void MoveBackDust()
+  {
+    LeanTween.move(dustPosition, _dustDeafultPosition, 1f);
   }
 }

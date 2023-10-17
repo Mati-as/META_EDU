@@ -88,49 +88,53 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       
       _tmp = GetComponentInChildren<TMP_Text>();
       _tmp.text = $"{gameObject.name} 찾았다!";
+     
        
    }
     
-   void Start()
-   {
-      gameObject.SetActive(false);
-   }
+   // void Start()
+   // {
+   //    // gameObject.SetActive(false);
+   // }
 
    private void OnDisable()
    {
       UIGameObj.transform.localScale = Vector3.zero;
    }
 
-   private bool _isFirstlyEnabled;
+   private bool _isFirstlyEnabled = false;
    void OnEnable()
    {
-      if (!_isFirstlyEnabled)
-      {
-         _isFirstlyEnabled = true;
-         return;
-      }
+       if (!GroundGameManager.isGameStartedbool)
+       {
+         gameObject.SetActive(false);
+       }
+       
+       
+       else
+       {
+           
+          //animal control section;
+          LeanTween.scale(gameObject,  Vector3.one, durations[(int)tweenParam.Scale])
+             .setEaseInOutBounce();
       
-      //animal control section;
-      LeanTween.scale(gameObject,  Vector3.one, durations[(int)tweenParam.Scale])
-         .setEaseInOutBounce();
-        
-      
-      
-      //AttachedUI control section;
-      _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
+          //AttachedUI control section;
+          _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-      LeanTween.move(UIGameObj, _textBoxInitialPosition, durations[(int)tweenParam.Move]);
-      LeanTween.scale(UIGameObj, _maximizedSizeVec, durations[(int)tweenParam.Scale])
-         .setEaseInOutBounce()
-         .setOnComplete(() =>
-            {
-               Debug.Log("sizeIncreasing Function worked");
-               LeanTween.delayedCall
-               (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
-                  , PlayNextMessageAnim);
-            }
+          LeanTween.move(UIGameObj, _textBoxInitialPosition, durations[(int)tweenParam.Move]);
+          LeanTween.scale(UIGameObj, _maximizedSizeVec, durations[(int)tweenParam.Scale])
+             .setEaseInOutBounce()
+             .setOnComplete(() =>
+                {
+                   Debug.Log("sizeIncreasing Function worked");
+                   LeanTween.delayedCall
+                   (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
+                      , PlayNextMessageAnim);
+                }
                
-         );
+             );
+       }
+      
       
    }
 
@@ -140,6 +144,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    private void PlayNextMessageAnim()
    {
       StopCoroutine(_typingCoroutine);
+      
       if (gameObject.name != "여우")
       {
          _tmp.text = "다음 동물친구를 \n 찾아보자!";
@@ -148,26 +153,34 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       {  
          _tmp.text = "친구들을 \n 모두 찾았어!";
       }
-    
-         
-         //messages[(int)messageID.OnNextAnimal];
+      
       _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-      LeanTween.delayedCall(10f, () =>
-         {
-            LeanTween.scale(gameObject, Vector3.zero, durations[(int)tweenParam.Scale])
-               .setEaseInOutBounce();
+      if (gameObject.name != "여우" && GroundGameManager.isGameFinishedbool == false)
+      {
+          
+         Debug.Log("동물 사라지는 중");
+         LeanTween.delayedCall(6f, () =>
+            {
+               LeanTween.scale(gameObject, Vector3.zero, durations[(int)tweenParam.Scale])
+                  .setEaseInOutBounce();
 
 
-            LeanTween.scale(UIGameObj, Vector3.zero, durations[(int)tweenParam.Scale])
-               .setEaseInOutBounce()
-               .setOnComplete(() =>
-               {
-                  StopCoroutine(_typingCoroutine);
-                  gameObject.SetActive(false);
-               });
-         }
-      );
+               LeanTween.scale(UIGameObj, Vector3.zero, durations[(int)tweenParam.Scale])
+                  .setEaseInOutBounce()
+                  .setOnComplete(() =>
+                  {
+                     StopCoroutine(_typingCoroutine);
+                     gameObject.SetActive(false);
+                  });
+            }
+         );
+      }
+   
+         //messages[(int)messageID.OnNextAnimal];
+      
+
+    
    }
    
    public IEnumerator TypeIn(string str, float offset)

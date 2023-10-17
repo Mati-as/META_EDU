@@ -116,9 +116,9 @@ public class UndergroundUIManager : MonoBehaviour
             .Subscribe(_ =>  OnStageStart())
             .AddTo(this);
         
-        gameManager.currentStateRP
-            .Where(_currentState =>_currentState.GameState == IState.GameStateList.GameOver)
-            .Delay(TimeSpan.FromSeconds(7.5f))
+        gameManager.isGameFinishedRP
+            .Where(value =>value == true)
+            .Delay(TimeSpan.FromSeconds(8f))
             .Subscribe(_ =>  OnGameOver())
             .AddTo(this);
         

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using 땅속탐험.Utils;
@@ -24,11 +25,7 @@ public class GroundGameManager : MonoBehaviour
     public StateController _stateController { get; private set; }
 
 
-    private static readonly Dictionary<int, GameObject> animalGameObjectList = new();
-    private static Dictionary<int, GameObject> footstepGameObjectList = new();
-
-    public GameObject Animal_group;
-    public GameObject Footstep_group;
+  
 
 
     #region legacy 예정
@@ -57,6 +54,9 @@ public class GroundGameManager : MonoBehaviour
     public ReactiveProperty<bool> isStageStartButtonClicked;
     public ReactiveProperty<bool> isGameFinishedRP;
 
+
+    public static bool isGameFinishedbool = false;
+    public static bool isGameStartedbool;
     //10/10 초기화 관련 null 문제 해결
 
     public ReactiveProperty<IState> currentStateRP { get; private set; }
@@ -71,6 +71,7 @@ public class GroundGameManager : MonoBehaviour
         isStageStartButtonClicked = new ReactiveProperty<bool>(false);
         isGameFinishedRP = new ReactiveProperty<bool>(false);
         _stateController = new StateController();
+       
 
         Init();
 
@@ -83,11 +84,13 @@ public class GroundGameManager : MonoBehaviour
 
     private void Start()
     {
+        
         isStartButtonClicked
             .Subscribe(_ =>
             {
                 Debug.Log("게임시작");
                 SetStage(_gameStart);
+                isGameStartedbool = true;
                 Debug.Log($" 현재 statecontroller의 GameState{_stateController.GameState}");
             });
 
@@ -101,11 +104,13 @@ public class GroundGameManager : MonoBehaviour
             });
 
         isGameFinishedRP
+            .Where(value=>value ==true)
             .Subscribe(_ =>
             {
                 Debug.Log("게임종료");
+                isGameFinishedbool = true;
                 SetStage(_gameover);
-                Debug.Log($" 현재 statecontroller의 GameState{_stateController.GameState}");
+                ActivateAllAnimals();
             });
     }
 
@@ -135,11 +140,31 @@ public class GroundGameManager : MonoBehaviour
         Screen.SetResolution(width, height, Screen.fullScreen);
     }
 
+    public List<GameObject> AllAnimals;
     private void SetAnimalIntoDictionaryAndList()
     {
-        //group에 저장되어있는 순서대로 저장
-        for (var i = 0; i < Animal_group.transform.childCount; i++)
-            animalGameObjectList.Add(i, Animal_group.transform.GetChild(i).gameObject);
-        //Debug.Log(Animal_group.transform.childCount);
+       
+        
+        // //group에 저장되어있는 순서대로 저장
+        // for (var i = 0; i < Animal_group.transform.childCount; i++)
+        //     animalGameObjectList.Add(i, Animal_group.transform.GetChild(i).gameObject);
+        // //Debug.Log(Animal_group.transform.childCount);
+    }
+
+    private void ActivateAllAnimals()
+    {
+        foreach (GameObject obj in AllAnimals)
+        {
+            Debug.Log("게임종료 및 동물 표출");
+            obj.SetActive(true);
+            obj.transform.DOScale(1f, 1f);
+           
+            if (obj.transform.childCount > 0) // 자식 오브젝트가 있는지 확인
+            {
+                Transform lastChild = obj.transform.GetChild(obj.transform.childCount - 1);
+                lastChild.gameObject.SetActive(false);
+            }
+            
+        }
     }
 }

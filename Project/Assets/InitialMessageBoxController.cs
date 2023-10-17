@@ -16,6 +16,7 @@ public class InitialMessageBoxController : MonoBehaviour
         
         gameManager.currentStateRP
             .Where(CurrentState => CurrentState.GameState == IState.GameStateList.StageStart)
+            .Delay(TimeSpan.FromSeconds(1f))
             .Subscribe(_=>
             {
                 Debug.Log("Initial Message Out!");
