@@ -124,13 +124,22 @@ public class UndergroundUIManager : MonoBehaviour
         
     }
 
+    [SerializeField] private GameObject buttonToDeactivate;
 
     private void OnGameOver()
     {
         Debug.Log("종료UI표출");
+        buttonToDeactivate.SetActive(false);
+       
+       
+      
+
         LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
-            .setEase(LeanTweenType.easeInOutBack);
-        UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
+            .setEase(LeanTweenType.easeInOutBack)
+            .setOnComplete(() => LeanTween.delayedCall(1.0f,MoveUIRight));
+        
+        
+            UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
     }
     private void OnGameStart()
     {
@@ -138,9 +147,15 @@ public class UndergroundUIManager : MonoBehaviour
                 new Vector2(0, tutorialAwayTransfrom.position.y),
                 2f)
             .setEase(LeanTweenType.easeInOutBack);
-
+            
         Observable.Timer(TimeSpan.FromSeconds(stagesInterval))
             .Do(_ => UpdateUI(storyUICvsGroup, _storyUITmp, _firstUIMessage)).Subscribe().AddTo(this);
+    }
+
+    public RectTransform uiAwayPosition;
+    private void MoveUIRight()
+    {
+        LeanTween.move(storyUIRectTransform, uiAwayPosition.position, 3f).setEase(LeanTweenType.easeInOutBack);
     }
 
     private void OnStageStart()

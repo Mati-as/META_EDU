@@ -28,8 +28,8 @@ public class InitialMessageBoxController : MonoBehaviour
             .Where(CurrentState => CurrentState.GameState == IState.GameStateList.GameOver)
             .Subscribe(_=>
             {
-                Debug.Log("Initial Message Out!");
-                LeanTween.scale(gameObject, Vector3.zero, 2)
+                Debug.Log("첫번째 '밟자국을 밟아봐' 메세지 삭제");
+                LeanTween.scale(gameObject, Vector3.zero, 1)
                     .setEaseInOutBounce();
             });
         

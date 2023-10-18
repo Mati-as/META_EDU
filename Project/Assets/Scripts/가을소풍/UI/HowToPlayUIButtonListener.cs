@@ -24,6 +24,7 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
     [SerializeField]
     private AudioSource _audioSource;
 
+    public AudioClip buttonSound;
  
 
     public float maximizedSize;
@@ -53,20 +54,19 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
   
         if (gameManager.isStartButtonClicked.Value == false)
         {
+            Debug.Log("스타튼 버튼클릭");
             gameManager.isStartButtonClicked.Value = true;
         }
-        else
+     
+        if (_audioSource != null)
         {
-            gameManager.isStartButtonClicked.Value = false;
+            _audioSource.clip = buttonSound;
+            _audioSource.Play();
         }
-        // if (_audioSource != null)
-        // {
-        //     _audioSource.Play();
-        // }
-        // if (!_isUIPlayed)
-        // {
-        //     _isUIPlayed = true;
-        // }
+        if (!_isUIPlayed)
+        {
+            _isUIPlayed = true;
+        }
         
       Debug.Log("startButtonClicked");
     }

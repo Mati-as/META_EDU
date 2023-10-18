@@ -14,6 +14,16 @@ using MyCustomizedEditor;
 
 public class FootstepManager : MonoBehaviour
 {
+
+    enum FootstepSounds
+    {
+        Normal1,
+        Normal2,
+        Found1,
+        Found2
+    }
+    private AudioSource _audioSource;
+    public AudioClip[] _audioClips = new AudioClip[4];
    
     [Header("Reference")] [SerializeField] private GroundGameManager gameManager;
     [SerializeField]
@@ -156,6 +166,8 @@ public class FootstepManager : MonoBehaviour
     
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
+        
         LeanTween.init(2000);
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
         SetTransformArray();
@@ -305,6 +317,17 @@ public class FootstepManager : MonoBehaviour
     /// <param name="objGroup"></param>
     void OnLastElementImplemented(GameObject[] objGroup)
     {
+        if (currentFootstepGroupOrder % 2 == 0)
+        {
+            _audioSource.clip = _audioClips[(int)FootstepSounds.Found1];
+        }
+        else
+        {
+            _audioSource.clip = _audioClips[(int)FootstepSounds.Found2];
+        }
+        _audioSource.Play();
+        
+        
         ShakeAndRemoveDust();
         
         
@@ -369,11 +392,11 @@ public class FootstepManager : MonoBehaviour
     {
         if (currentFootstepGroupOrder % 3 == 0)
         {
-            yield return GetWaitForSeconds(8.5f);
+            yield return GetWaitForSeconds(9f);
         }
         else
         {
-            yield return GetWaitForSeconds(4f);
+            yield return GetWaitForSeconds(6f);
         }
         
         _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
@@ -389,6 +412,19 @@ public class FootstepManager : MonoBehaviour
     /// <param name="objGroup"></param>
     void OnOtherElementImplemented(GameObject[] objGroup)
     {
+
+        if (currentFootstepGroupOrder % 2 == 0)
+        {
+            _audioSource.clip = _audioClips[(int)FootstepSounds.Normal1];
+        }
+        else
+        {
+            _audioSource.clip = _audioClips[(int)FootstepSounds.Normal2];
+        }
+      
+        _audioSource.Play();
+        
+        
         currentFootstepIndexOrder++;
         if (currentFootstepIndexOrder < objGroup.Length)
         {

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
@@ -86,6 +88,7 @@ public class GroundGameManager : MonoBehaviour
     {
         
         isStartButtonClicked
+            .Where(value=>value==true)
             .Subscribe(_ =>
             {
                 Debug.Log("게임시작");
@@ -96,6 +99,7 @@ public class GroundGameManager : MonoBehaviour
 
 
         isStageStartButtonClicked
+            .Where(value=>value==true)
             .Subscribe(_ =>
             {
                 Debug.Log("스테이지 시작");
@@ -107,13 +111,15 @@ public class GroundGameManager : MonoBehaviour
             .Where(value=>value ==true)
             .Subscribe(_ =>
             {
-                Debug.Log("게임종료");
+                
                 isGameFinishedbool = true;
                 SetStage(_gameover);
-                ActivateAllAnimals();
+                Debug.Log("게임종료");
+                _finishAnimalActivationCoroutine = StartCoroutine(ActivateAllAnimals());
             });
     }
 
+    private Coroutine _finishAnimalActivationCoroutine;
     private void Update()
     {
         _mainElapsedTime += Time.deltaTime;
@@ -125,11 +131,15 @@ public class GroundGameManager : MonoBehaviour
         //Model Area
         _stateController.ChangeState(state);
         _stateController.GameState = state.GameState;
-
-
+        
+        _stateController?.Enter();
+        
         //Rx사용을 위한 Presenter Area
         currentStateRP.Value = state;
         currentStateRP.Value.GameState = state.GameState;
+
+        Debug.Log($"현재 게임상태 RP: {currentStateRP.Value.GameState}");
+
     }
 
     private float _mainElapsedTime;
@@ -151,8 +161,10 @@ public class GroundGameManager : MonoBehaviour
         // //Debug.Log(Animal_group.transform.childCount);
     }
 
-    private void ActivateAllAnimals()
+    IEnumerator ActivateAllAnimals()
     {
+        yield return new WaitForSeconds(8f);
+        
         foreach (GameObject obj in AllAnimals)
         {
             Debug.Log("게임종료 및 동물 표출");
@@ -161,8 +173,13 @@ public class GroundGameManager : MonoBehaviour
            
             if (obj.transform.childCount > 0) // 자식 오브젝트가 있는지 확인
             {
-                Transform lastChild = obj.transform.GetChild(obj.transform.childCount - 1);
-                lastChild.gameObject.SetActive(false);
+                // 랜덤시스템 도입시 여우가 아닌 
+                if (obj.name != "여우")
+                {
+                    Transform lastChild = obj.transform.GetChild(obj.transform.childCount - 1);
+                    lastChild.gameObject.SetActive(false);
+                }
+                
             }
             
         }

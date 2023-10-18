@@ -6,6 +6,7 @@ using TMPro;
 using DG.Tweening;
 using KoreanTyper;
 using Unity.VisualScripting;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR 
 using MyCustomizedEditor;
@@ -38,8 +39,10 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    [Header("UI parts")]
    public float textPrintingSpeed;
 
-   [Header("Tween Parameters")] 
-   public float maximizedSize;
+   [FormerlySerializedAs("maximizedSize")] [Header("Tween Parameters")] 
+   public float UImaximizedSize;
+
+   public float animalMaximizedSize;
 
    private Vector3 _maximizedSizeVec;
    [Space(10)]
@@ -70,10 +73,15 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    })]
 #endif
  
-   [TextArea]
-   private string OnNext;
-   public string[] messages  = new string[4];
 
+   private string OnNext;
+   //public string[] messages  = new string[4];
+
+   
+   [TextArea]
+   public string firstMessage;
+   [TextArea]
+   public string secondMessage;
    void Awake()
    {  
       //초기위치 정보 저장 후, 부모객체 위치로 이동 및 OnEnable에서 다시 UI재생위치로 이동.
@@ -84,7 +92,8 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       gameObject.transform.localScale = Vector3.zero;
       
       
-      _maximizedSizeVec = maximizedSize * Vector3.one;
+      _maximizedSizeVec = UImaximizedSize * Vector3.one;
+      
       
       _tmp = GetComponentInChildren<TMP_Text>();
       _tmp.text = $"{gameObject.name} 찾았다!";
@@ -115,7 +124,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
        {
            
           //animal control section;
-          LeanTween.scale(gameObject,  Vector3.one, durations[(int)tweenParam.Scale])
+          LeanTween.scale(gameObject, Vector3.one * animalMaximizedSize, durations[(int)tweenParam.Scale])
              .setEaseInOutBounce();
       
           //AttachedUI control section;
@@ -138,8 +147,9 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       
    }
 
-   
-   
+
+
+   private float _waitTimeToDisappear=3.6f;
    
    private void PlayNextMessageAnim()
    {
@@ -147,7 +157,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       
       if (gameObject.name != "여우")
       {
-         _tmp.text = "다음 동물친구를 \n 찾아보자!";
+         _tmp.text = secondMessage;
       }
       else
       {  
@@ -160,7 +170,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       {
           
          Debug.Log("동물 사라지는 중");
-         LeanTween.delayedCall(6f, () =>
+         LeanTween.delayedCall(_waitTimeToDisappear, () =>
             {
                LeanTween.scale(gameObject, Vector3.zero, durations[(int)tweenParam.Scale])
                   .setEaseInOutBounce();
@@ -175,6 +185,10 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
                   });
             }
          );
+      }
+      else
+      {
+         
       }
    
          //messages[(int)messageID.OnNextAnimal];

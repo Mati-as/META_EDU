@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GameStartButton : MonoBehaviour
@@ -11,6 +12,8 @@ public class GameStartButton : MonoBehaviour
 
     private Button _button;
 
+    [SerializeField] private AudioSource uiAudioSource;
+    public AudioClip buttonSound;
 
     void Awake()
     {
@@ -29,6 +32,13 @@ public class GameStartButton : MonoBehaviour
             gameManager.isStageStartButtonClicked.Value = false;
         }
         
+        
+        
+        if (uiAudioSource != null)
+        {
+            uiAudioSource.clip = buttonSound;
+            uiAudioSource.Play();
+        }
     }
     
    
