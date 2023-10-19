@@ -12,6 +12,7 @@ using MyCustomizedEditor;
 
 public class FootstepManager : MonoBehaviour
 {
+ 
     private enum FootstepSounds
     {
         Normal1,
