@@ -149,7 +149,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
 
 
 
-   private float _waitTimeToDisappear=3.6f;
+   private float _waitTimeToDisappear=2.25f;
    
    private void PlayNextMessageAnim()
    {
@@ -161,7 +161,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       }
       else
       {  
-         _tmp.text = "친구들을 \n 모두 찾았어!";
+         _tmp.text = "동물친구들을 \n 모두 찾았어!";
       }
       
       _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
@@ -170,6 +170,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       {
           
          Debug.Log("동물 사라지는 중");
+          
          LeanTween.delayedCall(_waitTimeToDisappear, () =>
             {
                LeanTween.scale(gameObject, Vector3.zero, durations[(int)tweenParam.Scale])

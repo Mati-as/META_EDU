@@ -169,7 +169,8 @@ public class GroundGameManager : MonoBehaviour
         {
             Debug.Log("게임종료 및 동물 표출");
             obj.SetActive(true);
-            obj.transform.DOScale(1f, 1f);
+            var scaleFactor = obj.GetComponent<UndergroundAnimalAttachedUIController>().animalMaximizedSize;
+            obj.transform.DOScale(scaleFactor, 1.1f);
            
             if (obj.transform.childCount > 0) // 자식 오브젝트가 있는지 확인
             {
