@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR

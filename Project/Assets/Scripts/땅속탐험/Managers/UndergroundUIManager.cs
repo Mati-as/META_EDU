@@ -225,7 +225,15 @@ public class UndergroundUIManager : MonoBehaviour
         // 마지막 동물인 여우가 아닐 때만...
         if (FootstepManager.currentFootstepGroupOrder != 12)
         {
-            PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
+            if (FootstepManager.currentFootstepGroupOrder % 2 == 0)
+            {
+                PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
+            }
+            else
+            {
+                PlayAudio(etcAudioClips[(int)EtcAudioClips.LetsMeetNext]);
+            }
+          
         }
         else
         {
