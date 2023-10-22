@@ -58,7 +58,7 @@ public class UndergroundUIManager : MonoBehaviour
     [Space(10f)] [Header("Story Message Settings")] [Space(10f)]
     public string _firstUIMessage = " 땅속에는 다양한 동물친구가 살고 있어요! 저를 따라오면서 구경해볼까요?";
 
-    public string _lastUIMessage = "우와! 동물친구들을 모두 찾았어요!";
+    public string _lastUIMessage = "와~ 동물친구들을 모두 찾았어요!";
 
     [Space(30f)] [Header("Audio")] [Space(10f)] //-------------------------------
     public AudioSource uiAudioSource; // 두개 AudioSource중 하단 AudioSource 입니니다. 위에 것은 Button AudioSource
@@ -291,7 +291,7 @@ public class UndergroundUIManager : MonoBehaviour
 
         LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
             .setEase(LeanTweenType.easeInOutBack)
-            .setOnComplete(() => LeanTween.delayedCall(1.0f, MoveAwayUI));
+            .setOnComplete(() => LeanTween.delayedCall(2.0f, MoveAwayUI));
 
 
         UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
