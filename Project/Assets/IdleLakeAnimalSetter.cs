@@ -213,7 +213,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
             {
                 animals[_selectedAnimalNum].transform.
                     DOMove(defaultPositions[_selectedAnimalNum].position, moveOutDuration)
-                    .SetEase(Ease.OutCubic)
+                    .SetEase(Ease.InOutCirc)
                     .OnComplete(() =>
                     {
                         _isOnDeFaultLocation = true;
@@ -283,7 +283,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
                               - animals[_selectedAnimalNum].transform.position;
         var lookRotation = Quaternion.LookRotation(directionToLook);
         animals[_selectedAnimalNum].transform.DORotate(lookRotation.eulerAngles,2)
-            .SetEase(Ease.OutCubic)
+            .SetEase(Ease.InOutCirc)
             .OnComplete(() =>
             {
              

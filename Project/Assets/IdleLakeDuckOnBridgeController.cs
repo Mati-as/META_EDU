@@ -81,10 +81,10 @@ private void OnClicked()
         
         
         _animator.SetBool(FAST_RUN_ANIM,true);
-        float duration = 1.4f;  // 움직임의 전체 기간 설정
+        float duration = 1.1f;  // 움직임의 전체 기간 설정
     
         transform.DOPath(_duckFlyRouteAVector, duration, PathType.CatmullRom)
-            .SetEase(Ease.InOutQuad)
+            .SetEase(Ease.OutQuart)
             .OnComplete(() =>
             {
                 _animator.SetBool(FAST_RUN_ANIM, false);
