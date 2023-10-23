@@ -66,15 +66,15 @@ public class UndergroundUIManager : MonoBehaviour
     public AudioClip[] uiAudioClips = new AudioClip[5];
 
     public AudioClip[] etcAudioClips = new AudioClip[5];
+
     private enum EtcAudioClips
     {
-        WhoIsNext,//다음동물친구는 누굴까
-        LetsMeetNext,// 다음동물친구를 찾아보자
+        WhoIsNext, //다음동물친구는 누굴까
+        LetsMeetNext, // 다음동물친구를 찾아보자
         FollowFootsteps, // 발판을 따라가서 개미를 찾아봐!
         FoundAllAnimals // 동물을 모두 찾았어!
-        
-        
     }
+
     private enum AudioClips
     {
         Tutorial1, // 놀이 방법을 알아볼까요
@@ -127,13 +127,13 @@ public class UndergroundUIManager : MonoBehaviour
 
     private Coroutine _uiPlayCoroutine;
     private Coroutine _onAnimalFindAudioCoroutine;
+
     private void Awake()
     {
         tutorialUIGameObject.SetActive(true);
 
 
         _uiPlayCoroutine = StartCoroutine(PlayTutorialAudio());
-
 
         _storyUIInitialRectPos = storyUIRectTransform;
         DOTween.Init();
@@ -162,16 +162,16 @@ public class UndergroundUIManager : MonoBehaviour
     }
 
     private Coroutine _stageStartCoroutine;
+
     private void Start()
     {
         gameManager.isStartButtonClicked
-            .Where(_=>_ == true)
+            .Where(_ => _)
             .Delay(TimeSpan.FromSeconds(INTRO_UI_DELAY))
             .Subscribe(_ => SetUIIntroUsingUniRx())
             .AddTo(this);
 
         gameManager.currentStateRP
-            .Do(currentState => Debug.Log($"Current state is: {currentState.GameState}"))
             .Where(_currentState => _currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ => OnGameStart())
             .AddTo(this);
@@ -179,10 +179,7 @@ public class UndergroundUIManager : MonoBehaviour
         gameManager.currentStateRP
             .Where(_currentState => _currentState.GameState == IState.GameStateList.StageStart)
             // .Delay(TimeSpan.FromSeconds(3f))
-            .Subscribe(_ =>
-            {
-                _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine());
-            })
+            .Subscribe(_ => { _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine()); })
             .AddTo(this);
 
         gameManager.isGameFinishedRP
@@ -205,79 +202,64 @@ public class UndergroundUIManager : MonoBehaviour
     }
 
 
-    
     private void OnAnimalFind()
     {
-       
-            _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
-          
+        _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
 
     private IEnumerator PlayOnFindAudios()
     {
         if (FootstepManager.currentFootstepGroupOrder != 0)
-        {
             PlayAudio(animalAudioClips[FootstepManager.currentFootstepGroupOrder - 1]);
-        }
-        
+
         yield return GetWaitForSeconds(2.1f);
 
         // 마지막 동물인 여우가 아닐 때만...
         if (FootstepManager.currentFootstepGroupOrder != 12)
         {
             if (FootstepManager.currentFootstepGroupOrder % 2 == 0)
-            {
                 PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
-            }
             else
-            {
                 PlayAudio(etcAudioClips[(int)EtcAudioClips.LetsMeetNext]);
-            }
-          
         }
         else
         {
             PlayAudio(etcAudioClips[(int)EtcAudioClips.FoundAllAnimals]);
         }
-      
 
-       while (uiAudioSource.isPlaying)
-       {
-           yield return null;
-       }
-       
-       StopCoroutine(_onAnimalFindAudioCoroutine);
-        
+
+        while (uiAudioSource.isPlaying) yield return null;
+
+        StopCoroutine(_onAnimalFindAudioCoroutine);
     }
 
     private void OnPageChange()
     {
-        OnpageChangeCoroutine =StartCoroutine(OnpageChangeWithAudio());
+        OnpageChangeCoroutine = StartCoroutine(OnpageChangeWithAudio());
     }
 
     private Coroutine OnpageChangeCoroutine;
-    private readonly float INTERVAL_BETWEEN_PAGECHANGE_UI=2f;
+    private readonly float INTERVAL_BETWEEN_PAGECHANGE_UI = 2f;
+
     private IEnumerator OnpageChangeWithAudio()
     {
         if (FootstepManager.currentFootstepGroupOrder < 11)
         {
             buttonToDeactivate.SetActive(false);
-        
+
             LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
                 .setEase(LeanTweenType.easeInOutBack)
                 .setOnComplete(() => LeanTween.delayedCall(3.5f, MoveAwayUI));
-        
+
             UpdateUI(storyUICvsGroup, _storyUITmp, "다음 친구가 나와서\n땅속 친구들을 찾아볼까요?");
-            
+
             yield return GetWaitForSeconds(INTERVAL_BETWEEN_PAGECHANGE_UI);
-        
+
             PlayAudio(uiAudioClips[(int)AudioClips.PageOver]);
 
             yield return GetWaitForSeconds(1f);
             StopCoroutine(OnpageChangeCoroutine);
         }
-
-  
     }
 
     [SerializeField] private GameObject buttonToDeactivate;
@@ -286,7 +268,9 @@ public class UndergroundUIManager : MonoBehaviour
 
     private IEnumerator OnGameOverWithAudio()
     {
+#if UNITY_EDITOR
         Debug.Log("종료UI표출");
+#endif
         buttonToDeactivate.SetActive(false);
 
         LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
@@ -297,12 +281,11 @@ public class UndergroundUIManager : MonoBehaviour
         UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
 
         yield return GetWaitForSeconds(3f);
-        
+
         PlayAudio(uiAudioClips[(int)AudioClips.GameOver]);
 
         yield return GetWaitForSeconds(3f);
         StopCoroutine(_gameOVerCoroutine);
-
     }
 
     private void OnGameOver()
@@ -311,31 +294,28 @@ public class UndergroundUIManager : MonoBehaviour
     }
 
     private Coroutine _gameStartCoroutine;
+
     private void OnGameStart()
     {
-
         _gameStartCoroutine = StartCoroutine(OnGameStartCoroutine());
-
-
     }
 
     private IEnumerator OnGameStartCoroutine()
     {
-    
-        
         LeanTween.move(tutorialUIRectTransform,
                 new Vector2(0, tutorialAwayTransfrom.position.y),
                 2f)
-            .setEase(LeanTweenType.easeInOutBack);
-            
+            .setEase(LeanTweenType.easeInOutBack)
+            .setOnComplete(() => tutorialUIGameObject.SetActive(false));
+
         yield return GetWaitForSeconds(3.5f);
-    
+
         buttonToDeactivate.SetActive(false);
         UpdateUI(storyUICvsGroup, _storyUITmp, _firstUIMessage);
-        
+
         yield return GetWaitForSeconds(6.6f);
         buttonToDeactivate.SetActive(true);
-        
+
         yield return GetWaitForSeconds(1f);
         StopCoroutine(_gameStartCoroutine);
     }
@@ -353,14 +333,14 @@ public class UndergroundUIManager : MonoBehaviour
         OnStageStart();
         yield return GetWaitForSeconds(1.8f);
         PlayFollowFootstepAudio();
-        
+
         yield return GetWaitForSeconds(3f);
         StopCoroutine(_stageStartCoroutine);
-
     }
+
     private void MoveAwayUI()
     {
-        LeanTween.move(storyUIRectTransform, new Vector2(storyUIRectTransform.position.x, 
+        LeanTween.move(storyUIRectTransform, new Vector2(storyUIRectTransform.position.x,
             storyUIRectTransform.position.y + 1000), 2.3f).setEase(LeanTweenType.easeInOutBack);
     }
 
@@ -369,8 +349,9 @@ public class UndergroundUIManager : MonoBehaviour
         LeanTween.move(storyUIRectTransform,
             new Vector2(0, tutorialAwayTransfrom.position.y),
             3f).setEase(LeanTweenType.easeInOutBack);
-
+#if UNITY_EDITOR
         Debug.Log("UI OnstageStart");
+#endif
         storyUICvsGroup.DOFade(0, 0.5f);
     }
 
@@ -405,6 +386,8 @@ public class UndergroundUIManager : MonoBehaviour
         if (_uiPlayCoroutine != null) StopCoroutine(_uiPlayCoroutine);
 
         PlayAudio(uiAudioClips[(int)AudioClips.Story]);
+#if UNITY_EDITOR
         Debug.Log("Second introduction message.");
+#endif
     }
 }

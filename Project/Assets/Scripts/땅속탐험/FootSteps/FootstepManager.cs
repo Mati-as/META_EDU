@@ -234,8 +234,11 @@ public class FootstepManager : MonoBehaviour
 
     private void InspectObject(GameObject obj)
     {
-        Debug.Log("Clicked on: " + obj.name);
+     
 
+#if UNITY_EDITOR
+        Debug.Log("Clicked on: " + obj.name);
+#endif
         var footstepController = obj.GetComponent<FootstepController>();
         if (footstepController != null)
         {
@@ -292,13 +295,16 @@ public class FootstepManager : MonoBehaviour
         if (currentFootstepIndexOrder < _footstepGameObjGroups[currentFootstepGroupOrder].Length - 1)
         {
             OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-            Debug.Log("OnOtherElementImplemented");
+            
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log($"currentFootstepGroupOrder : {currentFootstepGroupOrder}");
+#endif
+            
             OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-            Debug.Log("OnLastElementImplemented");
+           
         }
 
         // 10/12/23 순회로직의 경우에는 아래 로직을 사용할 것 
@@ -354,7 +360,12 @@ public class FootstepManager : MonoBehaviour
 
     private void pageFinishToggle()
     {
+        
+      
+        
+#if UNITY_EDITOR
         Debug.Log("페이지 전환");
+#endif
         finishPageTriggerProperty.Value = true;
     }
 
@@ -362,7 +373,10 @@ public class FootstepManager : MonoBehaviour
     {
         if (currentFootstepGroupOrder < 12 - 1)
         {
+#if UNITY_EDITOR
             Debug.Log("다음페이지");
+#endif
+           
             currentFootstepGroupOrder++;
             _turnOnNextGroupFirstFootstepCoroutine = StartCoroutine(TurnOnNextGroupFirstFootstep());
             _isTOGFCorutineStopped = false;
@@ -371,7 +385,10 @@ public class FootstepManager : MonoBehaviour
 
         else
         {
+#if UNITY_EDITOR
             Debug.Log("game Finished!");
+#endif
+          
 
 
             currentFootstepGroupOrder++;

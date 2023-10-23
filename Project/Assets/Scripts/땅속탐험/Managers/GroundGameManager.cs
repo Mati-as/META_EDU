@@ -91,10 +91,17 @@ public class GroundGameManager : MonoBehaviour
             .Where(value=>value==true)
             .Subscribe(_ =>
             {
+#if UNITY_EDITOR
                 Debug.Log("게임시작");
+#endif
+               
                 SetStage(_gameStart);
                 isGameStartedbool = true;
+                
+#if UNITY_EDITOR
                 Debug.Log($" 현재 statecontroller의 GameState{_stateController.GameState}");
+#endif
+               
             });
 
 
@@ -102,9 +109,12 @@ public class GroundGameManager : MonoBehaviour
             .Where(value=>value==true)
             .Subscribe(_ =>
             {
-                Debug.Log("스테이지 시작");
                 SetStage(_stageStart);
+#if UNITY_EDITOR
+                Debug.Log("스테이지 시작");
                 Debug.Log($" 현재 statecontroller의 GameState{_stateController.GameState}");
+#endif
+
             });
 
         isGameFinishedRP
@@ -114,7 +124,10 @@ public class GroundGameManager : MonoBehaviour
                 
                 isGameFinishedbool = true;
                 SetStage(_gameover);
+               
+#if UNITY_EDITOR
                 Debug.Log("게임종료");
+#endif
                 _finishAnimalActivationCoroutine = StartCoroutine(ActivateAllAnimals());
             });
     }
@@ -138,8 +151,11 @@ public class GroundGameManager : MonoBehaviour
         currentStateRP.Value = state;
         currentStateRP.Value.GameState = state.GameState;
 
-        Debug.Log($"현재 게임상태 RP: {currentStateRP.Value.GameState}");
+       
 
+#if UNITY_EDITOR
+        Debug.Log($"현재 게임상태 RP: {currentStateRP.Value.GameState}");
+#endif
     }
 
     private float _mainElapsedTime;
@@ -167,7 +183,10 @@ public class GroundGameManager : MonoBehaviour
         
         foreach (GameObject obj in AllAnimals)
         {
+#if UNITY_EDITOR
             Debug.Log("게임종료 및 동물 표출");
+#endif
+           
             obj.SetActive(true);
             var scaleFactor = obj.GetComponent<UndergroundAnimalAttachedUIController>().animalMaximizedSize;
             obj.transform.DOScale(scaleFactor, 1.1f);

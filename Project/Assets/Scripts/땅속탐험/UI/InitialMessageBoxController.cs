@@ -8,7 +8,8 @@ public class InitialMessageBoxController : MonoBehaviour
 {
     [SerializeField] 
     private GroundGameManager gameManager;
-    
+
+    public float maximizedSize;
     
     private void Start()
     {
@@ -20,7 +21,7 @@ public class InitialMessageBoxController : MonoBehaviour
             .Subscribe(_=>
             {
                 Debug.Log("Initial Message Out!");
-                LeanTween.scale(gameObject, Vector3.one * 4f, 2)
+                LeanTween.scale(gameObject, Vector3.one * maximizedSize, 2)
                     .setEaseInOutBounce();
             });
         
