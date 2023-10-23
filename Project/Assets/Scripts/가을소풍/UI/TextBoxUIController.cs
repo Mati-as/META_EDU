@@ -11,11 +11,11 @@ public class TextBoxUIController : MonoBehaviour
     [Header("TextBox Frame Move Settings")] 
    
     [SerializeField]
-    private Transform frame;
+    private RectTransform frame;
     [SerializeField]
-    private Transform leftPosition;
+    private RectTransform leftPosition;
     [SerializeField]
-    private Transform rightPosition;
+    private RectTransform rightPosition;
 
     private float elapsedForFrameMove;
     public float frameMoveDuration;
@@ -25,17 +25,15 @@ public class TextBoxUIController : MonoBehaviour
     [SerializeField] private TMP_Text tmpBodyLeft;
     [SerializeField] private TMP_Text tmpBodyRight;
 
-    [SerializeField] private Transform leftAnimFirst;
-    [SerializeField] private Transform leftAnimSecond;
-    [SerializeField] private Transform rightAnimal;
+    [SerializeField] private RectTransform leftAnimFirst;
+    [SerializeField] private RectTransform leftAnimSecond;
+    [SerializeField] private RectTransform rightAnimal;
 
 
-    [SerializeField]
-    private Transform _defaultPositionLf;
-    [SerializeField]
-    private Transform _defaultPositionLs;
-    [SerializeField]
-    private Transform _defaultPositionR;
+   
+    private RectTransform _defaultPositionLf;
+    private RectTransform _defaultPositionLs;
+    private RectTransform _defaultPositionR;
 
     public float waitTimeToStart;
     public float textPrintingSpeed = 0.03f;
@@ -61,7 +59,10 @@ public class TextBoxUIController : MonoBehaviour
     {
         UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
-        
+
+        _defaultPositionLf = leftAnimFirst;
+        _defaultPositionLs = leftAnimSecond;
+        _defaultPositionR = rightAnimal;
 
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
         TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;

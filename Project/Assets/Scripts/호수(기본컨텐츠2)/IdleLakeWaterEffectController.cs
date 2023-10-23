@@ -14,8 +14,15 @@ public class IdleLakeWaterEffectController : MonoBehaviour
 {
     [SerializeField] 
     private ParticleSystem particleSystemPrefab;
+
+    public int layerMask;
+   
     private void Start()
     {
+        int uiLayer = LayerMask.NameToLayer("UI");
+        layerMask = ~(1 << uiLayer);
+        
+        
         var trigger = GetComponent<EventTrigger>();
         var entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
@@ -52,9 +59,9 @@ public class IdleLakeWaterEffectController : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit,12345f,layerMask))
         {
-            if (hit.collider.gameObject.name == "Water" || hit.collider.name != "Terrain" && hit.collider.gameObject.name != null)
+            if (hit.collider.gameObject.name == "Water" && hit.collider.gameObject.name != null)
             {
                 ParticleSystem particle = GetFromPool();
                 particle.transform.position = hit.point;

@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.Serialization;
 
 public class UndergroundUIManager : MonoBehaviour
@@ -302,9 +303,11 @@ public class UndergroundUIManager : MonoBehaviour
 
     private IEnumerator OnGameStartCoroutine()
     {
+        
+        
         LeanTween.move(tutorialUIRectTransform,
-                new Vector2(0, tutorialAwayTransfrom.position.y),
-                2f)
+                new Vector2(0, tutorialAwayTransfrom.anchoredPosition.y),
+                3f)
             .setEase(LeanTweenType.easeInOutBack)
             .setOnComplete(() => tutorialUIGameObject.SetActive(false));
 
@@ -340,14 +343,14 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void MoveAwayUI()
     {
-        LeanTween.move(storyUIRectTransform, new Vector2(storyUIRectTransform.position.x,
-            storyUIRectTransform.position.y + 1000), 2.3f).setEase(LeanTweenType.easeInOutBack);
+        LeanTween.move(storyUIRectTransform, new Vector2(storyUIRectTransform.anchoredPosition.x,
+            storyUIRectTransform.anchoredPosition.y + 1000), 2.3f).setEase(LeanTweenType.easeInOutBack);
     }
 
     private void OnStageStart()
     {
         LeanTween.move(storyUIRectTransform,
-            new Vector2(0, tutorialAwayTransfrom.position.y),
+            new Vector2(0, tutorialAwayTransfrom.anchoredPosition.y),
             3f).setEase(LeanTweenType.easeInOutBack);
 #if UNITY_EDITOR
         Debug.Log("UI OnstageStart");
@@ -366,6 +369,9 @@ public class UndergroundUIManager : MonoBehaviour
         cvsGroup.alpha = 0;
         cvsGroup.DOFade(1, 1);
     }
+    
+    
+    
 
     private void ChangeUIText(TMP_Text tmptext, string message)
     {

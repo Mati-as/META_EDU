@@ -54,7 +54,10 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
   
         if (gameManager.isStartButtonClicked.Value == false)
         {
+#if UNITY_EDITOR
             Debug.Log("스타튼 버튼클릭");
+#endif
+            
             gameManager.isStartButtonClicked.Value = true;
         }
      
@@ -68,7 +71,6 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
             _isUIPlayed = true;
         }
         
-      Debug.Log("startButtonClicked");
     }
     
     public void OnPointerEnter(PointerEventData eventData)
