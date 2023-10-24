@@ -38,10 +38,10 @@ public class Mousecontroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            MouseClickOn = !MouseClickOn;
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    MouseClickOn = !MouseClickOn;
+        //}
 
         timer += Time.deltaTime;
 
@@ -69,7 +69,8 @@ public class Mousecontroller : MonoBehaviour
             {
                 if (pre_Cursor_x != Cursor_x)
                 {
-                    if (timer > 0.5f)
+                    //2D 콘텐츠의 경우 0.1 그외에 나머지 0.5
+                    if (timer > 0.1f)
                     {
                         mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
                         timer = 0;

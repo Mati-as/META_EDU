@@ -21,12 +21,13 @@ public class MOUSE_prefab : MonoBehaviour
     {
         
     }
+
     void Destroy_obj()
     {
         Temp_position = camera.WorldToScreenPoint(this.transform.position);
         //Debug.Log("BEFORE 1. temp_x : " + this.transform.position.x + "  2. temp_y : " + (1080 - this.transform.position.y));
         //Debug.Log("AFTER 1. temp_x : " + Temp_position.x + "  2. temp_y : " + (1080 - Temp_position.y));
-        Mouse.current.WarpCursorPosition(new Vector2(Temp_position.x, Temp_position.y));
+        Mouse.current.WarpCursorPosition(new Vector2(Temp_position.x, Temp_position.y ));
 
         Destroy(this.gameObject);
     }

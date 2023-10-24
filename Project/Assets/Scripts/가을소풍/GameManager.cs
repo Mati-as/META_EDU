@@ -12,6 +12,8 @@ using Random = System.Random;
 // 시퀀스 흐름도입니다. 
 public class GameManager : MonoBehaviour
 {
+  
+   
     [Header("Debug Mode")] [Space(10f)] 
     [Range(0.25f, 10f)] 
     public float GAME_PROGRESSING_SPEED_COPY = 1;
@@ -83,6 +85,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> _selectedAnimals = new();
     private List<GameObject> _inPlayTempAnimals;
 
+    
 
     [Space(40f)] [Header("Game Rule Setting")] [Space(10f)] [SerializeField]
     public int roundCount;
@@ -289,7 +292,8 @@ public class GameManager : MonoBehaviour
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
     private void Awake()
-    { 
+    {
+        SetPhysicsLayer();
         Reset();
         SetTimeScale(1);
         SetRandomSeed();
@@ -305,6 +309,35 @@ public class GameManager : MonoBehaviour
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
     }
 
+    
+    
+    /// <summary>
+    /// 해당 게임에 맞게 Physics Layer를 설정합니다.
+    /// 레이어 ID 인스턴스는 Awake,Start에서 선언할 수 없을에 유의합니다.
+    /// </summary>
+    private void SetPhysicsLayer()
+    {
+        int SCREEN = LayerMask.NameToLayer("Screen");
+        int UI = LayerMask.NameToLayer("UI");
+        int IN_PLAY_OBJECT = LayerMask.NameToLayer("In-Play Objects");
+        int DEFAULT = LayerMask.NameToLayer("Default");
+        
+        
+        for (int i = 0; i < 32; i++)
+        {
+            for (int j = 0; j < 32; j++)
+            {
+                Physics.IgnoreLayerCollision(i, j, true);
+            }
+        }
+        
+        
+        Physics.IgnoreLayerCollision(UI,SCREEN,false);
+        Physics.IgnoreLayerCollision(DEFAULT,IN_PLAY_OBJECT,false);
+        Physics.IgnoreLayerCollision(DEFAULT,UI,false);
+        Physics.IgnoreLayerCollision(DEFAULT,DEFAULT,false);
+        
+    }
 
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.

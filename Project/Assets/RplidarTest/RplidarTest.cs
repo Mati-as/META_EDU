@@ -7,7 +7,6 @@ using System.Threading;
 
 public class RplidarTest : MonoBehaviour
 {
-    public GameObject CAMERA;
     public string port;
     //public GameObject Capsule;
 
@@ -33,6 +32,7 @@ public class RplidarTest : MonoBehaviour
     double number = 0f;
 
     public GameObject Guideline;
+    public GameObject TESTUI;
     //
 
     //1015
@@ -141,11 +141,10 @@ public class RplidarTest : MonoBehaviour
 
     void Update()
     {
-            //Sensing();
-        if (Input.GetKeyDown(KeyCode.Space))
-            Test_check = !Test_check;
-    }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //    Test_check = !Test_check;
 
+    }
     void GenMesh()
     {
         while (true)
@@ -174,7 +173,7 @@ public class RplidarTest : MonoBehaviour
                 //센서 데이터 data[i].theta, distant
                 //1. 화면과 센서를 일치화 시키기 위해서 theta를 마이너스 곱해줌, 추가로 회전 시켜주기 위해 Sensor_rotation 추가했고 위에서 아래 방향으로 내려다 보는것 기준으 90도 입력하면 댐
                 x = 0.74f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * data[i].distant;
-                y = Cal_y+540+0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * data[i].distant;
+                y = Cal_y + 540 + 0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * data[i].distant;
 
                 if (i % 4 == 0)
                 {
@@ -211,30 +210,24 @@ public class RplidarTest : MonoBehaviour
                                 {
                                     //데모용, 마우스
                                     Guideline.SetActive(false);
+                                    TESTUI.SetActive(false);
                                     GameObject Prefab_pos = Instantiate(MOUSEPrefab, this.transform.position, Quaternion.Euler(0, 0, 0), CANVAS.transform);
-                                    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(x, y, 0);
+                                    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(x+30, y-30, 0);
                                     Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
                                 }
-                                else {
+                                else
+                                {
                                     //개발자용, 공
                                     Guideline.SetActive(true);
+                                    TESTUI.SetActive(true);
                                     GameObject Prefab_pos = Instantiate(BALLPrefab, this.transform.position, Quaternion.Euler(0, 0, 0), CANVAS.transform);
-                                    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(x, y, 0);
+                                    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(x + 30, y - 30, 0);
                                     Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
                                 }
                                 //Debug.Log("BEFORE 1. x : " + x + "  2. y : " + y);
                                 //Prefab_pos.transform.LookAt(transform.position + cameraToLookAt.transform.rotation * Vector3.back,
                                 //cameraToLookAt.transform.rotation * Vector3.down);
 
-                                if (i % 16 == 0)
-                                {
-                                    if (Test_check)
-                                    {
-                                        //Temp_position = Camera.main.WorldToScreenPoint(Prefab_pos.transform.position);
-                                        //Mouse.current.WarpCursorPosition(new Vector2(Temp_position.x, 1080-Temp_position.y));
-                                        //나중에 여기 좌표도 확인이 필요할 듯
-                                    }
-                                }
                             }
                         }
                     }
@@ -308,7 +301,8 @@ public class RplidarTest : MonoBehaviour
         RplidarBinding.ReleaseDrive();
 
         //StopCoroutine(GenMesh());
-        m_thread.Abort();
+        
+        m_thread?.Abort();
 
         m_onscan = false;
     }
