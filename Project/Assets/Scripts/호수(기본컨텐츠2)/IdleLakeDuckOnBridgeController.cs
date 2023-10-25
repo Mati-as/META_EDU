@@ -13,7 +13,6 @@ using MyCustomizedEditor;
 public class IdleLakeDuckOnBridgeController : MonoBehaviour
 {
     public  readonly int IDLE_ANIM = Animator.StringToHash("idle");
-   
     public  readonly int EAT_ANIM = Animator.StringToHash("Eat");
     public  readonly int FAST_RUN_ANIM = Animator.StringToHash("FastRun");
     public  readonly int SWIM_ANIM = Animator.StringToHash("Swim");
@@ -43,10 +42,12 @@ private Vector3[] _duckAwayRouteVector = new Vector3[4];
 private Animator _animator;
 private bool _isClickedAnimStarted;
 
+
+
 private void Awake()
 {
     _animator = GetComponent<Animator>();
-    
+
     for (int i = 0; i < 3; i++)
     {
         _duckFlyRouteAVector[i] = duckFlyRoute[i].position;
@@ -69,6 +70,7 @@ private void Start()
     trigger.triggers.Add(entry);
 }
 
+public ParticleSystem waterEffect;
 private void OnClicked()
 {
 #if UNITY_EDITOR
@@ -77,16 +79,16 @@ private void OnClicked()
 
     if (!_isClickedAnimStarted)
     {
-        _isClickedAnimStarted = true;
-        
-        
         _animator.SetBool(FAST_RUN_ANIM,true);
-        float duration = 1.1f;  // 움직임의 전체 기간 설정
-    
+        _isClickedAnimStarted = true;
+        float duration = 0.9f;  // 움직임의 전체 기간 설정
+      
         transform.DOPath(_duckFlyRouteAVector, duration, PathType.CatmullRom)
-            .SetEase(Ease.OutQuart)
+            .SetEase(Ease.InOutQuad)
             .OnComplete(() =>
             {
+                waterEffect.transform.position = duckFlyRoute[2].position;
+                waterEffect.Play();
                 _animator.SetBool(FAST_RUN_ANIM, false);
                 var directionToLook = _duckAwayRouteVector[1] - transform.transform.position;
                 var lookRotation = Quaternion.LookRotation(directionToLook);
@@ -96,7 +98,7 @@ private void OnClicked()
                     {
                         _animator.SetBool(FAST_RUN_ANIM, false);
                         _animator.SetBool(SWIM_ANIM, true);
-                        transform.DOPath(_duckAwayRouteVector, 20.0f, PathType.CatmullRom)
+                        transform.DOPath(_duckAwayRouteVector, 30.0f, PathType.CatmullRom)
                             .SetDelay(0f)
                             .SetLookAt(0.01f)
                             .SetEase(Ease.InOutQuad).OnComplete(() =>

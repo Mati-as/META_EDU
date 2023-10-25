@@ -19,9 +19,10 @@ public class IdleLakeWaterEffectController : MonoBehaviour
    
     private void Start()
     {
+        InitializePool();
+        
         int uiLayer = LayerMask.NameToLayer("UI");
         layerMask = ~(1 << uiLayer);
-        
         
         var trigger = GetComponent<EventTrigger>();
         var entry = new EventTrigger.Entry();
