@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using UnityEngine.Serialization;
 using Vector3 = UnityEngine.Vector3;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
@@ -28,12 +29,14 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
 
    private float _defaultYCoordinate;
    private Animator _animator;
+   private float _defaultAnimSpeed;
 
    private ParticleSystem _particle;
    //더블클릭 방지용으로 콜라이더를 설정하기위한 인스턴스 선언
    private Collider _collider;
    private void Awake()
-   { 
+   
+   {
       _particle = GetComponentInChildren<ParticleSystem>();
       _collider = GetComponent<Collider>();
       
@@ -46,6 +49,7 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
       }
 
       _animator = GetComponent<Animator>();
+      _defaultAnimSpeed = _animator.speed;
       _animator.SetBool(IS_ON_LAKE,true);
    }
    private void Start()
@@ -58,10 +62,13 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
       PatrolAround();
    }
 
+   [FormerlySerializedAs("animationSpeed")] [Range(0,40)]
+   public float increasedAnimationSpeed;
    public float durationOfGoingBackToInitialSpot;
    private void OnClicked()
    {
       _collider.enabled = false;
+     
       
       DOTween.Kill(transform);
       
@@ -81,6 +88,7 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
          transform.DOShakePosition(0.13f, shakeStrengthVec, vibrato)
             .OnComplete(() =>
             {
+              
                _particle.Play();
                _animator.SetBool(FAST_RUN_ANIM,false); 
                Vector3 position;
@@ -94,13 +102,21 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
       var directionToLook = _patrolPathVec[0] - transform1.transform.position;
       var lookRotation = Quaternion.LookRotation(directionToLook);
       transform.DORotate(lookRotation.eulerAngles, 0.4f)
+         .OnStart(() =>
+         {
+            DOVirtual.Float(increasedAnimationSpeed, _defaultAnimSpeed, durationOfGoingBackToInitialSpot, newSpeed =>
+            {
+               _animator.speed = newSpeed;
+            });
+         })
          .SetDelay(1.5f)
          .OnComplete(() =>
          {
-          
+            _animator.speed = increasedAnimationSpeed;
             transform.DOMove(_patrolPathVec[0], durationOfGoingBackToInitialSpot)
                .OnComplete(()=>
                {
+                  _animator.speed = _defaultAnimSpeed;
                   _collider.enabled = true;
                   PatrolAround();
                });

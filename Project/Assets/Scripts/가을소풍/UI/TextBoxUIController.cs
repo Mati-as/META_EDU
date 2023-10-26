@@ -249,11 +249,11 @@ public class TextBoxUIController : MonoBehaviour
         {
             _comeBackElapsed += Time.deltaTime;
             
-            leftAnimFirst.position = MoveLikeWave(_defaultPositionLf.position,
+            leftAnimFirst.anchoredPosition = MoveLikeWave(_defaultPositionLf.anchoredPosition,
                 _defaultPositionLf.position + new Vector3(0, offsetA, 0), waveSpeed, offsetA);
 
-            leftAnimSecond.position = MoveLikeWave(_defaultPositionLs.position,
-                _defaultPositionLs.position + new Vector3(0, offsetB, 0), waveSpeed, offsetB);
+            // leftAnimSecond.anchoredPosition = MoveLikeWave(_defaultPositionLs.position,
+            //     (_defaultPositionLs.anchoredPosition + new Vector3(0, offsetB, 0), waveSpeed, offsetB));
 
             
             rightAnimal.position = Vector3.Lerp(rightAnimal.position, _defaultPositionR.position, _comeBackElapsed);
@@ -290,14 +290,5 @@ public class TextBoxUIController : MonoBehaviour
     private float sinElapsed;
     private float t2;
 
-    // private Vector3 MoveDown(Vector3 startPosition, Vector3 arrivingPosition, float moveTime)
-    // {
-    //     t2 = Time.deltaTime / moveTime;
-    //
-    //     float lerp;
-    //     lerp = Lerp2D.EaseInOutQuint(0, 1, sinElapsed);
-    //
-    //     return Vector3.Lerp(startPosition,
-    //         arrivingPosition + new Vector3(0, offsetA, 0), lerp);
-    // }
+
 }

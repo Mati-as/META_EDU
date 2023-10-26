@@ -41,13 +41,13 @@ private Vector3[] _duckAwayRouteVector = new Vector3[4];
 
 private Animator _animator;
 private bool _isClickedAnimStarted;
-
+private float _defaultAnimSpeed;
 
 
 private void Awake()
 {
     _animator = GetComponent<Animator>();
-
+    _defaultAnimSpeed = _animator.speed;
     for (int i = 0; i < 3; i++)
     {
         _duckFlyRouteAVector[i] = duckFlyRoute[i].position;
@@ -71,6 +71,10 @@ private void Start()
 }
 
 public ParticleSystem waterEffect;
+[Range(0,40)]
+public float comingBackDuration;
+[Range(0,40)]
+public float increasedAnimationSpeed;
 private void OnClicked()
 {
 #if UNITY_EDITOR
@@ -79,10 +83,13 @@ private void OnClicked()
 
     if (!_isClickedAnimStarted)
     {
-        _animator.SetBool(FAST_RUN_ANIM,true);
+        // FSM에서 직접 다루거나 별도의 빠른재생용 애니메이션 로직 설정하지 않고, animator의 Speed로직을 설정합니다.
+
+
+        _animator.SetBool(FAST_RUN_ANIM, true);
         _isClickedAnimStarted = true;
-        float duration = 0.9f;  // 움직임의 전체 기간 설정
-      
+        var duration = 0.9f; // 움직임의 전체 기간 설정
+
         transform.DOPath(_duckFlyRouteAVector, duration, PathType.CatmullRom)
             .SetEase(Ease.InOutQuad)
             .OnComplete(() =>
@@ -90,24 +97,26 @@ private void OnClicked()
                 waterEffect.transform.position = duckFlyRoute[2].position;
                 waterEffect.Play();
                 _animator.SetBool(FAST_RUN_ANIM, false);
+                _animator.speed += 5;
                 var directionToLook = _duckAwayRouteVector[1] - transform.transform.position;
                 var lookRotation = Quaternion.LookRotation(directionToLook);
+             
                 transform.DORotate(lookRotation.eulerAngles, 1.6f)
-                
                     .OnComplete(() =>
-                    {
-                        _animator.SetBool(FAST_RUN_ANIM, false);
-                        _animator.SetBool(SWIM_ANIM, true);
-                        transform.DOPath(_duckAwayRouteVector, 30.0f, PathType.CatmullRom)
-                            .SetDelay(0f)
-                            .SetLookAt(0.01f)
-                            .SetEase(Ease.InOutQuad).OnComplete(() =>
+                    {   _animator.speed = increasedAnimationSpeed;
+                        DOTween.Sequence()
+                            .Append(transform.DOPath(_duckAwayRouteVector, comingBackDuration, PathType.CatmullRom)
+                                .SetDelay(0f)
+                                .SetLookAt(0.01f)
+                                .SetEase(Ease.InOutQuad))
+                            .InsertCallback(7f, // InsertCall 사용을 위해 애니메이션 시퀀스로 구성.
+                                () => _animator.speed = _defaultAnimSpeed) // 애니메이션 중간에 속도를 기본값으로 설정
+                            .OnComplete(() =>
                             {
                                 _animator.SetBool(SWIM_ANIM, false);
                                 _isClickedAnimStarted = false;
                             });
                     });
-            
             });
     }
   
