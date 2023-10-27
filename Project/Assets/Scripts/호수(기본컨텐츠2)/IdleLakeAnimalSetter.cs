@@ -213,7 +213,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
             {
                 animals[_selectedAnimalNum].transform.
                     DOMove(defaultPositions[_selectedAnimalNum].position, moveOutDuration)
-                    .SetEase(Ease.InOutCirc)
+                    .SetEase(Ease.InQuad)
                     .OnComplete(() =>
                     {
                         _isOnDeFaultLocation = true;

@@ -10,7 +10,8 @@ using UnityEngine.Serialization;
 public class UI_TutorialBox : MonoBehaviour
 {
     [Header("Text Printing Settings")]
-    public float textPrintingSpeed = 0.03f;
+    public float textPrintingSpeed = 0.06f;
+    
     [Space(10f)]
     [Header("Rect Positions")]
     [SerializeField]
@@ -19,14 +20,17 @@ public class UI_TutorialBox : MonoBehaviour
     private RectTransform leftFrameAncPosition;
     [SerializeField]
     private RectTransform rightFrameAncPosition;
+    
+    
     [Space(10f)]
     [Header("TMP")]
-    [SerializeField] private TMP_Text left_TMP_Component;
-    [TextArea]
-    public string left_TMP_Text;
-    [SerializeField] private TMP_Text right_TMP_Component;
-    [TextArea]
-    public string right_TMP_Text;
+    [SerializeField] 
+    private TMP_Text left_TMP_Component;
+    [TextArea] public string left_TMP_Text;
+    [SerializeField]
+    private TMP_Text right_TMP_Component;
+    [TextArea] public string right_TMP_Text;
+    
     [Space(10f)] [Header("Interval")] 
     public float interval;
     public RectTransform[] onLeftUI_Objects;
