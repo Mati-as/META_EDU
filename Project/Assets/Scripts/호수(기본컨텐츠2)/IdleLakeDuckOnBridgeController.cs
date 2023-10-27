@@ -78,7 +78,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
     [Range(0, 40)] public float comingBackDuration;
     [Range(0, 40)] public float increasedAnimationSpeed;
 
-    float jumpDuration = 0.7f;
+    public float jumpDuration;
     private void OnClicked()
     {
 #if UNITY_EDITOR
@@ -98,14 +98,13 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
                 .Sequence(transform.DOPath(_duckFlyRouteAVector, jumpDuration, PathType.CatmullRom))
                 .SetEase(Ease.InOutQuad)
                 //사운드 싱크 맞추기위한 InsertCallback.
-                .InsertCallback(jumpDuration - 0.15f,
-                    ()=>
-                    {
-                        Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]);
-                        
-                        waterEffect.transform.position = duckFlyRoute[2].position;
-                        waterEffect.Play();
-                    })
+                .InsertCallback(jumpDuration - 0.35f,
+                    () => { Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]); })
+                .InsertCallback(jumpDuration - 0.1f, () =>
+                {
+                    waterEffect.transform.position = duckFlyRoute[2].position;
+                    waterEffect.Play();
+                })
                 .OnComplete(() =>
                 {
                     _animator.SetBool(FAST_RUN_ANIM, false);
@@ -121,6 +120,8 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
                         })
                         .OnComplete(() =>
                         {
+                            _animator.SetBool(SWIM_ANIM, true);
+                            
                             _animator.speed = increasedAnimationSpeed;
                             DOTween
                                 .Sequence()

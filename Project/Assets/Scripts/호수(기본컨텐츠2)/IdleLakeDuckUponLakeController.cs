@@ -45,8 +45,8 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
     {
         _particle = GetComponentInChildren<ParticleSystem>();
         _collider = GetComponent<Collider>();
-        
-        AudioSource[] audioSources = GetComponents<AudioSource>();
+
+        var audioSources = GetComponents<AudioSource>();
         _audioSourceDive = audioSources[(int)Sound.Dive];
         _audioSourceSqueak = audioSources[(int)Sound.Squeak];
 
@@ -68,6 +68,7 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
         entry.eventID = EventTriggerType.PointerClick;
         entry.callback.AddListener(data => { OnClicked(); });
         trigger.triggers.Add(entry);
+       
         PatrolAround();
     }
 
@@ -76,70 +77,71 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
 
     public float durationOfGoingBackToInitialSpot;
 
+    public float jumpDuration;
+
     private void OnClicked()
     {
         _collider.enabled = false;
-        DOTween.Kill(transform);
-
+        Lake_SoundManager.PlaySound(_audioSourceSqueak, audioClips[(int)Sound.Squeak]);
+        
+        DOVirtual.Float(_defaultAnimSpeed, increasedAnimationSpeed, 1.5f, newValue => {
+            _animator.speed = newValue;
+        }).SetEase(Ease.InOutQuad);
+        
         _animator.SetBool(FAST_RUN_ANIM, true);
         for (var i = 0; i < Mathf.Min(jumpSurpPath.Length, _jumpSurpPathVec.Length); i++)
             _jumpSurpPathVec[i] = jumpSurpPath[i].position;
+        
 
-        Lake_SoundManager.PlaySound(_audioSourceSqueak, audioClips[(int)Sound.Squeak]);
-        Transform transform1;
+        DOTween.Kill(transform);
 
-        DOTween
-            .Sequence((transform1 = transform).DOPath(_jumpSurpPathVec, 0.28f, PathType.CatmullRom))
-            .SetEase(Ease.InOutQuad)
-            //사운드 싱크 맞추기위한 InsertCallback.
-            .InsertCallback(0.18f, () => { Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]); })
-            .OnComplete(() =>
-            {
-                var shakeStrengthVec = new Vector3(shakeStrength, 0, shakeStrength); // This will fix the y axis
-                transform.DOShakePosition(0.13f, shakeStrengthVec, vibrato)
-                    .OnComplete(() =>
-                    {
-                        _particle.Play();
-                        _animator.SetBool(FAST_RUN_ANIM, false);
+        var seq = DOTween.Sequence();
+        var lookAtTarget = _jumpSurpPathVec[0];
+        if (jumpDuration > 2f) 
+        {
+            seq.Append(transform.DOLookAt(lookAtTarget, 0.8f));
+        }
+        seq.Append(transform.DOPath(_jumpSurpPathVec, jumpDuration, PathType.CatmullRom).SetEase(Ease.InOutQuad));
+        seq.InsertCallback(0.18f, () =>
+        {
+            _particle.transform.position = _jumpSurpPathVec[0];
+            _particle.Play();
+            Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]);
+        });
+        seq.OnComplete(ReturnToPatrol);
+    }
 
-                        Vector3 position;
-                        transform.DOMove
-                            (new Vector3((position = transform.position).x, _defaultYCoordinate, position.z)
-                                , 0.55f)
-                            .SetEase(Ease.InOutBounce);
-                    });
-            });
-
-        var directionToLook = _patrolPathVec[0] - transform1.transform.position;
-        var lookRotation = Quaternion.LookRotation(directionToLook);
-        transform.DORotate(lookRotation.eulerAngles, 0.4f)
-            .OnStart(() =>
-            {
-                DOVirtual.Float(increasedAnimationSpeed, _defaultAnimSpeed, durationOfGoingBackToInitialSpot,
-                    newSpeed => { _animator.speed = newSpeed; });
-            })
-            .SetDelay(1.0f) //회전하고 OnComplete실행까지의 대기시간.
-            .OnComplete(() =>
-            {
-                _animator.speed = increasedAnimationSpeed;
-                transform.DOMove(_patrolPathVec[0], durationOfGoingBackToInitialSpot)
-                    .OnComplete(() =>
-                    {
-                        _animator.speed = _defaultAnimSpeed;
-                        _collider.enabled = true;
-                        PatrolAround();
-                    });
-            });
+    private void ReturnToPatrol()
+    {
+        var directionToLook = _patrolPathVec[0];
+        var seq = DOTween.Sequence();
+        seq.Append(transform.DOLookAt(directionToLook, 0.8f).OnComplete(() =>
+        {
+            _animator.SetBool(FAST_RUN_ANIM, false);
+            transform
+                .DOMove(_patrolPathVec[0], durationOfGoingBackToInitialSpot)
+                .OnStart(() => DOVirtual.Float(increasedAnimationSpeed, _defaultAnimSpeed,
+                    durationOfGoingBackToInitialSpot,
+                    newSpeed => { _animator.speed = newSpeed; }))
+                .OnComplete(PatrolAround);
+        }));
     }
 
     public float oneCycleDuration;
 
     private void PatrolAround()
     {
-        transform.DOPath(_patrolPathVec, oneCycleDuration, PathType.CatmullRom)
-            //.SetDelay(0f)
-            .SetLookAt(0.01f)
-            .SetOptions(true)
-            .SetEase(Ease.InOutQuad).OnComplete(PatrolAround);
+        #if UNITY_EDITOR
+        Debug.Log($"{gameObject.name} 순찰중..");
+        #endif
+      
+        var rotateSequecne = DOTween.Sequence();
+        rotateSequecne.Append(transform.DOLookAt(_patrolPathVec[1], 1).OnComplete(() =>
+        {
+            _collider.enabled = true;
+            transform.DOPath(_patrolPathVec, oneCycleDuration, PathType.CatmullRom)
+                .SetLookAt(0.01f);
+        }));
+        
     }
 }
