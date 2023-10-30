@@ -82,18 +82,20 @@ public class Desert_BullController : MonoBehaviour
         SetRandomMoveAnimDuration();
         SetRandomEatAnimDuration();
         
-        SetAnimation(EAT_ANIM,false);
-        SetAnimation(WALK_ANIM);
         
-        DOVirtual.
-            Float(_defaultAnimSpeed, animSpeed_Rotate, 2f,value =>
-            {
-                _animator.speed = value;
-            });
-
-        
-
         transform.DOLookAt(pos, 5f)
+            .OnStart(() =>
+            {
+                SetAnimation(EAT_ANIM,false);
+                SetAnimation(WALK_ANIM);
+                
+                DOVirtual.
+                    Float(_defaultAnimSpeed, animSpeed_Rotate, 2f,value =>
+                    {
+                        _animator.speed = value;
+                    });
+            })
+            .SetDelay(UnityEngine.Random.Range(0,15))
             .OnComplete(() =>
             {
                 DOVirtual.
@@ -106,7 +108,7 @@ public class Desert_BullController : MonoBehaviour
                 SetAnimation(IDLE_ANIM);
                 
                 transform.DOMove(pos, dur)
-                    .SetDelay(2f)
+                    .SetDelay(UnityEngine.Random.Range(2,3.5f))
                     .SetEase(Ease.InOutQuad)
                     .OnStart(() =>
                     {
