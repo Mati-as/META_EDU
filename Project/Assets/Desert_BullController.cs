@@ -41,6 +41,9 @@ public class Desert_BullController : MonoBehaviour
     private float _eatDuration;
     private float _idleDuration;
 
+    private Rigidbody _rb;
+    public float chargeSpeed;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -83,7 +86,8 @@ public class Desert_BullController : MonoBehaviour
         SetRandomEatAnimDuration();
         
         
-        transform.DOLookAt(pos, 5f)
+        transform.DOLookAt(pos, 20f)
+            .SetSpeedBased()
             .OnStart(() =>
             {
                 SetAnimation(EAT_ANIM,false);
@@ -108,13 +112,15 @@ public class Desert_BullController : MonoBehaviour
                 SetAnimation(IDLE_ANIM);
                 
                 transform.DOMove(pos, dur)
+                    .SetSpeedBased()
                     .SetDelay(UnityEngine.Random.Range(2,3.5f))
-                    .SetEase(Ease.InOutQuad)
                     .OnStart(() =>
                     {
                         SetAnimation(IDLE_ANIM,false);
                         SetAnimation(WALK_ANIM);
                     })
+                    .SetEase(Ease.InOutQuad)
+                  
                     .OnComplete(() =>
                     {
                        
@@ -165,5 +171,26 @@ public class Desert_BullController : MonoBehaviour
     private void SetAnimation(int animHash, bool value = true)
     {
         _animator.SetBool(animHash,value);
+    }
+
+    private ContactPoint contact;
+    private Vector3 collisionPoint;
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.contacts.Length > 0 && collision.gameObject.name == "DetectiveCollider")
+        {
+            contact = collision.contacts[0];
+            collisionPoint = contact.point;
+            Charge(collisionPoint);
+        }
+    }
+    
+    private void Charge(Vector3 target)
+    {
+        
+        Vector3 chargeDirection = (target - transform.position).normalized;
+        transform
+            .DOMove(target, 3f)
+            .SetEase(Ease.InQuart);
     }
 }
