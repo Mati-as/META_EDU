@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
@@ -13,6 +14,11 @@ public class Desert_CrowController : MonoBehaviour
         Squeak,
         Dive
     }
+      
+ 
+
+
+  
 
       [Header("DoTween Parameters")] public float speed;
     public int vibrato;
@@ -74,6 +80,12 @@ public class Desert_CrowController : MonoBehaviour
         _defaultAnimSpeed = _animator.speed;
         _animator.SetBool(IS_ON_LAKE, true);
     }
+    
+    private void Start()
+    {
+        _camera = Camera.main;
+    }
+
 
     private void OnEnable()
     {
@@ -102,15 +114,7 @@ public class Desert_CrowController : MonoBehaviour
         }
     }
 
-
-    private void Start()
-    {
-        _camera = Camera.main;
-
-        isOnThisPlace[2] = true;
-        isOnThisPlace[3] = true;
-        isOnThisPlace[5] = true;
-    }
+    
 
     [Range(0, 40)]
   
@@ -118,47 +122,47 @@ public class Desert_CrowController : MonoBehaviour
 
     private float _elapsedForNextPatol;
     public float patrolInterval; 
-    // ReSharper disable Unity.PerformanceAnalysis
-    private IEnumerator FlyAround()
-    {
-        _elapsedForNextPatol = 0f;
-        _nextLocationIndex = Random.Range(0, 8);
-        
-        //까마귀 중복된 곳 위치하는 경우 방지
-        while (isOnThisPlace[_nextLocationIndex] == true)
-        {
-            _nextLocationIndex = Random.Range(0, 8);
-        }
-        
-        _elapsedForNextPatol = 0f;
-        float randomizedInterval = patrolInterval + Random.Range(-5, 5);
-
-        while (_elapsedForNextPatol <= randomizedInterval && !_isClicked)
-        {
-            _elapsedForNextPatol += Time.deltaTime;
-            yield return null;
-        }
-        
-        
-        transform
-            .DOMove(landableTransforms[_currentLocationIndex].position, speed)
-            .OnStart(() =>
-            {
-#if UNITY_EDITOR
-                Debug.Log($"{gameObject.name} 순찰중..");
-#endif
-                _currentLocationIndex = _nextLocationIndex;
-                isOnThisPlace[_nextLocationIndex] = true;
-            })
-            .SetSpeedBased()
-            .OnComplete(() =>
-            {
-                _collider.enabled = true;
-                _isClicked = false;
-                StartCoroutine(FlyAround());
-            });
-    
-    }
+//     // ReSharper disable Unity.PerformanceAnalysis
+//     private IEnumerator FlyAround()
+//     {
+//         _elapsedForNextPatol = 0f;
+//         _nextLocationIndex = Random.Range(0, 8);
+//         
+//         //까마귀 중복된 곳 위치하는 경우 방지
+//         while (isOnThisPlace[_nextLocationIndex] == true)
+//         {
+//             _nextLocationIndex = Random.Range(0, 8);
+//         }
+//         
+//         _elapsedForNextPatol = 0f;
+//         float randomizedInterval = patrolInterval + Random.Range(-5, 5);
+//
+//         while (_elapsedForNextPatol <= randomizedInterval && !_isClicked)
+//         {
+//             _elapsedForNextPatol += Time.deltaTime;
+//             yield return null;
+//         }
+//         
+//         
+//         transform
+//             .DOMove(landableTransforms[_currentLocationIndex].position, speed)
+//             .OnStart(() =>
+//             {
+// #if UNITY_EDITOR
+//                 Debug.Log($"{gameObject.name} 순찰중..");
+// #endif
+//                 _currentLocationIndex = _nextLocationIndex;
+//                 isOnThisPlace[_nextLocationIndex] = true;
+//             })
+//             .SetSpeedBased()
+//             .OnComplete(() =>
+//             {
+//                 _collider.enabled = true;
+//                 _isClicked = false;
+//                 StartCoroutine(FlyAround());
+//             });
+//     
+//     }
 
     private bool _isClicked;
     public static bool[] _isOnThisPlace = new bool[8];
@@ -186,23 +190,27 @@ public class Desert_CrowController : MonoBehaviour
          
             _isOnThisPlace[_nextLocationIndex] = true;
 
-            // Move to the new location.
-            transform
-                .DOMove(landableTransforms[_nextLocationIndex].position, speed)
-                .OnStart(() =>
-                {
-#if UNITY_EDITOR
-                    Debug.Log($"{gameObject.name} 순찰중..");
-#endif
-                    _isOnThisPlace[_currentLocationIndex] = false;
-                    _currentLocationIndex = _nextLocationIndex;
-                })
-                .SetSpeedBased()
+            transform.DOLookAt(landableTransforms[_nextLocationIndex].position, 0.55f)
                 .OnComplete(() =>
                 {
-                    _animator.SetBool(FLY_ANIM, false);
-                    _collider.enabled = true;
-                    _isClicked = false;
+                    // Move to the new location.
+                    transform
+                        .DOMove(landableTransforms[_nextLocationIndex].position, speed)
+                        .OnStart(() =>
+                        {
+#if UNITY_EDITOR
+                            Debug.Log($"{gameObject.name} 순찰중..");
+#endif
+                            _isOnThisPlace[_currentLocationIndex] = false;
+                            _currentLocationIndex = _nextLocationIndex;
+                        })
+                        .SetSpeedBased()
+                        .OnComplete(() =>
+                        {
+                            _animator.SetBool(FLY_ANIM, false);
+                            _collider.enabled = true;
+                            _isClicked = false;
+                        });
                 });
         }
     
