@@ -56,15 +56,25 @@ public class Desert_DogController : MonoBehaviour
         _mouseClickAction.Disable();
     }
 
+    [Range(0,50)]
+    public float loopDuration;
     private Tween _pathTween;
+    
+    
     private void WalkOnPath()
     {
+        _pathTween?.Kill();
+        
         _animator.SetBool(WALK_ANIM,true);
+        
+     
         _pathTween = transform
             .DOPath
             (waypoints.Select(w => w.position)
-                .ToArray(), 35f, PathType.CatmullRom)
-            .SetLoops(-1, LoopType.Yoyo)
+                .ToArray(), loopDuration, PathType.CatmullRom)
+            .SetEase(Ease.Linear)
+            .SetSpeedBased()
+            .SetLoops(-1)
             .SetLookAt(0.01f)
             .OnWaypointChange(WaypointReached)
             .OnComplete(WalkOnPath);
