@@ -118,8 +118,24 @@ public class Desert_DogController : MonoBehaviour
       
         DOVirtual.DelayedCall(_currentInterval, () =>
         {
-            _animator.SetBool(WALK_ANIM,true);
-            _clickSeq.Play();
+            
+            if (_isClicked)
+            {
+                DOVirtual.DelayedCall(3.5f, () =>
+                {
+                    _clickSeq.Play();
+                    _animator.SetBool(SIT_ANIM, false);
+                    _animator.SetBool(WALK_ANIM,true);
+                });
+
+            }
+            else
+            {
+                _clickSeq.Play();
+                _animator.SetBool(SIT_ANIM, false);
+                _animator.SetBool(WALK_ANIM,true);
+            }
+           
         });
     }
     
@@ -141,7 +157,7 @@ public class Desert_DogController : MonoBehaviour
         
             _collider.enabled = false;
 
-            yield return new WaitForSeconds(waypointAnimationInterval); // Wait for animation interval
+            yield return new WaitForSeconds(waypointAnimationInterval); 
 
             _animator.SetBool(SIT_ANIM, false);
             _collider.enabled = true;
@@ -150,6 +166,7 @@ public class Desert_DogController : MonoBehaviour
             _clickSeq.Play(); // Resume the sequence after the wait
 
             _isClicked = false;
+            if(_onClickedCoroutine!=null) StopCoroutine(_onClickedCoroutine);
         }
     }
 }

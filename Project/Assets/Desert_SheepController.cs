@@ -25,7 +25,8 @@ public class Desert_SheepController : MonoBehaviour
     public float delayBetweenMoves;
 
     
-    public Transform[] waypoints;
+    public Transform[] wayPoints;
+    private Transform[] _wayPointsCopy;
 
     public float ranIntervalMin;
     public float ranIntervalMax;
@@ -36,23 +37,51 @@ public class Desert_SheepController : MonoBehaviour
     private float _elapsed;
     private float _interval;
     private Vector3 _defaultPos;
+    private int _counter;
     private void Awake()
     {
         _interval = Random.Range(ranIntervalMin, ranIntervalMax);
         _animator = GetComponent<Animator>();
-
+         // _rb = GetComponent<Rigidbody>();
         _defaultPos = transform.position;
+        
+        if (wayPoints.Length >= 4)
+        {
+            _wayPointsCopy = wayPoints.ToArray();
+            _wayPointsCopy[3] = transform;
+        }
+        else
+        {
+            Debug.LogError("wayPoints의 크기가 4 미만입니다.");
+            return;
+        }
+        _counter++;
+        int seed = this.gameObject.GetInstanceID() + DateTime.Now.Millisecond + _counter;
+        Random.InitState(seed);
     }
 
+    public float randomAmount;
     private void Start()
     {
         delayBetweenMoves = Random.Range(ranDelayMin, ranDelayMax);
         Invoke(nameof(MoveToRandomPosition), delayBetweenMoves);
         _moveTweenSeq = DOTween.Sequence();
-        waypoints[3] = transform;
+        _wayPointsCopy[3] = transform;
+        SetRandomPoint(randomAmount);
     }
 
-    
+    private void SetRandomPoint(float amount)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            _wayPointsCopy[i].position =  wayPoints[i].position + (Vector3.right * Random.Range(-amount,amount) ) + (Vector3.forward * Random.Range(-amount,amount));
+        }
+       
+        for (int i = 1; i < 4; i++)
+        {
+            Debug.Log($"{this.gameObject.name}position of {i} :{ _wayPointsCopy[0].position}");
+        }
+    }
    
     private void Update()
     {
@@ -77,8 +106,11 @@ public class Desert_SheepController : MonoBehaviour
     private int _moveCount = 0;
     private Vector3 _moveDirection;
     private Vector3 _randomPosition;
+    private Rigidbody _rb;
     private void MoveToRandomPosition()
-    { 
+    {
+
+       
         _animator.SetBool(WALK_ANIM, true);
         
         if (_moveCount % 10 == 0)
@@ -125,13 +157,14 @@ public class Desert_SheepController : MonoBehaviour
     public float loopTime;
     private void WalkAwayAndComeBack()
     {
-       
+        SetRandomPoint(randomAmount);
+        
         _moveTweenSeq?.Kill();
         _moveTweenSeq = DOTween.Sequence();
         
         _animator.SetBool(WALK_ANIM,true);
         _moveTweenSeq.Append(transform
-            .DOPath(waypoints.Select(w => w.position).ToArray(), loopTime, PathType.CatmullRom)
+            .DOPath(_wayPointsCopy.Select(w => w.position).ToArray(), loopTime, PathType.CatmullRom)
             .SetEase(Ease.Linear)
             .SetSpeedBased()
             .SetLookAt(0.01f)
