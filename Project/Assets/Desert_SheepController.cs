@@ -1,8 +1,13 @@
-
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using Sequence = DG.Tweening.Sequence;
 
 public class Desert_SheepController : MonoBehaviour
 {
@@ -19,52 +24,125 @@ public class Desert_SheepController : MonoBehaviour
     public float moveDuration;
     public float delayBetweenMoves;
 
+    
+    public Transform[] waypoints;
 
+    public float ranIntervalMin;
+    public float ranIntervalMax;
+    [Range(0,30)]
+    public float ranDelayMin;
+    [FormerlySerializedAs("ranDlayMax")] [Range(0,30)]
+    public float ranDelayMax;
+    private float _elapsed;
+    private float _interval;
+    private Vector3 _defaultPos;
     private void Awake()
     {
+        _interval = Random.Range(ranIntervalMin, ranIntervalMax);
         _animator = GetComponent<Animator>();
+
+        _defaultPos = transform.position;
     }
 
     private void Start()
     {
+        delayBetweenMoves = Random.Range(ranDelayMin, ranDelayMax);
         Invoke(nameof(MoveToRandomPosition), delayBetweenMoves);
+        _moveTweenSeq = DOTween.Sequence();
+        waypoints[3] = transform;
+    }
+
+    
+   
+    private void Update()
+    {
+        _elapsed += Time.deltaTime;
+
+        if (_elapsed > _interval)
+        {
+            _elapsed = 0;
+            _interval = Random.Range(ranIntervalMin, ranIntervalMax);
+            WalkAwayAndComeBack();
+            
+        }
     }
 
     private int _order;
     private readonly int FRONT = 0;
     private readonly int BACK = 1;
-
+    private Tween _rotateTween;
+    private Sequence _moveTweenSeq;
+    
+    
+    private int _moveCount = 0;
+    private Vector3 _moveDirection;
+    private Vector3 _randomPosition;
     private void MoveToRandomPosition()
     { 
         _animator.SetBool(WALK_ANIM, true);
         
-        var moveDirection = _currentDirection == MoveDirection.Front ? moveFront : moveBack;
+        if (_moveCount % 10 == 0)
+        {
+            _moveDirection = _currentDirection == MoveDirection.Front ? moveFront : moveBack;
         
 
-        var randomPosition = new Vector3(
-            moveDirection.x + Random.Range(minPosition.x, maxPosition.x),
-            moveDirection.y + Random.Range(minPosition.y, maxPosition.y),
-            moveDirection.z + Random.Range(minPosition.z, maxPosition.z)
-        );
+            _randomPosition = new Vector3(
+                _moveDirection.x + Random.Range(minPosition.x, maxPosition.x),
+                _moveDirection.y + Random.Range(minPosition.y, maxPosition.y),
+                _moveDirection.z + Random.Range(minPosition.z, maxPosition.z)
+            );
+        }
+        else
+        {
+            _moveDirection = _defaultPos;
+            _randomPosition = Vector3.zero;
+        }
+       
 
-        transform
-            .DOLookAt(transform.position + randomPosition, 2f)
-            //.OnStart(() => _animator.SetBool(WALK_ANIM, false))
+        _moveTweenSeq?.Kill();
+        // Add the look at tween to the sequence
+        _moveTweenSeq.Append(transform.DOLookAt(transform.position + _randomPosition, 2f)
             .OnComplete(() =>
             {
-                transform.DOMove(transform.position + randomPosition, moveDuration).OnComplete(() =>
+                transform.DOMove(transform.position + _randomPosition, moveDuration).OnComplete(() =>
                 {
                     _animator.SetBool(WALK_ANIM, false);
-
                     ToggleDirection();
-                    Invoke(nameof(MoveToRandomPosition), delayBetweenMoves);
+                    delayBetweenMoves = Random.Range(ranDelayMin, ranDelayMax);
+                    _moveTweenSeq.OnComplete(() => Invoke(nameof(MoveToRandomPosition), delayBetweenMoves));
                 });
-            });
+            }));
+  
+      
     }
 
     void ToggleDirection()
     {
         Debug.Log($"sheep move direction{(MoveDirection)_currentDirection}");
         _currentDirection = _currentDirection == MoveDirection.Front ? MoveDirection.Back : MoveDirection.Front;
+    }
+   
+    public float loopTime;
+    private void WalkAwayAndComeBack()
+    {
+       
+        _moveTweenSeq?.Kill();
+        _moveTweenSeq = DOTween.Sequence();
+        
+        _animator.SetBool(WALK_ANIM,true);
+        _moveTweenSeq.Append(transform
+            .DOPath(waypoints.Select(w => w.position).ToArray(), loopTime, PathType.CatmullRom)
+            .SetEase(Ease.Linear)
+            .SetSpeedBased()
+            .SetLookAt(0.01f)
+            .OnStart(() =>
+            {
+                DOVirtual.Float(0.5f, 1.3f, 2.4f, value => { _animator.speed = value; });
+            })
+            .OnComplete(() =>
+            {
+                _animator.SetBool(WALK_ANIM, false);
+                MoveToRandomPosition();
+            }));
     }
 }

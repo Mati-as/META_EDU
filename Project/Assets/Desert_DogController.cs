@@ -44,6 +44,7 @@ public class Desert_DogController : MonoBehaviour
     {
         _camera = Camera.main;
         WalkOnPath();
+        
     }
 
     private void OnEnable()
@@ -59,25 +60,25 @@ public class Desert_DogController : MonoBehaviour
     [Range(0,50)]
     public float loopDuration;
     private Tween _pathTween;
-    
-    
-    private void WalkOnPath()
+    private DG.Tweening.Sequence _clickSeq;
+    private int _currentPointWayIndex;
+   
+    private void WalkOnPath(int startIndex =0)
     {
-        _pathTween?.Kill();
-        
+        _clickSeq?.Kill();
+        _clickSeq = DOTween.Sequence();
         _animator.SetBool(WALK_ANIM,true);
         
-     
-        _pathTween = transform
-            .DOPath
-            (waypoints.Select(w => w.position)
-                .ToArray(), loopDuration, PathType.CatmullRom)
-            .SetEase(Ease.Linear)
+        var pathWaypoints = waypoints.Skip(startIndex).Select(w => w.position).ToArray();
+        
+        _clickSeq.Append(transform
+            .DOPath(pathWaypoints, loopDuration, PathType.CatmullRom)
             .SetSpeedBased()
             .SetLoops(-1)
             .SetLookAt(0.01f)
             .OnWaypointChange(WaypointReached)
-            .OnComplete(WalkOnPath);
+            .OnComplete(() => WalkOnPath())
+        );
     }
     
     private void OnMouseClick(InputAction.CallbackContext context)
@@ -104,16 +105,21 @@ public class Desert_DogController : MonoBehaviour
     private float _currentInterval;
     private void WaypointReached(int waypointIndex)
     {
+        _clickSeq.Pause();
         _currentInterval = Random.Range(intervalMin, intervalMax);
+        
 #if  UNITY_EDITOR
         Debug.Log("Reached waypoint: " + waypointIndex);
+        Debug.Log(" _currentInterval: " + _currentInterval);
 #endif
+
+        _currentPointWayIndex = waypointIndex;
         _animator.SetBool(WALK_ANIM,false);
-        transform.DOPause();
+      
         DOVirtual.DelayedCall(_currentInterval, () =>
         {
             _animator.SetBool(WALK_ANIM,true);
-            transform.DOPlay();
+            _clickSeq.Play();
         });
     }
     
@@ -121,40 +127,29 @@ public class Desert_DogController : MonoBehaviour
     private bool _isClicked;
     private Coroutine _onClickedCoroutine;
     private float elapsed;
-     public float waypointAnimationInterval;
+    public float waypointAnimationInterval;
     
     private IEnumerator OnClicked()
     {
         if (!_isClicked)
         {
             _isClicked = true;
-            _pathTween.Pause();
-            elapsed = 0f;
-
+        
+            _clickSeq.Pause(); // Pausing the sequence when clicked
+            _animator.SetBool(WALK_ANIM, false);
             _animator.SetBool(SIT_ANIM, true);
+        
             _collider.enabled = false;
-                
-            while (true)
-            {
-                _currentInterval = 987654321;
-                elapsed += Time.deltaTime;
-                if (elapsed > waypointAnimationInterval)
-                {
-                    break;
-                }
 
-                yield return null;
-            }
-            
+            yield return new WaitForSeconds(waypointAnimationInterval); // Wait for animation interval
+
             _animator.SetBool(SIT_ANIM, false);
             _collider.enabled = true;
-            _currentInterval = Random.Range(intervalMin, intervalMax);
-            _pathTween.Play();
+        
+            _animator.SetBool(WALK_ANIM, true);
+            _clickSeq.Play(); // Resume the sequence after the wait
+
             _isClicked = false;
-            if(_onClickedCoroutine!=null)
-            StopCoroutine(_onClickedCoroutine);
-            
         }
-    
     }
 }
