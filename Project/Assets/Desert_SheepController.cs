@@ -99,7 +99,7 @@ public class Desert_SheepController : MonoBehaviour
     private int _order;
     private readonly int FRONT = 0;
     private readonly int BACK = 1;
-    private Tween _rotateTween;
+    
     private Sequence _moveTweenSeq;
     
     
@@ -163,19 +163,24 @@ public class Desert_SheepController : MonoBehaviour
         _moveTweenSeq = DOTween.Sequence();
         
         _animator.SetBool(WALK_ANIM,true);
-        _moveTweenSeq.Append(transform
-            .DOPath(_wayPointsCopy.Select(w => w.position).ToArray(), loopTime, PathType.CatmullRom)
-            .SetEase(Ease.Linear)
-            .SetSpeedBased()
-            .SetLookAt(0.01f)
-            .OnStart(() =>
-            {
-                DOVirtual.Float(0.5f, 1.3f, 2.4f, value => { _animator.speed = value; });
-            })
-            .OnComplete(() =>
-            {
-                _animator.SetBool(WALK_ANIM, false);
-                MoveToRandomPosition();
-            }));
+        _moveTweenSeq
+            .Append(
+                transform.DOLookAt(_wayPointsCopy[0].position, 0.8f)
+                    .OnComplete(() =>
+                    {
+                        transform
+                            .DOPath(_wayPointsCopy.Select(w => w.position).ToArray(), loopTime, PathType.CatmullRom)
+                            .SetEase(Ease.Linear)
+                            .SetLookAt(0.01f)
+                            .OnStart(() =>
+                            {
+                                DOVirtual.Float(0.5f, 1.3f, 2.4f, value => { _animator.speed = value; });
+                            })
+                            .OnComplete(() =>
+                            {
+                                _animator.SetBool(WALK_ANIM, false);
+                                MoveToRandomPosition();
+                            });
+                    }));
     }
 }
