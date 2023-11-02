@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using Debug = UnityEngine.Debug;
 #if UNITY_EDITOR
 #endif
 
@@ -88,10 +90,12 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
             _animator.speed = newValue;
         }).SetEase(Ease.InOutQuad);
         
+        _particle.Play();
+        
         _animator.SetBool(FAST_RUN_ANIM, true);
         for (var i = 0; i < Mathf.Min(jumpSurpPath.Length, _jumpSurpPathVec.Length); i++)
             _jumpSurpPathVec[i] = jumpSurpPath[i].position;
-        
+      
 
         DOTween.Kill(transform);
 
@@ -101,13 +105,17 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
         {
             seq.Append(transform.DOLookAt(lookAtTarget, 0.8f));
         }
-        seq.Append(transform.DOPath(_jumpSurpPathVec, jumpDuration, PathType.CatmullRom).SetEase(Ease.InOutQuad));
-        seq.InsertCallback(0.18f, () =>
-        {
-            _particle.transform.position = _jumpSurpPathVec[0];
-            _particle.Play();
-            Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]);
-        });
+        //자식객체 이므로, DoPath이후에 위치값 할당하면 수면위에 배치되지않음. 따라서 DoPath이전에 Transform 할당. 
+     
+        seq.Append(transform.DOPath(_jumpSurpPathVec, jumpDuration, PathType.CatmullRom).SetEase(Ease.InOutQuad))
+            .InsertCallback(0.138f, () =>
+            {
+               
+                Debug.Log("particle Player On Surface! ");
+                
+                Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]);
+            });
+        
         seq.OnComplete(ReturnToPatrol);
     }
 

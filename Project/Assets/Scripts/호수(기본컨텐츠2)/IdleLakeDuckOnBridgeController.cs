@@ -24,8 +24,8 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
         "Start", "Max_Height", "End"
     })]
 #endif
-    public Transform[] duckFlyRoute = new Transform[3];
-    private readonly Vector3[] _duckFlyRouteAVector = new Vector3[3];
+    public Transform[] duckFlyRoute = new Transform[4];
+    private readonly Vector3[] _duckFlyRouteAVector = new Vector3[4];
 
 
 #if UNITY_EDITOR
@@ -72,6 +72,8 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
         entry.eventID = EventTriggerType.PointerClick;
         entry.callback.AddListener(data => { OnClicked(); });
         trigger.triggers.Add(entry);
+        
+      
     }
 
     public ParticleSystem waterEffect;
@@ -79,6 +81,8 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
     [Range(0, 40)] public float increasedAnimationSpeed;
 
     public float jumpDuration;
+    public Sequence _sequence;
+    public ParticleSystem secondWaterParticle;
     private void OnClicked()
     {
 #if UNITY_EDITOR
@@ -93,17 +97,17 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
             _isClickedAnimStarted = true;
             
             
-            
                  DOTween
                 .Sequence(transform.DOPath(_duckFlyRouteAVector, jumpDuration, PathType.CatmullRom))
                 .SetEase(Ease.InOutQuad)
                 //사운드 싱크 맞추기위한 InsertCallback.
-                .InsertCallback(jumpDuration - 0.35f,
+                .InsertCallback(jumpDuration - 0.45f,
                     () => { Lake_SoundManager.PlaySound(_audioSourceDive, audioClips[(int)Sound.Dive]); })
-                .InsertCallback(jumpDuration - 0.1f, () =>
+                .InsertCallback(jumpDuration -0.35f, () =>
                 {
                     waterEffect.transform.position = duckFlyRoute[2].position;
                     waterEffect.Play();
+                    secondWaterParticle.Play();
                 })
                 .OnComplete(() =>
                 {
@@ -112,7 +116,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
                     var directionToLook = _duckAwayRouteVector[1] - transform.transform.position;
                     var lookRotation = Quaternion.LookRotation(directionToLook);
 
-                    transform.DORotate(lookRotation.eulerAngles, 1.6f)
+                    transform.DORotate(lookRotation.eulerAngles, 1.32f)
                         .OnStart(() =>
                         {
                             DOVirtual.Float(_defaultAnimSpeed, increasedAnimationSpeed, 8f,
