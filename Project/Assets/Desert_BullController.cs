@@ -36,7 +36,7 @@ public class Desert_BullController : MonoBehaviour
     private float _idleDuration;
 
     private Rigidbody _rb;
-    public float chargeSpeed;
+    //public float chargeSpeed;
 #if UNITY_EDITOR
     [Range(0,10)]
     public float GAME_SPEED;

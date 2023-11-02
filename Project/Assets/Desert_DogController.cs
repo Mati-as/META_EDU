@@ -73,6 +73,7 @@ public class Desert_DogController : MonoBehaviour
         
         _clickSeq.Append(transform
             .DOPath(pathWaypoints, loopDuration, PathType.CatmullRom)
+            .SetEase(Ease.Linear)
             .SetSpeedBased()
             .SetLoops(-1)
             .SetLookAt(0.01f)
@@ -83,21 +84,18 @@ public class Desert_DogController : MonoBehaviour
     
     private void OnMouseClick(InputAction.CallbackContext context)
     {
-        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-        
-#if UNITY_EDITOR
-        Debug.Log("Dog Clicked!");
-#endif
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-        if (Physics.Raycast(ray, out hit))
+        foreach (var hit in hits)
         {
-            if (hit.collider.gameObject == this.gameObject)
-            {
 #if UNITY_EDITOR
-                Debug.Log($"{this.gameObject.name} is Clicked On!");
+            Debug.Log("Dog Clicked!");
 #endif
+            if (hit.collider.gameObject == gameObject)
+            {
                 _onClickedCoroutine= StartCoroutine(OnClicked());
+                break;
             }
         }
     }
@@ -109,8 +107,8 @@ public class Desert_DogController : MonoBehaviour
         _currentInterval = Random.Range(intervalMin, intervalMax);
         
 #if  UNITY_EDITOR
-        Debug.Log("Reached waypoint: " + waypointIndex);
-        Debug.Log(" _currentInterval: " + _currentInterval);
+        // Debug.Log("Reached waypoint: " + waypointIndex);
+        // Debug.Log(" _currentInterval: " + _currentInterval);
 #endif
 
         _currentPointWayIndex = waypointIndex;

@@ -77,10 +77,10 @@ public class Desert_SheepController : MonoBehaviour
             _wayPointsCopy[i].position =  wayPoints[i].position + (Vector3.right * Random.Range(-amount,amount) ) + (Vector3.forward * Random.Range(-amount,amount));
         }
        
-        for (int i = 1; i < 4; i++)
-        {
-            Debug.Log($"{this.gameObject.name}position of {i} :{ _wayPointsCopy[0].position}");
-        }
+        // for (int i = 1; i < 4; i++)
+        // {
+        //     Debug.Log($"{this.gameObject.name}position of {i} :{ _wayPointsCopy[0].position}");
+        // }
     }
    
     private void Update()

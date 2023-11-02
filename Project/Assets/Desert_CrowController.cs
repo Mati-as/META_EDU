@@ -1,26 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.EventSystems;
 using DG.Tweening;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using Unity.VisualScripting;
 
 public class Desert_CrowController : MonoBehaviour
 {
-      private enum Sound
+    private enum Sound
     {
         Squeak,
         Dive
     }
-      
- 
 
 
-  
-
-      [Header("DoTween Parameters")] public float speed;
+    [Header("DoTween Parameters")] public float speed;
     public int vibrato;
 
     public readonly int IDLE_ANIM = Animator.StringToHash("idle");
@@ -33,7 +24,7 @@ public class Desert_CrowController : MonoBehaviour
     public Transform[] landableTransforms = new Transform [8];
     public static bool[] isOnThisPlace = new bool[8];
     private int _nextLocationIndex;
-    
+
     public Transform[] jumpSurpPath = new Transform[3];
     private readonly Vector3[] _jumpSurpPathVec = new Vector3[3];
 
@@ -44,29 +35,29 @@ public class Desert_CrowController : MonoBehaviour
     private Animator _animator;
     private float _defaultAnimSpeed;
 
+  
     private ParticleSystem _particle;
-
     //더블클릭 방지용으로 콜라이더를 설정하기위한 인스턴스 선언
     private Collider _collider;
     private AudioSource _audioSourceDive;
     private AudioSource _audioSourceSqueak;
     public AudioClip[] audioClips;
-    
-    
+
+
     private Camera _camera;
     private InputAction _mouseClickAction;
 
     private void Awake()
     {
         _camera = Camera.main;
-        
+
         _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         _mouseClickAction.performed += OnMouseClick;
-        
+
         _particle = GetComponentInChildren<ParticleSystem>();
         _collider = GetComponent<Collider>();
 
-    
+
         // var audioSources = GetComponents<AudioSource>();
         // _audioSourceDive = audioSources[(int)Sound.Dive];
         // _audioSourceSqueak = audioSources[(int)Sound.Squeak];
@@ -79,14 +70,18 @@ public class Desert_CrowController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _defaultAnimSpeed = _animator.speed;
         _animator.SetBool(IS_ON_LAKE, true);
+
+        _isOnThisPlace[2] = true;
+        _isOnThisPlace[3] = true;
+        _isOnThisPlace[7] = true;
+        
     }
-    
+
     private void Start()
     {
         _camera = Camera.main;
     }
-
-
+    
     private void OnEnable()
     {
         _mouseClickAction.Enable();
@@ -99,29 +94,29 @@ public class Desert_CrowController : MonoBehaviour
 
     private void OnMouseClick(InputAction.CallbackContext context)
     {
-        Ray ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-        #if UNITY_EDITOR
-        Debug.Log("Crow Clicked!");
-        #endif
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
-        if (Physics.Raycast(ray, out hit))
+        foreach (var hit in hits)
         {
-            if (hit.collider.gameObject == this.gameObject)
+#if UNITY_EDITOR
+            Debug.Log("Crow Clicked!");
+#endif
+            if (hit.collider.gameObject == gameObject)
             {
                 OnClicked();
+                
+                break;
             }
         }
     }
 
-    
 
-    [Range(0, 40)]
-  
-    private Coroutine _flyCoroutine;
+    [Range(0, 40)] private Coroutine _flyCoroutine;
 
     private float _elapsedForNextPatol;
-    public float patrolInterval; 
+
+    public float patrolInterval;
 //     // ReSharper disable Unity.PerformanceAnalysis
 //     private IEnumerator FlyAround()
 //     {
@@ -173,21 +168,18 @@ public class Desert_CrowController : MonoBehaviour
         if (!_isClicked)
         {
             _isClicked = true;
-        
+
 #if UNITY_EDITOR
-            Debug.Log($"Crow is Clicked On!");
+            Debug.Log("Crow is Clicked On!");
 #endif
 
             _animator.SetBool(FLY_ANIM, true);
             _nextLocationIndex = Random.Range(0, 8);
-        
-            while (_isOnThisPlace[_nextLocationIndex])
-            {
-                _nextLocationIndex = Random.Range(0, 8);
-            }
+
+            while (_isOnThisPlace[_nextLocationIndex]) _nextLocationIndex = Random.Range(0, 8);
 
             // Set the value of the new location to `true`.
-         
+
             _isOnThisPlace[_nextLocationIndex] = true;
 
             transform.DOLookAt(landableTransforms[_nextLocationIndex].position, 0.55f)
@@ -213,6 +205,5 @@ public class Desert_CrowController : MonoBehaviour
                         });
                 });
         }
-    
     }
 }
