@@ -345,7 +345,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene();
+        // 11/2/2023
+        // new input system 도입으로 인한 legacy logic & function.
+        // 추후 UI버튼을 통한 reload 기능 도입 시, 이벤트결합 해야합니다.
+        // if (Input.GetKeyDown(KeyCode.R)) ReloadCurrentScene();
         
         //디버그 및 UI용 재생속도 조정 함수
         if (!isGameStopped)

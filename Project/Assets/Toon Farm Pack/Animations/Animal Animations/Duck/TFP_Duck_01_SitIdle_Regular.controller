@@ -173,9 +173,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.49987018
   m_TransitionOffset: 0
-  m_ExitTime: 0.9166667
+  m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -224,9 +224,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.027908765
+  m_TransitionDuration: 0.027908767
   m_TransitionOffset: 0
-  m_ExitTime: 8.19746e-11
+  m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 0
   m_InterruptionSource: 0
@@ -481,7 +481,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 6010834623784201533}
-    m_Position: {x: 260, y: 40, z: 0}
+    m_Position: {x: 260, y: 50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 9163261891432568167}
     m_Position: {x: 530, y: 160, z: 0}
@@ -523,7 +523,10 @@ AnimatorStateMachine:
     m_Position: {x: -240, y: -100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -436004246112805545}
-    m_Position: {x: -240, y: -190, z: 0}
+    m_Position: {x: -240, y: -250, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 8227066052926528291}
+    m_Position: {x: 150, y: -230, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -653,7 +656,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.28477973
+  m_TransitionDuration: 0
   m_TransitionOffset: 0.076434225
   m_ExitTime: 1.2364737
   m_HasExitTime: 0
@@ -762,7 +765,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0.3442675
   m_TransitionOffset: 0
-  m_ExitTime: 0.4835988
+  m_ExitTime: 0.036715932
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -785,7 +788,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25000006
+  m_TransitionDuration: 0.09101645
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -815,6 +818,32 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400010, guid: 791d780f9c80adf4bab7f173c529b859, type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &8227066052926528291
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: My_Duck_Flyable_Fly
+  m_Speed: 3
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 43c87bd030e695f4bbc3ba9089292264, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
