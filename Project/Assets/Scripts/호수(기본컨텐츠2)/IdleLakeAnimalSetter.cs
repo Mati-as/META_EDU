@@ -209,6 +209,10 @@ public class IdleLakeAnimalSetter : MonoBehaviour
                             
         var lookRotation = Quaternion.LookRotation(directionToLook);
         animals[_selectedAnimalNum].transform.DORotate(lookRotation.eulerAngles,1.6f)
+            .OnStart(() =>
+            {
+                DOVirtual.Float(0.1f, 1.5f, 7.5f,value=> animalAnimators[_selectedAnimalNum].speed = value);
+            })
             .OnComplete(() =>
             {
                 animals[_selectedAnimalNum].transform.
@@ -290,6 +294,10 @@ public class IdleLakeAnimalSetter : MonoBehaviour
             });
         animals[_selectedAnimalNum].transform
             .DOMove(drinkableLocation[_ranNumForLocation].position, moveInDuration)
+            .OnStart(() =>
+            {
+                DOVirtual.Float(2f, 0.45f, 6.3f,value=> animalAnimators[_selectedAnimalNum].speed = value);
+            })
             .OnComplete(OnArrivalAtLake);
         yield return null;
     }
