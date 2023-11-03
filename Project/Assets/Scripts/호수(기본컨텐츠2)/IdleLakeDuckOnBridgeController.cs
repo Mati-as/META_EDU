@@ -73,7 +73,6 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
         entry.callback.AddListener(data => { OnClicked(); });
         trigger.triggers.Add(entry);
         
-      
     }
 
     public ParticleSystem waterEffect;
