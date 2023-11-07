@@ -4,6 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class ParticleEventController : MonoBehaviour
 {
@@ -49,45 +52,121 @@ public class ParticleEventController : MonoBehaviour
     public float clickRadius = 5.0f;
     public float clickRotationPower;
     
+   
     [Header("Sound Setting")] [Space(10f)]
+    [SerializeField] private AudioClip clickRustlingSound;
+    [SerializeField] private AudioClip clickPopSound;
     [SerializeField] private AudioClip windBlowingSound;
-    private AudioSource _audioSource;
-    private event Action WindBlowTriggerEvent;
+    [SerializeField] private AudioClip rollingLeaves;
     
    
+    private AudioSource[] _audioSources;
+    private Camera _camera;
+    private InputAction _mouseClickAction;
+
+   
+    enum FallenLeave_SoundID
+    {
+        RollingLeaves,
+        Blowing,
+        MouseClick,
+        ClickPop
+    }
+
+    private int _count = 0;
     private void Awake()
     {
-        _audioSource = GetComponent<AudioSource>();
-        _audioSource.clip = windBlowingSound;
-        _audioSource.Stop();
+        _audioSources = GetComponents<AudioSource>();
+                     
+        _audioSources[(int)FallenLeave_SoundID.RollingLeaves].clip = rollingLeaves;
+        _audioSources[(int)FallenLeave_SoundID.Blowing].clip = windBlowingSound;
+        
+        
+        for(int i = (int)FallenLeave_SoundID.MouseClick ; i < _audioSources.Length ;i++)
+        {
+            
+            if (i % 2 == 0)
+            {
+#if UNITY_EDITOR
+                Debug.Log("클립할당");
+#endif
+                _audioSources[i].clip = clickPopSound;
+            }
+            else
+            {
+                _audioSources[i].clip = clickRustlingSound;
+            }
+        }
         
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         Subscribe();
         StopAllParticles();
-
     }
+   
+    private void Start()
+    {
+        _camera = Camera.main;
+        
+        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        _mouseClickAction.performed += OnMouseClick;
+        _mouseClickAction.Enable();
+        
+    }
+    
+    private void OnDisable()
+    {
+        _mouseClickAction.Disable();
+    }
+
+    private void OnMouseClick(InputAction.CallbackContext context)
+    {
+        
+        for(int i = 2 ;i < _audioSources.Length ;i += 2)
+        {
+            if (!_audioSources[i].isPlaying)
+            {
+                SoundManager.FadeInAndOutSound(_audioSources[i],1.0f,0.05f
+                    ,duration,0.25f);
+                
+                SoundManager.FadeInAndOutSound(_audioSources[i+1],0.25f,0.05f
+                    ,0.89f,0.25f,rollBack:true);
+#if UNITY_EDITOR
+                Debug.Log("클릭소리 재생");
+#endif
+                break;
+
+            }
+        }
+      
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            Debug.Log("Ray hit: " + hit.transform.name);
+            ClickEventApplyRadialForce(hit.point,particleSystemA);
+            ClickEventApplyRadialForce(hit.point,particleSystemB);
+            ClickEventApplyRadialForce(hit.point,particleSystemC);
+        }
+    }
+
+    public float duration;
+    
+    
     private void Update()
     {
         _elapsedTime += Time.deltaTime;
         
-        if (Input.GetMouseButtonDown(0))
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                Debug.Log("Ray hit: " + hit.transform.name);
-                ClickEventApplyRadialForce(hit.point,particleSystemA);
-                ClickEventApplyRadialForce(hit.point,particleSystemB);
-                ClickEventApplyRadialForce(hit.point,particleSystemC);
-            }
-        }
-        
-        
        
         if (_elapsedTime > _randomTime)
         {
+#if UNITY_EDITOR
+            Debug.Log("바람소리 재생");
+#endif
+            SoundManager.FadeInAndOutSound(_audioSources[(int)FallenLeave_SoundID.RollingLeaves],1f,0.01f
+                ,5f,0.5f);
+            SoundManager.FadeInAndOutSound(_audioSources[(int)FallenLeave_SoundID.Blowing],0.18f,0.01f
+                ,5f,0.5f);
             randomDirection = new Vector3(Random.Range(-2, 2), 0 , Random.Range(-2, 2));
             isWindBlowing = true;
            
@@ -99,12 +178,9 @@ public class ParticleEventController : MonoBehaviour
                 randomWindAngularMax,randomWindForceMin,randomWindForceMax);
             ApplyWindRandomForce(center, particleSystemC,randomWindAngularMin,
                 randomWindAngularMax,randomWindForceMin,randomWindForceMax);
+         
+           
             
-            _audioSource.Play();
-            
-            _angularStopElapse = 0f;
-            _elapsedTime = 0f;
-            _isAngularZero = false;
             _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         }
             

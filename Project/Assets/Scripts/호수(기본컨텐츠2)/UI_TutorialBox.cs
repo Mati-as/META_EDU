@@ -91,15 +91,7 @@ public class UI_TutorialBox : MonoBehaviour
         {
             onLeftUI_Objects[1].DOShakePosition(interval, new Vector2(0,  waveAmounts[1]),vibrato,0);
         }
-         // 예를 들기 위해 사용되는 RectTransform 변수
-        
-        // OPTION1
-        // frame.DOMove(leftFrameAncPosition.anchoredPosition, 1.5f)
-        //     .SetDelay(3f) // 3초 대기
-        //     .OnComplete(OnRight);
-        
-        // OPTION2
-        // DoMove후 n초대기 한다음 콜백하고 싶은 경우.
+    
         DOTween.Sequence()
             .Append(frame.DOAnchorPos(leftFrameAncPosition.anchoredPosition, 1.5f))
             .AppendInterval(interval)
@@ -115,22 +107,7 @@ public class UI_TutorialBox : MonoBehaviour
             
     }
    
-    // private void DtMove(RectTransform rect,Vector2 defaultAncPos, float waveAmount)
-    // {
-    //     rect.DOMove(defaultAncPos + Vector2.one * waveAmount, waveSpeed)
-    //         .OnComplete(() =>
-    //         {
-    //             if (_isSideChanged == true)
-    //             {
-    //                 Debug.Log("닷트윈 애니메이션 중단!");
-    //                 rect.DOKill();// 애니메이션 중단
-    //                 _isSideChanged = false;
-    //                 return;
-    //             }
-    //             DtMove(rect, defaultAncPos, - waveAmount);
-    //         });
-    // }
-
+  
     public int vibrato;
     private void OnRight()
     {

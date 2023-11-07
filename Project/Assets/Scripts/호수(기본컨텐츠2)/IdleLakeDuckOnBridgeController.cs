@@ -72,7 +72,6 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
         entry.eventID = EventTriggerType.PointerClick;
         entry.callback.AddListener(data => { OnClicked(); });
         trigger.triggers.Add(entry);
-        
     }
 
     public ParticleSystem waterEffect;
