@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -53,10 +55,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     [FormerlySerializedAs("drinkingTimeRandomIntervalMan")] [Range(0, 60)]
     public float drinkingTimeRandomIntervalMax;
-
-  
-
-   
+    
 
     [Header("Animal List(Array)")]
     [Space(20f)]
@@ -97,6 +96,9 @@ public class IdleLakeAnimalSetter : MonoBehaviour
         = new IdleLakeAnimalController[4];
 
     private Coroutine _setAnimalRunCoroutine;
+    
+    public static event Action onArrival;
+    public static event Action onLeaving;
 
     private void Awake()
     {
@@ -128,18 +130,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 #endif
             });
 
-//         //Location의 콜라이더에 충돌, 즉 도달했을때
-//         _idleLakeAnimalControllers[_selectedAnimalNum].isArrivedAtDrinkablePosition
-//             .Where(value => value == true)
-//             .Subscribe(_ =>
-//                 {
-// #if UNITY_EDITOR
-//                     Debug.Log($"현재 선택된 동물: {(AnimalNames)_selectedAnimalNum}");
-//                     Debug.Log($"동물 Drinking 및 Leave 코루틴 시작");
-// #endif
-//                     _animalDrinkingCoroutine = StartCoroutine(DrinkAndLeaveCoroutine());
-//                 }
-//             );
+
     }
 
     private void Update()
@@ -161,7 +152,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private void DeactivateAllAnimation()
     {
-        animalAnimators[_selectedAnimalNum].SetBool(IDLE_ANIM, false);
+        //animalAnimators[_selectedAnimalNum].SetBool(IDLE_ANIM, false);
         animalAnimators[_selectedAnimalNum].SetBool(EAT_ANIM, false);
         animalAnimators[_selectedAnimalNum].SetBool(RUN_ANIM, false);
     }
@@ -212,6 +203,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
             .OnStart(() =>
             {
                 DOVirtual.Float(0.1f, 1.5f, 7.5f,value=> animalAnimators[_selectedAnimalNum].speed = value);
+                
             })
             .OnComplete(() =>
             {
@@ -220,17 +212,11 @@ public class IdleLakeAnimalSetter : MonoBehaviour
                     .SetEase(Ease.InQuad)
                     .OnComplete(() =>
                     {
+                        onLeaving?.Invoke();
                         _isOnDeFaultLocation = true;
                 
                     });
             });
-        
-  
-       
-      
-        
-    
-      
         
         
 #if UNITY_EDITOR
@@ -302,19 +288,10 @@ public class IdleLakeAnimalSetter : MonoBehaviour
         yield return null;
     }
 
-    // private void OnArrivalAtDefaultPosition()
-    // {
-    //     if (_animalDrinkingCoroutine != null)
-    //     {
-    //         StopCoroutine(_animalDrinkingCoroutine);
-    //     }
-    //   
-    //     _setAnimalRunCoroutine = StartCoroutine(SetRunCoroutine());
-    //     
-    // }
 
     private void OnArrivalAtLake()
     {
+        onArrival?.Invoke();
         if (_setAnimalRunCoroutine != null)
         {
             StopCoroutine(_setAnimalRunCoroutine);
@@ -322,11 +299,4 @@ public class IdleLakeAnimalSetter : MonoBehaviour
         _animalDrinkingCoroutine = StartCoroutine(DrinkAndLeaveCoroutine());
     }
     
-    // DoMove.OnComplete API 사용을 위해 코루틴에 명시
-    // private void MoveAnimalRandomly()
-    // {
-    //     #if UNITY_EDITOR
-    //         Debug.Log("동물 호수로 가는중..");
-    //     #endif
-    // }
 }

@@ -1,261 +1,767 @@
 fileFormatVersion: 2
 guid: 627b0375e4b758c46807b1d0f02a6ac6
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: CTR_Torso
-    100002: CTR_TWEEK_Spine
-    100004: Def_Belly
-    100006: Def_BFoot.L
-    100008: Def_BFoot.R
-    100010: Def_BLeg.L
-    100012: Def_BLeg.R
-    100014: Def_BShin.L
-    100016: Def_BShin.R
-    100018: Def_BToe.L
-    100020: Def_BToe.R
-    100022: Def_Chest
-    100024: Def_Ear.L
-    100026: Def_Ear.R
-    100028: Def_Eyelid.L
-    100030: Def_Eyelid.R
-    100032: Def_FFoot.L
-    100034: Def_FFoot.R
-    100036: Def_FLeg.L
-    100038: Def_FLeg.R
-    100040: Def_FShin.L
-    100042: Def_FShin.R
-    100044: Def_FToe.L
-    100046: Def_FToe.R
-    100048: Def_Head
-    100050: Def_Hip
-    100052: Def_Mouth
-    100054: Def_Neck
-    100056: Def_Rein
-    100058: Def_ReinAdjust_L
-    100060: Def_ReinAdjust_R
-    100062: Def_Snout
-    100064: Def_Spine
-    100066: Def_Stirrup.L
-    100068: Def_Stirrup.R
-    100070: Def_Tail_01
-    100072: Def_Tail_02
-    100074: Def_Tail_03
-    100076: MCH_Root_Neck
-    100078: RIG_Horse_01
-    100080: Root
-    100082: //RootNode
-    100084: TFP_Horse_01A
-    100086: TFP_Horse_01B
-    100088: TFP_Horse_01C
-    100090: TFP_Horse_01D
-    100092: TFP_Horse_01E
-    100094: TFP_Horse_01F
-    100096: TFP_Horse_01G
-    100098: TFP_Horse_01H
-    100100: TFP_Horse_01I
-    100102: TFP_Horse_Bridles_01A
-    100104: TFP_Horse_Bridles_01B
-    100106: TFP_Horse_Bridles_01C
-    100108: TFP_Horse_Bridles_01D
-    100110: TFP_Horse_Mane_01A
-    100112: TFP_Horse_Mane_01B
-    100114: TFP_Horse_Mane_01C
-    100116: TFP_Horse_Mane_01D
-    100118: TFP_Horse_Mane_01E
-    100120: TFP_Horse_Mane_02A
-    100122: TFP_Horse_Mane_02B
-    100124: TFP_Horse_Mane_02C
-    100126: TFP_Horse_Mane_02D
-    100128: TFP_Horse_Mane_02E
-    100130: TFP_Horse_Saddle_01A
-    100132: TFP_Horse_Saddle_01B
-    100134: TFP_Horse_Saddle_01C
-    100136: TFP_Horse_Saddle_01D
-    100138: TFP_Horse_Tail_01A
-    100140: TFP_Horse_Tail_01B
-    100142: TFP_Horse_Tail_01C
-    100144: TFP_Horse_Tail_01D
-    100146: TFP_Horse_Tail_01E
-    100148: TFP_Horse_Tail_02A
-    100150: TFP_Horse_Tail_02B
-    100152: TFP_Horse_Tail_02C
-    100154: TFP_Horse_Tail_02D
-    100156: TFP_Horse_Tail_02E
-    100158: TFP_Unicorn_Horn_01A
-    400000: CTR_Torso
-    400002: CTR_TWEEK_Spine
-    400004: Def_Belly
-    400006: Def_BFoot.L
-    400008: Def_BFoot.R
-    400010: Def_BLeg.L
-    400012: Def_BLeg.R
-    400014: Def_BShin.L
-    400016: Def_BShin.R
-    400018: Def_BToe.L
-    400020: Def_BToe.R
-    400022: Def_Chest
-    400024: Def_Ear.L
-    400026: Def_Ear.R
-    400028: Def_Eyelid.L
-    400030: Def_Eyelid.R
-    400032: Def_FFoot.L
-    400034: Def_FFoot.R
-    400036: Def_FLeg.L
-    400038: Def_FLeg.R
-    400040: Def_FShin.L
-    400042: Def_FShin.R
-    400044: Def_FToe.L
-    400046: Def_FToe.R
-    400048: Def_Head
-    400050: Def_Hip
-    400052: Def_Mouth
-    400054: Def_Neck
-    400056: Def_Rein
-    400058: Def_ReinAdjust_L
-    400060: Def_ReinAdjust_R
-    400062: Def_Snout
-    400064: Def_Spine
-    400066: Def_Stirrup.L
-    400068: Def_Stirrup.R
-    400070: Def_Tail_01
-    400072: Def_Tail_02
-    400074: Def_Tail_03
-    400076: MCH_Root_Neck
-    400078: RIG_Horse_01
-    400080: Root
-    400082: //RootNode
-    400084: TFP_Horse_01A
-    400086: TFP_Horse_01B
-    400088: TFP_Horse_01C
-    400090: TFP_Horse_01D
-    400092: TFP_Horse_01E
-    400094: TFP_Horse_01F
-    400096: TFP_Horse_01G
-    400098: TFP_Horse_01H
-    400100: TFP_Horse_01I
-    400102: TFP_Horse_Bridles_01A
-    400104: TFP_Horse_Bridles_01B
-    400106: TFP_Horse_Bridles_01C
-    400108: TFP_Horse_Bridles_01D
-    400110: TFP_Horse_Mane_01A
-    400112: TFP_Horse_Mane_01B
-    400114: TFP_Horse_Mane_01C
-    400116: TFP_Horse_Mane_01D
-    400118: TFP_Horse_Mane_01E
-    400120: TFP_Horse_Mane_02A
-    400122: TFP_Horse_Mane_02B
-    400124: TFP_Horse_Mane_02C
-    400126: TFP_Horse_Mane_02D
-    400128: TFP_Horse_Mane_02E
-    400130: TFP_Horse_Saddle_01A
-    400132: TFP_Horse_Saddle_01B
-    400134: TFP_Horse_Saddle_01C
-    400136: TFP_Horse_Saddle_01D
-    400138: TFP_Horse_Tail_01A
-    400140: TFP_Horse_Tail_01B
-    400142: TFP_Horse_Tail_01C
-    400144: TFP_Horse_Tail_01D
-    400146: TFP_Horse_Tail_01E
-    400148: TFP_Horse_Tail_02A
-    400150: TFP_Horse_Tail_02B
-    400152: TFP_Horse_Tail_02C
-    400154: TFP_Horse_Tail_02D
-    400156: TFP_Horse_Tail_02E
-    400158: TFP_Unicorn_Horn_01A
-    2100000: TFP_Atlas_1A
-    2100002: TFP_Atlas_1A.015
-    4300000: TFP_Horse_01A
-    4300002: TFP_Horse_Bridles_01A
-    4300004: TFP_Horse_Mane_01A
-    4300006: TFP_Horse_Mane_02A
-    4300008: TFP_Horse_Saddle_01A
-    4300010: TFP_Horse_Tail_01A
-    4300012: TFP_Horse_Tail_02A
-    4300014: TFP_Horse_01G
-    4300016: TFP_Horse_01F
-    4300018: TFP_Horse_01E
-    4300020: TFP_Horse_01D
-    4300022: TFP_Horse_01C
-    4300024: TFP_Horse_01B
-    4300026: TFP_Horse_01H
-    4300028: TFP_Horse_01I
-    4300030: TFP_Horse_Mane_01B
-    4300032: TFP_Horse_Mane_02B
-    4300034: TFP_Horse_Tail_01B
-    4300036: TFP_Horse_Tail_02B
-    4300038: TFP_Horse_Mane_01C
-    4300040: TFP_Horse_Mane_02C
-    4300042: TFP_Horse_Tail_01C
-    4300044: TFP_Horse_Tail_02C
-    4300046: TFP_Horse_Mane_01D
-    4300048: TFP_Horse_Mane_02D
-    4300050: TFP_Horse_Tail_01D
-    4300052: TFP_Horse_Tail_02D
-    4300054: TFP_Horse_Mane_01E
-    4300056: TFP_Horse_Mane_02E
-    4300058: TFP_Horse_Tail_01E
-    4300060: TFP_Horse_Tail_02E
-    4300062: TFP_Horse_Bridles_01B
-    4300064: TFP_Horse_Saddle_01B
-    4300066: TFP_Horse_Bridles_01C
-    4300068: TFP_Horse_Saddle_01C
-    4300070: TFP_Horse_Bridles_01D
-    4300072: TFP_Horse_Saddle_01D
-    4300074: TFP_Unicorn_Horn_01A
-    7400000: RIG_Horse_01_Idle_06
-    7400002: RIG_Horse_01_Jump
-    7400004: RIG_Horse_01_Kick
-    7400006: RIG_Horse_01_Stop
-    7400008: RIG_Horse_01_Trot
-    7400010: RIG_Horse_01_Walk
-    7400012: RIG_Horse_01_Galop
-    7400014: RIG_Horse_01_Idle_01
-    7400016: RIG_Horse_01_Idle_02
-    7400018: RIG_Horse_01_Idle_03
-    7400020: RIG_Horse_01_Idle_04
-    7400022: RIG_Horse_01_Idle_05
-    7400024: RIG_Horse_01_Eating_01
-    7400026: RIG_Horse_01_Eating_03
-    9500000: //RootNode
-    13700000: TFP_Horse_01A
-    13700002: TFP_Horse_01B
-    13700004: TFP_Horse_01C
-    13700006: TFP_Horse_01D
-    13700008: TFP_Horse_01E
-    13700010: TFP_Horse_01F
-    13700012: TFP_Horse_01G
-    13700014: TFP_Horse_01H
-    13700016: TFP_Horse_01I
-    13700018: TFP_Horse_Bridles_01A
-    13700020: TFP_Horse_Bridles_01B
-    13700022: TFP_Horse_Bridles_01C
-    13700024: TFP_Horse_Bridles_01D
-    13700026: TFP_Horse_Mane_01A
-    13700028: TFP_Horse_Mane_01B
-    13700030: TFP_Horse_Mane_01C
-    13700032: TFP_Horse_Mane_01D
-    13700034: TFP_Horse_Mane_01E
-    13700036: TFP_Horse_Mane_02A
-    13700038: TFP_Horse_Mane_02B
-    13700040: TFP_Horse_Mane_02C
-    13700042: TFP_Horse_Mane_02D
-    13700044: TFP_Horse_Mane_02E
-    13700046: TFP_Horse_Saddle_01A
-    13700048: TFP_Horse_Saddle_01B
-    13700050: TFP_Horse_Saddle_01C
-    13700052: TFP_Horse_Saddle_01D
-    13700054: TFP_Horse_Tail_01A
-    13700056: TFP_Horse_Tail_01B
-    13700058: TFP_Horse_Tail_01C
-    13700060: TFP_Horse_Tail_01D
-    13700062: TFP_Horse_Tail_01E
-    13700064: TFP_Horse_Tail_02A
-    13700066: TFP_Horse_Tail_02B
-    13700068: TFP_Horse_Tail_02C
-    13700070: TFP_Horse_Tail_02D
-    13700072: TFP_Horse_Tail_02E
-    13700074: TFP_Unicorn_Horn_01A
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: CTR_Torso
+  - first:
+      1: 100002
+    second: CTR_TWEEK_Spine
+  - first:
+      1: 100004
+    second: Def_Belly
+  - first:
+      1: 100006
+    second: Def_BFoot.L
+  - first:
+      1: 100008
+    second: Def_BFoot.R
+  - first:
+      1: 100010
+    second: Def_BLeg.L
+  - first:
+      1: 100012
+    second: Def_BLeg.R
+  - first:
+      1: 100014
+    second: Def_BShin.L
+  - first:
+      1: 100016
+    second: Def_BShin.R
+  - first:
+      1: 100018
+    second: Def_BToe.L
+  - first:
+      1: 100020
+    second: Def_BToe.R
+  - first:
+      1: 100022
+    second: Def_Chest
+  - first:
+      1: 100024
+    second: Def_Ear.L
+  - first:
+      1: 100026
+    second: Def_Ear.R
+  - first:
+      1: 100028
+    second: Def_Eyelid.L
+  - first:
+      1: 100030
+    second: Def_Eyelid.R
+  - first:
+      1: 100032
+    second: Def_FFoot.L
+  - first:
+      1: 100034
+    second: Def_FFoot.R
+  - first:
+      1: 100036
+    second: Def_FLeg.L
+  - first:
+      1: 100038
+    second: Def_FLeg.R
+  - first:
+      1: 100040
+    second: Def_FShin.L
+  - first:
+      1: 100042
+    second: Def_FShin.R
+  - first:
+      1: 100044
+    second: Def_FToe.L
+  - first:
+      1: 100046
+    second: Def_FToe.R
+  - first:
+      1: 100048
+    second: Def_Head
+  - first:
+      1: 100050
+    second: Def_Hip
+  - first:
+      1: 100052
+    second: Def_Mouth
+  - first:
+      1: 100054
+    second: Def_Neck
+  - first:
+      1: 100056
+    second: Def_Rein
+  - first:
+      1: 100058
+    second: Def_ReinAdjust_L
+  - first:
+      1: 100060
+    second: Def_ReinAdjust_R
+  - first:
+      1: 100062
+    second: Def_Snout
+  - first:
+      1: 100064
+    second: Def_Spine
+  - first:
+      1: 100066
+    second: Def_Stirrup.L
+  - first:
+      1: 100068
+    second: Def_Stirrup.R
+  - first:
+      1: 100070
+    second: Def_Tail_01
+  - first:
+      1: 100072
+    second: Def_Tail_02
+  - first:
+      1: 100074
+    second: Def_Tail_03
+  - first:
+      1: 100076
+    second: MCH_Root_Neck
+  - first:
+      1: 100078
+    second: RIG_Horse_01
+  - first:
+      1: 100080
+    second: Root
+  - first:
+      1: 100082
+    second: //RootNode
+  - first:
+      1: 100084
+    second: TFP_Horse_01A
+  - first:
+      1: 100086
+    second: TFP_Horse_01B
+  - first:
+      1: 100088
+    second: TFP_Horse_01C
+  - first:
+      1: 100090
+    second: TFP_Horse_01D
+  - first:
+      1: 100092
+    second: TFP_Horse_01E
+  - first:
+      1: 100094
+    second: TFP_Horse_01F
+  - first:
+      1: 100096
+    second: TFP_Horse_01G
+  - first:
+      1: 100098
+    second: TFP_Horse_01H
+  - first:
+      1: 100100
+    second: TFP_Horse_01I
+  - first:
+      1: 100102
+    second: TFP_Horse_Bridles_01A
+  - first:
+      1: 100104
+    second: TFP_Horse_Bridles_01B
+  - first:
+      1: 100106
+    second: TFP_Horse_Bridles_01C
+  - first:
+      1: 100108
+    second: TFP_Horse_Bridles_01D
+  - first:
+      1: 100110
+    second: TFP_Horse_Mane_01A
+  - first:
+      1: 100112
+    second: TFP_Horse_Mane_01B
+  - first:
+      1: 100114
+    second: TFP_Horse_Mane_01C
+  - first:
+      1: 100116
+    second: TFP_Horse_Mane_01D
+  - first:
+      1: 100118
+    second: TFP_Horse_Mane_01E
+  - first:
+      1: 100120
+    second: TFP_Horse_Mane_02A
+  - first:
+      1: 100122
+    second: TFP_Horse_Mane_02B
+  - first:
+      1: 100124
+    second: TFP_Horse_Mane_02C
+  - first:
+      1: 100126
+    second: TFP_Horse_Mane_02D
+  - first:
+      1: 100128
+    second: TFP_Horse_Mane_02E
+  - first:
+      1: 100130
+    second: TFP_Horse_Saddle_01A
+  - first:
+      1: 100132
+    second: TFP_Horse_Saddle_01B
+  - first:
+      1: 100134
+    second: TFP_Horse_Saddle_01C
+  - first:
+      1: 100136
+    second: TFP_Horse_Saddle_01D
+  - first:
+      1: 100138
+    second: TFP_Horse_Tail_01A
+  - first:
+      1: 100140
+    second: TFP_Horse_Tail_01B
+  - first:
+      1: 100142
+    second: TFP_Horse_Tail_01C
+  - first:
+      1: 100144
+    second: TFP_Horse_Tail_01D
+  - first:
+      1: 100146
+    second: TFP_Horse_Tail_01E
+  - first:
+      1: 100148
+    second: TFP_Horse_Tail_02A
+  - first:
+      1: 100150
+    second: TFP_Horse_Tail_02B
+  - first:
+      1: 100152
+    second: TFP_Horse_Tail_02C
+  - first:
+      1: 100154
+    second: TFP_Horse_Tail_02D
+  - first:
+      1: 100156
+    second: TFP_Horse_Tail_02E
+  - first:
+      1: 100158
+    second: TFP_Unicorn_Horn_01A
+  - first:
+      4: 400000
+    second: CTR_Torso
+  - first:
+      4: 400002
+    second: CTR_TWEEK_Spine
+  - first:
+      4: 400004
+    second: Def_Belly
+  - first:
+      4: 400006
+    second: Def_BFoot.L
+  - first:
+      4: 400008
+    second: Def_BFoot.R
+  - first:
+      4: 400010
+    second: Def_BLeg.L
+  - first:
+      4: 400012
+    second: Def_BLeg.R
+  - first:
+      4: 400014
+    second: Def_BShin.L
+  - first:
+      4: 400016
+    second: Def_BShin.R
+  - first:
+      4: 400018
+    second: Def_BToe.L
+  - first:
+      4: 400020
+    second: Def_BToe.R
+  - first:
+      4: 400022
+    second: Def_Chest
+  - first:
+      4: 400024
+    second: Def_Ear.L
+  - first:
+      4: 400026
+    second: Def_Ear.R
+  - first:
+      4: 400028
+    second: Def_Eyelid.L
+  - first:
+      4: 400030
+    second: Def_Eyelid.R
+  - first:
+      4: 400032
+    second: Def_FFoot.L
+  - first:
+      4: 400034
+    second: Def_FFoot.R
+  - first:
+      4: 400036
+    second: Def_FLeg.L
+  - first:
+      4: 400038
+    second: Def_FLeg.R
+  - first:
+      4: 400040
+    second: Def_FShin.L
+  - first:
+      4: 400042
+    second: Def_FShin.R
+  - first:
+      4: 400044
+    second: Def_FToe.L
+  - first:
+      4: 400046
+    second: Def_FToe.R
+  - first:
+      4: 400048
+    second: Def_Head
+  - first:
+      4: 400050
+    second: Def_Hip
+  - first:
+      4: 400052
+    second: Def_Mouth
+  - first:
+      4: 400054
+    second: Def_Neck
+  - first:
+      4: 400056
+    second: Def_Rein
+  - first:
+      4: 400058
+    second: Def_ReinAdjust_L
+  - first:
+      4: 400060
+    second: Def_ReinAdjust_R
+  - first:
+      4: 400062
+    second: Def_Snout
+  - first:
+      4: 400064
+    second: Def_Spine
+  - first:
+      4: 400066
+    second: Def_Stirrup.L
+  - first:
+      4: 400068
+    second: Def_Stirrup.R
+  - first:
+      4: 400070
+    second: Def_Tail_01
+  - first:
+      4: 400072
+    second: Def_Tail_02
+  - first:
+      4: 400074
+    second: Def_Tail_03
+  - first:
+      4: 400076
+    second: MCH_Root_Neck
+  - first:
+      4: 400078
+    second: RIG_Horse_01
+  - first:
+      4: 400080
+    second: Root
+  - first:
+      4: 400082
+    second: //RootNode
+  - first:
+      4: 400084
+    second: TFP_Horse_01A
+  - first:
+      4: 400086
+    second: TFP_Horse_01B
+  - first:
+      4: 400088
+    second: TFP_Horse_01C
+  - first:
+      4: 400090
+    second: TFP_Horse_01D
+  - first:
+      4: 400092
+    second: TFP_Horse_01E
+  - first:
+      4: 400094
+    second: TFP_Horse_01F
+  - first:
+      4: 400096
+    second: TFP_Horse_01G
+  - first:
+      4: 400098
+    second: TFP_Horse_01H
+  - first:
+      4: 400100
+    second: TFP_Horse_01I
+  - first:
+      4: 400102
+    second: TFP_Horse_Bridles_01A
+  - first:
+      4: 400104
+    second: TFP_Horse_Bridles_01B
+  - first:
+      4: 400106
+    second: TFP_Horse_Bridles_01C
+  - first:
+      4: 400108
+    second: TFP_Horse_Bridles_01D
+  - first:
+      4: 400110
+    second: TFP_Horse_Mane_01A
+  - first:
+      4: 400112
+    second: TFP_Horse_Mane_01B
+  - first:
+      4: 400114
+    second: TFP_Horse_Mane_01C
+  - first:
+      4: 400116
+    second: TFP_Horse_Mane_01D
+  - first:
+      4: 400118
+    second: TFP_Horse_Mane_01E
+  - first:
+      4: 400120
+    second: TFP_Horse_Mane_02A
+  - first:
+      4: 400122
+    second: TFP_Horse_Mane_02B
+  - first:
+      4: 400124
+    second: TFP_Horse_Mane_02C
+  - first:
+      4: 400126
+    second: TFP_Horse_Mane_02D
+  - first:
+      4: 400128
+    second: TFP_Horse_Mane_02E
+  - first:
+      4: 400130
+    second: TFP_Horse_Saddle_01A
+  - first:
+      4: 400132
+    second: TFP_Horse_Saddle_01B
+  - first:
+      4: 400134
+    second: TFP_Horse_Saddle_01C
+  - first:
+      4: 400136
+    second: TFP_Horse_Saddle_01D
+  - first:
+      4: 400138
+    second: TFP_Horse_Tail_01A
+  - first:
+      4: 400140
+    second: TFP_Horse_Tail_01B
+  - first:
+      4: 400142
+    second: TFP_Horse_Tail_01C
+  - first:
+      4: 400144
+    second: TFP_Horse_Tail_01D
+  - first:
+      4: 400146
+    second: TFP_Horse_Tail_01E
+  - first:
+      4: 400148
+    second: TFP_Horse_Tail_02A
+  - first:
+      4: 400150
+    second: TFP_Horse_Tail_02B
+  - first:
+      4: 400152
+    second: TFP_Horse_Tail_02C
+  - first:
+      4: 400154
+    second: TFP_Horse_Tail_02D
+  - first:
+      4: 400156
+    second: TFP_Horse_Tail_02E
+  - first:
+      4: 400158
+    second: TFP_Unicorn_Horn_01A
+  - first:
+      21: 2100000
+    second: TFP_Atlas_1A
+  - first:
+      21: 2100002
+    second: TFP_Atlas_1A.015
+  - first:
+      43: 4300000
+    second: TFP_Horse_01A
+  - first:
+      43: 4300002
+    second: TFP_Horse_Bridles_01A
+  - first:
+      43: 4300004
+    second: TFP_Horse_Mane_01A
+  - first:
+      43: 4300006
+    second: TFP_Horse_Mane_02A
+  - first:
+      43: 4300008
+    second: TFP_Horse_Saddle_01A
+  - first:
+      43: 4300010
+    second: TFP_Horse_Tail_01A
+  - first:
+      43: 4300012
+    second: TFP_Horse_Tail_02A
+  - first:
+      43: 4300014
+    second: TFP_Horse_01G
+  - first:
+      43: 4300016
+    second: TFP_Horse_01F
+  - first:
+      43: 4300018
+    second: TFP_Horse_01E
+  - first:
+      43: 4300020
+    second: TFP_Horse_01D
+  - first:
+      43: 4300022
+    second: TFP_Horse_01C
+  - first:
+      43: 4300024
+    second: TFP_Horse_01B
+  - first:
+      43: 4300026
+    second: TFP_Horse_01H
+  - first:
+      43: 4300028
+    second: TFP_Horse_01I
+  - first:
+      43: 4300030
+    second: TFP_Horse_Mane_01B
+  - first:
+      43: 4300032
+    second: TFP_Horse_Mane_02B
+  - first:
+      43: 4300034
+    second: TFP_Horse_Tail_01B
+  - first:
+      43: 4300036
+    second: TFP_Horse_Tail_02B
+  - first:
+      43: 4300038
+    second: TFP_Horse_Mane_01C
+  - first:
+      43: 4300040
+    second: TFP_Horse_Mane_02C
+  - first:
+      43: 4300042
+    second: TFP_Horse_Tail_01C
+  - first:
+      43: 4300044
+    second: TFP_Horse_Tail_02C
+  - first:
+      43: 4300046
+    second: TFP_Horse_Mane_01D
+  - first:
+      43: 4300048
+    second: TFP_Horse_Mane_02D
+  - first:
+      43: 4300050
+    second: TFP_Horse_Tail_01D
+  - first:
+      43: 4300052
+    second: TFP_Horse_Tail_02D
+  - first:
+      43: 4300054
+    second: TFP_Horse_Mane_01E
+  - first:
+      43: 4300056
+    second: TFP_Horse_Mane_02E
+  - first:
+      43: 4300058
+    second: TFP_Horse_Tail_01E
+  - first:
+      43: 4300060
+    second: TFP_Horse_Tail_02E
+  - first:
+      43: 4300062
+    second: TFP_Horse_Bridles_01B
+  - first:
+      43: 4300064
+    second: TFP_Horse_Saddle_01B
+  - first:
+      43: 4300066
+    second: TFP_Horse_Bridles_01C
+  - first:
+      43: 4300068
+    second: TFP_Horse_Saddle_01C
+  - first:
+      43: 4300070
+    second: TFP_Horse_Bridles_01D
+  - first:
+      43: 4300072
+    second: TFP_Horse_Saddle_01D
+  - first:
+      43: 4300074
+    second: TFP_Unicorn_Horn_01A
+  - first:
+      74: 7400000
+    second: RIG_Horse_01_Idle_06
+  - first:
+      74: 7400002
+    second: RIG_Horse_01_Jump
+  - first:
+      74: 7400004
+    second: RIG_Horse_01_Kick
+  - first:
+      74: 7400006
+    second: RIG_Horse_01_Stop
+  - first:
+      74: 7400008
+    second: RIG_Horse_01_Trot
+  - first:
+      74: 7400010
+    second: RIG_Horse_01_Walk
+  - first:
+      74: 7400012
+    second: RIG_Horse_01_Galop
+  - first:
+      74: 7400014
+    second: RIG_Horse_01_Idle_01
+  - first:
+      74: 7400016
+    second: RIG_Horse_01_Idle_02
+  - first:
+      74: 7400018
+    second: RIG_Horse_01_Idle_03
+  - first:
+      74: 7400020
+    second: RIG_Horse_01_Idle_04
+  - first:
+      74: 7400022
+    second: RIG_Horse_01_Idle_05
+  - first:
+      74: 7400024
+    second: RIG_Horse_01_Eating_01
+  - first:
+      74: 7400026
+    second: RIG_Horse_01_Eating_03
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: TFP_Horse_01A
+  - first:
+      137: 13700002
+    second: TFP_Horse_01B
+  - first:
+      137: 13700004
+    second: TFP_Horse_01C
+  - first:
+      137: 13700006
+    second: TFP_Horse_01D
+  - first:
+      137: 13700008
+    second: TFP_Horse_01E
+  - first:
+      137: 13700010
+    second: TFP_Horse_01F
+  - first:
+      137: 13700012
+    second: TFP_Horse_01G
+  - first:
+      137: 13700014
+    second: TFP_Horse_01H
+  - first:
+      137: 13700016
+    second: TFP_Horse_01I
+  - first:
+      137: 13700018
+    second: TFP_Horse_Bridles_01A
+  - first:
+      137: 13700020
+    second: TFP_Horse_Bridles_01B
+  - first:
+      137: 13700022
+    second: TFP_Horse_Bridles_01C
+  - first:
+      137: 13700024
+    second: TFP_Horse_Bridles_01D
+  - first:
+      137: 13700026
+    second: TFP_Horse_Mane_01A
+  - first:
+      137: 13700028
+    second: TFP_Horse_Mane_01B
+  - first:
+      137: 13700030
+    second: TFP_Horse_Mane_01C
+  - first:
+      137: 13700032
+    second: TFP_Horse_Mane_01D
+  - first:
+      137: 13700034
+    second: TFP_Horse_Mane_01E
+  - first:
+      137: 13700036
+    second: TFP_Horse_Mane_02A
+  - first:
+      137: 13700038
+    second: TFP_Horse_Mane_02B
+  - first:
+      137: 13700040
+    second: TFP_Horse_Mane_02C
+  - first:
+      137: 13700042
+    second: TFP_Horse_Mane_02D
+  - first:
+      137: 13700044
+    second: TFP_Horse_Mane_02E
+  - first:
+      137: 13700046
+    second: TFP_Horse_Saddle_01A
+  - first:
+      137: 13700048
+    second: TFP_Horse_Saddle_01B
+  - first:
+      137: 13700050
+    second: TFP_Horse_Saddle_01C
+  - first:
+      137: 13700052
+    second: TFP_Horse_Saddle_01D
+  - first:
+      137: 13700054
+    second: TFP_Horse_Tail_01A
+  - first:
+      137: 13700056
+    second: TFP_Horse_Tail_01B
+  - first:
+      137: 13700058
+    second: TFP_Horse_Tail_01C
+  - first:
+      137: 13700060
+    second: TFP_Horse_Tail_01D
+  - first:
+      137: 13700062
+    second: TFP_Horse_Tail_01E
+  - first:
+      137: 13700064
+    second: TFP_Horse_Tail_02A
+  - first:
+      137: 13700066
+    second: TFP_Horse_Tail_02B
+  - first:
+      137: 13700068
+    second: TFP_Horse_Tail_02C
+  - first:
+      137: 13700070
+    second: TFP_Horse_Tail_02D
+  - first:
+      137: 13700072
+    second: TFP_Horse_Tail_02E
+  - first:
+      137: 13700074
+    second: TFP_Unicorn_Horn_01A
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -268,7 +774,7 @@ ModelImporter:
       name: TFP_Atlas_1A.015
     second: {fileID: 2100000, guid: d9cbf70f2aef3bc479ce7f34d7aac6a9, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -277,6 +783,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 0
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -297,6 +804,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_06
       takeName: RIG_Horse_01_Idle_06
+      internalID: 0
       firstFrame: 0
       lastFrame: 90
       wrapMode: 0
@@ -325,6 +833,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Jump
       takeName: RIG_Horse_01_Jump
+      internalID: 0
       firstFrame: 0
       lastFrame: 35
       wrapMode: 0
@@ -353,6 +862,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Kick
       takeName: RIG_Horse_01_Kick
+      internalID: 0
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -361,8 +871,8 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
+      loopTime: 0
+      loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
@@ -381,6 +891,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Stop
       takeName: RIG_Horse_01_Stop
+      internalID: 0
       firstFrame: 0
       lastFrame: 90
       wrapMode: 0
@@ -409,6 +920,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Trot
       takeName: RIG_Horse_01_Trot
+      internalID: 0
       firstFrame: 0
       lastFrame: 18
       wrapMode: 0
@@ -437,6 +949,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Walk
       takeName: RIG_Horse_01_Walk
+      internalID: 0
       firstFrame: 0
       lastFrame: 40
       wrapMode: 0
@@ -465,6 +978,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Galop
       takeName: RIG_Horse_01_Galop
+      internalID: 0
       firstFrame: 0
       lastFrame: 14
       wrapMode: 0
@@ -493,6 +1007,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_01
       takeName: RIG_Horse_01_Idle_01
+      internalID: 0
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -521,6 +1036,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_02
       takeName: RIG_Horse_01_Idle_02
+      internalID: 0
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -549,6 +1065,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_03
       takeName: RIG_Horse_01_Idle_03
+      internalID: 0
       firstFrame: 0
       lastFrame: 80
       wrapMode: 0
@@ -577,6 +1094,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_04
       takeName: RIG_Horse_01_Idle_04
+      internalID: 0
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -605,6 +1123,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Idle_05
       takeName: RIG_Horse_01_Idle_05
+      internalID: 0
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -633,6 +1152,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Eating_01
       takeName: RIG_Horse_01_Eating_01
+      internalID: 0
       firstFrame: 0
       lastFrame: 120
       wrapMode: 0
@@ -661,6 +1181,7 @@ ModelImporter:
     - serializedVersion: 16
       name: RIG_Horse_01_Eating_03
       takeName: RIG_Horse_01_Eating_03
+      internalID: 0
       firstFrame: 0
       lastFrame: 45
       wrapMode: 0
@@ -693,25 +1214,34 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -720,10 +1250,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 2
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -733,13 +1263,18 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

@@ -11,6 +11,9 @@ public class Lake_SoundManager : MonoBehaviour
 		_audioSource.PlayDelayed(delayAmount);
 	}
 
+	//11/8/23 추후에 static 및 SoundManager로 구현 가능 코드입니다.
+	//사운드 시스템 설계 이후에 진행합니다. 
+	
 	// public enum Sound
 	// {
 	// 	Bgm,

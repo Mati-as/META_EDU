@@ -6,6 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using UnityEngine.InputSystem;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -195,15 +196,17 @@ public class FootstepManager : MonoBehaviour
         SetTransformArray();
         Initialize();
     }
-
+    private Camera _camera;
+    private InputAction _mouseClickAction;
     private void Start()
     {
-        var trigger = GetComponent<EventTrigger>();
-        var entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener(data => { OnMouseClicked(); });
-        trigger.triggers.Add(entry);
-
+        _camera = Camera.main;
+        
+        
+        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        _mouseClickAction.performed += OnMouseClicked;
+        _mouseClickAction.Enable();
+        
 
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
@@ -213,9 +216,9 @@ public class FootstepManager : MonoBehaviour
 
     public static string currentlyClickedObjectName;
 
-    public void OnMouseClicked()
+    public void OnMouseClicked(InputAction.CallbackContext context)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
@@ -458,14 +461,15 @@ public class FootstepManager : MonoBehaviour
         ShakeDust();
     }
 
+    public float shakeStrength; //other than the every last step.
 
     private void ShakeDust()
     {
-        _dustGameObjGroup[currentFootstepGroupOrder][0].transform.DOShakePosition(2.2f, 0.3f, 2, 1f);
+        _dustGameObjGroup[currentFootstepGroupOrder][0].transform.DOShakePosition(2.2f, shakeStrength, 2, 1f);
 
-        _dustGameObjGroup[currentFootstepGroupOrder][1].transform.DOShakePosition(2.2f, 0.3f, 2, 1f);
+        _dustGameObjGroup[currentFootstepGroupOrder][1].transform.DOShakePosition(2.2f, shakeStrength, 2, 1f);
 
-        _dustGameObjGroup[currentFootstepGroupOrder][2].transform.DOShakePosition(2.2f, 0.3f, 2, 1f);
+        _dustGameObjGroup[currentFootstepGroupOrder][2].transform.DOShakePosition(2.2f, shakeStrength, 2, 1f);
     }
 
     private SpriteRenderer _spriteRenderer1;

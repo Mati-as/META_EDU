@@ -89,7 +89,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       _textBoxInitialPosition = UIGameObj.transform.position;
       UIGameObj.transform.position = gameObject.transform.position;
    
-      gameObject.transform.localScale = Vector3.zero;
+      //gameObject.transform.localScale = Vector3.zero;
       
       
       _maximizedSizeVec = UImaximizedSize * Vector3.one;
@@ -101,10 +101,10 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
        
    }
     
-   // void Start()
-   // {
-   //    // gameObject.SetActive(false);
-   // }
+   void Start()
+   {
+      UIGameObj.SetActive(false);
+   }
 
    private void OnDisable()
    {
@@ -116,13 +116,14 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    {
        if (!GroundGameManager.isGameStartedbool)
        {
-         gameObject.SetActive(false);
+          // gameObject.SetActive(false);
        }
-       
-       
        else
        {
-           
+          //start에서 false하고, 부모객체가 함께 자동으로 Activate 되지않음에 유의. 반드시 활성화 수동으로 해줘야함. 
+          UIGameObj.SetActive(true);
+          
+          gameObject.transform.localScale = Vector3.zero;
           //animal control section;
           LeanTween.scale(gameObject, Vector3.one * animalMaximizedSize, durations[(int)tweenParam.Scale])
              .setEaseInOutBounce();

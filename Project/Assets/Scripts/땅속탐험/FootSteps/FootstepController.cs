@@ -125,9 +125,11 @@ public class FootstepController : MonoBehaviour
             {
                 if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
                 {
-                   Debug.Log("동물 소환");
-                    animalByLastFootstep.SetActive(true);
-                    //tween 추가하세요
+                    
+                   //animal 객체의 OnEnable로직을 활용하기위해 false,true 동시사용.
+                   animalByLastFootstep.SetActive(false);
+                   animalByLastFootstep.SetActive(true);
+                 
                 }
             }
         
