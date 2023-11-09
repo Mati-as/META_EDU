@@ -222,8 +222,6 @@ public class TextBoxUIController : MonoBehaviour
         {
             MoveDownUITBox();
             yield return null;
-
-            //if (GameManager.isGameStarted) gameObject.SetActive(false);
         }
     }
 
@@ -251,9 +249,6 @@ public class TextBoxUIController : MonoBehaviour
             
             leftAnimFirst.anchoredPosition = MoveLikeWave(_defaultPositionLf.anchoredPosition,
                 _defaultPositionLf.position + new Vector3(0, offsetA, 0), waveSpeed, offsetA);
-
-            // leftAnimSecond.anchoredPosition = MoveLikeWave(_defaultPositionLs.position,
-            //     (_defaultPositionLs.anchoredPosition + new Vector3(0, offsetB, 0), waveSpeed, offsetB));
 
             
             rightAnimal.position = Vector3.Lerp(rightAnimal.position, _defaultPositionR.position, _comeBackElapsed);

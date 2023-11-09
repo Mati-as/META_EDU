@@ -170,21 +170,21 @@ public class FootstepManager : MonoBehaviour
     })]
 #endif
     public GameObject[] twelfthFootstepsGroup = new GameObject[4];
-
     public GameObject[] DustGroup12 = new GameObject[4];
-
-
     private static readonly int TOTAL_FOOTSTEP_GROUP_COUNT = 12;
+    
     private readonly GameObject[][] _footstepGameObjGroups = new GameObject[TOTAL_FOOTSTEP_GROUP_COUNT][];
     private readonly GameObject[][] _dustGameObjGroup = new GameObject[TOTAL_FOOTSTEP_GROUP_COUNT][];
-
-
-    [FormerlySerializedAs("finishPageToggleProperty")]
+    
     public ReactiveProperty<bool> finishPageTriggerProperty;
 
     public static int currentFootstepGroupOrder { get; private set; }
-
     public static int currentFootstepIndexOrder { get; private set; }
+    public static event Action OnFootstepClicked;
+   
+    public UndergroundUIManager undergroundUIManager;
+    private Camera _camera;
+    private InputAction _mouseClickAction;
 
     private void Awake()
     {
@@ -195,9 +195,12 @@ public class FootstepManager : MonoBehaviour
         lastElementClickedProperty = new ReactiveProperty<bool>(false);
         SetTransformArray();
         Initialize();
+
+        Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
+        Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
     }
-    private Camera _camera;
-    private InputAction _mouseClickAction;
+    
+  
     private void Start()
     {
         _camera = Camera.main;
@@ -214,6 +217,12 @@ public class FootstepManager : MonoBehaviour
     }
 
 
+    private void OnDestroy()
+    {
+        Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
+    }
+    
+    
     public static string currentlyClickedObjectName;
 
     public void OnMouseClicked(InputAction.CallbackContext context)
@@ -236,10 +245,9 @@ public class FootstepManager : MonoBehaviour
         }
     }
 
+    
 
-    public static event Action OnFootstepClicked;
 
-    public UndergroundUIManager undergroundUIManager;
     private void InspectObject(GameObject obj)
     {
      
@@ -308,16 +316,13 @@ public class FootstepManager : MonoBehaviour
         if (currentFootstepIndexOrder < _footstepGameObjGroups[currentFootstepGroupOrder].Length - 1)
         {
             OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-            
         }
         else
         {
 #if UNITY_EDITOR
             Debug.Log($"currentFootstepGroupOrder : {currentFootstepGroupOrder}");
 #endif
-            
             OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-           
         }
 
         // 10/12/23 순회로직의 경우에는 아래 로직을 사용할 것 
@@ -367,19 +372,45 @@ public class FootstepManager : MonoBehaviour
         ShakeAndRemoveDust();
 
 
-        if (currentFootstepGroupOrder != 0 && currentFootstepGroupOrder % 3 == 0) pageFinishToggle();
+      
     }
 
 
     private void pageFinishToggle()
     {
         
-      
-        
+        if (currentFootstepGroupOrder != 0 && currentFootstepGroupOrder % 3 == 0)
+        {
+            finishPageTriggerProperty.Value = true;
 #if UNITY_EDITOR
-        Debug.Log("페이지 전환");
+            Debug.Log("페이지 전환");
 #endif
-        finishPageTriggerProperty.Value = true;
+        }
+        
+        if (currentFootstepGroupOrder % 3 == 0)
+        {
+            //그룹이 넘어갈때 시간 간격
+            DOVirtual.Float(0,1,13f,val=>val++)
+                .OnComplete(() =>
+                {
+                    _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
+                    
+                    _audioSource.clip = footstepAppearingSound;
+                    _audioSource.Play();
+                });
+        }
+        else
+        {
+            DOVirtual.Float(0,1,4f,val=>val++)
+                .OnComplete(() =>
+                {
+                    _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
+                    
+                    _audioSource.clip = footstepAppearingSound;
+                    _audioSource.Play();
+                });
+        }
+        
     }
 
     private void ActivateNextGroupOfFootsteps()
@@ -391,9 +422,10 @@ public class FootstepManager : MonoBehaviour
 #endif
            
             currentFootstepGroupOrder++;
-            _turnOnNextGroupFirstFootstepCoroutine = StartCoroutine(TurnOnNextGroupFirstFootstep());
+           
             _isTOGFCorutineStopped = false;
             currentFootstepIndexOrder = 0;
+             // _turnOnNextGroupFirstFootstepCoroutine = StartCoroutine(TurnOnNextGroupFirstFootstep());
         }
 
         else
@@ -438,11 +470,12 @@ public class FootstepManager : MonoBehaviour
         else
             // 동일 그룹 내 발자국 끼리의 시간간격
             yield return GetWaitForSeconds(8.5f);
-
-        _audioSource.clip = footstepAppearingSound;
-        _audioSource.Play();
-        _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
+        
+        // _audioSource.clip = footstepAppearingSound;
+        // _audioSource.Play();
+       
     }
+    
 
     public AudioClip footstepAppearingSound;
 

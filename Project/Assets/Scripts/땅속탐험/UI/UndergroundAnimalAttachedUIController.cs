@@ -6,6 +6,7 @@ using TMPro;
 using DG.Tweening;
 using KoreanTyper;
 using Unity.VisualScripting;
+using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 
 #if UNITY_EDITOR 
@@ -97,10 +98,18 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
       
       _tmp = GetComponentInChildren<TMP_Text>();
       _tmp.text = $"{gameObject.name} 찾았다!";
-     
-       
+
+      Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpButtonClicked;
+      Underground_PopUpUI_Button.onPopUpButtonEvent += OnPopUpButtonClicked;
+
+
    }
-    
+
+   private void OnDestroy()
+   {
+      Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpButtonClicked;
+   }
+
    void Start()
    {
       UIGameObj.SetActive(false);
@@ -137,15 +146,25 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
              .setOnComplete(() =>
                 {
                    Debug.Log("sizeIncreasing Function worked");
-                   LeanTween.delayedCall
-                   (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
-                      , PlayNextMessageAnim);
+                   
+                   // 11/09/23 => popup event처리로 변경함. leanTween 또한 삭제.
+                   // LeanTween.delayedCall
+                   // (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
+                   //    , PlayNextMessageAnim);
                 }
                
              );
        }
-      
-      
+       
+   }
+
+   private void OnPopUpButtonClicked()
+   {
+      DOVirtual.Float(0, 1, 1.5f, val => val++)
+         .OnComplete(() =>
+         {
+            PlayNextMessageAnim();
+         });
    }
 
 

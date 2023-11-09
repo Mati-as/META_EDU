@@ -131,6 +131,8 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void Awake()
     {
+        popUpUIRect.localScale = Vector3.zero;
+        
         DOTween.SetTweensCapacity(2000,100);
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
         FootstepController.onLastFootstepClicked += EveryLastFootstepClicked;
@@ -145,37 +147,70 @@ public class UndergroundUIManager : MonoBehaviour
         DOTween.Init();
         Init();
         tutorialUICvsGroup.DOFade(1, 1);
+
+        Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpUIClicked;
+        Underground_PopUpUI_Button.onPopUpButtonEvent += OnPopUpUIClicked;
     }
 
     private void OnDestroy()
     {
+        Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpUIClicked;
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
     }
 
 
     public TMP_Text popUpUIRectTmp;
 
+    public RectTransform popUpButton;
 
     private void EveryLastFootstepClicked()
     {
-        
+        var defaultSize = popUpButton.localScale;
+        popUpButton.localScale = Vector2.zero;
 #if UNITY_EDITOR
         Debug.Log("동물설명 UI 표출");
 #endif
         //FootstepMager에서 클릭시 GetComponent하여 Tmp수정
        //popUpUIRectTmp.text = footstepController.animalByLastFootstep.name;
 
-        popUpUIRect
-            .DOAnchorPos(new Vector2(0, 0), 3.3f)
-            .SetEase(Ease.InOutBack)
-            .SetDelay(0.5f)
+       popUpUIRect.DOScale(1, 1.5f)
+           .SetEase(Ease.InOutExpo)
+           .SetDelay(1.5f)
+           .OnComplete(() =>
+           {
+               popUpButton.DOScale(defaultSize, 1f)
+                   .SetEase(Ease.InOutExpo)
+                   .SetDelay(3f);
+           });
+    }
+
+    /// <summary>
+    /// 팝업 클릭시 -> 스케일감소 및 소리재생 및 카메라전환까지 이루어져야합니다. 
+    /// </summary>
+    private void OnPopUpUIClicked()
+    {
+        popUpUIRect.DOScale(0, 1.5f)
+            .SetEase(Ease.InOutExpo)
+            .SetDelay(0f);
+        
+        // 단순 delay 설정용 DoVirtual..
+        DOVirtual.Float(0, 1, 1.5f, val => val++)
             .OnComplete(() =>
             {
-                popUpUIRect
-                    .DOAnchorPos(tutorialAwayRectransfrom.anchoredPosition, 2.8f)
-                    .SetEase(Ease.InOutBack)
-                    .SetDelay(3f);
+                if (FootstepManager.currentFootstepGroupOrder != 12)
+                {
+                    if (FootstepManager.currentFootstepGroupOrder % 2 == 0)
+                        PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
+                    else
+                        PlayAudio(etcAudioClips[(int)EtcAudioClips.LetsMeetNext]);
+                }
+                else
+                {
+                    PlayAudio(etcAudioClips[(int)EtcAudioClips.FoundAllAnimals]);
+                }
             });
+      
+
     }
 
     private IEnumerator PlayTutorialAudio()
@@ -227,7 +262,7 @@ public class UndergroundUIManager : MonoBehaviour
 
         footstepManager.finishPageTriggerProperty
             .Where(value => value)
-            .Delay(TimeSpan.FromSeconds(5f))
+            .Delay(TimeSpan.FromSeconds(3.5f))
             .Subscribe(_ => OnPageChange())
             .AddTo(this);
 
@@ -252,17 +287,7 @@ public class UndergroundUIManager : MonoBehaviour
         yield return GetWaitForSeconds(2.1f);
 
         // 마지막 동물인 여우가 아닐 때만...
-        if (FootstepManager.currentFootstepGroupOrder != 12)
-        {
-            if (FootstepManager.currentFootstepGroupOrder % 2 == 0)
-                PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
-            else
-                PlayAudio(etcAudioClips[(int)EtcAudioClips.LetsMeetNext]);
-        }
-        else
-        {
-            PlayAudio(etcAudioClips[(int)EtcAudioClips.FoundAllAnimals]);
-        }
+       
 
 
         while (uiAudioSource.isPlaying) yield return null;
@@ -286,7 +311,7 @@ public class UndergroundUIManager : MonoBehaviour
 
             storyUIRectTransform.DOAnchorPos(Vector2.zero,3f)
                 .SetEase(Ease.InOutBack)
-                .SetDelay(2f)
+                .SetDelay(0)
                 .OnComplete(() =>  MoveAwayUI());
 
             UpdateUI(storyUICvsGroup, _storyUITmp, "다음 친구가 나와서\n땅속 친구들을 찾아볼까요?");
@@ -354,7 +379,13 @@ public class UndergroundUIManager : MonoBehaviour
         UpdateUI(storyUICvsGroup, _storyUITmp, _firstUIMessage);
 
         yield return GetWaitForSeconds(6.6f);
+        
         buttonToDeactivate.SetActive(true);
+        var defaultScale = buttonToDeactivate.transform.localScale;
+        buttonToDeactivate.transform.localScale = Vector3.zero; 
+        buttonToDeactivate.transform.DOScale(defaultScale, 1f);
+        
+      
 
         yield return GetWaitForSeconds(1f);
         StopCoroutine(_gameStartCoroutine);

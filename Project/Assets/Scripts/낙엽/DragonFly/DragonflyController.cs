@@ -156,15 +156,7 @@ public class DragonflyController : MonoBehaviour
             _isIdleAnimPlayable = false;
         }
     }
-
-    private void OnTriggerStay(Collider other)
-    {
-        // if (other.CompareTag(DRAGONFLY))
-        // {
-        //     _landPositionIndex = Random.Range(0, 6);
-        //     _isClicked = false;
-        // }
-    }
+    
 
     private void OnTriggerEnter(Collider other)
     {
@@ -176,8 +168,7 @@ public class DragonflyController : MonoBehaviour
             _animator.SetBool(DRAGONFLY_ANIM_FLY, false);
             _animator.SetTrigger(LANDING);
         }
-
-        // if (other.CompareTag(upper)) _isClicked = false;
+        
     }
 
 

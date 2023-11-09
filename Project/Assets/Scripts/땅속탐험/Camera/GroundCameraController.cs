@@ -69,6 +69,7 @@ public class GroundCameraController : MonoBehaviour
         transform.position = cameraPositions[(int)CameraState.Default].position;
 
         
+        
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ =>
@@ -77,6 +78,8 @@ public class GroundCameraController : MonoBehaviour
                     cameraPositions[(int)CameraState.Story],
                     cameraMovingTime[(int)CameraState.Story]);
             });
+        
+        
         
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
@@ -87,6 +90,8 @@ public class GroundCameraController : MonoBehaviour
                     cameraMovingTime[(int)CameraState.InPlayStart]);
             });
 
+        
+        
         footstepManager.finishPageTriggerProperty
             .Where(finishpage => finishpage == true)
             .Delay(TimeSpan.FromSeconds(pageChangeInterval))
@@ -111,8 +116,6 @@ public class GroundCameraController : MonoBehaviour
 
                 Debug.Log($"현재 페이지{(CameraState)(FootstepManager.currentFootstepGroupOrder / 3 + (int)CameraState.FirstPage)}");
             });
-       
-
     }
 
     private void MoveCamera(Transform target,float duration)
