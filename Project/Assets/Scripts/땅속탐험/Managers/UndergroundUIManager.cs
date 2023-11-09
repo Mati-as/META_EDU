@@ -39,8 +39,8 @@ public class UndergroundUIManager : MonoBehaviour
     public TMP_Text tutorialTMPText;
     public RectTransform tutorialUIRectTransform;
 
-    [FormerlySerializedAs("tutorialAwayPosition")]
-    public RectTransform tutorialAwayTransfrom;
+    public RectTransform tutorialAwayRectransfrom;
+    public RectTransform popUpUIRect;
 
     [Space(10f)] [Header("Tutorial Message Settings")]
     public string tutorialMessage;
@@ -131,8 +131,13 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void Awake()
     {
-        tutorialUIGameObject.SetActive(true);
+        DOTween.SetTweensCapacity(2000,100);
+        FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
+        FootstepController.onLastFootstepClicked += EveryLastFootstepClicked;
 
+        //popUpUIRectTmp = popUpUIRect.GetComponent<TMP_Text>();
+        
+        tutorialUIGameObject.SetActive(true);
 
         _uiPlayCoroutine = StartCoroutine(PlayTutorialAudio());
 
@@ -140,6 +145,37 @@ public class UndergroundUIManager : MonoBehaviour
         DOTween.Init();
         Init();
         tutorialUICvsGroup.DOFade(1, 1);
+    }
+
+    private void OnDestroy()
+    {
+        FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
+    }
+
+
+    public TMP_Text popUpUIRectTmp;
+
+
+    private void EveryLastFootstepClicked()
+    {
+        
+#if UNITY_EDITOR
+        Debug.Log("동물설명 UI 표출");
+#endif
+        //FootstepMager에서 클릭시 GetComponent하여 Tmp수정
+       //popUpUIRectTmp.text = footstepController.animalByLastFootstep.name;
+
+        popUpUIRect
+            .DOAnchorPos(new Vector2(0, 0), 3.3f)
+            .SetEase(Ease.InOutBack)
+            .SetDelay(0.5f)
+            .OnComplete(() =>
+            {
+                popUpUIRect
+                    .DOAnchorPos(tutorialAwayRectransfrom.anchoredPosition, 2.8f)
+                    .SetEase(Ease.InOutBack)
+                    .SetDelay(3f);
+            });
     }
 
     private IEnumerator PlayTutorialAudio()
@@ -248,9 +284,10 @@ public class UndergroundUIManager : MonoBehaviour
         {
             buttonToDeactivate.SetActive(false);
 
-            LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
-                .setEase(LeanTweenType.easeInOutBack)
-                .setOnComplete(() => LeanTween.delayedCall(3.5f, MoveAwayUI));
+            storyUIRectTransform.DOAnchorPos(Vector2.zero,3f)
+                .SetEase(Ease.InOutBack)
+                .SetDelay(2f)
+                .OnComplete(() =>  MoveAwayUI());
 
             UpdateUI(storyUICvsGroup, _storyUITmp, "다음 친구가 나와서\n땅속 친구들을 찾아볼까요?");
 
@@ -273,10 +310,13 @@ public class UndergroundUIManager : MonoBehaviour
         Debug.Log("종료UI표출");
 #endif
         buttonToDeactivate.SetActive(false);
+        storyUIRectTransform.DOAnchorPos(Vector2.zero, 3f)
+            .SetEase(Ease.InOutBack)
+            .OnComplete(() =>
+            {
+                MoveAwayUI(2f);
+            });
 
-        LeanTween.move(storyUIRectTransform, Vector2.zero, 3f)
-            .setEase(LeanTweenType.easeInOutBack)
-            .setOnComplete(() => LeanTween.delayedCall(2.0f, MoveAwayUI));
 
 
         UpdateUI(storyUICvsGroup, _storyUITmp, _lastUIMessage);
@@ -303,14 +343,11 @@ public class UndergroundUIManager : MonoBehaviour
 
     private IEnumerator OnGameStartCoroutine()
     {
-        
-        
-        LeanTween.move(tutorialUIRectTransform,
-                new Vector2(0, tutorialAwayTransfrom.anchoredPosition.y),
+        tutorialUIRectTransform.DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y),
                 3f)
-            .setEase(LeanTweenType.easeInOutBack)
-            .setOnComplete(() => tutorialUIGameObject.SetActive(false));
-
+            .SetEase(Ease.InOutBack)
+            .OnComplete(() => tutorialUIGameObject.SetActive(false));
+        
         yield return GetWaitForSeconds(3.5f);
 
         buttonToDeactivate.SetActive(false);
@@ -341,17 +378,23 @@ public class UndergroundUIManager : MonoBehaviour
         StopCoroutine(_stageStartCoroutine);
     }
 
-    private void MoveAwayUI()
+    private void MoveAwayUI(float delay =3f)
     {
-        LeanTween.move(storyUIRectTransform, new Vector2(storyUIRectTransform.anchoredPosition.x,
-            storyUIRectTransform.anchoredPosition.y + 1000), 2.3f).setEase(LeanTweenType.easeInOutBack);
+        storyUIRectTransform
+            .DOAnchorPos
+            (new Vector2(storyUIRectTransform.anchoredPosition.x, storyUIRectTransform.anchoredPosition.y + 1000),
+                2.3f)
+            .SetEase(Ease.InOutBack)
+            .SetDelay(delay);
+
     }
 
     private void OnStageStart()
     {
-        LeanTween.move(storyUIRectTransform,
-            new Vector2(0, tutorialAwayTransfrom.anchoredPosition.y),
-            3f).setEase(LeanTweenType.easeInOutBack);
+        storyUIRectTransform
+            .DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y), 3f)
+            .SetEase(Ease.InOutBack);
+   
 #if UNITY_EDITOR
         Debug.Log("UI OnstageStart");
 #endif
@@ -392,6 +435,7 @@ public class UndergroundUIManager : MonoBehaviour
         if (_uiPlayCoroutine != null) StopCoroutine(_uiPlayCoroutine);
 
         PlayAudio(uiAudioClips[(int)AudioClips.Story]);
+        
 #if UNITY_EDITOR
         Debug.Log("Second introduction message.");
 #endif

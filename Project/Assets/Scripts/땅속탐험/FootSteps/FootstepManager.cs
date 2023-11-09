@@ -228,6 +228,10 @@ public class FootstepManager : MonoBehaviour
             var fC = obj.GetComponent<FootstepController>();
 
             currentlyClickedObjectName = fC.animalNameToCall;
+
+           
+            
+            
             InspectObject(clickedObject);
         }
     }
@@ -235,6 +239,7 @@ public class FootstepManager : MonoBehaviour
 
     public static event Action OnFootstepClicked;
 
+    public UndergroundUIManager undergroundUIManager;
     private void InspectObject(GameObject obj)
     {
      
@@ -246,7 +251,12 @@ public class FootstepManager : MonoBehaviour
         if (footstepController != null)
         {
             currentFootstepGroupOrder = footstepController.footstepGroupOrder - 1;
-
+            
+            if(footstepController.animalNameToCall!=null && currentlyClickedObjectName!=string.Empty || currentlyClickedObjectName == "")
+                
+                undergroundUIManager.popUpUIRectTmp.text = currentlyClickedObjectName;
+            
+            
             OnFootstepClicked?.Invoke();
             DoNext();
         }
@@ -427,7 +437,7 @@ public class FootstepManager : MonoBehaviour
             yield return GetWaitForSeconds(11f);
         else
             // 동일 그룹 내 발자국 끼리의 시간간격
-            yield return GetWaitForSeconds(5.15f);
+            yield return GetWaitForSeconds(8.5f);
 
         _audioSource.clip = footstepAppearingSound;
         _audioSource.Play();

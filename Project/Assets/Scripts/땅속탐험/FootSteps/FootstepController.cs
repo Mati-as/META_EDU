@@ -38,7 +38,7 @@ public class FootstepController : MonoBehaviour
     private Transform _buttonRectTransform;
     private Vector2 _originalSizeDelta;
     
-    [Space(20f)] [Header("Reference : 마지막 버튼에만 할당할 것 (non-nullable)")] 
+    [Space(20f)] [Header("Reference : 마지막 버튼에만 할당하여, 마지막 발자국만 동물을 활성화 할 수 있도록 합니다.")] 
     [SerializeField]
     public GameObject animalByLastFootstep;
     [SerializeField] public string animalNameToCall;
@@ -113,6 +113,7 @@ public class FootstepController : MonoBehaviour
 
     private bool _isUIPlayed;
     private bool _isClicked =false;
+    public static event Action onLastFootstepClicked; 
     private void OnButtonClicked()
     {
             //중복클릭 방지용 콜라이더 비활성화.
@@ -129,7 +130,10 @@ public class FootstepController : MonoBehaviour
                    //animal 객체의 OnEnable로직을 활용하기위해 false,true 동시사용.
                    animalByLastFootstep.SetActive(false);
                    animalByLastFootstep.SetActive(true);
-                 
+                   
+                   //UI에서 활용
+                   onLastFootstepClicked?.Invoke();
+
                 }
             }
         
