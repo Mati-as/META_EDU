@@ -15,6 +15,7 @@ public class IdleLakeAnimalController : MonoBehaviour
 
     private Camera _camera;
     private InputAction _mouseClickAction;
+    private IdleLakeAnimalSetter _idleLakeAnimalSetter;
 
 
     private void Awake()
@@ -27,19 +28,21 @@ public class IdleLakeAnimalController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _audioSource = GetComponent<AudioSource>();
         _collider = GetComponent<Collider>();
+        _idleLakeAnimalSetter = GetComponentInParent<IdleLakeAnimalSetter>();
+        
         _audioSource.clip = _audioClip;
 
-        IdleLakeAnimalSetter.onArrival -= onArritvalAtLake;
-        IdleLakeAnimalSetter.onLeaving -= OnLeavingFromLake;
+        IdleLakeAnimalSetter.onArrivalToLake -= onArritvalAtLake;
+        IdleLakeAnimalSetter.onArrivalToDefaultPosition -= OnArrivalAtDefaultPos;
 
-        IdleLakeAnimalSetter.onArrival += onArritvalAtLake;
-        IdleLakeAnimalSetter.onLeaving += OnLeavingFromLake;
+        IdleLakeAnimalSetter.onArrivalToLake += onArritvalAtLake;
+        IdleLakeAnimalSetter.onArrivalToDefaultPosition += OnArrivalAtDefaultPos;
     }
 
     private void OnDestroy()
     {
-        IdleLakeAnimalSetter.onArrival -= onArritvalAtLake;
-        IdleLakeAnimalSetter.onLeaving -= OnLeavingFromLake;
+        IdleLakeAnimalSetter.onArrivalToLake -= onArritvalAtLake;
+        IdleLakeAnimalSetter.onArrivalToDefaultPosition -= OnArrivalAtDefaultPos;
     }
 
     private void onArritvalAtLake()
@@ -47,9 +50,10 @@ public class IdleLakeAnimalController : MonoBehaviour
         _isClickable = true;
     }
 
-    private void OnLeavingFromLake()
+    private void OnArrivalAtDefaultPos()
     {
         _isClickable = false;
+        _isClicked = false;
     }
 
     private void OnEnable()
@@ -61,14 +65,10 @@ public class IdleLakeAnimalController : MonoBehaviour
     {
         _mouseClickAction.Disable();
     }
-
-    // private void Start()
-    // {
-    //    
-    // }
-
+    
     //DoVirtual -> 콜백사용을 위한 float선언
     private float _rubbishNum;
+    
     public float soundDuration;
 
     private void OnMouseClick(InputAction.CallbackContext context)
@@ -92,16 +92,18 @@ public class IdleLakeAnimalController : MonoBehaviour
     public float duration = 0.55f; // 회전하는 데 걸리는 시간 (초 단위)
     public Ease easeType = Ease.InOutQuad; // 회전의 이징 타입 (선택적)
     public LoopType loopType = LoopType.Incremental; // 반복 타입 (선택적)
-    public int loops = 3; // 반복 횟수 (-1은 무한 반복)
+    public int loops = 3;// 반복 횟수 (-1은 무한 반복)
+    public int addtionalDrinkingTime;
 
     private void OnClicked()
     {
-        //Clickable은 AnimalSetter에서 eventque방식으로 관리, isClciked 중복클릭방지를 위해 방어적 프로그래밍 적용
+        //Clickable은 AnimalSetter에서 event방식으로 관리, isClciked 중복클릭방지를 위해 방어적 프로그래밍 적용
         if (!_isClicked && _isClickable)
         {
 #if UNITY_EDITOR
             Debug.Log($"{gameObject.name} Clicked! : ONCLICK FUNCTION IS ON..");
 #endif
+            _idleLakeAnimalSetter._drinkingDuration += addtionalDrinkingTime;
             _isClicked = true;
 
             _animator.SetTrigger(ON_CLICK_ANIM);
@@ -115,7 +117,7 @@ public class IdleLakeAnimalController : MonoBehaviour
 
             DOVirtual.Float(0, 1, soundDuration, value => _rubbishNum = value).OnComplete(() =>
             {
-                _isClicked = false;
+                
             });
 
             if (gameObject.name == "오리")

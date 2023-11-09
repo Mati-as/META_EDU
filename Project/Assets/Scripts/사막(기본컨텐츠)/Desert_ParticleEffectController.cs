@@ -25,7 +25,7 @@ public class Desert_ParticleEffectController : MonoBehaviour
     private void OnEnable()
     {
         _mouseClickAction.Enable();
-    }
+    }   
 
     private void OnDisable()
     {
@@ -58,3 +58,4 @@ public class Desert_ParticleEffectController : MonoBehaviour
         _particle.Play();
     }
 }
+//Action 

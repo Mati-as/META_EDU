@@ -16,7 +16,9 @@ public class IdleLakeAnimalSetter : MonoBehaviour
     [Header("Debug Mode Set")]
     [SerializeField] private ReactiveProperty<float> _timer;
     [SerializeField] private float _waitTimeForStartRunning;
-    [SerializeField] private float _drinkingDuration;
+    
+    //동물 객체 클릭 시 AnimalController에서 duration 증가를 set할 수 있도록하기 위해 public set 설정
+    [SerializeField] public float _drinkingDuration { get; set; } 
    
    [Header("Move Speed Setting")]
     [Range(1, 20)]
@@ -97,8 +99,8 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private Coroutine _setAnimalRunCoroutine;
     
-    public static event Action onArrival;
-    public static event Action onLeaving;
+    public static event Action onArrivalToLake;
+    public static event Action onArrivalToDefaultPosition;
 
     private void Awake()
     {
@@ -212,7 +214,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
                     .SetEase(Ease.InQuad)
                     .OnComplete(() =>
                     {
-                        onLeaving?.Invoke();
+                        onArrivalToDefaultPosition?.Invoke();
                         _isOnDeFaultLocation = true;
                 
                     });
@@ -291,7 +293,7 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private void OnArrivalAtLake()
     {
-        onArrival?.Invoke();
+        onArrivalToLake?.Invoke();
         if (_setAnimalRunCoroutine != null)
         {
             StopCoroutine(_setAnimalRunCoroutine);

@@ -3296,7 +3296,7 @@ MonoBehaviour:
   increasedAnimationSpeed: 4.7
   durationOfGoingBackToInitialSpot: 10
   jumpDuration: 2.5
-  oneCycleDuration: 50
+  oneCycleDuration: 40
 --- !u!95 &640325408
 Animator:
   serializedVersion: 5
@@ -17041,7 +17041,6 @@ MonoBehaviour:
   _timer:
     value: 0
   _waitTimeForStartRunning: 0
-  _drinkingDuration: 0
   moveOutDuration: 4.8
   moveInDuration: 5
   randomIntervalMin: 8
@@ -22053,6 +22052,7 @@ MonoBehaviour:
   easeType: 7
   loopType: 2
   loops: 1
+  addtionalDrinkingTime: 8
 --- !u!82 &1369942611564876993
 AudioSource:
   m_ObjectHideFlags: 0
@@ -22065,7 +22065,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.42
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -33501,6 +33501,7 @@ MonoBehaviour:
   easeType: 7
   loopType: 2
   loops: 1
+  addtionalDrinkingTime: 8
 --- !u!82 &4198247926028402449
 AudioSource:
   m_ObjectHideFlags: 0
@@ -33513,7 +33514,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.42
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -51162,6 +51163,7 @@ MonoBehaviour:
   easeType: 7
   loopType: 2
   loops: 1
+  addtionalDrinkingTime: 8
 --- !u!64 &5687587656605050535
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -51188,7 +51190,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.42
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -56710,6 +56712,7 @@ MonoBehaviour:
   easeType: 7
   loopType: 2
   loops: 1
+  addtionalDrinkingTime: 8
 --- !u!64 &8002368641438193483
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -56736,7 +56739,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.42
   m_Pitch: 1
   Loop: 0
   Mute: 0
