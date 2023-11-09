@@ -111,6 +111,8 @@ public class ParticleEventController : MonoBehaviour
         _mouseClickAction.performed += OnMouseClick;
         _mouseClickAction.Enable();
         
+        PlayAllParticles();
+        
     }
     
     private void OnDisable()

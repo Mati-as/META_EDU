@@ -185,7 +185,7 @@ public class DragonflyController : MonoBehaviour
     private int _currentIndex;
     private void MoveAway()
     {
-        transform.DORotate(_moveAwayPositions[_moveAwayPositionIndex].position, 1f)
+        transform.DOLookAt(_moveAwayPositions[_moveAwayPositionIndex].position, 1f)
             .OnStart(() =>
             {
             })
@@ -206,7 +206,7 @@ public class DragonflyController : MonoBehaviour
 
     private void LandToGround()
     {
-        transform.DORotate(_landingPositions[initialLandingPosition].position, 1f)
+        transform.DOLookAt(_landingPositions[initialLandingPosition].position, 2f)
             .OnComplete(() =>
             {
                 transform.DOMove(_landingPositions[_landPositionIndex].position, moveBackDuration).OnComplete(() =>
