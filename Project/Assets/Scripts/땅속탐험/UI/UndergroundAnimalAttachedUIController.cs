@@ -92,17 +92,13 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
    
       //gameObject.transform.localScale = Vector3.zero;
       
-      
       _maximizedSizeVec = UImaximizedSize * Vector3.one;
-      
-      
+       
       _tmp = GetComponentInChildren<TMP_Text>();
       _tmp.text = $"{gameObject.name} 찾았다!";
 
       Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpButtonClicked;
       Underground_PopUpUI_Button.onPopUpButtonEvent += OnPopUpButtonClicked;
-
-
    }
 
    private void OnDestroy()
@@ -134,28 +130,22 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
           
           gameObject.transform.localScale = Vector3.zero;
           //animal control section;
-          LeanTween.scale(gameObject, Vector3.one * animalMaximizedSize, durations[(int)tweenParam.Scale])
-             .setEaseInOutBounce();
+          
+
+          transform.DOScale(Vector3.one * animalMaximizedSize, durations[(int)tweenParam.Scale])
+             .SetEase((Ease.InOutBounce));
       
           //AttachedUI control section;
           _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-          LeanTween.move(UIGameObj, _textBoxInitialPosition, durations[(int)tweenParam.Move]);
-          LeanTween.scale(UIGameObj, _maximizedSizeVec, durations[(int)tweenParam.Scale])
-             .setEaseInOutBounce()
-             .setOnComplete(() =>
-                {
-                   Debug.Log("sizeIncreasing Function worked");
-                   
-                   // 11/09/23 => popup event처리로 변경함. leanTween 또한 삭제.
-                   // LeanTween.delayedCall
-                   // (waitTimes[(int)waitTimeName.IntervalBetweenFirstMessageAndSecond]
-                   //    , PlayNextMessageAnim);
-                }
-               
-             );
+          UIGameObj.transform.DOMove(_textBoxInitialPosition, durations[(int)tweenParam.Move]);
+          UIGameObj.transform.DOScale(_maximizedSizeVec, durations[(int)tweenParam.Scale])
+             .SetEase((Ease.InOutBounce))
+             .OnComplete(() =>
+             {
+                Debug.Log("sizeIncreasing Function worked");
+             });
        }
-       
    }
 
    private void OnPopUpButtonClicked()
@@ -170,52 +160,42 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
 
 
    private float _waitTimeToDisappear=2.25f;
-   
+
    private void PlayNextMessageAnim()
    {
-      StopCoroutine(_typingCoroutine);
-      
-      if (gameObject.name != "여우")
+      if (gameObject.activeSelf)
       {
-         _tmp.text = secondMessage;
-      }
-      else
-      {  
-         _tmp.text = "동물친구들을 \n 모두 찾았어!";
-      }
-      
-      _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
+         StopCoroutine(_typingCoroutine);
 
-      if (gameObject.name != "여우" && GroundGameManager.isGameFinishedbool == false)
-      {
-          
-         Debug.Log("동물 사라지는 중");
-          
-         LeanTween.delayedCall(_waitTimeToDisappear, () =>
-            {
-               LeanTween.scale(gameObject, Vector3.zero, durations[(int)tweenParam.Scale])
-                  .setEaseInOutBounce();
+         if (gameObject.name != "여우")
+            _tmp.text = secondMessage;
+         else
+            _tmp.text = "동물친구들을 \n 모두 찾았어!";
 
+         _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-               LeanTween.scale(UIGameObj, Vector3.zero, durations[(int)tweenParam.Scale])
-                  .setEaseInOutBounce()
-                  .setOnComplete(() =>
-                  {
-                     StopCoroutine(_typingCoroutine);
-                     gameObject.SetActive(false);
-                  });
-            }
-         );
+         if (gameObject.name != "여우" && GroundGameManager.isGameFinishedbool == false)
+         {
+            Debug.Log("동물 사라지는 중");
+
+            transform.DOScale(Vector3.zero, durations[(int)tweenParam.Scale])
+               .SetEase(Ease.InOutBounce)
+               .OnStart(() =>
+               {
+                  transform.DOScale(Vector3.zero, durations[(int)tweenParam.Scale])
+                     .SetEase(Ease.InOutBounce)
+                     .OnComplete(() =>
+                     {
+                        StopCoroutine(_typingCoroutine);
+                        gameObject.SetActive(false);
+                     });
+               })
+               .SetDelay(_waitTimeToDisappear);
+         }
       }
-      else
-      {
-         
-      }
-   
-         //messages[(int)messageID.OnNextAnimal];
-      
+       
 
-    
+      //messages[(int)messageID.OnNextAnimal];
    }
    
    public IEnumerator TypeIn(string str, float offset)
