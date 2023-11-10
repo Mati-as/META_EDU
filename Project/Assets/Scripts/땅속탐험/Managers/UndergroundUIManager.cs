@@ -331,6 +331,10 @@ public class UndergroundUIManager : MonoBehaviour
 
     private IEnumerator OnGameOverWithAudio()
     {
+        
+        
+        yield return GetWaitForSeconds(3f);
+        
 #if UNITY_EDITOR
         Debug.Log("종료UI표출");
 #endif

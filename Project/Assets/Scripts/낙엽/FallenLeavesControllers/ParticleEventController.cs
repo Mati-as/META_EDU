@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -128,10 +129,10 @@ public class ParticleEventController : MonoBehaviour
             if (!_audioSources[i].isPlaying)
             {
                 SoundManager.FadeInAndOutSound(_audioSources[i],1.0f,0.05f
-                    ,duration,0.25f);
+                    ,duration,0.05f,rollBack:true);
                 
-                SoundManager.FadeInAndOutSound(_audioSources[i+1],0.25f,0.05f
-                    ,0.89f,0.25f,rollBack:true);
+                SoundManager.FadeInAndOutSound(_audioSources[i+1],0.05f,0.05f
+                    ,0.9f,0.05f,rollBack:true);
 #if UNITY_EDITOR
                 Debug.Log("클릭소리 재생");
 #endif
@@ -170,9 +171,10 @@ public class ParticleEventController : MonoBehaviour
             SoundManager.FadeInAndOutSound(_audioSources[(int)FallenLeave_SoundID.Blowing],0.18f,0.01f
                 ,5f,0.5f);
             randomDirection = new Vector3(Random.Range(-2, 2), 0 , Random.Range(-2, 2));
+            
+            
             isWindBlowing = true;
-           
-           
+
             
             ApplyWindRandomForce(center, particleSystemA,randomWindAngularMin,randomWindAngularMax,
                 randomWindForceMin,randomWindForceMax);
@@ -181,41 +183,44 @@ public class ParticleEventController : MonoBehaviour
             ApplyWindRandomForce(center, particleSystemC,randomWindAngularMin,
                 randomWindAngularMax,randomWindForceMin,randomWindForceMax);
          
-           
             
             _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         }
-            
-        else
+        
+        //_angularStopElapse += Time.deltaTime;
+
+        if (isWindBlowing)
         {
+            Debug.Log($"바람 멈추기위한 isWindowBlowing Logic 진입..{angularStopWaitTime}");
+
+           
+            
+            DOVirtual
+                .Float(0, 1, angularStopWaitTime, val => _elapsedTime = val)
+                .OnComplete(() =>
+                {
+                    // if (_angularStopElapse > angularStopWaitTime)
+                    //     if (!_isAngularZero)
+                    //     {
+                    
+                    _elapsedTime = 0;
+                    
+                    Debug.Log("바람 멈추기");
+                    _isAngularZero = true;
+                    ApplyWindRandomForce(center, particleSystemA, -angularSpeedWhenStop, angularSpeedWhenStop,
+                        -forceWhenStop, forceWhenStop);
+                    ApplyWindRandomForce(center, particleSystemB, -angularSpeedWhenStop, angularSpeedWhenStop,
+                        -forceWhenStop, forceWhenStop);
+                    ApplyWindRandomForce(center, particleSystemC, -angularSpeedWhenStop, angularSpeedWhenStop,
+                        -forceWhenStop, forceWhenStop);
+                    // }
+                });
+            
             isWindBlowing = false;
         }
 
-        if (!isWindBlowing)
-        {
-            _angularStopElapse += Time.deltaTime;
-            
-            if (_angularStopElapse > angularStopWaitTime)
-            {
-                if (!_isAngularZero)
-                {
-                    Debug.Log("바람 멈추기");
-                    _isAngularZero = true;
-                    ApplyWindRandomForce(center, particleSystemA,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
-                    ApplyWindRandomForce(center, particleSystemB,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
-                    ApplyWindRandomForce(center, particleSystemC,-angularSpeedWhenStop,angularSpeedWhenStop,-forceWhenStop,forceWhenStop);
-                }
-               
-            }
-        }
-        
-        
-        else if (isWindBlowing)
-        {
-            _angularStopElapse += Time.deltaTime;
-        }
-        
-        
+
+        //else if (isWindBlowing) _angularStopElapse += Time.deltaTime;
     }
     private void OnDestroy()
     {

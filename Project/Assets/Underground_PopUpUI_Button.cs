@@ -27,6 +27,7 @@ public class Underground_PopUpUI_Button : MonoBehaviour
     }
 
     private bool isClickable;
+    // Popup이벤트 action list
     void OnButtonClicked()
     {
         if (isClickable)
@@ -41,14 +42,16 @@ public class Underground_PopUpUI_Button : MonoBehaviour
                 {
                     isClickable = true;
                 });
+            
+            if (uiAudioSource != null)
+            {
+                uiAudioSource.clip = buttonSound;
+                uiAudioSource.Play();
+            }
         }
       
 
-        if (uiAudioSource != null)
-        {
-            uiAudioSource.clip = buttonSound;
-            uiAudioSource.Play();
-        }
+        
     }
 
 }
