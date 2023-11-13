@@ -11,6 +11,7 @@ public class Desert_ParticleEffectController : MonoBehaviour
     {
         _camera = Camera.main;
 
+        //OnEnable,Disable 또한 반드시 가져갈 것..
         _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         _mouseClickAction.performed += OnMouseClick;
 

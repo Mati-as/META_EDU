@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = System.Random;
+using UnityEngine.InputSystem;
 
 
 // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
@@ -291,8 +292,18 @@ public class GameManager : MonoBehaviour
     }
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
+    //inputSystem Update로 인한 인스턴스 11/13/23
+    private Camera _camera;
+    private InputAction _mouseClickAction;
+    private ParticleSystem _particle;
+
     private void Awake()
     {
+        _camera = Camera.main;
+        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        _mouseClickAction.performed += ClickOnObject;
+        
+        
         SetPhysicsLayer();
         Reset();
         SetTimeScale(1);
@@ -302,11 +313,21 @@ public class GameManager : MonoBehaviour
         onAllAnimalsInitialized += SetAndInitializedAnimals;
         onCorrectedEvent += PlayAnswerParticle;
         SetTwoDimensionaTransformlArray();
+            
+            
+        isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
     }
 
-    private void Start()
+
+ 
+    private void OnEnable()
     {
-        isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
+        _mouseClickAction.Enable();
+    }   
+
+    private void OnDisable()
+    {
+        _mouseClickAction.Disable();
     }
 
     
@@ -365,7 +386,7 @@ public class GameManager : MonoBehaviour
         if (isGameStarted && isGameFinished == false)
         {
                 CheckInitialReady();
-                PlayClickOnScreenEffect();//파티클
+                //PlayClickOnScreenEffect();//파티클
             
                 //2. 라운드 시작 준비 완료 시 ------------------------------
                 if (isRoundReady) //1회 실행 보장.
@@ -402,7 +423,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
 
 #endif
-                        ClickOnObject();
+                       // ClickOnObject();
                     }
                 }
          
@@ -577,63 +598,70 @@ public class GameManager : MonoBehaviour
     ///     오브젝트를 선택하는 함수 입니다.
     ///     Linked lIst를 활용해 자료를 검색하고 해당하는 메세지를 카메라 및, 게임 다음 동작에 전달합니다.
     /// </summary>
-    private void ClickOnObject()
+    ///
+    private readonly string LAYER_NAME = "Screen";
+    private void ClickOnObject(InputAction.CallbackContext context)
     {
-        // 마우스 클릭 시
-        if (Input.GetMouseButtonDown(0) && !isCorrected)
+     
+        int layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
+        
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit[] hits = Physics.RaycastAll(ray);
+
+        foreach (var hit in hits)
         {
-            m_vecMouseDownPos = Input.mousePosition;
-
-            var ray = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, playObejctInteractableLayer))
-                if (animalGameOjbectDictionary.ContainsKey(hit.collider.name))
-                {
-                    Debug.Log("클릭!");
-                    _clickedAnimal = hit.collider.name;
-
-
-                    //정답인 경우
-                    if (_clickedAnimal == answer)
-                    {
-                        //1회실행 보장용
-                        if (!isCorrected)
-                        {
-                            SetAnimalData(_clickedAnimal);
-                            onCorrectedEvent?.Invoke();
-                            isCorrected = true;
-                        }
-
-                        //moving에서의 lerp
-                        _elapsedForMovingToSpotLight = 0;
-
-                        //sizeIncrease()의 lerp
-                        _currentSizeLerp = 0;
-                    }
-                }
-        }
-    }
-
-    private RaycastHit hitSecond;
-
-    private void PlayClickOnScreenEffect()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            m_vecMouseDownPos = Input.mousePosition;
-
-            var raySecond = Camera.main.ScreenPointToRay(m_vecMouseDownPos);
-
-
-            if (Physics.Raycast(raySecond, out hitSecond, Mathf.Infinity, UIInteractableLayer))
+            if (hit.collider.name == "Screen")
             {
-                Debug.Log("파티클 재생");
-                clickParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
-                clickParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
-                clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
+
+#if UNITY_EDITOR
+                Debug.Log("Click On New Input System");
+#endif
+                PlayClickOnScreenEffect(hit);
+            }
+          
+            
+            if (animalGameOjbectDictionary.ContainsKey(hit.collider.name) && AnimalShaderController.isGlowOn)
+            {
+                Debug.Log("클릭!");
+                
+                _clickedAnimal = hit.collider.name;
+                
+                //정답인 경우
+                if (_clickedAnimal == answer)
+                {
+                    //1회실행 보장용
+                    if (!isCorrected)
+                    {
+                        SetAnimalData(_clickedAnimal);
+                        onCorrectedEvent?.Invoke();
+                        isCorrected = true;
+                    }
+
+                    //moving에서의 lerp
+                    _elapsedForMovingToSpotLight = 0;
+
+                    //sizeIncrease()의 lerp
+                    _currentSizeLerp = 0;
+                }
             }
         }
+
+      
+
+
+        
+        
+    }
+  
+    RaycastHit hit;
+    private RaycastHit hitSecond;
+
+    private void PlayClickOnScreenEffect(RaycastHit hit)
+    {
+        Debug.Log("파티클 재생");
+        clickParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
+        clickParticleSystem.transform.position = hit.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
+        clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
     }
 
     private void PlayAnswerParticle()

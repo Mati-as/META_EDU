@@ -433,7 +433,7 @@ public class AnimalController : MonoBehaviour
         transform.rotation =  Quaternion.Euler(0, randomRotation, 0);;
        
         
-        Debug.Log($"TargetRotation  {randomRotation}");
+       
     }
     private bool _isrotated;
     IEnumerator MoveAndRotateCoroutine()
