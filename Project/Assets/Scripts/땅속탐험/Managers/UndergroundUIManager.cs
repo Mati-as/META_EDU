@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Mime;
+using System.Xml;
 using DG.Tweening;
 using TMPro;
 using UniRx;
@@ -10,6 +12,7 @@ using UnityEngine.Serialization;
 
 public class UndergroundUIManager : MonoBehaviour
 {
+    
     private enum UI
     {
         HowToPlayA,
@@ -18,6 +21,9 @@ public class UndergroundUIManager : MonoBehaviour
         StoryB,
         Finish
     }
+
+   
+    
 
 
     [Header("References")] //-------------------------------
@@ -57,7 +63,7 @@ public class UndergroundUIManager : MonoBehaviour
     [SerializeField] private UIAudioController _uiAudioController;
 
     [Space(10f)] [Header("Story Message Settings")] [Space(10f)]
-    public string _firstUIMessage = " 땅속에는 다양한 동물친구가 살고 있어요! 저를 따라오면서 구경해볼까요?";
+    public string _firstUIMessage = " 땅속에는 다양한 동물친구가 살고 있어요!     저를 따라오면서 구경해볼까요?";
 
     public string _lastUIMessage = "와~ 동물친구들을 모두 찾았어요!";
 
@@ -151,12 +157,66 @@ public class UndergroundUIManager : MonoBehaviour
         Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpUIClicked;
         Underground_PopUpUI_Button.onPopUpButtonEvent += OnPopUpUIClicked;
     }
+    
+    int soundID;
+    private TextAsset xmlAsset;
+    private XmlNode soundNode;
+    private XmlDocument soundPathXml;
+    private void Start()
+    {
+
+
+        xmlAsset = Resources.Load<TextAsset>("Data/Path/SoundPathData");
+        soundPathXml = new XmlDocument();
+        soundPathXml.LoadXml(xmlAsset.text);
+        
+        soundNode = soundPathXml.SelectSingleNode($"//SoundData[@ID='{soundID}']");
+        
+        
+        gameManager.isStartButtonClicked
+            .Where(_ => _)
+            .Delay(TimeSpan.FromSeconds(INTRO_UI_DELAY))
+            .Subscribe(_ => SetUIIntroUsingUniRx())
+            .AddTo(this);
+
+        gameManager.currentStateRP
+            .Where(_currentState => _currentState.GameState == IState.GameStateList.GameStart)
+            .Subscribe(_ => OnGameStart())
+            .AddTo(this);
+
+        gameManager.currentStateRP
+            .Where(_currentState => _currentState.GameState == IState.GameStateList.StageStart)
+            // .Delay(TimeSpan.FromSeconds(3f))
+            .Subscribe(_ => { _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine()); })
+            .AddTo(this);
+
+        gameManager.isGameFinishedRP
+            .Where(value => value)
+            .Delay(TimeSpan.FromSeconds(8f))
+            .Subscribe(_ => OnGameOver())
+            .AddTo(this);
+
+        footstepManager.finishPageTriggerProperty
+            .Where(value => value)
+            .Delay(TimeSpan.FromSeconds(3.5f))
+            .Subscribe(_ => OnPageChange())
+            .AddTo(this);
+
+        footstepManager.lastElementClickedProperty
+            .Where(_ => _)
+            .Delay(TimeSpan.FromSeconds(0.1f))
+            .Subscribe(_ => OnAnimalFind())
+            .AddTo(this);
+    }
+    
 
     private void OnDestroy()
     {
         Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpUIClicked;
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
     }
+    
+
 
 
     public TMP_Text popUpUIRectTmp;
@@ -197,24 +257,68 @@ public class UndergroundUIManager : MonoBehaviour
         DOVirtual.Float(0, 1, 1.5f, val => val++)
             .OnComplete(() =>
             {
-                if (FootstepManager.currentFootstepGroupOrder != 12)
+                if (FootstepManager.currentFootstepGroupOrder <= 13)
                 {
-                    if (FootstepManager.currentFootstepGroupOrder % 2 == 0)
-                        PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
-                    else
-                        PlayAudio(etcAudioClips[(int)EtcAudioClips.LetsMeetNext]);
-                }
-                else
-                {
-                    PlayAudio(etcAudioClips[(int)EtcAudioClips.FoundAllAnimals]);
+                    soundNode = soundPathXml.SelectSingleNode(
+                        //calculate index..
+                        $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
+                    string soundPath = soundNode.Attributes["path"].Value;
+                    gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+
+                    //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
             });
       
 
     }
+    
+    private void OnAnimalFind()
+    {
+        _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
+    }
+
+    private float _waitTimeUntilPopUpAppear = 2.8f;
+    private IEnumerator PlayOnFindAudios()
+    {
+        if (FootstepManager.currentFootstepGroupOrder != 0)
+        {
+          //  PlayAudio(animalAudioClips[FootstepManager.currentFootstepGroupOrder - 1]);
+
+            soundNode = soundPathXml
+                .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
+            string soundPath = soundNode.Attributes["path"].Value;
+            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+        }
+          
+        
+        
+        yield return GetWaitForSeconds(_waitTimeUntilPopUpAppear);
+        
+        //popup_UI 음성 재생파트 
+        if (FootstepManager.currentFootstepGroupOrder != 0)
+        {
+            //  PlayAudio(animalAudioClips[FootstepManager.currentFootstepGroupOrder - 1]);
+
+            soundNode = soundPathXml
+                .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
+            string soundPath = soundNode.Attributes["path"].Value;
+            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+        }
+
+        // 마지막 동물인 여우가 아닐 때만...
+       
+
+
+        while (uiAudioSource.isPlaying) yield return null;
+
+        StopCoroutine(_onAnimalFindAudioCoroutine);
+    }
+    
+    
 
     private IEnumerator PlayTutorialAudio()
     {
+        //gameManager.s_soundManager.Play();
         PlayAudio(uiAudioClips[(int)AudioClips.Tutorial1]);
 
         while (uiAudioSource.isPlaying) yield return null;
@@ -235,65 +339,10 @@ public class UndergroundUIManager : MonoBehaviour
 
     private Coroutine _stageStartCoroutine;
 
-    private void Start()
-    {
-        gameManager.isStartButtonClicked
-            .Where(_ => _)
-            .Delay(TimeSpan.FromSeconds(INTRO_UI_DELAY))
-            .Subscribe(_ => SetUIIntroUsingUniRx())
-            .AddTo(this);
-
-        gameManager.currentStateRP
-            .Where(_currentState => _currentState.GameState == IState.GameStateList.GameStart)
-            .Subscribe(_ => OnGameStart())
-            .AddTo(this);
-
-        gameManager.currentStateRP
-            .Where(_currentState => _currentState.GameState == IState.GameStateList.StageStart)
-            // .Delay(TimeSpan.FromSeconds(3f))
-            .Subscribe(_ => { _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine()); })
-            .AddTo(this);
-
-        gameManager.isGameFinishedRP
-            .Where(value => value)
-            .Delay(TimeSpan.FromSeconds(8f))
-            .Subscribe(_ => OnGameOver())
-            .AddTo(this);
-
-        footstepManager.finishPageTriggerProperty
-            .Where(value => value)
-            .Delay(TimeSpan.FromSeconds(3.5f))
-            .Subscribe(_ => OnPageChange())
-            .AddTo(this);
-
-        footstepManager.lastElementClickedProperty
-            .Where(_ => _)
-            .Delay(TimeSpan.FromSeconds(0.1f))
-            .Subscribe(_ => OnAnimalFind())
-            .AddTo(this);
-    }
+   
 
 
-    private void OnAnimalFind()
-    {
-        _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
-    }
 
-    private IEnumerator PlayOnFindAudios()
-    {
-        if (FootstepManager.currentFootstepGroupOrder != 0)
-            PlayAudio(animalAudioClips[FootstepManager.currentFootstepGroupOrder - 1]);
-
-        yield return GetWaitForSeconds(2.1f);
-
-        // 마지막 동물인 여우가 아닐 때만...
-       
-
-
-        while (uiAudioSource.isPlaying) yield return null;
-
-        StopCoroutine(_onAnimalFindAudioCoroutine);
-    }
 
     private void OnPageChange()
     {
