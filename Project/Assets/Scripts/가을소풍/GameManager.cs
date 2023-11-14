@@ -613,22 +613,23 @@ public class GameManager : MonoBehaviour
             if (hit.collider.name == "Screen")
             {
 
-#if UNITY_EDITOR
-                Debug.Log("Click On New Input System");
-#endif
+
                 PlayClickOnScreenEffect(hit);
             }
           
             
             if (animalGameOjbectDictionary.ContainsKey(hit.collider.name) && AnimalShaderController.isGlowOn)
             {
-                Debug.Log("클릭!");
+               
                 
                 _clickedAnimal = hit.collider.name;
                 
                 //정답인 경우
                 if (_clickedAnimal == answer)
                 {
+#if UNITY_EDITOR
+                    Debug.Log("Correct!");
+#endif
                     //1회실행 보장용
                     if (!isCorrected)
                     {
