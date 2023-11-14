@@ -277,7 +277,7 @@ public class UndergroundUIManager : MonoBehaviour
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
 
-    private float _waitTimeUntilPopUpAppear = 2.05f;
+    private float _waitTimeUntilPopUpAppear = 3.25f;
     private IEnumerator PlayOnFindAudios()
     {
         if (FootstepManager.currentFootstepGroupOrder != 0)

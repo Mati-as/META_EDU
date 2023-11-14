@@ -189,8 +189,7 @@ public class FootstepManager : MonoBehaviour
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
-
-        LeanTween.init(2000);
+        
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
         lastElementClickedProperty = new ReactiveProperty<bool>(false);
         SetTransformArray();
@@ -199,21 +198,29 @@ public class FootstepManager : MonoBehaviour
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
     }
-    
-  
+
+
+    private readonly float _firstFootstepWaitTime = 4.5f;
+
     private void Start()
     {
         _camera = Camera.main;
-        
-        
+
+
         _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         _mouseClickAction.performed += OnMouseClicked;
         _mouseClickAction.Enable();
-        
+
 
         gameManager.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
-            .Subscribe(_ => firstFootstepsGroup[0].SetActive(true));
+            .Delay(TimeSpan.FromSeconds(_firstFootstepWaitTime))
+            .Subscribe(_ =>
+            {
+                firstFootstepsGroup[0].SetActive(true);
+                _audioSource.clip = footstepAppearingSound;
+                _audioSource.Play();
+            });
     }
 
 
