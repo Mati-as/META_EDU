@@ -95,6 +95,9 @@ public class IdleLakeAnimalController : MonoBehaviour
     public int loops = 3;// 반복 횟수 (-1은 무한 반복)
     public int addtionalDrinkingTime;
 
+    public Transform[] dog_ClickedAnimationPath;
+    public Vector3[] dog_ClickedAnimationPathVector;
+   
     private void OnClicked()
     {
         //Clickable은 AnimalSetter에서 event방식으로 관리, isClciked 중복클릭방지를 위해 방어적 프로그래밍 적용
@@ -117,7 +120,6 @@ public class IdleLakeAnimalController : MonoBehaviour
 
             DOVirtual.Float(0, 1, soundDuration, value => _rubbishNum = value).OnComplete(() =>
             {
-                
             });
 
             if (gameObject.name == "오리")
@@ -125,15 +127,25 @@ public class IdleLakeAnimalController : MonoBehaviour
                     .SetEase(easeType)
                     .SetLoops(loops);
 
-            if (gameObject.name == "개")
-                transform.DORotate(dog_rotationAngles, duration)
-                    .SetEase(easeType)
-                    .OnComplete(
-                        () =>
-                        {
-                            transform.DORotate(-dog_rotationAngles, duration)
-                                .SetEase(easeType);
-                        });
+            
+            else if (gameObject.name == "개")
+            {
+                Vector3[] dog_ClickedAnimationPathVector= new Vector3[4];
+                for (int count = 0; count < dog_ClickedAnimationPathVector.Length; count++)
+                {
+                    dog_ClickedAnimationPathVector[count] = dog_ClickedAnimationPath[count].position;
+                }
+
+#if UNITY_EDITOR
+                Debug.Log($"{gameObject.name} Dog DoPath Working");
+#endif
+                transform
+                    .DOPath(dog_ClickedAnimationPathVector, 3f,PathType.CatmullRom)
+                    .SetLookAt(0.01f)
+                    .SetEase(easeType);
+
+            }
+             
         }
     }
 }

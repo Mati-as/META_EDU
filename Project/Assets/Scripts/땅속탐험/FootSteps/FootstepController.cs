@@ -65,7 +65,8 @@ public class FootstepController : MonoBehaviour
         UpScale();
     }
 
-    private LTDescr upscaleAnim;
+    
+    
 
     private void UpScale()
     {
@@ -74,14 +75,19 @@ public class FootstepController : MonoBehaviour
         {
             _spriteRenderer.DOFade(1, 2.0f);
             transform.localScale = _defaultSize;
-            LeanTween.scale(gameObject,
-                    _defaultSize * _groundFootStepData.scaleUpSize,
-                    _groundFootStepData.sizeChangeDuration)
-                .setEase(LeanTweenType.easeOutBounce)
-                .setOnComplete(() =>
-                {
-                    DownScale();
-                });
+            transform.DOScale(_defaultSize * _groundFootStepData.scaleUpSize, _groundFootStepData.sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => DownScale());
+            
+            
+            // LeanTween.scale(gameObject,
+            //         _defaultSize * _groundFootStepData.scaleUpSize,
+            //         _groundFootStepData.sizeChangeDuration)
+            //     .setEase(LeanTweenType.easeOutBounce)
+            //     .setOnComplete(() =>
+            //     {
+            //         DownScale();
+            //     });
         }
   
     }
@@ -93,15 +99,18 @@ public class FootstepController : MonoBehaviour
         if (!_isClicked)
         {
             transform.localScale = _defaultSize * _groundFootStepData.scaleUpSize;
-           
-            LeanTween.scale(gameObject,
-                    _defaultSize * _groundFootStepData.defaultFootstepSize,
-                    _groundFootStepData.sizeChangeDuration)
-                .setEase(LeanTweenType.easeOutBounce)
-                .setOnComplete(()=>
-                {
-                    UpScale();
-                });
+            transform.DOScale(_defaultSize * _groundFootStepData.defaultFootstepSize, _groundFootStepData.sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => UpScale());
+            
+            // LeanTween.scale(gameObject,
+            //         _defaultSize * _groundFootStepData.defaultFootstepSize,
+            //         _groundFootStepData.sizeChangeDuration)
+            //     .setEase(LeanTweenType.easeOutBounce)
+            //     .setOnComplete(()=>
+            //     {
+            //         UpScale();
+            //     });
         }
  
     }

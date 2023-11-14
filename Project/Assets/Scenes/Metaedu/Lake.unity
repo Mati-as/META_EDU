@@ -187,6 +187,37 @@ Transform:
   m_Father: {fileID: 317367621}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8641850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8641851}
+  m_Layer: 0
+  m_Name: Dog Click Anim(Rotate) Path (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8641851
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8641850}
+  m_LocalRotation: {x: 0.0000000037252903, y: -0, z: 0.0000000037252903, w: 1}
+  m_LocalPosition: {x: 2.03, y: -0, z: 0.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 161396260}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &10281790
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,7 +812,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
+  m_StaticShadowCaster: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -987,6 +1018,41 @@ Transform:
   - {fileID: 2018567826}
   m_Father: {fileID: 488227009}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &161396259
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161396260}
+  m_Layer: 0
+  m_Name: Dog Click Anim(Rotate) Path
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &161396260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161396259}
+  m_LocalRotation: {x: -0.060262587, y: 0.37951803, z: -0.0756738, w: 0.920113}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8641851}
+  - {fileID: 441777878}
+  - {fileID: 575003706}
+  - {fileID: 1528439340}
+  m_Father: {fileID: 4198247926019363006}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &167928396
 GameObject:
@@ -1985,7 +2051,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 341468340}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.03, y: 2.4672, z: -2.08}
+  m_LocalPosition: {x: 9.54, y: 2.4672, z: -2.2799969}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2200,6 +2266,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 337812384}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &441777877
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 441777878}
+  m_Layer: 0
+  m_Name: Dog Click Anim(Rotate) Path (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &441777878
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441777877}
+  m_LocalRotation: {x: 0.0000000037252903, y: -0, z: 0.0000000037252903, w: 1}
+  m_LocalPosition: {x: 1.93, y: -0, z: -1.61}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 161396260}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &447027237
 GameObject:
@@ -2750,6 +2847,37 @@ Transform:
   - {fileID: 1255806441}
   m_Father: {fileID: 1153748674}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &575003705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 575003706}
+  m_Layer: 0
+  m_Name: Dog Click Anim(Rotate) Path (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &575003706
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575003705}
+  m_LocalRotation: {x: 0.0000000037252903, y: -0, z: 0.0000000037252903, w: 1}
+  m_LocalPosition: {x: -0.16, y: -0, z: -2.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 161396260}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &579859771
 GameObject:
@@ -15917,7 +16045,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1075834776}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.18552399, y: -0.27186644, z: -9.00425}
+  m_LocalPosition: {x: -0.2, y: -0.27186644, z: -9.43}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17524,7 +17652,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1456976635}
   m_LocalRotation: {x: -0, y: -0, z: 0.06624791, w: 0.9978033}
-  m_LocalPosition: {x: 7.72, y: 2.3941998, z: -4.18}
+  m_LocalPosition: {x: 7.68, y: 2.38, z: -4.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17994,6 +18122,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1528439339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1528439340}
+  m_Layer: 0
+  m_Name: Dog Click Anim(Rotate) Path (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1528439340
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528439339}
+  m_LocalRotation: {x: 0.0000000037252903, y: -0, z: 0.0000000037252903, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 161396260}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1549450060
 GameObject:
@@ -18793,7 +18952,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693088226}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.11, y: 2.4462, z: -3.09}
+  m_LocalPosition: {x: 9.160001, y: 2.4462, z: -3.2899969}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18982,7 +19141,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762390893}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.18, y: 2.4882, z: -3.73}
+  m_LocalPosition: {x: 8.230001, y: 2.4882, z: -3.929997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20748,6 +20907,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\uBC30\uACBD"
       objectReference: {fileID: 0}
+    - target: {fileID: 3300901686460118816, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3300901687191515610, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5305147829259513075, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.770687
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.7706863
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.770687
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -28.581
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.992
+      objectReference: {fileID: 0}
+    - target: {fileID: 8719239894763976008, guid: 6dae64251ec0dbd4497adf3e06896783,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 90.101
+      objectReference: {fileID: 0}
     - target: {fileID: 9214727686998805953, guid: 6dae64251ec0dbd4497adf3e06896783,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -21472,8 +21676,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369942611555493688}
-  m_LocalRotation: {x: 0.008599434, y: -0.2571227, z: 0.07959068, w: 0.9630572}
-  m_LocalPosition: {x: 6.2800007, y: 7.61, z: -5.2399964}
+  m_LocalRotation: {x: 0.0003441458, y: -0.25726625, z: 0.110453434, w: 0.96000737}
+  m_LocalPosition: {x: 6.379, y: 6.962, z: -5.229}
   m_LocalScale: {x: 2.0165, y: 2.0165, z: 2.0165}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21481,7 +21685,7 @@ Transform:
   - {fileID: 1369942611555007258}
   m_Father: {fileID: 1354480361}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 3.296, y: -29.65, z: 8.576}
+  m_LocalEulerAnglesHint: {x: 3.296, y: -29.65, z: 12.254}
 --- !u!4 &1369942611555007258
 Transform:
   m_ObjectHideFlags: 0
@@ -22767,6 +22971,8 @@ MonoBehaviour:
   loopType: 2
   loops: 1
   addtionalDrinkingTime: 8
+  dog_ClickedAnimationPath: []
+  dog_ClickedAnimationPathVector: []
 --- !u!82 &1369942611564876993
 AudioSource:
   m_ObjectHideFlags: 0
@@ -33550,6 +33756,7 @@ Transform:
   m_Children:
   - {fileID: 4198247926019362978}
   - {fileID: 4198247926019362998}
+  - {fileID: 161396260}
   m_Father: {fileID: 1354480361}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 9.691, y: -26.218, z: 5.444}
@@ -34216,6 +34423,12 @@ MonoBehaviour:
   loopType: 2
   loops: 1
   addtionalDrinkingTime: 8
+  dog_ClickedAnimationPath:
+  - {fileID: 8641851}
+  - {fileID: 441777878}
+  - {fileID: 575003706}
+  - {fileID: 1528439340}
+  dog_ClickedAnimationPathVector: []
 --- !u!82 &4198247926028402449
 AudioSource:
   m_ObjectHideFlags: 0
@@ -51878,6 +52091,8 @@ MonoBehaviour:
   loopType: 2
   loops: 1
   addtionalDrinkingTime: 8
+  dog_ClickedAnimationPath: []
+  dog_ClickedAnimationPathVector: []
 --- !u!64 &5687587656605050535
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -56616,7 +56831,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8002368641430938879}
   m_LocalRotation: {x: 0.058415838, y: -0.20294602, z: 0.07953196, w: 0.9742049}
-  m_LocalPosition: {x: 5.34, y: 7.56, z: -5.35}
+  m_LocalPosition: {x: 5.489, y: 6.74, z: -5.418}
   m_LocalScale: {x: 1.3412738, y: 1.3412735, z: 1.3412733}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -57427,6 +57642,8 @@ MonoBehaviour:
   loopType: 2
   loops: 1
   addtionalDrinkingTime: 8
+  dog_ClickedAnimationPath: []
+  dog_ClickedAnimationPathVector: []
 --- !u!64 &8002368641438193483
 MeshCollider:
   m_ObjectHideFlags: 0

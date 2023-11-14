@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UniRx;
 
@@ -21,17 +22,22 @@ public class InitialMessageBoxController : MonoBehaviour
             .Subscribe(_=>
             {
                 Debug.Log("Initial Message Out!");
-                LeanTween.scale(gameObject, Vector3.one * maximizedSize, 2)
-                    .setEaseInOutBounce();
+                transform.DOScale(Vector3.one * maximizedSize, 2f)
+                    .SetEase(Ease.InOutBounce);
+                // {
+                //     
+                // }
+                // LeanTween.scale(gameObject, Vector3.one * maximizedSize, 2)
+                //     .setEaseInOutBounce();
             });
         
         gameManager.currentStateRP
             .Where(CurrentState => CurrentState.GameState == IState.GameStateList.GameOver)
             .Subscribe(_=>
             {
-                Debug.Log("첫번째 '밟자국을 밟아봐' 메세지 삭제");
-                LeanTween.scale(gameObject, Vector3.zero, 1)
-                    .setEaseInOutBounce();
+                Debug.Log("Initial Message Out!");
+                transform.DOScale(Vector3.zero, 0.5f)
+                    .SetEase(Ease.InOutBounce);
             });
         
     }
