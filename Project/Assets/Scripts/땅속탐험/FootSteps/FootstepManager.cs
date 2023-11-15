@@ -449,7 +449,8 @@ public class FootstepManager : MonoBehaviour
             pageFinishToggle();
 
             //state전환용
-            gameManager.isGameFinishedRP.Value = true;
+            //11/15/23 -> Bind with Button Event 
+            //gameManager.isGameFinishedRP.Value = true;
 
             if (_turnOnNextGroupFirstFootstepCoroutine != null && !_isTOGFCorutineStopped)
             {

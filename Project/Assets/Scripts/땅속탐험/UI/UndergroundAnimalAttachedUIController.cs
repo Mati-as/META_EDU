@@ -111,7 +111,8 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
     private void Start()
     {
        
-         xmlAsset = Resources.Load<TextAsset>("Data/AnimalNarrationStringData"); // XML 파일 로드 (Resources 폴더 안에 있어야 함)
+        // XML 파일 로드 (Resources 폴더 안에 있어야 함)
+         xmlAsset = Resources.Load<TextAsset>("Data/AnimalNarrationStringData"); 
         _xmlDoc = new XmlDocument();
         _xmlDoc.LoadXml(xmlAsset.text);
 

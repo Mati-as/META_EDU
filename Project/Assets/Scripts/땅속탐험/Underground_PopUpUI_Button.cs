@@ -48,6 +48,12 @@ public class Underground_PopUpUI_Button : MonoBehaviour
                 uiAudioSource.clip = buttonSound;
                 uiAudioSource.Play();
             }
+
+            
+            if (FootstepManager.currentFootstepGroupOrder >= gameManager.TOTAL_ANIMAL_COUNT )
+            {
+                gameManager.isGameFinishedRP.Value = true;
+            }
         }
       
 

@@ -29,7 +29,7 @@ public class GroundGameManager : MonoBehaviour
 
     // GameManager에서만 상태컨트롤 및 상태인스턴스는 StateController만 소유.
     public StateController _stateController { get; private set; }
-
+    public int TOTAL_ANIMAL_COUNT { get; private set; }
 
   
 
@@ -73,6 +73,9 @@ public class GroundGameManager : MonoBehaviour
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         //---------------------------------------------
+        TOTAL_ANIMAL_COUNT = 12;
+            
+            
         isStartButtonClicked = new ReactiveProperty<bool>(false);
         isStageStartButtonClicked = new ReactiveProperty<bool>(false);
         isGameFinishedRP = new ReactiveProperty<bool>(false);
@@ -193,7 +196,7 @@ public class GroundGameManager : MonoBehaviour
 
     IEnumerator ActivateAllAnimals()
     {
-        yield return new WaitForSeconds(8f);
+        yield return new WaitForSeconds(5.5f);
         
         foreach (GameObject obj in AllAnimals)
         {
