@@ -382,7 +382,7 @@ public class UndergroundUIManager : MonoBehaviour
     {
         
         
-        yield return GetWaitForSeconds(3f);
+        yield return GetWaitForSeconds(0.0f);
         
 #if UNITY_EDITOR
         Debug.Log("종료UI표출");
@@ -392,7 +392,7 @@ public class UndergroundUIManager : MonoBehaviour
             .SetEase(Ease.InOutBack)
             .OnComplete(() =>
             {
-                MoveAwayUI(2f);
+                MoveAwayUI(4f);
             });
 
 

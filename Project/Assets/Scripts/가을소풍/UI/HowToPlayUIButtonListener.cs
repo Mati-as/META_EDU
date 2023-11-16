@@ -49,41 +49,52 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
     }
 
     private bool _isUIPlayed;
+    private bool _isClicked;
     private void ButtonClicked()
     {
-  
-        if (gameManager.isStartButtonClicked.Value == false)
+
+        if (!_isClicked)
         {
+            _isClicked = true;
+            if (gameManager.isStartButtonClicked.Value == false)
+            {
 #if UNITY_EDITOR
-            Debug.Log("스타튼 버튼클릭");
+                Debug.Log("스타튼 버튼클릭");
 #endif
             
-            gameManager.isStartButtonClicked.Value = true;
-        }
+                gameManager.isStartButtonClicked.Value = true;
+            }
      
-        if (_audioSource != null)
-        {
-            _audioSource.clip = buttonSound;
-            _audioSource.Play();
+            if (_audioSource != null)
+            {
+                _audioSource.clip = buttonSound;
+                _audioSource.Play();
+            }
+            if (!_isUIPlayed)
+            {
+                _isUIPlayed = true;
+            }
+
         }
-        if (!_isUIPlayed)
-        {
-            _isUIPlayed = true;
-        }
-        
+
     }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        
-        var targetSize = _originalSizeDelta * maximizedSize;
-        _buttonRectTransform.DOSizeDelta(targetSize, buttonChangeDuration);
+        if (!_isClicked)
+        {
+            var targetSize = _originalSizeDelta * maximizedSize;
+            _buttonRectTransform.DOSizeDelta(targetSize, buttonChangeDuration);
+        }
+      
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-     
-        _buttonRectTransform.DOSizeDelta(_originalSizeDelta,buttonChangeDuration);
+        if (!_isClicked)
+        {
+            _buttonRectTransform.DOSizeDelta(_originalSizeDelta, buttonChangeDuration);
+        }
     }
     
 }

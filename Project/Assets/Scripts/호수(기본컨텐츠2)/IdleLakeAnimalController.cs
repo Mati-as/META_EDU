@@ -164,7 +164,7 @@ public class IdleLakeAnimalController : MonoBehaviour
                             DOVirtual.Float(0.2f, 1, 3.5f,
                                 newSpeed => { _animator.speed = newSpeed; }).OnComplete(()=>
                             {
-                                DOVirtual.Float(1, 0.2f, 3f,
+                                DOVirtual.Float(1, 0.5f, 3f,
                                     newSpeed => { _animator.speed = newSpeed; })
                                     .OnComplete(() =>
                                     {
@@ -185,7 +185,7 @@ public class IdleLakeAnimalController : MonoBehaviour
                             .OnComplete(() =>
                             {
                                 _animator.SetBool(ON_CLICK_ANIM, false);
-                                transform.DORotate(finalRotation, 1f).SetEase(Ease.OutQuad);
+                                transform.DORotate(finalRotation, 2f).SetEase(Ease.OutQuad);
                             });
                     })
                 );

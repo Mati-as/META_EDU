@@ -110,7 +110,9 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_EDITOR
         GAME_SPEED = 1;
+#endif
         DOTween.Init(false,true,LogBehaviour.ErrorsOnly);
         CacheComponents();
         SetRandomInterval();
@@ -144,7 +146,9 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private void Update()
     {
+        #if UNITY_EDITOR
         Time.timeScale = GAME_SPEED;
+        #endif
         
         if(_isOnDeFaultLocation)
         {
