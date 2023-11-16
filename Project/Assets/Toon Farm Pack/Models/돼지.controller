@@ -43,9 +43,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 1.2886515
-  m_TransitionOffset: 0.5603188
-  m_ExitTime: 1
+  m_TransitionDuration: 1.2886512
+  m_TransitionOffset: 0.5051955
+  m_ExitTime: 0.94956833
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -59,7 +59,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: RIG_Piglet_01_GroundToIdle
-  m_Speed: 1
+  m_Speed: 1.27
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 667211309582537832}
@@ -176,8 +176,8 @@ AnimatorStateTransition:
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 1.2450342
-  m_TransitionOffset: 0.5676592
-  m_ExitTime: 1
+  m_TransitionOffset: 0.4908648
+  m_ExitTime: 0.92974174
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -236,7 +236,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: RIG_Piglet_01_IdleToGround
-  m_Speed: 1
+  m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 6390285546471273014}
@@ -270,25 +270,25 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: Run
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: Eat
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: Click
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -357,9 +357,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.7409923
+  m_TransitionDuration: 0.67
   m_TransitionOffset: 0
-  m_ExitTime: 0.7092556
+  m_ExitTime: 0.024043053
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -382,9 +382,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.84467983
+  m_TransitionDuration: 0.8446797
   m_TransitionOffset: 0
-  m_ExitTime: 0.7081706
+  m_ExitTime: 0.6576408
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -434,10 +434,10 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 1.3873701
-  m_TransitionOffset: 0.2641176
-  m_ExitTime: 0.93044376
-  m_HasExitTime: 0
+  m_TransitionDuration: 1.3873703
+  m_TransitionOffset: 0.22846927
+  m_ExitTime: 0.89362675
+  m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -525,7 +525,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Clicked_Anim
-  m_Speed: 0.9
+  m_Speed: 0.95
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -2165645499944175852}
@@ -565,7 +565,7 @@ AnimatorStateTransition:
   m_TransitionDuration: 1.3359567
   m_TransitionOffset: 0
   m_ExitTime: 0.59921306
-  m_HasExitTime: 0
+  m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1

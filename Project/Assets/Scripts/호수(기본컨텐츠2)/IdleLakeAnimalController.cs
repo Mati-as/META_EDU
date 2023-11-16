@@ -1,6 +1,9 @@
+using System.Numerics;
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Vector3 = UnityEngine.Vector3;
 #if UNITY_EDITOR
 #endif
 
@@ -109,7 +112,15 @@ public class IdleLakeAnimalController : MonoBehaviour
             _idleLakeAnimalSetter._drinkingDuration += addtionalDrinkingTime;
             _isClicked = true;
 
-            _animator.SetTrigger(ON_CLICK_ANIM);
+            if (gameObject.name != "개")
+            {
+                _animator.SetBool(ON_CLICK_ANIM,true);
+            }
+            else
+            {
+                _animator.SetTrigger(ON_CLICK_ANIM);
+            }
+           
 
             SoundManager.FadeInAndOutSound(_audioSource, fadeWaitTime: 3.5f);
 
@@ -123,10 +134,11 @@ public class IdleLakeAnimalController : MonoBehaviour
             });
 
             if (gameObject.name == "오리")
+            {
                 transform.DORotate(duck_rotationAngles, duration, RotateMode.FastBeyond360)
                     .SetEase(easeType)
                     .SetLoops(loops);
-
+            }
             
             else if (gameObject.name == "개")
             {
@@ -139,10 +151,57 @@ public class IdleLakeAnimalController : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log($"{gameObject.name} Dog DoPath Working");
 #endif
-                transform
-                    .DOPath(dog_ClickedAnimationPathVector, 3f,PathType.CatmullRom)
-                    .SetLookAt(0.01f)
-                    .SetEase(easeType);
+                
+                Sequence s = DOTween.Sequence();
+                
+                Vector3 directionToFirstPoint = dog_ClickedAnimationPath[0].position - transform.position;
+                UnityEngine.Quaternion lookRotation =  UnityEngine.Quaternion.LookRotation(directionToFirstPoint);
+
+                s.Append(
+                    transform.DORotateQuaternion(lookRotation, 1.5f)
+                        .OnStart(() =>
+                        {
+                            DOVirtual.Float(0.2f, 1, 3.5f,
+                                newSpeed => { _animator.speed = newSpeed; }).OnComplete(()=>
+                            {
+                                DOVirtual.Float(1, 0.2f, 3f,
+                                    newSpeed => { _animator.speed = newSpeed; })
+                                    .OnComplete(() =>
+                                    {
+                                        _animator.speed = 1;
+                                    });
+                            });
+                        })
+                        .OnComplete(() =>
+                    {
+                        
+                        Vector3 finalRotation =
+                            new Vector3(0, transform.eulerAngles.y - 85,
+                                0);
+
+                        transform
+                            .DOPath(dog_ClickedAnimationPathVector, 5f, PathType.CatmullRom)
+                            .SetLookAt(0.01f)
+                            .OnComplete(() =>
+                            {
+                                _animator.SetBool(ON_CLICK_ANIM, false);
+                                transform.DORotate(finalRotation, 1f).SetEase(Ease.OutQuad);
+                            });
+                    })
+                );
+                
+#if UNITY_EDITOR
+                Debug.Log($"{dog_ClickedAnimationPath[0].position} Dog DoPath Working");
+#endif
+           
+         
+                
+                
+
+
+
+
+
 
             }
              

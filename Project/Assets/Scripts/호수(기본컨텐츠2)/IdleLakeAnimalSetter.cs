@@ -102,8 +102,15 @@ public class IdleLakeAnimalSetter : MonoBehaviour
     public static event Action onArrivalToLake;
     public static event Action onArrivalToDefaultPosition;
 
+    #if UNITY_EDITOR
+    [Range(0,20)]
+     public float GAME_SPEED;
+    #endif
+    
+
     private void Awake()
     {
+        GAME_SPEED = 1;
         DOTween.Init(false,true,LogBehaviour.ErrorsOnly);
         CacheComponents();
         SetRandomInterval();
@@ -137,6 +144,8 @@ public class IdleLakeAnimalSetter : MonoBehaviour
 
     private void Update()
     {
+        Time.timeScale = GAME_SPEED;
+        
         if(_isOnDeFaultLocation)
         {
             _timer.Value += Time.deltaTime;
@@ -254,37 +263,32 @@ public class IdleLakeAnimalSetter : MonoBehaviour
     }
 
     private int _ranNumForLocation;
+
     private IEnumerator SetRunCoroutine()
     {
-        if (_animalDrinkingCoroutine != null)
-        {
-            StopCoroutine(_animalDrinkingCoroutine);
-        }
-        
+        if (_animalDrinkingCoroutine != null) StopCoroutine(_animalDrinkingCoroutine);
+
         //_timer control
 #if UNITY_EDITOR
-        Debug.Log($"호수로 가는 코루틴 실행중..");
+        Debug.Log("호수로 가는 코루틴 실행중..");
 #endif
         _isOnDeFaultLocation = false;
-        
+
         SetRandomAnimal();
         SetAnimation(RUN_ANIM);
         _ranNumForLocation = Random.Range(0, 4);
-        
-        var directionToLook = drinkableLocation[_ranNumForLocation].position 
+
+        var directionToLook = drinkableLocation[_ranNumForLocation].position
                               - animals[_selectedAnimalNum].transform.position;
         var lookRotation = Quaternion.LookRotation(directionToLook);
-        animals[_selectedAnimalNum].transform.DORotate(lookRotation.eulerAngles,2)
+        animals[_selectedAnimalNum].transform.DORotate(lookRotation.eulerAngles, 2)
             .SetEase(Ease.InOutCirc)
-            .OnComplete(() =>
-            {
-             
-            });
+            .OnComplete(() => { });
         animals[_selectedAnimalNum].transform
             .DOMove(drinkableLocation[_ranNumForLocation].position, moveInDuration)
             .OnStart(() =>
             {
-                DOVirtual.Float(2f, 0.45f, 6.3f,value=> animalAnimators[_selectedAnimalNum].speed = value);
+                DOVirtual.Float(2f, 0.45f, 6.3f, value => animalAnimators[_selectedAnimalNum].speed = value);
             })
             .OnComplete(OnArrivalAtLake);
         yield return null;
