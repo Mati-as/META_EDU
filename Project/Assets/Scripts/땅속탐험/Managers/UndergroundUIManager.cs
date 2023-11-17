@@ -9,6 +9,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class UndergroundUIManager : MonoBehaviour
 {
@@ -74,6 +75,23 @@ public class UndergroundUIManager : MonoBehaviour
 
     public AudioClip[] etcAudioClips = new AudioClip[5];
 
+    
+    //Pop창 안의 실제 사진 표출 부분의 Image Component..
+    [SerializeField]
+    private Image _image; 
+    
+    public void ChangeImageSource(string resourcePath)
+    {
+        Sprite newSprite = Resources.Load<Sprite>(resourcePath);
+        if (_image != null && newSprite != null)
+        {
+            _image.sprite = newSprite; // 이미지 소스 변경
+        }
+        else
+        {
+            Debug.LogError("Image or Sprite not found!");
+        }
+    }
     private enum EtcAudioClips
     {
         WhoIsNext, //다음동물친구는 누굴까
@@ -249,6 +267,8 @@ public class UndergroundUIManager : MonoBehaviour
     /// </summary>
     private void OnPopUpUIClicked()
     {
+      
+        
         popUpUIRect.DOScale(0, 1.5f)
             .SetEase(Ease.InOutExpo)
             .SetDelay(0f);
@@ -274,6 +294,9 @@ public class UndergroundUIManager : MonoBehaviour
     
     private void OnAnimalFind()
     {
+        //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
+        ChangeImageSource("땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
+        
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
 
@@ -288,6 +311,9 @@ public class UndergroundUIManager : MonoBehaviour
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
             gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+
+
+            
         }
           
         

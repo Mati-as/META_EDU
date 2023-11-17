@@ -63,6 +63,8 @@ public class GroundGameManager : MonoBehaviour
 
     public static bool isGameFinishedbool = false;
     public static bool isGameStartedbool;
+
+   
     //10/10 초기화 관련 null 문제 해결
 
     public ReactiveProperty<IState> currentStateRP { get; private set; }

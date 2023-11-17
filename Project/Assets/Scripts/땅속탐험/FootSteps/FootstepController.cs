@@ -155,7 +155,7 @@ public class FootstepController : MonoBehaviour
                 _isUIPlayed = true;
             }
         
-            Debug.Log("The footstep's been Clicked");
+            
         
      
     }
