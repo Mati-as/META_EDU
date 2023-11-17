@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Unity.VisualScripting;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -360,6 +361,9 @@ public class GameManager : MonoBehaviour
         
     }
 
+    #if UNITY_EDITOR
+    private bool isDebugPlayed;
+    #endif
     /// <summary>
     ///     시퀀스 구조로, 각 조건마다 조건에 해당하는 애니메이션을 실행할 수 있도록 구성.
     ///     Status 추가 및 대규모 로직 구성 시 FSM으로 재설계 권장
@@ -403,19 +407,24 @@ public class GameManager : MonoBehaviour
                     //동물 애니메이션, 로컬스케일 초기화.
                     selectableAnimalsCount = UnityEngine.Random.Range(3, 5);
                     SelectRandomAnimals(selectableAnimalsCount);
+                    
+                    
 #if UNITY_EDITOR
                     Debug.Log("준비 완료");
 #endif
+                    
                     onRoundStartedEvent?.Invoke();
+                    
+#if UNITY_EDITOR
+                    Debug.Log("라운드 시작!");
+#endif
                 }
 
                 //3. 라운드 시작 시 ------------------
                 if (isRoundStarted)
                 {
                     //PlayInPlayAnimation();
-#if UNITY_EDITOR
-                    Debug.Log("라운드 시작!");
-#endif
+
                     InitializeAndSetTimerOnStarted();
                     //동물 쉐이더 글로우가 켜질 때 선택가능.
                     if (AnimalShaderController.isGlowOn)
@@ -432,9 +441,7 @@ public class GameManager : MonoBehaviour
             if (isCorrected)
             {
                 isRoundStarted = false;
-#if UNITY_EDITOR
-                Debug.Log("정답!");
-#endif
+
                 InitializeAndSetTimerOnCorrect();
             }
 
@@ -442,9 +449,7 @@ public class GameManager : MonoBehaviour
             if (isRoundFinished)
             {
                 IntializeAndInvokeWhenRoundFinished();
-#if UNITY_EDITOR
-                Debug.Log("라운드 종료!");
-#endif
+
                 MoveOutOfScreen();
             }
 
@@ -503,8 +508,18 @@ public class GameManager : MonoBehaviour
     {
         if (isCorrected)
         {
+            
             onRoundFinishedEvent?.Invoke();
             isCorrected = false;
+            
+#if UNITY_EDITOR
+            if (!isDebugPlayed)
+            {
+                isDebugPlayed = true;
+                Debug.Log("라운드 종료!");
+            }
+            
+#endif
         }
 
         _moveOutElapsed += Time.deltaTime;
@@ -627,12 +642,13 @@ public class GameManager : MonoBehaviour
                 //정답인 경우
                 if (_clickedAnimal == answer)
                 {
-#if UNITY_EDITOR
-                    Debug.Log("Correct!");
-#endif
                     //1회실행 보장용
                     if (!isCorrected)
                     {
+#if UNITY_EDITOR
+                        Debug.Log("정답!");
+#endif
+                        
                         SetAnimalData(_clickedAnimal);
                         onCorrectedEvent?.Invoke();
                         isCorrected = true;

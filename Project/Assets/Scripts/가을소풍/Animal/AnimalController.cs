@@ -160,7 +160,8 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
-        _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        //쉐도우 캐스팅 설정 파트
+        //_skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
    
     private void OnRoundStarted()

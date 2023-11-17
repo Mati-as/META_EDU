@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Spine;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 
 public class AnimalShaderController : MonoBehaviour
@@ -27,10 +29,13 @@ public class AnimalShaderController : MonoBehaviour
     private float _elapsedForInPlayGlowOn;
     
     //▼ 쉐이더 컨트롤 및 머테리얼 할당.
-    private SkinnedMeshRenderer _meshRenderer;
+    private SkinnedMeshRenderer _glowMeshRenderer;
+    private SkinnedMeshRenderer _bodyMeshRenderer;
     private readonly int EMISSION_COLOR = Shader.PropertyToID("_emissionColor");
     private readonly int FRESNEL_COLOR = Shader.PropertyToID("_FresnelPower");
-    private Material _mat;
+    private readonly int BODY_COLOR = Shader.PropertyToID("_Color");
+    private Material _glowMat;
+    private Material _bodyMat;
     
     public static bool isGlowOn { get; private set; }
     /*
@@ -62,8 +67,10 @@ public class AnimalShaderController : MonoBehaviour
         SetCoroutine();
         SubscribeGameManagerEvents();
         GetAndInitializeMat();
-        _meshRenderer.enabled = false;
     }
+
+    private float _elapsedForBlink;
+    public float blinkInterval = 5; 
     
     void Update()
     {
@@ -74,12 +81,37 @@ public class AnimalShaderController : MonoBehaviour
             if (_elapsedForInPlayGlowOn > _shaderAndCommon.waitTimeForTurningOnGlow)
             {
                 fresnelElapsedTime += Time.deltaTime;
-                _meshRenderer.enabled = true;
+                _glowMeshRenderer.enabled = true;
                 isGlowOn = true;
                 BrightenOutlineWithLerp();
                 SetIntensity(_shaderAndCommon.colorIntensityRange);
                 ChangeFresnelOfAnimalOutlineColor();
             }
+
+            _elapsedForBlink += Time.deltaTime;
+
+            if (_elapsedForBlink > blinkInterval)
+            {
+                DOVirtual.Float(0, 1, Random.Range(1,3), val => val++)
+                    .OnComplete(() =>
+                    {
+#if UNITY_EDITOR
+                        Debug.Log($"{gameObject.name}'s Blinking its Body");
+#endif
+
+                        BlinkBodyColor();
+                        _elapsedForBlink = 0; 
+                    });
+                
+                _elapsedForBlink = 0; 
+            }
+
+        
+
+        }
+        else
+        {
+            _blinkTween.Kill();
         }
         
 
@@ -87,6 +119,8 @@ public class AnimalShaderController : MonoBehaviour
         {
             TurnOffOutlineMesh();
         }
+        
+        
     }
     
     void OnDestroy()
@@ -95,29 +129,97 @@ public class AnimalShaderController : MonoBehaviour
     }
 
     
-    
-    
     // 1. 상태 기준 분류 --------------------------------------------
     
     private void OnGameStart()
     {
+
+
+
     }
 
     private void OnRoundReady()
     {
         _elapsedForInPlayGlowOn = 0f;
         StopCoroutineWithNullCheck(_coroutines);
+        
+
+        
+        
+    }
+
+    private Tween _blinkTween;
+    private void DarkenBodyColor(float duration  = 1.25f)
+    {
+#if UNITY_EDITOR
+        Debug.Log($"darkend Color current bodyMat is: {_bodyMat}");
+#endif
+        
+          DOVirtual
+            .Color(_animalData.defaultColor, _animalData.darkenedColor, duration, color =>
+            {
+#if UNITY_EDITOR
+                Debug.Log($"{this._bodyMat}'s Color is {color}");
+#endif
+                
+                _bodyMat.SetColor(BODY_COLOR, color);
+                _bodyMeshRenderer.material = _bodyMat;
+            });
+    }
+
+    private void BlinkBodyColor(float duration =0.3f ,float interval=0.3f)
+    {
+
+       _blinkTween = DOVirtual
+            .Color(_animalData.darkenedColor, _animalData.defaultColor, duration, color =>
+            {
+                _bodyMat.SetColor(BODY_COLOR, color);
+                _bodyMeshRenderer.material = _bodyMat;
+            })
+            .OnComplete(() =>
+            {
+                _blinkTween = DOVirtual
+                    .Color(_animalData.defaultColor, _animalData.darkenedColor, duration, color =>
+                    {
+                        _bodyMat.SetColor(BODY_COLOR, color);
+                        _bodyMeshRenderer.material = _bodyMat;
+                    })
+                    .SetDelay(interval);
+            });
+        
+    }
+    
+    
+
+    private void BrightenBodyColor(float duration =1.4f)
+    {
+#if UNITY_EDITOR
+        Debug.Log("쉐이더 코루틴 동작 중...");
+#endif
+
+        _coroutines[0] = StartCoroutine(TurnOffOutLineWithLerpCoroutine());
+        
+        DOVirtual
+            .Color(_animalData.darkenedColor, _animalData.defaultColor, duration, color =>
+            {
+                _bodyMat.SetColor(BODY_COLOR, color);
+                _bodyMeshRenderer.material = _bodyMat;
+            });
+
     }
    
     private void OnRoundStarted()
     {
-      
+        DarkenBodyColor();
     }
+
+    private Color _currentColor;
 
     private void OnCorrect()
     {
-        Debug.Log("쉐이더 코루틴 동작 중...");
-        _coroutines[0] = StartCoroutine(TurnOffOutLineWithLerpCoroutine());
+        BrightenBodyColor();
+       
+
     }
     
     private void OnRoundFinished()
@@ -153,12 +255,46 @@ public class AnimalShaderController : MonoBehaviour
             }
         }
     }
+    
+    
     private void GetAndInitializeMat()
     {
-        _meshRenderer = GetComponent<SkinnedMeshRenderer>();
-        _mat = _meshRenderer.material; // material instance를 가져옵니다.
-        _mat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
-        _mat.SetColor(EMISSION_COLOR, _animalData.outlineColor);
+//         _bodyMeshRenderer = Util.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
+//         _bodyMat = _bodyMeshRenderer.sharedMaterial;
+//         _bodyMat.EnableKeyword("_Color");
+//         _bodyMat.SetColor(COLOR, _animalData.defaultColor);
+// #if UNITY_EDITOR
+//         Debug.Log($" bodyMat name is.......{_bodyMat}");
+// #endif
+//
+//        
+      
+        _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+        _glowMeshRenderer.enabled = false;
+            
+        _glowMat = _glowMeshRenderer.material; // material instance를 가져옵니다.
+        _glowMat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
+        _glowMat.SetColor(EMISSION_COLOR, _animalData.outlineColor);
+
+        
+        
+        // 리소스 폴더에서 머티리얼 불러오기
+        _bodyMat = Resources.Load<Material>("가을소풍/" + _animalData.englishName);
+      
+
+        // SkinnedMeshRenderer 가져오기
+        _bodyMeshRenderer = Util.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
+        _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+        
+        if (_bodyMeshRenderer != null && _bodyMat != null)
+        {
+            _bodyMeshRenderer.material = _bodyMat; // 새로운 인스턴스 생성
+            _bodyMeshRenderer.material.EnableKeyword("_Color");
+            _bodyMeshRenderer.material.SetColor(BODY_COLOR, _animalData.defaultColor);
+        }
+
+
+        
     }
     private void ChangeFresnelOfAnimalOutlineColor()
     {
@@ -170,14 +306,14 @@ public class AnimalShaderController : MonoBehaviour
     
     private void SetFresnelPower(float fresnelPower)
     {
-        _mat.SetFloat(FRESNEL_COLOR, fresnelPower);
+        _glowMat.SetFloat(FRESNEL_COLOR, fresnelPower);
     }
     
     private void SetIntensity(float range)
     {
         float t = (Mathf.Sin(fresnelElapsedTime * _shaderAndCommon.fresnelSpeed) + 1) * 0.5f; // t는 0과 1 사이의 값
         Color currrentColor = Color.Lerp(_animalData.outlineColor/range,_animalData.outlineColor * range , t);
-        _mat.SetColor(EMISSION_COLOR, currrentColor);
+        _glowMat.SetColor(EMISSION_COLOR, currrentColor);
     }
     
     private void BrightenOutlineWithLerp()
@@ -185,7 +321,7 @@ public class AnimalShaderController : MonoBehaviour
         _colorLerp += Time.deltaTime * _shaderAndCommon.outlineTurningOnSpeed;
         Color color =Color.Lerp(Color.black, _animalData.outlineColor, _colorLerp);
         
-        _mat.SetColor(EMISSION_COLOR,color);
+        _glowMat.SetColor(EMISSION_COLOR,color);
     }
 
     Color randomColorWhenOnCorrect;
@@ -255,7 +391,7 @@ public class AnimalShaderController : MonoBehaviour
       
         Color color =Color.Lerp(_animalData.outlineColor, targerColor , _colorLerp);
         
-        _mat.SetColor(EMISSION_COLOR,color);
+        _glowMat.SetColor(EMISSION_COLOR,color);
     }
     
     private void SubscribeGameManagerEvents()
@@ -291,7 +427,7 @@ public class AnimalShaderController : MonoBehaviour
 
     private void TurnOffOutlineMesh()
     {
-        _meshRenderer.enabled = false;
+        _glowMeshRenderer.enabled = false;
         isGlowOn = false;
     }
 
