@@ -4074,7 +4074,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.65
+  m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -4174,10 +4174,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultAmbient: 1
   minAmbient: 1
-  defaultIntensity: 1.6
+  defaultIntensity: 2
   decreaseRate: 0.35
   increaseRate: 1
-  minIntensity: 1.5
+  minIntensity: 2
   lightTurningOffTime: 12
   spotlight: {fileID: 719557198}
   spotlightDownLeft: {fileID: 1187601860}
@@ -36048,6 +36048,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8866851145789937939, guid: 644cff11a11eaf643bb9c0f0e8e64866,
+        type: 3}
+      propertyPath: defaultSkyColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8866851145789937939, guid: 644cff11a11eaf643bb9c0f0e8e64866,
+        type: 3}
+      propertyPath: defaultSkyColor.g
+      value: 0.81336874
+      objectReference: {fileID: 0}
+    - target: {fileID: 8866851145789937939, guid: 644cff11a11eaf643bb9c0f0e8e64866,
+        type: 3}
+      propertyPath: defaultSkyColor.r
+      value: 0.5424528
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 644cff11a11eaf643bb9c0f0e8e64866, type: 3}
