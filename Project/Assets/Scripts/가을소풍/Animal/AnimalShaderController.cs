@@ -70,7 +70,7 @@ public class AnimalShaderController : MonoBehaviour
     }
 
     private float _elapsedForBlink;
-    public float blinkInterval = 5; 
+    public float blinkInterval = 10; 
     
     void Update()
     {
@@ -92,7 +92,7 @@ public class AnimalShaderController : MonoBehaviour
 
             if (_elapsedForBlink > blinkInterval)
             {
-                DOVirtual.Float(0, 1, Random.Range(1,3), val => val++)
+                DOVirtual.Float(0, 1, Random.Range(1,2.5f), val => val++)
                     .OnComplete(() =>
                     {
 #if UNITY_EDITOR
@@ -100,6 +100,7 @@ public class AnimalShaderController : MonoBehaviour
 #endif
 
                         BlinkBodyColor();
+                        blinkInterval = Random.Range(8, 12);
                         _elapsedForBlink = 0; 
                     });
                 

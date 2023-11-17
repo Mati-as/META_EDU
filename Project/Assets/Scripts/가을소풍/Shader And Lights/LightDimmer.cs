@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class LightDimmer : MonoBehaviour
 {
@@ -70,8 +71,9 @@ public class LightDimmer : MonoBehaviour
         dirLight.intensity = defaultIntensity;
     }
 
- 
 
+
+    private float _loopDuration =30;
     private void Start()
     {
         SubscribeGameManagerEvents();
@@ -83,8 +85,15 @@ public class LightDimmer : MonoBehaviour
         
         
         InitializeAndOffLight();
+        DOTween.To(() => transform.eulerAngles, x => 
+                    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, x.z),
+                new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 360f), 
+                _loopDuration)
+            .SetEase(Ease.Linear) // 일정한 속도로 회전
+            .SetLoops(-1, LoopType.Incremental);
     }
   
+
 
     
     
