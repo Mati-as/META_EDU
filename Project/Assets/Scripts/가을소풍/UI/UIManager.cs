@@ -157,8 +157,8 @@ public class UIManager : MonoBehaviour
         {
             
             _isCorrectMessagePlaying = true; //중복재생 방지
-            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}" +
-                               $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
+            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}";
+                               //$"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
             
             _coroutines[0] = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
@@ -177,7 +177,8 @@ public class UIManager : MonoBehaviour
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[GameManager.answer]}의 그림자를 찾아보세요";
+            roundInstruction = $"{animalNameToKorean[GameManager.answer]}" 
+                               + $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾아보세요";
             _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }

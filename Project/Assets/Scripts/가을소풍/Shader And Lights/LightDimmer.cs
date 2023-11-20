@@ -85,12 +85,12 @@ public class LightDimmer : MonoBehaviour
         
         
         InitializeAndOffLight();
-        DOTween.To(() => transform.eulerAngles, x => 
-                    transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, x.z),
-                new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 360f), 
-                _loopDuration)
-            .SetEase(Ease.Linear) // 일정한 속도로 회전
-            .SetLoops(-1, LoopType.Incremental);
+        // DOTween.To(() => transform.eulerAngles, x => 
+        //             transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, x.z),
+        //         new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 360f), 
+        //         _loopDuration)
+        //     .SetEase(Ease.Linear) // 일정한 속도로 회전
+        //     .SetLoops(-1, LoopType.Incremental);
     }
   
 
@@ -262,13 +262,15 @@ public class LightDimmer : MonoBehaviour
 
     private void OnGameStart()
     {
-        _decreaseAmbientAndLightIntensityCoroutine =   StartCoroutine(DecreaseAmbientAndLightIntensity());
+        if (_decreaseAmbientAndLightIntensityCoroutine != null)
+            _decreaseAmbientAndLightIntensityCoroutine = StartCoroutine(DecreaseAmbientAndLightIntensity());
     }
     
 
     private void OnGameFinished()
     {
-        _increaseAmbientAndLightIntensityCoroutine = StartCoroutine(IncreaseAmbientAndLightIntensity());
+        
+        //_increaseAmbientAndLightIntensityCoroutine = StartCoroutine(IncreaseAmbientAndLightIntensity());
     }
 
     

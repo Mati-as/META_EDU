@@ -31,7 +31,7 @@ public class StoryUIController : MonoBehaviour
     
     [Header("Message Settings")]  [Space(10f)]
     private readonly string _firstUIMessage = "가을을 맞아 동물 친구들이 소풍을 왔어요! 함께 친구들을 만나 보러 가볼까요?"; 
-    private readonly string  _secondUIMessage = "이제 밤이되어 모든 동물 친구들이 숲속으로 사라졌어요! 친구들을 찾아볼까요?"; 
+    private readonly string  _secondUIMessage = "모든 동물 친구들이 숲속으로 숨었어요!\n친구들을 찾아볼까요?"; 
     private readonly string  _lastUIMessage = "우와! 동물친구들을 모두 찾았어요!"; 
     
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();

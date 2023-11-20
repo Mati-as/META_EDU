@@ -561,7 +561,7 @@ public class AnimalController : MonoBehaviour
             
             if (CheckIsAnswer())
             {
-                _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                //_skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
                 
                 if (isTouchedDown == false)
                 {
