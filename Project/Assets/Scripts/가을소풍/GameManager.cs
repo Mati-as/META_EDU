@@ -309,7 +309,7 @@ public class GameManager : MonoBehaviour
         SetResolution(1920, 1080, TARGET_FRAME);
         totalAnimalCount = allAnimals.Count;
         onAllAnimalsInitialized += SetAndInitializedAnimals;
-        onCorrectedEvent += PlayAnswerParticle;
+        //onCorrectedEvent += PlayAnswerParticle;
         SetTwoDimensionaTransformlArray();
             
             
@@ -642,6 +642,7 @@ public class GameManager : MonoBehaviour
                     //1회실행 보장용
                     if (!isCorrected)
                     {
+                        PlayAnswerParticle(hit);
 #if UNITY_EDITOR
                         Debug.Log("정답!");
 #endif
@@ -678,11 +679,11 @@ public class GameManager : MonoBehaviour
         clickParticleSystem.Play(); // 파티클 시스템을 재생합니다.
     }
 
-    private void PlayAnswerParticle()
+    private void PlayAnswerParticle(RaycastHit hit)
     {
         Debug.Log("정답 파티클 재생");
         answerParticleSystem.Stop(); // 현재 재생 중인 파티클이 있다면 중지합니다.
-        answerParticleSystem.transform.position = hitSecond.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
+        answerParticleSystem.transform.position = hit.point; // 파티클 시스템을 클릭한 위치로 이동시킵니다.
         answerParticleSystem.Play(); // 파티클 시스템
     }
 
