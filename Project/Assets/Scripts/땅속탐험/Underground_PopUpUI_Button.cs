@@ -41,6 +41,8 @@ public class Underground_PopUpUI_Button : MonoBehaviour
                 .OnComplete(() =>
                 {
                     isClickable = true;
+                    _tween.Kill();
+                    gameObject.SetActive(false);
                 });
             
             if (uiAudioSource != null)
@@ -55,9 +57,62 @@ public class Underground_PopUpUI_Button : MonoBehaviour
                 gameManager.isGameFinishedRP.Value = true;
             }
         }
-      
-
         
+    }
+
+    private Tween _tween;
+
+    private void Start()
+    {
+        
+    }
+    private void OnEnable()
+    {
+        
+    }
+
+    private void OnDisable()
+    {
+
+    }
+
+    private bool _isClicked =false;
+    public float scaleUpSize;
+    public float sizeChangeDuration;
+    public float defaultSize;
+    [SerializeField]
+    
+    [Header("Audio")] 
+    private AudioSource _audioSource;
+    
+    private SpriteRenderer _spriteRenderer;
+    [Space(20f)] [Header("Tween Parameters")]
+    public float maximizedSize;
+    private Transform _buttonRectTransform;
+    public void UpScale()
+    {
+        _tween.Kill();
+            #if UNITY_EDITOR
+            Debug.Log($"{this.gameObject.name} : DoScale is Working...");
+            #endif
+            transform.localScale = defaultSize * Vector3.one;
+            _tween = transform.DOScale( Vector3.one * scaleUpSize, sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => DownScale());
+        
+  
+    }
+    
+
+    private void DownScale()
+    {
+        _tween.Kill();
+            transform.localScale = Vector3.one * scaleUpSize ;
+            _tween = transform.DOScale(Vector3.one * defaultSize, sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => UpScale());
+        
+ 
     }
 
 }

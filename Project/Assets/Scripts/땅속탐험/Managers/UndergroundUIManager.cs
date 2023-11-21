@@ -8,6 +8,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -47,6 +48,7 @@ public class UndergroundUIManager : MonoBehaviour
     public RectTransform tutorialUIRectTransform;
 
     public RectTransform tutorialAwayRectransfrom;
+    
     public RectTransform popUpUIRect;
 
     [Space(10f)] [Header("Tutorial Message Settings")]
@@ -240,6 +242,11 @@ public class UndergroundUIManager : MonoBehaviour
     public TMP_Text popUpUIRectTmp;
 
     public RectTransform popUpButton;
+    [SerializeField]
+    private Underground_PopUpUI_Button _underground_PopUpUI_Button;
+
+    [SerializeField] private GameObject popUpUIGameObj;
+    private Tween _popUpUIScaleTween;
 
     private void EveryLastFootstepClicked()
     {
@@ -250,15 +257,28 @@ public class UndergroundUIManager : MonoBehaviour
 #endif
         //FootstepMager에서 클릭시 GetComponent하여 Tmp수정
        //popUpUIRectTmp.text = footstepController.animalByLastFootstep.name;
-
-       popUpUIRect.DOScale(1, 1.5f)
+       popUpUIGameObj.SetActive(true);
+       _popUpUIScaleTween = popUpUIRect.DOScale(1, 1.5f)
            .SetEase(Ease.InOutExpo)
            .SetDelay(1.5f)
            .OnComplete(() =>
            {
-               popUpButton.DOScale(defaultSize, 1f)
+               _popUpUIScaleTween = popUpButton.DOScale(defaultSize, 1f)
                    .SetEase(Ease.InOutExpo)
-                   .SetDelay(3f);
+                   .SetDelay(3f)
+                   .OnComplete(() =>
+                   {
+                      
+                       //콜백 딜레이용 DoVirtual입니다. Duration제외 의미없음
+                       DOVirtual.Float(0, 1, 2, value => value++).OnComplete(() =>
+                       {
+                           _popUpUIScaleTween.Kill();
+                           _underground_PopUpUI_Button.UpScale();
+                       });
+
+                   });
+
+
            });
     }
 

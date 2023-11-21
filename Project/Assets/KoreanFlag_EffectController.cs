@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 public class KoreanFlag_EffectController : MonoBehaviour
 {
     private ParticleSystem[] particleSystems;
@@ -17,20 +18,16 @@ public class KoreanFlag_EffectController : MonoBehaviour
     private AudioSource _subAudioSourceA;
     private AudioSource _subAudioSourceB;
     private AudioSource _subAudioSourceC;
-    public AudioClip _effectClip; 
-    
-    
+    public AudioClip _effectClip;
+
+
     private readonly Stack<ParticleSystem> particlePool = new();
 
     private void Awake()
     {
-
         _adSources = GetComponents<AudioSource>();
-        foreach (var adSource in _adSources)
-        {
-            adSource.clip = _effectClip;
-        }
-        
+        foreach (var adSource in _adSources) adSource.clip = _effectClip;
+
         wait_ = new WaitForSeconds(_returnWaitForSeconds);
         _camera = Camera.main;
 
@@ -59,10 +56,10 @@ public class KoreanFlag_EffectController : MonoBehaviour
 
     private readonly string LAYER_NAME = "UI";
     private RaycastHit _hit;
-    
+
     // fadeInDuration은 사실상 playduration과 다름없습니다.
     public float fadeInDuration;
-    public float fadeOutDuration; 
+    public float fadeOutDuration;
 
     private void OnMouseClick(InputAction.CallbackContext context)
     {
@@ -70,20 +67,7 @@ public class KoreanFlag_EffectController : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
-        {
-            
-            for(int i = 0;i < _adSources.Length;i++)
-            {
-                if (!_adSources[i].isPlaying)
-                {
-                    FadeInSound(targetVol,fadeInDuration,_adSources[i]);
-                    break;
-                }
-            }
-        
-         
             PlayParticle(hit.point);
-        }
     }
 
     public float targetVol;
@@ -92,20 +76,28 @@ public class KoreanFlag_EffectController : MonoBehaviour
     public int burstAmount;
     public int burstCount;
     private int _currentCountForBurst;
+
     private void PlayParticle(Vector3 position)
     {
         if (burstCount < _currentCountForBurst)
         {
             _currentCountForBurst = 0;
-            
+
             for (var i = 0; i < burstAmount; i++)
             {
                 var ps = particlePool.Pop();
                 ps.transform.position = position;
                 ps.gameObject.SetActive(true);
                 ps.Play();
-              
+
                 StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.duration));
+
+                for (var j = 0; j < _adSources.Length; j++)
+                    if (!_adSources[i].isPlaying)
+                    {
+                        FadeInSound(targetVol, fadeInDuration, _adSources[i]);
+                        break;
+                    }
             }
         }
         else if (particlePool.Count >= emitAmount)
@@ -165,31 +157,24 @@ public class KoreanFlag_EffectController : MonoBehaviour
             particlePool.Push(newInstance);
         }
     }
-    
-    public void FadeOutSound(float target,float duration,AudioSource audioSource)
+
+    public void FadeOutSound(float target, float duration, AudioSource audioSource)
     {
         audioSource.DOFade(0f, duration).SetDelay(fadeInDuration).OnComplete(() =>
         {
-            
 #if UNITY_EDITOR
             Debug.Log("audioQuit");
-#endif 
-            audioSource.Pause();
+#endif
+            audioSource.Stop();
         });
     }
 
-    public void FadeInSound(float targetVolume, float duration,AudioSource audioSource)
+    public void FadeInSound(float targetVolume, float duration, AudioSource audioSource)
     {
-
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         Debug.Log("audioPlay");
-        #endif 
+#endif
         audioSource.Play();
-        audioSource.DOFade(targetVolume, duration).OnComplete(() =>
-        {
-            FadeOutSound(0.05f, 0.5f,audioSource);
-        });
-        
-        
+        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(0.05f, 0.5f, audioSource); });
     }
 }

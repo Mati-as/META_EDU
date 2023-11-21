@@ -157,7 +157,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
                 .SetEase(Ease.InOutBounce);
 
             //AttachedUI control section;
-            _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
+            _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0.45f));
 
             UIGameObj.transform.DOMove(_textBoxInitialPosition, durations[(int)tweenParam.Move]);
             UIGameObj.transform.DOScale(_maximizedSizeVec, durations[(int)tweenParam.Scale])

@@ -72,7 +72,7 @@ public class GroundGameManager : MonoBehaviour
 
     private void Awake()
     {
-        SetResolution(2560, 1440);
+        SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         //---------------------------------------------
         TOTAL_ANIMAL_COUNT = 12;
