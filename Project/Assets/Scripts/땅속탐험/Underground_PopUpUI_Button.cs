@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using DG.Tweening;
+using TreeEditor;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 
@@ -64,6 +65,7 @@ public class Underground_PopUpUI_Button : MonoBehaviour
 
     private void Start()
     {
+        _defaultSize = transform.localScale.x;
         
     }
     private void OnEnable()
@@ -79,7 +81,7 @@ public class Underground_PopUpUI_Button : MonoBehaviour
     private bool _isClicked =false;
     public float scaleUpSize;
     public float sizeChangeDuration;
-    public float defaultSize;
+    public float _defaultSize;
     [SerializeField]
     
     [Header("Audio")] 
@@ -89,14 +91,14 @@ public class Underground_PopUpUI_Button : MonoBehaviour
     [Space(20f)] [Header("Tween Parameters")]
     public float maximizedSize;
     private Transform _buttonRectTransform;
-    public void UpScale()
+    private void UpScale()
     {
         _tween.Kill();
             #if UNITY_EDITOR
             Debug.Log($"{this.gameObject.name} : DoScale is Working...");
             #endif
-            transform.localScale = defaultSize * Vector3.one;
-            _tween = transform.DOScale( Vector3.one * scaleUpSize, sizeChangeDuration)
+            transform.localScale = _defaultSize * Vector3.one;
+            _tween = transform.DOScale( Vector3.one * (_defaultSize * scaleUpSize), sizeChangeDuration)
                 .SetEase(Ease.OutBounce)
                 .OnComplete(() => DownScale());
         
@@ -104,11 +106,11 @@ public class Underground_PopUpUI_Button : MonoBehaviour
     }
     
 
-    private void DownScale()
+    public void DownScale()
     {
         _tween.Kill();
-            transform.localScale = Vector3.one * scaleUpSize ;
-            _tween = transform.DOScale(Vector3.one * defaultSize, sizeChangeDuration)
+            transform.localScale = Vector3.one *_defaultSize* scaleUpSize ;
+            _tween = transform.DOScale(Vector3.one * _defaultSize, sizeChangeDuration)
                 .SetEase(Ease.OutBounce)
                 .OnComplete(() => UpScale());
         

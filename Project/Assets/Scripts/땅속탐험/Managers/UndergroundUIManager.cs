@@ -263,7 +263,8 @@ public class UndergroundUIManager : MonoBehaviour
            .SetDelay(1.5f)
            .OnComplete(() =>
            {
-               _popUpUIScaleTween = popUpButton.DOScale(defaultSize, 1f)
+               _popUpUIScaleTween = popUpButton.DOScale(_underground_PopUpUI_Button._defaultSize
+                                                        *_underground_PopUpUI_Button.scaleUpSize, 1f)
                    .SetEase(Ease.InOutExpo)
                    .SetDelay(3f)
                    .OnComplete(() =>
@@ -273,7 +274,7 @@ public class UndergroundUIManager : MonoBehaviour
                        DOVirtual.Float(0, 1, 2, value => value++).OnComplete(() =>
                        {
                            _popUpUIScaleTween.Kill();
-                           _underground_PopUpUI_Button.UpScale();
+                           _underground_PopUpUI_Button.DownScale();
                        });
 
                    });
