@@ -10,7 +10,7 @@ public class VideoContent_VideoPlayer : MonoBehaviour
     void Awake() 
     {
         var videoPlayer = GetComponent<VideoPlayer>(); // VideoPlayer 컴포넌트를 찾습니다.
-        string path = Path.Combine(Application.streamingAssetsPath, "Turtle.mp4");
+        string path = Path.Combine(Application.streamingAssetsPath, $"{gameObject.name}.mp4");
         videoPlayer.url = path;
         videoPlayer.Play();
     }
