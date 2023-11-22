@@ -1,44 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class KoreanFlag_EffectController : MonoBehaviour
+public class KoreanFlag_EffectController : Base_EffectController
 {
     private ParticleSystem[] particleSystems;
 
-    private Camera _camera;
-    private InputAction _mouseClickAction;
-    private ParticleSystem[] _particles;
-    private WaitForSeconds wait_;
-
+ 
+   
     private AudioSource[] _adSources;
     private AudioSource _audioSource;
     private AudioSource _subAudioSourceA;
     private AudioSource _subAudioSourceB;
     private AudioSource _subAudioSourceC;
     public AudioClip _effectClip;
-
-
-    private readonly Stack<ParticleSystem> particlePool = new();
+    
 
     private void Awake()
     {
-        _adSources = GetComponents<AudioSource>();
-        foreach (var adSource in _adSources) adSource.clip = _effectClip;
-
+        Init();
+        SetInputSystem();
+        
+        _adSources = new AudioSource[120];
+        
+        for (int i = 0; i < 20; i++)
+        {
+            _adSources[i] = gameObject.AddComponent<AudioSource>();
+            _adSources[i].clip = _effectClip;
+            _adSources[i].playOnAwake = false;
+            _adSources[i].pitch = Random.Range(0.75f, 1.4f);
+        }
+        
         wait_ = new WaitForSeconds(_returnWaitForSeconds);
-        _camera = Camera.main;
-
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
-
         _particles = GetComponentsInChildren<ParticleSystem>();
-
         foreach (var ps in _particles) particlePool.Push(ps);
     }
 
+    private void OnMouseClick(InputAction.CallbackContext context)
+    {
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+            PlayParticle(hit.point);
+    }
     private void Start()
     {
         _camera = Camera.main;
@@ -53,22 +61,12 @@ public class KoreanFlag_EffectController : MonoBehaviour
     {
         _mouseClickAction.Disable();
     }
+    
 
     private readonly string LAYER_NAME = "UI";
     private RaycastHit _hit;
+    
 
-    // fadeInDuration은 사실상 playduration과 다름없습니다.
-    public float fadeInDuration;
-    public float fadeOutDuration;
-
-    private void OnMouseClick(InputAction.CallbackContext context)
-    {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
-            PlayParticle(hit.point);
-    }
 
     public float targetVol;
     private int _count;
@@ -77,104 +75,129 @@ public class KoreanFlag_EffectController : MonoBehaviour
     public int burstCount;
     private int _currentCountForBurst;
 
-    private void PlayParticle(Vector3 position)
+    public override void PlayParticle(Vector3 position)
     {
-        if (burstCount < _currentCountForBurst)
+        if (particlePool.Count >= emitAmount && particlePool.Count > burstCount)
         {
-            _currentCountForBurst = 0;
-
-            for (var i = 0; i < burstAmount; i++)
+            if (_currentCountForBurst < burstCount)
             {
-                var ps = particlePool.Pop();
-                ps.transform.position = position;
-                ps.gameObject.SetActive(true);
-                ps.Play();
-
-                StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.duration));
-
-                for (var j = 0; j < _adSources.Length; j++)
-                    if (!_adSources[i].isPlaying)
-                    {
-                        FadeInSound(targetVol, fadeInDuration, _adSources[i]);
-                        break;
-                    }
+                for (var i = 0; i < emitAmount; i++)
+                {
+                    var ps = particlePool.Pop();
+                    ps.transform.position = position;
+                    ps.gameObject.SetActive(true);
+                    ps.Play();
+                    
+                    for (var k = 0; k < _adSources.Length; k++)
+                        if (!_adSources[k].isPlaying)
+                        {
+                            FadeInSound(_adSources[k]);
+                            break;
+                        }
+                    
+                    #if UNITY_EDITOR
+                    Debug.Log("enough particles in the pool.");
+                    #endif
+                    _currentCountForBurst++;
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
+                }
             }
-        }
-        else if (particlePool.Count >= emitAmount)
-        {
-            for (var i = 0; i < emitAmount; i++)
+            
+            else
             {
-                var ps = particlePool.Pop();
-                ps.transform.position = position;
-                ps.gameObject.SetActive(true);
-                ps.Play();
-                _currentCountForBurst++;
+                _currentCountForBurst = 0;
 
-                StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.duration));
+                for (var i = 0; i < burstAmount; i++)
+                {
+                    var ps = particlePool.Pop();
+                    ps.transform.position = position;
+                    ps.gameObject.SetActive(true);
+                    ps.Play();
+
+#if UNITY_EDITOR
+                    Debug.Log("to burst, enough particles in the pool.");
+#endif
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
+
+                    for (var k = 0; k < _adSources.Length; k++)
+                        if (!_adSources[k].isPlaying)
+                        {
+                            FadeInSound(_adSources[k]);
+                            break;
+                        }
+                }
             }
         }
         else
         {
-            _count = 0;
-            foreach (var ps in _particles)
+            foreach(ParticleSystem ps in _particles)
             {
-                GrowPool(_particles[_count], 1);
-                _count++;
+                GrowPool(ps);
             }
 
-            for (var i = 0; i < emitAmount; i++)
+#if UNITY_EDITOR
+            Debug.Log("no particles in the pool. creating particles and push...");
+#endif
+            
+            for (var k = 0; k < emitAmount; k++)
             {
                 var ps = particlePool.Pop();
                 ps.transform.position = position;
                 ps.gameObject.SetActive(true);
                 ps.Play();
 
-                StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.duration));
+                for (var j = 0; j < _adSources.Length; j++)
+                    if (!_adSources[j].isPlaying)
+                    {
+                        FadeInSound(_adSources[j]);
+                        break;
+                    }
+                
+                StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
             }
 
             Debug.LogWarning("No particles available in pool!");
         }
     }
 
-    private readonly float _returnWaitForSeconds = 5f;
+    private readonly float _returnWaitForSeconds = 3f;
 
-    private IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float delay)
+
+    public void SetInputSystem()
     {
-        yield return wait_;
-        ps.Stop();
-        ps.Clear();
-        ps.gameObject.SetActive(false);
-        particlePool.Push(ps); // Return the particle system to the pool
+        _camera = Camera.main;
+        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        _mouseClickAction.performed += OnMouseClick;
+
     }
 
-
-    private void GrowPool(ParticleSystem original, int count)
-    {
-        for (var i = 0; i < count; i++)
-        {
-            var newInstance = Instantiate(original);
-            newInstance.gameObject.SetActive(false);
-            particlePool.Push(newInstance);
-        }
-    }
-
-    public void FadeOutSound(float target, float duration, AudioSource audioSource)
-    {
-        audioSource.DOFade(0f, duration).SetDelay(fadeInDuration).OnComplete(() =>
-        {
-#if UNITY_EDITOR
-            Debug.Log("audioQuit");
-#endif
-            audioSource.Stop();
-        });
-    }
-
-    public void FadeInSound(float targetVolume, float duration, AudioSource audioSource)
-    {
-#if UNITY_EDITOR
-        Debug.Log("audioPlay");
-#endif
-        audioSource.Play();
-        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(0.05f, 0.5f, audioSource); });
-    }
+//     private void GrowPool(ParticleSystem original, int count)
+//     {
+//         for (var i = 0; i < count; i++)
+//         {
+//             var newInstance = Instantiate(original);
+//             newInstance.gameObject.SetActive(false);
+//             particlePool.Push(newInstance);
+//         }
+//     }
+// //
+//     public void FadeOutSound(float target, float duration, AudioSource audioSource)
+//     {
+//         audioSource.DOFade(0f, duration).SetDelay(fadeInDuration).OnComplete(() =>
+//         {
+// #if UNITY_EDITOR
+//             Debug.Log("audioQuit");
+// #endif
+//             audioSource.Stop();
+//         });
+//     }
+//
+//     public void FadeInSound(float targetVolume, float duration, AudioSource audioSource)
+//     {
+// #if UNITY_EDITOR
+//         Debug.Log("audioPlay");
+// #endif
+//         audioSource.Play();
+//         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(0.05f, 0.5f, audioSource); });
+//     }
 }

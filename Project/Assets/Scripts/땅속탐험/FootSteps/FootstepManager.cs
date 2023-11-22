@@ -377,9 +377,6 @@ public class FootstepManager : MonoBehaviour
 
 
         ShakeAndRemoveDust();
-
-
-      
     }
 
 
@@ -396,7 +393,7 @@ public class FootstepManager : MonoBehaviour
         
         if (currentFootstepGroupOrder % 3 == 0)
         {
-            //그룹이 넘어갈때 시간 간격
+            //페이지 전환 시 interval == duration
             DOVirtual.Float(0,1,13f,val=>val++)
                 .OnComplete(() =>
                 {
@@ -408,7 +405,8 @@ public class FootstepManager : MonoBehaviour
         }
         else
         {
-            DOVirtual.Float(0,1,4f,val=>val++)
+            //다음 동물로 넘어갈 때의 interval == duration
+            DOVirtual.Float(0,1,6.0f,val=>val++)
                 .OnComplete(() =>
                 {
                     _footstepGameObjGroups[currentFootstepGroupOrder][0].SetActive(true);
@@ -470,19 +468,21 @@ public class FootstepManager : MonoBehaviour
         return waitForSecondsCache[seconds];
     }
 
-    private IEnumerator TurnOnNextGroupFirstFootstep()
-    {
-        if (currentFootstepGroupOrder % 3 == 0)
-            //그룹이 넘어갈때 시간 간격
-            yield return GetWaitForSeconds(11f);
-        else
-            // 동일 그룹 내 발자국 끼리의 시간간격
-            yield return GetWaitForSeconds(8.5f);
-        
-        // _audioSource.clip = footstepAppearingSound;
-        // _audioSource.Play();
-       
-    }
+    
+    //pageFinishToggle()에서 처리하도록 로직 변경, 함수 미사용 중 11/22/23
+    // private IEnumerator TurnOnNextGroupFirstFootstep()
+    // {
+    //     if (currentFootstepGroupOrder % 3 == 0)
+    //         //그룹이 넘어갈때 시간 간격
+    //         yield return GetWaitForSeconds(12.5f);
+    //     else
+    //         // 동일 그룹 내 발자국 끼리의 시간간격
+    //         yield return GetWaitForSeconds(8.5f);
+    //     
+    //     // _audioSource.clip = footstepAppearingSound;
+    //     // _audioSource.Play();
+    //    
+    // }
     
 
     public AudioClip footstepAppearingSound;

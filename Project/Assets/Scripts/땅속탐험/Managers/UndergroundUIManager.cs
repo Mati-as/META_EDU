@@ -260,7 +260,7 @@ public class UndergroundUIManager : MonoBehaviour
        popUpUIGameObj.SetActive(true);
        _popUpUIScaleTween = popUpUIRect.DOScale(1, 1.5f)
            .SetEase(Ease.InOutExpo)
-           .SetDelay(1.5f)
+           .SetDelay(3f) // 마지막 발판 클릭 후 팝업 UI가 나타나기 까지 Delay하는 시간
            .OnComplete(() =>
            {
                _popUpUIScaleTween = popUpButton.DOScale(_underground_PopUpUI_Button._defaultSize
@@ -332,8 +332,6 @@ public class UndergroundUIManager : MonoBehaviour
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
             gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
-
-
             
         }
           
