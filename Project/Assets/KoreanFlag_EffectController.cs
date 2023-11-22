@@ -1,16 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
-using DG.Tweening;
+
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class KoreanFlag_EffectController : Base_EffectController
 {
     private ParticleSystem[] particleSystems;
-
- 
-   
+    
     private AudioSource[] _adSources;
     private AudioSource _audioSource;
     private AudioSource _subAudioSourceA;
@@ -31,7 +27,7 @@ public class KoreanFlag_EffectController : Base_EffectController
             _adSources[i] = gameObject.AddComponent<AudioSource>();
             _adSources[i].clip = _effectClip;
             _adSources[i].playOnAwake = false;
-            _adSources[i].pitch = Random.Range(0.75f, 1.4f);
+            _adSources[i].pitch = UnityEngine.Random.Range(0.75f, 1.4f);
         }
         
         wait_ = new WaitForSeconds(_returnWaitForSeconds);
@@ -75,71 +71,41 @@ public class KoreanFlag_EffectController : Base_EffectController
     public int burstCount;
     private int _currentCountForBurst;
 
-    private bool _isPlaying;
+  
     public override void PlayParticle(Vector3 position)
     {
-        if (particlePool.Count >= emitAmount && particlePool.Count > burstCount)
+        
+        
+        if (particlePool.Count >= emitAmount)
         {
-            _isPlaying = false; 
-            if (_currentCountForBurst < burstCount)
-            {
+            
+           
                 for (var i = 0; i < emitAmount; i++)
                 {
                     var ps = particlePool.Pop();
                     ps.transform.position = position;
                     ps.gameObject.SetActive(true);
                     ps.Play();
-                   
                     
-                    
-                    #if UNITY_EDITOR
-                    Debug.Log("enough particles in the pool.");
-                    #endif
-                    _currentCountForBurst++;
-                    StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
-                    
-                  
-
-                    for (var k = 0; k < _adSources.Length; k++)
-                    {
-                        
-                       
-                        
-                        if (!_adSources[k].isPlaying && !_isPlaying)
-                        {
-                            //파티클을 두개를 Pop하되, 소리는 한번만 재생하기위한 로직입니다.
-                            FadeInSound(_adSources[k]);
-                            _isPlaying = true;
-                        }
-                    }
-                       
-                }
-            }
-            
-            else
-            {
-                _currentCountForBurst = 0;
-
-                for (var i = 0; i < burstAmount; i++)
-                {
-                    var ps = particlePool.Pop();
-                    ps.transform.position = position;
-                    ps.gameObject.SetActive(true);
-                    ps.Play();
-
 #if UNITY_EDITOR
-                    Debug.Log("to burst, enough particles in the pool.");
+    Debug.Log("enough particles in the pool.");
 #endif
                     StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
-
-                    for (var k = 0; k < _adSources.Length; k++)
-                        if (!_adSources[k].isPlaying)
-                        {
-                            FadeInSound(_adSources[k]);
-                            break;
-                        }
                 }
-            }
+                
+                _currentCountForBurst++;
+                
+                var availableAudioSource = Array.Find(_adSources, audioSource => !audioSource.isPlaying);
+                if (availableAudioSource != null)
+                {
+                    FadeInSound(availableAudioSource);
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    Debug.LogWarning("No available AudioSource!");
+#endif
+                }
         }
         else
         {
@@ -149,7 +115,7 @@ public class KoreanFlag_EffectController : Base_EffectController
             }
 
 #if UNITY_EDITOR
-            Debug.Log("no particles in the pool. creating particles and push...");
+    Debug.Log("no particles in the pool. creating particles and push...");
 #endif
             
             for (var k = 0; k < emitAmount; k++)
@@ -158,18 +124,23 @@ public class KoreanFlag_EffectController : Base_EffectController
                 ps.transform.position = position;
                 ps.gameObject.SetActive(true);
                 ps.Play();
-
-                for (var j = 0; j < _adSources.Length; j++)
-                    if (!_adSources[j].isPlaying)
-                    {
-                        FadeInSound(_adSources[j]);
-                        break;
-                    }
                 
                 StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
             }
 
-            Debug.LogWarning("No particles available in pool!");
+            var availableAudioSource = Array.Find(_adSources, audioSource => !audioSource.isPlaying);
+            if (availableAudioSource != null)
+            {
+                FadeInSound(availableAudioSource);
+            }
+            else
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning("No available AudioSource!");
+#endif
+            }
+            
+           
         }
     }
 
@@ -184,33 +155,5 @@ public class KoreanFlag_EffectController : Base_EffectController
 
     }
 
-//     private void GrowPool(ParticleSystem original, int count)
-//     {
-//         for (var i = 0; i < count; i++)
-//         {
-//             var newInstance = Instantiate(original);
-//             newInstance.gameObject.SetActive(false);
-//             particlePool.Push(newInstance);
-//         }
-//     }
-// //
-//     public void FadeOutSound(float target, float duration, AudioSource audioSource)
-//     {
-//         audioSource.DOFade(0f, duration).SetDelay(fadeInDuration).OnComplete(() =>
-//         {
-// #if UNITY_EDITOR
-//             Debug.Log("audioQuit");
-// #endif
-//             audioSource.Stop();
-//         });
-//     }
-//
-//     public void FadeInSound(float targetVolume, float duration, AudioSource audioSource)
-//     {
-// #if UNITY_EDITOR
-//         Debug.Log("audioPlay");
-// #endif
-//         audioSource.Play();
-//         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(0.05f, 0.5f, audioSource); });
-//     }
+
 }

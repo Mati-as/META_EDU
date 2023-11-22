@@ -56,7 +56,7 @@ public class Base_EffectController : MonoBehaviour
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
     
-    public IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f)
+    public IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 2f)
     {
         yield return wait_;
         ps.Stop();
