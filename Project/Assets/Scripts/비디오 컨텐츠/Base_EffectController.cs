@@ -26,7 +26,7 @@ public class Base_EffectController : MonoBehaviour
         }
      
     }
-    public void GrowPool(ParticleSystem original, int count = 5)
+    public void GrowPool(ParticleSystem original, int count = 1)
     {
         for (var i = 0; i < count; i++)
         {

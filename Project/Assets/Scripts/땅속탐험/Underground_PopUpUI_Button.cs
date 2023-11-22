@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using DG.Tweening;
-using TreeEditor;
-using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 
 public class Underground_PopUpUI_Button : MonoBehaviour

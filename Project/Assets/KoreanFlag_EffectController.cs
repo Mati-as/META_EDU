@@ -17,16 +17,16 @@ public class KoreanFlag_EffectController : Base_EffectController
     private AudioSource _subAudioSourceB;
     private AudioSource _subAudioSourceC;
     public AudioClip _effectClip;
-    
+    public int audioSize;
 
     private void Awake()
     {
         Init();
         SetInputSystem();
         
-        _adSources = new AudioSource[120];
+        _adSources = new AudioSource[audioSize];
         
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < audioSize; i++)
         {
             _adSources[i] = gameObject.AddComponent<AudioSource>();
             _adSources[i].clip = _effectClip;
@@ -75,10 +75,12 @@ public class KoreanFlag_EffectController : Base_EffectController
     public int burstCount;
     private int _currentCountForBurst;
 
+    private bool _isPlaying;
     public override void PlayParticle(Vector3 position)
     {
         if (particlePool.Count >= emitAmount && particlePool.Count > burstCount)
         {
+            _isPlaying = false; 
             if (_currentCountForBurst < burstCount)
             {
                 for (var i = 0; i < emitAmount; i++)
@@ -87,19 +89,30 @@ public class KoreanFlag_EffectController : Base_EffectController
                     ps.transform.position = position;
                     ps.gameObject.SetActive(true);
                     ps.Play();
+                   
                     
-                    for (var k = 0; k < _adSources.Length; k++)
-                        if (!_adSources[k].isPlaying)
-                        {
-                            FadeInSound(_adSources[k]);
-                            break;
-                        }
                     
                     #if UNITY_EDITOR
                     Debug.Log("enough particles in the pool.");
                     #endif
                     _currentCountForBurst++;
                     StartCoroutine(ReturnToPoolAfterDelay(ps, 3f));
+                    
+                  
+
+                    for (var k = 0; k < _adSources.Length; k++)
+                    {
+                        
+                       
+                        
+                        if (!_adSources[k].isPlaying && !_isPlaying)
+                        {
+                            //파티클을 두개를 Pop하되, 소리는 한번만 재생하기위한 로직입니다.
+                            FadeInSound(_adSources[k]);
+                            _isPlaying = true;
+                        }
+                    }
+                       
                 }
             }
             
