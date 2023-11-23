@@ -215,7 +215,6 @@ public class UIAudioController : MonoBehaviour
         narrationAudioSource.Play();
 
         yield return GetWaitForSeconds(HTPAAudioInterval);
-        Debug.Log("첫번째HTP 오디오 종료");
         StopCoroutine(_howToPlayACoroutine);
     }
 

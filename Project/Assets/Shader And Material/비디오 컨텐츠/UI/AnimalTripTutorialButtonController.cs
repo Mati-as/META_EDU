@@ -32,7 +32,6 @@ public class AnimalTripTutorialButtonController : MonoBehaviour
         if (!_isUIPlayed)
         {
             _audioSource.Play();
-            Debug.Log("설명 끝, 스토리 UI시작.");
             textBoxUIController.OnUIFinished();
             _storyUIController.OnHowToPlayUIFinished();
          

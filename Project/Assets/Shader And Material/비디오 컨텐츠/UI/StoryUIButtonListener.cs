@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,8 +22,14 @@ public class StoryUIButtonListener : MonoBehaviour
     {
         _button.onClick.AddListener(ButtonClicked);
     }
-    
-    void ButtonClicked()
+
+    private void Update()
+    {
+       
+    }
+
+    public float elapsedAfterArrived;
+    public void ButtonClicked()
     {
         //storyUI 구분을 위한 로직
         if (GameManager.isCameraArrivedToPlay)

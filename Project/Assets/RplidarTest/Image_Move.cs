@@ -1,68 +1,162 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class Image_Move : MonoBehaviour
 {
-    public float moveSpeed = 5f; // ÀÌ¹ÌÁöÀÇ ÀÌµ¿ ¼Óµµ
+    public GameManager _gameManager;
+    [SerializeField] private UIAudioController _uiAudioController;
+   
+    [SerializeField]
+    private StoryUIController _storyUIController;
 
-    public Image imageA; // A ÀÌ¹ÌÁö
+    public float moveSpeed; // ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Óµï¿½
+
+    public Image imageA; // A ï¿½Ì¹ï¿½ï¿½ï¿½
 
     private GameObject UI_Canvas;
-    private Camera UI_Camera;
+    private Camera _mainCamera;
 
     private GraphicRaycaster GR;
     private PointerEventData PED;
     private Vector3 Temp_position;
 
-    void Start()
+    private InputAction _spaceAction;
+
+    private void Awake()
     {
+       
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
+        _uiAudioController = GameObject.Find("AudioManager").GetComponent<UIAudioController>();
+        _mainCamera = Camera.main;
+        _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
+        _spaceAction.performed += OnSpaceBarPressed;
+        _spaceAction.performed += _gameManager.ClickOnObject;
+
+    }
+
+    private void Start()
+    {
+
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-        UI_Camera = Manager_Sensor.instance.Get_UIcamera();
+        _mainCamera = Camera.main;
 
         GR = UI_Canvas.GetComponent<GraphicRaycaster>();
         PED = new PointerEventData(null);
-
+        
+        StartCoroutine(MoveObject());
     }
-    void Update()
+
+    private void Update()
     {
-        // ¼öÆò ¹× ¼öÁ÷ ÀÔ·ÂÀ» ¹Ş¾Æ ÀÌµ¿ ¹æÇâÀ» °è»ê
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        Vector3 moveDirection = new Vector3(horizontalInput, verticalInput, 0f).normalized;
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ş¾ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+       
+        var horizontalInput = Input.GetAxis("Horizontal");
+        var verticalInput = Input.GetAxis("Vertical");
+        moveDirection = new Vector3(horizontalInput, verticalInput, 0f).normalized;
+        movement  = moveSpeed * Time.deltaTime;
+        // ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
+     
 
-        // ÀÌ¹ÌÁö ÀÌµ¿
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+        // if (Input.GetKeyDown(KeyCode.Space)) ShootRay();
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    private float movement;
+    private Vector3 moveDirection;
+
+    
+  
+    IEnumerator MoveObject()
+    {
+        while (true)
         {
-            ShootRay();
+           
+            transform.Translate(moveDirection *movement);
+
+
+            yield return null; // í•œ í”„ë ˆì„ ê¸°ë‹¤ë¦¼
         }
     }
-
-    void ShootRay()
+    
+    private void ShootRay()
     {
-        Temp_position = UI_Camera.WorldToScreenPoint(this.transform.position);
+        Temp_position = _mainCamera.WorldToScreenPoint(transform.position);
 
-        //¸ŞÀÎ Ä«¸Ş¶ó ·¹ÀÌ Ä³½ºÆ®
-        Ray ray = Camera.main.ScreenPointToRay(Temp_position);
+        //ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½Æ®
+        var ray = Camera.main.ScreenPointToRay(Temp_position);
 
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            Debug.Log(hit.transform.name);
-        }
+        if (Physics.Raycast(ray, out hit)) Debug.Log(hit.transform.name);
 
-        //UI Ä«¸Ş¶ó ·¹ÀÌ Ä³½ºÆ®
+        //UI Ä«ï¿½Ş¶ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½Æ®
         PED.position = Temp_position;
-        List<RaycastResult> results = new List<RaycastResult>();
+        var results = new List<RaycastResult>();
         GR.Raycast(PED, results);
 
-        if (results.Count > 0)
+        if (results.Count > 0) Debug.Log(results[0].gameObject.name);
+    }
+
+    private void OnEnable()
+    {
+        _spaceAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _spaceAction.Disable();
+    }
+
+  
+    private void OnSpaceBarPressed(InputAction.CallbackContext context)
+    {
+        MoveMouseToCurrentObjectPosition();
+        ShootRay();
+        ExecuteButtonClick();
+
+        if (!_uiAudioController.narrationAudioSource.isPlaying)
         {
-            Debug.Log(results[0].gameObject.name);
+            GameManager.isGameStopped = false;
+            _storyUIController.gameObject.SetActive(false);
+        }
+        
+        //_gameManager._ray = Camera.main.ScreenPointToRay(Temp_position);
+    }
+    
+    private void MoveMouseToCurrentObjectPosition()
+    {   Vector3 objectPosition = transform.position;
+        Vector3 screenPosition = _mainCamera.WorldToScreenPoint(objectPosition);
+
+        // ë§ˆìš°ìŠ¤ì˜ ìœ„ì¹˜ë¥¼ ì›í•˜ëŠ” ìœ„ì¹˜ë¡œ ì„¤ì •
+        Mouse.current.WarpCursorPosition(new Vector2(screenPosition.x, screenPosition.y));
+    }
+    
+    
+    /// <summary>
+    /// UIë„ í´ë¦­ ê°€ëŠ¥í•˜ê²Œ í•˜ëŠ” ë©”ì†Œë“œ ì…ë‹ˆë‹¤. 
+    /// </summary>
+    private void ExecuteButtonClick()
+    {
+        PED =new PointerEventData(EventSystem.current);
+        PED.position = Mouse.current.position.ReadValue();
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(PED, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.GetComponent<UnityEngine.UI.Button>() != null)
+            {
+                // UI ë²„íŠ¼ì„ ì°¾ì•„ í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
+                ExecuteEvents.Execute(result.gameObject, PED, ExecuteEvents.submitHandler);
+                break;
+            }
         }
     }
+    
 }
+    

@@ -152,16 +152,12 @@ public class AnimalShaderController : MonoBehaviour
     private Tween _blinkTween;
     private void DarkenBodyColor(float duration  = 1.25f)
     {
-#if UNITY_EDITOR
-        Debug.Log($"darkend Color current bodyMat is: {_bodyMat}");
-#endif
+
         
           DOVirtual
             .Color(_animalData.defaultColor, _animalData.darkenedColor, duration, color =>
             {
-#if UNITY_EDITOR
-                Debug.Log($"{this._bodyMat}'s Color is {color}");
-#endif
+
                 
                 _bodyMat.SetColor(BODY_COLOR, color);
                 _bodyMeshRenderer.material = _bodyMat;

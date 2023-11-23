@@ -192,7 +192,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private void OnTextBoxLeftUILetterTyping()
     {
-        Debug.Log("UI Animal Is Moving..");
+       
         _coroutineA = StartCoroutine(LeftCoroutine());
         if (_coroutineB != null) StopCoroutine(_coroutineB);
     }
@@ -217,7 +217,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private IEnumerator MoveDownUIBoxCoroutine()
     {
-        Debug.Log("UI is going down....");
+      
         while (true)
         {
             MoveDownUITBox();

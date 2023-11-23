@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     public static bool isRoundFinished { get; private set; }
     public static bool isGameFinished { get; private set; }
     public static bool isGameStopped { get; set; }
-    private static readonly int IS_GAME_STOPPED = 0;
+    private static readonly float IS_GAME_STOPPED = 0.001f;
 
 
     private bool _isGameEventInvoked;
@@ -375,7 +375,10 @@ public class GameManager : MonoBehaviour
         //디버그 및 UI용 재생속도 조정 함수
         if (!isGameStopped)
             SetTimeScale(GAME_PROGRESSING_SPEED_COPY);
-        else if (isGameStopped) SetTimeScale(IS_GAME_STOPPED);
+        else if (isGameStopped)
+        {
+            SetTimeScale(IS_GAME_STOPPED);
+        }
 
         
         //카메라 도착 시 일정시간 지나면 게임 시작.
@@ -612,59 +615,56 @@ public class GameManager : MonoBehaviour
     /// </summary>
     ///
     private readonly string LAYER_NAME = "Screen";
-    private void ClickOnObject(InputAction.CallbackContext context)
+
+    public Ray _ray;
+
+
+    
+    public void ClickOnObject(InputAction.CallbackContext context)
     {
-     
-        int layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
-        
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit[] hits = Physics.RaycastAll(ray);
+       
+            var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
+            _ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            var hits = Physics.RaycastAll(_ray);
 
-        foreach (var hit in hits)
-        {
-            if (hit.collider.name == "Screen")
+            foreach (var hit in hits)
             {
+                if (hit.collider.name == "Screen") PlayClickOnScreenEffect(hit);
 
 
-                PlayClickOnScreenEffect(hit);
-            }
-          
-            
-            if (animalGameOjbectDictionary.ContainsKey(hit.collider.name) && AnimalShaderController.isGlowOn)
-            {
-               
-                
-                _clickedAnimal = hit.collider.name;
-                
-                //정답인 경우
-                if (_clickedAnimal == answer)
+                if (animalGameOjbectDictionary.ContainsKey(hit.collider.name) && AnimalShaderController.isGlowOn)
                 {
-                    //1회실행 보장용
-                    if (!isCorrected)
+                    _clickedAnimal = hit.collider.name;
+
+                    //정답인 경우
+                    if (_clickedAnimal == answer)
                     {
-                        PlayAnswerParticle(hit);
+                        //1회실행 보장용
+                        if (!isCorrected)
+                        {
+                            PlayAnswerParticle(hit);
 #if UNITY_EDITOR
-                        Debug.Log("정답!");
+                            Debug.Log("정답!");
 #endif
-                        
-                        SetAnimalData(_clickedAnimal);
-                        onCorrectedEvent?.Invoke();
-                        isCorrected = true;
+
+                            SetAnimalData(_clickedAnimal);
+                            onCorrectedEvent?.Invoke();
+                            isCorrected = true;
+                        }
+
+                        //moving에서의 lerp
+                        _elapsedForMovingToSpotLight = 0;
+
+                        //sizeIncrease()의 lerp
+                        _currentSizeLerp = 0;
                     }
-
-                    //moving에서의 lerp
-                    _elapsedForMovingToSpotLight = 0;
-
-                    //sizeIncrease()의 lerp
-                    _currentSizeLerp = 0;
                 }
             }
-        }
-
-      
-
-
         
+    }
+
+    private void OnCastRays(Vector3 position)
+    {
         
     }
   
