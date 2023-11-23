@@ -15032,7 +15032,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.3
+      scalar: 0.63
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -54121,7 +54121,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7465382209269301422}
   - component: {fileID: 7465382209269301426}
-  - component: {fileID: 7465382209269301424}
   m_Layer: 5
   m_Name: Effect_Maker
   m_TagString: Untagged
@@ -54156,36 +54155,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -0.972, y: 2.003, z: 0.196}
---- !u!114 &7465382209269301424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7465382209269301392}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3533fa3cdaf838e4b9a7f1291adb267b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _particles: []
-  _camera: {fileID: 0}
-  _mouseClickAction:
-    m_Name: Mouse Click
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 5ac1ac9a-3aca-4481-9d36-3d25d1dac83d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  _effectClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
-  _burstClip: {fileID: 0}
-  audioSize: 120
-  targetVol: 1
-  emitAmount: 2
-  burstAmount: 2
-  burstCount: 10
 --- !u!114 &7465382209269301426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54211,7 +54180,7 @@ MonoBehaviour:
     m_Flags: 0
   _effectClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
   _burstClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
-  audioSize: 35
+  audioSize: 30
   targetVol: 1
   emitAmount: 2
   burstAmount: 0
