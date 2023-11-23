@@ -15,20 +15,28 @@ public class Base_EffectController : MonoBehaviour
     public InputAction _mouseClickAction;
     protected Stack<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
-    public float targetVol;
+  
     private int _count;
     public int emitAmount;
     public int burstAmount;
     public int burstCount;
-    protected readonly int _burstAudioSize = 10;
+    public float targetVol;
+    protected int _burstAudioSize;
+    
+    
 
     protected virtual void Init()
     {
         particlePool = new Stack<ParticleSystem>();
-        foreach(ParticleSystem ps in _particles)
+        
+        for (int i = 0; i < burstAmount; i++)
         {
-            GrowPool(ps);
+            foreach(ParticleSystem ps in _particles)
+            {
+                GrowPool(ps);
+            }
         }
+       
      
     }
     protected void GrowPool(ParticleSystem original, int count = 1)
@@ -61,8 +69,9 @@ public class Base_EffectController : MonoBehaviour
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
     
-    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 2f)
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f)
     {
+       
         yield return wait_;
         ps.Stop();
         ps.Clear();
@@ -78,10 +87,10 @@ public class Base_EffectController : MonoBehaviour
         
 
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
-        if (particlePool.Count < emitAmount || (currentCountForBurst < burstCount && particlePool.Count < burstCount))
+        if (particlePool.Count < emitAmount || particlePool.Count < burstCount)
         {
             // 에디터상에서 배치한 순서대로 파티클을 Push하기 위해 for문 사용합니다. 
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < burstAmount; i++)
                 foreach (var ps in _particles)
                     GrowPool(ps);
 
