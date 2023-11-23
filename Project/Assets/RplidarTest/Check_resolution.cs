@@ -18,7 +18,7 @@ public class Check_resolution : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CANVAS = GameObject.Find("UIManager");
+        CANVAS = Manager_Sensor.instance.Get_UIcanvas();
         //CANVAS = GameObject.Find("UI 캔버스 (UI Manager)");
 
         Resolution = Screen.width.ToString() + "x" + Screen.height.ToString();
