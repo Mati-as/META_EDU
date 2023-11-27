@@ -5,15 +5,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Image_Move : MonoBehaviour
 {
     public GameManager _gameManager;
-    [SerializeField] private UIAudioController _uiAudioController;
-
-    [SerializeField] private StoryUIController _storyUIController;
-
+   
     public float moveSpeed;
     //public Image imageA;
     private GameObject UI_Canvas;
@@ -39,11 +37,6 @@ public class Image_Move : MonoBehaviour
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
         _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction.performed += OnSpaceBarPressed;
-        
-        //-----가을 소풍에서만 필요한 스크립트(컴포넌트) 입니다.-----
-        _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
-        _uiAudioController = GameObject.Find("AudioManager").GetComponent<UIAudioController>();
-        
     }
 
     private void Start()
@@ -79,10 +72,7 @@ public class Image_Move : MonoBehaviour
         
         //GameManager의 RayCast를 발생 
         OnStep?.Invoke();
-     
         
-        //-----게임이 가을소풍인 경우에만 실행-----
-        CloseStoryUI();
     }
     
     /// <summary>
@@ -122,19 +112,6 @@ public class Image_Move : MonoBehaviour
     /// 가을소풍에서 storyUI 진행 시 TimeScale이 0이 되는데,이 때 UI를 진행시키기 위한 메소드입니다.
     /// 다른게임에서는 해당 메소드를 사용하지 않을 예정입니다 11/27/23
     /// </summary>
-    private void CloseStoryUI()
-    {
-        if (_uiAudioController != null)
-        {
-            if (_uiAudioController.narrationAudioSource != null
-                && !_uiAudioController.narrationAudioSource.isPlaying)
-            {
-                GameManager.isGameStopped = false;
-                _storyUIController.gameObject.SetActive(false);
-          
-            }
-        }
-    }
 
     private void Move()
     {

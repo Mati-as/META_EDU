@@ -296,6 +296,8 @@ public class GameManager : MonoBehaviour
     private Camera _camera;
     private InputAction _mouseClickAction;
     private ParticleSystem _particle;
+   private UIAudioController _uiAudioController;
+   private StoryUIController _storyUIController;
 
     private void Awake()
     {
@@ -305,6 +307,9 @@ public class GameManager : MonoBehaviour
         Image_Move.OnStep -= OnStep;
         Image_Move.OnStep += OnStep;
         
+        //-----가을 소풍에서만 필요한 스크립트(컴포넌트) 입니다.-----
+        _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
+        _uiAudioController = GameObject.Find("AudioManager").GetComponent<UIAudioController>();
         
         
         SetPhysicsLayer();
@@ -677,8 +682,31 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+            
+            //-----게임이 가을소풍인 경우에만 실행-----
+            if (SceneManager.GetActiveScene().name == "AnimalTrip")
+            {
+                CloseStoryUI();
+            }
         
     }
+    
+    
+    
+    private void CloseStoryUI()
+    {
+        if (_uiAudioController != null)
+        {
+            if (_uiAudioController.narrationAudioSource != null
+                && !_uiAudioController.narrationAudioSource.isPlaying)
+            {
+                GameManager.isGameStopped = false;
+                _storyUIController.gameObject.SetActive(false);
+          
+            }
+        }
+    }
+
     
   
     RaycastHit hit;
