@@ -120,19 +120,20 @@ public class Image_Move : MonoBehaviour
     private void OnSpaceBarPressed(InputAction.CallbackContext context)
     {
         MoveMouseToCurrentObjectPosition();
-        _gameManager._ray = Camera.main.ScreenPointToRay(Temp_position);
-       
         ShootRay();
-
+        
+       
 
         if (!_uiAudioController.narrationAudioSource.isPlaying)
         {
             GameManager.isGameStopped = false;
             _storyUIController.gameObject.SetActive(false);
-            OnStep?.Invoke();
+          
         }
         
-       
+        
+        _gameManager._ray = Camera.main.ScreenPointToRay(Temp_position);
+        OnStep?.Invoke();
         //  ExecuteButtonClick();
     }
 
