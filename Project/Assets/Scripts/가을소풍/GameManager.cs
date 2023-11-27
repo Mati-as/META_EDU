@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -298,9 +299,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        _camera = Camera.main;
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += ClickOnObject;
+        // _camera = Camera.main;
+        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        // _mouseClickAction.performed += ClickOnObject;
+        Image_Move.OnStep -= OnClick;
+        Image_Move.OnStep += OnClick;
+        
         
         
         SetPhysicsLayer();
@@ -318,46 +322,24 @@ public class GameManager : MonoBehaviour
     }
 
 
- 
-    private void OnEnable()
-    {
-        _mouseClickAction.Enable();
-    }   
-
-    private void OnDisable()
-    {
-        _mouseClickAction.Disable();
-    }
-
-    
+    //
+    // private void OnEnable()
+    // {
+    //     _mouseClickAction.Enable();
+    // }   
+    //
+    // private void OnDisable()
+    // {
+    //     _mouseClickAction.Disable();
+    // }
+    //
+    //
     
     /// <summary>
     /// 해당 게임에 맞게 Physics Layer를 설정합니다.
     /// 레이어 ID 인스턴스는 Awake,Start에서 선언할 수 없을에 유의합니다.
     /// </summary>
-    private void SetPhysicsLayer()
-    {
-        int SCREEN = LayerMask.NameToLayer("Screen");
-        int UI = LayerMask.NameToLayer("UI");
-        int IN_PLAY_OBJECT = LayerMask.NameToLayer("In-Play Objects");
-        int DEFAULT = LayerMask.NameToLayer("Default");
-        
-        
-        for (int i = 0; i < 32; i++)
-        {
-            for (int j = 0; j < 32; j++)
-            {
-                Physics.IgnoreLayerCollision(i, j, true);
-            }
-        }
-        
-        
-        Physics.IgnoreLayerCollision(UI,SCREEN,false);
-        Physics.IgnoreLayerCollision(DEFAULT,IN_PLAY_OBJECT,false);
-        Physics.IgnoreLayerCollision(DEFAULT,UI,false);
-        Physics.IgnoreLayerCollision(DEFAULT,DEFAULT,false);
-        
-    }
+  
 
     #if UNITY_EDITOR
     private bool isDebugPlayed;
@@ -479,9 +461,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        Image_Move.OnStep -= OnClick;
+    }
+
 
     // ------------------------- ▼ 메소드 목록 ------------------------------------------------
 
+    
+    private void SetPhysicsLayer()
+    {
+        int SCREEN = LayerMask.NameToLayer("Screen");
+        int UI = LayerMask.NameToLayer("UI");
+        int IN_PLAY_OBJECT = LayerMask.NameToLayer("In-Play Objects");
+        int DEFAULT = LayerMask.NameToLayer("Default");
+        
+        
+        for (int i = 0; i < 32; i++)
+        {
+            for (int j = 0; j < 32; j++)
+            {
+                Physics.IgnoreLayerCollision(i, j, true);
+            }
+        }
+        
+        
+        Physics.IgnoreLayerCollision(UI,SCREEN,false);
+        Physics.IgnoreLayerCollision(DEFAULT,IN_PLAY_OBJECT,false);
+        Physics.IgnoreLayerCollision(DEFAULT,UI,false);
+        Physics.IgnoreLayerCollision(DEFAULT,DEFAULT,false);
+        
+    }
+    
+    
     public static void AnimalInitialized()
     {
         initializedAnimalsCount++;
@@ -620,14 +633,15 @@ public class GameManager : MonoBehaviour
     public Ray _ray;
 
 
-    
-    public void ClickOnObject(InputAction.CallbackContext context)
+    public void OnClick()
+    //public void OnClick(InputAction.CallbackContext context) // 이벤트 구독방식으로 수정을 위한 parameter 제거.(11/27/23)
     {
        
             var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
             //_ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
             //spaceBar누르는 경우, 해당위치 전송 및 아래 함수가 실행.
-            _ray = _camera.ScreenPointToRay(Image_Move.screenPosition);
+          
+           // _ray = _camera.ScreenPointToRay(Image_Move.screenPosition);
             var hits = Physics.RaycastAll(_ray);
 
             foreach (var hit in hits)
