@@ -9,7 +9,7 @@ public class Underground_Image_Move : Image_Move
 
     private FootstepManager _footstepManager;
     private GameObject uiCamera;
-    public static Ray m_ray;
+    
     public override void Init()
     {
         base.Init();
@@ -24,8 +24,8 @@ public class Underground_Image_Move : Image_Move
         
         //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
         Debug.Assert(_footstepManager!=null);
-        m_ray= Camera.main.ScreenPointToRay(screenPosition);
-        _footstepManager.ray = m_ray;
+        ray = Camera.main.ScreenPointToRay(screenPosition);
+        _footstepManager.ray = ray;
        
 #if UNITY_EDITOR
         Debug.Log($"override ShootRay 호출");

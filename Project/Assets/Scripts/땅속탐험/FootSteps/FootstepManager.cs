@@ -234,21 +234,24 @@ public class FootstepManager : MonoBehaviour
         Image_Move.OnStep -= OnMouseClicked;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
-    
-    
+
+
     public static string currentlyClickedObjectName;
 
     public Ray ray;
-    RaycastHit hit;
+
+    private RaycastHit[] hits;
+
     //public void OnMouseClicked(InputAction.CallbackContext context)
     public void OnMouseClicked()
     {
-
         //ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-       
-
-        if (Physics.Raycast(Underground_Image_Move.m_ray, out hit))
+        hits = Physics.RaycastAll(ray);
+        foreach (var hit in hits)
         {
+#if UNITY_EDITOR
+            Debug.Log($"{gameObject.name} : onMouseClicked invoked");
+#endif
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
             var fC = obj.GetComponent<FootstepController>();
