@@ -45,12 +45,12 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
     // Update is called once per frame
     private void Start()
     {
-        _button.onClick.AddListener(ButtonClicked);
+        _button.onClick.AddListener(OnButtonClicked);
     }
 
     private bool _isUIPlayed;
     private bool _isClicked;
-    private void ButtonClicked()
+    private void OnButtonClicked()
     {
 
         if (!_isClicked)
@@ -59,7 +59,7 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
             if (gameManager.isStartButtonClicked.Value == false)
             {
 #if UNITY_EDITOR
-                Debug.Log("스타튼 버튼클릭");
+                Debug.Log("스타트 버튼클릭");
 #endif
             
                 gameManager.isStartButtonClicked.Value = true;

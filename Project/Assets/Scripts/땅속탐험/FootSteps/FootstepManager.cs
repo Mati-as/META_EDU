@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -197,6 +198,10 @@ public class FootstepManager : MonoBehaviour
 
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
+
+        
+        Image_Move.OnStep -= OnMouseClicked;
+        Image_Move.OnStep += OnMouseClicked;
     }
 
 
@@ -207,9 +212,9 @@ public class FootstepManager : MonoBehaviour
         _camera = Camera.main;
 
 
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClicked;
-        _mouseClickAction.Enable();
+        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        // _mouseClickAction.performed += OnMouseClicked
+        // _mouseClickAction.Enable();
 
 
         gameManager.currentStateRP
@@ -226,28 +231,31 @@ public class FootstepManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        Image_Move.OnStep -= OnMouseClicked;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
     
     
     public static string currentlyClickedObjectName;
 
-    public void OnMouseClicked(InputAction.CallbackContext context)
+    public Ray ray;
+    RaycastHit hit;
+    //public void OnMouseClicked(InputAction.CallbackContext context)
+    public void OnMouseClicked()
     {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit))
+        //ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+       
+
+        if (Physics.Raycast(Underground_Image_Move.m_ray, out hit))
         {
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
             var fC = obj.GetComponent<FootstepController>();
-
+#if UNITY_EDITOR
+            Debug.Log($"raycasted object name :{obj}");
+#endif
             currentlyClickedObjectName = fC.animalNameToCall;
-
-           
-            
-            
             InspectObject(clickedObject);
         }
     }
