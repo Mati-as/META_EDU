@@ -23,10 +23,6 @@ public class StoryUIButtonListener : MonoBehaviour
         _button.onClick.AddListener(ButtonClicked);
     }
 
-    private void Update()
-    {
-       
-    }
 
     public float elapsedAfterArrived;
     public void ButtonClicked()

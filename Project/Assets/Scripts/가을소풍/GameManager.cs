@@ -291,6 +291,7 @@ public class GameManager : MonoBehaviour
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
     //inputSystem Update로 인한 인스턴스 11/13/23
+    
     private Camera _camera;
     private InputAction _mouseClickAction;
     private ParticleSystem _particle;
@@ -430,7 +431,7 @@ public class GameManager : MonoBehaviour
                     if (AnimalShaderController.isGlowOn)
                     {
 #if UNITY_EDITOR
-
+                        Debug.Log("동물 선택 가능");
 #endif
                        // ClickOnObject();
                     }
@@ -624,7 +625,9 @@ public class GameManager : MonoBehaviour
     {
        
             var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
-            _ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            //_ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            //spaceBar누르는 경우, 해당위치 전송 및 아래 함수가 실행.
+            _ray = _camera.ScreenPointToRay(Image_Move.screenPosition);
             var hits = Physics.RaycastAll(_ray);
 
             foreach (var hit in hits)
@@ -662,11 +665,7 @@ public class GameManager : MonoBehaviour
             }
         
     }
-
-    private void OnCastRays(Vector3 position)
-    {
-        
-    }
+    
   
     RaycastHit hit;
     private RaycastHit hitSecond;

@@ -23,11 +23,11 @@ public class AnimalTripTutorialButtonController : MonoBehaviour
     // Update is called once per frame
     private void Start()
     {
-        _button.onClick.AddListener(ButtonClicked);
+        _button.onClick.AddListener(OnButtonClicked);
     }
 
     private bool _isUIPlayed;
-    void ButtonClicked()
+    void OnButtonClicked()
     {
         if (!_isUIPlayed)
         {

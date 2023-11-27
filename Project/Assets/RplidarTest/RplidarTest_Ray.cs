@@ -114,10 +114,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
     }
 
-    void Update()
-    {
-
-    }
+   
     void GenMesh()
     {
         while (true)
