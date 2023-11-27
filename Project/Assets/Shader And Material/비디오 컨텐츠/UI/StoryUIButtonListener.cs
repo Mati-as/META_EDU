@@ -30,8 +30,7 @@ public class StoryUIButtonListener : MonoBehaviour
         //storyUI 구분을 위한 로직
         if (GameManager.isCameraArrivedToPlay)
         {
-            GameManager.isGameStopped = false;
-            _storyUIController.gameObject.SetActive(false);
+           // _storyUIController.gameObject.SetActive(false);
         }
         else
         {

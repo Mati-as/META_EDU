@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 
 public class StoryUIController : MonoBehaviour
 {
@@ -73,14 +74,17 @@ public class StoryUIController : MonoBehaviour
         Debug.Log("UI내용 변경");
     
     }
-    
+
+    public GameObject _button;
     public void OnGameStart()
     {
+        _button.SetActive(false);
         _storyUITmp.text = _secondUIMessage;
     }
 
     public void OnFinishUIActiavte()
     {
+        _button.SetActive(true);
         Debug.Log("게임종료 메세지 출력");
         _storyUITmp.text = _lastUIMessage;
       //  _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());

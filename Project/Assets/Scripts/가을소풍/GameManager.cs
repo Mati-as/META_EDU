@@ -302,8 +302,8 @@ public class GameManager : MonoBehaviour
         // _camera = Camera.main;
         // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         // _mouseClickAction.performed += ClickOnObject;
-        Image_Move.OnStep -= OnClick;
-        Image_Move.OnStep += OnClick;
+        Image_Move.OnStep -= OnStep;
+        Image_Move.OnStep += OnStep;
         
         
         
@@ -463,7 +463,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Image_Move.OnStep -= OnClick;
+        Image_Move.OnStep -= OnStep;
     }
 
 
@@ -633,7 +633,7 @@ public class GameManager : MonoBehaviour
     public Ray _ray;
 
 
-    public void OnClick()
+    public void OnStep()
     //public void OnClick(InputAction.CallbackContext context) // 이벤트 구독방식으로 수정을 위한 parameter 제거.(11/27/23)
     {
        
