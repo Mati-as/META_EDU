@@ -31,8 +31,8 @@ public class Manager_Sensor : MonoBehaviour
 
     private void Init()
     {
-        UI_Camera = GameObject.Find("UICamera").GetComponent<Camera>();
-        UI_Canvas = GameObject.Find("UIManager");
+        UI_Camera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+        UI_Canvas = GameObject.FindWithTag("UIManager");
 
     }
     public GameObject Get_UIcanvas()

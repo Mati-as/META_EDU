@@ -21,7 +21,7 @@ public class Space_EffectController : Base_EffectController
     private void Awake()
     {
         Init();
-        SetInputSystem();
+        // SetInputSystem();
     }
     
     private void Start()
@@ -68,25 +68,35 @@ public class Space_EffectController : Base_EffectController
         foreach (var ps in _particles) particlePool.Push(ps);
     }
 
-    public void SetInputSystem()
+    // public void SetInputSystem()
+    // {
+    //     _camera = Camera.main;
+    //     _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+    //     _mouseClickAction.performed += OnMouseClick;
+    // }
+
+
+    // private void OnMouseClick(InputAction.CallbackContext context)
+    // {
+    //     var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+    //     RaycastHit hit;
+    //
+    //     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+    //         PlayParticle(hit.point,
+    //             _adSources, _burstAdSources,
+    //             ref _currentCountForBurst, false, wait: 3.4f);
+    // }
+
+    protected override void OnClicked()
     {
-        _camera = Camera.main;
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
-    }
-
-
-    private void OnMouseClick(InputAction.CallbackContext context)
-    {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+        hits = Physics.RaycastAll(ray);
+        foreach (var hit in hits)
+        {
             PlayParticle(hit.point,
                 _adSources, _burstAdSources,
                 ref _currentCountForBurst, false, wait: 3.4f);
+        }
     }
-
 
     // 하위 메소드 모두 BaseController로 이전 및 상속. 정상작동 (11/23/23)       
 

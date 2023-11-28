@@ -5,7 +5,7 @@ using DG.Tweening;
 using UnityEngine.InputSystem;
 using System;
 
-public class Base_EffectController : MonoBehaviour
+public abstract class Base_EffectController : MonoBehaviour
 {
    
     public ParticleSystem[] _particles;
@@ -22,8 +22,10 @@ public class Base_EffectController : MonoBehaviour
     public int burstCount;
     public float targetVol;
     protected int _burstAudioSize;
-    
-    
+
+    public Ray ray { get; set; }
+    public RaycastHit[] hits;
+    protected abstract void OnClicked();
 
     protected virtual void Init()
     {
@@ -36,9 +38,17 @@ public class Base_EffectController : MonoBehaviour
                 GrowPool(ps);
             }
         }
-       
-     
+
+        Video_Image_Move.OnStep -= OnClicked;
+        Video_Image_Move.OnStep += OnClicked;
+        
     }
+
+    protected virtual void OnDestroy()
+    {
+        Video_Image_Move.OnStep -= OnClicked;
+    }
+
     protected void GrowPool(ParticleSystem original, int count = 1)
     {
         for (var i = 0; i < count; i++)
@@ -69,20 +79,12 @@ public class Base_EffectController : MonoBehaviour
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
     
-    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f)
-    {
-       
-        yield return wait_;
-        ps.Stop();
-        ps.Clear();
-        ps.gameObject.SetActive(false);
-        particlePool.Push(ps); // Return the particle system to the pool
-    }
+
 
 
     protected virtual void PlayParticle(Vector3 position, AudioSource[] audioSources, AudioSource[]
             burstAudioSources, ref int currentCountForBurst, bool isBurst = false,
-        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f)
+        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f,bool isWaitTimeManuallySet = false)
     {
         
 
@@ -107,13 +109,15 @@ public class Base_EffectController : MonoBehaviour
                 //     foreach (var ps in _particles)
                 //         GrowPool(ps);
 
-                TurnOnParticle(position, burstCount, wait);
+              
+                TurnOnParticle(position, emitAmount, wait,isWaitTimeManuallySet);
                 FindAndPlayAudio(burstAudioSources);
                 currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(position, emitAmount, wait);
+              
+                TurnOnParticle(position, emitAmount, wait,isWaitTimeManuallySet);
                 FindAndPlayAudio(audioSources);
                 currentCountForBurst++;
             }
@@ -121,19 +125,57 @@ public class Base_EffectController : MonoBehaviour
     }
 
 
-    protected void TurnOnParticle(Vector3 position, int loopCount = 2, float delayToReturn = 3f)
+    protected void TurnOnParticle(Vector3 position, int loopCount = 2, float delayToReturn = 3f, bool isWaitTimeManuallySet = false)
     {
         for (var i = 0; i < loopCount; i++)
         {
-            var ps = particlePool.Pop();
+            ParticleSystem ps = particlePool.Pop();
             ps.transform.position = position;
             ps.gameObject.SetActive(true);
             ps.Play();
+
+           
+            if (isWaitTimeManuallySet)
+            {
+                StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax));
+            }
+            else 
+            {
 #if UNITY_EDITOR
-            Debug.Log("enough particles in the pool.");
+                Debug.Log($"delayToReturn: {delayToReturn}");
 #endif
-            StartCoroutine(ReturnToPoolAfterDelay(ps, delayToReturn));
+                StartCoroutine(ReturnToPoolAfterDelay(ps, delayToReturn));
+            }
+
+         
         }
+        
+    }
+    
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f,bool isWaitTimeManuallySet = false)
+    {
+        if (wait_ == null)
+        {
+            if (isWaitTimeManuallySet)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"PS.LIFETIME.CONSTANTMAX : {ps.main.startLifetime.constantMax}");
+#endif
+                wait_ = new WaitForSeconds(ps.main.startLifetime.constantMax);
+            }
+            else
+            {
+                wait_ = new WaitForSeconds(wait);
+            }
+            
+        }
+        
+        
+        yield return new WaitForSeconds(ps.main.startLifetime.constantMax);
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(false);
+        particlePool.Push(ps); // Return the particle system to the pool
     }
     
     protected void FindAndPlayAudio(AudioSource[] audioSources,bool isBurst = false, bool recursive = false)
@@ -156,6 +198,8 @@ public class Base_EffectController : MonoBehaviour
         
 
     }
+
+
 
 
 }

@@ -33,7 +33,7 @@ public class SummerNight_EffectController : Base_EffectController
     private void Awake()
     {
         Init();
-        SetInputSystem();
+        //SetInputSystem();
     }
     
     private void Start()
@@ -49,7 +49,18 @@ public class SummerNight_EffectController : Base_EffectController
     {
         _mouseClickAction.Disable();
     }
-    
+      
+    protected override void OnClicked()
+    {
+        hits = Physics.RaycastAll(ray);
+        foreach (var hit in hits)
+        {
+            PlayParticle(hit.point, _adSources, _burstAdSources
+                , ref _currentCountForBurst
+                , true);
+        }
+       
+    }
 
     protected override void Init()
     {
@@ -81,22 +92,22 @@ public class SummerNight_EffectController : Base_EffectController
         foreach (var ps in _particles) particlePool.Push(ps);
     }
 
-    public void SetInputSystem()
-    {
-        _camera = Camera.main;
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
-    }
+    // public void SetInputSystem()
+    // {
+    //     _camera = Camera.main;
+    //     _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+    //     _mouseClickAction.performed += OnMouseClick;
+    // }
 
 
-    private void OnMouseClick(InputAction.CallbackContext context)
-    {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
-            PlayParticle(hit.point,
-                _adSources, _burstAdSources,
-                ref _currentCountForBurst, true, wait: _returnWaitForSeconds);
-    }
+    // private void OnMouseClick(InputAction.CallbackContext context)
+    // {
+    //     var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+    //     RaycastHit hit;
+    //
+    //     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+    //         PlayParticle(hit.point,
+    //             _adSources, _burstAdSources,
+    //             ref _currentCountForBurst, true, wait: _returnWaitForSeconds);
+    // }
 }

@@ -21,22 +21,38 @@ public class KoreanFlag_EffectController : Base_EffectController
     private void Awake()
     {
         Init();
-        SetInputSystem();
+        // SetInputSystem();
     }
 
-    private void OnMouseClick(InputAction.CallbackContext context)
-    {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
+//     private void OnMouseClick(InputAction.CallbackContext context)
+//     {
+//         var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+//         RaycastHit hit;
+//
+//         if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+//             PlayParticle(hit.point, _adSources, _burstAdSources
+//                 , ref _currentCountForBurst
+//                 , true, burstCount: 15, emitAmount: 1);
+//
+// #if UNITY_EDITOR
+//         Debug.Log($"currentCountForBust:   {_currentCountForBurst}");
+// #endif
+//     }
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer(LAYER_NAME)))
+   
+    protected override void OnClicked()
+    {
+        //var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        
+        hits = Physics.RaycastAll(ray);
+        foreach (var hit in hits)
+        {
             PlayParticle(hit.point, _adSources, _burstAdSources
                 , ref _currentCountForBurst
                 , true, burstCount: 15, emitAmount: 1);
-
-#if UNITY_EDITOR
-        Debug.Log($"currentCountForBust:   {_currentCountForBurst}");
-#endif
+            break;
+        }
+       
     }
 
     private void Start()
@@ -58,12 +74,12 @@ public class KoreanFlag_EffectController : Base_EffectController
     private readonly string LAYER_NAME = "UI";
     private RaycastHit _hit;
 
-    public void SetInputSystem()
-    {
-        _camera = Camera.main;
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
-    }
+    // public void SetInputSystem()
+    // {
+    //     _camera = Camera.main;
+    //     _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+    //     _mouseClickAction.performed += OnMouseClick;
+    // }
 
 
     protected override void Init()

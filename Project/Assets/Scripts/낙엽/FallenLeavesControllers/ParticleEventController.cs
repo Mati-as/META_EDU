@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
-public class ParticleEventController : MonoBehaviour
+public class ParticleEventController : MonoBehaviour,IOnClicked
 {
     private ParticleSystem.Particle[] particles;
     [Header("Fallen Leaves Particle")] [Space(10f)]
@@ -106,24 +106,59 @@ public class ParticleEventController : MonoBehaviour
    
     private void Start()
     {
-        _camera = Camera.main;
-        
-        _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
-        _mouseClickAction.Enable();
+        // _camera = Camera.main;
+        //
+        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
+        // _mouseClickAction.performed += OnMouseClick;
+        // _mouseClickAction.Enable();
         
         PlayAllParticles();
         
     }
+
+    public Ray ray { get; set; }
     
     private void OnDisable()
     {
         _mouseClickAction.Disable();
     }
 
-    private void OnMouseClick(InputAction.CallbackContext context)
+//     private void OnMouseClick(InputAction.CallbackContext context)
+//     {
+//         
+//         for(int i = 2 ;i < _audioSources.Length ;i += 2)
+//         {
+//             if (!_audioSources[i].isPlaying)
+//             {
+//                 SoundManager.FadeInAndOutSound(_audioSources[i],1.0f,0.05f
+//                     ,duration,0.05f,rollBack:true);
+//                 
+//                 SoundManager.FadeInAndOutSound(_audioSources[i+1],0.05f,0.05f
+//                     ,0.9f,0.05f,rollBack:true);
+// #if UNITY_EDITOR
+//                 Debug.Log("클릭소리 재생");
+// #endif
+//                 break;
+//
+//             }
+//         }
+//       
+//          //   var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+//          
+//         RaycastHit hit;
+//
+//         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+//         {
+//             Debug.Log("Ray hit: " + hit.transform.name);
+//             ClickEventApplyRadialForce(hit.point,particleSystemA);
+//             ClickEventApplyRadialForce(hit.point,particleSystemB);
+//             ClickEventApplyRadialForce(hit.point,particleSystemC);
+//         }
+//     }
+
+    private IOnClicked _iOnClicked;
+    public void OnClicked()
     {
-        
         for(int i = 2 ;i < _audioSources.Length ;i += 2)
         {
             if (!_audioSources[i].isPlaying)
@@ -141,11 +176,15 @@ public class ParticleEventController : MonoBehaviour
             }
         }
       
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        //   var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+         
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
+            hit.transform.gameObject.TryGetComponent<IOnClicked>(out _iOnClicked);
+            _iOnClicked?.OnClicked();
+            
             Debug.Log("Ray hit: " + hit.transform.name);
             ClickEventApplyRadialForce(hit.point,particleSystemA);
             ClickEventApplyRadialForce(hit.point,particleSystemB);
@@ -232,6 +271,10 @@ public class ParticleEventController : MonoBehaviour
     
     private void Subscribe()
     {
+        FallenLeaves_Image_Move.OnStep -= OnClicked;
+        FallenLeaves_Image_Move.OnStep += OnClicked;
+        
+        
         FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent -= PlayAllParticles;
         FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent += PlayAllParticles;
     }
@@ -239,6 +282,7 @@ public class ParticleEventController : MonoBehaviour
     private void Unsubscribe()
     {
         FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent -= PlayAllParticles;
+        FallenLeaves_Image_Move.OnStep -= OnClicked;
     }
     
     private void PlayAllParticles()

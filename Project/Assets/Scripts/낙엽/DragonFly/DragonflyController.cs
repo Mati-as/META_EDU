@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragonflyController : MonoBehaviour
+public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
 {
     [Header("DragonFly Movement Settings")] [Space(10f)] [SerializeField]
     private Transform landingPositionA;
@@ -92,12 +92,12 @@ public class DragonflyController : MonoBehaviour
 
     private void Start()
     {
-        _audioSource = GetComponent<AudioSource>();
-        var trigger = GetComponent<EventTrigger>();
-        var entry = new EventTrigger.Entry();
-        entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener(data => { OnClicked(); });
-        trigger.triggers.Add(entry);
+        // _audioSource = GetComponent<AudioSource>();
+        // var trigger = GetComponent<EventTrigger>();
+        // var entry = new EventTrigger.Entry();
+        // entry.eventID = EventTriggerType.PointerClick;
+        // entry.callback.AddListener(data => { OnClicked(); });
+        // trigger.triggers.Add(entry);
 
 
         PlayIdleAnim();
@@ -208,7 +208,7 @@ public class DragonflyController : MonoBehaviour
             });
     }
 
-    private void OnClicked()
+    public void OnClicked()
     {
 #if UNITY_EDITOR
         Debug.Log("OnClicked진입");

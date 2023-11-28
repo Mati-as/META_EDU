@@ -1,7 +1,5 @@
-namespace MyCustomizedEditor.Common.Util
-{
+
     public interface IOnClicked
     {
-        
+        public abstract void OnClicked();
     }
-}
