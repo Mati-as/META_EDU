@@ -31,12 +31,21 @@ using System.Xml;
             return null;
         }
 
-        public static void LoadXML(TextAsset xmlAsset,XmlDocument xmlDoc, string path)
+        public static void LoadXML(ref TextAsset xmlAsset,ref XmlDocument xmlDoc, string path)
         {
-            xmlAsset = Resources.Load<TextAsset>("Data/AnimalNarrationStringData"); 
+            xmlAsset = Resources.Load<TextAsset>(path); 
             xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlAsset.text);
         }
+        
+        public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
+        {
+            T component = go.GetComponent<T>();
+            if (component == null)
+                component = go.AddComponent<T>();
+            return component;
+        }
+
         
         public static T FindChild<T>(GameObject go, string name = null, bool recursive = false) where T : UnityEngine.Object
         {

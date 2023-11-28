@@ -63,7 +63,7 @@ public class Space_EffectController : Base_EffectController
             _burstAdSources[i].pitch = Random.Range(0.95f, 1.3f);
         }
 
-        wait_ = new WaitForSeconds(_returnWaitForSeconds);
+       
         _particles = GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in _particles) particlePool.Push(ps);
     }
@@ -94,7 +94,7 @@ public class Space_EffectController : Base_EffectController
         {
             PlayParticle(hit.point,
                 _adSources, _burstAdSources,
-                ref _currentCountForBurst, false, wait: 3.4f);
+                ref _currentCountForBurst, false, wait: 3.4f,usePsMainDuration:true);
         }
     }
 

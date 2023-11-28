@@ -84,7 +84,7 @@ public abstract class Base_EffectController : MonoBehaviour
 
     protected virtual void PlayParticle(Vector3 position, AudioSource[] audioSources, AudioSource[]
             burstAudioSources, ref int currentCountForBurst, bool isBurst = false,
-        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f,bool isWaitTimeManuallySet = false)
+        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f,bool usePsMainDuration = false)
     {
         
 
@@ -110,14 +110,14 @@ public abstract class Base_EffectController : MonoBehaviour
                 //         GrowPool(ps);
 
               
-                TurnOnParticle(position, emitAmount, wait,isWaitTimeManuallySet);
+                TurnOnParticle(position, emitAmount, wait,usePsMainDuration);
                 FindAndPlayAudio(burstAudioSources);
                 currentCountForBurst = 0;
             }
             else
             {
               
-                TurnOnParticle(position, emitAmount, wait,isWaitTimeManuallySet);
+                TurnOnParticle(position, emitAmount, wait,usePsMainDuration);
                 FindAndPlayAudio(audioSources);
                 currentCountForBurst++;
             }

@@ -72,7 +72,7 @@ public class Turtle_EffectController : Base_EffectController
         {
             PlayParticle(hit.point, _adSources, _burstAdSources
                 , ref _currentCountForBurst
-                , false,isWaitTimeManuallySet:true);
+                , false,usePsMainDuration:true);
         }
     }
 

@@ -280,7 +280,7 @@ public class AnimalShaderController : MonoBehaviour
       
 
         // SkinnedMeshRenderer 가져오기
-        _bodyMeshRenderer = Util.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
+        _bodyMeshRenderer = Utils.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
         _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
         
         if (_bodyMeshRenderer != null && _bodyMat != null)
