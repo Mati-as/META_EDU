@@ -8,7 +8,7 @@ using Vector3 = UnityEngine.Vector3;
 #endif
 
 
-public class IdleLakeAnimalController : MonoBehaviour
+public class IdleLakeAnimalController : MonoBehaviour,Lake_IAnimalBehavior
 {
     private Animator _animator;
     private AudioSource _audioSource;
@@ -82,7 +82,7 @@ public class IdleLakeAnimalController : MonoBehaviour
         foreach (var hit in hits)
             if (hit.collider.gameObject == gameObject)
             {
-                OnClicked();
+               // OnClicked();
                 break;
             }
     }
@@ -101,7 +101,7 @@ public class IdleLakeAnimalController : MonoBehaviour
     public Transform[] dog_ClickedAnimationPath;
     public Vector3[] dog_ClickedAnimationPathVector;
    
-    private void OnClicked()
+    public void OnClicked()
     {
         //Clickable은 AnimalSetter에서 event방식으로 관리, isClciked 중복클릭방지를 위해 방어적 프로그래밍 적용
         if (!_isClicked && _isClickable)

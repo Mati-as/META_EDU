@@ -7,13 +7,17 @@ using Debug = UnityEngine.Debug;
 #if UNITY_EDITOR
 #endif
 
-public class IdleLakeDuckUponLakeController : MonoBehaviour
+public class IdleLakeDuckUponLakeController : MonoBehaviour,Lake_IAnimalBehavior
 {
     private enum Sound
     {
         Squeak,
         Dive
     }
+
+ 
+    
+    
 
     [Header("DoTween Parameters")] public float shakeStrength;
     public int vibrato;
@@ -81,7 +85,7 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
 
     public float jumpDuration;
 
-    private void OnClicked()
+    public void OnClicked()
     {
         _collider.enabled = false;
         Lake_SoundManager.PlaySound(_audioSourceSqueak, audioClips[(int)Sound.Squeak]);
@@ -119,6 +123,8 @@ public class IdleLakeDuckUponLakeController : MonoBehaviour
         seq.OnComplete(ReturnToPatrol);
     }
 
+
+ 
     private void ReturnToPatrol()
     {
         var directionToLook = _patrolPathVec[0];

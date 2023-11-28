@@ -53,14 +53,7 @@ public class Underground_Image_Move : Image_Move
             }
     }
     
-    // public override void SetUIEssentials()
-    // {
-    //     UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-    //     GameObject.FindWithTag("UICamera").TryGetComponent(out uiCamera);
-    //     GR = uiCamera.GetComponent<GraphicRaycaster>();
-    //     PED = new PointerEventData(null);
-    // }
-
+  
   
     
     

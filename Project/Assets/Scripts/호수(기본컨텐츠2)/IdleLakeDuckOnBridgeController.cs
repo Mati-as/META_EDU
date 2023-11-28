@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using MyCustomizedEditor;
 #endif
 
-public class IdleLakeDuckOnBridgeController : MonoBehaviour
+public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
 {
     enum Sound
     {
@@ -81,7 +81,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour
     public float jumpDuration;
     public Sequence _sequence;
     public ParticleSystem secondWaterParticle;
-    private void OnClicked()
+    public void OnClicked()
     {
 #if UNITY_EDITOR
         Debug.Log("Ducks on the bridge Clicked!");
