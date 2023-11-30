@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 public class StarryNight_MoonController : MonoBehaviour
 {
-    public Transform target;
+    public Transform[] pathTargets;
     private Vector3 _defaultPosition;
     private float _defaultSize;
     public float scaleUpSize;
@@ -21,11 +21,12 @@ public class StarryNight_MoonController : MonoBehaviour
     public Color[] targetColors;
     void Start()
     {
-        _defaultPosition = transform.position;
-        _defaultSize = transform.localScale.x;
 
-      
-      
+        transform.position = pathTargets[0].position;
+        
+        _defaultSize = transform.localScale.x;
+        _defaultPosition = transform.position;
+        
         
         if (targetMaterial == null)
         {
@@ -53,14 +54,16 @@ public class StarryNight_MoonController : MonoBehaviour
         // 랜덤한 duration 값을 설정
         randomDuration = Random.Range(20,22);
         
-        Vector3[] path = new Vector3[2];
-        path[0] = _defaultPosition;
-        path[1] = target.position;
+        Vector3[] path = new Vector3[3];
+        path[0] = pathTargets[0].position;
+        path[1] = pathTargets[1].position;
+        path[2] = pathTargets[2].position;
         // Path 설정 (여기에서는 원형 경로를 설정)
-        transform.DOPath(path, randomDuration)
+        transform.DOPath(path, randomDuration,PathType.CatmullRom)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
+                transform.position = _defaultPosition;
                 DoColorToTarget();
                 OnPathAnimationComplete();
             });

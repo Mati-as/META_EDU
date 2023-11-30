@@ -538,8 +538,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489167018}
   m_LocalRotation: {x: 0.7190164, y: -0, z: -0, w: 0.6949932}
-  m_LocalPosition: {x: -19.77, y: 14.72, z: 1.19}
-  m_LocalScale: {x: 0.54210085, y: 1.0134032, z: 0.5421007}
+  m_LocalPosition: {x: -19.77001, y: 14.7199955, z: 1.190006}
+  m_LocalScale: {x: 0.52217597, y: 0.9761553, z: 0.5221757}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1672867596}
@@ -621,8 +621,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3741814ada10a2444b3f4b380bdea205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 645584773}
-  scaleUpSize: 0.84
+  pathTargets:
+  - {fileID: 645584773}
+  - {fileID: 1252672112}
+  - {fileID: 1637435240}
+  scaleUpSize: 55
   targetMaterial: {fileID: 0}
   colorChangeSpeed: 1
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
@@ -857,7 +860,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &645584772
 GameObject:
@@ -869,7 +872,7 @@ GameObject:
   m_Component:
   - component: {fileID: 645584773}
   m_Layer: 0
-  m_Name: Moon Move Target
+  m_Name: Moon Move Default
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -882,13 +885,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 645584772}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 442.44, y: 148.52, z: -192.02}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 394.09, y: 137.6, z: -192.02}
+  m_LocalScale: {x: 0.99999994, y: 1.0000001, z: 0.99999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &704871935
 GameObject:
@@ -1216,6 +1219,37 @@ Transform:
   m_Father: {fileID: 463261086}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1252672111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1252672112}
+  m_Layer: 0
+  m_Name: Moon Move Peak
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1252672112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252672111}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 425.14, y: 150.08, z: -192.02}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1306366579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,7 +1332,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: b8e34c84c5c5b2149bf65e1fe4bdafa5,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: -8422.882
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b8e34c84c5c5b2149bf65e1fe4bdafa5,
         type: 3}
@@ -1482,6 +1516,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 91.945984, y: 0, z: 0}
+--- !u!1 &1637435239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1637435240}
+  m_Layer: 0
+  m_Name: Moon Move Arrival
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1637435240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637435239}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 465.04, y: 137.6, z: -192.02}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1655492522 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b8e34c84c5c5b2149bf65e1fe4bdafa5,
@@ -1502,8 +1567,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 53de5b3da9ab77142bc3b0746c8742ee, type: 2}
   refractionSpeed: 3
-  amplitude: 0.007
-  minRefraction: 0.015
+  amplitude: 0.036
+  minRefraction: 0.6
   rotationDurationForEachLoop: 5
   uppperTarget: {fileID: 334333481}
   lowerTarget: {fileID: 1727945009}
