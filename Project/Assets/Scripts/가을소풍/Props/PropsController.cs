@@ -13,14 +13,14 @@ public class PropsController : MonoBehaviour
     private void Awake()
     {
         _touchDownBoxCollider.enabled = false;
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
         
-        GameManager.onRoundReadyEvent -= OnReady;
-        GameManager.onRoundReadyEvent += OnReady;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnReady;
+        AnimalTrip_GameManager.onRoundReadyEvent += OnReady;
 
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
         
     }
 
@@ -46,11 +46,11 @@ public class PropsController : MonoBehaviour
     }
     private void OnDestroy()
     {
-        GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
         
-        GameManager.onRoundReadyEvent -= OnReady;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnReady;
         
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
     }
     
     

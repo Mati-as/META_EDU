@@ -40,10 +40,11 @@ public class UIManager : MonoBehaviour
     public string onCorrectMessage;
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
+    [FormerlySerializedAs("gameManager")]
     [FormerlySerializedAs("_gameManager")]
     [Header("Reference")] [Space(10f)] 
     [SerializeField]
-    private GameManager gameManager;
+    private AnimalTrip_GameManager animalTripGameManager;
     
     
 
@@ -107,7 +108,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        foreach(AnimalData animalData in gameManager.allAnimals)
+        foreach(AnimalData animalData in animalTripGameManager.allAnimals)
         {
             animalNameToKorean.Add(animalData.englishName,animalData.koreanName);
         }
@@ -157,7 +158,7 @@ public class UIManager : MonoBehaviour
         {
             
             _isCorrectMessagePlaying = true; //중복재생 방지
-            onCorrectMessage = $"{animalNameToKorean[GameManager.answer]}";
+            onCorrectMessage = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}";
                                //$"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
             
             _coroutines[0] = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
@@ -169,16 +170,16 @@ public class UIManager : MonoBehaviour
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
      
 
-        if (GameManager.isGameStarted && _isQuizPlaying == false && !GameManager.isCorrected && !_isCorrectMessagePlaying)
+        if (AnimalTrip_GameManager.isGameStarted && _isQuizPlaying == false && !AnimalTrip_GameManager.isCorrected && !_isCorrectMessagePlaying)
         {
             StopCoroutineWithNullCheck(_coroutines);
 #if DEFINE_TEST
-            Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[GameManager.answer]}");
+            Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[AnimalTrip_GameManager.answer]}");
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[GameManager.answer]}" 
-                               + $"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾아보세요";
+            roundInstruction = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}" 
+                               + $"{EulOrReul(animalNameToKorean[AnimalTrip_GameManager.answer])}" + " 찾아보세요";
             _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }
@@ -188,7 +189,7 @@ public class UIManager : MonoBehaviour
         Debug.Log("제시문 하단 종료 이벤트 발생!");
 
         _isQuizPlaying = false;
-        if (_isQuizPlaying == false && GameManager.isGameFinished)
+        if (_isQuizPlaying == false && AnimalTrip_GameManager.isGameFinished)
         {
             Debug.Log(" 지시문 종료");
             StopCoroutineWithNullCheck(_coroutines);
@@ -267,7 +268,7 @@ public class UIManager : MonoBehaviour
         yield return GetWaitForSeconds(storyUIController.waitTimeForSecondActivation);
         storyUIController.gameObject.SetActive(true);
         SecondStoryUIActivateEvent?.Invoke();
-        GameManager.isGameStopped = true;
+        AnimalTrip_GameManager.isGameStopped = true;
         StopCoroutine(_coroutineC);
     }
 
@@ -313,32 +314,32 @@ public class UIManager : MonoBehaviour
     
     private void SubscribeGameManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
         
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
 
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
 
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
         
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
 

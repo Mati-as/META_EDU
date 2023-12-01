@@ -12,14 +12,13 @@ using UnityEngine.UI;
 /// </summary>
 public class Image_Move : MonoBehaviour
 {
-    public GameManager _gameManager;
+   
 
     public float moveSpeed;
 
     //public Image imageA;
     public GameObject UI_Canvas;
     public Camera _uiCamera;
-
     
     public GraphicRaycaster GR;
     public PointerEventData PED;
@@ -41,9 +40,8 @@ public class Image_Move : MonoBehaviour
 
     public virtual void Init()
     {
-        //게임 오브젝트 이름과 결합도를 낮추기 위해 Tag사용
+        //각 씬의 Overlay-UICamera Tag 할당 필요
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-        GameObject.FindWithTag("GameManager").TryGetComponent(out _gameManager);
 
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
         _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
@@ -55,7 +53,7 @@ public class Image_Move : MonoBehaviour
         SetUIEssentials();
     }
 
-    public virtual void SetUIEssentials()
+    public void SetUIEssentials()
     {
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         GR = UI_Canvas.GetComponent<GraphicRaycaster>();
@@ -102,18 +100,17 @@ public class Image_Move : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
-        screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+     
+        
         ray = Camera.main.ScreenPointToRay(screenPosition);
-
-        //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
-        if (_gameManager != null) _gameManager._ray = ray;
-
-
+        
+        
         // GameManger에서 Ray 발생시키므로, 아래 로직 미사용 (11/27/23)
         // var ray = Camera.main.ScreenPointToRay(screenPosition);
         // RaycastHit hit;
         // if (Physics.Raycast(ray, out hit)) Debug.Log(hit.transform.name);
 
+        screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
 
         PED.position = screenPosition;
         var results = new List<RaycastResult>();

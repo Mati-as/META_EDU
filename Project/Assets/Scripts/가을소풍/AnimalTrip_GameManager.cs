@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 
 // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
 // 시퀀스 흐름도입니다. 
-public class GameManager : MonoBehaviour
+public class AnimalTrip_GameManager : MonoBehaviour
 {
   
    
@@ -700,7 +700,7 @@ public class GameManager : MonoBehaviour
             if (_uiAudioController.narrationAudioSource != null
                 && !_uiAudioController.narrationAudioSource.isPlaying)
             {
-                GameManager.isGameStopped = false;
+                AnimalTrip_GameManager.isGameStopped = false;
                 _storyUIController.gameObject.SetActive(false);
           
             }

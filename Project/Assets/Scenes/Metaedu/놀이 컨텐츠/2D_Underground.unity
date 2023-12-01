@@ -17367,7 +17367,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6008355088037114046, guid: 5022d621131ac774c8fdc45e59f7bb7d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5022d621131ac774c8fdc45e59f7bb7d, type: 3}
 --- !u!224 &883080919 stripped
 RectTransform:
@@ -17833,8 +17834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17c54f9403d00bb4282a6792c4ed0f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameManager: {fileID: 0}
-  moveSpeed: 20
+  moveSpeed: 30
   UI_Canvas: {fileID: 0}
   _uiCamera: {fileID: 0}
   GR: {fileID: 0}

@@ -138,7 +138,7 @@ public class StoryUIController : MonoBehaviour
             playerIcon.position = Vector3.Lerp(playerIconDefault.position, playerIconMovePosition.position, t);
 
             
-            if (GameManager.isCameraArrivedToPlay)
+            if (AnimalTrip_GameManager.isCameraArrivedToPlay)
             {
                 if (_coroutineA != null && _coroutineB != null)
                 {
@@ -156,8 +156,8 @@ public class StoryUIController : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-         GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
@@ -168,8 +168,8 @@ public class StoryUIController : MonoBehaviour
         UIManager.GameFinishUIActivateEvent -= OnFinishUIActiavte;
         UIManager.GameFinishUIActivateEvent += OnFinishUIActiavte;
             
-        GameManager.onGameStartEvent -= OnRoundReady;
-        GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTrip_GameManager.onGameStartEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
 
         // GameManager.onCorrectedEvent -= OnCorrect;
         // GameManager.onCorrectedEvent += OnCorrect;
@@ -186,8 +186,8 @@ public class StoryUIController : MonoBehaviour
 
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;

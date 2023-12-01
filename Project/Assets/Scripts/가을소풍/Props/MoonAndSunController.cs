@@ -39,17 +39,17 @@ public class MoonAndSunController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (GameManager.isGameStarted)
+        if (AnimalTrip_GameManager.isGameStarted)
         {
             MoveUp(waitTime,movingTimeSec);
         }
 
-        if (GameManager.isRoundReady)
+        if (AnimalTrip_GameManager.isRoundReady)
         {
             InitializeLerpParams(false);
         }
 
-        if (GameManager.isCorrected)
+        if (AnimalTrip_GameManager.isCorrected)
         {
             #if UNITY_EDITOR
             Debug.Log("moon shader param changing");
@@ -57,7 +57,7 @@ public class MoonAndSunController : MonoBehaviour
             SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor * targetIntensity);
         }
 
-        if (GameManager.isRoundFinished)
+        if (AnimalTrip_GameManager.isRoundFinished)
         {
             if (!_isElpasedInitialized)
             {
@@ -66,7 +66,7 @@ public class MoonAndSunController : MonoBehaviour
             SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor);
         }
         
-        if (GameManager.isGameFinished)
+        if (AnimalTrip_GameManager.isGameFinished)
         {
             if (!_isElapseInitialized)
             {
