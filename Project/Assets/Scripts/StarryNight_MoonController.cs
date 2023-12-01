@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 
 public class StarryNight_MoonController : MonoBehaviour
@@ -14,7 +17,9 @@ public class StarryNight_MoonController : MonoBehaviour
     
     public Material targetMaterial;
     public float colorChangeSpeed = 1.0f;
-   
+    private float _currentRotationX;
+    public float rotationAmount;
+
 
     
     public Color defaultColor;
@@ -43,10 +48,33 @@ public class StarryNight_MoonController : MonoBehaviour
         }
 
         StartPathAnimation();
-        
+        DoRoatate();
         DoScaleUp();
 
     }
+    
+  
+
+    private void DoRoatate()
+    {
+        DOVirtual.Float(0,rotationAmount ,3f, rotationAmount =>
+        {
+            transform.rotation *= Quaternion.Euler(rotationAmount,rotationAmount,rotationAmount);
+        }).OnComplete(()=>DoRoatateBack());  
+    }
+    private void DoRoatateBack()
+    {
+        DOVirtual.Float(0,rotationAmount ,3f, rotationAmount =>
+        {
+            transform.rotation *= Quaternion.Euler(-rotationAmount,-rotationAmount,-rotationAmount);
+        }).OnComplete(()=>
+        {
+            DoRoatate();
+        }); ;  
+    }
+
+  
+    
 
     private float randomDuration;
     private void StartPathAnimation()
@@ -68,13 +96,16 @@ public class StarryNight_MoonController : MonoBehaviour
                 OnPathAnimationComplete();
             });
     }
-    
+
+ 
+
     private void OnPathAnimationComplete()
     {
         // 애니메이션이 끝나면 다음 애니메이션 시작
         StartPathAnimation();
     }
 
+    
 
     private static readonly int BaseColorPropertyID = Shader.PropertyToID("_BaseColor");
     
@@ -111,8 +142,5 @@ public class StarryNight_MoonController : MonoBehaviour
             .OnComplete(() => DoScaleUp(scaleUpSize));
     }
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
+ 
 }

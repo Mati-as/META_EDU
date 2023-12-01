@@ -437,8 +437,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463261085}
   m_LocalRotation: {x: 0.7190164, y: -0, z: -0, w: 0.6949932}
-  m_LocalPosition: {x: -3.82, y: -3.17, z: -2.2000008}
-  m_LocalScale: {x: 4.435921, y: 4.4359207, z: 4.4359207}
+  m_LocalPosition: {x: -4.17, y: -4.92, z: -2.2000008}
+  m_LocalScale: {x: 4.1, y: 4.4359207, z: 4.63}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1185702059}
@@ -537,14 +537,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489167018}
-  m_LocalRotation: {x: 0.7190164, y: -0, z: -0, w: 0.6949932}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -19.77001, y: 14.7199955, z: 1.190006}
   m_LocalScale: {x: 0.52217597, y: 0.9761553, z: 0.5221757}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1672867596}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 91.945984, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!64 &489167020
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -625,9 +625,10 @@ MonoBehaviour:
   - {fileID: 645584773}
   - {fileID: 1252672112}
   - {fileID: 1637435240}
-  scaleUpSize: 55
+  scaleUpSize: 0.8
   targetMaterial: {fileID: 0}
-  colorChangeSpeed: 1
+  colorChangeSpeed: 3
+  rotationAmount: 0.3
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   targetColors:
   - {r: 0.26148093, g: 0.3305411, b: 0.49056602, a: 1}
