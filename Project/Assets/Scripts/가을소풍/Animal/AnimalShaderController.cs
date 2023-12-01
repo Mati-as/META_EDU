@@ -276,7 +276,8 @@ public class AnimalShaderController : MonoBehaviour
         
         
         // 리소스 폴더에서 머티리얼 불러오기
-        _bodyMat = Resources.Load<Material>("가을소풍/" + _animalData.englishName);
+        var tempMat = Resources.Load<Material>("가을소풍/" + _animalData.englishName);
+        _bodyMat = tempMat;
       
 
         // SkinnedMeshRenderer 가져오기
