@@ -47,10 +47,11 @@ public class StarryNight_MoonController : MonoBehaviour
             }
         }
 
+        
         StartPathAnimation();
         DoRoatate();
-        DoScaleUp();
-
+        DoScaleUp(scaleUpSize);
+        DoColorToTarget();
     }
     
   
@@ -80,7 +81,7 @@ public class StarryNight_MoonController : MonoBehaviour
     private void StartPathAnimation()
     {
         // 랜덤한 duration 값을 설정
-        randomDuration = Random.Range(20,22);
+        randomDuration = Random.Range(40,42);
         
         Vector3[] path = new Vector3[3];
         path[0] = pathTargets[0].position;
@@ -130,13 +131,13 @@ public class StarryNight_MoonController : MonoBehaviour
         //.OnComplete(()=>DoColorToTarget());
     }
 
-    private void DoScaleUp(float targetSize = 0.8f)
+    private void DoScaleUp(float targetSize)
     {
         transform.DOScale(targetSize, Random.Range(3,20))
             .OnComplete(() => DoScaleDown(_defaultSize));
     }
 
-    private void DoScaleDown(float defaultSize = 0.5f)
+    private void DoScaleDown(float defaultSize)
     {
         transform.DOScale(defaultSize, Random.Range(3,20))
             .OnComplete(() => DoScaleUp(scaleUpSize));

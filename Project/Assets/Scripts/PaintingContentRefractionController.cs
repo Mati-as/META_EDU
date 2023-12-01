@@ -14,13 +14,14 @@ public class PaintingContentRefractionController : MonoBehaviour
     public float minRefraction;
     public float rotationDurationForEachLoop;
     private float _rotationAmount;
+    private Vector3 _defaultScaleVector;
     private void Update()
     {
         // Sin 함수를 사용하여 "_refractionPower" 값을 왔다갔다 변경합니다.
         float refractionValue = minRefraction + Mathf.Sin(Time.time * refractionSpeed) * amplitude + amplitude;
 
 #if UNITY_EDITOR
-        Debug.Log($"refractionValue: {refractionValue}");
+  
 #endif
         // 머티리얼의 "_refractionPower" 프로퍼티를 변경합니다.
         material.SetFloat("_refractionPower", refractionValue);
@@ -33,6 +34,12 @@ public class PaintingContentRefractionController : MonoBehaviour
 
     private void Start()
     {
+
+        _defaultScaleVector = transform.localScale;
+        _defaultSize = transform.localScale.y;
+
+        DoScaleY();
+        
         DOTween.To(() => transform.eulerAngles, x => transform.eulerAngles = x,
                 new Vector3(360f, transform.eulerAngles.y, transform.eulerAngles.z), rotationDurationForEachLoop)
             .SetEase(Ease.Linear)// 일정한 속도로 회전
@@ -56,5 +63,24 @@ public class PaintingContentRefractionController : MonoBehaviour
     // private void MoveUp()
     // {
     //     transform.DOMove(uppperTarget.position, Random.Range(0,0.5f)).OnComplete(MoveDown);
-    // }
+    //
+    //}
+
+    private float _defaultSize;
+    public float targetSize;
+    private void DoScaleY()
+    {
+        DOVirtual.Float(_defaultSize, targetSize, 5f, currentSize =>
+        {
+            transform.localScale = new Vector3(_defaultScaleVector.x, currentSize, _defaultScaleVector.z);
+        }).OnComplete(()=>DoDownScaleY());
+    }
+    
+    private void DoDownScaleY()
+    {
+        DOVirtual.Float(targetSize, _defaultSize, 5f, currentSize =>
+        {
+            transform.localScale = new Vector3(_defaultScaleVector.x, currentSize, _defaultScaleVector.z);
+        }).OnComplete(()=>DoScaleY());
+    }
 }
