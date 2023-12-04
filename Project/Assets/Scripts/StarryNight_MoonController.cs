@@ -125,10 +125,10 @@ public class StarryNight_MoonController : MonoBehaviour
         Debug.Log("Color to Target..");
 #endif
         int currentColorIndex= Random.Range(0, 3);;
-        int randomDuratio = Random.Range(4, 7);
+        randomDuration = Random.Range(4, 7);
         
         DOVirtual
-            .Color(defaultColor, targetColors[currentColorIndex], randomDuratio, color =>
+            .Color(defaultColor, targetColors[currentColorIndex], randomDuration, color =>
                 { targetMaterial.SetColor(BaseColorPropertyID, color); })
             .OnComplete(()=>DoColorToDefault(currentColorIndex));
     }
