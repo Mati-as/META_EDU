@@ -628,13 +628,14 @@ MonoBehaviour:
   scaleUpSize: 0.8
   targetMaterial: {fileID: 0}
   colorChangeSpeed: 3
-  rotationAmount: 0
   defaultColor: {r: 0.7921569, g: 0.8352941, b: 0.8980392, a: 1}
   targetColors:
   - {r: 0.376157, g: 0.48315, b: 0.745283, a: 1}
   - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
   - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
   - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
+  duration: 0
+  rotationAmount: 0
 --- !u!1 &526114940
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,7 +926,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.97
+  m_Intensity: 0
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1444,14 +1445,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1601660877}
-  m_LocalRotation: {x: -0.30339333, y: -0.15239193, z: 0.9406002, w: 0.00071002}
-  m_LocalPosition: {x: -13.63, y: 9.68, z: 1.52}
-  m_LocalScale: {x: 14.417754, y: 15.836461, z: 5.698062}
+  m_LocalRotation: {x: -0.03163595, y: -0.6958677, z: 0.6895491, w: -0.19821543}
+  m_LocalPosition: {x: -17.506, y: 10.126003, z: -0.92199737}
+  m_LocalScale: {x: 11, y: 11, z: 11}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1672867596}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 16.634, y: -36.576, z: 174.382}
+  m_LocalEulerAnglesHint: {x: 76.461, y: 82.752, z: 281.592}
 --- !u!114 &1601660879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1468,16 +1469,16 @@ MonoBehaviour:
   - {fileID: 645584773}
   - {fileID: 1252672112}
   - {fileID: 1637435240}
-  scaleUpSize: 13
+  scaleUpSize: 11
   targetMaterial: {fileID: 0}
   colorChangeSpeed: 3
-  rotationAmount: 0
-  defaultColor: {r: 0.7921569, g: 0.8352941, b: 0.8980392, a: 1}
+  defaultColor: {r: 0.8156863, g: 0.85882354, b: 1, a: 0.4627451}
   targetColors:
-  - {r: 0.376157, g: 0.48315, b: 0.745283, a: 1}
-  - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
-  - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
-  - {r: 0.3764706, g: 0.48235294, b: 0.74509805, a: 1}
+  - {r: 0.64627093, g: 0.72243476, b: 0.9716981, a: 0.4627451}
+  - {r: 0.64705884, g: 0.72156864, b: 0.972549, a: 0.4627451}
+  - {r: 0.64705884, g: 0.72156864, b: 0.972549, a: 0.4627451}
+  duration: 4.28
+  rotationAmount: 280
 --- !u!64 &1601660880
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1541,7 +1542,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1601660877}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 4300000, guid: 794f0e9f14d08e0429b8fcc936e4e6b9, type: 3}
 --- !u!1 &1607380919
 GameObject:
   m_ObjectHideFlags: 0

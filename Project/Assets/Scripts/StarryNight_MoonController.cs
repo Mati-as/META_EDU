@@ -18,7 +18,7 @@ public class StarryNight_MoonController : MonoBehaviour
     public Material targetMaterial;
     public float colorChangeSpeed = 1.0f;
     private float _currentRotationX;
-    public float rotationAmount;
+
 
 
     
@@ -27,6 +27,7 @@ public class StarryNight_MoonController : MonoBehaviour
     void Start()
     {
 
+        DOTween.Init();
         transform.position = pathTargets[0].position;
         
         _defaultSize = transform.localScale.x;
@@ -49,28 +50,35 @@ public class StarryNight_MoonController : MonoBehaviour
 
         
         StartPathAnimation();
-        DoRoatate();
-        DoScaleUp(scaleUpSize);
+        DoRotate();
+        //DoScaleUp(scaleUpSize);
         DoColorToTarget();
     }
-    
-  
 
-    private void DoRoatate()
+
+    [Space(10f)] [Header("rotation setting")]
+    public float duration;
+    private float currentRotation = 0f;
+    public float rotationAmount;
+    
+
+    private void DoRotate()
     {
-        DOVirtual.Float(0,rotationAmount ,3f, rotationAmount =>
-        {
-            transform.rotation *= Quaternion.Euler(rotationAmount,rotationAmount,rotationAmount);
-        }).OnComplete(()=>DoRoatateBack());  
+
+
+            currentRotation = (currentRotation + rotationAmount) % 360; // Keep within 360 degrees
+            Quaternion endRotation = Quaternion.Euler(0,0 , currentRotation);
+
+            transform.DORotateQuaternion(endRotation, duration).SetEase(Ease.Linear).SetRelative().OnComplete(DoRotate);
     }
-    private void DoRoatateBack()
+    private void DoRotateBack()
     {
         DOVirtual.Float(0,rotationAmount ,3f, rotationAmount =>
         {
-            transform.rotation *= Quaternion.Euler(-rotationAmount,-rotationAmount,-rotationAmount);
+            transform.rotation *= Quaternion.Euler( transform.rotation.x, transform.rotation.y,-rotationAmount);
         }).OnComplete(()=>
         {
-            DoRoatate();
+            DoRotate();
         }); ;  
     }
 
@@ -108,15 +116,19 @@ public class StarryNight_MoonController : MonoBehaviour
 
     
 
-    private static readonly int BaseColorPropertyID = Shader.PropertyToID("_BaseColor");
+    private static readonly int BaseColorPropertyID = Shader.PropertyToID("_Color");
     
     private void DoColorToTarget()
     {
-        int currentColorIndex;
-        currentColorIndex = Random.Range(0, 3);
+        
+#if UNITY_EDITOR
+        Debug.Log("Color to Target..");
+#endif
+        int currentColorIndex= Random.Range(0, 3);;
+        int randomDuratio = Random.Range(4, 7);
         
         DOVirtual
-            .Color(defaultColor, targetColors[currentColorIndex], randomDuration/2, color =>
+            .Color(defaultColor, targetColors[currentColorIndex], randomDuratio, color =>
                 { targetMaterial.SetColor(BaseColorPropertyID, color); })
             .OnComplete(()=>DoColorToDefault(currentColorIndex));
     }
@@ -124,11 +136,11 @@ public class StarryNight_MoonController : MonoBehaviour
     private void DoColorToDefault(int currentColorIndex)
     {
         DOVirtual
-            .Color(targetColors[currentColorIndex], defaultColor, randomDuration/2, color =>
+            .Color(targetColors[currentColorIndex], defaultColor, randomDuration, color =>
             {
                 targetMaterial.SetColor(BaseColorPropertyID, color);
-            });
-        //.OnComplete(()=>DoColorToTarget());
+            })
+        .OnComplete(()=>DoColorToTarget());
     }
 
     private void DoScaleUp(float targetSize)
