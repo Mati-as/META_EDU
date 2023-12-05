@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.PlayerLoop;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -24,9 +26,24 @@ public class StarryNight_MoonController : MonoBehaviour
     
     public Color defaultColor;
     public Color[] targetColors;
+
+    [Header("Chormatic Abbreation")] 
+    public Volume volume;
+    private ChromaticAberration _chromaticAberration;
+    public float chromaticDuration;
+    public float chromaticIntensity;
+    public float chromaticDefault;
+    
     void Start()
     {
 
+        if (volume.profile.TryGet(out _chromaticAberration))
+        {
+            // 초기 설정
+            _chromaticAberration.intensity.value = 0f;
+        }
+        
+        
         DOTween.Init();
         transform.position = pathTargets[0].position;
         
@@ -53,6 +70,7 @@ public class StarryNight_MoonController : MonoBehaviour
         DoRotate();
         //DoScaleUp(scaleUpSize);
         DoColorToTarget();
+        DoVirtualChromaticIncrease();
     }
 
 
@@ -60,7 +78,22 @@ public class StarryNight_MoonController : MonoBehaviour
     public float duration;
     private float currentRotation = 0f;
     public float rotationAmount;
-    
+
+    private void DoVirtualChromaticIncrease()
+    {
+        DOVirtual.Float(chromaticDefault, chromaticIntensity, chromaticDuration, value =>
+        {
+            _chromaticAberration.intensity.value = value;
+        }).OnComplete(()=>DoVirtualChromaticDecrease());
+    }
+
+    private void DoVirtualChromaticDecrease()
+    {
+        DOVirtual.Float(chromaticIntensity, chromaticDefault, chromaticDuration, value =>
+        {
+            _chromaticAberration.intensity.value = value;
+        }).OnComplete(()=>DoVirtualChromaticIncrease());;
+    }
 
     private void DoRotate()
     {
@@ -89,7 +122,7 @@ public class StarryNight_MoonController : MonoBehaviour
     private void StartPathAnimation()
     {
         // 랜덤한 duration 값을 설정
-        randomDuration = Random.Range(40,42);
+        randomDuration = Random.Range(60,65);
         
         Vector3[] path = new Vector3[3];
         path[0] = pathTargets[0].position;
