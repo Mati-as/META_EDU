@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class StarryNight_StarlightController : MonoBehaviour
 {
+    
     public Light[] spotLights;
 
     [Header("Color")] public Color[] colors;
@@ -30,6 +31,8 @@ public class StarryNight_StarlightController : MonoBehaviour
     private void Start()
     {
         Init();
+        DOTween.Init();
+       
         _determinedIntensity = Random.Range(intensityMin, intensityMax);
         _determinedInterval = Random.Range(intervalMin, intervalMax);
         foreach (var light in spotLights) DoVirtualIntensityIncrease(light);
@@ -50,16 +53,19 @@ public class StarryNight_StarlightController : MonoBehaviour
     {
         _determinedIntensity = Random.Range(intensityMin, intensityMax);
         _determinedInterval = Random.Range(intervalMin, intervalMax);
-        DOVirtual.Float(defaultIntensity, _determinedIntensity, _determinedInterval
+        
+        DOVirtual.Float(defaultIntensity, _determinedIntensity, 0.6f
                 , value => light.intensity = value)
-            .OnComplete(() => DoVirtualIntensityDecrease(light));
+            .OnComplete(() => DoVirtualIntensityDecrease(light,_determinedIntensity,_determinedInterval))
+            .SetDelay(_determinedInterval);
     }
 
 
-    private void DoVirtualIntensityDecrease(Light light)
+    private void DoVirtualIntensityDecrease(Light light,float intensity,float delay)
     {
-        DOVirtual.Float(_determinedIntensity, defaultIntensity, _determinedInterval
+        DOVirtual.Float(intensity, defaultIntensity, 0.8f
                 , value => light.intensity = value)
-            .OnComplete(() => DoVirtualIntensityIncrease(light));
+            .OnComplete(() => DoVirtualIntensityIncrease(light)
+            ).SetDelay(delay);
     }
 }

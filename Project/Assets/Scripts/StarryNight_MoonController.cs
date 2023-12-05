@@ -118,7 +118,8 @@ public class StarryNight_MoonController : MonoBehaviour
   
     
 
-    private float randomDuration;
+    public float randomDuration { get; private set; }
+    public static event Action OnPathStart;
     private void StartPathAnimation()
     {
         // 랜덤한 duration 값을 설정
@@ -128,6 +129,7 @@ public class StarryNight_MoonController : MonoBehaviour
         path[0] = pathTargets[0].position;
         path[1] = pathTargets[1].position;
         path[2] = pathTargets[2].position;
+        OnPathStart?.Invoke();
         // Path 설정 (여기에서는 원형 경로를 설정)
         transform.DOPath(path, randomDuration,PathType.CatmullRom)
             .SetEase(Ease.Linear)
@@ -189,4 +191,6 @@ public class StarryNight_MoonController : MonoBehaviour
     }
     // Update is called once per frame
  
+    
+    
 }
