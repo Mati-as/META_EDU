@@ -9,11 +9,11 @@ public abstract class Base_EffectController : MonoBehaviour
 {
    
     public ParticleSystem[] _particles;
-    
+  
     [HideInInspector]
     public Camera _camera;
     public InputAction _mouseClickAction;
-    protected Stack<ParticleSystem> particlePool;
+    protected Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
   
     private int _count;
@@ -29,7 +29,9 @@ public abstract class Base_EffectController : MonoBehaviour
 
     protected virtual void Init()
     {
-        particlePool = new Stack<ParticleSystem>();
+        var temp = GetComponentsInChildren<ParticleSystem>();
+        _particles = new ParticleSystem[temp.Length];
+        particlePool = new Queue<ParticleSystem>();
         
         for (int i = 0; i < burstAmount; i++)
         {
@@ -37,6 +39,7 @@ public abstract class Base_EffectController : MonoBehaviour
             {
                 GrowPool(ps);
             }
+            
         }
 
         Video_Image_Move.OnStep -= OnClicked;
@@ -53,9 +56,9 @@ public abstract class Base_EffectController : MonoBehaviour
     {
         for (var i = 0; i < count; i++)
         {
-            var newInstance = Instantiate(original);
+            var newInstance = Instantiate(original,transform);
             newInstance.gameObject.SetActive(false);
-            particlePool.Push(newInstance);
+            particlePool.Enqueue(newInstance);
         }
     }
 
@@ -64,7 +67,7 @@ public abstract class Base_EffectController : MonoBehaviour
         audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
         {
 #if UNITY_EDITOR
-            Debug.Log("audioQuit");
+       
 #endif
             audioSource.Stop();
         });
@@ -73,7 +76,7 @@ public abstract class Base_EffectController : MonoBehaviour
     protected void FadeInSound( AudioSource audioSource,float targetVolume = 1f,float duration = 0.3f)
     {
 #if UNITY_EDITOR
-        Debug.Log("audioPlay");
+     
 #endif
         audioSource.Play();
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
@@ -83,9 +86,10 @@ public abstract class Base_EffectController : MonoBehaviour
 
 
     protected virtual void PlayParticle(Vector3 position, AudioSource[] audioSources, AudioSource[]
-            burstAudioSources, ref int currentCountForBurst, bool isBurst = false,
+            burstAudioSources, ref int currentCountForBurst, bool isBurstMode = false,
         int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f,bool usePsMainDuration = false)
     {
+
         
 
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
@@ -97,27 +101,27 @@ public abstract class Base_EffectController : MonoBehaviour
                     GrowPool(ps);
 
 #if UNITY_EDITOR
-            Debug.Log("no particles in the pool. creating particles and push...");
+           
 #endif
         }
 
         if (particlePool.Count >= emitAmount)
         {
-            if (currentCountForBurst > burstCount && isBurst)
+            if (currentCountForBurst > burstCount && isBurstMode)
             {
                 // if (particlePool.Count <= burstAmount)
                 //     foreach (var ps in _particles)
                 //         GrowPool(ps);
 
               
-                TurnOnParticle(position, emitAmount, wait,usePsMainDuration);
+                TurnOnParticle(position, loopCount:emitAmount, wait,usePsMainDuration);
                 FindAndPlayAudio(burstAudioSources);
                 currentCountForBurst = 0;
             }
             else
             {
               
-                TurnOnParticle(position, emitAmount, wait,usePsMainDuration);
+                TurnOnParticle(position, loopCount:emitAmount, wait,usePsMainDuration);
                 FindAndPlayAudio(audioSources);
                 currentCountForBurst++;
             }
@@ -125,11 +129,11 @@ public abstract class Base_EffectController : MonoBehaviour
     }
 
 
-    protected void TurnOnParticle(Vector3 position, int loopCount = 2, float delayToReturn = 3f, bool isWaitTimeManuallySet = false)
+    protected void TurnOnParticle(Vector3 position, int loopCount = 1, float delayToReturn = 3f, bool isWaitTimeManuallySet = false)
     {
         for (var i = 0; i < loopCount; i++)
         {
-            ParticleSystem ps = particlePool.Pop();
+            ParticleSystem ps = particlePool.Dequeue();
             ps.transform.position = position;
             ps.gameObject.SetActive(true);
             ps.Play();
@@ -175,7 +179,7 @@ public abstract class Base_EffectController : MonoBehaviour
         ps.Stop();
         ps.Clear();
         ps.gameObject.SetActive(false);
-        particlePool.Push(ps); // Return the particle system to the pool
+        particlePool.Enqueue(ps); // Return the particle system to the pool
     }
     
     protected void FindAndPlayAudio(AudioSource[] audioSources,bool isBurst = false, bool recursive = false)
@@ -191,7 +195,7 @@ public abstract class Base_EffectController : MonoBehaviour
             else
             {
 #if UNITY_EDITOR
-                Debug.LogWarning("No available AudioSource!");
+                
 #endif
             }
         }

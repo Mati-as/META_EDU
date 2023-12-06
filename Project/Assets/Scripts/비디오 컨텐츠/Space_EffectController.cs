@@ -42,9 +42,10 @@ public class Space_EffectController : Base_EffectController
     protected override void Init()
     {
         base.Init();
-
+        // 배열길이 참조 및 크기할당
+       
         _adSources = new AudioSource[audioSize];
-
+        
         for (var i = 0; i < audioSize; i++)
         {
             _adSources[i] = gameObject.AddComponent<AudioSource>();
@@ -63,9 +64,9 @@ public class Space_EffectController : Base_EffectController
             _burstAdSources[i].pitch = Random.Range(0.95f, 1.3f);
         }
 
-       
+        
         _particles = GetComponentsInChildren<ParticleSystem>();
-        foreach (var ps in _particles) particlePool.Push(ps);
+        foreach (var ps in _particles) particlePool.Enqueue(ps);
     }
 
     // public void SetInputSystem()
@@ -87,15 +88,28 @@ public class Space_EffectController : Base_EffectController
     //             ref _currentCountForBurst, false, wait: 3.4f);
     // }
 
+    public int waitCount;
+    private int _currentCount;
+
     protected override void OnClicked()
     {
-        hits = Physics.RaycastAll(ray);
-        foreach (var hit in hits)
+        if (_currentCount > waitCount)
         {
-            PlayParticle(hit.point,
-                _adSources, _burstAdSources,
-                ref _currentCountForBurst, false, wait: 3.4f,usePsMainDuration:true);
+            hits = Physics.RaycastAll(ray);
+            foreach (var hit in hits)
+            {
+                PlayParticle(hit.point,
+                    _adSources, _burstAdSources,
+                    ref _currentCountForBurst, false, wait: 3.4f,usePsMainDuration:true,emitAmount:emitAmount);
+            }
+
+            _currentCount = 0;
         }
+        else
+        {
+            _currentCount++;
+        }
+       
     }
 
     // 하위 메소드 모두 BaseController로 이전 및 상속. 정상작동 (11/23/23)       

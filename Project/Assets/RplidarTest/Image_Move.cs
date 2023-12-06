@@ -86,9 +86,7 @@ public class Image_Move : MonoBehaviour
 
         //GameManager의 RayCast를 발생 
         OnStep?.Invoke();
-#if UNITY_EDITOR
- Debug.Log("SpaceBar Pressed");
-#endif
+
     }
 
     public Ray ray;

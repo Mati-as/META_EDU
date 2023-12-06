@@ -112,7 +112,7 @@ public class KoreanFlag_EffectController : Base_EffectController
 
         foreach (var ps in _particles)
             if (ps != null)
-                particlePool.Push(ps);
+                particlePool.Enqueue(ps);
     }
 
 }

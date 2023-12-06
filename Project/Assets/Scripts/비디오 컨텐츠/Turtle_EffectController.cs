@@ -103,7 +103,7 @@ public class Turtle_EffectController : Base_EffectController
 
         //  wait_ = new WaitForSeconds(_returnWaitForSeconds);
         _particles = GetComponentsInChildren<ParticleSystem>();
-        foreach (var ps in _particles) particlePool.Push(ps);
+        foreach (var ps in _particles) particlePool.Enqueue(ps);
     }
     
     
