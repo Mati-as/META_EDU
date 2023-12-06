@@ -79,7 +79,7 @@ public class Space_EffectControllerGlow : Base_EffectController
 
     protected override void OnClicked()
     {
-        hits = Physics.RaycastAll(ray);
+        hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
             PlayParticle(hit.point,

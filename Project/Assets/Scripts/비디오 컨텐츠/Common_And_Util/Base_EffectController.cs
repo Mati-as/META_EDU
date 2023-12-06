@@ -23,7 +23,7 @@ public abstract class Base_EffectController : MonoBehaviour
     public float targetVol;
     protected int _burstAudioSize;
 
-    public Ray ray { get; set; }
+    public Ray ray_BaseController { get; set; }
     public RaycastHit[] hits;
     protected abstract void OnClicked();
 
@@ -33,14 +33,14 @@ public abstract class Base_EffectController : MonoBehaviour
         _particles = new ParticleSystem[temp.Length];
         particlePool = new Queue<ParticleSystem>();
         
-        for (int i = 0; i < burstAmount; i++)
-        {
-            foreach(ParticleSystem ps in _particles)
-            {
-                GrowPool(ps);
-            }
-            
-        }
+        // for (int i = 0; i < burstAmount; i++)
+        // {
+        //     foreach(ParticleSystem ps in _particles)
+        //     {
+        //         GrowPool(ps);
+        //     }
+        //     
+        // }
 
         Video_Image_Move.OnStep -= OnClicked;
         Video_Image_Move.OnStep += OnClicked;

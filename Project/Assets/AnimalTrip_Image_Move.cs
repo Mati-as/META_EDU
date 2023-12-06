@@ -23,7 +23,7 @@ public class AnimalTrip_Image_Move : Image_Move
         base.ShootRay();
         
         //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
-        _animalTripGameManager._ray = ray;
+        _animalTripGameManager._ray = ray_ImageMove;
        
 #if UNITY_EDITOR
         Debug.Log($"override ShootRay 호출");

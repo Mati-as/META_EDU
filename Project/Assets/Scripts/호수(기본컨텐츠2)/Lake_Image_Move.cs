@@ -24,8 +24,8 @@ using UnityEngine.UI;
         
             //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
             Debug.Assert(_lake_GameManger!=null);
-            ray = Camera.main.ScreenPointToRay(screenPosition);
-            Lake_GameManager.ray = ray;
+            ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+            Lake_GameManager.ray = ray_ImageMove;
        
 #if UNITY_EDITOR
             Debug.Log($"override ShootRay 호출");

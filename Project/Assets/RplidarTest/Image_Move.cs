@@ -29,6 +29,7 @@ public class Image_Move : MonoBehaviour
     public Vector3 moveDirection;
     public Button button;
 
+    public Ray ray_ImageMove { get; set; }
     // 현재는 SpaceBar click 시 입니다. 11/27/23
     public static event Action OnStep;
 
@@ -83,32 +84,18 @@ public class Image_Move : MonoBehaviour
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장 
         ShootRay();
-
-        //GameManager의 RayCast를 발생 
         OnStep?.Invoke();
-
     }
-
-    public Ray ray;
-
+    
     /// <summary>
     ///     1. GameManager에서 로직처리를 위한 ray 정보를 업데이트
     ///     2. UI에 rayCast하고 Button 컴포넌트의 onClick이벤트 실행
-
     /// </summary>
     public virtual void ShootRay()
     {
-     
-        
-        ray = Camera.main.ScreenPointToRay(screenPosition);
-        
-        
-        // GameManger에서 Ray 발생시키므로, 아래 로직 미사용 (11/27/23)
-        // var ray = Camera.main.ScreenPointToRay(screenPosition);
-        // RaycastHit hit;
-        // if (Physics.Raycast(ray, out hit)) Debug.Log(hit.transform.name);
-
         screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+        ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+      
 
         PED.position = screenPosition;
         var results = new List<RaycastResult>();
@@ -117,23 +104,11 @@ public class Image_Move : MonoBehaviour
         if (results.Count > 0)
             for (var i = 0; i < results.Count; i++)
             {
-#if UNITY_EDITOR
-                Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
-#endif
                 results[i].gameObject.TryGetComponent<Button>(out button);
                 button?.onClick?.Invoke();
             }
         
-#if UNITY_EDITOR
- 
-        Debug.Log($"Raycast 오브젝트 갯수: {results.Count}");
-        if (button != null)
-        {
-            Debug.Log($"버튼 클릭 )");
-        }
-       
-#endif
-
+      
     }
     
     public void Move()

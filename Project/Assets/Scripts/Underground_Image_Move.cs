@@ -24,7 +24,7 @@ public class Underground_Image_Move : Image_Move
         base.ShootRay();
         
         //GameManager에서 Cast할 _Ray를 업데이트.. (UI가 아닌 게임오브젝트 클릭)
-        _footstepManager.ray = ray;
+        _footstepManager.ray = ray_ImageMove;
        
 #if UNITY_EDITOR
         Debug.Log($"override ShootRay 호출");

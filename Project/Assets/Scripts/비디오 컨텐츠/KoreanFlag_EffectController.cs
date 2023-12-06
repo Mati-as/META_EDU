@@ -44,7 +44,7 @@ public class KoreanFlag_EffectController : Base_EffectController
     {
         //var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         
-        hits = Physics.RaycastAll(ray);
+        hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
             PlayParticle(hit.point, _adSources, _burstAdSources
