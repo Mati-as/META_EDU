@@ -55,8 +55,8 @@ public class SummerNight_EffectController : Base_EffectController
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(hit.point, _adSources, _burstAdSources
-                , ref _currentCountForBurst
+            PlayParticle(hit.point
+                
                 , true);
         }
        

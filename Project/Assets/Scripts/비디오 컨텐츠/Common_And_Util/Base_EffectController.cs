@@ -9,47 +9,117 @@ public abstract class Base_EffectController : MonoBehaviour
 {
    
     public ParticleSystem[] _particles;
-  
+    private int _currentCountForBurst;
+    private readonly float _returnWaitForSeconds = 3f;
+    public ParticleSystem[] particleSystem;
+    
     [HideInInspector]
     public Camera _camera;
     public InputAction _mouseClickAction;
-    protected Queue<ParticleSystem> particlePool;
+    public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
-  
+        
+    [Header("Particle Emission Setting")]
     private int _count;
     public int emitAmount;
     public int burstAmount;
     public int burstCount;
     public float targetVol;
-    protected int _burstAudioSize;
-
+   
+    [Header("Audio Setting")]
+    public int audioSize;
+    public int _burstAudioSize;
+    
+    public AudioClip _effectClip;
+    public AudioClip _burstClip;
+    
+    private AudioSource[] _audioSources;
+    private AudioSource[] _burstAudioSources;
+   
+   
     public Ray ray_BaseController { get; set; }
     public RaycastHit[] hits;
     protected abstract void OnClicked();
 
     protected virtual void Init()
     {
-        var temp = GetComponentsInChildren<ParticleSystem>();
-        _particles = new ParticleSystem[temp.Length];
-        particlePool = new Queue<ParticleSystem>();
-        
-        // for (int i = 0; i < burstAmount; i++)
-        // {
-        //     foreach(ParticleSystem ps in _particles)
-        //     {
-        //         GrowPool(ps);
-        //     }
-        //     
-        // }
+        SetPool();
+        SetAudio();
+        BindEvent();
+    }
+    private void Start()
+    {
+        _camera = Camera.main;
+    }
 
-        Video_Image_Move.OnStep -= OnClicked;
-        Video_Image_Move.OnStep += OnClicked;
-        
+    private void Awake()
+    {
+        Init();
+    }
+
+    private void OnEnable()
+    {
+        _mouseClickAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _mouseClickAction.Disable();
     }
 
     protected virtual void OnDestroy()
     {
         Video_Image_Move.OnStep -= OnClicked;
+    }
+
+    protected virtual void SetPool()
+    {
+        particlePool = new Queue<ParticleSystem>();
+        _particles = new ParticleSystem[transform.childCount];
+        int index = 0;
+        foreach (Transform child in transform)
+        {
+            ParticleSystem ps = child.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                _particles[index++] = ps;
+            }
+        }
+
+        foreach (var ps in _particles)
+        {
+            particlePool.Enqueue(ps);
+            ps.gameObject.SetActive(false);
+        }
+    }
+
+    protected virtual void BindEvent()
+    {
+        Video_Image_Move.OnStep -= OnClicked;
+        Video_Image_Move.OnStep += OnClicked;
+    }
+
+    private void SetAudio()
+    {
+        _audioSources = new AudioSource[audioSize];
+
+        for (var i = 0; i < audioSize; i++)
+        {
+            _audioSources[i] = gameObject.AddComponent<AudioSource>();
+            _audioSources[i].clip = _effectClip;
+            _audioSources[i].playOnAwake = false;
+            _audioSources[i].pitch = UnityEngine.Random.Range(0.75f, 1.4f);
+        }
+
+        _burstAudioSources = new AudioSource[_burstAudioSize];
+
+        for (var i = 0; i < _burstAudioSize; i++)
+        {
+            _burstAudioSources[i] = gameObject.AddComponent<AudioSource>();
+            _burstAudioSources[i].clip = _burstClip;
+            _burstAudioSources[i].playOnAwake = false;
+            _burstAudioSources[i].pitch = UnityEngine.Random.Range(0.95f, 1.3f);
+        }
     }
 
     protected void GrowPool(ParticleSystem original, int count = 1)
@@ -82,16 +152,12 @@ public abstract class Base_EffectController : MonoBehaviour
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
     
+    
 
-
-
-    protected virtual void PlayParticle(Vector3 position, AudioSource[] audioSources, AudioSource[]
-            burstAudioSources, ref int currentCountForBurst, bool isBurstMode = false,
+    protected virtual void PlayParticle(Vector3 position, bool isBurstMode = false,
         int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f,bool usePsMainDuration = false)
     {
-
         
-
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
         if (particlePool.Count < emitAmount || particlePool.Count < burstCount)
         {
@@ -107,7 +173,7 @@ public abstract class Base_EffectController : MonoBehaviour
 
         if (particlePool.Count >= emitAmount)
         {
-            if (currentCountForBurst > burstCount && isBurstMode)
+            if (_currentCountForBurst > burstCount && isBurstMode)
             {
                 // if (particlePool.Count <= burstAmount)
                 //     foreach (var ps in _particles)
@@ -115,15 +181,15 @@ public abstract class Base_EffectController : MonoBehaviour
 
               
                 TurnOnParticle(position, loopCount:emitAmount, wait,usePsMainDuration);
-                FindAndPlayAudio(burstAudioSources);
-                currentCountForBurst = 0;
+                FindAndPlayAudio(_burstAudioSources);
+                _currentCountForBurst = 0;
             }
             else
             {
               
                 TurnOnParticle(position, loopCount:emitAmount, wait,usePsMainDuration);
-                FindAndPlayAudio(audioSources);
-                currentCountForBurst++;
+                FindAndPlayAudio(_audioSources);
+                _currentCountForBurst++;
             }
         }
     }
@@ -190,7 +256,7 @@ public abstract class Base_EffectController : MonoBehaviour
 
             if (availableAudioSource != null)
             {
-                FadeInSound(availableAudioSource);
+                FadeInSound(availableAudioSource,targetVolume:targetVol);
             }
             else
             {
