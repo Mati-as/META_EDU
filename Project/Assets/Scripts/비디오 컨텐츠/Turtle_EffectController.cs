@@ -72,7 +72,7 @@ public class Turtle_EffectController : Base_EffectController
         {
             PlayParticle(hit.point
                 
-                , false,usePsMainDuration:true);
+                , false,usePsLifeTime:true);
         }
     }
 
