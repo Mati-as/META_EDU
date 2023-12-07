@@ -17,20 +17,31 @@ public abstract class Base_EffectController : MonoBehaviour
     public InputAction _mouseClickAction;
     public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
+    public WaitForSeconds subWait_;
 
     [Header("Particle Emission Setting")] private int _count;
     public int emitAmount;
+    public float targetVol;
+    
+    [Header("Burst Setting")]
     public int burstAmount;
     public int burstCount;
-    public float targetVol;
 
-    [Header("Audio Setting")] public int audioSize;
+    [Header("SubEmitter Setting")] 
+    public float subEmitLifetime;
+    
+    [Header("Particle Emission Setting")] 
+
+    [Header("Audio Setting")]
+    public int audioSize;
     public int _burstAudioSize;
 
     public AudioClip _effectClip;
+    public AudioClip _subAudioClip;
     public AudioClip _burstClip;
 
     private AudioSource[] _audioSources;
+    private AudioSource[] _subAudioSources;
     private AudioSource[] _burstAudioSources;
 
 
@@ -102,19 +113,40 @@ public abstract class Base_EffectController : MonoBehaviour
         {
             _audioSources[i] = gameObject.AddComponent<AudioSource>();
             _audioSources[i].clip = _effectClip;
+            _audioSources[i].spatialBlend = 0f;
+            _audioSources[i].outputAudioMixerGroup = null;
             _audioSources[i].playOnAwake = false;
             _audioSources[i].pitch = Random.Range(0.75f, 1.4f);
         }
 
+        _subAudioSources = new AudioSource[audioSize + 10];
+        
+        for (var i = 0; i < audioSize; i++)
+        {
+            _subAudioSources[i] = gameObject.AddComponent<AudioSource>();
+           
+            _subAudioSources[i].clip = _subAudioClip;
+            _subAudioSources[i].spatialBlend = 0f;
+            _subAudioSources[i].outputAudioMixerGroup = null;
+            _subAudioSources[i].playOnAwake = false;
+            _subAudioSources[i].pitch = Random.Range(0.9f, 1.2f);
+        }
+        
+        
         _burstAudioSources = new AudioSource[_burstAudioSize];
 
         for (var i = 0; i < _burstAudioSize; i++)
         {
             _burstAudioSources[i] = gameObject.AddComponent<AudioSource>();
             _burstAudioSources[i].clip = _burstClip;
+            _burstAudioSources[i].spatialBlend = 0f;
+            _burstAudioSources[i].outputAudioMixerGroup = null;
             _burstAudioSources[i].playOnAwake = false;
             _burstAudioSources[i].pitch = Random.Range(0.95f, 1.3f);
         }
+        
+        
+      
     }
 
     protected void GrowPool(ParticleSystem original, int count = 1)
@@ -127,30 +159,11 @@ public abstract class Base_EffectController : MonoBehaviour
         }
     }
 
-    protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
-        float duration = 1f)
-    {
-        audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
-        {
-#if UNITY_EDITOR
-
-#endif
-            audioSource.Stop();
-        });
-    }
-
-    protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
-    {
-#if UNITY_EDITOR
-
-#endif
-        audioSource.Play();
-        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
-    }
 
 
     protected virtual void PlayParticle(Vector3 position, bool isBurstMode = false,
-        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f, bool usePsLifeTime = false)
+        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f, bool usePsLifeTime = false
+        , bool useSubEmitter = false)
     {
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
         if (particlePool.Count < emitAmount || particlePool.Count < burstCount)
@@ -169,13 +182,13 @@ public abstract class Base_EffectController : MonoBehaviour
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
-                TurnOnParticle(position, emitAmount, wait, usePsLifeTime);
+                TurnOnParticle(position, emitAmount, wait, usePsLifeTime,useSubEmitter);
                 FindAndPlayAudio(_burstAudioSources);
                 _currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(position, emitAmount, wait, usePsLifeTime);
+                TurnOnParticle(position, emitAmount, wait, usePsLifeTime,useSubEmitter);
                 FindAndPlayAudio(_audioSources);
                 _currentCountForBurst++;
             }
@@ -184,7 +197,7 @@ public abstract class Base_EffectController : MonoBehaviour
 
 
     protected void TurnOnParticle(Vector3 position, int loopCount = 1, float delayToReturn = 3f,
-        bool isWaitTimeManuallySet = false)
+        bool usePsLifeTime = false,bool useSubEmitter =false)
     {
         for (var i = 0; i < loopCount; i++)
         {
@@ -194,9 +207,18 @@ public abstract class Base_EffectController : MonoBehaviour
             ps.Play();
 
 
-            if (isWaitTimeManuallySet)
+            if (usePsLifeTime)
             {
-                StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax));
+                if (useSubEmitter)
+                {
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax,useSubEmitter:useSubEmitter));
+                }
+                else
+                {
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax,useSubEmitter:useSubEmitter));
+                }
+             
+               
             }
             else
             {
@@ -208,31 +230,40 @@ public abstract class Base_EffectController : MonoBehaviour
         }
     }
 
-    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f, bool isWaitTimeManuallySet = false)
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f ,bool useSubEmitter =false)
     {
         if (wait_ == null)
         {
-            if (isWaitTimeManuallySet)
-            {
-#if UNITY_EDITOR
-                Debug.Log($"PS.LIFETIME.CONSTANTMAX : {ps.main.startLifetime.constantMax}");
-#endif
-                wait_ = new WaitForSeconds(ps.main.startLifetime.constantMax);
-            }
-            else
-            {
-                wait_ = new WaitForSeconds(wait);
-            }
+            wait_ = new WaitForSeconds(wait);
         }
 
+        if (useSubEmitter && subWait_==null)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"WaitForSeconds 생성");
+#endif
+            subWait_ = new WaitForSeconds(subEmitLifetime);
+            
+        }
+    
 
         yield return wait_;
         
+        FindAndPlayAudio(_subAudioSources);
+
+        if (subWait_!=null) yield return subWait_;
+       
+#if UNITY_EDITOR
+        Debug.Log($"delayToReturn: {subWait_}{subEmitLifetime}");
+#endif
         ps.Stop();
         ps.Clear();
         ps.gameObject.SetActive(false);
         particlePool.Enqueue(ps); // Return the particle system to the pool
+        
+       
     }
+    
 
     protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false)
     {
@@ -244,12 +275,31 @@ public abstract class Base_EffectController : MonoBehaviour
             {
                 FadeInSound(availableAudioSource, targetVol);
             }
-            else
-            {
+            
+#if UNITY_EDITOR
+#endif
+           
+        }
+    }
+    
+    protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
+        float duration = 1f)
+    {
+        audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
+        {
+#if UNITY_EDITOR
+#endif
+            audioSource.Stop();
+        });
+    }
+
+    protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
+    {
 #if UNITY_EDITOR
 
 #endif
-            }
-        }
+        audioSource.Play();
+        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
+
 }

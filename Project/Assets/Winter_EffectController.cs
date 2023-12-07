@@ -9,7 +9,7 @@ public class Winter_EffectController : Base_EffectController
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(hit.point,wait: 3.4f,usePsLifeTime:true,emitAmount:1);
+            PlayParticle(hit.point,wait: 3.4f,usePsLifeTime:true,emitAmount:2);
             break;
         }
     }
