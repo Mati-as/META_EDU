@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 public abstract class Base_EffectController : MonoBehaviour
 {
     public ParticleSystem[] _particles;
-g    private int _currentCountForBurst;
+    private int _currentCountForBurst;
     private readonly float _returnWaitForSeconds = 3f;
     
     [HideInInspector] private Camera _camera;
