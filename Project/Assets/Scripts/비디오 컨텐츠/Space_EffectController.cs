@@ -16,7 +16,7 @@ public class Space_EffectController : Base_EffectController
             {
                 PlayParticle(hit.point
                     
-                    , wait: 3.4f,usePsLifeTime:true,emitAmount:emitAmount);
+                    , wait: 3.4f,usePsLifeTime:true);
             }
 
             _currentCount = 0;

@@ -9,11 +9,10 @@ using Random = UnityEngine.Random;
 public abstract class Base_EffectController : MonoBehaviour
 {
     public ParticleSystem[] _particles;
-    private int _currentCountForBurst;
+g    private int _currentCountForBurst;
     private readonly float _returnWaitForSeconds = 3f;
-    public ParticleSystem[] particleSystem;
-
-    [HideInInspector] public Camera _camera;
+    
+    [HideInInspector] private Camera _camera;
     public InputAction _mouseClickAction;
     public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
@@ -21,26 +20,30 @@ public abstract class Base_EffectController : MonoBehaviour
 
     [Header("Particle Emission Setting")] private int _count;
     public int emitAmount;
-    public float targetVol;
-    
-    [Header("Burst Setting")]
-    public int burstAmount;
+   
+
+    [Header("Burst Setting")] public int burstAmount;
     public int burstCount;
 
-    [Header("SubEmitter Setting")] 
-    public float subEmitLifetime;
-    
-    [Header("Particle Emission Setting")] 
+    [Header("SubEmitter Setting")] public float subEmitLifetime;
 
+    [Header("Particle Emission Setting")]
     [Header("Audio Setting")]
     public int audioSize;
+
     public int _burstAudioSize;
 
-    public AudioClip _effectClip;
+    public AudioClip _effectClipA;
+    [Range(0f, 1f)] public float volumeA;
+    public AudioClip _effectClipB;
+    [Range(0f, 1f)] public float volumeB;
     public AudioClip _subAudioClip;
+    [Range(0f, 1f)] public float volumeSub;
     public AudioClip _burstClip;
+    [Range(0f, 1f)] public float volumeBurst;
 
-    private AudioSource[] _audioSources;
+    private AudioSource[] _audioSourcesA;
+    private AudioSource[] _audioSourcesB;
     private AudioSource[] _subAudioSources;
     private AudioSource[] _burstAudioSources;
 
@@ -105,48 +108,33 @@ public abstract class Base_EffectController : MonoBehaviour
         Image_Move.OnStep += OnClicked;
     }
 
-    private void SetAudio()
+    protected virtual void SetAudio()
     {
-        _audioSources = new AudioSource[audioSize];
+        _audioSourcesA = new AudioSource[audioSize];
+        SetAudioSettings(_audioSourcesA, _effectClipA, volumeA);
 
-        for (var i = 0; i < audioSize; i++)
-        {
-            _audioSources[i] = gameObject.AddComponent<AudioSource>();
-            _audioSources[i].clip = _effectClip;
-            _audioSources[i].spatialBlend = 0f;
-            _audioSources[i].outputAudioMixerGroup = null;
-            _audioSources[i].playOnAwake = false;
-            _audioSources[i].pitch = Random.Range(0.75f, 1.4f);
-        }
+        _audioSourcesB = new AudioSource[audioSize];
+        if (_effectClipB != null) SetAudioSettings(_audioSourcesB, _effectClipB, volumeB);
 
-        _subAudioSources = new AudioSource[audioSize + 10];
-        
-        for (var i = 0; i < audioSize; i++)
-        {
-            _subAudioSources[i] = gameObject.AddComponent<AudioSource>();
-           
-            _subAudioSources[i].clip = _subAudioClip;
-            _subAudioSources[i].spatialBlend = 0f;
-            _subAudioSources[i].outputAudioMixerGroup = null;
-            _subAudioSources[i].playOnAwake = false;
-            _subAudioSources[i].pitch = Random.Range(0.9f, 1.2f);
-        }
-        
-        
+        _subAudioSources = new AudioSource[audioSize];
+        SetAudioSettings(_subAudioSources, _subAudioClip, volumeSub);
+
         _burstAudioSources = new AudioSource[_burstAudioSize];
+        SetAudioSettings(_burstAudioSources, _burstClip, volumeBurst);
+    }
 
-        for (var i = 0; i < _burstAudioSize; i++)
+    private void SetAudioSettings(AudioSource[] audioSources, AudioClip audioClip, float volume = 1f,float interval = 0.15f)
+    {
+        for (var i = 0; i < audioSources.Length; i++)
         {
-            _burstAudioSources[i] = gameObject.AddComponent<AudioSource>();
-            _burstAudioSources[i].clip = _burstClip;
-            _burstAudioSources[i].spatialBlend = 0f;
-            _burstAudioSources[i].outputAudioMixerGroup = null;
-            _burstAudioSources[i].playOnAwake = false;
-            _burstAudioSources[i].pitch = Random.Range(0.95f, 1.3f);
+            audioSources[i] = gameObject.AddComponent<AudioSource>();
+            audioSources[i].clip = audioClip;
+            audioSources[i].volume = volume;
+            audioSources[i].spatialBlend = 0f;
+            audioSources[i].outputAudioMixerGroup = null;
+            audioSources[i].playOnAwake = false;
+            audioSources[i].pitch = Random.Range(1 - interval, 1 + interval);
         }
-        
-        
-      
     }
 
     protected void GrowPool(ParticleSystem original, int count = 1)
@@ -160,9 +148,8 @@ public abstract class Base_EffectController : MonoBehaviour
     }
 
 
-
     protected virtual void PlayParticle(Vector3 position, bool isBurstMode = false,
-        int emitAmount = 2, int burstCount = 10, int burstAmount = 5, float wait = 3f, bool usePsLifeTime = false
+       int burstCount = 10, int burstAmount = 5, float wait = 3f, bool usePsLifeTime = false
         , bool useSubEmitter = false)
     {
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
@@ -182,24 +169,25 @@ public abstract class Base_EffectController : MonoBehaviour
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
-                TurnOnParticle(position, emitAmount, wait, usePsLifeTime,useSubEmitter);
-                FindAndPlayAudio(_burstAudioSources);
+                TurnOnParticle(position, wait, usePsLifeTime, useSubEmitter);
+                FindAndPlayAudio(_burstAudioSources,volume:volumeBurst);
                 _currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(position, emitAmount, wait, usePsLifeTime,useSubEmitter);
-                FindAndPlayAudio(_audioSources);
+                TurnOnParticle(position, wait, usePsLifeTime, useSubEmitter);
+                FindAndPlayAudio(_audioSourcesA,volume:volumeA);
+                if (_effectClipB != null) FindAndPlayAudio(_audioSourcesB,volume:volumeB);
                 _currentCountForBurst++;
             }
         }
     }
 
 
-    protected void TurnOnParticle(Vector3 position, int loopCount = 1, float delayToReturn = 3f,
-        bool usePsLifeTime = false,bool useSubEmitter =false)
+    protected void TurnOnParticle(Vector3 position, float delayToReturn = 3f,
+        bool usePsLifeTime = false, bool useSubEmitter = false)
     {
-        for (var i = 0; i < loopCount; i++)
+        for (var i = 0; i < emitAmount; i++)
         {
             var ps = particlePool.Dequeue();
             ps.transform.position = position;
@@ -210,15 +198,9 @@ public abstract class Base_EffectController : MonoBehaviour
             if (usePsLifeTime)
             {
                 if (useSubEmitter)
-                {
-                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax,useSubEmitter:useSubEmitter));
-                }
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax, useSubEmitter));
                 else
-                {
-                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax,useSubEmitter:useSubEmitter));
-                }
-             
-               
+                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax, useSubEmitter));
             }
             else
             {
@@ -230,58 +212,49 @@ public abstract class Base_EffectController : MonoBehaviour
         }
     }
 
-    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f ,bool useSubEmitter =false)
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f, bool useSubEmitter = false)
     {
-        if (wait_ == null)
-        {
-            wait_ = new WaitForSeconds(wait);
-        }
+        if (wait_ == null) wait_ = new WaitForSeconds(wait);
 
-        if (useSubEmitter && subWait_==null)
+        if (useSubEmitter && subWait_ == null)
         {
 #if UNITY_EDITOR
-            Debug.Log($"WaitForSeconds 생성");
+            Debug.Log("WaitForSeconds 생성");
 #endif
             subWait_ = new WaitForSeconds(subEmitLifetime);
-            
         }
-    
+
 
         yield return wait_;
-        
-        FindAndPlayAudio(_subAudioSources);
 
-        if (subWait_!=null) yield return subWait_;
-       
+        if(useSubEmitter) FindAndPlayAudio(_subAudioSources, volume:volumeSub);
+
+        if (subWait_ != null) yield return subWait_;
+
 #if UNITY_EDITOR
-        Debug.Log($"delayToReturn: {subWait_}{subEmitLifetime}");
+
 #endif
         ps.Stop();
         ps.Clear();
         ps.gameObject.SetActive(false);
         particlePool.Enqueue(ps); // Return the particle system to the pool
-        
-       
     }
-    
 
-    protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false)
+
+    protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
+    float volume = 0.8f)
     {
         if (!isBurst)
         {
             var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
 
-            if (availableAudioSource != null)
-            {
-                FadeInSound(availableAudioSource, targetVol);
-            }
-            
+            if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
+
 #if UNITY_EDITOR
 #endif
-           
         }
     }
-    
+
     protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
         float duration = 1f)
     {
@@ -301,5 +274,4 @@ public abstract class Base_EffectController : MonoBehaviour
         audioSource.Play();
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
-
 }

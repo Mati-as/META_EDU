@@ -8,8 +8,7 @@ public class Spring_EffectController : Base_EffectController
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(hit.point, usePsLifeTime: true, emitAmount: emitAmount,useSubEmitter:true);
-
+            PlayParticle(hit.point, usePsLifeTime: true,useSubEmitter:true);
             break;
         }
     }

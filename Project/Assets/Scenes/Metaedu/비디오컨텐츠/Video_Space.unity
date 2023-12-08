@@ -93020,11 +93020,17 @@ MonoBehaviour:
   emitAmount: 1
   burstAmount: 0
   burstCount: 0
-  targetVol: 1
-  audioSize: 20
+  subEmitLifetime: 0
+  audioSize: 13
   _burstAudioSize: 0
-  _effectClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
+  _effectClipA: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
+  volumeA: 0.882
+  _effectClipB: {fileID: 8300000, guid: aa06c9e64a77db8488c222f88935beec, type: 3}
+  volumeB: 0.02
+  _subAudioClip: {fileID: 0}
+  volumeSub: 0
   _burstClip: {fileID: 0}
+  volumeBurst: 0
 --- !u!4 &1028587150
 Transform:
   m_ObjectHideFlags: 0
@@ -169310,11 +169316,17 @@ MonoBehaviour:
   emitAmount: 1
   burstAmount: 0
   burstCount: 0
-  targetVol: 1
+  subEmitLifetime: 0
   audioSize: 30
   _burstAudioSize: 0
-  _effectClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
+  _effectClipA: {fileID: 0}
+  volumeA: 0
+  _effectClipB: {fileID: 0}
+  volumeB: 0
+  _subAudioClip: {fileID: 0}
+  volumeSub: 0
   _burstClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
+  volumeBurst: 0
   waitCount: 4
 --- !u!114 &7708619268736582622
 MonoBehaviour:
