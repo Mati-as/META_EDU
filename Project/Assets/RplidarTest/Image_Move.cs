@@ -45,7 +45,8 @@ public class Image_Move : MonoBehaviour
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
 
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
-        _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
+       // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
+        _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
         _spaceAction.performed += OnSpaceBarPressed;
     }
 
@@ -93,7 +94,13 @@ public class Image_Move : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
-        screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+        
+        //마우스 및 포인터 위치를 기반으로 하고싶은경우.
+        screenPosition = Mouse.current.position.ReadValue();
+        
+        //spacebar 및 공 위치를 기반으로 하고싶은 경우.
+        //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+        
         ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
       
 
