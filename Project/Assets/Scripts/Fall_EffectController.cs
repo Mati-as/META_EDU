@@ -10,7 +10,7 @@ public class Fall_EffectController : Base_EffectController
         foreach (var hit in hits)
         {
             PlayParticle(hit.point,
-                 false, wait: 3.4f,usePsLifeTime:true);
+                 false);
             break;
         }
     }

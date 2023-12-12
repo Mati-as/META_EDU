@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public abstract class Base_EffectController : MonoBehaviour
 {
+    [Header("Particle Play Setting")] 
     public ParticleSystem[] _particles;
     private int _currentCountForBurst;
-    private readonly float _returnWaitForSeconds = 3f;
     
-    [HideInInspector] private Camera _camera;
-    public InputAction _mouseClickAction;
-    public Queue<ParticleSystem> particlePool;
+    public bool usePsMainTime;
+    public float returnWaitForSeconds;
+
+    [Header("ObjectPool Setting")] 
+    public int poolSize;
+    
+    private Camera _camera;
+  [HideInInspector] public InputAction _mouseClickAction;
+     [HideInInspector] public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
     public WaitForSeconds subWait_;
 
@@ -22,10 +29,14 @@ public abstract class Base_EffectController : MonoBehaviour
     public int emitAmount;
    
 
-    [Header("Burst Setting")] public int burstAmount;
+    [Header("Burst Setting")] 
+    public bool useBurstMode;
+    public int burstAmount;
     public int burstCount;
 
-    [Header("SubEmitter Setting")] public float subEmitLifetime;
+    [Header("SubEmitter Setting")] 
+    public bool useSubEmitter;
+    public float subEmitLifetime;
 
     [Header("Particle Emission Setting")]
     [Header("Audio Setting")]
@@ -57,6 +68,7 @@ public abstract class Base_EffectController : MonoBehaviour
         SetPool();
         SetAudio();
         BindEvent();
+      
     }
 
     private void Start()
@@ -89,17 +101,39 @@ public abstract class Base_EffectController : MonoBehaviour
         particlePool = new Queue<ParticleSystem>();
         _particles = new ParticleSystem[transform.childCount];
         var index = 0;
-        foreach (Transform child in transform)
+         foreach (Transform child in transform)
+    {
+        var ps = child.GetComponent<ParticleSystem>();
+        if (ps != null) 
         {
-            var ps = child.GetComponent<ParticleSystem>();
-            if (ps != null) _particles[index++] = ps;
+            _particles[index++] = ps;
         }
+    }
 
-        foreach (var ps in _particles)
+    // Only enqueue each ParticleSystem instance once
+    foreach (var ps in _particles)
+    {
+        if (ps != null)
         {
             particlePool.Enqueue(ps);
             ps.gameObject.SetActive(false);
         }
+    }
+
+    // Optionally, if you need more instances than available, clone them
+    while (particlePool.Count < poolSize)
+    {
+        foreach (var ps in _particles)
+        {
+            if (ps != null)
+            {
+                var newPs = Instantiate(ps, transform);
+                newPs.gameObject.SetActive(false);
+                particlePool.Enqueue(newPs);
+            }
+        }
+    }
+      
     }
 
     protected virtual void BindEvent()
@@ -137,20 +171,18 @@ public abstract class Base_EffectController : MonoBehaviour
         }
     }
 
-    protected void GrowPool(ParticleSystem original, int count = 1)
+    protected void GrowPool(ParticleSystem original)
     {
-        for (var i = 0; i < count; i++)
-        {
+       
             var newInstance = Instantiate(original, transform);
             newInstance.gameObject.SetActive(false);
             particlePool.Enqueue(newInstance);
-        }
+        
     }
 
 
     protected virtual void PlayParticle(Vector3 position, bool isBurstMode = false,
-       int burstCount = 10, int burstAmount = 5, float wait = 3f, bool usePsLifeTime = false
-        , bool useSubEmitter = false)
+       int burstCount = 10, int burstAmount = 5)
     {
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
         if (particlePool.Count < emitAmount || particlePool.Count < burstCount)
@@ -159,7 +191,6 @@ public abstract class Base_EffectController : MonoBehaviour
             for (var i = 0; i < burstAmount; i++)
                 foreach (var ps in _particles)
                     GrowPool(ps);
-
 #if UNITY_EDITOR
 
 #endif
@@ -169,13 +200,13 @@ public abstract class Base_EffectController : MonoBehaviour
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
-                TurnOnParticle(position, wait, usePsLifeTime, useSubEmitter);
+                TurnOnParticle(position);
                 FindAndPlayAudio(_burstAudioSources,volume:volumeBurst);
                 _currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(position, wait, usePsLifeTime, useSubEmitter);
+                TurnOnParticle(position);
                 FindAndPlayAudio(_audioSourcesA,volume:volumeA);
                 if (_effectClipB != null) FindAndPlayAudio(_audioSourcesB,volume:volumeB);
                 _currentCountForBurst++;
@@ -184,8 +215,7 @@ public abstract class Base_EffectController : MonoBehaviour
     }
 
 
-    protected void TurnOnParticle(Vector3 position, float delayToReturn = 3f,
-        bool usePsLifeTime = false, bool useSubEmitter = false)
+    protected void TurnOnParticle(Vector3 position)
     {
         for (var i = 0; i < emitAmount; i++)
         {
@@ -194,27 +224,28 @@ public abstract class Base_EffectController : MonoBehaviour
             ps.gameObject.SetActive(true);
             ps.Play();
 
-
-            if (usePsLifeTime)
-            {
-                if (useSubEmitter)
-                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax, useSubEmitter));
-                else
-                    StartCoroutine(ReturnToPoolAfterDelay(ps, ps.main.startLifetime.constantMax, useSubEmitter));
-            }
-            else
-            {
-#if UNITY_EDITOR
-                Debug.Log($"delayToReturn: {delayToReturn}");
-#endif
-                StartCoroutine(ReturnToPoolAfterDelay(ps, delayToReturn));
-            }
+            StartCoroutine(ReturnToPoolAfterDelay(ps));
+            
+     
         }
     }
 
-    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, float wait = 3f, bool useSubEmitter = false)
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
     {
-        if (wait_ == null) wait_ = new WaitForSeconds(wait);
+        
+        if (wait_ == null)
+        {
+            if (usePsMainTime)
+            {
+                wait_ = new WaitForSeconds(  ps.main.startLifetime.constantMax);
+            }
+            
+            else
+            {
+                wait_ = new WaitForSeconds(returnWaitForSeconds);
+            }
+           
+        }
 
         if (useSubEmitter && subWait_ == null)
         {

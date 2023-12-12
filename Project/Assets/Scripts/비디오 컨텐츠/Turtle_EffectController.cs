@@ -9,6 +9,6 @@ public class Turtle_EffectController : Base_EffectController
     protected override void OnClicked()
     {
         hits = Physics.RaycastAll(ray_BaseController);
-        foreach (var hit in hits) PlayParticle(hit.point, usePsLifeTime: true);
+        foreach (var hit in hits) PlayParticle(hit.point);
     }
 }
