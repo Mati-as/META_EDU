@@ -110,8 +110,6 @@ public class RplidarTest_Ray : MonoBehaviour
         Cal_y = 0;
         //Cal_y = -50;
 
-
-
     }
 
    
@@ -131,11 +129,19 @@ public class RplidarTest_Ray : MonoBehaviour
             }
         }
     }
-    //해상도 1920,1080
-
+    //1212 수정
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Test_check = !Test_check;
+        }
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
+       
+
         if (m_datachanged)
         {
             for (int i = 0; i < 720; i++)

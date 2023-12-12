@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Destroy_prefab : MonoBehaviour
+public class Destroy_prefab_Legacy : MonoBehaviour
 {
     private float timer = 0f;
     //public GameObject Text;

@@ -43,7 +43,6 @@ public class Image_Move : MonoBehaviour
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
@@ -80,6 +79,16 @@ public class Image_Move : MonoBehaviour
     {
         Move();
     }
+    
+    public void Temp_1203()
+    {
+        Debug.Log("Temp_1230");
+        ShootRay();
+
+        //GameManager의 RayCast를 발생 
+        OnStep?.Invoke();
+    }
+
 
     public void OnSpaceBarPressed(InputAction.CallbackContext context)
     {
