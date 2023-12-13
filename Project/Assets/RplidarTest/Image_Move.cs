@@ -80,14 +80,19 @@ public class Image_Move : MonoBehaviour
         Move();
     }
     
-    public void Temp_1203()
+    public void Temp_Destroy()
     {
-        Debug.Log("Temp_1230");
         ShootRay();
-
         //GameManager의 RayCast를 발생 
         OnStep?.Invoke();
     }
+
+    public void Temp_ray()
+    {
+        //GameManager의 RayCast를 발생 
+        OnStep?.Invoke();
+    }
+
 
 
     public void OnSpaceBarPressed(InputAction.CallbackContext context)
@@ -105,10 +110,10 @@ public class Image_Move : MonoBehaviour
     {
         
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
-        screenPosition = Mouse.current.position.ReadValue();
+        //screenPosition = Mouse.current.position.ReadValue();
         
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
-        //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+        screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         
         ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
       

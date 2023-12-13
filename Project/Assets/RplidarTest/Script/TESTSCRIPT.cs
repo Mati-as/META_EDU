@@ -1,18 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class TESTSCRIPT : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    private float timer = 0f;
     void Update()
     {
-        
+        if (timer < 0.5f)
+        {
+            timer += Time.deltaTime;
+        }
+        else
+        {
+            timer = 0f;
+            Destroy_obj();
+        }
+    }
+
+    void Destroy_obj()
+    {
+        Destroy(this.gameObject);
     }
 }

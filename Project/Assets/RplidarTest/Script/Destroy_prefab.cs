@@ -6,11 +6,14 @@ using System.Collections.Generic;
 
 public class Destroy_prefab : Image_Move
 {
+    //
     private Base_EffectController _base_effectController;
     private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
     private float timer=0f;
+    //
+
 
     public override void Init()
     {
@@ -22,7 +25,8 @@ public class Destroy_prefab : Image_Move
     {
         //1212 수정
         base.Start();
-        base.Temp_1203();
+        base.Temp_Destroy();
+
     }
 
     public override void ShootRay()
@@ -52,12 +56,13 @@ public class Destroy_prefab : Image_Move
             for (var i = 0; i < results.Count; i++)
             {
 #if UNITY_EDITOR
-                Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
+                    Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
 #endif
                 results[i].gameObject.TryGetComponent(out Button button);
                 button?.onClick?.Invoke();
             }
     }
+
 
     // Update is called once per frame
     void Update()

@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Ray_Prefab : MonoBehaviour
+public class Ray_Prefab : Image_Move
 {
     private float timer = 0f;
     //public GameObject Text;
@@ -16,7 +16,7 @@ public class Ray_Prefab : MonoBehaviour
     //
 
     //====1122
-    private GameObject UI_Canvas;
+    //private GameObject UI_Canvas;
     private Camera UI_Camera;
 
     //====1130
@@ -31,15 +31,28 @@ public class Ray_Prefab : MonoBehaviour
     private float Pos_x;
     private float Pos_y;
 
-    public GameObject BALLPrefab;
+    private GameObject BALLPrefab;
+
+    private Base_EffectController _base_effectController;
+    private GameObject uiCamera;
+    private readonly string GAME_MANAGER = "GameManager";
+
     // Start is called before the first frame update
+
+    public override void Init()
+    {
+        base.Init();
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _base_effectController);
+    }
 
     void Start()
     {
-        UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
+
+        base.Start();
+
+        //UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         UI_Camera = Manager_Sensor.instance.Get_UIcamera();
         BALLPrefab = Manager_Sensor.instance.BALLPrefab;
-
 
         //Temp_position = UI_Camera.WorldToScreenPoint(this.transform.position);
 
@@ -48,8 +61,54 @@ public class Ray_Prefab : MonoBehaviour
         Pos_y = Ray_position.anchoredPosition.y;
         //Manager_Sensor.instance.Set_RayPosition(this.transform.position);
         ShootRay();
+        base.Temp_ray();
     }
 
+    public void ShootRay()
+    {
+
+        Prev_x = Manager_Sensor.instance.Prev_Ray_position_x;
+        Prev_y = Manager_Sensor.instance.Prev_Ray_position_y;
+
+        Debug.Log("Moving " + " Prev " + " x: " + Prev_x + " y: " + Prev_y + " Pos " + " x: " + Pos_x + " y: " + Pos_y);
+
+        if (Prev_x - Pos_x < -50 || Prev_x - Pos_x > 50)
+        {
+            if (Prev_y - Pos_y < -50 || Prev_y - Pos_y > 50)
+            {
+
+                GameObject Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+                Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(Pos_x, Pos_y, 0);
+                Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+
+                screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+
+                //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
+                Debug.Assert(_base_effectController != null);
+
+                ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+                _base_effectController.ray_BaseController = ray_ImageMove;
+                PED.position = screenPosition;
+                var results = new List<RaycastResult>();
+                GR.Raycast(PED, results);
+
+                if (results.Count > 0)
+                    for (var i = 0; i < results.Count; i++)
+                    {
+                        results[i].gameObject.TryGetComponent(out Button button);
+                        button?.onClick?.Invoke();
+                    }
+
+            }
+        }
+        else
+        {
+            //Holding 상태
+            Debug.Log("Holding");
+        }
+
+        Manager_Sensor.instance.Set_PrevRayPosition(Pos_x, Pos_y);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -68,47 +127,10 @@ public class Ray_Prefab : MonoBehaviour
     {
         Destroy(this.gameObject);
     }
-
-
-    void ShootRay()
-    {
-        Prev_x = Manager_Sensor.instance.Prev_Ray_position_x;
-        Prev_y = Manager_Sensor.instance.Prev_Ray_position_y;
-
-        if (Prev_x - Pos_x < -50 || Prev_x - Pos_x > 50)
-        {
-            if (Prev_y - Pos_y < -50 || Prev_y - Pos_y > 50)
-            {
-                Debug.Log("Moving " + " Prev " + " x: " + Prev_x + " y: " + Prev_y + " Pos " + " x: " + Pos_x + " y: " + Pos_y);
-
-                //이동일 경우 Ball 프리팹 생성
-                GameObject Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
-                Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(Pos_x, Pos_y, 0);
-                Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-
-                ////메인 카메라 레이 캐스트
-                //Ray ray = Camera.main.ScreenPointToRay(Temp_position);
-
-                //RaycastHit hit;
-
-                //Color randomColor = new Color(Random.value, Random.value, Random.value);
-
-                ////UI 카메라 레이 캐스트
-                //PED.position = Temp_position;
-                //List<RaycastResult> results = new List<RaycastResult>();
-                //GR.Raycast(PED, results);
-
-            }
-        }
-        else
-        {
-            //Holding 상태
-            Debug.Log("Holding");
-        }
-
-        Manager_Sensor.instance.Set_PrevRayPosition(Pos_x, Pos_y);
-    }
 }
+
+
+
 
 
 //1. Rplidar에서 센서 데이터 기반 해당 지점에 프리팹 생성

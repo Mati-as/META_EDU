@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 829051406354318904}
   - component: {fileID: 8649642933146989693}
   - component: {fileID: 17638532442657887}
-  - component: {fileID: 9030035972001050215}
+  - component: {fileID: 7788811467304918718}
   m_Layer: 5
   m_Name: Ball
   m_TagString: Untagged
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9030035972001050215
+--- !u!114 &7788811467304918718
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -164,10 +164,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4389488267611479880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb7e4cf587e5684194cc8595b9a49dd, type: 3}
+  m_Script: {fileID: 11500000, guid: 16553081d749a364382a48fb8c058a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameManager: {fileID: 0}
   moveSpeed: 0
   UI_Canvas: {fileID: 0}
   _uiCamera: {fileID: 0}
@@ -177,7 +176,7 @@ MonoBehaviour:
     m_Name: Space
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 3a54adbb-91e6-4258-8bd6-2adcb6e50abc
+    m_Id: 30b20a39-8cb3-40c8-b71f-bbd6c0cdb126
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -185,6 +184,9 @@ MonoBehaviour:
   movement: 0
   moveDirection: {x: 0, y: 0, z: 0}
   button: {fileID: 0}
+  MouseClickOn: 0
+  Ray_position: {fileID: 0}
+  BALLPrefab: {fileID: 0}
 --- !u!1 &5819352866190171848
 GameObject:
   m_ObjectHideFlags: 0
