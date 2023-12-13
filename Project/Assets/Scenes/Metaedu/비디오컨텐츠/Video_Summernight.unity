@@ -130,6 +130,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1792742203532383272, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879600045236255, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879601097170827, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879601097170830, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879601180951947, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879601469745388, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319879601469745390, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429664156890506930, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3726712036607529010, guid: 7b3e77bf0eca93e4e980281ebd768891,
         type: 3}
       propertyPath: m_Pivot.x
@@ -244,6 +284,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UIManager(Video_Contents)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3954786844509736234, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5196535179016281791, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6977773213129192458, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_CullTransparentMesh
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b3e77bf0eca93e4e980281ebd768891, type: 3}
@@ -15804,6 +15859,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particles: []
+  usePsMainTime: 1
+  returnWaitForSeconds: 11
+  poolSize: 1
   _mouseClickAction:
     m_Name: Mouse Click
     m_Type: 0
@@ -15814,15 +15872,22 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   emitAmount: 1
-  burstAmount: 0
+  useBurstMode: 0
+  burstEmitAmount: 0
   burstCount: 0
+  useSubEmitter: 0
   subEmitLifetime: 0
-  audioSize: 15
+  audioSize: 16
   _burstAudioSize: 0
+  isPlayAltogether: 1
   _effectClipA: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
   volumeA: 0.3
   _effectClipB: {fileID: 0}
   volumeB: 0.003
+  _effectClipC: {fileID: 0}
+  volumeC: 0
+  _effectClipD: {fileID: 0}
+  volumeD: 0
   _subAudioClip: {fileID: 0}
   volumeSub: 0
   _burstClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
