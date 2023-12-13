@@ -61,7 +61,7 @@ public class Ray_Prefab : Image_Move
         Pos_y = Ray_position.anchoredPosition.y;
         //Manager_Sensor.instance.Set_RayPosition(this.transform.position);
         ShootRay();
-        base.Temp_ray();
+        
     }
 
     public void ShootRay()
@@ -70,12 +70,13 @@ public class Ray_Prefab : Image_Move
         Prev_x = Manager_Sensor.instance.Prev_Ray_position_x;
         Prev_y = Manager_Sensor.instance.Prev_Ray_position_y;
 
-        Debug.Log("Moving " + " Prev " + " x: " + Prev_x + " y: " + Prev_y + " Pos " + " x: " + Pos_x + " y: " + Pos_y);
 
         if (Prev_x - Pos_x < -50 || Prev_x - Pos_x > 50)
         {
             if (Prev_y - Pos_y < -50 || Prev_y - Pos_y > 50)
             {
+                base.Temp_ray();
+                Debug.Log("Moving " + " Prev " + " x: " + Prev_x + " y: " + Prev_y + " Pos " + " x: " + Pos_x + " y: " + Pos_y);
 
                 GameObject Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
                 Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(Pos_x, Pos_y, 0);

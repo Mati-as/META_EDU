@@ -156,7 +156,7 @@ public class RplidarTest_Ray : MonoBehaviour
                 {
 
                    
-                    if (x != 0 || y != 0)
+                    if (x != 0 && y != 0)
                     {
                         if (min_x < x && x < max_x)
                         {
@@ -164,18 +164,17 @@ public class RplidarTest_Ray : MonoBehaviour
                             {
                                 if (Test_check)
                                 {
-                                    //데모용, 마우스
+                                    //MOUSE
                                     Guideline.SetActive(false);
                                     UI_group.SetActive(false);
                                     text_group.SetActive(false);
                                     GameObject Prefab_pos = Instantiate(MOUSEPrefab, this.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
                                     Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(x + 30, y - 30, 0);
                                     Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-
                                 }
                                 else
                                 {
-                                    //개발자용, 공
+                                    //BALL
                                     Guideline.SetActive(true);
                                     UI_group.SetActive(true);
                                     text_group.SetActive(true);

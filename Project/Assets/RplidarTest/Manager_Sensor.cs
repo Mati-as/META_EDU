@@ -62,6 +62,7 @@ public class Manager_Sensor : MonoBehaviour
     }
     public void Set_PrevRayPosition(float x, float y)
     {
+        Debug.Log("매니저 호출해서 데이터 들어옴");
         Prev_Ray_position_x = x;
         Prev_Ray_position_y = y;
 
