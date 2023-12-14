@@ -23,7 +23,7 @@ public class Playground_GameManager : MonoBehaviour
 
     public float forceAmount;
 
-    public Vector3 offset;
+    public float upOffset;
     private void Start()
     {
         Playground_ImageMove.OnStep -= OnMouseClicked;
@@ -48,7 +48,7 @@ public class Playground_GameManager : MonoBehaviour
             if (rb != null)
             {
               
-                Vector3 forceDirection =  rb.transform.position - hit.point;
+                Vector3 forceDirection =  rb.transform.position - hit.point + Vector3.up*upOffset;
                 
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
             }
