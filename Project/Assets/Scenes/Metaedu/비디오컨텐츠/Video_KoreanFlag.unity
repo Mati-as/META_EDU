@@ -39225,6 +39225,11 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 766349086}
+    - target: {fileID: 3726712036607529161, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3726712036607529166, guid: 7b3e77bf0eca93e4e980281ebd768891,
         type: 3}
       propertyPath: m_Name
@@ -39244,6 +39249,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8831507234161505948, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b3e77bf0eca93e4e980281ebd768891, type: 3}
@@ -45197,16 +45207,21 @@ MonoBehaviour:
     m_Flags: 0
   emitAmount: 1
   useBurstMode: 0
-  burstAmount: 5
+  burstEmitAmount: 5
   burstCount: 10
   useSubEmitter: 0
   subEmitLifetime: 0
   audioSize: 17
   _burstAudioSize: 5
+  isPlayAltogether: 0
   _effectClipA: {fileID: 8300000, guid: 6179d9426f4419b4db62dfe252fec1d0, type: 3}
   volumeA: 0.1
   _effectClipB: {fileID: 0}
   volumeB: 0
+  _effectClipC: {fileID: 0}
+  volumeC: 0
+  _effectClipD: {fileID: 0}
+  volumeD: 0
   _subAudioClip: {fileID: 0}
   volumeSub: 0
   _burstClip: {fileID: 8300000, guid: 3ba0fdb37206a2a418cbf474a013ae6d, type: 3}
