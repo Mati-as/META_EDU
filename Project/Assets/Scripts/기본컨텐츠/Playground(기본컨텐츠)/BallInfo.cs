@@ -20,23 +20,27 @@ public class BallInfo : ScriptableObject
         Yellow,
         Blue
     }
-    [Header("Color Settings")] 
+    [Header("Color Setting")] 
     public float sizeRandomInterval;
 
     [SerializeField] public float[] ballSizes;
     [SerializeField]
     public Color[] colorDef;
 
-    [Header("Path Settings")] 
+    [Header("Path Setting")] 
     public float offset;
     public float depth;
      public float durationIntoHole;
      public float durationSpawnerToGround;
 
-    [Header("Sound Settings")] public float volume;
+    [Header("Sound Setting")] public float volume;
     public int audioSize = 5;
 
     [Header("path")] public Vector3 departure;
     public Vector3 arrival;
+
+    [Header("Respon Setting")] 
+    public float respawnPower;
+    public float respawnWaitTime;
 
 }

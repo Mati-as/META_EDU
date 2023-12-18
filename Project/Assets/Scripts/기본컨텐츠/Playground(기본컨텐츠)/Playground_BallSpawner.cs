@@ -5,8 +5,8 @@ using UnityEngine.Serialization;
 
 public class Playground_BallSpawner : MonoBehaviour
 {
-     // public Transform pathDeparture;
-     // //Arrival == spawnPosition
-     // public Transform pathArrival;
+
+     public Transform[] spawnPositions;
+     
 
 }

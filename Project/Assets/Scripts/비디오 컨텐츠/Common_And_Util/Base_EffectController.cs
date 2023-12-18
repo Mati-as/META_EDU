@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public abstract class Base_EffectController : MonoBehaviour
+public abstract class  Base_EffectController : MonoBehaviour
 {
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;

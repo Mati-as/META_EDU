@@ -24,8 +24,6 @@ public class Playground_ImageMove : Image_Move
         playgroundGameManager.ray = ray_ImageMove;
        
 #if UNITY_EDITOR
-        Debug.Log($"override ShootRay 호출");
-        Debug.Log($"ray point: {playgroundGameManager.ray}");
 #endif
         
     }
