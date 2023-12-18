@@ -17,7 +17,7 @@ public class UIAudioController : MonoBehaviour
     [Header("References")] [Space(10f)]
     [SerializeField] private StoryUIController storyUIController;
     [SerializeField] private AudioAndUIData audioAndUIData;
-    [SerializeField] private GameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [SerializeField] private AnimalTrip_GameManager animalTripGameManager;
 
     [Space(15f)] [Header("Audio Clips")] [Space(10f)]
     public AudioClip[] uiAudioClip = new AudioClip[6];
@@ -76,7 +76,7 @@ public class UIAudioController : MonoBehaviour
 
     private void Start()
     {
-        foreach (var animalData in gameManager.allAnimals)
+        foreach (var animalData in animalTripGameManager.allAnimals)
         {
             UIAudioA.Add(animalData.englishName, animalData.UIAnimAudioA);
             UIAudioB.Add(animalData.englishName, animalData.UIAnimAudioB);
@@ -128,7 +128,7 @@ public class UIAudioController : MonoBehaviour
 
     private void OnRoundStarted()
     {
-        if (!GameManager.isGameFinished)
+        if (!AnimalTrip_GameManager.isGameFinished)
         {
             Debug.Log("찾아보세요 클립재생");
             uiAudioAReadyCoroutine = StartCoroutine(PlayUI_A_Audio());
@@ -139,7 +139,7 @@ public class UIAudioController : MonoBehaviour
     {
       
         
-        if (!GameManager.isGameFinished)
+        if (!AnimalTrip_GameManager.isGameFinished)
         {
     
             SetAndPlayAudio(correctSoundAudioSource, correctedSoundClip);
@@ -168,23 +168,23 @@ public class UIAudioController : MonoBehaviour
         // UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
         // UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
 
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
 
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
 
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
 
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
@@ -192,12 +192,12 @@ public class UIAudioController : MonoBehaviour
         UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
 
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
     private Coroutine _playFirstHtpCoroutine;
@@ -215,7 +215,6 @@ public class UIAudioController : MonoBehaviour
         narrationAudioSource.Play();
 
         yield return GetWaitForSeconds(HTPAAudioInterval);
-        Debug.Log("첫번째HTP 오디오 종료");
         StopCoroutine(_howToPlayACoroutine);
     }
 
@@ -269,8 +268,8 @@ public class UIAudioController : MonoBehaviour
             {
                 yield return GetWaitForSeconds(onCorrectWaitTime);
                 
-                if (UIAudioB[GameManager.answer] != null)
-                    SetAndPlayAudio(narrationAudioSource, UIAudioB[GameManager.answer]);
+                if (UIAudioB[AnimalTrip_GameManager.answer] != null)
+                    SetAndPlayAudio(narrationAudioSource, UIAudioB[AnimalTrip_GameManager.answer]);
 
                 _isCorrectClipPlayed = true;
             }
@@ -283,14 +282,14 @@ public class UIAudioController : MonoBehaviour
             
             
             if (elapsedForAnimalSound < intervalBtwAnimalSoundAndNarration
-                || AnimalSoundAudio[GameManager.answer] == null
+                || AnimalSoundAudio[AnimalTrip_GameManager.answer] == null
                 || _isAnimalSoundPlaying)
             {
                 yield return null;
             }
             else
             {
-                SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[GameManager.answer]);
+                SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[AnimalTrip_GameManager.answer]);
                 _isAnimalSoundPlaying = true;
             }
 
@@ -307,7 +306,7 @@ public class UIAudioController : MonoBehaviour
             }
           
             
-            if (GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
+            if (AnimalTrip_GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
             yield return null;
         }
     }
@@ -335,7 +334,7 @@ public class UIAudioController : MonoBehaviour
             {
                 Debug.Log("StoryB 재생중...");
                 yield return GetWaitForSeconds(onRoundStartWaitTime);
-                if (UIAudioA[GameManager.answer] != null) narrationAudioSource.clip = UIAudioA[GameManager.answer];
+                if (UIAudioA[AnimalTrip_GameManager.answer] != null) narrationAudioSource.clip = UIAudioA[AnimalTrip_GameManager.answer];
                 narrationAudioSource.Play();
                 _isReadyClipPlayed = true;
             }

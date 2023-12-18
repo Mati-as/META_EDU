@@ -39,22 +39,25 @@ public class MoonAndSunController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (GameManager.isGameStarted)
+        if (AnimalTrip_GameManager.isGameStarted)
         {
             MoveUp(waitTime,movingTimeSec);
         }
 
-        if (GameManager.isRoundReady)
+        if (AnimalTrip_GameManager.isRoundReady)
         {
             InitializeLerpParams(false);
         }
 
-        if (GameManager.isCorrected)
+        if (AnimalTrip_GameManager.isCorrected)
         {
-            SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor*targetIntensity);
+            #if UNITY_EDITOR
+            Debug.Log("moon shader param changing");
+            #endif
+            SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor * targetIntensity);
         }
 
-        if (GameManager.isRoundFinished)
+        if (AnimalTrip_GameManager.isRoundFinished)
         {
             if (!_isElpasedInitialized)
             {
@@ -63,7 +66,7 @@ public class MoonAndSunController : MonoBehaviour
             SetColorIntensity(_mat.GetColor(_ALBEDO),_defaultColor);
         }
         
-        if (GameManager.isGameFinished)
+        if (AnimalTrip_GameManager.isGameFinished)
         {
             if (!_isElapseInitialized)
             {
@@ -95,7 +98,7 @@ public class MoonAndSunController : MonoBehaviour
 
         if (elapsedTime > waitTimeTotal)
         {
-            // Lerp의 t값을 계산 (0 ~ 1 사이)
+            
             var t = Mathf.Clamp01(elapsedTime / movingTimeTotal);
             t = Lerp2D.EaseInQuad(0, 1, t);
 
@@ -110,7 +113,7 @@ public class MoonAndSunController : MonoBehaviour
 
         if (elapsedTime > waitTimeTotal)
         {
-            // Lerp의 t값을 계산 (0 ~ 1 사이)
+         
             var t = Mathf.Clamp01(elapsedTime / movingTimeTotal);
             t = Lerp2D.EaseInQuad(0, 1, t);
 
@@ -120,12 +123,11 @@ public class MoonAndSunController : MonoBehaviour
     }
     
     public float intensityChangeSpeed;
-    [Range(0,5)]
+    [Range(0,100)]
     public float targetIntensity;
     private float _colorLerp;
     private void SetColorIntensity(Color initialColor, Color targetColor)
     {
-      
         _colorLerp += Time.deltaTime * intensityChangeSpeed;
         Color color = Color.Lerp(initialColor, targetColor, _colorLerp);
         _mat.SetColor(_ALBEDO,color); 

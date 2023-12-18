@@ -38,7 +38,7 @@ public class FootstepController : MonoBehaviour
     private Transform _buttonRectTransform;
     private Vector2 _originalSizeDelta;
     
-    [Space(20f)] [Header("Reference : 마지막 버튼에만 할당할 것 (non-nullable)")] 
+    [Space(20f)] [Header("Reference : 마지막 버튼에만 할당하여, 마지막 발자국만 동물을 활성화 할 수 있도록 합니다.")] 
     [SerializeField]
     public GameObject animalByLastFootstep;
     [SerializeField] public string animalNameToCall;
@@ -65,7 +65,8 @@ public class FootstepController : MonoBehaviour
         UpScale();
     }
 
-    private LTDescr upscaleAnim;
+    
+    
 
     private void UpScale()
     {
@@ -74,14 +75,19 @@ public class FootstepController : MonoBehaviour
         {
             _spriteRenderer.DOFade(1, 2.0f);
             transform.localScale = _defaultSize;
-            LeanTween.scale(gameObject,
-                    _defaultSize * _groundFootStepData.scaleUpSize,
-                    _groundFootStepData.sizeChangeDuration)
-                .setEase(LeanTweenType.easeOutBounce)
-                .setOnComplete(() =>
-                {
-                    DownScale();
-                });
+            transform.DOScale(_defaultSize * _groundFootStepData.scaleUpSize, _groundFootStepData.sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => DownScale());
+            
+            
+            // LeanTween.scale(gameObject,
+            //         _defaultSize * _groundFootStepData.scaleUpSize,
+            //         _groundFootStepData.sizeChangeDuration)
+            //     .setEase(LeanTweenType.easeOutBounce)
+            //     .setOnComplete(() =>
+            //     {
+            //         DownScale();
+            //     });
         }
   
     }
@@ -93,15 +99,18 @@ public class FootstepController : MonoBehaviour
         if (!_isClicked)
         {
             transform.localScale = _defaultSize * _groundFootStepData.scaleUpSize;
-           
-            LeanTween.scale(gameObject,
-                    _defaultSize * _groundFootStepData.defaultFootstepSize,
-                    _groundFootStepData.sizeChangeDuration)
-                .setEase(LeanTweenType.easeOutBounce)
-                .setOnComplete(()=>
-                {
-                    UpScale();
-                });
+            transform.DOScale(_defaultSize * _groundFootStepData.defaultFootstepSize, _groundFootStepData.sizeChangeDuration)
+                .SetEase(Ease.OutBounce)
+                .OnComplete(() => UpScale());
+            
+            // LeanTween.scale(gameObject,
+            //         _defaultSize * _groundFootStepData.defaultFootstepSize,
+            //         _groundFootStepData.sizeChangeDuration)
+            //     .setEase(LeanTweenType.easeOutBounce)
+            //     .setOnComplete(()=>
+            //     {
+            //         UpScale();
+            //     });
         }
  
     }
@@ -113,6 +122,7 @@ public class FootstepController : MonoBehaviour
 
     private bool _isUIPlayed;
     private bool _isClicked =false;
+    public static event Action onLastFootstepClicked; 
     private void OnButtonClicked()
     {
             //중복클릭 방지용 콜라이더 비활성화.
@@ -125,9 +135,14 @@ public class FootstepController : MonoBehaviour
             {
                 if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
                 {
-                   Debug.Log("동물 소환");
-                    animalByLastFootstep.SetActive(true);
-                    //tween 추가하세요
+                    
+                   //animal 객체의 OnEnable로직을 활용하기위해 false,true 동시사용.
+                   animalByLastFootstep.SetActive(false);
+                   animalByLastFootstep.SetActive(true);
+                   
+                   //UI에서 활용
+                   onLastFootstepClicked?.Invoke();
+
                 }
             }
         
@@ -140,7 +155,7 @@ public class FootstepController : MonoBehaviour
                 _isUIPlayed = true;
             }
         
-            Debug.Log("The footstep's been Clicked");
+            
         
      
     }

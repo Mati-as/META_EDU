@@ -112,23 +112,23 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void SubscribeGameManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
         
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
 
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
 
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
         
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     
@@ -138,12 +138,12 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onCorrectedEvent -= OnCorrect;
-        GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
     
     // 1. 상태 기준 분류 --------------------------------------------
@@ -160,7 +160,8 @@ public class AnimalController : MonoBehaviour
     private void OnRoundReady()
     {
         isTouchedDown = false;
-        _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        //쉐도우 캐스팅 설정 파트
+        //_skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
    
     private void OnRoundStarted()
@@ -264,7 +265,7 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private bool CheckIsAnswer()
     {
-        if (_animalData.englishName == GameManager.answer)
+        if (_animalData.englishName == AnimalTrip_GameManager.answer)
         {
             return true;
         }
@@ -280,12 +281,12 @@ public class AnimalController : MonoBehaviour
     /// </summary>
     private void InitializeTransform()
     {
-        if (GameManager.isAnimalTransformSet == false)
+        if (AnimalTrip_GameManager.isAnimalTransformSet == false)
         { 
             _animalData.initialPosition = transform.position;
             _animalData.initialRotation = transform.rotation;
             
-            GameManager.AnimalInitialized();
+            AnimalTrip_GameManager.AnimalInitialized();
             Destroy(gameObject);
         }
     }
@@ -309,11 +310,11 @@ public class AnimalController : MonoBehaviour
         //초기화.
         _currentSizeLerp = 0f;
         
-        while (CheckIsAnswer() && !GameManager.isRoundFinished)
+        while (CheckIsAnswer() && !AnimalTrip_GameManager.isRoundFinished)
         {
             IncreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
             
-            if (GameManager.isRoundFinished)
+            if (AnimalTrip_GameManager.isRoundFinished)
             {
                 Debug.Log("Increase 코루틴 종료");
                 StopCoroutineWithNullCheck(_coroutines);
@@ -347,12 +348,12 @@ public class AnimalController : MonoBehaviour
         _currentSizeLerp = 0f;
         _isDecreasingScale = false;
         
-        while (CheckIsAnswer() && GameManager.isRoundFinished)
+        while (CheckIsAnswer() && AnimalTrip_GameManager.isRoundFinished)
         {
             _isDecreasingScale = true;
             DecreaseScale(gameObject, _animalData.defaultSize, _animalData.increasedSize);
             
-            if (!GameManager.isRoundFinished)
+            if (!AnimalTrip_GameManager.isRoundFinished)
             {
                 Debug.Log("Decrease 코루틴 종료");
                 StopCoroutineWithNullCheck(_coroutines);
@@ -433,7 +434,7 @@ public class AnimalController : MonoBehaviour
         transform.rotation =  Quaternion.Euler(0, randomRotation, 0);;
        
         
-        Debug.Log($"TargetRotation  {randomRotation}");
+       
     }
     private bool _isrotated;
     IEnumerator MoveAndRotateCoroutine()
@@ -444,11 +445,11 @@ public class AnimalController : MonoBehaviour
           
         
         
-        while (GameManager.isRoundStarted)
+        while (AnimalTrip_GameManager.isRoundStarted)
         {
             MoveAndRotateInPlay(_animalData.moveInTime,0,AnimalData.LOOK_AT_POSITION);
             
-            if (GameManager.isCorrected)
+            if (AnimalTrip_GameManager.isCorrected)
             {
                 StopCoroutineWithNullCheck(_coroutines);
                 break;
@@ -523,7 +524,7 @@ public class AnimalController : MonoBehaviour
     IEnumerator SetRandomAnimationWhenWhenRoundStartCoroutine()
     {
         _randomInterval = Random.Range(_animalData.animationPlayIntervalMin, _animalData.animationPlayIntervalMax);
-        while (!GameManager.isCorrected)
+        while (!AnimalTrip_GameManager.isCorrected)
         {
             yield return GetWaitForSeconds(_randomInterval);
             SetRandomPlayIdleAnimationWhenRoundStart(true);
@@ -554,13 +555,13 @@ public class AnimalController : MonoBehaviour
         _isArrivedTouchDownSpot = false;
         isTouchedDown = false;
         
-        while (!GameManager.isRoundFinished)
+        while (!AnimalTrip_GameManager.isRoundFinished)
         {
             _elapsedForMovingWhenCorrect += Time.deltaTime;
             
             if (CheckIsAnswer())
             {
-                _skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                //_skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
                 
                 if (isTouchedDown == false)
                 {

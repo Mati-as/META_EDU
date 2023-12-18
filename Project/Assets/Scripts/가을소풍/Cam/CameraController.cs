@@ -50,7 +50,7 @@ public class CameraController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("camera")) GameManager.isCameraArrivedToPlay = true;
+        if (other.CompareTag("camera")) AnimalTrip_GameManager.isCameraArrivedToPlay = true;
     }
 
     private void OnDestroy()
@@ -116,8 +116,8 @@ public class CameraController : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
         // GameManager.onRoundReadyEvent -= OnRoundReady;
         // GameManager.onRoundReadyEvent += OnRoundReady;
@@ -131,17 +131,17 @@ public class CameraController : MonoBehaviour
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
         // GameManager.onRoundStartedEvent += OnRoundStarted;
         //
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         // GameManager.onRoundReadyEvent -= OnRoundReady;
         // GameManager.onCorrectedEvent -= OnCorrect;
         // GameManager.onRoundFinishedEvent -= OnRoundFinished;
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
 }

@@ -34,6 +34,8 @@ public class AnimalData : ScriptableObject
     
     [Space(20)] [Header("Animal Color Default and Fresnel Settings")]
     public Color outlineColor;
+    public Color darkenedColor;
+    public Color defaultColor;
     
     [Space(20)] [Header("Position Settings")]
     

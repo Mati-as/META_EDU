@@ -5,6 +5,7 @@ using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using 땅속탐험.Utils;
+using System.Xml;
 
 public class GroundGameManager : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class GroundGameManager : MonoBehaviour
     private static StageStart _stageStart;
     private static StageFinished _stageFinished;
     private static NotGameStarted _notGameStarted;
+
+    public New_SoundManager s_soundManager;
+    
 
     private void Init()
     {
@@ -25,7 +29,7 @@ public class GroundGameManager : MonoBehaviour
 
     // GameManager에서만 상태컨트롤 및 상태인스턴스는 StateController만 소유.
     public StateController _stateController { get; private set; }
-
+    public int TOTAL_ANIMAL_COUNT { get; private set; }
 
   
 
@@ -59,6 +63,8 @@ public class GroundGameManager : MonoBehaviour
 
     public static bool isGameFinishedbool = false;
     public static bool isGameStartedbool;
+
+   
     //10/10 초기화 관련 null 문제 해결
 
     public ReactiveProperty<IState> currentStateRP { get; private set; }
@@ -69,6 +75,9 @@ public class GroundGameManager : MonoBehaviour
         SetResolution(1920, 1080);
         Application.targetFrameRate = 30;
         //---------------------------------------------
+        TOTAL_ANIMAL_COUNT = 12;
+            
+            
         isStartButtonClicked = new ReactiveProperty<bool>(false);
         isStageStartButtonClicked = new ReactiveProperty<bool>(false);
         isGameFinishedRP = new ReactiveProperty<bool>(false);
@@ -86,6 +95,16 @@ public class GroundGameManager : MonoBehaviour
 
     private void Start()
     {
+
+        s_soundManager = new New_SoundManager();
+        
+        s_soundManager.Init();
+
+        // 1. must be without extenstion name
+        // 2. must be below resources folder
+        s_soundManager.Play(Define.Sound.Bgm,
+            "Sound/Underground/Bgm/01. Take It Easy",0.115f);
+        
         
         isStartButtonClicked
             .Where(value=>value==true)
@@ -179,7 +198,7 @@ public class GroundGameManager : MonoBehaviour
 
     IEnumerator ActivateAllAnimals()
     {
-        yield return new WaitForSeconds(8f);
+        yield return new WaitForSeconds(5.5f);
         
         foreach (GameObject obj in AllAnimals)
         {

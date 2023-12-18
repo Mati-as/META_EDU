@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using DG.Tweening;
 
 public class FallenLeavesGameManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class FallenLeavesGameManager : MonoBehaviour
         TARGET_FRAME = 30;
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = TARGET_FRAME;
+
+        DOTween.SetTweensCapacity(2000,200);
     }
     
     // private void PlayClickOnScreenEffect()

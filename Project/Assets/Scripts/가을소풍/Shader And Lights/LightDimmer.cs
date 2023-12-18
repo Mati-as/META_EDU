@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class LightDimmer : MonoBehaviour
 {
@@ -70,8 +71,9 @@ public class LightDimmer : MonoBehaviour
         dirLight.intensity = defaultIntensity;
     }
 
- 
 
+
+    private float _loopDuration =30;
     private void Start()
     {
         SubscribeGameManagerEvents();
@@ -83,8 +85,15 @@ public class LightDimmer : MonoBehaviour
         
         
         InitializeAndOffLight();
+        // DOTween.To(() => transform.eulerAngles, x => 
+        //             transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, x.z),
+        //         new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 360f), 
+        //         _loopDuration)
+        //     .SetEase(Ease.Linear) // 일정한 속도로 회전
+        //     .SetLoops(-1, LoopType.Incremental);
     }
   
+
 
     
     
@@ -165,7 +174,7 @@ public class LightDimmer : MonoBehaviour
         
         while (true)
         {
-            if (GameManager.isCorrected)
+            if (AnimalTrip_GameManager.isCorrected)
             {
                 if (!isLightEnabled)
                 {
@@ -204,7 +213,7 @@ public class LightDimmer : MonoBehaviour
         elapsedForLight = 0f;
         while (true)
         {
-            if (GameManager.isRoundFinished)
+            if (AnimalTrip_GameManager.isRoundFinished)
             {
                 light.enabled = true;
                 elapsedForLight += Time.deltaTime;
@@ -253,41 +262,43 @@ public class LightDimmer : MonoBehaviour
 
     private void OnGameStart()
     {
-        _decreaseAmbientAndLightIntensityCoroutine =   StartCoroutine(DecreaseAmbientAndLightIntensity());
+        if (_decreaseAmbientAndLightIntensityCoroutine != null)
+            _decreaseAmbientAndLightIntensityCoroutine = StartCoroutine(DecreaseAmbientAndLightIntensity());
     }
     
 
     private void OnGameFinished()
     {
-        _increaseAmbientAndLightIntensityCoroutine = StartCoroutine(IncreaseAmbientAndLightIntensity());
+        
+        //_increaseAmbientAndLightIntensityCoroutine = StartCoroutine(IncreaseAmbientAndLightIntensity());
     }
 
     
     private void SubscribeGameManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
-        GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
       
 
-        GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
-        GameManager.onCorrectedEvent += TurnOnSpotLightEvent;
+        AnimalTrip_GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        AnimalTrip_GameManager.onCorrectedEvent += TurnOnSpotLightEvent;
 
-        GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
-        GameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        AnimalTrip_GameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
 
     
-        GameManager.onGameFinishedEvent -= OnGameFinished;
-        GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
     
     private void UnsubscribeGamaManagerEvents()
     {
-        GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         // GameManager.onRoundReadyEvent -= OnRoundReady;
-        GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
-        GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        AnimalTrip_GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        AnimalTrip_GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
-        GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
     public void TurnOffSpotLightEvent()

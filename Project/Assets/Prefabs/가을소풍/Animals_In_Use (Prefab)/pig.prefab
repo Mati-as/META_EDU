@@ -443,7 +443,7 @@ Transform:
   m_GameObject: {fileID: 2539679876153080028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1999998, y: 1.2, z: 1.2}
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2310896866976878467}
@@ -486,7 +486,7 @@ CapsuleCollider:
   m_Radius: 0.43
   m_Height: 1
   m_Direction: 2
-  m_Center: {x: -0.00035232306, y: 0.41419923, z: 0.09673458}
+  m_Center: {x: -0.00035232306, y: 0.43, z: 0.09673458}
 --- !u!114 &599376417675040377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,13 +510,13 @@ Rigidbody:
   m_GameObject: {fileID: 2539679876153080028}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 4
+  m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 122
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!136 &599376417675040379
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -640,3 +640,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
   _animalData: {fileID: 11400000, guid: adc1e94cade60d644a9a5ade2fdc4239, type: 2}
+  blinkInterval: 3

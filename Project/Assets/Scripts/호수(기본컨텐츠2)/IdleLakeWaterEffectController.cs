@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
-public class IdleLakeWaterEffectController : MonoBehaviour
+public class IdleLakeWaterEffectController : MonoBehaviour,Lake_IAnimalBehavior
 {
     [SerializeField] 
-    private ParticleSystem particleSystemPrefab;
+    private ParticleSystem particleSystemPrefab,Lake_IAnimalBehavior;
 
     public int layerMask;
    
@@ -61,6 +61,23 @@ public class IdleLakeWaterEffectController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(eventData.position);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit,12345f,layerMask))
+        {
+            if (hit.collider.gameObject.name == "Water" && hit.collider.gameObject.name != null)
+            {
+                ParticleSystem particle = GetFromPool();
+                particle.transform.position = hit.point;
+                particle.gameObject.SetActive(true);
+                particle.Play();
+                StartCoroutine(DeactivateAfterPlay(particle));
+            }
+        }
+    }
+
+    public void OnClicked()
+    {
+       
+        RaycastHit hit;
+        if (Physics.Raycast(Lake_GameManager.ray, out hit,12345f,layerMask))
         {
             if (hit.collider.gameObject.name == "Water" && hit.collider.gameObject.name != null)
             {
