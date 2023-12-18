@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Playgorund_Ball_Base : MonoBehaviour
+public class Playground_Ball_Base : MonoBehaviour
 {
     [SerializeField] private BallInfo ballInfo;
 
@@ -23,7 +23,12 @@ public class Playgorund_Ball_Base : MonoBehaviour
     private AudioSource[] _audioSources;
     private AudioSource[] _xylophoneAudioSources;
     private AudioSource[] holeSoundSource;
+    private AudioSource[] netSoundSource;
     private int _audioSize = 5;
+
+    [Header("Reference")] 
+    [SerializeField]
+    private Playground_VegetationController _vegetaionController;
 
 
     //클릭 가능 여부 판정을 위해 Collider 할당 및 제어.
@@ -50,7 +55,7 @@ public class Playgorund_Ball_Base : MonoBehaviour
         //material은 static이기 때문에, 직접적으로 수정하지 않기 위한 tempMat 설정  .
         GetComponents();
 
-        ColorInit();
+        ColorInit(); 
         SetColor();
 
         SetScale();
@@ -79,6 +84,8 @@ public class Playgorund_Ball_Base : MonoBehaviour
     }
 
     private Vector3[] _path;
+    public Vector3 triggerPosition { get; private set; }
+    private float _veggiePositionOffset =0.15f;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -86,6 +93,9 @@ public class Playgorund_Ball_Base : MonoBehaviour
         
         if (size == (int)BallInfo.BallSize.Small && other.transform.gameObject.name == "Hole")
         {
+            _vegetaionController._veggieGrowPosition = other.transform.position + Vector3.up * _veggiePositionOffset;
+            OnBallIsInTheHole?.Invoke();
+            
             // 중복클릭방지
             _collider.enabled = false;
 
@@ -94,6 +104,10 @@ public class Playgorund_Ball_Base : MonoBehaviour
             _path[2] = other.transform.position + Vector3.down * ballInfo.depth;
 
             transform.DOPath(_path, ballInfo.durationIntoHole, PathType.CatmullRom)
+                .OnStart(() =>
+                {
+                    FindAndPlayAudio(holeSoundSource);
+                })
                 .OnComplete(() => { DOVirtual.Float(0, 1, ballInfo.respawnWaitTime, value => value++)
                     .OnComplete(() =>
                     {
@@ -105,6 +119,8 @@ public class Playgorund_Ball_Base : MonoBehaviour
         else if (other.transform.gameObject.name == "Net")
 
         {
+            FindAndPlayAudio(netSoundSource);
+            
             transform.DOScale(0, 1.5f).SetEase(Ease.InBounce).OnComplete(() =>
             {
                 gameObject.SetActive(false);
@@ -126,7 +142,7 @@ public class Playgorund_Ball_Base : MonoBehaviour
         }
 
         if (other.transform.gameObject.name != "Ground" &&
-            other.transform.gameObject.name == "Big"||
+            other.transform.gameObject.name == "Large"||
             other.transform.gameObject.name == "Small" ||
             other.transform.gameObject.name == "Medium")
         {
@@ -233,6 +249,8 @@ public class Playgorund_Ball_Base : MonoBehaviour
         _audioSources = new AudioSource[ballInfo.audioSize];
         _xylophoneAudioSources =  new AudioSource[ballInfo.audioSize];
         holeSoundSource =  new AudioSource[ballInfo.audioSize];
+        netSoundSource = new AudioSource[2];
+        
         for (var i = 0; i < _audioSources.Length; i++)
         {
             _audioSources[i] = gameObject.AddComponent<AudioSource>();
@@ -253,7 +271,7 @@ public class Playgorund_Ball_Base : MonoBehaviour
             }
             else if (size ==(int)BallInfo.BallSize.Large)
             {
-                _audioSources[i].pitch = 0.5f;
+                _audioSources[i].pitch = 0.8f;
             }
             
         }
@@ -291,7 +309,7 @@ public class Playgorund_Ball_Base : MonoBehaviour
             {
                 holeSoundSource[i] = gameObject.AddComponent<AudioSource>();
                 holeSoundSource[i].clip = Resources.Load<AudioClip>("Audio/Playground/Hole");
-                holeSoundSource[i].volume = ballInfo.volume;
+                holeSoundSource[i].volume = 0.3f;
                 holeSoundSource[i].spatialBlend = 0f;
                 holeSoundSource[i].outputAudioMixerGroup = null;
                 holeSoundSource[i].playOnAwake = false;
@@ -303,6 +321,18 @@ public class Playgorund_Ball_Base : MonoBehaviour
                 
             }
         }
+        
+        
+        for (var i = 0; i < 2; i++)
+        {
+            netSoundSource[i] = gameObject.AddComponent<AudioSource>();
+             netSoundSource[i].clip = Resources.Load<AudioClip>("Audio/Playground/Net");
+             netSoundSource[i].volume = 0.5f;
+             netSoundSource[i].spatialBlend = 0f;
+             netSoundSource[i].outputAudioMixerGroup = null;
+             netSoundSource[i].playOnAwake = false;
+        }
+       
        
     }
       
