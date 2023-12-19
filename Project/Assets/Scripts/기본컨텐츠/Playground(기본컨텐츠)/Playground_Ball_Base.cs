@@ -155,13 +155,20 @@ public class Playground_Ball_Base : MonoBehaviour
         colors[(int)BallInfo.BallColor.Yellow] = ballInfo.colorDef[(int)BallInfo.BallColor.Yellow];
         colors[(int)BallInfo.BallColor.Blue] = ballInfo.colorDef[(int)BallInfo.BallColor.Blue];
     }
+    
+    
 
     private void SetColor()
     {
-        _currentColorIndex = Random.Range((int)BallInfo.BallColor.Red, (int)BallInfo.BallColor.Blue + 1);
-        _color = colors[_currentColorIndex];
 
-        _meshRenderer.material.color = _color;
+        if (this.gameObject.name != "Rainbow")
+        {
+            _currentColorIndex = Random.Range((int)BallInfo.BallColor.Red, (int)BallInfo.BallColor.Blue + 1);
+            _color = colors[_currentColorIndex];
+
+            _meshRenderer.material.color = _color;
+        }
+       
     }
 
     private void SetScale()
