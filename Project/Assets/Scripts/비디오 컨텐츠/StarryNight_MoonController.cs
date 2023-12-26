@@ -54,7 +54,13 @@ public class StarryNight_MoonController : MonoBehaviour
             }
         }
 
+        starryNight_MainCamController.paintMovingStart -= OnStart;
+        starryNight_MainCamController.paintMovingStart += OnStart;
 
+    }
+
+    private void OnStart()
+    {
         StartPathAnimation();
         DoRotate();
         //DoScaleUp(scaleUpSize);
@@ -62,6 +68,10 @@ public class StarryNight_MoonController : MonoBehaviour
         DoVirtualChromaticIncrease();
     }
 
+    private void OnDestroy()
+    {
+        starryNight_MainCamController.paintMovingStart -= OnStart;
+    }
 
     [Space(10f)] [Header("rotation setting")]
     public float duration;
