@@ -7,6 +7,7 @@ using System.IO;
 public class Base_VideoContentPlayer : MonoBehaviour
 {
     protected VideoPlayer videoPlayer;
+    protected bool _initiailized;
 
     [Header("Video Settings")] public float playbackSpeed;
 
@@ -36,5 +37,7 @@ public class Base_VideoContentPlayer : MonoBehaviour
         }
         
         videoPlayer.Play();
+
+        _initiailized = true;
     }
 }

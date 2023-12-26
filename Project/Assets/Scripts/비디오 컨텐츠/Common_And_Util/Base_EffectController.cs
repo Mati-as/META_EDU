@@ -228,8 +228,7 @@ public abstract class  Base_EffectController : MonoBehaviour
                     AudioSource[] currentAudioSourceArray = null;
                     var currentVolume = 0f;
 #if UNITY_EDITOR
-                    Debug.Log($"current audio index: {currentAudioSourceIndex}");
-                    Debug.Log($"totalActiveAudioSourcesCount: {totalActiveAudioSourcesCount}");
+              
 #endif
 
                     switch (currentAudioSourceIndex)
@@ -246,7 +245,7 @@ public abstract class  Base_EffectController : MonoBehaviour
                             break;
                     }
 
-                    currentAudioSourceIndex = ++currentAudioSourceIndex % (totalActiveAudioSourcesCount - 1);
+                    currentAudioSourceIndex = ++currentAudioSourceIndex % (totalActiveAudioSourcesCount);
                 }
 
                 _currentCountForBurst++;

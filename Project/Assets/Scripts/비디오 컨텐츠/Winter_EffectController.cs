@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+
 
 public class Winter_EffectController : Base_EffectController
 {
+
+   
     protected override void OnClicked()
     {
         hits = Physics.RaycastAll(ray_BaseController);
@@ -12,5 +16,7 @@ public class Winter_EffectController : Base_EffectController
             PlayParticle(hit.point);
             break;
         }
+
+       
     }
 }
