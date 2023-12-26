@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 {
-    
+    [SerializeField] private ParticleSystem _particleSystem;
     private bool _isShaked;
 
     private bool _isReplayEventTriggered;
@@ -31,8 +31,17 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
             // 비디오가 95% 이상 재생되었는지 확인
             if (currentTime / totalDuration >= 0.95)
             {
-                TriggerEvent();
+                Debug.Log("replay");
+                ReplayTriggerEvent();
                 _isReplayEventTriggered = true; // 이벤트가 한 번만 실행되도록 함
+            }
+
+            if (currentTime >= 0.99)
+            {
+                DOVirtual.Float(1,0,3f,speed=>
+                {
+                    videoPlayer.playbackSpeed = speed;
+                });
             }
         }
     }
@@ -49,6 +58,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         DOVirtual.Float(1,0,3f,speed=>
         {
             videoPlayer.playbackSpeed = speed;
+            _isShaked = false; // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
     }
 
@@ -69,5 +79,12 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
             transform.DOShakePosition(2.25f, 2.5f, randomness: 90,vibrato:5);
             
         }
+    }
+
+    void ReplayTriggerEvent()
+    {
+        _particleSystem.Play();
+        
+     
     }
 }
