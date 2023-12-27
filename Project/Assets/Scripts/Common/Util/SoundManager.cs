@@ -145,7 +145,7 @@ public class SoundManager : MonoBehaviour
         audioSource.DOFade(0f, outDuration).SetDelay(waitTime).OnComplete(() =>
         {
 #if UNITY_EDITOR
-            Debug.Log("audioQuit");
+           
 #endif
             if (!rollBack)
                 audioSource.Pause();
@@ -158,7 +158,7 @@ public class SoundManager : MonoBehaviour
         float fadeWaitTime = 0.5f, float outDuration = 0.5f, bool rollBack = false)
     {
 #if UNITY_EDITOR
-        Debug.Log("audioPlay");
+     
 #endif
         audioSource.Play();
         audioSource.DOFade(targetVolume, inDuration).OnComplete(() =>
