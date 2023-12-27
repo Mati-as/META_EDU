@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 {
@@ -8,11 +9,12 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 #if UNITY_EDITOR
     [Header("Debug Only")]
     public bool ManuallyReplay;
+    [FormerlySerializedAs("_particleSystem")]
     [Space(15f)]
 #endif
   
     [Header("Particle and Audio Setting")] [SerializeField]
-    private ParticleSystem _particleSystem;
+    private ParticleSystem[] _particleSystems;
 
     [SerializeField] private AudioSource _particleSystemAudioSource;
     public static bool _isShaked;
@@ -109,7 +111,11 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
     
     private void ReplayTriggerEvent()
     {
-        _particleSystem.Play();
+        foreach (var ps in _particleSystems)
+        {
+            ps.Play();
+        }
+       
         SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
         OnReplay?.Invoke();
     }

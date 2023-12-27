@@ -57,8 +57,9 @@ public class StarryNight_IntroCamController : MonoBehaviour
         {
             _path[i] = pathTransforms[i].position;
         }
-        
-        
+
+
+        transform.DOLookAt(lookAtTarget.position,0.01f);
 
         transform.DOPath(_path, 6, PathType.CatmullRom, resolution: 5)
             .SetEase(Ease.OutQuint)
@@ -98,7 +99,7 @@ public class StarryNight_IntroCamController : MonoBehaviour
                 });
               
              
-            });
+            }).SetDelay(1.1f);
         
 
     }
