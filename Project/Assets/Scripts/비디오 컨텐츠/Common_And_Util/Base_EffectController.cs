@@ -261,6 +261,7 @@ public abstract class  Base_EffectController : MonoBehaviour
             var ps = particlePool.Dequeue();
             ps.transform.position = position;
             ps.gameObject.SetActive(true);
+            
             ps.Play();
 
             StartCoroutine(ReturnToPoolAfterDelay(ps));

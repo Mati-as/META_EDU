@@ -7,10 +7,14 @@ using UnityEngine.Rendering;
 
 public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 {
+    [Header("Particle and Audio Setting")]
     [SerializeField] private ParticleSystem _particleSystem;
-    private bool _isShaked;
+    [SerializeField] private AudioSource _particleSystemAudioSource;
+    public static bool _isShaked;
 
     private bool _isReplayEventTriggered;
+
+    public static event Action OnReplay;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,9 +33,17 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
             double totalDuration = videoPlayer.length;
 
             // 비디오가 95% 이상 재생되었는지 확인
-            if (currentTime / totalDuration >= 0.95)
+            if (currentTime / totalDuration >= 0.95
+#if UNITY_EDITOR
+            || manuallyTrigger==true
+#endif
+                )
             {
+                #if UNITY_EDITOR
+                manuallyTrigger = false; //for debug
                 Debug.Log("replay");
+                #endif
+               
                 ReplayTriggerEvent();
                 _isReplayEventTriggered = true; // 이벤트가 한 번만 실행되도록 함
             }
@@ -41,6 +53,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
                 DOVirtual.Float(1,0,3f,speed=>
                 {
                     videoPlayer.playbackSpeed = speed;
+                    
                 });
             }
         }
@@ -55,7 +68,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
     {
         base.Init();
         
-        DOVirtual.Float(1,0,3f,speed=>
+        DOVirtual.Float(1,0,1.1f,speed=>
         {
             videoPlayer.playbackSpeed = speed;
             _isShaked = false; // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
@@ -81,10 +94,17 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         }
     }
 
+#if UNITY_EDITOR
+    public bool manuallyTrigger;
+#endif
     void ReplayTriggerEvent()
     {
+      
         _particleSystem.Play();
+        SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
+        OnReplay?.Invoke();
         
+
      
     }
 }

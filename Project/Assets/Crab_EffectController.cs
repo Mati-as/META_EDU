@@ -12,10 +12,19 @@ public class Crab_EffectController : Base_EffectController
         foreach (var hit in hits)
         {
             PlayParticle(hit.point);
+            
+#if UNITY_EDITOR
+            Debug.Log("Clicked");
+#endif
+            if (!Crab_VideoContentPlayer._isShaked)
+            {
+                onClicked?.Invoke();
+            }
+         
+            
             break;
             
         }
 
-        onClicked?.Invoke();
     }
 }
