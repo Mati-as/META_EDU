@@ -854,7 +854,8 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 0
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Standalone: 1
   managedStrippingLevel:
     EmbeddedLinux: 1
     GameCoreScarlett: 1
@@ -952,11 +953,14 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 3
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  qualitySettingsNames: []
+  qualitySettingsNames:
+  - Performant
+  - Balanced
+  - High Fidelity
   projectName: 
   organizationId: 
   cloudEnabled: 0

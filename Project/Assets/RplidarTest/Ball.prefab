@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.59284186, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.59284186, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -167,7 +167,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceb7e4cf587e5684194cc8595b9a49dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Text: {fileID: 5819352866190171848}
+  _gameManager: {fileID: 0}
+  moveSpeed: 0
+  UI_Canvas: {fileID: 0}
+  _uiCamera: {fileID: 0}
+  GR: {fileID: 0}
+  screenPosition: {x: 0, y: 0, z: 0}
+  _spaceAction:
+    m_Name: Space
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 3a54adbb-91e6-4258-8bd6-2adcb6e50abc
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  movement: 0
+  moveDirection: {x: 0, y: 0, z: 0}
+  button: {fileID: 0}
 --- !u!1 &5819352866190171848
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

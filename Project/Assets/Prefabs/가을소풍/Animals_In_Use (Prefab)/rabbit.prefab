@@ -110,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
   _animalData: {fileID: 11400000, guid: e39fc595383606242ae1d0b5d49368fb, type: 2}
+  blinkInterval: 10
 --- !u!65 &5104755347869424682
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -231,6 +232,7 @@ GameObject:
   - component: {fileID: 5188285725345078535}
   - component: {fileID: 5164627934438932181}
   - component: {fileID: 5164627934438932177}
+  - component: {fileID: 5164627934438932178}
   m_Layer: 6
   m_Name: rabbit
   m_TagString: Untagged
@@ -290,7 +292,7 @@ CapsuleCollider:
   m_Radius: 0.18
   m_Height: 0.83
   m_Direction: 2
-  m_Center: {x: -0.00035232306, y: 0.178, z: 0.05226299}
+  m_Center: {x: 0, y: 0.213, z: 0.05226299}
 --- !u!54 &5188285725345078535
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -300,13 +302,13 @@ Rigidbody:
   m_GameObject: {fileID: 5188285725345078533}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 4
+  m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 122
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &5164627934438932181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,6 +337,20 @@ CapsuleCollider:
   m_Height: 1.1
   m_Direction: 2
   m_Center: {x: 0, y: 0.37, z: 0}
+--- !u!136 &5164627934438932178
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5188285725345078533}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.48, z: 0}
 --- !u!1 &8482167556242752456
 GameObject:
   m_ObjectHideFlags: 0

@@ -110,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shaderAndCommon: {fileID: 11400000, guid: f983bf651c8396e48b6ab2b767f6e7a3, type: 2}
   _animalData: {fileID: 11400000, guid: 92e088a290877f44985f103a7bce2600, type: 2}
+  blinkInterval: 3
 --- !u!1 &5481596815952789024
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,13 +208,13 @@ Rigidbody:
   m_GameObject: {fileID: 5481596815952789024}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 4
+  m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 122
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!136 &930623712
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -224,7 +225,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.82
+  m_Radius: 0.49
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.37, z: 0}
