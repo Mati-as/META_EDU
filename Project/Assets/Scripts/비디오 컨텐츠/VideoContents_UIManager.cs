@@ -22,7 +22,7 @@ public class VideoContents_UIManager : UI_Base
     //private XmlNode soundNode;
     private TextAsset _xmlAsset;
     private XmlDocument _xmlDoc;
-    private string _path = "VideoContents/Data/UI_TextData";
+    private string _path = "게임별분류/비디오컨텐츠/Data/UI_TextData";
 
     void Start()
     {

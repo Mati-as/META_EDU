@@ -5,12 +5,17 @@ using UnityEngine;
 
 public class Crab_EffectController : Base_EffectController
 {
-    public static event Action onClicked; 
+    public static event Action onClicked;
+    public Vector3 hitPoint { get; private set; }
+
     protected override void OnClicked()
     {
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
+            
+            hitPoint = hit.point;
+            
             PlayParticle(hit.point);
             
 #if UNITY_EDITOR
@@ -20,7 +25,7 @@ public class Crab_EffectController : Base_EffectController
             {
                 onClicked?.Invoke();
             }
-         
+            
             
             break;
             
