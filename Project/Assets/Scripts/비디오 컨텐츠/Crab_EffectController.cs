@@ -6,6 +6,7 @@ using UnityEngine;
 public class Crab_EffectController : Base_EffectController
 {
     public static event Action onClicked;
+    public static event Action OnClickForEachClick;
     public Vector3 hitPoint { get; private set; }
 
     protected override void OnClicked()
@@ -18,15 +19,13 @@ public class Crab_EffectController : Base_EffectController
             
             PlayParticle(hit.point);
             
-#if UNITY_EDITOR
-            Debug.Log("Clicked");
-#endif
+
             if (!Crab_VideoContentPlayer._isShaked)
             {
                 onClicked?.Invoke();
             }
             
-            
+            OnClickForEachClick?.Invoke();
             break;
             
         }
