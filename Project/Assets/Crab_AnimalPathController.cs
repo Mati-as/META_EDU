@@ -83,6 +83,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void Init()
     {
+        DOTween.Init().SetCapacity(100, 200);
         inactiveCrabPool = new Stack<Crab>();
         activeCrabPool = new Queue<Crab>();
 
@@ -155,7 +156,7 @@ public class Crab_AnimalPathController : MonoBehaviour
         if (crabFromPool != null)
         {
             SetAndPlayPath(crabFromPool);
-          
+
             PushIntoActivePool(crabFromPool);
         }
         else
@@ -165,7 +166,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             if (!crab.isGoingHome && crab.isPathSet)
             {
                 SetAndPlayPath(crab);
-                
+
                 PushIntoActivePool(crab);
             }
         }
@@ -177,7 +178,6 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void SetAndPlayPath(Crab crabDoingPath)
     {
-      
         _duration = crabDoingPath.isPathSet ? _pathDurationOnSec : _pathDuration;
 
         if (crabDoingPath.isPathSet == false)
@@ -188,73 +188,73 @@ public class Crab_AnimalPathController : MonoBehaviour
         }
         else
         {
-
 #if UNITY_EDITOR
-          
+
 #endif
-           // inPath[(int)InPath.Start] = _crabDoingPath.gameObj.transform.position;
+            // inPath[(int)InPath.Start] = _crabDoingPath.gameObj.transform.position;
         }
-        
+
         PlayPath(crabDoingPath);
-      
     }
-    
+
 
     private void PlayPath(Crab _crabDoingPath)
     {
         if (_crabDoingPath.currentSequence != null && _crabDoingPath.currentSequence.IsActive())
-        {
             _crabDoingPath.currentSequence.Kill();
-        }
-        
+
         StartCoroutine(CheckSequenceKilled(_crabDoingPath.currentSequence));
-        
+
         _crabDoingPath.currentSequence = DOTween.Sequence();
-        
-        _crabDoingPath.currentSequence
-                .Append(_crabDoingPath.gameObj.transform
-                .DOMove(crab_effectController.hitPoint + Vector3.up *Random.Range(0,3), _duration)
-                .OnStart(() =>
-                {
-                    _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f);
-                })
-                .OnComplete(() =>
-                {
+        CopyPathArrays(_crabDoingPath);
+
+        // 첫 번째 트윈: 이동
+        _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
+            .DOMove(crab_effectController.hitPoint + Vector3.up * Random.Range(0, 3), _duration)
+            .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
+            .OnComplete(() =>
+            {
 #if UNITY_EDITOR
-                       Debug.Log("시퀀스시작");
+                Debug.Log("첫 번째 트윈 완료");
 #endif
-                    _crabDoingPath.gameObj.transform.position = _crabDoingPath.loopPath[(int)LoopPath.Start];
-                    
-                   // SetInAndLoopPath();
-                   // CopyPathArrays(_crabDoingPath);
-                   
-                    _crabDoingPath.gameObj.transform.DOPath(_crabDoingPath.loopPath, 2.5f, PathType.CatmullRom)
-                        .SetLoops(8, LoopType.Yoyo)
-                        .SetEase(Ease.Linear)
-                        .OnComplete(() =>
-                        {
-                            _crabDoingPath.isGoingHome = true;
-                            awayPath[(int)AwayPath.start] = _crabDoingPath.gameObj.transform.position;
+               // _crabDoingPath.gameObj.transform.position = _crabDoingPath.loopPath[(int)LoopPath.Start];
+            }));
 
-                            _crabDoingPath.gameObj.transform
-                                .DOPath(_crabDoingPath.awayPath, 3f, PathType.Linear)
-                                .OnComplete(() =>
-                                {
-                                    _crabDoingPath.gameObj.SetActive(false);
-                                    inactiveCrabPool.Push(_crabDoingPath);
+// 두 번째 트윈: 경로 따라 이동
+        _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
+            .DOPath(_crabDoingPath.loopPath, 2.5f, PathType.CatmullRom)
+            .SetLoops(8, LoopType.Yoyo)
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+#if UNITY_EDITOR
+                Debug.Log("두 번째 트윈 완료");
+#endif
+                _crabDoingPath.isGoingHome = true;
+                awayPath[(int)AwayPath.start] = _crabDoingPath.gameObj.transform.position;
+            }));
 
-                                    _crabDoingPath.isPathSet = false;
-                                    _crabDoingPath.isGoingHome = false;
-                                });
-                        });
-                    
-                }));
+// 세 번째 트윈: 집으로 돌아가기
+        _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
+            .DOPath(_crabDoingPath.awayPath, 3f)
+            .OnComplete(() =>
+            {
+#if UNITY_EDITOR
+                Debug.Log("세 번째 트윈 완료");
+#endif
+                _crabDoingPath.gameObj.SetActive(false);
+                inactiveCrabPool.Push(_crabDoingPath);
+
+                _crabDoingPath.isPathSet = false;
+                _crabDoingPath.isGoingHome = false;
+            }));
+
+// 시퀀스 재생
         _crabDoingPath.currentSequence.Play();
     }
 
-   
 
-    IEnumerator CheckSequenceKilled(Sequence sequence)
+    private IEnumerator CheckSequenceKilled(Sequence sequence)
     {
         yield return new WaitForSeconds(0.1f); // 짧은 지연
 
@@ -271,12 +271,10 @@ public class Crab_AnimalPathController : MonoBehaviour
 #endif
         }
     }
+
     private void InitializeAndSetSequence(Crab crab)
     {
-        if (crab.currentSequence != null && crab.currentSequence.IsActive())
-        {
-            DOTween.Kill(crab);
-        }
+        if (crab.currentSequence != null && crab.currentSequence.IsActive()) DOTween.Kill(crab);
 
         crab.currentSequence = DOTween.Sequence();
     }
@@ -304,7 +302,7 @@ public class Crab_AnimalPathController : MonoBehaviour
         mid1 = main + Vector3.forward * midOffset * Random.Range(1, randomLoopRange);
         mid2 = main + Vector3.down * midOffset * Random.Range(1, randomLoopRange);
         mid3 = main + Vector3.back * midOffset * Random.Range(1, randomLoopRange);
-        
+
         /*           mid
          *    start       mid2
          *           end
@@ -356,7 +354,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             var crab = new Crab();
             crab = inactiveCrabPool.Pop();
             crab.gameObj.SetActive(true);
-            
+
 
             return crab;
         }
