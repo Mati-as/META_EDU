@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using System.Xml;
-using TMPro;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
-using UnityEngine.Serialization;
 
 
 public class VideoContents_UIManager : UI_Base
 {
-     public float fadeOutDelay;
+    public float fadeOutDelay;
     private CanvasGroup _canvasGroup;
+
+    public static event Action OnFadeOutFinish ;
     enum UI_Type
     {
         Head,
@@ -28,7 +26,11 @@ public class VideoContents_UIManager : UI_Base
     {
         Init();
         _canvasGroup = GetComponentInChildren<CanvasGroup>();
-        _canvasGroup.DOFade(0, 1f).SetDelay(fadeOutDelay);
+        _canvasGroup.DOFade(0, 1f).SetDelay(fadeOutDelay)
+            .OnComplete(() =>
+        {
+            OnFadeOutFinish?.Invoke();
+        });
     }
 
     public override bool Init()

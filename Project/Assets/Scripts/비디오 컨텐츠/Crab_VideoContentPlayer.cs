@@ -96,17 +96,26 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         });
     }
 
+    public int crabAppearClickCount;
+    private int _currentClickCount;
     private void OnClicked()
     {
         if (!_initiailized) return;
 
+        
         if (!_isShaked)
         {
-            DOVirtual.Float(0, 1, 2f, speed => { videoPlayer.playbackSpeed = speed; })
-                .OnComplete(() => { _isShaked = true; });
-
-            transform.DOShakePosition(2.25f, 2.5f, randomness: 90, vibrato: 5);
+            transform.DOShakePosition(2.25f, 1f+(0.1f * _currentClickCount), randomness: 90, vibrato: 5);
         }
+
+        _currentClickCount++;
+
+        if (_currentClickCount > crabAppearClickCount)
+        {
+            DOVirtual.Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
+                .OnComplete(() => { _isShaked = true; });
+        }
+      
     }
     
     private void ReplayTriggerEvent()
