@@ -8,6 +8,10 @@ using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
+    public static readonly int ROLL_ANIM = Animator.StringToHash("Roll");
+    public static readonly int SPIN_ANIM = Animator.StringToHash("Spin");
+    public static readonly int IDLE_B_ANIM = Animator.StringToHash("Idle_B");
+    public static readonly int IDLE_C_ANIM = Animator.StringToHash("Idle_C");
     private enum StartDirection // 1     2
         // 4     3 
     {
@@ -48,8 +52,11 @@ public class Crab_AnimalPathController : MonoBehaviour
     private readonly string _crabPrefabPath = "게임별분류/비디오컨텐츠/Crab/";
 
 
-    private Stack<Crab> inactiveCrabPool;
-    private Queue<Crab> activeCrabPool;
+    private Stack<Crab> _inactiveCrabPool;
+    private Queue<Crab> _activeCrabPool;
+    private Animator _currentAnimator;
+    
+   
 
     [FormerlySerializedAs("startPoints")] [Header("Start Points")]
     public Transform[] appearablePoints;
@@ -84,9 +91,10 @@ public class Crab_AnimalPathController : MonoBehaviour
     private void Init()
     {
         DOTween.Init().SetCapacity(100, 200);
-        inactiveCrabPool = new Stack<Crab>();
-        activeCrabPool = new Queue<Crab>();
-
+        _inactiveCrabPool = new Stack<Crab>();
+        _activeCrabPool = new Queue<Crab>();
+        
+        
         loopPath = new Vector3[5];
         awayPath = new Vector3[2];
         inPath = new Vector3[2];
@@ -95,11 +103,12 @@ public class Crab_AnimalPathController : MonoBehaviour
         Crab_EffectController.OnClickForEachClick -= OnClicked;
         Crab_EffectController.OnClickForEachClick += OnClicked;
 
-        SetPool(inactiveCrabPool, "CrabA");
-        SetPool(inactiveCrabPool, "CrabB");
-        SetPool(inactiveCrabPool, "CrabC");
-        SetPool(inactiveCrabPool, "CrabD");
-
+        SetPool(_inactiveCrabPool, "CrabA");
+        SetPool(_inactiveCrabPool, "CrabB");
+        SetPool(_inactiveCrabPool, "CrabC");
+        SetPool(_inactiveCrabPool, "CrabD");
+        
+        
 
         isInit = true;
     }
@@ -161,7 +170,7 @@ public class Crab_AnimalPathController : MonoBehaviour
         }
         else
         {
-            var crab = activeCrabPool.Dequeue();
+            var crab = _activeCrabPool.Dequeue();
 
             if (!crab.isGoingHome && crab.isPathSet)
             {
@@ -197,9 +206,38 @@ public class Crab_AnimalPathController : MonoBehaviour
         PlayPath(crabDoingPath);
     }
 
+    private void DeactivateAnim(Animator animator)
+    {
+        animator.SetBool(SPIN_ANIM,false);
+        animator.SetBool(ROLL_ANIM,false);
+        animator.SetBool(IDLE_B_ANIM,false);
+        animator.SetBool(IDLE_C_ANIM,false);
+    }
 
+    private void SetAnim(Animator animator)
+    {
+        int randomAnim =Random.Range(0,4);
+
+#if UNITY_EDITOR
+        Debug.Log($"애니메이션 세팅 완료 :{randomAnim}");
+#endif
+        switch (randomAnim)
+        {
+            case 0 : animator.SetBool(SPIN_ANIM,true);
+                break;
+            case 1 :animator.SetBool(ROLL_ANIM,true);
+                break;
+            case 2 :animator.SetBool(IDLE_B_ANIM,true);
+                break;
+            case 3 :animator.SetBool(IDLE_C_ANIM,true);
+                break;
+        }
+    }
+   
     private void PlayPath(Crab _crabDoingPath)
     {
+        DeactivateAnim(_crabDoingPath.gameObj.GetComponent<Animator>());
+        
         if (_crabDoingPath.currentSequence != null && _crabDoingPath.currentSequence.IsActive())
             _crabDoingPath.currentSequence.Kill();
 
@@ -214,6 +252,8 @@ public class Crab_AnimalPathController : MonoBehaviour
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
+             
+                SetAnim(_crabDoingPath.animator);
 #if UNITY_EDITOR
                 Debug.Log("첫 번째 트윈 완료");
 #endif
@@ -225,6 +265,10 @@ public class Crab_AnimalPathController : MonoBehaviour
             .DOPath(_crabDoingPath.loopPath, 2.5f, PathType.CatmullRom)
             .SetLoops(8, LoopType.Yoyo)
             .SetEase(Ease.Linear)
+            .OnStart(() =>
+            {
+               
+            })
             .OnComplete(() =>
             {
 #if UNITY_EDITOR
@@ -243,8 +287,8 @@ public class Crab_AnimalPathController : MonoBehaviour
                 Debug.Log("세 번째 트윈 완료");
 #endif
                 _crabDoingPath.gameObj.SetActive(false);
-                inactiveCrabPool.Push(_crabDoingPath);
-
+                _inactiveCrabPool.Push(_crabDoingPath);
+                DeactivateAnim(_crabDoingPath.animator);
                 _crabDoingPath.isPathSet = false;
                 _crabDoingPath.isGoingHome = false;
             }));
@@ -328,6 +372,8 @@ public class Crab_AnimalPathController : MonoBehaviour
             var crab = new Crab();
             crab.gameObj = Instantiate(prefab, transform);
 
+            crab.animator = crab.gameObj.GetComponent<Animator>();
+
             // instance.transform.position = startPoints[0].position;
 
             crab.gameObj.SetActive(false);
@@ -349,10 +395,10 @@ public class Crab_AnimalPathController : MonoBehaviour
     /// <returns></returns>
     private Crab GetFromPool()
     {
-        if (inactiveCrabPool.Count > 0)
+        if (_inactiveCrabPool.Count > 0)
         {
             var crab = new Crab();
-            crab = inactiveCrabPool.Pop();
+            crab = _inactiveCrabPool.Pop();
             crab.gameObj.SetActive(true);
 
 
@@ -367,7 +413,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 #if UNITY_EDITOR
 
 #endif
-        activeCrabPool.Enqueue(_crab);
+        _activeCrabPool.Enqueue(_crab);
     }
 }
 
@@ -386,4 +432,5 @@ public class Crab
     public Sequence currentSequence { get; set; }
 
     public bool isGoingHome { get; set; }
+    public Animator animator { get; set; }
 }
