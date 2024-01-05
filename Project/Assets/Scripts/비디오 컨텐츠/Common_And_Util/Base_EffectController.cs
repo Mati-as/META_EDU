@@ -64,6 +64,7 @@ public abstract class  Base_EffectController : MonoBehaviour
 
     private AudioSource[][] _audioSources;
 
+    // 차례대로 Audiosource를 재생하기위한 AudioSource Count
     private int totalActiveAudioSourcesCount;
 
     private AudioSource[] _audioSourcesA;
@@ -109,6 +110,9 @@ public abstract class  Base_EffectController : MonoBehaviour
     {
         Image_Move.OnStep -= OnClicked;
     }
+    /// <summary>
+    /// 초기 풀 설정 -----------------
+    /// </summary>
 
     protected virtual void SetPool()
     {
@@ -146,6 +150,9 @@ public abstract class  Base_EffectController : MonoBehaviour
         Image_Move.OnStep += OnClicked;
     }
 
+    /// <summary>
+    /// 오디오 초기화 및 재생을 위한 메소드 목록 -----------------
+    /// </summary>
     protected virtual void SetAudio()
     {
         _audioSourcesA = SetAudioSettings(_audioSourcesA, _effectClipA, audioSize, volumeA);
@@ -177,6 +184,41 @@ public abstract class  Base_EffectController : MonoBehaviour
         }
 
         return audioSources;
+    }
+    
+    
+    protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
+        float volume = 0.8f)
+    {
+        if (!isBurst)
+        {
+            var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
+
+            if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
+
+#if UNITY_EDITOR
+#endif
+        }
+    }
+
+    protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
+        float duration = 1f)
+    {
+        audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
+        {
+#if UNITY_EDITOR
+#endif
+            audioSource.Stop();
+        });
+    }
+
+    protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
+    {
+#if UNITY_EDITOR
+
+#endif
+        audioSource.Play();
+        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
 
     protected void GrowPool(ParticleSystem original)
@@ -253,6 +295,10 @@ public abstract class  Base_EffectController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 파티클 초기화 및 재생을 위한 메소드 목록 -----------------
+    /// </summary>
+    /// <param name="position"></param>
 
     protected void TurnOnParticle(Vector3 position)
     {
@@ -304,37 +350,4 @@ public abstract class  Base_EffectController : MonoBehaviour
     }
 
 
-    protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
-        float volume = 0.8f)
-    {
-        if (!isBurst)
-        {
-            var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
-
-            if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
-
-#if UNITY_EDITOR
-#endif
-        }
-    }
-
-    protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
-        float duration = 1f)
-    {
-        audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
-        {
-#if UNITY_EDITOR
-#endif
-            audioSource.Stop();
-        });
-    }
-
-    protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
-    {
-#if UNITY_EDITOR
-
-#endif
-        audioSource.Play();
-        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
-    }
 }
