@@ -21,6 +21,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 
     private bool _isReplayEventTriggered;
 
+    public bool _isCrabAppearable { get; private set; }
 
     public static event Action OnReplay;
 
@@ -28,7 +29,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
     private void Start()
     {
         Init();
-
+        _isCrabAppearable = true;
         Crab_EffectController.onClicked -= OnClicked;
         Crab_EffectController.onClicked += OnClicked;
     }
@@ -98,6 +99,8 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 
     public int crabAppearClickCount;
     private int _currentClickCount;
+
+    public static event Action OnCrabAppear;
     private void OnClicked()
     {
         if (!_initiailized) return;
@@ -112,6 +115,8 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 
         if (_currentClickCount > crabAppearClickCount)
         {
+            OnCrabAppear?.Invoke();
+            _isCrabAppearable = false;
             DOVirtual.Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
         }
@@ -124,7 +129,9 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         {
             ps.Play();
         }
-       
+
+        _currentClickCount = 0;
+        _isCrabAppearable = true;
         SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
         OnReplay?.Invoke();
     }
