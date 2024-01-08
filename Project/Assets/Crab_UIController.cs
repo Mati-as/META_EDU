@@ -29,6 +29,7 @@ public class Crab_UIController : MonoBehaviour
         VideoContents_UIManager.OnFadeOutFinish -= OnFadeOutComplete;
     }
 
+    private float _defaultSize;
     private void Init()
     {
         _up = Resources.Load<Image>(_crabPrefabPath + "up");
@@ -38,7 +39,7 @@ public class Crab_UIController : MonoBehaviour
         image = _up;
         image = _greatRect.transform.GetComponent<Image>();
         image = _great;
-
+        _defaultSize = _upRect.localScale.x;
         
         VideoContents_UIManager.OnFadeOutFinish -= OnFadeOutComplete;
         VideoContents_UIManager.OnFadeOutFinish += OnFadeOutComplete;
@@ -64,15 +65,18 @@ public class Crab_UIController : MonoBehaviour
     }
     private void OnFadeOutComplete()
     {
+        _upRect.localScale = Vector3.zero;
+        _upRect.anchoredPosition = arrivalRect.anchoredPosition;
         
-        _upRect.DOAnchorPos(arrivalRect.anchoredPosition, 4.5f)
+        _upRect.DOScale(_defaultSize, 2f)
             .SetEase(Ease.OutQuint)
             .OnComplete(() =>
-            {
-                _upRect.DOAnchorPos(awayRect.anchoredPosition, 4.5f)
-                    .SetEase(Ease.OutQuint)
-                    .SetDelay(1.8f);;
-
-            });
+        {
+            _upRect.DOAnchorPos(awayRect.anchoredPosition, 4.5f)
+                .SetEase(Ease.OutQuint)
+                .SetDelay(1.8f);;
+        });
+        
+        
     }
 }

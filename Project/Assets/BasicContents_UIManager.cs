@@ -18,7 +18,7 @@ public class BasicContents_UIManager : UI_Base
     //private XmlNode soundNode;
     private TextAsset _xmlAsset;
     private XmlDocument _xmlDoc;
-    private string _path = "UI_TextData";
+    private string _path = "Data/UI_TextData";
 
     void Start()
     {

@@ -46,7 +46,7 @@ public class Image_Move : MonoBehaviour
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
-        _spaceAction.performed += OnSpaceBarPressed;
+        _spaceAction.performed += OnKeyPressed;
     }
 
     public void Start()
@@ -90,7 +90,7 @@ public class Image_Move : MonoBehaviour
     }
 
 
-    public void OnSpaceBarPressed(InputAction.CallbackContext context)
+    public void OnKeyPressed(InputAction.CallbackContext context)
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장 
         ShootRay();

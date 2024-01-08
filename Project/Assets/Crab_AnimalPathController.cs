@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.SocialPlatforms;
 using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
+    //animation control part.
     public static readonly int ROLL_ANIM = Animator.StringToHash("Roll");
-    public static readonly int SPIN_ANIM = Animator.StringToHash("Spin");
-    public static readonly int IDLE_B_ANIM = Animator.StringToHash("Idle_B");
-    public static readonly int IDLE_C_ANIM = Animator.StringToHash("Idle_C");
+    public static readonly int ROTATE_A_ANIM = Animator.StringToHash("Rotate_A");
+    public static readonly int ROTATE_B_ANIM = Animator.StringToHash("Rotate_B");
+    public static readonly int IDLE_ANIM = Animator.StringToHash("Idle");
     private enum StartDirection // 1     2
-        // 4     3 
+                                // 4     3 
     {
         Upper_Left,
         Upper_Right,
@@ -27,11 +29,11 @@ public class Crab_AnimalPathController : MonoBehaviour
         arrival
     }
 
-    private enum InPath
-    {
-        Start,
-        Arrival
-    }
+    // private enum InPath
+    // {
+    //     Start,
+    //     Arrival
+    // }
 
     private enum LoopPath
     {
@@ -42,9 +44,10 @@ public class Crab_AnimalPathController : MonoBehaviour
         End
     }
 
-    public Vector3[] loopPath { get; set; }
+    public Vector3[] circularPath { get; private set; }
+    public Vector3[] linearPath { get; private set; }
 
-    [FormerlySerializedAs("c_efc")] [SerializeField]
+    [SerializeField]
     private Crab_EffectController crab_effectController;
 
     private Vector3 _pivotPoint;
@@ -64,6 +67,8 @@ public class Crab_AnimalPathController : MonoBehaviour
     [Header("Offsets")] public float startOffset;
     public float midOffset;
     public float endOffset;
+    [Space(10f)]
+    public float linearPathDistance;
 
 
     private Vector3 main;
@@ -73,12 +78,20 @@ public class Crab_AnimalPathController : MonoBehaviour
     private Vector3 mid3;
     private Vector3 end;
 
-    private Vector3[] inPath;
+    private Vector3 start_Linear;
+    private Vector3 end_Linear;
+
+    // private Vector3[] inPath; DoMove로 대체
     private Vector3[] awayPath;
+
+    //경로의 종류에 따라 애니메이션을 결정하기 위한 bool 연산자 선언
+    //false인경우 원형루프, true인 경우 선형 루프이며, Idle 애니메이션 재생합니다. 
+    private bool _isLinearPath;
+    private bool _isNoPath;
 
     public Transform lookAtTarget;
 
-    [Range(0, 5)] public float randomLoopRange;
+    [FormerlySerializedAs("randomLoopRange")] [Range(0, 5)] public float randomDistance;
 
 
     private void Start()
@@ -93,11 +106,12 @@ public class Crab_AnimalPathController : MonoBehaviour
         DOTween.Init().SetCapacity(100, 200);
         _inactiveCrabPool = new Stack<Crab>();
         _activeCrabPool = new Queue<Crab>();
-        
-        
-        loopPath = new Vector3[5];
+
+
+        linearPath = new Vector3[2];
+        circularPath = new Vector3[5];
         awayPath = new Vector3[2];
-        inPath = new Vector3[2];
+       // inPath = new Vector3[2];
         _distancesFromStartPoint = new float[4];
 
         Crab_EffectController.OnClickForEachClick -= OnClicked;
@@ -124,7 +138,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         if (!isInit) return;
 
-        SetInAndLoopPath();
+       
         UpdateDistanceFromStartPointToClickedPoint();
         DoPathToClickPoint();
 
@@ -181,19 +195,23 @@ public class Crab_AnimalPathController : MonoBehaviour
         }
     }
 
-    [Header("duration Setting")] public float _pathDurationOnSec;
-    public float _pathDuration;
-    public float _duration;
+    [Header("duration Setting")] 
+    public float pathDuration;
+    public float pathDurationOnSec;
+    private float _duration;
 
-    private void SetAndPlayPath(Crab crabDoingPath)
+    private void SetAndPlayPath(Crab _crabDoingPath)
     {
-        _duration = crabDoingPath.isPathSet ? _pathDurationOnSec : _pathDuration;
+        
+        SetInAndLoopPath(_crabDoingPath);
+        CopyPathArrays(_crabDoingPath);
+        _duration = _crabDoingPath.isPathSet ? pathDurationOnSec : pathDuration;
 
-        if (crabDoingPath.isPathSet == false)
+        if (_crabDoingPath.isPathSet == false)
         {
-            crabDoingPath.gameObj.transform.position = appearablePoints[_closestStartPointIndex].position;
-            inPath[(int)InPath.Start] = appearablePoints[_closestStartPointIndex].position;
-            crabDoingPath.isPathSet = true;
+            _crabDoingPath.gameObj.transform.position = appearablePoints[_closestStartPointIndex].position;
+            //inPath[(int)InPath.Start] = appearablePoints[_closestStartPointIndex].position;
+            _crabDoingPath.isPathSet = true;
         }
         else
         {
@@ -203,37 +221,38 @@ public class Crab_AnimalPathController : MonoBehaviour
             // inPath[(int)InPath.Start] = _crabDoingPath.gameObj.transform.position;
         }
 
-        PlayPath(crabDoingPath);
+        PlayPath(_crabDoingPath);
     }
 
     private void DeactivateAnim(Animator animator)
     {
-        animator.SetBool(SPIN_ANIM,false);
         animator.SetBool(ROLL_ANIM,false);
-        animator.SetBool(IDLE_B_ANIM,false);
-        animator.SetBool(IDLE_C_ANIM,false);
+        animator.SetBool(ROTATE_B_ANIM,false);
+        animator.SetBool(ROTATE_A_ANIM,false);
+        animator.SetBool(IDLE_ANIM,false);
     }
 
-    private void SetAnim(Animator animator)
+    private void SetAnim(Animator animator,bool isNoPath =false)
     {
         int randomAnim =Random.Range(0,4);
 
-#if UNITY_EDITOR
-        Debug.Log($"애니메이션 세팅 완료 :{randomAnim}");
-#endif
-        switch (randomAnim)
-        {
-            case 0 : animator.SetBool(SPIN_ANIM,true);
-                break;
-            case 1 :animator.SetBool(ROLL_ANIM,true);
-                break;
-            case 2 :animator.SetBool(IDLE_B_ANIM,true);
-                break;
-            case 3 :animator.SetBool(IDLE_C_ANIM,true);
-                break;
-        }
+
+        
+          switch (randomAnim)
+            {
+                case 0 : animator.SetBool(ROLL_ANIM,true);
+                    break;
+                case 1 :animator.SetBool(ROTATE_A_ANIM,true);
+                    break;
+                case 2 :animator.SetBool(ROTATE_B_ANIM,true);
+                    break;
+       
+            }
+        
+     
     }
-   
+
+ 
     private void PlayPath(Crab _crabDoingPath)
     {
         DeactivateAnim(_crabDoingPath.gameObj.GetComponent<Animator>());
@@ -244,39 +263,87 @@ public class Crab_AnimalPathController : MonoBehaviour
         StartCoroutine(CheckSequenceKilled(_crabDoingPath.currentSequence));
 
         _crabDoingPath.currentSequence = DOTween.Sequence();
-        CopyPathArrays(_crabDoingPath);
+        
 
-        // 첫 번째 트윈: 이동
+        // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
             .DOMove(crab_effectController.hitPoint + Vector3.up * Random.Range(0, 3), _duration)
-            .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
+            .OnStart(() =>
+            {
+                
+                _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f);
+            })
             .OnComplete(() =>
             {
-             
-                SetAnim(_crabDoingPath.animator);
+                _crabDoingPath.linearPath[0] = _crabDoingPath.gameObj.transform.position;
 #if UNITY_EDITOR
-                Debug.Log("첫 번째 트윈 완료");
+             //   Debug.Log("첫 번째 트윈 완료");
 #endif
                // _crabDoingPath.gameObj.transform.position = _crabDoingPath.loopPath[(int)LoopPath.Start];
             }));
 
-// 두 번째 트윈: 경로 따라 이동
-        _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOPath(_crabDoingPath.loopPath, 2.5f, PathType.CatmullRom)
-            .SetLoops(8, LoopType.Yoyo)
-            .SetEase(Ease.Linear)
-            .OnStart(() =>
+        if (_crabDoingPath.isNoPath)
+        {
+            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 7f, val => val++).OnStart(() =>
             {
-               
-            })
-            .OnComplete(() =>
-            {
+                _crabDoingPath.animator.SetBool(IDLE_ANIM,true);
 #if UNITY_EDITOR
-                Debug.Log("두 번째 트윈 완료");
+                Debug.Log("Idle: 경로없음");
 #endif
-                _crabDoingPath.isGoingHome = true;
-                awayPath[(int)AwayPath.start] = _crabDoingPath.gameObj.transform.position;
+            }).OnComplete(() =>
+            {
+                
+              
             }));
+        }
+        else
+        {
+            if (_crabDoingPath.isLinearPath)
+                // 두 번째 트윈: 경로 따라 이동
+                _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
+                    .DOPath(_crabDoingPath.linearPath, 2.5f, PathType.Linear)
+                    .SetLoops(8, LoopType.Yoyo)
+                    .SetEase(Ease.Linear)
+                    .OnStart(() =>
+                    {
+                       
+                        SetAnim(_crabDoingPath.animator);            
+#if UNITY_EDITOR
+                        Debug.Log($"꽃게선형움직임 중, bool : {_crabDoingPath.isLinearPath}, (좌우)선형 경로{linearPath[0]},{linearPath[1]} ");
+#endif
+                    
+                    })
+                    .OnComplete(() =>
+                    {
+
+
+                        _crabDoingPath.isGoingHome = true;
+                        awayPath[(int)AwayPath.start] = _crabDoingPath.gameObj.transform.position;
+                    }));
+            else
+                // 두 번째 트윈: 경로 따라 이동
+                _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
+                    .DOPath(_crabDoingPath.circularPath, 2.5f, PathType.CatmullRom)
+                    .SetLoops(8, LoopType.Yoyo)
+                    .SetEase(Ease.Linear)
+                    .OnStart(() =>
+                    {
+                        SetAnim(_crabDoingPath.animator);       
+#if UNITY_EDITOR
+                        Debug.Log("원형 경로");
+#endif
+                    })
+                    .OnComplete(() =>
+                    {
+
+                        _crabDoingPath.isGoingHome = true;
+                        _crabDoingPath.awayPath[(int)AwayPath.start] = _crabDoingPath.gameObj.transform.position;
+                    }));
+        }
+
+        
+
+        
 
 // 세 번째 트윈: 집으로 돌아가기
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
@@ -284,7 +351,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             .OnComplete(() =>
             {
 #if UNITY_EDITOR
-                Debug.Log("세 번째 트윈 완료");
+           //     Debug.Log("세 번째 트윈 완료");
 #endif
                 _crabDoingPath.gameObj.SetActive(false);
                 _inactiveCrabPool.Push(_crabDoingPath);
@@ -323,14 +390,31 @@ public class Crab_AnimalPathController : MonoBehaviour
         crab.currentSequence = DOTween.Sequence();
     }
 
+    private void SetBool(Crab crab)
+    {
+        crab.isLinearPath = _isLinearPath;
+        crab.isNoPath = _isNoPath;
+    }
     private void CopyPathArrays(Crab crab)
     {
-        crab.inPath = new Vector3[inPath.Length];
-        Array.Copy(inPath, crab.inPath, inPath.Length);
+        
+        // crab.inPath = new Vector3[inPath.Length];
+        // Array.Copy(inPath, crab.inPath, inPath.Length);
 
-        crab.loopPath = new Vector3[loopPath.Length];
-        Array.Copy(loopPath, crab.loopPath, loopPath.Length);
+        if (crab.isLinearPath)
+        {
+             
+            crab.linearPath = new Vector3[1];
+            Array.Copy(linearPath, crab.linearPath, 1);
 
+        }
+        else
+        {
+            crab.circularPath = new Vector3[circularPath.Length];
+            Array.Copy(circularPath, crab.circularPath, circularPath.Length);
+
+        }
+       
         crab.awayPath = new Vector3[awayPath.Length];
         Array.Copy(awayPath, crab.awayPath, awayPath.Length);
     }
@@ -338,25 +422,64 @@ public class Crab_AnimalPathController : MonoBehaviour
     /// <summary>
     ///     클릭시 게가 이동할 경로를 클릭하는 곳으로 이동시키는 함수 입니다.
     /// </summary>
-    private void SetInAndLoopPath()
+    enum PathName
+    {
+        Circular,
+        Linear,
+        NoPath
+    }
+
+    private void SetInAndLoopPath(Crab crab)
     {
         main = crab_effectController.hitPoint;
 
-        start = main + Vector3.up * startOffset * Random.Range(1, randomLoopRange);
-        mid1 = main + Vector3.forward * midOffset * Random.Range(1, randomLoopRange);
-        mid2 = main + Vector3.down * midOffset * Random.Range(1, randomLoopRange);
-        mid3 = main + Vector3.back * midOffset * Random.Range(1, randomLoopRange);
+        _isNoPath = false;
+        _isLinearPath = false;
+        
+        int currentPath = Random.Range(0, 3);
 
-        /*           mid
-         *    start       mid2
-         *           end
-         */
+        if (currentPath == (int)PathName.Circular)
+        {
+            start = main + Vector3.up * startOffset * Random.Range(1, randomDistance);
+            mid1 = main + Vector3.forward * midOffset * Random.Range(1, randomDistance);
+            mid2 = main + Vector3.down * midOffset * Random.Range(1, randomDistance);
+            mid3 = main + Vector3.back * midOffset * Random.Range(1, randomDistance);
 
-        loopPath[(int)LoopPath.Start] = start;
-        loopPath[(int)LoopPath.Mid1] = mid1;
-        loopPath[(int)LoopPath.Mid2] = mid2;
-        loopPath[(int)LoopPath.Mid3] = mid3;
-        loopPath[(int)LoopPath.End] = start;
+            /*           mid
+             *    start       mid2
+             *           end
+             */
+            
+            circularPath[(int)LoopPath.Start] = start;
+            circularPath[(int)LoopPath.Mid1] = mid1;
+            circularPath[(int)LoopPath.Mid2] = mid2;
+            circularPath[(int)LoopPath.Mid3] = mid3;
+            circularPath[(int)LoopPath.End] = start;
+            
+            
+            _isLinearPath = false;
+            
+        }
+        else if(currentPath == (int)PathName.Linear)
+        {
+            end_Linear = main + transform.forward * linearPathDistance * Random.Range(1, randomDistance);
+            
+            linearPath[0] = end_Linear;
+            
+#if UNITY_EDITOR
+            Debug.Log($"경로 설정 완료: (좌우)선형 경로{linearPath[0]},{linearPath[1]} ");
+#endif
+
+            
+            _isLinearPath = true;
+        }
+        else
+        {
+            _isNoPath = true;
+        }
+        SetBool(crab);
+        
+      
     }
 
     private void SetPool(Stack<Crab> pool, string name)
@@ -421,8 +544,9 @@ public class Crab_AnimalPathController : MonoBehaviour
 public class Crab
 {
     public GameObject gameObj { get; set; }
-    public Vector3[] inPath { get; set; }
-    public Vector3[] loopPath { get; set; }
+    // public Vector3[] inPath { get; set; }
+    public Vector3[] circularPath { get; set; }
+    public Vector3[] linearPath { get; set; }
     public Vector3[] awayPath { get; set; }
 
     //isPathSet은 경로 재설정 위한 bool값.
@@ -432,5 +556,7 @@ public class Crab
     public Sequence currentSequence { get; set; }
 
     public bool isGoingHome { get; set; }
+    public bool isLinearPath { get; set; }
+    public bool isNoPath { get; set; }
     public Animator animator { get; set; }
 }

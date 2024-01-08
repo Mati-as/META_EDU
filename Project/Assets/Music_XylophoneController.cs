@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 using Random = UnityEngine.Random;
 
 public class Music_XylophoneController : MonoBehaviour
 {
+  [Header("Reference")] [SerializeField] private Music_GameManager _gameManager;
+  
   public Transform[] xylophones;
   public Vector3[] targetPos;
 
@@ -16,45 +19,68 @@ public class Music_XylophoneController : MonoBehaviour
   private bool _isInit;
 
   [Header("sound")] 
+  public float pitchInterval;
   public int audioSize;
   public int volumeA;
   private AudioClip _audioClip;
   private AudioSource[] _audioSourcesA;
-    
+  
+  // 오디오 소스 캐싱
+  private Dictionary<string, AudioSource> audioSourceMap;
   
   private string _path = "게임별분류/기본컨텐츠/Music";
+
+  private void Awake()
+  {
+    BindEvent();
+  }
 
   private void Start()
   {
     if (!_isInit) Init();
 
+  
     DoIntroMove();
   }
+
+  private int CHILD_COUNT;
   protected virtual void SetAudio()
   {
-    _audioSourcesA = SetAudioSettings(_audioSourcesA, _audioClip, audioSize, volumeA);
+   
   }
   
 
   private void Init()
   {
-    xylophones = new Transform[transform.childCount];
-    xylophones = GetComponentsInChildren<Transform>();
     
-    targetPos = new Vector3[xylophones.Length];
-   
+    audioSourceMap = new Dictionary<string, AudioSource>();
+
+    CHILD_COUNT  = transform.childCount;
+    
+    xylophones = new Transform[CHILD_COUNT];
+    xylophones = GetComponentsInChildren<Transform>();
+  
+    targetPos = new Vector3[CHILD_COUNT];
       
-    for (int i = 0;i < xylophones.Length ; i++)
+    for (int i = 0;i < CHILD_COUNT ; i++)
     {
       targetPos[i] = xylophones[i].transform.position;
     }
-    
+
+    int count = 0;
+   
     //초기 위치 설정
     foreach (var x in xylophones)
     {
       x.transform.position += defaultOffset;
+
+      AudioSource audioSource = new AudioSource();
+      Initialize(x.transform,audioSource,pitchInterval * count);
+      audioSourceMap.TryAdd(x.gameObject.name, audioSource);
+      count++;
     }
 
+    
     _isInit = true;
    
   }
@@ -63,7 +89,7 @@ public class Music_XylophoneController : MonoBehaviour
 
   private void DoIntroMove()
   {
-    for (int i = 0; i < xylophones.Length ; ++i)
+    for (int i = 0; i < CHILD_COUNT ; ++i)
     {
       xylophones[i].transform.DOMove(targetPos[i], 0.5f + _interval* i)
         .SetDelay(2f);
@@ -75,44 +101,28 @@ public class Music_XylophoneController : MonoBehaviour
     AudioClip _audioClip = Resources.Load<AudioClip>(path);
     return _audioClip;
   }
+
+
   
-  
-  
-  
-  private AudioSource[] SetAudioSettings(AudioSource[] audioSources, AudioClip audioClip, int size, float volume = 1f,
+  private void Initialize(Transform _transform,AudioSource xylophones,float pitch, float volume = 1f,
     float interval = 0.25f)
   {
-    
-    audioSources = new AudioSource[size];
-    AudioClip _audioClip = LoadSound("게임별분류/기본컨텐츠/Music/Xylophone");
+    AudioSource[] tempAudioSources = new AudioSource[this.xylophones.Length];
+  
+     AudioClip _audioClip = LoadSound("게임별분류/기본컨텐츠/Music/Xylophone");
       
-    for (var i = 0; i < audioSources.Length; i++)
-    {
-      audioSources[i] = gameObject.AddComponent<AudioSource>();
-      audioSources[i].clip = _audioClip;
-      audioSources[i].volume = volume;
-      audioSources[i].spatialBlend = 0f;
-      audioSources[i].outputAudioMixerGroup = null;
-      audioSources[i].playOnAwake = false;
-      audioSources[i].pitch = 0.75f + 0.08f * i;
-    }
+      xylophones = _transform.gameObject.AddComponent<AudioSource>();
+      xylophones.clip = _audioClip;
+      xylophones.volume = volume;
+      xylophones.spatialBlend = 0f;
+      xylophones.outputAudioMixerGroup = null;
+      xylophones.playOnAwake = false;
+      xylophones.pitch = 0.95f +pitch;
 
-    return audioSources;
+
   }
   
-  protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
-    float volume = 0.8f)
-  {
-    if (!isBurst)
-    {
-      var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
-
-      if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
-
-#if UNITY_EDITOR
-#endif
-    }
-  }
+  
 
   protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
     float duration = 1f)
@@ -125,12 +135,59 @@ public class Music_XylophoneController : MonoBehaviour
     });
   }
 
-  protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
-  {
-#if UNITY_EDITOR
 
-#endif
-    audioSource.Play();
-    audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
+  private void OnClicked()
+  {
+    if (_gameManager.hits.Length <= 0) return;
+
+    foreach (var _ray in _gameManager.hits)
+    {
+      if (_gameManager == null)
+      {
+        Debug.Log("_gameManager is null");
+        return;
+      }
+
+      if (_ray.transform == null)
+      {
+        Debug.Log("_ray.transform is null");
+        return;
+      }
+
+      var rayGameObject = _ray.transform.gameObject;
+      if (rayGameObject == null)
+      {
+        Debug.Log("rayGameObject is null");
+        return;
+      }
+        
+
+      if (_ray.transform.gameObject.TryGetComponent(out AudioSource currentAudioSource))
+        currentAudioSource.Play();
+
+      currentAudioSource.DOFade(1, 0.15f)
+        .OnComplete(() => { FadeOutSound(currentAudioSource); });
+      
+      return;
+
+    }
+      
+    
+  }
+   
+    
+  
+  
+  
+  protected virtual void OnDestroy()
+  {
+    Music_GameManager.eventAfterAGetRay -= OnClicked;
+  }
+    
+  protected virtual void BindEvent()
+  {
+    Music_GameManager.eventAfterAGetRay -= OnClicked;
+    Music_GameManager.eventAfterAGetRay += OnClicked;
   }
 }
+

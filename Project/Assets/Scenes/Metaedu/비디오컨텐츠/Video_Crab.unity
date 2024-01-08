@@ -2639,7 +2639,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 441137026}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 69.3, z: -417}
+  m_LocalPosition: {x: 0, y: 69.3, z: -137.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13964,7 +13964,7 @@ GameObject:
   - component: {fileID: 778424655}
   - component: {fileID: 778424654}
   m_Layer: 0
-  m_Name: CrabRotater
+  m_Name: CrabRotater (Spawner)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13988,14 +13988,14 @@ MonoBehaviour:
   - {fileID: 805184338}
   - {fileID: 908984935}
   - {fileID: 932562755}
-  startOffset: 3
-  midOffset: 3
-  endOffset: 3
+  startOffset: 10
+  midOffset: 10
+  endOffset: 10
+  linearPathDistance: 20
   lookAtTarget: {fileID: 1504853159}
-  randomLoopRange: 4.89
-  _pathDurationOnSec: 1
-  _pathDuration: 3.5
-  _duration: 3
+  randomDistance: 1.09
+  pathDuration: 5
+  pathDurationOnSec: 3
 --- !u!4 &778424655
 Transform:
   m_ObjectHideFlags: 0
@@ -14004,7 +14004,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 778424653}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -59.1, y: 1.9501258, z: 14.501551}
+  m_LocalPosition: {x: 147.4, y: 1.9501258, z: -15.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14098,7 +14098,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 805184337}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 83.399994, z: 345}
+  m_LocalPosition: {x: 0, y: 83.399994, z: 98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14683,7 +14683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 908984934}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -62.500004, z: 361}
+  m_LocalPosition: {x: 0, y: -62.500004, z: 114.000015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14821,7 +14821,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 932562754}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -52.2, z: -459}
+  m_LocalPosition: {x: 0, y: -52.2, z: -179.49998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

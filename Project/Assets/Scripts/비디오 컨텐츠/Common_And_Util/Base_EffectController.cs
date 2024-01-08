@@ -17,7 +17,7 @@ public abstract class  Base_EffectController : MonoBehaviour
 
     [Header("ObjectPool Setting")] public int poolSize;
 
-    private Camera _camera;
+
     [HideInInspector] public InputAction _mouseClickAction;
     [HideInInspector] public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
@@ -86,10 +86,7 @@ public abstract class  Base_EffectController : MonoBehaviour
         BindEvent();
     }
 
-    private void Start()
-    {
-        _camera = Camera.main;
-    }
+   
 
     private void Awake()
     {

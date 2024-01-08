@@ -9,7 +9,8 @@ public class Video_Image_Move : Image_Move
     private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
     
-
+  
+    
     public override void Init()
     {
         base.Init();
@@ -24,9 +25,9 @@ public class Video_Image_Move : Image_Move
         _base_effectController.ray_BaseController = ray_ImageMove;
        
 #if UNITY_EDITOR
+       
 #endif
- 
-   
+        
     }
 
 }
