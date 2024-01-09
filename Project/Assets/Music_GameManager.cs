@@ -12,6 +12,8 @@ public class Music_GameManager : Base_BasicGameManager
     {
         hits = Physics.RaycastAll(ray_GameManager);
         eventAfterAGetRay?.Invoke();
-        
+#if UNITY_EDITOR
+       // Debug.Log("eventAfterAGetRay Invoke");
+#endif
     }
 }
