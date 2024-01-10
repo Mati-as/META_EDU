@@ -142,7 +142,6 @@ public class Music_XylophoneController : MonoBehaviour
   public int audioClipCount;
   private void Initialize(Transform _transform,AudioSource xylophones, float volume = 1f)
   {
-      
      AudioClip _audioClip = LoadSound("게임별분류/기본컨텐츠/Music/Xylophone");
 
      for (int i = 0; i < audioClipCount; ++i)
@@ -260,7 +259,7 @@ public class Music_XylophoneController : MonoBehaviour
 
       // 히트 지점에 작은 구체를 그립니다.
       Gizmos.color = Color.magenta;
-      Gizmos.DrawSphere(RayForXylophone.point,0.15f);
+      Gizmos.DrawSphere(RayForXylophone.point,3f);
     }
   }
   
