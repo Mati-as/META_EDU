@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;
 
 public class Music_XylophoneController : MonoBehaviour
 {
@@ -12,35 +13,40 @@ public class Music_XylophoneController : MonoBehaviour
     public Transform[] allXylophones;
     public Vector3[] targetPos;
 
-    
-    [Space(10f)] 
-    [Header("position setting")] public Vector3 defaultOffset;
+
+    [Space(10f)] [Header("position setting")]
+    public Vector3 defaultOffset;
+
     // semi-singleton
     private bool _isInit;
 
-    
-    [Space(10f)] 
-    [Header("sound")] public float pitchInterval;
+
+    [Space(10f)] [Header("sound")] public float pitchInterval;
     public int audioSize;
     public int volumeA;
     private AudioClip _audioClip;
-    private AudioSource[] _audioSourcesA;
+
+    //순서대로 피아노 음원 재생을 위해 배열로 캐싱합니다.
+    private AudioSource[] _xylophoneAudioSources;
     private int _totalChildCount;
-    private readonly int SOUND_PRODUCING_CHILD_COUNT = 9;
+    private readonly int SOUND_PRODUCING_CHILD_COUNT = 8;
 
     // Cache Audio Source
+    //클릭시, gameObjecet.name(string)값에 대한 AudioSource를 플레이하기 위해 자료사전을 사용합니다. 
     private Dictionary<string, AudioSource> audioSourceMap;
     private Dictionary<string, int> noteSemitones;
     private Dictionary<string, MeshRenderer> _materialMap;
     private Dictionary<MeshRenderer, Color> _defaultColorMap;
-      
+
     private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Xylophone";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
-    
+
+    private MeshRenderer[] _xylophoneMeshRenderers;
 
     private void Awake()
     {
         BindEvent();
+
 
         allXylophones = GetComponentsInChildren<Transform>();
         audioSourceMap = new Dictionary<string, AudioSource>();
@@ -53,10 +59,14 @@ public class Music_XylophoneController : MonoBehaviour
 
         //클릭시 사운드가 나는 실로폰은 위치정보 + 사운드소스 참조가 필요하기 때문에, 따로 다른 배열로 구성합니다.
         soundProducingXylophones = new Transform[SOUND_PRODUCING_CHILD_COUNT];
+        _xylophoneAudioSources = new AudioSource[SOUND_PRODUCING_CHILD_COUNT];
+        _xylophoneMeshRenderers = new MeshRenderer[SOUND_PRODUCING_CHILD_COUNT];
+
         var allTransforms = GetComponentsInChildren<Transform>();
         var childTransforms = allTransforms.Where(t => t != transform).ToArray();
         var numberOfChildrenToTake = Mathf.Min(childTransforms.Length, 8);
         var selectedTransforms = childTransforms.Take(numberOfChildrenToTake).ToArray();
+
         soundProducingXylophones = selectedTransforms;
     }
 
@@ -69,18 +79,39 @@ public class Music_XylophoneController : MonoBehaviour
         DoIntroMove();
     }
 
+    private bool _isIncreasingWay;
 
-    protected virtual void SetAudio()
+    private void Update()
     {
+        _playCurrentTime += Time.deltaTime;
+
+        if (_playCurrentTime > playWaitTime) StartPlayAutomaticallyCoroutine(_isIncreasingWay);
     }
 
+
+    private AudioSource[] SetAudio(AudioSource[] audioSources, string path, float volume = 0.5f)
+    {
+        var _audioClip = LoadSound(path);
+
+        audioSources = new AudioSource[audioSources.Length];
+        for (var i = 0; i < audioSources.Length; ++i)
+        {
+            audioSources[i] = gameObject.AddComponent<AudioSource>();
+            audioSources[i].clip = _audioClip;
+            audioSources[i].volume = volume;
+            audioSources[i].spatialBlend = 0f;
+            audioSources[i].outputAudioMixerGroup = null;
+            audioSources[i].playOnAwake = false;
+            audioSources[i].pitch = CalculatePitch(i);
+        }
+
+        return audioSources;
+    }
 
     private void Init()
     {
         for (var i = 0; i < _totalChildCount; i++) targetPos[i] = allXylophones[i].transform.position;
-
         var count = 0;
-
 
         //초기 위치 설정
         foreach (var x in soundProducingXylophones)
@@ -89,17 +120,37 @@ public class Music_XylophoneController : MonoBehaviour
                 var audioSource = new AudioSource();
                 InitializeAudioSource(x.transform, audioSource);
                 audioSourceMap.TryAdd(x.gameObject.name, audioSource);
-                count++;
             }
-
-        count = 0;
+        
+        
         foreach (var x in allXylophones)
             if (x.gameObject.name != "Xylophones" || x.gameObject.name.Length <= 2)
             {
                 x.transform.position += defaultOffset;
+            }
+
+        _xylophoneAudioSources = SetAudio(_xylophoneAudioSources, AUDIO_XYLOPHONE_PATH);
+        
+        
+        count = 0;
+        foreach (var xyl in soundProducingXylophones)
+        {
+            if (xyl.gameObject.name != "Xylophones" || xyl.gameObject.name.Length <= 2)
+            {
+                var thisMeshRenderer = xyl.gameObject.GetComponent<MeshRenderer>();
+                if (thisMeshRenderer != null)
+                {
+                    _xylophoneMeshRenderers[count] = thisMeshRenderer;
+                }
+                else
+                {
+                    // MeshRenderer가 없는 경우에 대한 처리
+                    Debug.LogError("MeshRenderer가 없는 GameObject 발견: " + xyl.gameObject.name);
+                }
 
                 count++;
             }
+        }
 
         _isInit = true;
     }
@@ -141,6 +192,15 @@ public class Music_XylophoneController : MonoBehaviour
         return pitch;
     }
 
+    private float CalculatePitch(int i)
+    {
+        var semitonesFromC4 = i;
+
+        // pitch 계산
+        var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
+        return pitch;
+    }
+
     private void InitializeAudioSource(Transform _transform, AudioSource xylophones, float volume = 1f)
     {
         var _audioClip = LoadSound(AUDIO_XYLOPHONE_PATH);
@@ -157,7 +217,7 @@ public class Music_XylophoneController : MonoBehaviour
             xylophones.pitch = GetPitchForNote(gameObj.name);
         }
     }
-
+    
     protected void FindAndPlayAudio(AudioSource[] audioSources,
         float volume = 0.8f)
     {
@@ -217,7 +277,7 @@ public class Music_XylophoneController : MonoBehaviour
         }
 
         var clickedObjName = RayForXylophone.transform.gameObject.name;
-      
+
         // string.length로 판단하는 로직은 유지보수난이도 상승.. 로직 변경필요. 1-10-24
         if (clickedObjName.Length > 3)
         {
@@ -262,24 +322,74 @@ public class Music_XylophoneController : MonoBehaviour
     private void ChangeColor(MeshRenderer meshRenderer, float duration = 0.8f)
     {
         var thisMaterial = new Material(meshRenderer.material);
+        
+        _defaultColorMap.TryAdd(meshRenderer,thisMaterial.color);
+        
         var defaultColor = thisMaterial.color;
 
 
         //중복 곱 방지
         var brightenedColor = defaultColor * brightenIntensity;
 
-
         thisMaterial.DOColor(brightenedColor, BASE_MAP, duration).OnComplete(() =>
         {
             thisMaterial.DOColor(_defaultColorMap[meshRenderer], BASE_MAP, duration);
         });
+     
 
         meshRenderer.material = thisMaterial;
+    }
 
+    private Coroutine _xylophoneCoroutine;
 
+    private void StartPlayAutomaticallyCoroutine(bool isIncrease)
+    {
+        var i = Random.Range(0, 2);
+        switch (i)
+        {
+            case 0:
+                isIncrease = true;
+                break;
+            case 1:
+                isIncrease = false;
+                break;
+        }
 
+        //_xylophoneCoroutine = 
+        StartCoroutine(PlayAutomatically(isIncrease));
     }
 
 
+    public float playWaitTime;
+    private float _playCurrentTime;
+    private WaitForSeconds xylophoneInerval;
 
+    private IEnumerator PlayAutomatically(bool isIncrease)
+    {
+        _playCurrentTime = 0;
+
+#if UNITY_EDITOR
+Debug.Log($"렌더러 Length{_xylophoneMeshRenderers.Length}");
+Debug.Log($"오디오 Length{_xylophoneAudioSources.Length}");
+#endif
+        for (var i = 0; i < _xylophoneAudioSources.Length; i++)
+        {
+            if (isIncrease)
+            {
+                FadeInSound(_xylophoneAudioSources[i]);
+                ChangeColor(_xylophoneMeshRenderers[i]);
+            }
+
+            else
+            {
+                FadeInSound(_xylophoneAudioSources[_xylophoneAudioSources.Length - i - 1]);
+                ChangeColor(_xylophoneMeshRenderers[_xylophoneAudioSources.Length - i - 1]);
+            }
+
+
+            if (xylophoneInerval == null) xylophoneInerval = new WaitForSeconds(0.043f);
+
+            yield return xylophoneInerval;
+        }
+    }
 }
