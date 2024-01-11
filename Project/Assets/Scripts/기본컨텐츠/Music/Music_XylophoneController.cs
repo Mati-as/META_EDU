@@ -367,6 +367,9 @@ public class Music_XylophoneController : MonoBehaviour
     private IEnumerator PlayAutomatically(bool isIncrease)
     {
         _playCurrentTime = 0;
+        
+        //처음 시작에만 짧은 Interval로 동작하고 이후에는 아래처럼 랜덤으로 동작
+        playWaitTime = Random.Range(10, 20);
 
 #if UNITY_EDITOR
 Debug.Log($"렌더러 Length{_xylophoneMeshRenderers.Length}");
