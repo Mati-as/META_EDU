@@ -20,6 +20,8 @@ public class EasternArt_GameManager : MonoBehaviour
     [Header("Skinned Picture")] public GameObject skinnedPicture;
 
     private Transform[] _skinnedPictureChildren;
+    
+    
 
     private void Awake()
     {
@@ -57,6 +59,7 @@ public class EasternArt_GameManager : MonoBehaviour
     {
         camera.DOLookAt(lookAtA.position, 0.01f);
 
+        camera.position = _pathVector[0];
 
         camera.DOPath(_pathVector, 3.5f, PathType.CatmullRom)
             .SetLookAt(lookAtA, true)

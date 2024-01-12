@@ -7,11 +7,7 @@ using Random = UnityEngine.Random;
 
 public class Music_BubbleController : MonoBehaviour
 {
-   
-
-    
-    [Header("Reference")] 
-    [SerializeField] private Music_GameManager _gameManager;
+    [Header("Reference")] [SerializeField] private Music_GameManager _gameManager;
 
     public float randomTime;
     private float _currentTime;
@@ -21,13 +17,25 @@ public class Music_BubbleController : MonoBehaviour
 
     private WaitForSeconds _poolReturnWait;
 
-    
-    [Space(10f)] 
-    [Header("particle control")] 
+
+    [Space(10f)] [Header("particle control")]
     public float clickRadius;
+
     public float setLifeTime;
-    private ParticleSystem[] particleSystems;
+
+    private enum ParticlePattern
+    {
+        BigBubble,
+        Switching_Left,
+        Switching_Right,
+        SlowlyFillingScreen,
+        RapidlyFillingScreen
+    }
+
+    private ParticleSystem[] _effectParticleSystems;
+    private ParticleSystem[] _bubbleParticleSystems;
     public static event Action bigBubbleEvent;
+    public static event Action onPatternChange;
     private ParticleSystem _effect_Small;
     private ParticleSystem _effect_Big;
     private float closestDistance;
@@ -39,14 +47,14 @@ public class Music_BubbleController : MonoBehaviour
     private AudioSource[] _bigBubbleAudioSources;
     private AudioSource[] _clearBubbleSoundAudioSource;
     private readonly int _audioClipCount = 5;
-    
-    
+
+
     private readonly string AUDIO_SMALL_BUBBLE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/bubble_explode_small";
-    private readonly string AUDIO_BIG_BUBBLE_PATH =   "게임별분류/기본컨텐츠/SkyMusic/Audio/bubble_explode_big";
-    private readonly string AUDIO_CLEAR_BUBBLE =   "게임별분류/기본컨텐츠/SkyMusic/Audio/clear_bubble";
+    private readonly string AUDIO_BIG_BUBBLE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/bubble_explode_big";
+    private readonly string AUDIO_CLEAR_BUBBLE = "게임별분류/기본컨텐츠/SkyMusic/Audio/clear_bubble";
 
     private readonly string PREFAB_EFFECT_PARTICLE_PATH_SMALL = "게임별분류/기본컨텐츠/SkyMusic/Prefab/bubble_explode_small";
-    private readonly string PREFAB_EFFECT_PARTICLE_PATH_BIG =   "게임별분류/기본컨텐츠/SkyMusic/Prefab/bubble_explode_big";
+    private readonly string PREFAB_EFFECT_PARTICLE_PATH_BIG = "게임별분류/기본컨텐츠/SkyMusic/Prefab/bubble_explode_big";
 
     private RaycastHit rayCastHitForBubble;
     private Ray ray;
@@ -55,74 +63,93 @@ public class Music_BubbleController : MonoBehaviour
     private void Awake()
     {
         BindEvent();
-       
     }
 
 
     private void Start()
     {
         Init();
-        
-
-        var childParticleSystems = new List<ParticleSystem>();
 
 
-        foreach (Transform child in transform)
-        {
-            var ps = child.GetComponent<ParticleSystem>();
-            if (ps != null) childParticleSystems.Add(ps);
-        }
+        // var childParticleSystems = new List<ParticleSystem>();
+        //
+        //
+        // foreach (Transform child in transform)
+        // {
+        //     var ps = child.GetComponent<ParticleSystem>();
+        //     if (ps != null) childParticleSystems.Add(ps);
+        // }
+        //
+        // randomTime = Random.Range(40, 50);
+        // _effectParticleSystems = childParticleSystems.ToArray();
 
-        randomTime = Random.Range(40, 50);
-        particleSystems = childParticleSystems.ToArray();
+        StartCoroutine(PlayParticleByTurns());
     }
 
-    private void Update()
+    // private void Update()
+    // {
+    //     _currentTime += Time.deltaTime;
+    //
+    //     if (_currentTime > randomTime)
+    //     {
+    //         var layerMask = LayerMask.GetMask("Screen");
+    //
+    //         foreach (var ps in _effectParticleSystems)
+    //             if (Physics.Raycast(ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
+    //             {
+    //
+    //                 ClickEventApplyRadialForce(rayCastHitForBubble.point, ps, 100);
+    //
+    //             }
+    //
+    //         //오디오 일괄재생
+    //         FindAndPlayAudio(_smallBubbleAudioSources);
+    //         FindAndPlayAudio(_bigBubbleAudioSources);
+    //         FindAndPlayAudio(_clearBubbleSoundAudioSource);
+    //
+    //
+    //         _currentTime = 0;
+    //         randomTime = Random.Range(20, 25);
+    //     }
+    // }
+
+    private void ClearOffAllBubbles()
     {
-        _currentTime += Time.deltaTime;
+        var layerMask = LayerMask.GetMask("Screen");
 
-        if (_currentTime > randomTime)
-        {
-            var layerMask = LayerMask.GetMask("Screen");
+        foreach (var ps in _bubbleParticleSystems)
+            if (Physics.Raycast(ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
+                RemoveAllBubble(rayCastHitForBubble.point, ps, 10000);
 
-            foreach (var ps in particleSystems)
-                if (Physics.Raycast(ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
-                {
-#if UNITY_EDITOR
-                    Debug.Log("clear off all the bubbles");
-#endif
-                    ClickEventApplyRadialForce(rayCastHitForBubble.point, ps, 100);
-                    
-                }
-
-            //오디오 일괄재생
-            FindAndPlayAudio(_smallBubbleAudioSources);
-            FindAndPlayAudio(_bigBubbleAudioSources);
-            FindAndPlayAudio(_clearBubbleSoundAudioSource);
-            
-            
-            _currentTime = 0;
-            randomTime = Random.Range(20, 25);
-        }
+        //오디오 일괄재생
+        FindAndPlayAudio(_smallBubbleAudioSources);
+        FindAndPlayAudio(_bigBubbleAudioSources);
+        FindAndPlayAudio(_clearBubbleSoundAudioSource);
     }
 
 
     private void Init()
     {
+        _bubbleParticleSystems = new ParticleSystem[transform.childCount];
+
+        for (var i = 0; i < transform.childCount; i++)
+            _bubbleParticleSystems[i] = transform.GetChild(i).GetComponent<ParticleSystem>();
+
         _clickEffectPoolSmall = new Stack<ParticleSystem>();
         _clickEffectPoolBig = new Stack<ParticleSystem>();
-
+#if UNITY_EDITOR
+        Debug.Log($" ChildCount: {_bubbleParticleSystems.Length}");
+#endif
         _effect_Small = Resources.Load<GameObject>(PREFAB_EFFECT_PARTICLE_PATH_SMALL).GetComponent<ParticleSystem>();
         _effect_Big = Resources.Load<GameObject>(PREFAB_EFFECT_PARTICLE_PATH_BIG).GetComponent<ParticleSystem>();
 
         SetPool(_clickEffectPoolSmall, PREFAB_EFFECT_PARTICLE_PATH_SMALL);
         SetPool(_clickEffectPoolBig, PREFAB_EFFECT_PARTICLE_PATH_BIG, 3);
-        
-        
+
+
         _smallBubbleAudioSources = InitializeAudioSource(_smallBubbleAudioSources, AUDIO_SMALL_BUBBLE_PATH);
         _bigBubbleAudioSources = InitializeAudioSource(_bigBubbleAudioSources, AUDIO_BIG_BUBBLE_PATH);
-        _clearBubbleSoundAudioSource = InitializeAudioSource(_clearBubbleSoundAudioSource, AUDIO_CLEAR_BUBBLE,1);
-        
+        _clearBubbleSoundAudioSource = InitializeAudioSource(_clearBubbleSoundAudioSource, AUDIO_CLEAR_BUBBLE, 1);
     }
 
     private void OnClicked()
@@ -139,12 +166,16 @@ public class Music_BubbleController : MonoBehaviour
     protected virtual void OnDestroy()
     {
         Music_GameManager.eventAfterAGetRay -= OnClicked;
+        onPatternChange -= ClearOffAllBubbles;
     }
 
     protected virtual void BindEvent()
     {
         Music_GameManager.eventAfterAGetRay -= OnClicked;
         Music_GameManager.eventAfterAGetRay += OnClicked;
+
+        onPatternChange -= ClearOffAllBubbles;
+        onPatternChange += ClearOffAllBubbles;
     }
 
 #if UNITY_EDITOR //같이 빌드하지 말 것.
@@ -156,11 +187,11 @@ public class Music_BubbleController : MonoBehaviour
         {
             // 레이를 그립니다.
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(ray.origin, rayCastHitForBubble.point+hitOffset);
+            Gizmos.DrawLine(ray.origin, rayCastHitForBubble.point + hitOffset);
 
             // 히트 지점에 작은 구체를 그립니다.
             Gizmos.color = Color.magenta;
-            Gizmos.DrawSphere(rayCastHitForBubble.point +hitOffset, 3f);
+            Gizmos.DrawSphere(rayCastHitForBubble.point + hitOffset, 3f);
         }
     }
 
@@ -168,6 +199,12 @@ public class Music_BubbleController : MonoBehaviour
 
     // objectPool-related methods-------------------------------------------------
 
+    /// <summary>
+    ///     버블 자체가 아닌 터질때 이펙트의 오브젝트 풀링입니다.
+    /// </summary>
+    /// <param name="effectPool"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     private ParticleSystem GetFromPool(Stack<ParticleSystem> effectPool, string path)
     {
         if (effectPool.Count < 0) GrowPool(effectPool, path);
@@ -258,7 +295,7 @@ public class Music_BubbleController : MonoBehaviour
         ParticleSystem closestParticleSystem = null;
         var closestParticleIndex = -1;
 
-        foreach (var ps in particleSystems)
+        foreach (var ps in _bubbleParticleSystems)
         {
             var (index, distance) = FindClosestParticle(position, ps);
 
@@ -324,7 +361,7 @@ public class Music_BubbleController : MonoBehaviour
         return (closestIndex, closestDistance);
     }
 
-    private void ClickEventApplyRadialForce(Vector3 position, ParticleSystem particleSystem, float clickRadious)
+    private void RemoveAllBubble(Vector3 position, ParticleSystem particleSystem, float clickRadious)
     {
         var particles = new ParticleSystem.Particle[particleSystem.particleCount];
         var particleCount = particleSystem.GetParticles(particles);
@@ -352,7 +389,7 @@ public class Music_BubbleController : MonoBehaviour
             {
                 var distance = Vector3.Distance(position, particles[i].position);
 
-                if (distance < clickRadious) particles[i].remainingLifetime = 0.8f;
+                if (distance < clickRadious) particles[i].remainingLifetime = 0.5f;
             }
 
             particleSystem.SetParticles(particles, particleCount);
@@ -368,14 +405,15 @@ public class Music_BubbleController : MonoBehaviour
         return _audioClip;
     }
 
-    private AudioSource[] InitializeAudioSource(AudioSource[] audioSources, string path, float volume = 0.5f,int size =5)
+    private AudioSource[] InitializeAudioSource(AudioSource[] audioSources, string path, float volume = 0.5f,
+        int size = 5)
     {
         var _audioClip = LoadSound(path);
 
         audioSources = new AudioSource[size];
         for (var i = 0; i < audioSources.Length; ++i)
         {
-            audioSources[i] =  gameObject.AddComponent<AudioSource>();
+            audioSources[i] = gameObject.AddComponent<AudioSource>();
             audioSources[i].clip = _audioClip;
             audioSources[i].volume = volume;
             audioSources[i].spatialBlend = 0f;
@@ -393,10 +431,6 @@ public class Music_BubbleController : MonoBehaviour
         var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
 
         if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
-
-#if UNITY_EDITOR
-        Debug.Log("재생");
-#endif
     }
 
     protected void FadeInSound(AudioSource audioSource, float target = 0.3f, float fadeInDuration = 1.0f
@@ -406,5 +440,101 @@ public class Music_BubbleController : MonoBehaviour
         audioSource.DOFade(target, fadeInDuration).OnComplete(() => { }).OnComplete(() => { audioSource.Stop(); });
     }
 
-}
 
+    private WaitForSeconds _wait;
+    private WaitForSeconds _secondWait;
+    private WaitForSeconds _thirdWait;
+    public float durationPerPs;
+    
+    //clearAll함수의 setlifetime보다 항상 조금 더 큰 수여야 합니다.
+    private readonly float _DELAY_FOR_PARTICLE_EXPLOSION = 1.0f;
+    private readonly float _DELAY_FOR_NEXT_PS = 1.0f;
+
+    private int _currentParticleIndex;
+
+    private IEnumerator PlayParticleByTurns()
+    {
+        //initialize
+        foreach (var ps in _bubbleParticleSystems)
+        {
+            ps.Stop();
+            ps.gameObject.SetActive(false);
+        }
+
+        if (_wait == null) _wait = new WaitForSeconds(durationPerPs);
+        if (_secondWait == null) _secondWait = new WaitForSeconds(_DELAY_FOR_PARTICLE_EXPLOSION);
+        if (_thirdWait == null) _thirdWait = new WaitForSeconds(_DELAY_FOR_NEXT_PS);
+
+
+        _currentParticleIndex = (int)ParticlePattern.Switching_Left;
+
+
+        //bigbubble을 항상 play 상태여야 합니다. 
+        _bubbleParticleSystems[(int)ParticlePattern.BigBubble].gameObject.SetActive(true);
+        _bubbleParticleSystems[(int)ParticlePattern.BigBubble].Play();
+
+        var length = Enum.GetValues(typeof(ParticlePattern)).Length;
+        while (true)
+        {
+         
+            if (_currentParticleIndex == (int)ParticlePattern.Switching_Left || _currentParticleIndex == (int)ParticlePattern.BigBubble)
+            {
+                ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Left]);
+                ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Right]);
+                _currentParticleIndex = (int)ParticlePattern.Switching_Right;
+            }
+            else
+            {
+                ActivateParicle(_bubbleParticleSystems[_currentParticleIndex % length]);
+            }
+
+
+          
+#if UNITY_EDITOR
+            Debug.Log($"파티클 재생, 현재 인덱스{(ParticlePattern)(_currentParticleIndex % length)}");
+#endif
+            yield return _wait;
+
+            onPatternChange?.Invoke();
+
+
+            yield return _secondWait;
+
+            if (_currentParticleIndex == (int)ParticlePattern.Switching_Right)
+            {
+#if UNITY_EDITOR
+                Debug.Log(
+                    $"패턴 1 두개 다 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex % length].gameObject.name}");
+#endif
+                DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Right]);
+                DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Left]);
+            }
+
+            else
+            {
+                DeactivateParticle(_bubbleParticleSystems[_currentParticleIndex % length]);
+            }
+
+            _currentParticleIndex++;
+
+           
+#if UNITY_EDITOR
+            Debug.Log($"파티클 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex % length].gameObject.name}");
+#endif
+            yield return _thirdWait;
+        }
+    }
+
+    private void ActivateParicle(ParticleSystem ps)
+    {
+        ps.gameObject.SetActive(true);
+        ps.Play();
+    }
+
+    private void DeactivateParticle(ParticleSystem ps)
+    {
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(true);
+    }
+}

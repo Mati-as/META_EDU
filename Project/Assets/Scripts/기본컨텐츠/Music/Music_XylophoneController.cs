@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem.Controls;
 using Random = UnityEngine.Random;
 
 public class Music_XylophoneController : MonoBehaviour
@@ -295,8 +297,8 @@ public class Music_XylophoneController : MonoBehaviour
         {
             MeshRenderer clickedMeshRenderer;
             RayForXylophone.transform.gameObject.TryGetComponent(out clickedMeshRenderer);
-            _materialMap.Add(clickedObjName, clickedMeshRenderer);
-            _defaultColorMap.Add(clickedMeshRenderer, clickedMeshRenderer.material.color);
+            _materialMap.TryAdd(clickedObjName, clickedMeshRenderer);
+            _defaultColorMap.TryAdd(clickedMeshRenderer, clickedMeshRenderer.material.color);
         }
 
         ChangeColor(_materialMap[clickedObjName]);
@@ -318,6 +320,7 @@ public class Music_XylophoneController : MonoBehaviour
 
 
     public float brightenIntensity;
+    private Color brightenedColor;
 
     private void ChangeColor(MeshRenderer meshRenderer, float duration = 0.8f)
     {
@@ -326,10 +329,16 @@ public class Music_XylophoneController : MonoBehaviour
         _defaultColorMap.TryAdd(meshRenderer,thisMaterial.color);
         
         var defaultColor = thisMaterial.color;
-
-
-        //중복 곱 방지
-        var brightenedColor = defaultColor * brightenIntensity;
+        
+        brightenedColor = new Color();
+        
+        brightenedColor = defaultColor * brightenIntensity;
+        
+        //기준밝기보다 초과하여 밝아지지 않도록 Clamp
+        brightenedColor = new Color(
+            Mathf.Clamp(brightenedColor.r, defaultColor.r, _defaultColorMap[meshRenderer].r * brightenIntensity),
+            Mathf.Clamp(brightenedColor.g, defaultColor.g, _defaultColorMap[meshRenderer].g * brightenIntensity),
+            Mathf.Clamp(brightenedColor.b, defaultColor.b, _defaultColorMap[meshRenderer].b * brightenIntensity));
 
         thisMaterial.DOColor(brightenedColor, BASE_MAP, duration).OnComplete(() =>
         {
