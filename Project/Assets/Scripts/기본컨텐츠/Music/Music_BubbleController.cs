@@ -491,7 +491,7 @@ public class Music_BubbleController : MonoBehaviour
 
           
 #if UNITY_EDITOR
-            Debug.Log($"파티클 재생, 현재 인덱스{(ParticlePattern)(_currentParticleIndex % length)}");
+            Debug.Log($"파티클 재생, 현재 인덱스{(ParticlePattern)(_currentParticleIndex)}");
 #endif
             yield return _wait;
 
@@ -504,7 +504,7 @@ public class Music_BubbleController : MonoBehaviour
             {
 #if UNITY_EDITOR
                 Debug.Log(
-                    $"패턴 1 두개 다 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex % length].gameObject.name}");
+                    $"패턴 1 두개 다 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex].gameObject.name}");
 #endif
                 DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Right]);
                 DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Left]);
@@ -512,10 +512,11 @@ public class Music_BubbleController : MonoBehaviour
 
             else
             {
-                DeactivateParticle(_bubbleParticleSystems[_currentParticleIndex % length]);
+                DeactivateParticle(_bubbleParticleSystems[_currentParticleIndex]);
             }
 
             _currentParticleIndex++;
+            _currentParticleIndex %= length;
 
            
 #if UNITY_EDITOR
