@@ -18,6 +18,7 @@ public class Music_CameraController : MonoBehaviour
     private void OnDestroy()
     {
         Music_BubbleController.bigBubbleEvent -= OnBigBubbleExplode;
+        Music_BubbleController.onPatternChange -= OnClearOffBubbles;
     }
 
     private void OnBigBubbleExplode()
@@ -27,9 +28,20 @@ public class Music_CameraController : MonoBehaviour
             transform.DOMove(_defaultPosition, 0.2f);
         });
     }
+
+    private void OnClearOffBubbles()
+    {
+        transform.DOShakePosition(1.5f, 0.5f, 5).OnComplete(() =>
+        {
+            transform.DOMove(_defaultPosition, 0.2f);
+        });
+    }
     private void BindEvent()
     {
         Music_BubbleController.bigBubbleEvent -= OnBigBubbleExplode;
         Music_BubbleController.bigBubbleEvent += OnBigBubbleExplode;
+
+        Music_BubbleController.onPatternChange -= OnClearOffBubbles;
+        Music_BubbleController.onPatternChange += OnClearOffBubbles;
     }
 }

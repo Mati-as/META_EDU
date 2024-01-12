@@ -29,13 +29,16 @@ public class Music_BubbleController : MonoBehaviour
         Switching_Left,
         Switching_Right,
         SlowlyFillingScreen,
-        RapidlyFillingScreen
+        RapidlyFillingScreen,
+        ClockWise,
+        ZigZag
     }
 
     private ParticleSystem[] _effectParticleSystems;
     private ParticleSystem[] _bubbleParticleSystems;
     public static event Action bigBubbleEvent;
     public static event Action onPatternChange;
+    
     private ParticleSystem _effect_Small;
     private ParticleSystem _effect_Big;
     private float closestDistance;
@@ -389,7 +392,7 @@ public class Music_BubbleController : MonoBehaviour
             {
                 var distance = Vector3.Distance(position, particles[i].position);
 
-                if (distance < clickRadious) particles[i].remainingLifetime = 0.5f;
+                if (distance < clickRadious) particles[i].remainingLifetime = 0.6f;
             }
 
             particleSystem.SetParticles(particles, particleCount);
