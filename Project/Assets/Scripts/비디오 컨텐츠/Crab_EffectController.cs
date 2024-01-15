@@ -17,7 +17,7 @@ public class Crab_EffectController : Base_EffectController
             
             hitPoint = hit.point;
             
-            PlayParticle(hit.point);
+            PlayParticle(particlePool,hit.point);
             
 
             if (!Crab_VideoContentPlayer._isShaked)

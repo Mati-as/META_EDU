@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -18,8 +20,9 @@ public abstract class  Base_EffectController : MonoBehaviour
     [Header("ObjectPool Setting")] public int poolSize;
 
 
+    private readonly string AUDIO_PATH_EFFECT_A;
     [HideInInspector] public InputAction _mouseClickAction;
-    [HideInInspector] public Queue<ParticleSystem> particlePool;
+    public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
     public WaitForSeconds subWait_;
 
@@ -74,6 +77,8 @@ public abstract class  Base_EffectController : MonoBehaviour
     private AudioSource[] _subAudioSources;
     private AudioSource[] _burstAudioSources;
 
+    private AudioSource[][] _audioSourceGroups;
+
 
     public Ray ray_BaseController { get; set; }
     public RaycastHit[] hits;
@@ -81,7 +86,7 @@ public abstract class  Base_EffectController : MonoBehaviour
 
     protected virtual void Init()
     {
-        SetPool();
+        SetPool(ref particlePool);
         SetAudio();
         BindEvent();
     }
@@ -111,9 +116,9 @@ public abstract class  Base_EffectController : MonoBehaviour
     /// 초기 풀 설정 -----------------
     /// </summary>
 
-    protected virtual void SetPool()
+    protected virtual void SetPool(ref Queue<ParticleSystem> psQueue)
     {
-        particlePool = new Queue<ParticleSystem>();
+        psQueue = new Queue<ParticleSystem>();
         _particles = new ParticleSystem[transform.childCount];
         var index = 0;
         foreach (Transform child in transform)
@@ -126,18 +131,18 @@ public abstract class  Base_EffectController : MonoBehaviour
         foreach (var ps in _particles)
             if (ps != null)
             {
-                particlePool.Enqueue(ps);
+                psQueue.Enqueue(ps);
                 ps.gameObject.SetActive(false);
             }
 
         // Optionally, if you need more instances than available, clone them
-        while (particlePool.Count < poolSize)
+        while (psQueue.Count < poolSize)
             foreach (var ps in _particles)
                 if (ps != null)
                 {
                     var newPs = Instantiate(ps, transform);
                     newPs.gameObject.SetActive(false);
-                    particlePool.Enqueue(newPs);
+                    psQueue.Enqueue(newPs);
                 }
     }
 
@@ -152,6 +157,11 @@ public abstract class  Base_EffectController : MonoBehaviour
     /// </summary>
     protected virtual void SetAudio()
     {
+        if (AUDIO_PATH_EFFECT_A!= null && _effectClipA ==null)
+        {
+            _effectClipA = Resources.Load<AudioClip>(AUDIO_PATH_EFFECT_A);
+        }
+        
         _audioSourcesA = SetAudioSettings(_audioSourcesA, _effectClipA, audioSize, volumeA);
         if (_effectClipB != null) _audioSourcesB = SetAudioSettings(_audioSourcesB, _effectClipB, audioSize, volumeB);
         if (_effectClipC != null) _audioSourcesC = SetAudioSettings(_audioSourcesC, _effectClipC, audioSize, volumeC);
@@ -226,11 +236,11 @@ public abstract class  Base_EffectController : MonoBehaviour
     }
 
 
-    protected virtual void PlayParticle(Vector3 position, bool isBurstMode = false,
+    protected virtual void PlayParticle(Queue<ParticleSystem> psQueue,Vector3 position,  bool isBurstMode = false,
         int burstCount = 10, int burstAmount = 5)
     {
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
-        if (particlePool.Count < emitAmount || particlePool.Count < burstCount)
+        if (psQueue.Count < emitAmount || psQueue.Count < burstCount)
         {
             // 에디터상에서 배치한 순서대로 파티클을 Push하기 위해 for문 사용합니다. 
             for (var i = 0; i < burstAmount; i++)
@@ -241,17 +251,17 @@ public abstract class  Base_EffectController : MonoBehaviour
 #endif
         }
 
-        if (particlePool.Count >= emitAmount)
+        if (psQueue.Count >= emitAmount)
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
-                TurnOnParticle(position);
+                TurnOnParticle(psQueue,position);
                 FindAndPlayAudio(_burstAudioSources, volume: volumeBurst);
                 _currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(position);
+                TurnOnParticle(psQueue,position);
                 if (isPlayAltogether)
                 {
                     FindAndPlayAudio(_audioSourcesA, volume: volumeA);
@@ -297,11 +307,11 @@ public abstract class  Base_EffectController : MonoBehaviour
     /// </summary>
     /// <param name="position"></param>
 
-    protected void TurnOnParticle(Vector3 position)
+    protected void TurnOnParticle(Queue<ParticleSystem> psQueue, Vector3 position)
     {
         for (var i = 0; i < emitAmount; i++)
         {
-            var ps = particlePool.Dequeue();
+            var ps = psQueue.Dequeue();
             ps.transform.position = position;
             ps.gameObject.SetActive(true);
             
@@ -324,9 +334,6 @@ public abstract class  Base_EffectController : MonoBehaviour
 
         if (useSubEmitter && subWait_ == null)
         {
-#if UNITY_EDITOR
-            Debug.Log("WaitForSeconds 생성");
-#endif
             subWait_ = new WaitForSeconds(subEmitLifetime);
         }
 

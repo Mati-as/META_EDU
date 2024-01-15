@@ -283,7 +283,12 @@ PrefabInstance:
     - target: {fileID: 3726712036607529161, guid: 7b3e77bf0eca93e4e980281ebd768891,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3726712036607529161, guid: 7b3e77bf0eca93e4e980281ebd768891,
+        type: 3}
+      propertyPath: fadeOutDelay
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3726712036607529166, guid: 7b3e77bf0eca93e4e980281ebd768891,
         type: 3}
@@ -308,7 +313,7 @@ PrefabInstance:
     - target: {fileID: 8831507234161505948, guid: 7b3e77bf0eca93e4e980281ebd768891,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b3e77bf0eca93e4e980281ebd768891, type: 3}
@@ -15890,7 +15895,7 @@ MonoBehaviour:
   audioSize: 16
   _burstAudioSize: 0
   isPlayAltogether: 1
-  _effectClipA: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
+  _effectClipA: {fileID: 0}
   volumeA: 0.3
   _effectClipB: {fileID: 0}
   volumeB: 0.003

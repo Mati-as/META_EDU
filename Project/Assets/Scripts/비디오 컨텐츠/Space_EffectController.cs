@@ -14,7 +14,7 @@ public class Space_EffectController : Base_EffectController
             hits = Physics.RaycastAll(ray_BaseController);
             foreach (var hit in hits)
             {
-                PlayParticle(hit.point);
+                PlayParticle(particlePool,hit.point);
             }
 
             _currentCount = 0;

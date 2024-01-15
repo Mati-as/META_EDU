@@ -7,7 +7,7 @@ public class KoreanFlag_EffectController : Base_EffectController
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(hit.point, burstCount: 15);
+            PlayParticle(particlePool,hit.point, burstCount: 15);
             break;
         }
     }
