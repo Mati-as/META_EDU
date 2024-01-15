@@ -36,11 +36,11 @@ public class Music_XylophoneController : MonoBehaviour
     // Cache Audio Source
     //클릭시, gameObjecet.name(string)값에 대한 AudioSource를 플레이하기 위해 자료사전을 사용합니다. 
     private Dictionary<string, AudioSource> audioSourceMap;
-    private Dictionary<string, int> noteSemitones;
+    private Dictionary<int, string> noteSemitones;
     private Dictionary<string, MeshRenderer> _materialMap;
     private Dictionary<MeshRenderer, Color> _defaultColorMap;
 
-    private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Xylophone";
+    private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Piano/";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
 
     private MeshRenderer[] _xylophoneMeshRenderers;
@@ -93,18 +93,23 @@ public class Music_XylophoneController : MonoBehaviour
 
     private AudioSource[] SetAudio(AudioSource[] audioSources, string path, float volume = 0.5f)
     {
-        var _audioClip = LoadSound(path);
+        //int - 파일경로 딕셔너리 입니다.
+        noteSemitones = new Dictionary<int, string>
+        {
+            { 0, "C" },{ 1, "D" },{ 2, "E" },{ 3, "F" },{ 4, "G" },{ 5, "A" },{ 6, "B" },{ 7, "C2" }
+        };
 
         audioSources = new AudioSource[audioSources.Length];
         for (var i = 0; i < audioSources.Length; ++i)
         {
             audioSources[i] = gameObject.AddComponent<AudioSource>();
+            var _audioClip = LoadSound(path + noteSemitones[i]);
             audioSources[i].clip = _audioClip;
             audioSources[i].volume = volume;
             audioSources[i].spatialBlend = 0f;
             audioSources[i].outputAudioMixerGroup = null;
             audioSources[i].playOnAwake = false;
-            audioSources[i].pitch = CalculatePitch(i);
+           
         }
 
         return audioSources;
@@ -175,38 +180,40 @@ public class Music_XylophoneController : MonoBehaviour
 
     public int audioClipCount;
 
+    //
+    // private float GetPitchForNote(string note)
+    // {
+    //     if (noteSemitones == null)
+    //
+    //
+    //     // 중간 C에서 목표 음까지의 반음 수
+    //     var semitonesFromC4 = noteSemitones[note];
+    //
+    //     // pitch 계산
+    //     var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
+    //     return pitch;
+    // }
 
-    private float GetPitchForNote(string note)
-    {
-        if (noteSemitones == null)
-            noteSemitones = new Dictionary<string, int>
-            {
-                { "C", 0 }, { "C#", 1 }, { "D", 2 }, { "D#", 3 }, { "E", 4 }, { "F", 5 },
-                { "F#", 6 }, { "G", 7 }, { "G#", 8 }, { "A", 9 }, { "A#", 10 }, { "B", 11 },
-                { "C2", 12 }
-            };
-
-        // 중간 C에서 목표 음까지의 반음 수
-        var semitonesFromC4 = noteSemitones[note];
-
-        // pitch 계산
-        var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
-        return pitch;
-    }
-
-    private float CalculatePitch(int i)
-    {
-        var semitonesFromC4 = i;
-
-        // pitch 계산
-        var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
-        return pitch;
-    }
+    // private float CalculatePitch(int i)
+    // {
+    //     var semitonesFromC4 = i;
+    //
+    //     // pitch 계산
+    //     var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
+    //     return pitch;
+    // }
 
     private void InitializeAudioSource(Transform _transform, AudioSource xylophones, float volume = 1f)
     {
-        var _audioClip = LoadSound(AUDIO_XYLOPHONE_PATH);
-
+       
+        
+        var _audioClip = LoadSound(AUDIO_XYLOPHONE_PATH + _transform.gameObject.name);
+        
+        
+#if UNITY_EDITOR
+       if(_audioClip == null)
+        Debug.Log("이니셜 오디오소스 널 에러");
+#endif
         for (var i = 0; i < audioClipCount; ++i)
         {
             GameObject gameObj;
@@ -216,7 +223,7 @@ public class Music_XylophoneController : MonoBehaviour
             xylophones.spatialBlend = 0f;
             xylophones.outputAudioMixerGroup = null;
             xylophones.playOnAwake = false;
-            xylophones.pitch = GetPitchForNote(gameObj.name);
+            xylophones.pitch = 1;
         }
     }
     

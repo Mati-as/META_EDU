@@ -25,20 +25,33 @@ public class Music_BubbleController : MonoBehaviour
 
     private enum ParticlePattern
     {
-        BigBubble,
         Switching_Left,
         Switching_Right,
         SlowlyFillingScreen,
-        RapidlyFillingScreen,
         ClockWise,
+        BigBubbleLeft,
+        bigBubbleRight,
         ZigZag
     }
 
     private ParticleSystem[] _effectParticleSystems;
     private ParticleSystem[] _bubbleParticleSystems;
+
+
+    private WaitForSeconds _wait;
+    private WaitForSeconds _secondWait;
+    private WaitForSeconds _thirdWait;
+    public float durationPerPs;
+
+    //clearAll함수의 setlifetime보다 항상 조금 더 큰 수여야 합니다.
+    private readonly float _DELAY_FOR_PARTICLE_EXPLOSION = 1.0f;
+    private readonly float _DELAY_FOR_NEXT_PS = 1.0f;
+
+    private int _currentParticleIndex;
     public static event Action bigBubbleEvent;
-    public static event Action onPatternChange;
-    
+    public static event Action onPatternEnd;
+    public static event Action onPatternStart;
+
     private ParticleSystem _effect_Small;
     private ParticleSystem _effect_Big;
     private float closestDistance;
@@ -73,48 +86,9 @@ public class Music_BubbleController : MonoBehaviour
     {
         Init();
 
-
-        // var childParticleSystems = new List<ParticleSystem>();
-        //
-        //
-        // foreach (Transform child in transform)
-        // {
-        //     var ps = child.GetComponent<ParticleSystem>();
-        //     if (ps != null) childParticleSystems.Add(ps);
-        // }
-        //
-        // randomTime = Random.Range(40, 50);
-        // _effectParticleSystems = childParticleSystems.ToArray();
-
         StartCoroutine(PlayParticleByTurns());
     }
 
-    // private void Update()
-    // {
-    //     _currentTime += Time.deltaTime;
-    //
-    //     if (_currentTime > randomTime)
-    //     {
-    //         var layerMask = LayerMask.GetMask("Screen");
-    //
-    //         foreach (var ps in _effectParticleSystems)
-    //             if (Physics.Raycast(ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
-    //             {
-    //
-    //                 ClickEventApplyRadialForce(rayCastHitForBubble.point, ps, 100);
-    //
-    //             }
-    //
-    //         //오디오 일괄재생
-    //         FindAndPlayAudio(_smallBubbleAudioSources);
-    //         FindAndPlayAudio(_bigBubbleAudioSources);
-    //         FindAndPlayAudio(_clearBubbleSoundAudioSource);
-    //
-    //
-    //         _currentTime = 0;
-    //         randomTime = Random.Range(20, 25);
-    //     }
-    // }
 
     private void ClearOffAllBubbles()
     {
@@ -169,7 +143,7 @@ public class Music_BubbleController : MonoBehaviour
     protected virtual void OnDestroy()
     {
         Music_GameManager.eventAfterAGetRay -= OnClicked;
-        onPatternChange -= ClearOffAllBubbles;
+        onPatternEnd -= ClearOffAllBubbles;
     }
 
     protected virtual void BindEvent()
@@ -177,8 +151,8 @@ public class Music_BubbleController : MonoBehaviour
         Music_GameManager.eventAfterAGetRay -= OnClicked;
         Music_GameManager.eventAfterAGetRay += OnClicked;
 
-        onPatternChange -= ClearOffAllBubbles;
-        onPatternChange += ClearOffAllBubbles;
+        onPatternEnd -= ClearOffAllBubbles;
+        onPatternEnd += ClearOffAllBubbles;
     }
 
 #if UNITY_EDITOR //같이 빌드하지 말 것.
@@ -444,17 +418,6 @@ public class Music_BubbleController : MonoBehaviour
     }
 
 
-    private WaitForSeconds _wait;
-    private WaitForSeconds _secondWait;
-    private WaitForSeconds _thirdWait;
-    public float durationPerPs;
-    
-    //clearAll함수의 setlifetime보다 항상 조금 더 큰 수여야 합니다.
-    private readonly float _DELAY_FOR_PARTICLE_EXPLOSION = 1.0f;
-    private readonly float _DELAY_FOR_NEXT_PS = 1.0f;
-
-    private int _currentParticleIndex;
-
     private IEnumerator PlayParticleByTurns()
     {
         //initialize
@@ -472,34 +435,39 @@ public class Music_BubbleController : MonoBehaviour
         _currentParticleIndex = (int)ParticlePattern.Switching_Left;
 
 
-        //bigbubble을 항상 play 상태여야 합니다. 
-        _bubbleParticleSystems[(int)ParticlePattern.BigBubble].gameObject.SetActive(true);
-        _bubbleParticleSystems[(int)ParticlePattern.BigBubble].Play();
+        // BigBubblePatter 도입으로 코드삭제 1-12-24
+        // _bubbleParticleSystems[(int)ParticlePattern.BigBubble].gameObject.SetActive(true);
+        // _bubbleParticleSystems[(int)ParticlePattern.BigBubble].Play();
 
         var length = Enum.GetValues(typeof(ParticlePattern)).Length;
         while (true)
         {
-         
-            if (_currentParticleIndex == (int)ParticlePattern.Switching_Left || _currentParticleIndex == (int)ParticlePattern.BigBubble)
+            onPatternStart?.Invoke();
+            if (_currentParticleIndex == (int)ParticlePattern.Switching_Left)
             {
                 ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Left]);
                 ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Right]);
                 _currentParticleIndex = (int)ParticlePattern.Switching_Right;
             }
+            else if (_currentParticleIndex == (int)ParticlePattern.BigBubbleLeft)
+            {
+                ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.BigBubbleLeft]);
+                ActivateParicle(_bubbleParticleSystems[(int)ParticlePattern.bigBubbleRight]);
+                _currentParticleIndex = (int)ParticlePattern.bigBubbleRight;
+            }
             else
             {
-                ActivateParicle(_bubbleParticleSystems[_currentParticleIndex % length]);
+                ActivateParicle(_bubbleParticleSystems[_currentParticleIndex]);
             }
 
 
-          
 #if UNITY_EDITOR
-            Debug.Log($"파티클 재생, 현재 인덱스{(ParticlePattern)(_currentParticleIndex)}");
+            Debug.Log($"파티클 재생, 현재 인덱스{(ParticlePattern)_currentParticleIndex}");
 #endif
             yield return _wait;
 
-            onPatternChange?.Invoke();
 
+            onPatternEnd?.Invoke();
 
             yield return _secondWait;
 
@@ -512,20 +480,31 @@ public class Music_BubbleController : MonoBehaviour
                 DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Right]);
                 DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.Switching_Left]);
             }
+            else if (_currentParticleIndex == (int)ParticlePattern.bigBubbleRight)
+            {
+#if UNITY_EDITOR
+                Debug.Log(
+                    $"패턴 1 두개 다 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex].gameObject.name}");
+#endif
+                DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.BigBubbleLeft]);
+                DeactivateParticle(_bubbleParticleSystems[(int)ParticlePattern.bigBubbleRight]);
+            }
 
             else
             {
                 DeactivateParticle(_bubbleParticleSystems[_currentParticleIndex]);
             }
 
+
+#if UNITY_EDITOR
+            Debug.Log($"파티클 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex].gameObject.name}");
+#endif
+
+
+            yield return _thirdWait;
+
             _currentParticleIndex++;
             _currentParticleIndex %= length;
-
-           
-#if UNITY_EDITOR
-            Debug.Log($"파티클 비활성화, 현재 인덱스{_bubbleParticleSystems[_currentParticleIndex % length].gameObject.name}");
-#endif
-            yield return _thirdWait;
         }
     }
 
@@ -539,6 +518,6 @@ public class Music_BubbleController : MonoBehaviour
     {
         ps.Stop();
         ps.Clear();
-        ps.gameObject.SetActive(true);
+        ps.gameObject.SetActive(false);
     }
 }
