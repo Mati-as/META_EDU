@@ -338,12 +338,6 @@ public class Music_XylophoneController : MonoBehaviour
 
         brightenedColor = brightendColor;
         
-        //기준밝기보다 초과하여 밝아지지 않도록 Clamp
-        // brightenedColor = new Color(
-        //     Mathf.Clamp(brightenedColor.r, defaultColor.r, _defaultColorMap[meshRenderer].r * brightenIntensity),
-        //     Mathf.Clamp(brightenedColor.g, defaultColor.g, _defaultColorMap[meshRenderer].g * brightenIntensity),
-        //     Mathf.Clamp(brightenedColor.b, defaultColor.b, _defaultColorMap[meshRenderer].b * brightenIntensity));
-
         thisMaterial.DOColor(brightenedColor, BASE_MAP, duration).OnComplete(() =>
         {
             thisMaterial.DOColor(_defaultColorMap[meshRenderer], BASE_MAP, duration);

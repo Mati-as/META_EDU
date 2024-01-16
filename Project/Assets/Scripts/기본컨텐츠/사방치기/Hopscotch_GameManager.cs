@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Serialization;
@@ -14,6 +15,8 @@ public class Hopscotch_GameManager : MonoBehaviour
     [Space(20f)]
     
     public Transform stepGroup;
+
+    private RectTransform[] _numberTextRects;
     private Transform[] _steps;
     private int _stepCount;
 
@@ -24,6 +27,8 @@ public class Hopscotch_GameManager : MonoBehaviour
     public float successParticleDuration;
     private bool _isSuccesssParticlePlaying;
     public float offset;
+    
+    
     private void Awake()
     {
         Init();
@@ -31,8 +36,22 @@ public class Hopscotch_GameManager : MonoBehaviour
 
     private void Start()
     {
+        GameObject inPlayTexts = GameObject.Find("InPlayTexts");
         
-        PlayInducingParticle(0);
+        if (inPlayTexts != null)
+        {
+            // 자기 자신을 제외하고 자식 GameObject들의 RectTransform 컴포넌트만 선택
+            _numberTextRects = inPlayTexts.GetComponentsInChildren<RectTransform>()
+                .Where(rt => rt.gameObject != inPlayTexts)
+                .ToArray();
+        }
+        else
+        {
+            Debug.LogError("GameObject named 'InPlayTexts' not found in the scene.");
+        }
+        
+
+        DoIntroMove();
     }
 
     private void OnClick()
@@ -51,10 +70,13 @@ public class Hopscotch_GameManager : MonoBehaviour
     {
         Hopscotch_EffectController.Hopscotch_OnClick -= OnClick;
         Hopscotch_EffectController.Hopscotch_OnClick += OnClick;
+        onStageClear -= OnStageClear;
+        onStageClear += OnStageClear;
     }
 
     private void OnDestroy()
     {
+        onStageClear -= OnStageClear;
         Hopscotch_EffectController.Hopscotch_OnClick -= OnClick;
     }
 
@@ -73,6 +95,7 @@ public class Hopscotch_GameManager : MonoBehaviour
         if(psPrefab1 != null)
         {
             _inducingParticle = Instantiate(psPrefab1, offset*Vector3.down , transform.rotation,transform).GetComponent<ParticleSystem>();;
+            _inducingParticle.Stop();
         }
         else
         { 
@@ -97,8 +120,63 @@ public class Hopscotch_GameManager : MonoBehaviour
         for (int i = 0; i < _stepCount; ++i)
         {
             _steps[i] = stepGroup.GetChild(i);
-        
         }
+
+        targetPos = new Vector3[_stepCount];
+        for (var i = 0; i < _stepCount; i++) targetPos[i] = _steps[i].transform.position;
+        
+        foreach (var step in _steps)
+        {
+            step.position += defaultOffset;
+        }
+    }
+
+    public float numberDoScaleSize;
+    private float _defalutSize;
+
+
+    private void OnScaleSequenceKilled(RectTransform number)
+    {
+        if (_scaleBackSequence.IsActive())
+        {
+            _scaleBackSequence.Kill();
+        }
+
+        _scaleBackSequence = DOTween.Sequence();
+        
+        _scaleBackSequence.Append(number.DOScale(1.7f, 0.8f).SetEase(Ease.Linear));
+        _scaleBackSequence.Play();
+    }
+    
+    private void DoScaleUp(RectTransform number)
+    {
+       
+        _currentScaleSequence = DOTween.Sequence();
+
+        _currentScaleSequence
+            .Append(number
+            .DOScale(numberDoScaleSize, 1.2f)
+            .OnKill(() =>
+                {
+
+                    OnScaleSequenceKilled(number);
+                })
+            
+            .SetEase(Ease.OutBounce))
+           
+            .Append(number
+            .DOScale(1.7f, 1.2f)
+            .SetDelay(0.3f)
+           
+            .OnKill(() =>
+            {
+
+                OnScaleSequenceKilled(number);
+            })
+            .SetEase(Ease.OutBounce))
+            .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
+
+        _currentScaleSequence.Play();
     }
 
     private int _currentStep = 0;
@@ -106,28 +184,35 @@ public class Hopscotch_GameManager : MonoBehaviour
 
     private void PlayInducingParticle(int currentPosition)
     {
-        if (currentPosition > _stepCount) return;
-        if (_isGameFinished) return;
+        if (currentPosition >= _steps.Length) return;
+       
+        
         
             _inducingParticle.Stop();
             _inducingParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
             _inducingParticle.gameObject.SetActive(true);
             _inducingParticle.Play();
         
-       
     }
 
+    private Sequence _currentScaleSequence;
+    private Sequence _scaleBackSequence;
+    public static event Action onStageClear;
     private Vector3 AddOffset(Vector3 position)
     {
         return position + Vector3.down * offset;
     }
 
-  
+    public float nextStepInducingParticleDelay;
     private void PlaySuccessParticle( int currentPosition)
     {
-        if (currentPosition > _stepCount) return;
-        if (_isGameFinished) return;
-        
+            _currentScaleSequence.Kill();
+                                      
+#if UNITY_EDITOR
+            Debug.Log($"succuessful! : currentStep : {_currentStep}");
+#endif
+            
+            _inducingParticle.Stop();
             _successParticle.Stop();
             _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
             _successParticle.gameObject.SetActive(true);
@@ -138,17 +223,82 @@ public class Hopscotch_GameManager : MonoBehaviour
                 .Float(0, 0, successParticleDuration, val => val++)
                 .OnComplete(() =>
                 {
-                  
                     _successParticle.Stop();
                     _successParticle.gameObject.SetActive(false);
-                    _isSuccesssParticlePlaying = false;
-                   
-                    _currentStep++;
-                    PlayInducingParticle(_currentStep);
+                    
+                    DOVirtual
+                        .Float(0, 0, nextStepInducingParticleDelay, val => val++)
+                        .OnComplete(() =>
+                        {
+                            _isSuccesssParticlePlaying = false;
+                            _currentStep++;
+                            
+#if UNITY_EDITOR
+                            Debug.Log($"currentStep : {_currentStep} , step Count:{_stepCount}");
+#endif
+                            if (_currentStep >= _stepCount)
+                            {
+#if UNITY_EDITOR
+                                Debug.Log($"Replay Invoked!");
+#endif
+                                onStageClear?.Invoke();
+                            }
+                            else
+                            {
+                                DoScaleUp(_numberTextRects[_currentStep]);
+                                PlayInducingParticle(_currentStep);
+                            }
+                          
+                        });
                 });
+    }
+    
+    public Vector3[] targetPos;
+    public float stackInterval;
+    public Vector3 defaultOffset;
+
+    private void DoIntroMove()
+    {
+        for (var i = 0; i < _stepCount; ++i)
+        {
+            var i1 = i;
+            _steps[i].transform
+                .DOMove(targetPos[i], 1f + stackInterval * i)
+                .OnComplete(() =>
+                {
+                    if (i1 >= _stepCount - 1)
+                    {
+                        DOVirtual
+                            .Float(0, 0, 2, val => val++)
+                            .OnComplete(() =>
+                            {
+#if UNITY_EDITOR
+                                Debug.Log("시작시 1 Doscale");
+#endif
+                                if (i1 >= _stepCount - 1) DoScaleUp(_numberTextRects[0]);
+                                
+                                //DoScaleUp(_numberTextRects[1]);
+                                if (i1 >= _stepCount - 1) PlayInducingParticle(0);
+                            });
+                    }
+                      
+                })
+                .SetDelay(2f);
+        }
+    }
+
+    public float waitTimeToRestartGame; 
+
+    private void OnStageClear()
+    {
+        _currentStep = 0;
         
-        
-        
+        DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
+            .OnComplete(() =>
+            {
+                PlayInducingParticle(_currentStep);
+            });
+
     }
     private bool CheckOnStep()
     {
