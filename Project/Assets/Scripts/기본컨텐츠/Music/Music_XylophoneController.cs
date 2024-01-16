@@ -15,6 +15,8 @@ public class Music_XylophoneController : MonoBehaviour
     public Transform[] allXylophones;
     public Vector3[] targetPos;
 
+    [Header("Color")]
+    public Color[] colorsToChange;
 
     [Space(10f)] [Header("position setting")]
     public Vector3 defaultOffset;
@@ -38,7 +40,10 @@ public class Music_XylophoneController : MonoBehaviour
     private Dictionary<string, AudioSource> audioSourceMap;
     private Dictionary<int, string> noteSemitones;
     private Dictionary<string, MeshRenderer> _materialMap;
+    //디폴트로 돌아가기 위한 자료사전
     private Dictionary<MeshRenderer, Color> _defaultColorMap;
+    //바뀔 컬러 캐싱용 
+    private Dictionary<Transform, Color> _colorChangeMap;
 
     private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Piano/";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
@@ -54,6 +59,9 @@ public class Music_XylophoneController : MonoBehaviour
         audioSourceMap = new Dictionary<string, AudioSource>();
         _materialMap = new Dictionary<string, MeshRenderer>();
         _defaultColorMap = new Dictionary<MeshRenderer, Color>();
+        _colorChangeMap = new Dictionary<Transform, Color>();
+
+    
 
         _totalChildCount = transform.childCount;
         targetPos = new Vector3[_totalChildCount];
@@ -70,6 +78,14 @@ public class Music_XylophoneController : MonoBehaviour
         var selectedTransforms = childTransforms.Take(numberOfChildrenToTake).ToArray();
 
         soundProducingXylophones = selectedTransforms;
+        for (int i = 0; i < soundProducingXylophones.Length; i++)
+        {
+            _colorChangeMap.Add(soundProducingXylophones[i],colorsToChange[i]);
+#if UNITY_EDITOR
+            Debug.Log($"color map caching.. {soundProducingXylophones[i].gameObject.name},{colorsToChange[i]}");
+#endif
+        }
+
     }
 
 
@@ -77,6 +93,8 @@ public class Music_XylophoneController : MonoBehaviour
     {
         if (!_isInit) Init();
 
+             
+   
 
         DoIntroMove();
     }
@@ -180,28 +198,7 @@ public class Music_XylophoneController : MonoBehaviour
 
     public int audioClipCount;
 
-    //
-    // private float GetPitchForNote(string note)
-    // {
-    //     if (noteSemitones == null)
-    //
-    //
-    //     // 중간 C에서 목표 음까지의 반음 수
-    //     var semitonesFromC4 = noteSemitones[note];
-    //
-    //     // pitch 계산
-    //     var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
-    //     return pitch;
-    // }
 
-    // private float CalculatePitch(int i)
-    // {
-    //     var semitonesFromC4 = i;
-    //
-    //     // pitch 계산
-    //     var pitch = Mathf.Pow(1.059463f, semitonesFromC4);
-    //     return pitch;
-    // }
 
     private void InitializeAudioSource(Transform _transform, AudioSource xylophones, float volume = 1f)
     {
@@ -308,7 +305,7 @@ public class Music_XylophoneController : MonoBehaviour
             _defaultColorMap.TryAdd(clickedMeshRenderer, clickedMeshRenderer.material.color);
         }
 
-        ChangeColor(_materialMap[clickedObjName]);
+        ChangeColor(_materialMap[clickedObjName],_colorChangeMap[RayForXylophone.transform]);
 
         FindAndPlayAudio(currentAudioSources);
     }
@@ -329,7 +326,7 @@ public class Music_XylophoneController : MonoBehaviour
     public float brightenIntensity;
     private Color brightenedColor;
 
-    private void ChangeColor(MeshRenderer meshRenderer, float duration = 0.8f)
+    private void ChangeColor(MeshRenderer meshRenderer,Color brightendColor, float duration = 0.7f)
     {
         var thisMaterial = new Material(meshRenderer.material);
         
@@ -338,20 +335,23 @@ public class Music_XylophoneController : MonoBehaviour
         var defaultColor = thisMaterial.color;
         
         brightenedColor = new Color();
-        
-        brightenedColor = defaultColor * brightenIntensity;
+
+        brightenedColor = brightendColor;
         
         //기준밝기보다 초과하여 밝아지지 않도록 Clamp
-        brightenedColor = new Color(
-            Mathf.Clamp(brightenedColor.r, defaultColor.r, _defaultColorMap[meshRenderer].r * brightenIntensity),
-            Mathf.Clamp(brightenedColor.g, defaultColor.g, _defaultColorMap[meshRenderer].g * brightenIntensity),
-            Mathf.Clamp(brightenedColor.b, defaultColor.b, _defaultColorMap[meshRenderer].b * brightenIntensity));
+        // brightenedColor = new Color(
+        //     Mathf.Clamp(brightenedColor.r, defaultColor.r, _defaultColorMap[meshRenderer].r * brightenIntensity),
+        //     Mathf.Clamp(brightenedColor.g, defaultColor.g, _defaultColorMap[meshRenderer].g * brightenIntensity),
+        //     Mathf.Clamp(brightenedColor.b, defaultColor.b, _defaultColorMap[meshRenderer].b * brightenIntensity));
 
         thisMaterial.DOColor(brightenedColor, BASE_MAP, duration).OnComplete(() =>
         {
             thisMaterial.DOColor(_defaultColorMap[meshRenderer], BASE_MAP, duration);
         });
      
+#if UNITY_EDITOR
+        Debug.Log($"color map caching.. ,{brightendColor}");
+#endif
 
         meshRenderer.material = thisMaterial;
     }
@@ -396,13 +396,13 @@ Debug.Log($"오디오 Length{_xylophoneAudioSources.Length}");
             if (isIncrease)
             {
                 FadeInSound(_xylophoneAudioSources[i]);
-                ChangeColor(_xylophoneMeshRenderers[i]);
+                ChangeColor(_xylophoneMeshRenderers[i], colorsToChange[i]);
             }
 
             else
             {
                 FadeInSound(_xylophoneAudioSources[_xylophoneAudioSources.Length - i - 1]);
-                ChangeColor(_xylophoneMeshRenderers[_xylophoneAudioSources.Length - i - 1]);
+                ChangeColor(_xylophoneMeshRenderers[_xylophoneAudioSources.Length - i - 1], colorsToChange[_xylophoneAudioSources.Length - i - 1]);
             }
 
 
