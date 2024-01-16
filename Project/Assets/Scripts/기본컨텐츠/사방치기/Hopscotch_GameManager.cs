@@ -7,21 +7,23 @@ using UnityEngine.Serialization;
 
 public class Hopscotch_GameManager : MonoBehaviour
 {
-    [FormerlySerializedAs("_effectController")]
+  
     [Header("Reference")] 
-    [SerializeField]private Hopscotch_EffectController effectController;
-    
+    [SerializeField]
+    private Hopscotch_EffectController effectController;
     [Space(20f)]
+    
     public Transform stepGroup;
     private Transform[] _steps;
     private int _stepCount;
 
     private ParticleSystem _inducingParticle;
     private ParticleSystem _successParticle;
-    
     private readonly string PATH ="게임별분류/기본컨텐츠/Hopscotch/";
 
-    private float _offset;
+    public float successParticleDuration;
+    private bool _isSuccesssParticlePlaying;
+    public float offset;
     private void Awake()
     {
         Init();
@@ -61,7 +63,6 @@ public class Hopscotch_GameManager : MonoBehaviour
         BindEvent();
         LoadParticles();
         GetSteps();
-
     }
 
     private void LoadParticles()
@@ -71,10 +72,10 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if(psPrefab1 != null)
         {
-            _inducingParticle = Instantiate(psPrefab1, _offset*Vector3.zero , transform.rotation,transform).GetComponent<ParticleSystem>();;
+            _inducingParticle = Instantiate(psPrefab1, offset*Vector3.down , transform.rotation,transform).GetComponent<ParticleSystem>();;
         }
         else
-        {
+        { 
 #if UNITY_EDITOR
          
             Debug.LogError($"널에러 발생: {PATH}" + "CFX_inducingParticle");
@@ -83,7 +84,7 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if(psPrefab2 != null)
         {
-            _successParticle = Instantiate(psPrefab2, _offset*Vector3.zero , transform.rotation,transform).GetComponent<ParticleSystem>();;
+            _successParticle = Instantiate(psPrefab2, offset*Vector3.down , transform.rotation,transform).GetComponent<ParticleSystem>();;
             _successParticle.Stop();
         }
     }
@@ -91,12 +92,12 @@ public class Hopscotch_GameManager : MonoBehaviour
     private void GetSteps()
     {
         _stepCount = stepGroup.childCount;
-        
         _steps = new Transform[_stepCount];
         
         for (int i = 0; i < _stepCount; ++i)
         {
             _steps[i] = stepGroup.GetChild(i);
+        
         }
     }
 
@@ -109,22 +110,26 @@ public class Hopscotch_GameManager : MonoBehaviour
         if (_isGameFinished) return;
         
             _inducingParticle.Stop();
-            _inducingParticle.gameObject.transform.position = _steps[currentPosition].position;
+            _inducingParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
             _inducingParticle.gameObject.SetActive(true);
             _inducingParticle.Play();
         
        
     }
 
-    public float successParticleDuration;
-    private bool _isSuccesssParticlePlaying;
+    private Vector3 AddOffset(Vector3 position)
+    {
+        return position + Vector3.down * offset;
+    }
+
+  
     private void PlaySuccessParticle( int currentPosition)
     {
         if (currentPosition > _stepCount) return;
         if (_isGameFinished) return;
         
             _successParticle.Stop();
-            _successParticle.gameObject.transform.position = _steps[currentPosition].position;
+            _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
             _successParticle.gameObject.SetActive(true);
             _successParticle.Play();
 
@@ -133,7 +138,7 @@ public class Hopscotch_GameManager : MonoBehaviour
                 .Float(0, 0, successParticleDuration, val => val++)
                 .OnComplete(() =>
                 {
-                    _successParticle.Clear();
+                  
                     _successParticle.Stop();
                     _successParticle.gameObject.SetActive(false);
                     _isSuccesssParticlePlaying = false;
