@@ -40,7 +40,7 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if (inPlayTexts != null)
         {
-            // 자기 자신을 제외하고 자식 GameObject들의 RectTransform 컴포넌트만 선택
+           
             _numberTextRects = inPlayTexts.GetComponentsInChildren<RectTransform>()
                 .Where(rt => rt.gameObject != inPlayTexts)
                 .ToArray();
@@ -53,6 +53,20 @@ public class Hopscotch_GameManager : MonoBehaviour
 
         DoIntroMove();
     }
+    
+#if UNITY_EDITOR
+public bool isManuallyInvoked;
+private void Update()
+{
+    if (isManuallyInvoked)
+    {
+        onStageClear?.Invoke();
+        isManuallyInvoked = false;
+    }
+
+
+}
+#endif
 
     private void OnClick()
     {
@@ -94,7 +108,7 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if(psPrefab1 != null)
         {
-            _inducingParticle = Instantiate(psPrefab1, offset*Vector3.down , transform.rotation,transform).GetComponent<ParticleSystem>();;
+            _inducingParticle = Instantiate(psPrefab1 ,transform).GetComponent<ParticleSystem>();;
             _inducingParticle.Stop();
         }
         else
@@ -107,9 +121,18 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if(psPrefab2 != null)
         {
-            _successParticle = Instantiate(psPrefab2, offset*Vector3.down , transform.rotation,transform).GetComponent<ParticleSystem>();;
+            _successParticle = Instantiate(psPrefab2,transform).GetComponent<ParticleSystem>();;
             _successParticle.Stop();
         }
+
+
+        // var psPrefab3 = Resources.Load<GameObject>(PATH + "CFX_StageClear_Bubble");
+        //
+        // if (psPrefab3 != null)
+        // {
+        //     _stageClearBubble = Instantiate(psPrefab3, transform).GetComponent<ParticleSystem>();
+        //     _stageClearBubble.Stop();
+        // }
     }
 
     private void GetSteps()
@@ -287,11 +310,14 @@ public class Hopscotch_GameManager : MonoBehaviour
         }
     }
 
-    public float waitTimeToRestartGame; 
+    public float waitTimeToRestartGame;
+    public ParticleSystem _stageClearBubble;
 
     private void OnStageClear()
     {
         _currentStep = 0;
+        
+        _stageClearBubble.Play();
         
         DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
             .OnComplete(() =>

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -20,12 +21,17 @@ public class EasternArt_GameManager : MonoBehaviour
     [Header("Skinned Picture")] public GameObject skinnedPicture;
 
     private Transform[] _skinnedPictureChildren;
-    
-    
 
+    public Animator tigerAnimator;
+    private float _defaultAnimatorSpeed;
+
+    public static event Action OnSkinnedAnimStart ;
+    
     private void Awake()
     {
-      
+        _defaultAnimatorSpeed = tigerAnimator.speed;
+        tigerAnimator.speed = 0;
+        
         _pathVector = new Vector3[3];
         _newVector = new Vector3[2];
 
@@ -90,7 +96,10 @@ public class EasternArt_GameManager : MonoBehaviour
                             reval =>
                             {
                                 currentLookat = Vector3.Lerp(lookAtA.position, lookAtB.position, reval);
-                                camera.DOLookAt(currentLookat, 0.01f);
+                                camera.DOLookAt(currentLookat, 0.01f).OnComplete(() =>
+                                {
+                                    tigerAnimator.speed = _defaultAnimatorSpeed;
+                                });
                             });
                     });
             })
