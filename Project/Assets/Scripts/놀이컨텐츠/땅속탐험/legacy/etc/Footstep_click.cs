@@ -3,41 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Footstep_click : MonoBehaviour
+public class Footstep_click : MonoBehaviour, IPointerClickHandler
 {
-    // //ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
-    // public bool Last_footstep = false;
-    //
-    // //Ã©ï¿½ï¿½(BG) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
-    // public bool Last_chapfootstep = false;
-    //
-    // private GameObject Gamemanager;
-    //
-    // public void OnPointerClick(PointerEventData eventData)
-    // {
-    //    //Debug.Log("CLICK");
-    //    //ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®
-    //    if(Last_footstep)
-    //     {
-    //         //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    //         Gamemanager.GetComponent<S1_Controller>().ActNextchapter();
-    //     }
-    //     else
-    //     {
-    //         //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    //         Gamemanager.GetComponent<S1_Controller>().ActNextstep();
-    //     }
-    //
-    //     //UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®
-    //     if (Last_chapfootstep)
-    //     {
-    //         Gamemanager.GetComponent<S1_Controller>().ActNextlevel();
-    //     }
-    //
-    // }
-    //
-    // void Start()
-    // {
-    //     Gamemanager = GameObject.Find("Gamemanager");
-    // }
+    //ÇØ´ç µ¿¹° ¸¶Áö¸· ¹ßÆÇÀÎÁö ¿©ºÎ È®ÀÎ
+    public bool Last_footstep = false;
+
+    //Ã©ÅÍ(BG) ¸¶Áö¸· ¹ßÆÇÀÎÁö ¿©ºÎ È®ÀÎ
+    public bool Last_chapfootstep = false;
+
+    private GameObject Gamemanager;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+       //Debug.Log("CLICK");
+       //µ¿¹°, ¹ßÆÇ Á¦¾î ÆÄÆ®
+       if(Last_footstep)
+        {
+            //´ÙÀ½ µ¿¹°
+            Gamemanager.GetComponent<S1_Controller>().ActNextchapter();
+        }
+        else
+        {
+            //´ÙÀ½ ½ºÅÇ
+            Gamemanager.GetComponent<S1_Controller>().ActNextstep();
+        }
+
+        //UI Á¦¾î ÆÄÆ®
+        if (Last_chapfootstep)
+        {
+            Gamemanager.GetComponent<S1_Controller>().ActNextlevel();
+        }
+
+    }
+
+    void Start()
+    {
+        Gamemanager = GameObject.Find("Gamemanager");
+    }
 }
