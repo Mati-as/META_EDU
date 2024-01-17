@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class EasternArt_GameManager : MonoBehaviour
 {
@@ -22,15 +23,48 @@ public class EasternArt_GameManager : MonoBehaviour
 
     private Transform[] _skinnedPictureChildren;
 
-    public Animator tigerAnimator;
+public Animator mainTigerAnimator;
     private float _defaultAnimatorSpeed;
+    private Sequence mainTigerSequence;
+    private bool _isMainTigerAnimPlaying;
+    
+    public static readonly int RIGHT_IDLE = Animator.StringToHash("Right"); 
+    public static readonly int RIGHT_GROWLING = Animator.StringToHash("RightGrowling"); 
+    
+    public static readonly int LEFT_IDLE = Animator.StringToHash("Left");
+    public static readonly int LEFT_GROWLING = Animator.StringToHash("LeftGrowling");
+    public float animationInterval = 10f;
+
+    private AudioSource _tigerGrowlingAudioSource;
+
+    private AudioClip _tigerGrowlA;
+    private AudioClip _tigerGrowlB;
+    private AudioClip _tigerGrowlC;
+
+    private AudioClip[] _tigerGrowlClips;
 
     public static event Action OnSkinnedAnimStart ;
     
     private void Awake()
     {
-        _defaultAnimatorSpeed = tigerAnimator.speed;
-        tigerAnimator.speed = 0;
+
+        _tigerGrowlingAudioSource = gameObject.AddComponent<AudioSource>();
+        
+        _tigerGrowlingAudioSource.volume = 0.2f;
+        _tigerGrowlingAudioSource.playOnAwake = false;
+      
+        _tigerGrowlA = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlA));
+        _tigerGrowlB = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlB));
+        _tigerGrowlC = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlC));
+
+
+        _tigerGrowlClips = new AudioClip[3];
+        _tigerGrowlClips[0] = _tigerGrowlA;
+        _tigerGrowlClips[1] = _tigerGrowlB;
+        _tigerGrowlClips[2] = _tigerGrowlC;
+            
+        _defaultAnimatorSpeed = mainTigerAnimator.speed;
+        mainTigerAnimator.speed = 0;
         
         _pathVector = new Vector3[3];
         _newVector = new Vector3[2];
@@ -38,8 +72,7 @@ public class EasternArt_GameManager : MonoBehaviour
         for (var i = 0; i < cameraPath.Length; i++)
         {
             _pathVector[i] = cameraPath[i].position;
-            Debug.Log($"cameraPathLength: {cameraPath.Length}");
-            Debug.Log($"i: {i}");
+         
         }
 
         _skinnedPictureChildren = new Transform[skinnedPicture.transform.childCount];
@@ -98,11 +131,142 @@ public class EasternArt_GameManager : MonoBehaviour
                                 currentLookat = Vector3.Lerp(lookAtA.position, lookAtB.position, reval);
                                 camera.DOLookAt(currentLookat, 0.01f).OnComplete(() =>
                                 {
-                                    tigerAnimator.speed = _defaultAnimatorSpeed;
+                                    DOVirtual.Float(0, 0, 1f, val => val++).OnComplete(() =>
+                                    {
+                                        mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                                        PlayMainTigerAnimation();
+                                    });
+
                                 });
                             });
                     });
             })
             .SetDelay(1.5f);
+    }
+
+    private Sequence _pollingSequence;
+    private void PlayMainTigerAnimation()
+    {
+        if(_isMainTigerAnimPlaying) return;
+        _isMainTigerAnimPlaying = true;
+        
+        
+        //1. start에서 Idle 애니메이션 재생상태..
+        mainTigerSequence = DOTween.Sequence();
+
+        //2. animationInterval 종료 후 왼쪽바라보기
+        mainTigerSequence
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+#if UNITY_EDITOR
+                    Debug.Log("LEFT_IDLE");
+#endif
+                    
+                    mainTigerAnimator.SetBool(LEFT_IDLE, true);
+                }))
+
+            //2. animationInterval 종료 후 LeftIdle및 Growling 재생
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+#if UNITY_EDITOR
+                    Debug.Log("LEFT_GROWLING");
+#endif
+                    _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                    _tigerGrowlingAudioSource.Play();
+
+                    _pollingSequence = DOTween.Sequence();
+                    _pollingSequence.Append(DOVirtual.Float(0, 1, animationInterval, _ =>
+                    {
+                        AnimatorStateInfo
+                            stateInfo = mainTigerAnimator.GetCurrentAnimatorStateInfo(0); // 0은 base layer를 의미
+                        
+                        Debug.Log("isGrowling Available checking....");
+                        if (stateInfo.normalizedTime % 1 < 0.05f)
+                        {
+                           
+                            Debug.Log("Growling Again");
+
+                            _tigerGrowlingAudioSource.Play();
+
+                            mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
+                        }
+                    }));
+                    
+                    mainTigerAnimator.SetBool(LEFT_GROWLING, true);
+                }))
+
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+#if UNITY_EDITOR
+                    Debug.Log("IDLE");
+#endif
+                    _pollingSequence.Kill();
+                    InitializeAnimParams();
+                }))
+
+            //3. LeftGrowling 종료 후 RightIdle 및 RightGrowling 재생
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+#if UNITY_EDITOR
+                    Debug.Log("RIGHT_IDLE");
+#endif
+                    mainTigerAnimator.SetBool(RIGHT_IDLE, true);
+                
+                }))
+            
+            //4. 초기화 및 무한 반복 
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+#if UNITY_EDITOR
+                    Debug.Log("RIGHT_GROWLING");
+#endif
+                    _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                    _tigerGrowlingAudioSource.Play();
+                    mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
+                    
+                    _pollingSequence = DOTween.Sequence();
+                    _pollingSequence.Append(DOVirtual.Float(0, 1, animationInterval, _ =>
+                    {
+                        AnimatorStateInfo
+                            stateInfo = mainTigerAnimator.GetCurrentAnimatorStateInfo(0); // 0은 base layer를 의미
+                       
+                        Debug.Log("isGrowling Available checking....");
+                        if (stateInfo.normalizedTime % 1 < 0.05f)
+                        {
+                            
+                            Debug.Log("Growling Again");
+
+                            _tigerGrowlingAudioSource.Play();
+
+                           
+                        }
+                    }));
+                }))
+            
+            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+                .OnComplete(() =>
+                {
+                    _pollingSequence.Kill();
+                    InitializeAnimParams();
+                }))
+      
+           
+            .SetLoops(-1,LoopType.Restart);
+
+
+        mainTigerSequence.Play();
+    }
+
+    private void InitializeAnimParams()
+    {
+        mainTigerAnimator.SetBool(RIGHT_IDLE,false);
+        mainTigerAnimator.SetBool(LEFT_IDLE,false);
+        mainTigerAnimator.SetBool(RIGHT_GROWLING,false);
+        mainTigerAnimator.SetBool(LEFT_GROWLING,false);
     }
 }

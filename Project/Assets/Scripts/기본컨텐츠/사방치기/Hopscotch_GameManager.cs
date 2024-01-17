@@ -28,9 +28,11 @@ public class Hopscotch_GameManager : MonoBehaviour
     private bool _isSuccesssParticlePlaying;
     public float offset;
     
+   
     
     private void Awake()
     {
+       
         Init();
     }
 
@@ -40,7 +42,6 @@ public class Hopscotch_GameManager : MonoBehaviour
         
         if (inPlayTexts != null)
         {
-           
             _numberTextRects = inPlayTexts.GetComponentsInChildren<RectTransform>()
                 .Where(rt => rt.gameObject != inPlayTexts)
                 .ToArray();
@@ -48,6 +49,11 @@ public class Hopscotch_GameManager : MonoBehaviour
         else
         {
             Debug.LogError("GameObject named 'InPlayTexts' not found in the scene.");
+        }
+
+        foreach (var rect in _numberTextRects)
+        {
+            _uiDefaultSizeMap.Add(rect,rect.localScale.x);
         }
         
 
@@ -97,6 +103,9 @@ private void Update()
     private void Init()
     {
         BindEvent();
+        
+        _defaultSizeMap = new Dictionary<Transform, float>();
+        _uiDefaultSizeMap = new Dictionary<RectTransform, float>();
         LoadParticles();
         GetSteps();
     }
@@ -126,13 +135,7 @@ private void Update()
         }
 
 
-        // var psPrefab3 = Resources.Load<GameObject>(PATH + "CFX_StageClear_Bubble");
-        //
-        // if (psPrefab3 != null)
-        // {
-        //     _stageClearBubble = Instantiate(psPrefab3, transform).GetComponent<ParticleSystem>();
-        //     _stageClearBubble.Stop();
-        // }
+     
     }
 
     private void GetSteps()
@@ -150,6 +153,7 @@ private void Update()
         
         foreach (var step in _steps)
         {
+            _defaultSizeMap.Add(step, step.localScale.x);
             step.position += defaultOffset;
         }
     }
@@ -160,47 +164,81 @@ private void Update()
 
     private void OnScaleSequenceKilled(RectTransform number)
     {
-        if (_scaleBackSequence.IsActive())
-        {
-            _scaleBackSequence.Kill();
-        }
+      //  if (_scaleBackSequence.IsActive()) _scaleBackSequence.Kill();
 
         _scaleBackSequence = DOTween.Sequence();
-        
-        _scaleBackSequence.Append(number.DOScale(1.7f, 0.8f).SetEase(Ease.Linear));
+
+#if UNITY_EDITOR
+   Debug.Log($"OnScaleSequenceKilled: Rect");
+#endif
+        _scaleBackSequence.Append(number.DOScale(_uiDefaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
         _scaleBackSequence.Play();
     }
-    
+
+    private void OnScaleSequenceKilled(Transform number)
+    {
+        //if (_scaleBackSequence.IsActive()) _scaleBackSequence.Kill();
+
+        _scaleBackSequence = DOTween.Sequence();
+
+#if UNITY_EDITOR
+        Debug.Log($"OnScaleSequenceKilled: Transform");
+#endif
+        _scaleBackSequence
+            .Append(number.DOScale(_defaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
+        _scaleBackSequence.Play();
+    }
+
+    private float _stepSizeChangeRate =1.11f;
+    private Dictionary<Transform, float> _defaultSizeMap;
+    private Dictionary<RectTransform, float> _uiDefaultSizeMap;
+
     private void DoScaleUp(RectTransform number)
     {
-       
         _currentScaleSequence = DOTween.Sequence();
 
         _currentScaleSequence
             .Append(number
-            .DOScale(numberDoScaleSize, 1.2f)
-            .OnKill(() =>
-                {
-
-                    OnScaleSequenceKilled(number);
-                })
-            
-            .SetEase(Ease.OutBounce))
+                .DOScale(numberDoScaleSize, 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(number); })
+                .SetEase(Ease.Linear))
            
             .Append(number
-            .DOScale(1.7f, 1.2f)
-            .SetDelay(0.3f)
-           
-            .OnKill(() =>
-            {
-
-                OnScaleSequenceKilled(number);
-            })
-            .SetEase(Ease.OutBounce))
+                .DOScale(_uiDefaultSizeMap[number], 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(number); })
+                .SetEase(Ease.Linear))
+            
+            .AppendInterval(0.5f)
+            
+            
             .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
 
         _currentScaleSequence.Play();
     }
+
+    private void DoScaleUp(Transform step)
+    {
+        _stepCurrentScaleSequence = DOTween.Sequence();
+
+        _stepCurrentScaleSequence
+            .Append(step
+                .DOScale(_defaultSizeMap[step]*_stepSizeChangeRate, 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(step); })
+                .SetEase(Ease.Linear))
+           
+            .Append(step
+                .DOScale(_defaultSizeMap[step], 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(step); })
+                .SetEase(Ease.Linear))
+            
+            .AppendInterval(0.5f)
+            
+            
+            .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
+
+        _stepCurrentScaleSequence.Play();
+    }
+
 
     private int _currentStep = 0;
     private bool _isGameFinished;
@@ -208,8 +246,6 @@ private void Update()
     private void PlayInducingParticle(int currentPosition)
     {
         if (currentPosition >= _steps.Length) return;
-       
-        
         
             _inducingParticle.Stop();
             _inducingParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
@@ -219,6 +255,7 @@ private void Update()
     }
 
     private Sequence _currentScaleSequence;
+    private Sequence _stepCurrentScaleSequence;
     private Sequence _scaleBackSequence;
     public static event Action onStageClear;
     private Vector3 AddOffset(Vector3 position)
@@ -227,53 +264,58 @@ private void Update()
     }
 
     public float nextStepInducingParticleDelay;
-    private void PlaySuccessParticle( int currentPosition)
-    {
-            _currentScaleSequence.Kill();
-                                      
-#if UNITY_EDITOR
-            Debug.Log($"succuessful! : currentStep : {_currentStep}");
-#endif
-            
-            _inducingParticle.Stop();
-            _successParticle.Stop();
-            _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
-            _successParticle.gameObject.SetActive(true);
-            _successParticle.Play();
 
-            _isSuccesssParticlePlaying = true;
-            DOVirtual
-                .Float(0, 0, successParticleDuration, val => val++)
-                .OnComplete(() =>
-                {
-                    _successParticle.Stop();
-                    _successParticle.gameObject.SetActive(false);
-                    
-                    DOVirtual
-                        .Float(0, 0, nextStepInducingParticleDelay, val => val++)
-                        .OnComplete(() =>
+    private void PlaySuccessParticle(int currentPosition)
+    {
+        if (_isSuccesssParticlePlaying) return;
+
+        _isSuccesssParticlePlaying = true;
+        _currentScaleSequence.Kill();
+        _stepCurrentScaleSequence.Kill();
+
+#if UNITY_EDITOR
+        Debug.Log($"Sequence Killed!");
+#endif
+
+        _inducingParticle.Stop();
+        _successParticle.Stop();
+        _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
+        _successParticle.gameObject.SetActive(true);
+        _successParticle.Play();
+
+
+        DOVirtual
+            .Float(0, 0, successParticleDuration, val => val++)
+            .OnComplete(() =>
+            {
+                _successParticle.Stop();
+                _successParticle.gameObject.SetActive(false);
+
+                DOVirtual
+                    .Float(0, 0, nextStepInducingParticleDelay, val => val++)
+                    .OnComplete(() =>
+                    {
+                        _isSuccesssParticlePlaying = false;
+                        _currentStep++;
+
+
+                        if (_currentStep >= _stepCount)
                         {
-                            _isSuccesssParticlePlaying = false;
-                            _currentStep++;
-                            
-#if UNITY_EDITOR
-                            Debug.Log($"currentStep : {_currentStep} , step Count:{_stepCount}");
-#endif
-                            if (_currentStep >= _stepCount)
-                            {
-#if UNITY_EDITOR
-                                Debug.Log($"Replay Invoked!");
-#endif
-                                onStageClear?.Invoke();
-                            }
+
+                            onStageClear?.Invoke();
+                        }
+                        else
+                        {
+                            if (_currentStep == 2)
+                                DoScaleUp(_steps[1]);
                             else
-                            {
-                                DoScaleUp(_numberTextRects[_currentStep]);
-                                PlayInducingParticle(_currentStep);
-                            }
-                          
-                        });
-                });
+                                DoScaleUp(_steps[_currentStep]);
+
+                            DoScaleUp(_numberTextRects[_currentStep]);
+                            PlayInducingParticle(_currentStep);
+                        }
+                    });
+            });
     }
     
     public Vector3[] targetPos;
@@ -298,7 +340,11 @@ private void Update()
 #if UNITY_EDITOR
                                 Debug.Log("시작시 1 Doscale");
 #endif
-                                if (i1 >= _stepCount - 1) DoScaleUp(_numberTextRects[0]);
+                                if (i1 >= _stepCount - 1)
+                                {
+                                    DoScaleUp(_numberTextRects[0]);
+                                    DoScaleUp(_steps[0]);
+                                }
                                 
                                 //DoScaleUp(_numberTextRects[1]);
                                 if (i1 >= _stepCount - 1) PlayInducingParticle(0);
@@ -342,4 +388,7 @@ private void Update()
         }
         return false;
     }
+
+
+   
 }
