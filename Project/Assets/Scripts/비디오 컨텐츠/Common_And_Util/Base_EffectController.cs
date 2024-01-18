@@ -30,6 +30,10 @@ public abstract class  Base_EffectController : MonoBehaviour
     public int emitAmount;
 
 
+    //여러 오디오클립을 랜덤하게 사용하고싶은 경우 체크하여 사용
+    //_effectClip A,B,C..에 할당하면됨
+    public bool isMultipleRandomClip;
+    
     [Header("Burst Setting")] public bool useBurstMode;
     [FormerlySerializedAs("burstAmount")] public int burstEmitAmount;
     public int burstCount;
@@ -50,6 +54,11 @@ public abstract class  Base_EffectController : MonoBehaviour
     //재생하게끔 하기 위한  index 설정입니다. 
     private int currentAudioSourceIndex;
 
+
+
+    //아래 오디오 클립을 모두 저장하는데 사용합니다, 여러 클립을 할당받고 랜덤하게 재생하기 위해 사용중입니다 1-17-24
+    private List<AudioClip> _audioClips;
+    private int CLIP_COUNTS = 10; //max로 10으로 설정
     public AudioClip _effectClipA;
     [Range(0f, 1f)] public float volumeA;
     public AudioClip _effectClipB;
@@ -59,16 +68,19 @@ public abstract class  Base_EffectController : MonoBehaviour
     [Range(0f, 1f)] public float volumeC;
     public AudioClip _effectClipD;
     [Range(0f, 1f)] public float volumeD;
+    public AudioClip _effectClipE;
 
     public AudioClip _subAudioClip;
     [Range(0f, 1f)] public float volumeSub;
     public AudioClip _burstClip;
     [Range(0f, 1f)] public float volumeBurst;
 
+
+    // AudioeffectClip은 Source 없음.. Randomize 기능 구현 전용입니다
     private AudioSource[][] _audioSources;
 
     // 차례대로 Audiosource를 재생하기위한 AudioSource Count
-    private int totalActiveAudioSourcesCount;
+    private int totalActiveAudioSouceSortCount;
 
     private AudioSource[] _audioSourcesA;
     private AudioSource[] _audioSourcesB;
@@ -80,6 +92,7 @@ public abstract class  Base_EffectController : MonoBehaviour
     private AudioSource[][] _audioSourceGroups;
 
 
+    
     public Ray ray_BaseController { get; set; }
     public RaycastHit[] hits;
     protected abstract void OnClicked();
@@ -89,6 +102,8 @@ public abstract class  Base_EffectController : MonoBehaviour
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
+        
+        if(isMultipleRandomClip)SetRandomClip();
     }
 
    
@@ -166,7 +181,7 @@ public abstract class  Base_EffectController : MonoBehaviour
         if (_effectClipB != null) _audioSourcesB = SetAudioSettings(_audioSourcesB, _effectClipB, audioSize, volumeB);
         if (_effectClipC != null) _audioSourcesC = SetAudioSettings(_audioSourcesC, _effectClipC, audioSize, volumeC);
         if (_effectClipD != null) _audioSourcesD = SetAudioSettings(_audioSourcesD, _effectClipD, audioSize, volumeD);
-        if (_subAudioClip != null)
+        if (_subAudioClip != null && useSubEmitter )
             _subAudioSources = SetAudioSettings(_subAudioSources, _subAudioClip, audioSize, volumeSub);
         if (_burstClip != null)
             _burstAudioSources = SetAudioSettings(_burstAudioSources, _burstClip, _burstAudioSize, volumeBurst);
@@ -176,7 +191,8 @@ public abstract class  Base_EffectController : MonoBehaviour
     private AudioSource[] SetAudioSettings(AudioSource[] audioSources, AudioClip audioClip, int size, float volume = 1f,
         float interval = 0.25f)
     {
-        totalActiveAudioSourcesCount++;
+        //오디오 갯수아닌 오디오 종류의 갯수.
+        totalActiveAudioSouceSortCount++;
 
         audioSources = new AudioSource[size];
         for (var i = 0; i < audioSources.Length; i++)
@@ -201,12 +217,57 @@ public abstract class  Base_EffectController : MonoBehaviour
         {
             var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
 
-            if (availableAudioSource != null) FadeInSound(availableAudioSource, volume);
+            if (availableAudioSource != null)
+            {
+                if(isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
+                
+#if UNITY_EDITOR
+                Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
+                          $" _currentRandomClipIndex :{_currentRandomClipIndex}");
+#endif
+                FadeInSound(availableAudioSource, volume);
+            }
 
 #if UNITY_EDITOR
 #endif
         }
     }
+
+    protected void SetRandomClip()
+    {
+        _audioClips = new List<AudioClip>();
+
+        if (_effectClipA != null)
+        {
+            _audioClips.Add(_effectClipA);
+        }
+        if (_effectClipB != null)
+        {
+            _audioClips.Add(_effectClipB);
+        }
+        if (_effectClipC != null)
+        {
+            _audioClips.Add(_effectClipC);
+        }
+        if (_effectClipD != null)
+        {
+            _audioClips.Add(_effectClipD);
+        }
+        if (_effectClipD != null)
+        {
+            _audioClips.Add(_effectClipE);
+        }
+ 
+
+    }
+    protected AudioClip RandomizeClip()
+    {
+        _currentRandomClipIndex = Random.Range(0, 5);
+        AudioClip randomClip = _audioClips[_currentRandomClipIndex];
+        return randomClip;
+    }
+
+    private int _currentRandomClipIndex;
 
     protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
         float duration = 1f)
@@ -294,7 +355,7 @@ public abstract class  Base_EffectController : MonoBehaviour
                             break;
                     }
 
-                    currentAudioSourceIndex = ++currentAudioSourceIndex % (totalActiveAudioSourcesCount);
+                    currentAudioSourceIndex = ++currentAudioSourceIndex % (totalActiveAudioSouceSortCount);
                 }
 
                 _currentCountForBurst++;

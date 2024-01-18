@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 
 public class Hopscotch_GameManager : MonoBehaviour
 {
-  
+    
     [Header("Reference")] 
     [SerializeField]
     private Hopscotch_EffectController effectController;
@@ -34,6 +34,7 @@ public class Hopscotch_GameManager : MonoBehaviour
     {
        
         Init();
+       
     }
 
     private void Start()

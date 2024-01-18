@@ -16,41 +16,15 @@ using UnityEngine.UI;
             base.Init();
             GameObject.FindWithTag("GameManager").TryGetComponent(out _particleEventController);
         }
-        
+
         public override void ShootRay()
         {
-        
-            screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
-        
-            //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
-            Debug.Assert(_particleEventController!=null);
-            ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
-            _particleEventController.ray = ray_ImageMove;
+            Debug.Assert(_particleEventController != null);
+           
+            base.ShootRay();
             
-       
-#if UNITY_EDITOR
-            Debug.Log($"override ShootRay 호출");
-            Debug.Log($"ray point: {_particleEventController.ray}");
-#endif
-        
-            // GameManger에서 Ray 발생시키므로, 아래 로직 미사용 (11/27/23)
-            // var ray = Camera.main.ScreenPointToRay(screenPosition);
-            // RaycastHit hit;
-            // if (Physics.Raycast(ray, out hit)) Debug.Log(hit.transform.name);
+         
+            _particleEventController.ray = ray_ImageMove;
 
-
-            PED.position = screenPosition;
-            var results = new List<RaycastResult>();
-            GR.Raycast(PED, results);
-
-            if (results.Count > 0)
-                for (var i = 0; i < results.Count; i++)
-                {
-#if UNITY_EDITOR
-                    Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
-#endif
-                    results[i].gameObject.TryGetComponent(out Button button);
-                    button?.onClick?.Invoke();
-                }
         }
     }

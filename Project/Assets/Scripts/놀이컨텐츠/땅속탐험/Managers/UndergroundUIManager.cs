@@ -316,7 +316,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void OnAnimalFind()
     {
         //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
-        ChangeImageSource("땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
+        ChangeImageSource("게임별분류/땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
         
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }

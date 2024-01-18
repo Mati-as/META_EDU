@@ -23,10 +23,10 @@ public class UIManager : MonoBehaviour
     [Header("Reference")]  [Space(10f)]
     [SerializeField]
     private StoryUIController storyUIController;
-    [SerializeField]
-    private TextBoxUIController textBoxUIController;
-    [SerializeField]
-    private UIAudioController uiAudioController;
+  //  [SerializeField]
+  //  private TextBoxUIController textBoxUIController;
+  //  [SerializeField]
+  //  private UIAudioController uiAudioController;
     
     [Header("Overall Settings")]  [Space(10f)]
     public float startTimeOffsetSeconds; // 게임시작후 몇 초 후 UI재생할 건지

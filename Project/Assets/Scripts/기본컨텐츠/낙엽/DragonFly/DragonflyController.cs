@@ -85,9 +85,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
         _animator = GetComponent<Animator>();
 
         _dragonflyName = gameObject.name;
-#if DEFINE_TEST
-        Debug.Log($"gameobject name is {_dragonflyName}");
-#endif
+
     }
 
     private void Start()
@@ -110,6 +108,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
 
     private void Update()
     {
+        _audioSource = gameObject.AddComponent<AudioSource>();
         _elapsed += Time.deltaTime;
         if (_elapsed > _dragonFlySoundInterval)
         {

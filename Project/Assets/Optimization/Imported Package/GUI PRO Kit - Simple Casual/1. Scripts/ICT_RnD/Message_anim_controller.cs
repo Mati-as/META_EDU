@@ -13,9 +13,9 @@ public class Message_anim_controller : MonoBehaviour
     //0 : On, 1 : Off
     /*
      * 
-     *  1. Message Tool , Å¬¸¯¿¡ µû¶ó ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
-     *  2. Message Intro , OnOff ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
-     *  3. Message Content_func,  OnOff ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+     *  1. Message Tool , í´ë¦­ì— ë”°ë¼ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
+     *  2. Message Intro , OnOff ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
+     *  3. Message Content_func,  OnOff ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
      *  
      */
     void Start()

@@ -24,11 +24,12 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
     public bool _isCrabAppearable { get; private set; }
 
     public static event Action OnReplay;
-
+    public GameObject UI_Scene;
     // Start is called before the first frame update
     private void Start()
     {
         Init();
+        
         _isCrabAppearable = true;
         Crab_EffectController.onClicked -= OnClicked;
         Crab_EffectController.onClicked += OnClicked;
@@ -86,14 +87,18 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         Crab_EffectController.onClicked -= OnClicked;
     }
 
+    
     protected override void Init()
     {
         base.Init();
-
+        UI_Scene.SetActive(false);
         DOVirtual.Float(1, 0, 1.1f, speed =>
         {
             videoPlayer.playbackSpeed = speed;
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
+        }).OnComplete(() =>
+        {
+            UI_Scene.SetActive(true);
         });
     }
 

@@ -132,6 +132,9 @@ public class StoryUIController : MonoBehaviour
     public float playerIconMoveSpeed;
     IEnumerator MovePlayerIcon()
     {
+#if DEFINE_TEST
+        Debug.Log($" MovePlayerIcon()");
+#endif
         while (true)
         {
             t += Time.deltaTime * playerIconMoveSpeed;

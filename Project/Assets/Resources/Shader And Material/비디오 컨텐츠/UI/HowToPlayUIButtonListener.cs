@@ -53,29 +53,7 @@ public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPo
     private void OnButtonClicked()
     {
 
-        if (!_isClicked)
-        {
-            _isClicked = true;
-            if (gameManager.isStartButtonClicked.Value == false)
-            {
-#if UNITY_EDITOR
-                Debug.Log("스타트 버튼클릭");
-#endif
-            
-                gameManager.isStartButtonClicked.Value = true;
-            }
-     
-            if (_audioSource != null)
-            {
-                _audioSource.clip = buttonSound;
-                _audioSource.Play();
-            }
-            if (!_isUIPlayed)
-            {
-                _isUIPlayed = true;
-            }
-
-        }
+  
 
     }
     

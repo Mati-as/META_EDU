@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class AnimalTripTutorialButtonController : MonoBehaviour
@@ -9,8 +10,8 @@ public class AnimalTripTutorialButtonController : MonoBehaviour
     private Button _button;
     [SerializeField]
     private AudioSource _audioSource;
-    [SerializeField]
-    private TextBoxUIController textBoxUIController;
+    [FormerlySerializedAs("textBoxUIController")] [SerializeField]
+    private TextBoxUIController tutorialBoxController;
     
     [SerializeField]
     private StoryUIController _storyUIController;
@@ -32,7 +33,7 @@ public class AnimalTripTutorialButtonController : MonoBehaviour
         if (!_isUIPlayed)
         {
             _audioSource.Play();
-            textBoxUIController.OnUIFinished();
+            tutorialBoxController.OnUIFinished();
             _storyUIController.OnHowToPlayUIFinished();
          
             _isUIPlayed = true;
