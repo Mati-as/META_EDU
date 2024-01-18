@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public abstract class  Base_EffectController : MonoBehaviour
+public  class  Base_EffectController : MonoBehaviour
 {
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;
@@ -19,7 +19,6 @@ public abstract class  Base_EffectController : MonoBehaviour
 
     [Header("ObjectPool Setting")] public int poolSize;
 
-
     private readonly string AUDIO_PATH_EFFECT_A;
     [HideInInspector] public InputAction _mouseClickAction;
     public Queue<ParticleSystem> particlePool;
@@ -28,7 +27,6 @@ public abstract class  Base_EffectController : MonoBehaviour
 
     [Header("Particle Emission Setting")] private int _count;
     public int emitAmount;
-
 
     //여러 오디오클립을 랜덤하게 사용하고싶은 경우 체크하여 사용
     //_effectClip A,B,C..에 할당하면됨
@@ -53,8 +51,6 @@ public abstract class  Base_EffectController : MonoBehaviour
     //각 이펙트를 한번에 플레이 하는 경우가 아닌 (isPlayTogther == false) 경우에 차례대로 index를 돌면서
     //재생하게끔 하기 위한  index 설정입니다. 
     private int currentAudioSourceIndex;
-
-
 
     //아래 오디오 클립을 모두 저장하는데 사용합니다, 여러 클립을 할당받고 랜덤하게 재생하기 위해 사용중입니다 1-17-24
     private List<AudioClip> _audioClips;
@@ -95,7 +91,32 @@ public abstract class  Base_EffectController : MonoBehaviour
     
     public Ray ray_BaseController { get; set; }
     public RaycastHit[] hits;
-    protected abstract void OnClicked();
+    public static event Action onClicked;
+    public static event Action OnClickForEachClick;
+    public Vector3 hitPoint { get; private set; }
+
+    protected virtual void OnClicked()
+    {
+        hits = Physics.RaycastAll(ray_BaseController);
+        foreach (var hit in hits)
+        {
+            
+            hitPoint = hit.point;
+            
+            PlayParticle(particlePool,hit.point);
+            
+
+            if (!Crab_VideoContentPlayer._isShaked)
+            {
+                onClicked?.Invoke();
+            }
+            
+            OnClickForEachClick?.Invoke();
+            break;
+            
+        }
+
+    }
 
     protected virtual void Init()
     {
@@ -233,6 +254,7 @@ public abstract class  Base_EffectController : MonoBehaviour
         }
     }
 
+    private int _totalCilpCountWhenUseMultipleClips;
     protected void SetRandomClip()
     {
         _audioClips = new List<AudioClip>();
@@ -240,29 +262,34 @@ public abstract class  Base_EffectController : MonoBehaviour
         if (_effectClipA != null)
         {
             _audioClips.Add(_effectClipA);
+            _totalCilpCountWhenUseMultipleClips++;
         }
         if (_effectClipB != null)
         {
             _audioClips.Add(_effectClipB);
+            _totalCilpCountWhenUseMultipleClips++;
         }
         if (_effectClipC != null)
         {
             _audioClips.Add(_effectClipC);
+            _totalCilpCountWhenUseMultipleClips++;
         }
         if (_effectClipD != null)
         {
             _audioClips.Add(_effectClipD);
+            _totalCilpCountWhenUseMultipleClips++;
         }
         if (_effectClipD != null)
         {
             _audioClips.Add(_effectClipE);
+            _totalCilpCountWhenUseMultipleClips++;
         }
  
 
     }
     protected AudioClip RandomizeClip()
     {
-        _currentRandomClipIndex = Random.Range(0, 5);
+        _currentRandomClipIndex = Random.Range(0, _totalCilpCountWhenUseMultipleClips);
         AudioClip randomClip = _audioClips[_currentRandomClipIndex];
         return randomClip;
     }

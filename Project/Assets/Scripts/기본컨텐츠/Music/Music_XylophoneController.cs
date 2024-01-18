@@ -400,7 +400,7 @@ Debug.Log($"오디오 Length{_xylophoneAudioSources.Length}");
             }
 
 
-            if (xylophoneInerval == null) xylophoneInerval = new WaitForSeconds(0.043f);
+            if (xylophoneInerval == null) xylophoneInerval = new WaitForSeconds(0.093f);
 
             yield return xylophoneInerval;
         }
