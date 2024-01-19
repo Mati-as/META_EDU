@@ -20,7 +20,11 @@ public class Painting_PaintableTextureController : IGameManager
      public float burshStrength = 1;
     void Start()
     {
+        Init();
+    }
 
+    protected override void Init()
+    {
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
         SetInputSystem();
         
@@ -33,8 +37,6 @@ public class Painting_PaintableTextureController : IGameManager
 
         // Set the material's texture to the RenderTexture
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
-
-        
     }
     
     void StartPainting()
@@ -88,5 +90,10 @@ public class Painting_PaintableTextureController : IGameManager
     private void OnDisable()
     {
         paintAction.Disable();
+    }
+    
+    protected override void OnRaySynced()
+    {
+        
     }
 }

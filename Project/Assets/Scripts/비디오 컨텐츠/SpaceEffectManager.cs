@@ -7,7 +7,7 @@ public class SpaceEffectManager : Base_EffectManager
     public int waitCount;
     private int _currentCount;
 
-    protected override void OnClicked()
+    protected override void OnGmRaySyncedByOnGm()
     {
         if (_currentCount > waitCount)
         {

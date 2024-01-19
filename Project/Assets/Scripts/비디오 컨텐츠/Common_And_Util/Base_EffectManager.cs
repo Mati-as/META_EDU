@@ -98,10 +98,40 @@ public  class  Base_EffectManager : MonoBehaviour
     public static event Action OnRaySyncFromGmSingle;
     public Vector3 hitPoint { get; private set; }
 
-    protected virtual void OnClicked()
+#if UNITY_EDITOR
+    private bool _isRaySet;
+#endif
+    protected virtual void OnGmRaySyncedByOnGm()
     {
 
         ray_EffectManager = IGameManager.GameManager_Ray;
+#if UNITY_EDITOR
+        if (!_isRaySet)
+        {
+            Debug.Log($"Ray Synchronized by IGameManager; effectManager is Ready.");
+            _isRaySet = true;
+        }
+        
+        hits = Physics.RaycastAll(ray_EffectManager);
+        foreach (var hit in hits)
+        {
+            
+            hitPoint = hit.point;
+            
+            PlayParticle(particlePool,hit.point);
+            
+
+            if (!Base_Interactable_VideoGameManager._isShaked)
+            {
+                OnRaySyncFromGameManager?.Invoke();
+            }
+            
+            OnRaySyncFromGameManager?.Invoke();
+            break;
+            
+        }
+     
+#endif
     }
 
     protected virtual void Init()
@@ -134,7 +164,7 @@ public  class  Base_EffectManager : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        IGameManager.onRaySync -= OnClicked;
+        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
     }
     /// <summary>
     /// 초기 풀 설정 -----------------
@@ -172,8 +202,8 @@ public  class  Base_EffectManager : MonoBehaviour
 
     protected virtual void BindEvent()
     {
-        IGameManager.onRaySync -= OnClicked;
-        IGameManager.onRaySync += OnClicked;
+        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
+        IGameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
     }
 
     /// <summary>

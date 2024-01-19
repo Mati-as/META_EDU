@@ -18,7 +18,7 @@ public class SoundManager : MonoBehaviour
     {
      Bgm,
      Narration,
-     ButtonEffect,
+     Effect,
      Max
     }
 
@@ -93,7 +93,7 @@ public class SoundManager : MonoBehaviour
             return true;
         }
 
-        if (type == Sound.ButtonEffect)
+        if (type == Sound.Effect)
         {
             var audioClip = GetAudioClip(path);
             if (audioClip == null)

@@ -30,7 +30,7 @@ public class Image_Move : MonoBehaviour
     public Button button;
 
     public static Ray ray_ImageMove { get; set; }
-    // 현재는 SpaceBar click 시 입니다. 11/27/23
+ 
     public static event Action OnGetInputFromUser;
 
 
@@ -43,6 +43,7 @@ public class Image_Move : MonoBehaviour
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
+        
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
@@ -94,6 +95,8 @@ public class Image_Move : MonoBehaviour
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장 
         ShootRay();
+   
+
       
     }
     
@@ -123,8 +126,11 @@ public class Image_Move : MonoBehaviour
                 results[i].gameObject.TryGetComponent<Button>(out button);
                 button?.onClick?.Invoke();
             }
-        
         OnGetInputFromUser?.Invoke();
+       
+#if UNITY_EDITOR
+        Debug.Log("Ray Sync Originally");
+#endif
       
     }
     

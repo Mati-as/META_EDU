@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpaceEffectManagerGlow : Base_EffectManager
 {
     
-    protected override void OnClicked()
+    protected override void OnGmRaySyncedByOnGm()
     {
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)

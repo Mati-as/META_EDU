@@ -12,7 +12,7 @@ public class HopscotchEffectManager : Base_EffectManager
     
 
     public static event Action Hopscotch_OnClick; 
-    protected override void OnClicked()
+    protected override void OnGmRaySyncedByOnGm()
     {
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)

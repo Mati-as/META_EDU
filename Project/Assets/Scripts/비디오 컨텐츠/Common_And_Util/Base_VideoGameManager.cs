@@ -3,13 +3,16 @@ using System;
 using UnityEngine;
 using UnityEngine.Video;
 using System.IO;
+using UnityEngine.SceneManagement;
 
-public class Base_VideoGameManager : IGameManager
+public abstract class Base_VideoGameManager : IGameManager
 {
     protected VideoPlayer videoPlayer;
     protected bool _initiailized;
 
+    private readonly string prefix = "Video_";
 
+   
 
     [Header("Video Settings")] public float playbackSpeed;
 
@@ -18,12 +21,15 @@ public class Base_VideoGameManager : IGameManager
         Init();
     }
 
-    protected virtual void Init()
+    protected override void Init()
     {
+        
+        BindEvent();
+        
         videoPlayer = GetComponent<VideoPlayer>();
 
   
-        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"{gameObject.name}.mp4");
+        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"{SceneManager.GetActiveScene().name.Substring(prefix.Length)}.mp4");
 
     
         if (File.Exists(mp4Path))
@@ -41,9 +47,14 @@ public class Base_VideoGameManager : IGameManager
         videoPlayer.Play();
 
         _initiailized = true;
+        
+      
     }
-    
-    
-    
+
+
+    protected override void OnRaySynced()
+    {
+        
+    }
     
 }

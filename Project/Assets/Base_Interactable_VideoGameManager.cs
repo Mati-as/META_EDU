@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 /// 5.게임에 좀 더 특화해야할 경우 Interactive_VideoContentPlayer를 상속받아 사용합니다.
 /// 6.단순 클릭 후, 일정시간 정지 및 재생, 리플레이 로직만 포함된 경우 해당 Interactive_VideoContentPlayer만 사용해도 문제되지 않습니다. 
 /// </summary>
-public class Base_Interactable_VideoGameManager : Base_VideoGameManager
+public abstract class Base_Interactable_VideoGameManager : Base_VideoGameManager
 {
       
 #if UNITY_EDITOR
@@ -30,11 +30,12 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
     
     private readonly static string prefix = "Video_";
 
-    private string RESOURCE_PATH;
-    private List<ParticleSystem> _particlesOnRewind;
+    protected string rewindParticlePrefabPath;
+    protected string rewindParticleAudioPath;
+    [SerializeField]
+    protected ParticleSystem _particleOnRewind;
 
     
-    private AudioSource _particleSystemAudioSource;
     public static bool _isShaked;
 
     private bool _isRewindEventTriggered;
@@ -43,16 +44,21 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
 
     public static event Action OnRewind;
     public GameObject UI_Scene;
+    [SerializeField] protected float timeStampToStop;
 
  
-
+    [FormerlySerializedAs("clickAccountToReplayAfterPause")] 
+    public int maxCount;
+    private int _currentClickCount;
+    
+    // 주로 동물이 나타나거나, 상호작용이 일어나는 시점에 OnRepalyStart 설정.
+    public static event Action OnReplayStart;
+    
     private void Start()
     {
         Init();
         
         _isReplayAfterPausing = true;
-        Base_EffectManager.OnRaySyncFromGameManager -= OnRaySyncFromGameManager;
-        Base_EffectManager.OnRaySyncFromGameManager += OnRaySyncFromGameManager;
     }
 
     [FormerlySerializedAs("replayOffset")] public float rewindDuration;
@@ -83,9 +89,7 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
 
                 DOVirtual.Float(1, 0, 2f, speed => { videoPlayer.playbackSpeed = speed; }).OnComplete(() =>
                 {
-#if UNITY_EDITOR
-                    Debug.Log("RelayTriggerReady");
-#endif
+
                     videoPlayer.time = 0;
 
                     DOVirtual.Float(0, 0, 1f, duration => { })
@@ -102,10 +106,7 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
         }
     }
 
-    private void OnDestroy()
-    {
-        CrabEffectManager.Crab_OnClicked -= OnRaySyncFromGameManager;
-    }
+ 
 
     public float stopPointSecond;
     protected override void Init()
@@ -114,31 +115,24 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
         UI_Scene.SetActive(false);
 
         DOVirtual.Float(1, 0, 1.5f, _ => _++).OnComplete(() => { UI_Scene.SetActive(true); });
-        DOVirtual.Float(1, 0, 0.5f, speed =>
+        DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {
             videoPlayer.playbackSpeed = speed;
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
         
-        _particlesOnRewind = new List<ParticleSystem>();
-        
-        GameObject prefab = Resources.Load<GameObject>(RESOURCE_PATH);
-        if(prefab ==null) Debug.LogError($"Particle is null. Resource Path : {RESOURCE_PATH}");
-         _particlesOnRewind.Add(prefab.GetComponent<ParticleSystem>());
-        
-        
     }
 
-    public int clickAccountToReplayAfterPause;
-    private int _currentClickCount;
-    
-    // 주로 동물이 나타나거나, 상호작용이 일어나는 시점에 OnRepalyStart 설정.
-    public static event Action OnReplayStart;
+    protected override void OnRaySynced()
+    {
+        OnRaySyncFromGameManager();
+    }
+
+  
     private void OnRaySyncFromGameManager()
     {
-        if (!_initiailized) return;
 
-        
+        if (!_initiailized) return;
         if (!_isShaked)
         {
             transform.DOShakePosition(2.25f, 1f+(0.1f * _currentClickCount), randomness: 90, vibrato: 5);
@@ -146,7 +140,7 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
 
         _currentClickCount++;
 
-        if (_currentClickCount > clickAccountToReplayAfterPause)
+        if (CheckRewindCondition(_currentClickCount,this.maxCount))
         {
             OnReplayStart?.Invoke();
             _isReplayAfterPausing = false;
@@ -154,19 +148,23 @@ public class Base_Interactable_VideoGameManager : Base_VideoGameManager
                 .Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
         }
-      
+    }
+
+    private bool CheckRewindCondition(int currentCount,int max_Count)
+    {
+        bool isConditionMet = currentCount > max_Count ? true : false;
+        return isConditionMet;
     }
     
     private void RewindAndReplayTriggerEvent()
     {
-        foreach (var ps in _particlesOnRewind)
-        {
-            ps.Play();
-        }
+        _particleOnRewind.Play();
 
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
-        SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
+        Managers.Sound.Play(SoundManager.Sound.Effect,rewindParticleAudioPath,volume:0.1f);
         OnRewind?.Invoke();
     }
+    
+   
 }

@@ -22,4 +22,9 @@ public class Spring_VideoPlayer : Base_VideoGameManager
     {
         QualitySettings.shadows = ShadowQuality.Disable; 
     }
+
+    protected override void OnRaySynced()
+    {
+        
+    }
 }
