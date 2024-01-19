@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class KoreanFlag_EffectController : Base_EffectController
+public class SpringEffectManager : Base_EffectManager
 {
+    
     protected override void OnClicked()
     {
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(particlePool,hit.point, burstCount: 15);
+            PlayParticle(particlePool,hit.point);
             break;
         }
     }

@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Turtle_EffectController : Base_EffectController
+public class TurtleEffectManager : Base_EffectManager
 {
     protected override void OnClicked()
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Space_EffectControllerGlow : Base_EffectController
+public class SpaceEffectManagerGlow : Base_EffectManager
 {
     
     protected override void OnClicked()

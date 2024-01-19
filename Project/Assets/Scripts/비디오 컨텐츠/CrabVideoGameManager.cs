@@ -31,8 +31,8 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         Init();
         
         _isCrabAppearable = true;
-        Crab_EffectController.onClicked -= OnClicked;
-        Crab_EffectController.onClicked += OnClicked;
+        CrabEffectManager.onClicked -= OnClicked;
+        CrabEffectManager.onClicked += OnClicked;
     }
 
     public float replayOffset;
@@ -84,7 +84,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 
     private void OnDestroy()
     {
-        Crab_EffectController.onClicked -= OnClicked;
+        CrabEffectManager.onClicked -= OnClicked;
     }
 
     

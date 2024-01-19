@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public  class  Base_EffectController : MonoBehaviour
+public  class  Base_VideoGameManager : MonoBehaviour
 {
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;
@@ -120,6 +120,8 @@ public  class  Base_EffectController : MonoBehaviour
 
     protected virtual void Init()
     {
+       
+        
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Video;
 using System.IO;
 
-public class Base_VideoContentPlayer : MonoBehaviour
+public class Base_VideoContentPlayer : IGameManager
 {
     protected VideoPlayer videoPlayer;
     protected bool _initiailized;

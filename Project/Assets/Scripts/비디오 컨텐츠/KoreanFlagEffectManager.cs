@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Fall_EffectController : Base_EffectController
+public class KoreanFlagEffectManager : Base_EffectManager
 {
     protected override void OnClicked()
     {
         hits = Physics.RaycastAll(ray_BaseController);
         foreach (var hit in hits)
         {
-            PlayParticle(particlePool,hit.point,
-                 false);
+            PlayParticle(particlePool,hit.point, burstCount: 15);
             break;
         }
     }

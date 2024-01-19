@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 /// 5.게임에 좀 더 특화해야할 경우 Interactive_VideoContentPlayer를 상속받아 사용합니다.
 /// 6.단순 클릭 후, 일정시간 정지 및 재생, 리플레이 로직만 포함된 경우 해당 Interactive_VideoContentPlayer만 사용해도 문제되지 않습니다. 
 /// </summary>
-public class Interactive_VideoContentPlayer : Base_VideoContentPlayer
+public class Base_VideoGameManager : Base_VideoContentPlayer
 {
       
 #if UNITY_EDITOR
@@ -46,7 +46,7 @@ public class Interactive_VideoContentPlayer : Base_VideoContentPlayer
 
     private void Awake()
     {
-        RESOURCE_PATH = $"게임별분류/비디오컨텐츠/{SceneManager.GetActiveScene().name.Substring(prefix.Length)}/" +"ReplayParticle";
+        RESOURCE_PATH = $"게임별분류/비디오컨텐츠/{SceneManager.GetActiveScene().name.Substring(prefix.Length)}/CFX/" +"ReplayParticle";
     }
 
     private void Start()
@@ -54,8 +54,8 @@ public class Interactive_VideoContentPlayer : Base_VideoContentPlayer
         Init();
         
         _isReplayAfterPausing = true;
-        Base_EffectController.onClicked -= OnClicked;
-        Base_EffectController.onClicked += OnClicked;
+        Base_EffectManager.onClicked -= OnClicked;
+        Base_EffectManager.onClicked += OnClicked;
     }
 
     [FormerlySerializedAs("replayOffset")] public float rewindDuration;
@@ -107,7 +107,7 @@ public class Interactive_VideoContentPlayer : Base_VideoContentPlayer
 
     private void OnDestroy()
     {
-        Crab_EffectController.onClicked -= OnClicked;
+        CrabEffectManager.onClicked -= OnClicked;
     }
 
     public float stopPointSecond;

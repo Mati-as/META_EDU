@@ -7,7 +7,7 @@ using UnityEngine;
 /// 사방치기에서는 BaseEffectController가 effect연출 및 GameManager역할 모두 수행.
 /// 게임 규모 확장 시 GameManager와 분리 권장 1/15/24 
 /// </summary>
-public class Hopscotch_EffectController : Base_EffectController
+public class HopscotchEffectManager : Base_EffectManager
 {
     
 
