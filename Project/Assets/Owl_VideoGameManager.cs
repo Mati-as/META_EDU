@@ -4,8 +4,8 @@ using UnityEngine;
 using DG.Tweening;
 
 public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
-{
-    
+{  private GameObject Owl_SpeechBubble;
+    private float _defaultScale;
         
     protected override void Init()
     {
@@ -19,6 +19,7 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
             
         
         GameObject prefab = Resources.Load<GameObject>(rewindParticlePrefabPath);
+     
         if(prefab ==null) Debug.LogError($"Particle is null. Resource Path : {rewindParticlePrefabPath}");
         else
         {
@@ -27,10 +28,40 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
                 rewindPsPosition.transform.rotation).GetComponent<ParticleSystem>();
         }
        
+        //UI 관련 로직
+        Owl_SpeechBubble = GameObject.Find(nameof(Owl_SpeechBubble));
+        Debug.Assert(Owl_SpeechBubble!=null);
+
+
+        _defaultScale = Owl_SpeechBubble.transform.localScale.x;
+        Owl_SpeechBubble.transform.localScale = Vector3.zero;
         
+        OnReplayStart += UI_OnReplayStart;
+        OnReplayStart -= UI_OnReplayStart;
+    }
+    
+    
+    
+    private void UI_OnReplayStart()
+    {
+        Owl_SpeechBubble.transform
+            .DOScale(Vector3.one * _defaultScale, 3f)
+            .SetEase(Ease.OutBounce)
+            .SetDelay(2f);
+        
+#if UNITY_EDITOR
+        Debug.Log("UI Replaying");
+#endif
+
     }
 
+    private void OnDestroy()
+    {
+        OnReplayStart -= UI_OnReplayStart;
+    }
+  
 
 
-    
+
+
 }

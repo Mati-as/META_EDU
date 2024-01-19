@@ -129,7 +129,7 @@ public abstract class Base_Interactable_VideoGameManager : Base_VideoGameManager
     }
 
   
-    private void OnRaySyncFromGameManager()
+    protected void OnRaySyncFromGameManager()
     {
 
         if (!_initiailized) return;

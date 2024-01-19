@@ -30,7 +30,7 @@ public abstract class IGameManager : MonoBehaviour
         GameManager_Ray = Image_Move.ray_ImageMove;
         
 #if UNITY_EDITOR
-        
+        Debug.Log("On_GmRay_Synced Invoked");
 #endif
         On_GmRay_Synced?.Invoke();
     }
