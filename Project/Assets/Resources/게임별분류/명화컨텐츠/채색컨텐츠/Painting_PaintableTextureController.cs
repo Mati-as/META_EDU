@@ -16,12 +16,12 @@ public class Painting_PaintableTextureController : IGameManager
     public Texture2D burshTexture;// Define an InputAction for painting
 
 
-     [Header("Shader Seting")] 
+     [Header("Shader Setting")] 
      public float burshStrength = 1;
     void Start()
     {
-     
-        
+
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
         SetInputSystem();
         
         renderTexture = new RenderTexture(textureToPaint.width, textureToPaint.height, 0, RenderTextureFormat.ARGB32);

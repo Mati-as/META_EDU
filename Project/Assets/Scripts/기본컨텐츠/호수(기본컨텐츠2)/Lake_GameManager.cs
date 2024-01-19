@@ -12,17 +12,17 @@ public class Lake_GameManager : MonoBehaviour
     private void Start()
     {
         DOTween.SetTweensCapacity(2000,50);
-        Lake_Image_Move.OnStep -= OnStep;
-        Lake_Image_Move.OnStep += OnStep;
+        Lake_Image_Move.OnGetInputFromUser -= OnGetInputFromUser;
+        Lake_Image_Move.OnGetInputFromUser += OnGetInputFromUser;
     }
 
 
     private void OnDestroy()
     {
-        Lake_Image_Move.OnStep -= OnStep;
+        Lake_Image_Move.OnGetInputFromUser -= OnGetInputFromUser;
     }
 
-    public void OnStep()
+    public void OnGetInputFromUser()
     {
         var hits = Physics.RaycastAll(ray);
 

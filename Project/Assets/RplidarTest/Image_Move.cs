@@ -29,9 +29,9 @@ public class Image_Move : MonoBehaviour
     public Vector3 moveDirection;
     public Button button;
 
-    public Ray ray_ImageMove { get; set; }
+    public static Ray ray_ImageMove { get; set; }
     // 현재는 SpaceBar click 시 입니다. 11/27/23
-    public static event Action OnStep;
+    public static event Action OnGetInputFromUser;
 
 
     public void Awake()
@@ -86,7 +86,7 @@ public class Image_Move : MonoBehaviour
         ShootRay();
 
         //GameManager의 RayCast를 발생 
-        OnStep?.Invoke();
+        OnGetInputFromUser?.Invoke();
     }
 
 
@@ -94,7 +94,7 @@ public class Image_Move : MonoBehaviour
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장 
         ShootRay();
-        OnStep?.Invoke();
+      
     }
     
     /// <summary>
@@ -124,6 +124,7 @@ public class Image_Move : MonoBehaviour
                 button?.onClick?.Invoke();
             }
         
+        OnGetInputFromUser?.Invoke();
       
     }
     

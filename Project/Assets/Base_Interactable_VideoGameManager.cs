@@ -15,7 +15,7 @@ using UnityEngine.Serialization;
 /// 5.게임에 좀 더 특화해야할 경우 Interactive_VideoContentPlayer를 상속받아 사용합니다.
 /// 6.단순 클릭 후, 일정시간 정지 및 재생, 리플레이 로직만 포함된 경우 해당 Interactive_VideoContentPlayer만 사용해도 문제되지 않습니다. 
 /// </summary>
-public class Base_VideoGameManager : Base_VideoContentPlayer
+public class Base_Interactable_VideoGameManager : Base_VideoGameManager
 {
       
 #if UNITY_EDITOR
@@ -33,7 +33,7 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
     private string RESOURCE_PATH;
     private List<ParticleSystem> _particlesOnRewind;
 
-    [SerializeField] 
+    
     private AudioSource _particleSystemAudioSource;
     public static bool _isShaked;
 
@@ -41,21 +41,18 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
 
     public bool _isReplayAfterPausing { get; private set; }
 
-    public static event Action OnReplay;
+    public static event Action OnRewind;
     public GameObject UI_Scene;
 
-    private void Awake()
-    {
-        RESOURCE_PATH = $"게임별분류/비디오컨텐츠/{SceneManager.GetActiveScene().name.Substring(prefix.Length)}/CFX/" +"ReplayParticle";
-    }
+ 
 
     private void Start()
     {
         Init();
         
         _isReplayAfterPausing = true;
-        Base_EffectManager.onClicked -= OnClicked;
-        Base_EffectManager.onClicked += OnClicked;
+        Base_EffectManager.OnRaySyncFromGameManager -= OnRaySyncFromGameManager;
+        Base_EffectManager.OnRaySyncFromGameManager += OnRaySyncFromGameManager;
     }
 
     [FormerlySerializedAs("replayOffset")] public float rewindDuration;
@@ -80,7 +77,7 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
                     .OnComplete(() =>
                     {
                         _isRewindEventTriggered = true;
-                        ReplayTriggerEvent();
+                        RewindAndReplayTriggerEvent();
                     });
 
 
@@ -107,7 +104,7 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
 
     private void OnDestroy()
     {
-        CrabEffectManager.onClicked -= OnClicked;
+        CrabEffectManager.Crab_OnClicked -= OnRaySyncFromGameManager;
     }
 
     public float stopPointSecond;
@@ -137,7 +134,7 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
     
     // 주로 동물이 나타나거나, 상호작용이 일어나는 시점에 OnRepalyStart 설정.
     public static event Action OnReplayStart;
-    private void OnClicked()
+    private void OnRaySyncFromGameManager()
     {
         if (!_initiailized) return;
 
@@ -160,7 +157,7 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
       
     }
     
-    private void ReplayTriggerEvent()
+    private void RewindAndReplayTriggerEvent()
     {
         foreach (var ps in _particlesOnRewind)
         {
@@ -170,6 +167,6 @@ public class Base_VideoGameManager : Base_VideoContentPlayer
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
         SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
-        OnReplay?.Invoke();
+        OnRewind?.Invoke();
     }
 }

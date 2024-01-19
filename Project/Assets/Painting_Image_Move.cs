@@ -21,7 +21,7 @@ public class Painting_Image_Move : Image_Move
         Debug.Assert(gameManager!=null);
         base.ShootRay();
         // ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
-        gameManager.GameManager_Ray = ray_ImageMove;
+        
        
 #if UNITY_EDITOR
        

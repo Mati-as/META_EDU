@@ -8,9 +8,9 @@ using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
-    [Header("Reference")] [SerializeField] private Crab_EffectController crab_effectController;
+    [FormerlySerializedAs("crabVideoGameManager")] [FormerlySerializedAs("crab_effectController")] [Header("Reference")] [SerializeField] private CrabEffectManager crabEffectManager;
 
-    [SerializeField] private Crab_VideoContentPlayer _videoContentPlayer;
+    [FormerlySerializedAs("_videoContentPlayer")] [SerializeField] private CrabVideoGameManager videoGameManager;
 
     //animation control part.
     public static readonly int ROLL_ANIM = Animator.StringToHash("Roll");
@@ -115,11 +115,11 @@ public class Crab_AnimalPathController : MonoBehaviour
         // inPath = new Vector3[2];
         _distancesFromStartPoint = new float[4];
 
-        Crab_EffectController.OnClickForEachClick -= OnClicked;
-        Crab_EffectController.OnClickForEachClick += OnClicked;
+        CrabEffectManager.Crab_OnClickedSingle -= CrabOnClicked;
+        CrabEffectManager.Crab_OnClickedSingle += CrabOnClicked;
 
-        Crab_VideoContentPlayer.OnCrabAppear -= OnCrabAppear;
-        Crab_VideoContentPlayer.OnCrabAppear += OnCrabAppear;
+        CrabVideoGameManager.OnCrabAppear -= OnCrabAppear;
+        CrabVideoGameManager.OnCrabAppear += OnCrabAppear;
 
         SetPool(_inactiveCrabPool, "CrabA");
         SetPool(_inactiveCrabPool, "CrabB");
@@ -183,15 +183,15 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void OnDestroy()
     {
-        Crab_EffectController.OnClickForEachClick -= OnClicked;
+        CrabEffectManager.Crab_OnClickedSingle -= CrabOnClicked;
     }
 
 
-    private void OnClicked()
+    private void CrabOnClicked()
     {
         if (!isInit) return;
 
-        if (_videoContentPlayer._isCrabAppearable) DoPathToClickPoint();
+        if (videoGameManager._isCrabAppearable) DoPathToClickPoint();
 
 
 #if UNITY_EDITOR
@@ -210,7 +210,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         for (var i = (int)StartDirection.Upper_Left; i < appearablePoints.Length; ++i)
             _distancesFromStartPoint[i] =
-                Vector2.Distance(crab_effectController.hitPoint, appearablePoints[i].position);
+                Vector2.Distance(crabEffectManager.hitPoint, appearablePoints[i].position);
 
         _closestStartPointIndex = (int)StartDirection.Upper_Left;
 
@@ -328,7 +328,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crab_effectController.hitPoint + Vector3.up * Random.Range(0, 3), _duration)
+            .DOMove(crabEffectManager.hitPoint + Vector3.up * Random.Range(0, 3), _duration)
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
@@ -491,7 +491,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void SetInAndLoopPath(Crab crab)
     {
-        main = crab_effectController.hitPoint;
+        main = crabEffectManager.hitPoint;
 
         _isNoPath = false;
         _isLinearPath = false;

@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEngine.Video;
 using System.IO;
 
-public class Base_VideoContentPlayer : IGameManager
+public class Base_VideoGameManager : IGameManager
 {
     protected VideoPlayer videoPlayer;
     protected bool _initiailized;
+
+
 
     [Header("Video Settings")] public float playbackSpeed;
 
@@ -40,4 +42,8 @@ public class Base_VideoContentPlayer : IGameManager
 
         _initiailized = true;
     }
+    
+    
+    
+    
 }

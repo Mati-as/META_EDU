@@ -9,9 +9,11 @@ using UnityEngine.Serialization;
 public class Hopscotch_GameManager : MonoBehaviour
 {
     
+    [FormerlySerializedAs("videoGameManager")]
+    [FormerlySerializedAs("effectController")]
     [Header("Reference")] 
     [SerializeField]
-    private Hopscotch_EffectController effectController;
+    private HopscotchEffectManager effectManager;
     [Space(20f)]
     
     public Transform stepGroup;
@@ -89,8 +91,8 @@ private void Update()
 
     private void BindEvent()
     {
-        Hopscotch_EffectController.Hopscotch_OnClick -= OnClick;
-        Hopscotch_EffectController.Hopscotch_OnClick += OnClick;
+        HopscotchEffectManager.Hopscotch_OnClick -= OnClick;
+        HopscotchEffectManager.Hopscotch_OnClick += OnClick;
         onStageClear -= OnStageClear;
         onStageClear += OnStageClear;
     }
@@ -98,7 +100,7 @@ private void Update()
     private void OnDestroy()
     {
         onStageClear -= OnStageClear;
-        Hopscotch_EffectController.Hopscotch_OnClick -= OnClick;
+        HopscotchEffectManager.Hopscotch_OnClick -= OnClick;
     }
 
     private void Init()
@@ -376,7 +378,7 @@ private void Update()
     private bool CheckOnStep()
     {
 
-        foreach (var hit in effectController.hits)
+        foreach (var hit in effectManager.hits)
         {
             if (hit.transform.gameObject.name == "Step_" + _currentStep.ToString())
             {

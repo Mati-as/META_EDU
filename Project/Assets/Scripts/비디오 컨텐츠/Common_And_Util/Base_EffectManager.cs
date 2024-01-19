@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public  class  Base_VideoGameManager : MonoBehaviour
+
+
+/// <summary>
+/// *** GameManager 혹은 VideoGameManager에서 반드시 Ray를 참조하여 사용합니다.
+/// </summary>
+public  class  Base_EffectManager : MonoBehaviour
 {
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;
@@ -89,33 +92,16 @@ public  class  Base_VideoGameManager : MonoBehaviour
 
 
     
-    public Ray ray_BaseController { get; set; }
+    public Ray ray_EffectManager { get; private set; }
     public RaycastHit[] hits;
-    public static event Action onClicked;
-    public static event Action OnClickForEachClick;
+    public static event Action OnRaySyncFromGameManager;
+    public static event Action OnRaySyncFromGmSingle;
     public Vector3 hitPoint { get; private set; }
 
     protected virtual void OnClicked()
     {
-        hits = Physics.RaycastAll(ray_BaseController);
-        foreach (var hit in hits)
-        {
-            
-            hitPoint = hit.point;
-            
-            PlayParticle(particlePool,hit.point);
-            
 
-            if (!Crab_VideoContentPlayer._isShaked)
-            {
-                onClicked?.Invoke();
-            }
-            
-            OnClickForEachClick?.Invoke();
-            break;
-            
-        }
-
+        ray_EffectManager = IGameManager.GameManager_Ray;
     }
 
     protected virtual void Init()
@@ -148,7 +134,7 @@ public  class  Base_VideoGameManager : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        Image_Move.OnStep -= OnClicked;
+        IGameManager.onRaySync -= OnClicked;
     }
     /// <summary>
     /// 초기 풀 설정 -----------------
@@ -186,8 +172,8 @@ public  class  Base_VideoGameManager : MonoBehaviour
 
     protected virtual void BindEvent()
     {
-        Image_Move.OnStep -= OnClicked;
-        Image_Move.OnStep += OnClicked;
+        IGameManager.onRaySync -= OnClicked;
+        IGameManager.onRaySync += OnClicked;
     }
 
     /// <summary>

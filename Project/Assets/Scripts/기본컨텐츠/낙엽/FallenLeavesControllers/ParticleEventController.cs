@@ -225,8 +225,8 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
 
     private void Subscribe()
     {
-        FallenLeaves_Image_Move.OnStep -= OnClicked;
-        FallenLeaves_Image_Move.OnStep += OnClicked;
+        FallenLeaves_Image_Move.OnGetInputFromUser -= OnClicked;
+        FallenLeaves_Image_Move.OnGetInputFromUser += OnClicked;
 
 
         FallenLeave_NewUI_Manager.OnStart -= PlayAllParticles;
@@ -236,7 +236,7 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
     private void Unsubscribe()
     {
         FallenLeave_NewUI_Manager.OnStart -= PlayAllParticles;
-        FallenLeaves_Image_Move.OnStep -= OnClicked;
+        FallenLeaves_Image_Move.OnGetInputFromUser -= OnClicked;
     }
 
     private void PlayAllParticles()

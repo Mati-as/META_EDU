@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Crab_VideoContentPlayer : Base_VideoContentPlayer
+public class CrabVideoGameManager : Base_VideoGameManager
 {
     
 #if UNITY_EDITOR
@@ -31,8 +31,8 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
         Init();
         
         _isCrabAppearable = true;
-        CrabEffectManager.onClicked -= OnClicked;
-        CrabEffectManager.onClicked += OnClicked;
+        CrabEffectManager.Crab_OnClicked -= CrabOnClicked;
+        CrabEffectManager.Crab_OnClicked += CrabOnClicked;
     }
 
     public float replayOffset;
@@ -84,7 +84,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
 
     private void OnDestroy()
     {
-        CrabEffectManager.onClicked -= OnClicked;
+        CrabEffectManager.Crab_OnClicked -= CrabOnClicked;
     }
 
     
@@ -106,7 +106,7 @@ public class Crab_VideoContentPlayer : Base_VideoContentPlayer
     private int _currentClickCount;
 
     public static event Action OnCrabAppear;
-    private void OnClicked()
+    private void CrabOnClicked()
     {
         if (!_initiailized) return;
 

@@ -3,18 +3,26 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
+
+/// <summary>
+/// 1. EffectManager에도, SoundPlay 시스템은 구현되어있으나, 파티클 플레이에 관해서만 특화되어있는 클래스입니다.
+/// 2. 스토리 중심의 게임 (가을소풍, 땅속탐험)에 적합합니다. 
+/// 3. SoundManager ,EffectManager 사용예시.
+///     a. SoundManager - 단발성,Bgm,나레이션 등 사운드 소스가 파괴되면 안되며, 겹치지않게 단발성으로 나는 사운드를 낼 때 사용합니다.
+///     b. EffectManager - 클릭효과처럼, 짧은시간안에 여러번 사운드 소스가 재생되어야하는 경우 적합합니다. 런타임 성능에 취약할 수 있으니 주의바랍니다
+/// </summary>
 public class SoundManager : MonoBehaviour
 {
     
     public enum Sound
     {
-        Bgm,
-        Effect,
-        Speech,
-        Max,
+     Bgm,
+     Narration,
+     ButtonEffect,
+     Max
     }
 
-    private readonly AudioSource[] _audioSources = new AudioSource[(int)Define.Sound.Max];
+    private readonly AudioSource[] _audioSources = new AudioSource[(int)Sound.Max];
     private readonly Dictionary<string, AudioClip> _audioClips = new();
     private GameObject _soundRoot;
     public void Init()
@@ -35,9 +43,12 @@ public class SoundManager : MonoBehaviour
                     go.transform.parent = _soundRoot.transform;
                 }
 
-                _audioSources[(int)Define.Sound.Bgm].loop = true;
+                _audioSources[(int)Sound.Bgm].loop = true;
+
+                Play(Sound.Bgm, "");
             }
         }
+        
     }
 
     public void Clear()
@@ -56,7 +67,7 @@ public class SoundManager : MonoBehaviour
         audioSource.pitch = pitch;
     }
 
-    public bool Play(Define.Sound type, string path, float volume = 1.0f, float pitch = 1.0f)
+    public bool Play(Sound type, string path, float volume = 1.0f, float pitch = 1.0f)
     {
         if (string.IsNullOrEmpty(path))
             return false;
@@ -67,7 +78,7 @@ public class SoundManager : MonoBehaviour
 
         audioSource.volume = volume;
 
-        if (type == Define.Sound.Bgm)
+        if (type == Sound.Bgm)
         {
             var audioClip = Resources.Load<AudioClip>(path);
             if (audioClip == null)
@@ -82,7 +93,7 @@ public class SoundManager : MonoBehaviour
             return true;
         }
 
-        if (type == Define.Sound.Effect)
+        if (type == Sound.ButtonEffect)
         {
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
@@ -93,7 +104,7 @@ public class SoundManager : MonoBehaviour
             return true;
         }
 
-        if (type == Define.Sound.Speech)
+        if (type == Sound.Narration)
         {
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
@@ -111,7 +122,7 @@ public class SoundManager : MonoBehaviour
         return false;
     }
 
-    public void Stop(Define.Sound type)
+    public void Stop(Sound type)
     {
         var audioSource = _audioSources[(int)type];
         audioSource.Stop();

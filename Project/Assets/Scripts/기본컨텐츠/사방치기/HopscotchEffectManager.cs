@@ -14,7 +14,7 @@ public class HopscotchEffectManager : Base_EffectManager
     public static event Action Hopscotch_OnClick; 
     protected override void OnClicked()
     {
-        hits = Physics.RaycastAll(ray_BaseController);
+        hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
         {
 

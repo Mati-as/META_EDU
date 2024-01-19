@@ -17,13 +17,13 @@ public abstract class Base_BasicGameManager : MonoBehaviour
     
     protected virtual void OnDestroy()
     {
-        Image_Move.OnStep -= OnClicked;
+        Image_Move.OnGetInputFromUser -= OnClicked;
     }
     
     protected virtual void BindEvent()
     {
-        Image_Move.OnStep -= OnClicked;
-        Image_Move.OnStep += OnClicked;
+        Image_Move.OnGetInputFromUser -= OnClicked;
+        Image_Move.OnGetInputFromUser += OnClicked;
     }
     
 

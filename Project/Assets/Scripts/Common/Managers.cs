@@ -31,6 +31,11 @@ public class Managers : MonoBehaviour
             s_soundManager.Init();
             
             Application.targetFrameRate = 30;
+            
+#if UNITY_EDITOR
+
+            Debug.Log($"current targetFrameRate : {Application.targetFrameRate}");
+#endif
         }
     }
 }

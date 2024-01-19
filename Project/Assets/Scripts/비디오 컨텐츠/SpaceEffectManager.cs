@@ -11,7 +11,7 @@ public class SpaceEffectManager : Base_EffectManager
     {
         if (_currentCount > waitCount)
         {
-            hits = Physics.RaycastAll(ray_BaseController);
+            hits = Physics.RaycastAll(ray_EffectManager);
             foreach (var hit in hits)
             {
                 PlayParticle(particlePool,hit.point);

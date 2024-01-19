@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CrabVideoGameManager : Base_VideoGameManager
+public class CrabEffectManager : Base_EffectManager
 {
-    public static event Action onClicked;
-    public static event Action OnClickForEachClick;
+    public static event Action Crab_OnClicked;
+    public static event Action Crab_OnClickedSingle;
     public Vector3 hitPoint { get; private set; }
 
     protected override void OnClicked()
     {
-        hits = Physics.RaycastAll(ray_BaseController);
+        hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
         {
             
@@ -20,12 +20,12 @@ public class CrabVideoGameManager : Base_VideoGameManager
             PlayParticle(particlePool,hit.point);
             
 
-            if (!Crab_VideoContentPlayer._isShaked)
+            if (!CrabVideoGameManager._isShaked)
             {
-                onClicked?.Invoke();
+                Crab_OnClicked?.Invoke();
             }
             
-            OnClickForEachClick?.Invoke();
+            Crab_OnClickedSingle?.Invoke();
             break;
             
         }
