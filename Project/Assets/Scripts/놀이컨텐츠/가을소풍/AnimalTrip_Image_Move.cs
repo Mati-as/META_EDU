@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class AnimalTrip_Image_Move : Image_Move
+public class AnimalTrip_Image_Move : RaySynchronizer
 {
     private AnimalTrip_GameManager _animalTripGameManager;
     

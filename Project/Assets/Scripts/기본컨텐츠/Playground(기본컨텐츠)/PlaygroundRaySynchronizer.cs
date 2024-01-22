@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Playground_ImageMove : Image_Move
+public class PlaygroundRaySynchronizer : RaySynchronizer
 {
 
     private Playground_GameManager playgroundGameManager;

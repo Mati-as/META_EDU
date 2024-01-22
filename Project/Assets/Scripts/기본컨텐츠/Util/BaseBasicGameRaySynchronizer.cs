@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Base_BasicGameImageMove : Image_Move
+public class BaseBasicGameRaySynchronizer : RaySynchronizer
 {
     private Base_BasicGameManager _baseBasicGameManager;
     private GameObject uiCamera;

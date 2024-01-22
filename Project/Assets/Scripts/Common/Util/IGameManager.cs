@@ -20,14 +20,14 @@ public abstract class IGameManager : MonoBehaviour
     private void OnDestroy()
     {
   
-        Image_Move.OnGetInputFromUser -= OnClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnClicked;
         On_GmRay_Synced -= OnRaySynced;
     }
 
 
     protected void OnClicked()
     {
-        GameManager_Ray = Image_Move.ray_ImageMove;
+        GameManager_Ray = RaySynchronizer.ray_ImageMove;
         
 #if UNITY_EDITOR
         Debug.Log("On_GmRay_Synced Invoked");
@@ -42,8 +42,8 @@ public abstract class IGameManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("구독완료");
 #endif
-        Image_Move.OnGetInputFromUser -= OnClicked;
-        Image_Move.OnGetInputFromUser += OnClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnClicked;
+        RaySynchronizer.OnGetInputFromUser += OnClicked;
 
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;

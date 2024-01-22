@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-    public class Lake_Image_Move : Image_Move
+    public class Lake_Image_Move : RaySynchronizer
     {
      
         private Lake_GameManager _lake_GameManger;

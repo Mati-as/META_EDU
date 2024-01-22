@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-    public class FallenLeaves_Image_Move : Image_Move
+    public class FallenLeaves_Image_Move : RaySynchronizer
     {
         private ParticleEventController _particleEventController;
         private GameObject uiCamera;

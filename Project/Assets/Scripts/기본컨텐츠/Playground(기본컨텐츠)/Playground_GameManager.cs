@@ -26,13 +26,13 @@ public class Playground_GameManager : MonoBehaviour
     public float upOffset;
     private void Start()
     {
-        Playground_ImageMove.OnGetInputFromUser -= OnMouseClicked;
-        Playground_ImageMove.OnGetInputFromUser += OnMouseClicked;
+        PlaygroundRaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
+        PlaygroundRaySynchronizer.OnGetInputFromUser += OnMouseClicked;
     }
 
     private void OnDestroy()
     {
-        Playground_ImageMove.OnGetInputFromUser -= OnMouseClicked;
+        PlaygroundRaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
     }
 
     public void OnMouseClicked()

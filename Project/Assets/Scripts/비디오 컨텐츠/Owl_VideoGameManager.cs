@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
 public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
-{  private GameObject Owl_SpeechBubble;
+{  
+    private GameObject Owl_SpeechBubble;
     private float _defaultScale;
         
     protected override void Init()
@@ -35,11 +34,15 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
 
         _defaultScale = Owl_SpeechBubble.transform.localScale.x;
         Owl_SpeechBubble.transform.localScale = Vector3.zero;
-        
+
+        BindEvent();
+    }
+
+    public void BindEvent()
+    {
         OnReplayStart += UI_OnReplayStart;
         OnReplayStart -= UI_OnReplayStart;
     }
-    
     
     
     private void UI_OnReplayStart()

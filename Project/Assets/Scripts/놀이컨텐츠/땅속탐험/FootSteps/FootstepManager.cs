@@ -200,8 +200,8 @@ public class FootstepManager : MonoBehaviour
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
 
         
-        Image_Move.OnGetInputFromUser -= OnMouseClicked;
-        Image_Move.OnGetInputFromUser += OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser += OnMouseClicked;
     }
 
 
@@ -231,7 +231,7 @@ public class FootstepManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Image_Move.OnGetInputFromUser -= OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 

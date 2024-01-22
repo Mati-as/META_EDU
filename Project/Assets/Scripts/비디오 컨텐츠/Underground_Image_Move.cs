@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Underground_Image_Move : Image_Move
+public class Underground_Image_Move : RaySynchronizer
 {
 
     private FootstepManager _footstepManager;

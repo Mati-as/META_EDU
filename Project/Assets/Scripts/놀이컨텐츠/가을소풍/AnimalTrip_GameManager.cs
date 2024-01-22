@@ -304,8 +304,8 @@ public class AnimalTrip_GameManager : MonoBehaviour
         // _camera = Camera.main;
         // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         // _mouseClickAction.performed += ClickOnObject;
-        Image_Move.OnGetInputFromUser -= OnGetInputFromUser;
-        Image_Move.OnGetInputFromUser += OnGetInputFromUser;
+        RaySynchronizer.OnGetInputFromUser -= OnGetInputFromUser;
+        RaySynchronizer.OnGetInputFromUser += OnGetInputFromUser;
         
         //-----가을 소풍에서만 필요한 스크립트(컴포넌트) 입니다.-----
         _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
@@ -468,7 +468,7 @@ public class AnimalTrip_GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Image_Move.OnGetInputFromUser -= OnGetInputFromUser;
+        RaySynchronizer.OnGetInputFromUser -= OnGetInputFromUser;
     }
 
 

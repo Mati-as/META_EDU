@@ -7,32 +7,36 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// -게임마다 Image_Move를 상속받아 클래스 구현
-/// 게임이름 + Image_Move
+/// 게임마다 Image_move 방식에서 RaySynchronizer로 클래스 수정
+/// 게임마다 ray 동기화는 해당 클래스에서 처리.
+/// -1/22/24
 /// </summary>
-public class Image_Move : MonoBehaviour
+public class RaySynchronizer : MonoBehaviour
 {
+    public static Ray ray_ImageMove { get; set; }
    
-
-    public float moveSpeed;
-
+    private IGameManager gameManager;
+    private GameObject uiCamera;
+    
+ 
+    private readonly string GAME_MANAGER = "GameManager";
     //public Image imageA;
+    
     public GameObject UI_Canvas;
     public Camera _uiCamera;
     
+    public InputAction _spaceAction;
     public GraphicRaycaster GR;
     public PointerEventData PED;
     public Vector3 screenPosition;
-    public InputAction _spaceAction;
-
-    public float movement;
-    public Vector3 moveDirection;
     public Button button;
 
-    public static Ray ray_ImageMove { get; set; }
- 
     public static event Action OnGetInputFromUser;
 
+    //ball Position 미사옹으로 legacy 1/22
+    //public float moveSpeed;
+    //public Vector3 moveDirection;
+    //public float movement;
 
     public void Awake()
     {
@@ -43,6 +47,7 @@ public class Image_Move : MonoBehaviour
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
         
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
@@ -76,10 +81,11 @@ public class Image_Move : MonoBehaviour
         _spaceAction.Disable();
     }
 
-    public void Update()
-    {
-        Move();
-    }
+    // public void Update()
+    // {
+    //     Move();
+    // }
+    
     
     public void Temp_1203()
     {
@@ -106,6 +112,7 @@ public class Image_Move : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
+        Debug.Assert(gameManager!=null);
         
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
@@ -134,12 +141,13 @@ public class Image_Move : MonoBehaviour
       
     }
     
-    public void Move()
-    {
-        var horizontalInput = Input.GetAxis("Horizontal");
-        var verticalInput = Input.GetAxis("Vertical");
-        moveDirection = new Vector3(horizontalInput, verticalInput, 0f).normalized;
-        movement = moveSpeed * Time.deltaTime;
-        transform.Translate(moveDirection * movement);
-    }
+    // ball position 사용시 move() 사용
+    // public void Move()
+    // {
+    //     var horizontalInput = Input.GetAxis("Horizontal");
+    //     var verticalInput = Input.GetAxis("Vertical");
+    //     moveDirection = new Vector3(horizontalInput, verticalInput, 0f).normalized;
+    //     movement = moveSpeed * Time.deltaTime;
+    //     transform.Translate(moveDirection * movement);
+    // }
 }

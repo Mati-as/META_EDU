@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Destroy_prefab : Image_Move
+public class Destroy_prefab : RaySynchronizer
 {
     private Base_EffectManager _baseEffectManager;
     private GameObject uiCamera;
