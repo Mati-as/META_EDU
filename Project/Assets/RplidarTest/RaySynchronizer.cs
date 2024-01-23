@@ -49,6 +49,7 @@ public class RaySynchronizer : MonoBehaviour
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
         
+        if(gameManager==null) Debug.Assert(gameManager!=null);
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
@@ -101,8 +102,6 @@ public class RaySynchronizer : MonoBehaviour
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장 
         ShootRay();
-   
-
       
     }
     
@@ -112,7 +111,7 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
-        Debug.Assert(gameManager!=null);
+       
         
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
@@ -136,7 +135,7 @@ public class RaySynchronizer : MonoBehaviour
         OnGetInputFromUser?.Invoke();
        
 #if UNITY_EDITOR
-        Debug.Log("Ray Sync Originally");
+   
 #endif
       
     }

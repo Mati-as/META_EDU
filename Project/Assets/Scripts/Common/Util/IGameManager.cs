@@ -30,7 +30,7 @@ public abstract class IGameManager : MonoBehaviour
         GameManager_Ray = RaySynchronizer.ray_ImageMove;
         
 #if UNITY_EDITOR
-        Debug.Log("On_GmRay_Synced Invoked");
+     
 #endif
         On_GmRay_Synced?.Invoke();
     }
@@ -40,7 +40,7 @@ public abstract class IGameManager : MonoBehaviour
     protected void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("구독완료");
+        Debug.Log("Ray Sync 구독완료");
 #endif
         RaySynchronizer.OnGetInputFromUser -= OnClicked;
         RaySynchronizer.OnGetInputFromUser += OnClicked;
