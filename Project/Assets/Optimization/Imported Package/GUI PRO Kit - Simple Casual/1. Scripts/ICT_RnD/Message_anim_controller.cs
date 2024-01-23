@@ -22,11 +22,16 @@ public class Message_anim_controller : MonoBehaviour
     {
         Message_anim = this.GetComponent<Animation>();
         Init_Animation();
+        Animation_On();
+#if UNITY_EDITOR
+        Debug.Log("UI Animation On");
+#endif
     }
 
     public void Animation_On()
     {
         Message_anim.Play(Animation_clip[0]);
+        StartCoroutine(DeactivateAfterDelay());
     }
     public void Animation_Off()
     {
@@ -62,6 +67,17 @@ public class Message_anim_controller : MonoBehaviour
         yield return new WaitForSeconds(1f);
         this.gameObject.SetActive(false);
     }
+
+    public float _interval = 10f;
+    IEnumerator DeactivateAfterDelay()
+    {
+#if UNITY_EDITOR
+        Debug.Log("UI Animation Off");
+#endif
+        yield return new WaitForSeconds(_interval);
+        Animation_Off();
+    }
+
 
     //IEnumerator Active_false_time(float timer_1, float timer_2)
     //{

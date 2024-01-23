@@ -12,7 +12,7 @@ using UnityEngine.UIElements;
 using MyCustomizedEditor;
 #endif
 
-public class FootstepManager : MonoBehaviour
+public class FootstepManager : IGameManager
 {
  
     private enum FootstepSounds
@@ -189,6 +189,12 @@ public class FootstepManager : MonoBehaviour
 
     private void Awake()
     {
+        Init();
+
+    }
+
+    protected override void Init()
+    {
         _audioSource = GetComponent<AudioSource>();
         
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
@@ -200,8 +206,8 @@ public class FootstepManager : MonoBehaviour
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
 
         
-        RaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
-        RaySynchronizer.OnGetInputFromUser += OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
+        RaySynchronizer.OnGetInputFromUser += OnRaySynced;
     }
 
 
@@ -231,7 +237,7 @@ public class FootstepManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 
@@ -243,7 +249,7 @@ public class FootstepManager : MonoBehaviour
     private RaycastHit[] hits;
 
     //public void OnMouseClicked(InputAction.CallbackContext context)
-    public void OnMouseClicked()
+    protected override void OnRaySynced()
     {
         //ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         hits = Physics.RaycastAll(ray);
