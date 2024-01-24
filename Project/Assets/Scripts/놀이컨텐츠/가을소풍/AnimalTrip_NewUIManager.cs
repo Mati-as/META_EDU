@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -17,17 +18,23 @@ public class AnimalTrip_NewUIManager : MonoBehaviour
     private void Awake()
     {
         _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
+
+      
+        UI_Scene_Button.onBtnClicked -= ShowStoryUI;
+        UI_Scene_Button.onBtnClicked += ShowStoryUI;
     }
 
-   
-    private void Start()
+    private void OnDestroy()
     {
-        ShowStoryUI();
+        UI_Scene_Button.onBtnClicked -= ShowStoryUI;
     }
+
+
 
     private bool _isUIPlayed;
 
-    private void ShowStoryUI() =>DOVirtual.Float(0, 1, 4f, _ => _++)
-        .OnComplete(() => { _storyUIController.OnHowToPlayUIFinished(); });
-    
+    private void ShowStoryUI()
+    {
+       _storyUIController.OnHowToPlayUIFinished(); 
+    }
 }

@@ -6,23 +6,23 @@ using UnityEngine.SceneManagement;
 public abstract class IGameManager : MonoBehaviour
 {
     public static Ray GameManager_Ray { get; private set; }
-
-
-    /* onRaySynce
-        1. EffectManager ray와 동기화 (필수)
-             EffectMaager 내부에서 처리할 로직처리
-        2. 나머지 게임로직 처리..
-     */
     public static event Action On_GmRay_Synced;
+    public int TARGET_FRAME =30; 
 
 
-    protected virtual void Start()
+
+    protected virtual void Awake()
     {
+        Init();
+    }
+
+
+    protected virtual void Init()
+    {
+        BindEvent();
+        SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
     }
-    
-    
-    protected abstract void Init();
     
 
     private void OnDestroy()
@@ -43,12 +43,20 @@ public abstract class IGameManager : MonoBehaviour
         On_GmRay_Synced?.Invoke();
     }
 
+    
+ 
+/// <summary>
+///  onRaySync 구현 포인트
+/// 1. EffectManager ray와 동기화 (필수)
+///    EffectManager 내부에서 처리할 로직처리
+/// 2. 나머지 RaySync가 필요한 경우의 게임로직 처리..
+/// </summary>
     protected abstract void OnRaySynced();
     
     protected void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("Ray Sync 구독완료");
+        Debug.Log("Ray Sync Subscribed");
 #endif
         RaySynchronizer.OnGetInputFromUser -= OnClicked;
         RaySynchronizer.OnGetInputFromUser += OnClicked;
@@ -60,9 +68,8 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void PlayNarration()
     {
-#if UNITY_EDITOR
-        Debug.Log($"(나레이션) Narration playing.. path : Audio/Narration/{SceneManager.GetActiveScene().name}");
-#endif
+
+        //delay
         DOVirtual.Float(0, 1, 2f, _ => { })
             .OnComplete(() =>
             {
@@ -71,5 +78,17 @@ public abstract class IGameManager : MonoBehaviour
             });
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", 0.115f);
+    }
+    
+    private void SetResolution(int width, int height, int targetFrame)
+    {
+
+        Screen.SetResolution(width, height, Screen.fullScreen);
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFrame;
+        
+#if UNITY_EDITOR
+        Debug.Log($"Game Info: name: {SceneManager.GetActiveScene().name}, Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}");
+#endif
     }
 }

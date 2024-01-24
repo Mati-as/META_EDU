@@ -13,35 +13,24 @@ using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 
-public class Playground_GameManager : MonoBehaviour
+public class Playground_GameManager : IGameManager
 {
 
-    public Ray ray;
-    private RaycastHit[] hits;
-
-    private Rigidbody _currentRigidBody;
+   
+    private RaycastHit[] _hits;
+  //  private Rigidbody _currentRigidBody;
 
     public float forceAmount;
-
     public float upOffset;
-    private void Start()
-    {
-        PlaygroundRaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
-        PlaygroundRaySynchronizer.OnGetInputFromUser += OnMouseClicked;
-    }
 
-    private void OnDestroy()
+    
+    protected override void OnRaySynced()
     {
-        PlaygroundRaySynchronizer.OnGetInputFromUser -= OnMouseClicked;
-    }
-
-    public void OnMouseClicked()
-    {
-        hits = Physics.RaycastAll(ray);
-        foreach (var hit in hits)
+        _hits = Physics.RaycastAll(GameManager_Ray);
+        foreach (var hit in _hits)
         {
             
-            hit.transform.TryGetComponent(out _currentRigidBody);
+            //hit.transform.TryGetComponent(out _currentRigidBody);
             Rigidbody rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
 
           

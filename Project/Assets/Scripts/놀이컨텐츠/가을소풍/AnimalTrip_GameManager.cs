@@ -17,20 +17,12 @@ public class AnimalTrip_GameManager : IGameManager
     [Header("Debug Mode")] [Space(10f)] 
     [Range(0.25f, 10f)] 
     public float GAME_PROGRESSING_SPEED_COPY = 1;
-    public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
-
    
-    
-    [Header("Display Setting")] [Space(10f)]
-    public int TARGET_FRAME; // 디버그 이외에 런타임에 바뀔 필요가 없기에 read-only 컨벤션으로 작성.
-    
-    // 9/21 콜라이더 디버그 완료로 CLICK_REPEAT_COUNT미사용..
-    // //감도 향상 테스트를 위한 CLICK_REPEAT_COUNT 설정. 
-    // [FormerlySerializedAs("clickRepeatCount")]
-    // public int CLICK_REPEAT_COUNT;
 
- 
-
+#if UNITY_EDITOR
+    public static float GAME_PROGRESSING_SPEED; // 디버그 용 입니다. 빌드 포함X
+#endif
+    
     [Header("Screen Fx Settings")]  [Space(10f)] 
     public LayerMask playObejctInteractableLayer;
     public LayerMask UIInteractableLayer;
@@ -194,32 +186,6 @@ public class AnimalTrip_GameManager : IGameManager
     private readonly int[] randomNumberRedcord = new int[5]; // 모든 동물 배치가 뒤로가는 경우 방지용.
 
 
-    private void SetTwoDimensionaTransformlArray()
-    {
-        // 3마리 경우의 2D 배열
-        inPlayPositionsWhen3Arr[0, 0] = inPlayPositionsWhen3FistColumn[0];
-        inPlayPositionsWhen3Arr[1, 0] = inPlayPositionsWhen3FistColumn[1];
-
-        inPlayPositionsWhen3Arr[0, 1] = inPlayPositionsWhen3SecondColumn[0];
-        inPlayPositionsWhen3Arr[1, 1] = inPlayPositionsWhen3SecondColumn[1];
-
-        inPlayPositionsWhen3Arr[0, 2] = inPlayPositionsWhen3ThirdColumn[0];
-        inPlayPositionsWhen3Arr[1, 2] = inPlayPositionsWhen3ThirdColumn[1];
-
-        // 4마리 경우의 2D 배열
-        inPlayPositionsWhen4Arr[0, 0] = inPlayPositionsWhen4FirstColumn[0];
-        inPlayPositionsWhen4Arr[1, 0] = inPlayPositionsWhen4FirstColumn[1];
-
-        inPlayPositionsWhen4Arr[0, 1] = inPlayPositionsWhen4SecondColumn[0];
-        inPlayPositionsWhen4Arr[1, 1] = inPlayPositionsWhen4SecondColumn[1];
-
-        inPlayPositionsWhen4Arr[0, 2] = inPlayPositionsWhen4ThirdColumn[0];
-        inPlayPositionsWhen4Arr[1, 2] = inPlayPositionsWhen4ThirdColumn[1];
-
-        inPlayPositionsWhen4Arr[0, 3] = inPlayPositionsWhen4FourthColumn[0];
-        inPlayPositionsWhen4Arr[1, 3] = inPlayPositionsWhen4FourthColumn[1];
-    }
-
 
     [Space(5f)] [Header("On Correct Setting")] [Space(10f)]
     public Transform animalMovePositionToSpotLight; // 정답을 맞춘 경우 움직여야 할 위치
@@ -264,53 +230,22 @@ public class AnimalTrip_GameManager : IGameManager
     public static event Action onGameFinishedEvent;
 
 
-    /// <summary>
-    ///     디버그용 씬 재로드 함수 입니다. static 변수는 초기화 되지 않으므로 사용 시 주의합니다.
-    /// </summary>
-    private void ReloadCurrentScene()
-    {
-        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        // 해당 인덱스의 씬을 다시 로드합니다.
-        SceneManager.LoadScene(currentSceneIndex);
-    }
-
-    /// <summary>
-    ///     디버그용 재생속도 컨트롤 함수 입니다.
-    /// </summary>
-    /// <param name="speed"></param>
-    public static void SetTimeScale(float speed)
-    {
-        Time.timeScale = speed;
-    }
-
-    private void SetRandomSeed()
-    {
-        var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-        var value = Mathf.PerlinNoise(Time.time, 0.0f);
-    }
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
     //inputSystem Update로 인한 인스턴스 11/13/23
-
-    private Camera _camera;
-    private InputAction _mouseClickAction;
+  
     private ParticleSystem _particle;
     private UIAudioController _uiAudioController;
     private StoryUIController _storyUIController;
 
-    private void Awake()
-    {
-    
-      
-    }
+
 
     protected override void Init()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-        RaySynchronizer.OnGetInputFromUser += OnRaySynced;
         
-        //-----가을 소풍에서만 필요한 스크립트(컴포넌트) 입니다.-----
+        base.Init();
+        
         _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
         _uiAudioController = GameObject.Find("AudioManager").GetComponent<UIAudioController>();
         
@@ -319,7 +254,7 @@ public class AnimalTrip_GameManager : IGameManager
         Reset();
         SetTimeScale(1);
         SetRandomSeed();
-        SetResolution(1920, 1080, TARGET_FRAME);
+      
         totalAnimalCount = allAnimals.Count;
         onAllAnimalsInitialized += SetAndInitializedAnimals;
         //onCorrectedEvent += PlayAnswerParticle;
@@ -422,7 +357,6 @@ public class AnimalTrip_GameManager : IGameManager
             if (isRoundFinished)
             {
                 IntializeAndInvokeWhenRoundFinished();
-
                 MoveOutOfScreen();
             }
 
@@ -451,15 +385,65 @@ public class AnimalTrip_GameManager : IGameManager
         }
     }
 
-    private void OnDestroy()
-    {
-        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-    }
+    // private void OnDestroy()
+    // {
+    //  //   RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
+    // }
 
 
     // ------------------------- ▼ 메소드 목록 ------------------------------------------------
 
-    
+    /// <summary>
+    ///     디버그용 씬 재로드 함수 입니다. static 변수는 초기화 되지 않으므로 사용 시 주의합니다.
+    /// </summary>
+    private void ReloadCurrentScene()
+    {
+        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        // 해당 인덱스의 씬을 다시 로드합니다.
+        SceneManager.LoadScene(currentSceneIndex);
+    }
+
+    /// <summary>
+    ///     디버그용 재생속도 컨트롤 함수 입니다.
+    /// </summary>
+    /// <param name="speed"></param>
+    public static void SetTimeScale(float speed)
+    {
+        Time.timeScale = speed;
+    }
+
+    private void SetRandomSeed()
+    {
+        var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+        var value = Mathf.PerlinNoise(Time.time, 0.0f);
+    }
+    private void SetTwoDimensionaTransformlArray()
+    {
+        // 3마리 경우의 2D 배열
+        inPlayPositionsWhen3Arr[0, 0] = inPlayPositionsWhen3FistColumn[0];
+        inPlayPositionsWhen3Arr[1, 0] = inPlayPositionsWhen3FistColumn[1];
+
+        inPlayPositionsWhen3Arr[0, 1] = inPlayPositionsWhen3SecondColumn[0];
+        inPlayPositionsWhen3Arr[1, 1] = inPlayPositionsWhen3SecondColumn[1];
+
+        inPlayPositionsWhen3Arr[0, 2] = inPlayPositionsWhen3ThirdColumn[0];
+        inPlayPositionsWhen3Arr[1, 2] = inPlayPositionsWhen3ThirdColumn[1];
+
+        // 4마리 경우의 2D 배열
+        inPlayPositionsWhen4Arr[0, 0] = inPlayPositionsWhen4FirstColumn[0];
+        inPlayPositionsWhen4Arr[1, 0] = inPlayPositionsWhen4FirstColumn[1];
+
+        inPlayPositionsWhen4Arr[0, 1] = inPlayPositionsWhen4SecondColumn[0];
+        inPlayPositionsWhen4Arr[1, 1] = inPlayPositionsWhen4SecondColumn[1];
+
+        inPlayPositionsWhen4Arr[0, 2] = inPlayPositionsWhen4ThirdColumn[0];
+        inPlayPositionsWhen4Arr[1, 2] = inPlayPositionsWhen4ThirdColumn[1];
+
+        inPlayPositionsWhen4Arr[0, 3] = inPlayPositionsWhen4FourthColumn[0];
+        inPlayPositionsWhen4Arr[1, 3] = inPlayPositionsWhen4FourthColumn[1];
+    }
+
     private void SetPhysicsLayer()
     {
         int SCREEN = LayerMask.NameToLayer("Screen");
@@ -620,19 +604,15 @@ public class AnimalTrip_GameManager : IGameManager
     ///
     private readonly string LAYER_NAME = "Screen";
 
-    public Ray _ray;
+    
 
 
     protected override void OnRaySynced()
-    //public void OnClick(InputAction.CallbackContext context) // 이벤트 구독방식으로 수정을 위한 parameter 제거.(11/27/23)
     {
        
             var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
-            //_ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            //spaceBar누르는 경우, 해당위치 전송 및 아래 함수가 실행.
           
-           // _ray = _camera.ScreenPointToRay(Image_Move.screenPosition);
-            var hits = Physics.RaycastAll(_ray);
+            var hits = Physics.RaycastAll(GameManager_Ray);
 
             foreach (var hit in hits)
             {
@@ -669,10 +649,8 @@ public class AnimalTrip_GameManager : IGameManager
             }
             
             //-----게임이 가을소풍인 경우에만 실행-----
-            if (SceneManager.GetActiveScene().name == "AnimalTrip")
-            {
-                CloseStoryUI();
-            }
+        
+        CloseStoryUI();
         
     }
     
@@ -685,7 +663,7 @@ public class AnimalTrip_GameManager : IGameManager
             if (_uiAudioController.narrationAudioSource != null
                 && !_uiAudioController.narrationAudioSource.isPlaying)
             {
-                AnimalTrip_GameManager.isGameStopped = false;
+                isGameStopped = false;
                 _storyUIController.gameObject.SetActive(false);
           
             }
@@ -694,8 +672,7 @@ public class AnimalTrip_GameManager : IGameManager
 
     
   
-    RaycastHit hit;
-    private RaycastHit hitSecond;
+
 
     private void PlayClickOnScreenEffect(RaycastHit hit)
     {
@@ -978,12 +955,7 @@ public class AnimalTrip_GameManager : IGameManager
 
     private int _randomInPlayAnimationNumber;
 
-    private void SetResolution(int width, int height, int targetFrame)
-    {
-        Screen.SetResolution(width, height, Screen.fullScreen);
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = targetFrame;
-    }
+ 
 
     private bool CheckGameFinished()
     {
@@ -1013,21 +985,3 @@ public class AnimalTrip_GameManager : IGameManager
 }
 
 
-//8-31 아래 코드 미사용.
-///// <summary>
-///// 마우스 클릭 이벤트 없는 경우.
-///// </summary>
-// private void SelectObjectWithoutClick()
-// {
-//     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-//
-//     if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, interactableLayer))
-//     {
-//         Debug.Log("Mouse over: " + hitInfo.collider.gameObject.name);
-//         if (hitInfo.collider.name != null)
-//         {
-//             selectedAnimal = hitInfo.collider.name;
-//             elapsedTime = 0;
-//         }
-//     }
-// }

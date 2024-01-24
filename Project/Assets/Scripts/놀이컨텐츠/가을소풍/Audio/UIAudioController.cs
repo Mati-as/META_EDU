@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 public class UIAudioController : MonoBehaviour
 {
@@ -229,6 +230,7 @@ public class UIAudioController : MonoBehaviour
     public void PlayStoryBAudio()
     {
         _storyBCoroutine = StartCoroutine(PlayStoryAudioB());
+        
     }
 
     private IEnumerator PlayStoryAudioB()
@@ -236,6 +238,12 @@ public class UIAudioController : MonoBehaviour
         yield return null;
         narrationAudioSource.clip = uiAudioClip[(int)UI.StoryB];
         narrationAudioSource.Play();
+        DOVirtual.Float(0, 1, 8f, _ => { }).OnComplete(() =>
+        {
+
+            AnimalTrip_GameManager.isGameStopped = false;
+            StopCoroutine(_storyBCoroutine);
+        });
     }
 
     public float storyBWFS;

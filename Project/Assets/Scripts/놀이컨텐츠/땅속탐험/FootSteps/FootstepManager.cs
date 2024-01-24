@@ -213,16 +213,13 @@ public class FootstepManager : IGameManager
 
     private readonly float _firstFootstepWaitTime = 4.5f;
 
-    protected override void Start()
+    protected void Start()
     {
         
-        base.Start();
+      
         
         _camera = Camera.main;
-        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        // _mouseClickAction.performed += OnMouseClicked
-        // _mouseClickAction.Enable();
-        
+
         gameController.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
             .Delay(TimeSpan.FromSeconds(_firstFootstepWaitTime))
@@ -349,27 +346,6 @@ public class FootstepManager : IGameManager
             OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
         }
 
-        // 10/12/23 순회로직의 경우에는 아래 로직을 사용할 것 
-        // foreach (GameObject[] group in _footstepGameObjGroups)
-        // {
-
-        // foreach (GameObject obj in _footstepGameObjGroups[currentFootstepGroupOrder])
-        // {
-
-        // 현재 원소가 마지막 원소인 경우
-        // if (obj == _footstepGameObjGroups[currentFootstepGroupOrder]
-        //         [_footstepGameObjGroups[currentFootstepGroupOrder].Length - 1])
-        // {
-        //     OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-        //     ActivateNextFootstepGroup();
-        // }
-        // else
-        // {
-        //     OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-        // }
-
-        // }
-        // }
     }
 
     /// <summary>

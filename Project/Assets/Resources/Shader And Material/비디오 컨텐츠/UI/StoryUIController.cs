@@ -87,7 +87,6 @@ public class StoryUIController : MonoBehaviour
         _button.SetActive(true);
         Debug.Log("게임종료 메세지 출력");
         _storyUITmp.text = _lastUIMessage;
-      //  _coroutineA = StartCoroutine(ActivateLastStoryUICoroutine());
     }
 
     // 메소드 및 코루틴
@@ -102,11 +101,7 @@ public class StoryUIController : MonoBehaviour
     private Coroutine _coroutineB;
     private Coroutine _coroutineC;
 
-    // IEnumerator ActivateSecondStoryUICoroutine()
-    // {
-    //     yield return GetWaitForSeconds(waitTimeForSecondActivation);
-    //     
-    // }
+
 
     IEnumerator ActivateFirstStoryUICoroutine()
     {
