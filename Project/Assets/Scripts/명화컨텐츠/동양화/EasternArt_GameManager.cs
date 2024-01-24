@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EasternArt_GameManager : MonoBehaviour
+public class EasternArt_GameManager : IGameManager
 {
     [Header("gameObjs")] public Transform camera;
     public SpriteRenderer originalSpriteRenderer;
@@ -50,9 +50,11 @@ public Animator mainTigerAnimator;
 
 
     public static event Action OnSkinnedAnimStart ;
-    
-    private void Awake()
+
+    protected override void Init()
     {
+        base.Init();
+        
         UI_Message.SetActive(false);
         
         _tigerGrowlingAudioSource = gameObject.AddComponent<AudioSource>();
@@ -94,11 +96,15 @@ public Animator mainTigerAnimator;
 
     }
 
+    protected override void OnRaySynced()
+    {
+        
+    }
+
     [SerializeField]
     private GameObject originalPicture;
     [SerializeField]
     private SpriteRenderer newBackground;
-
 
     
     private void Start()
