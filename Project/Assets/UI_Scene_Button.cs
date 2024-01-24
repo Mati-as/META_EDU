@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,9 @@ public class UI_Scene_Button : MonoBehaviour
   private Message_anim_controller _animController;
   private Button _btn;
   private Image _btnImage;
+  private TMP_Text tmp;
+
+  private int _remainTime;
 
   
   /*
@@ -24,19 +28,30 @@ public class UI_Scene_Button : MonoBehaviour
   private void Awake()
   {
       _animController = FindActiveMessageAnimController();
+      
   }
 
   private void Start()
   {
+    
       _btn = GetComponent<Button>();
       _btnImage = GetComponent<Image>();
       _btn.onClick.AddListener(OnClicked);
+      tmp = GetComponentInChildren<TMP_Text>();
      
       
       Message_anim_controller.onIntroUIOff -= OnAnimOff;
       Message_anim_controller.onIntroUIOff += OnAnimOff;
      
-
+      _btnImage.DOFade(0, 0.01f);
+      _btnImage
+          .DOFade(1, 0.5f)
+          .SetDelay(3f);
+      
+      tmp.DOFade(0, 0.01f);
+      tmp
+          .DOFade(1, 0.5f)
+          .SetDelay(3f);
   }
   
   private Message_anim_controller FindActiveMessageAnimController()
@@ -56,6 +71,14 @@ public class UI_Scene_Button : MonoBehaviour
       return null; 
   }
 
+  private float _elapsedTime;
+  private void Update()
+  {
+      _elapsedTime += Time.deltaTime;
+      _remainTime = (int)(Message_anim_controller._autoShutDelay - _elapsedTime);
+      tmp.text = $"시작({_remainTime})";
+  }
+
   private void OnDestroy()
   {
       Message_anim_controller.onIntroUIOff -= OnAnimOff;
@@ -69,11 +92,12 @@ public class UI_Scene_Button : MonoBehaviour
       {
           _animController.Animation_Off();
           if (!_isBtnEventInvoked)
-          {
+          {   
+              
               _isBtnEventInvoked = true;
               
               onBtnClicked?.Invoke();
-              
+         
               FadeOutBtn();
           }
        
@@ -90,10 +114,12 @@ public class UI_Scene_Button : MonoBehaviour
   {
       if (!_isBtnEventInvoked)
       {
+
           _isBtnEventInvoked = true;
           
           onBtnClicked?.Invoke();
           FadeOutBtn();
+    
       }
   }
 

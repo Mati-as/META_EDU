@@ -64,6 +64,7 @@ public class StoryUIController : MonoBehaviour
     public void OnHowToPlayUIFinished()
     {
         Activate();
+        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/가을소풍/UI/AnimalTrip_Story_A");
         _coroutineA = StartCoroutine(ActivateFirstStoryUICoroutine());
         _coroutineB = StartCoroutine(MovePlayerIcon());
     }

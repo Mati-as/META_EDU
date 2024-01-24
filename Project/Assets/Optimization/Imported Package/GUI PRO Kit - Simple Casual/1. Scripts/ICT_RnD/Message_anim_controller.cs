@@ -24,6 +24,8 @@ public class Message_anim_controller : MonoBehaviour
      */
     void Start()
     {
+        _autoShutDelay = 13.5f;
+        
         Message_anim = this.GetComponent<Animation>();
         Init_Animation();
         Animation_On();
@@ -72,13 +74,14 @@ public class Message_anim_controller : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 
-    public float _interval = 10f;
+    public static float _autoShutDelay { get; private set; }
+
     IEnumerator DeactivateAfterDelay()
     {
 #if UNITY_EDITOR
         Debug.Log("UI Animation Off");
 #endif
-        yield return new WaitForSeconds(_interval);
+        yield return new WaitForSeconds(_autoShutDelay);
         onIntroUIOff?.Invoke();
         Animation_Off();
     }
