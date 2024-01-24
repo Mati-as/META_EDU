@@ -76,6 +76,7 @@ public class SoundManager : MonoBehaviour
         if (path.Contains("Audio/") == false)
             path = string.Format("Audio/{0}", path);
 
+        if(audioSource==null) Debug.LogError("audiosource null exception");
         audioSource.volume = volume;
 
         if (type == Sound.Bgm)

@@ -1,14 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_Scene_Button : MonoBehaviour
 {
-    [SerializeField]
+  
   private Message_anim_controller _animController;
-  private Button _button;
+  private Button _btn;
+  private Image _btnImage;
+
+  
+  /*
+   * onBtnClicked와 Message_anim_controller의 onIntroUIOff 이벤트는 같은 기능을 수행
+   * 사용자가 버튼을 클릭하여 event를 수행하는지, 혹은 10초(대기시간 제한)이 지나서 이벤트가 수행되는지에 대한
+   * 구분만 되어있음. 이를 방지하기위해 bool연산자 사용. 
+   *
+   */
+  public static event Action onBtnClicked;
 
   private void Awake()
   {
@@ -17,9 +28,15 @@ public class UI_Scene_Button : MonoBehaviour
 
   private void Start()
   {
-      _button = GetComponent<Button>();
-      _button.onClick.AddListener(OnClicked);
- 
+      _btn = GetComponent<Button>();
+      _btnImage = GetComponent<Image>();
+      _btn.onClick.AddListener(OnClicked);
+     
+      
+      Message_anim_controller.onIntroUIOff -= OnAnimOff;
+      Message_anim_controller.onIntroUIOff += OnAnimOff;
+     
+
   }
   
   private Message_anim_controller FindActiveMessageAnimController()
@@ -39,11 +56,27 @@ public class UI_Scene_Button : MonoBehaviour
       return null; 
   }
 
+  private void OnDestroy()
+  {
+      Message_anim_controller.onIntroUIOff -= OnAnimOff;
+  }
+
+  private bool _isBtnEventInvoked;
+
   private void OnClicked()
   {
       if (_animController != null)
       {
           _animController.Animation_Off();
+          if (!_isBtnEventInvoked)
+          {
+              _isBtnEventInvoked = true;
+              
+              onBtnClicked?.Invoke();
+              
+              FadeOutBtn();
+          }
+       
       }
       else
       {
@@ -51,5 +84,22 @@ public class UI_Scene_Button : MonoBehaviour
           Debug.Log("AnimalController is null");
           #endif
       }
+  }
+
+  private void OnAnimOff()
+  {
+      if (!_isBtnEventInvoked)
+      {
+          _isBtnEventInvoked = true;
+          
+          onBtnClicked?.Invoke();
+          FadeOutBtn();
+      }
+  }
+
+  private void FadeOutBtn()
+  {
+      _btnImage.DOFade(0, 0.5f)
+          .OnComplete(() => {gameObject.SetActive(false); });
   }
 }

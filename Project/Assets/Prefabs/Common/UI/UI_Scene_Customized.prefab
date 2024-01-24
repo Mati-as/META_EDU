@@ -270,6 +270,7 @@ GameObject:
   - component: {fileID: 6977773212829605923}
   - component: {fileID: 1792742203766521857}
   - component: {fileID: 1568265383}
+  - component: {fileID: 125233516}
   m_Layer: 5
   m_Name: (TEST)Ball
   m_TagString: Untagged
@@ -356,6 +357,32 @@ MonoBehaviour:
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: eb3903b8-00af-477a-9a7e-bbc0222c345d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  GR: {fileID: 0}
+  screenPosition: {x: 0, y: 0, z: 0}
+  button: {fileID: 0}
+--- !u!114 &125233516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2609039925856324374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275d215f22a052c4d9a742d4a95a9b55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UI_Canvas: {fileID: 0}
+  _uiCamera: {fileID: 0}
+  _spaceAction:
+    m_Name: Space
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 95933167-f4dc-4502-bf0f-38ee1f8acce4
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -7709,6 +7736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405532768921366
 GameObject:
   m_ObjectHideFlags: 0
@@ -9976,6 +10004,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 7602405533143080167}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533143080166
 GameObject:
   m_ObjectHideFlags: 0
@@ -10995,6 +11024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533324400471
 GameObject:
   m_ObjectHideFlags: 0
@@ -11067,6 +11097,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533328916176
 GameObject:
   m_ObjectHideFlags: 0
@@ -11991,6 +12022,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533379792436
 GameObject:
   m_ObjectHideFlags: 0
@@ -13420,6 +13452,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533553975174
 GameObject:
   m_ObjectHideFlags: 0
@@ -15634,6 +15667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533796712310
 GameObject:
   m_ObjectHideFlags: 0
@@ -16399,6 +16433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405533974492941
 GameObject:
   m_ObjectHideFlags: 0
@@ -16835,9 +16870,9 @@ RectTransform:
   m_Father: {fileID: 7602405533365195473}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 645, y: -97}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -97}
   m_SizeDelta: {x: 600, y: 120.94}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7602405534054569418
@@ -16911,7 +16946,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7602405534075986620
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17989,7 +18024,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7602405534262552588
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18044,6 +18079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405534265034244
 GameObject:
   m_ObjectHideFlags: 0
@@ -20217,6 +20253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405534518715673
 GameObject:
   m_ObjectHideFlags: 0
@@ -21266,6 +21303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Message_text: {fileID: 0}
   Message_text_sub: {fileID: 0}
+  _interval: 10
 --- !u!1 &7602405534710221249
 GameObject:
   m_ObjectHideFlags: 0
@@ -22236,7 +22274,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.4999933, y: 1.9999695}
+  m_AnchoredPosition: {x: 14, y: 1.9999695}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7602405534807512827

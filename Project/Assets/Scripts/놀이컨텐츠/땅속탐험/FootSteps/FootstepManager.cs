@@ -26,7 +26,7 @@ public class FootstepManager : IGameManager
     private AudioSource _audioSource;
     public AudioClip[] _audioClips = new AudioClip[4];
 
-    [Header("Reference")] [SerializeField] private GroundGameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [Header("Reference")] [SerializeField] private GroundGameController gameController;
     [SerializeField] private GroundFootStepData _groundFootStepData;
 
     public GroundFootStepData GetGroundFootStepData()
@@ -213,17 +213,17 @@ public class FootstepManager : IGameManager
 
     private readonly float _firstFootstepWaitTime = 4.5f;
 
-    private void Start()
+    protected override void Start()
     {
+        
+        base.Start();
+        
         _camera = Camera.main;
-
-
         // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
         // _mouseClickAction.performed += OnMouseClicked
         // _mouseClickAction.Enable();
-
-
-        gameManager.currentStateRP
+        
+        gameController.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
             .Delay(TimeSpan.FromSeconds(_firstFootstepWaitTime))
             .Subscribe(_ =>

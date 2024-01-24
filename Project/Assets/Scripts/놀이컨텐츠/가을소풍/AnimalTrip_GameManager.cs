@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 
 // https://app.diagrams.net/?src=about#G1oTy42sV_tIyZY60bED79XlyZ1FfcSRL0
 // 시퀀스 흐름도입니다. 
-public class AnimalTrip_GameManager : MonoBehaviour
+public class AnimalTrip_GameManager : IGameManager
 {
   
    
@@ -292,20 +292,23 @@ public class AnimalTrip_GameManager : MonoBehaviour
 
     // ------------------------- ▼ 유니티 루프 ----------------------------
     //inputSystem Update로 인한 인스턴스 11/13/23
-    
+
     private Camera _camera;
     private InputAction _mouseClickAction;
     private ParticleSystem _particle;
-   private UIAudioController _uiAudioController;
-   private StoryUIController _storyUIController;
+    private UIAudioController _uiAudioController;
+    private StoryUIController _storyUIController;
 
     private void Awake()
     {
-        // _camera = Camera.main;
-        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        // _mouseClickAction.performed += ClickOnObject;
-        RaySynchronizer.OnGetInputFromUser -= OnGetInputFromUser;
-        RaySynchronizer.OnGetInputFromUser += OnGetInputFromUser;
+    
+      
+    }
+
+    protected override void Init()
+    {
+        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
+        RaySynchronizer.OnGetInputFromUser += OnRaySynced;
         
         //-----가을 소풍에서만 필요한 스크립트(컴포넌트) 입니다.-----
         _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
@@ -325,26 +328,8 @@ public class AnimalTrip_GameManager : MonoBehaviour
             
         isRoundFinished = true; // 첫번째 라운드 세팅을 위해 true 로 설정하고 시작. 리팩토링 예정
     }
-
-
-    //
-    // private void OnEnable()
-    // {
-    //     _mouseClickAction.Enable();
-    // }   
-    //
-    // private void OnDisable()
-    // {
-    //     _mouseClickAction.Disable();
-    // }
-    //
-    //
     
-    /// <summary>
-    /// 해당 게임에 맞게 Physics Layer를 설정합니다.
-    /// 레이어 ID 인스턴스는 Awake,Start에서 선언할 수 없을에 유의합니다.
-    /// </summary>
-  
+    
 
     #if UNITY_EDITOR
     private bool isDebugPlayed;
@@ -468,7 +453,7 @@ public class AnimalTrip_GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnGetInputFromUser;
+        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
     }
 
 
@@ -638,7 +623,7 @@ public class AnimalTrip_GameManager : MonoBehaviour
     public Ray _ray;
 
 
-    public void OnGetInputFromUser()
+    protected override void OnRaySynced()
     //public void OnClick(InputAction.CallbackContext context) // 이벤트 구독방식으로 수정을 위한 parameter 제거.(11/27/23)
     {
        

@@ -12,9 +12,10 @@ using UniRx.Triggers;
 public class HowToPlayUIButtonListener :MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     
+    [FormerlySerializedAs("gameManager")]
     [Header("Reference")] [Space(10f)]
     [SerializeField] 
-    private GroundGameManager gameManager;
+    private GroundGameController gameController;
 
     [Space(20f)] [Header("Dot-ween Parameters")]
     public float buttonChangeDuration;

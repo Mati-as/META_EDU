@@ -28,9 +28,10 @@ public class UndergroundUIManager : MonoBehaviour
     
 
 
+    [FormerlySerializedAs("gameManager")]
     [Header("References")] //-------------------------------
     [SerializeField]
-    private GroundGameManager gameManager;
+    private GroundGameController gameController;
 
     [SerializeField] private FootstepManager footstepManager;
 
@@ -193,24 +194,24 @@ public class UndergroundUIManager : MonoBehaviour
         soundNode = soundPathXml.SelectSingleNode($"//SoundData[@ID='{soundID}']");
         
         
-        gameManager.isStartButtonClicked
+        gameController.isStartButtonClicked
             .Where(_ => _)
             .Delay(TimeSpan.FromSeconds(INTRO_UI_DELAY))
             .Subscribe(_ => SetUIIntroUsingUniRx())
             .AddTo(this);
 
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(_currentState => _currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ => OnGameStart())
             .AddTo(this);
 
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(_currentState => _currentState.GameState == IState.GameStateList.StageStart)
             // .Delay(TimeSpan.FromSeconds(3f))
             .Subscribe(_ => { _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine()); })
             .AddTo(this);
 
-        gameManager.isGameFinishedRP
+        gameController.isGameFinishedRP
             .Where(value => value)
             .Delay(TimeSpan.FromSeconds(8f))
             .Subscribe(_ => OnGameOver())
@@ -304,7 +305,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                    gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+                    gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -331,7 +332,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+            gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
             
         }
           
@@ -347,7 +348,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+            gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
         }
 
         // 마지막 동물인 여우가 아닐 때만...

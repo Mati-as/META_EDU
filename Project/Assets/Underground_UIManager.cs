@@ -1,33 +1,33 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
 public class Underground_UIManager : MonoBehaviour
 {
-    private GroundGameManager _gameManager;
+    private GroundGameController _gameController;
 
     private void Start()
     {
-        _gameManager = GameObject.FindWithTag("GameController").GetComponent<GroundGameManager>();
+        _gameController = GameObject.FindWithTag("GameController").GetComponent<GroundGameController>();
 
-
-        if (_gameManager != null)
-        {
-            TriggerStoryUI();
-        }
-        else
-        {
+        UI_Scene_Button.onBtnClicked -= TriggerStoryUI;
+        UI_Scene_Button.onBtnClicked += TriggerStoryUI;
 #if UNITY_EDITOR
+        if (_gameController == null)
+        {
             Debug.LogError("GameController or GroundGameManager is null.");
-#endif
         }
+#endif
     }
 
 
+    private void OnDestroy()
+    {
+        UI_Scene_Button.onBtnClicked -= TriggerStoryUI;
+    }
+
     private void TriggerStoryUI()
     {
-        DOVirtual.Float(0, 1, 2.3f, _ => _++).OnComplete(() =>
-        {
-            if (_gameManager.isStartButtonClicked.Value == false) _gameManager.isStartButtonClicked.Value = true;
-        });
+        if (_gameController.isStartButtonClicked.Value == false) _gameController.isStartButtonClicked.Value = true;
     }
 }

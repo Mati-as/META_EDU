@@ -1,5 +1,7 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class IGameManager : MonoBehaviour
 {
@@ -14,6 +16,12 @@ public abstract class IGameManager : MonoBehaviour
     public static event Action On_GmRay_Synced;
 
 
+    protected virtual void Start()
+    {
+        PlayNarration();
+    }
+    
+    
     protected abstract void Init();
     
 
@@ -48,5 +56,20 @@ public abstract class IGameManager : MonoBehaviour
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;
 
+    }
+
+    protected virtual void PlayNarration()
+    {
+#if UNITY_EDITOR
+        Debug.Log($"(나레이션) Narration playing.. path : Audio/Narration/{SceneManager.GetActiveScene().name}");
+#endif
+        DOVirtual.Float(0, 1, 2f, _ => { })
+            .OnComplete(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration,
+                    "Audio/Narration/" + $"{SceneManager.GetActiveScene().name}", 0.5f);
+            });
+
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", 0.115f);
     }
 }

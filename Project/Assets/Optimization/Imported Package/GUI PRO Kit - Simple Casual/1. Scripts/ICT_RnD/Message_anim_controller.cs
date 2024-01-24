@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +12,8 @@ public class Message_anim_controller : MonoBehaviour
     public Text Message_text;
     public Text Message_text_sub;
 
+    // underground UI에서 구독
+    public static event Action onIntroUIOff; 
     //0 : On, 1 : Off
     /*
      * 
@@ -75,6 +79,7 @@ public class Message_anim_controller : MonoBehaviour
         Debug.Log("UI Animation Off");
 #endif
         yield return new WaitForSeconds(_interval);
+        onIntroUIOff?.Invoke();
         Animation_Off();
     }
 

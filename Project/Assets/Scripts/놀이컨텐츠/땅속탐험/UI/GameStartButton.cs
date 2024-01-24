@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class GameStartButton : MonoBehaviour
 {
-    [SerializeField] 
-    private GroundGameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [SerializeField] 
+    private GroundGameController gameController;
 
     private Button _button;
 
@@ -23,13 +23,13 @@ public class GameStartButton : MonoBehaviour
 
     void OnButtonClicked()
     {
-        if (gameManager.isStageStartButtonClicked.Value == false)
+        if (gameController.isStageStartButtonClicked.Value == false)
         {
-            gameManager.isStageStartButtonClicked.Value = true;
+            gameController.isStageStartButtonClicked.Value = true;
         }
         else
         {
-            gameManager.isStageStartButtonClicked.Value = false;
+            gameController.isStageStartButtonClicked.Value = false;
         }
         
         
