@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class StarryNight_StarlightController : MonoBehaviour
+public class StarryNight_StarlightController : IGameManager
 {
     public Light[] spotLights;
 
@@ -35,8 +35,14 @@ public class StarryNight_StarlightController : MonoBehaviour
         }
     }
 
+    protected override void OnRaySynced()
+    {
+        return;
+    }
+    
+
     private Tween[] tweens; 
-    private void Init()
+    protected override void Init()
     {
         tweens = new Tween[spotLights.Length];
         var count = 0;
