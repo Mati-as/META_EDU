@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpaceEffectManagerGlow : Base_EffectManager
+public class SpaceEffectManagerGlow : EffectManager
 {
     
     protected override void OnGmRaySyncedByOnGm()

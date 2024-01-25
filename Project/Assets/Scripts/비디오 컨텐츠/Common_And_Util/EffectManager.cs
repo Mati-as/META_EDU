@@ -7,12 +7,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-
-
 /// <summary>
-/// *** GameManager 혹은 VideoGameManager에서 반드시 Ray를 참조하여 사용합니다.
+///     *** GameManager 혹은 VideoGameManager에서 반드시 Ray를 참조하여 사용합니다.
 /// </summary>
-public  class  Base_EffectManager : MonoBehaviour
+public class EffectManager : MonoBehaviour
 {
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;
@@ -34,7 +32,7 @@ public  class  Base_EffectManager : MonoBehaviour
     //여러 오디오클립을 랜덤하게 사용하고싶은 경우 체크하여 사용
     //_effectClip A,B,C..에 할당하면됨
     public bool isMultipleRandomClip;
-    
+
     [Header("Burst Setting")] public bool useBurstMode;
     [FormerlySerializedAs("burstAmount")] public int burstEmitAmount;
     public int burstCount;
@@ -91,61 +89,56 @@ public  class  Base_EffectManager : MonoBehaviour
     private AudioSource[][] _audioSourceGroups;
 
 
-    
     public Ray ray_EffectManager { get; private set; }
     public RaycastHit[] hits;
-    public static event Action OnRaySyncFromGameManager;
-    public static event Action OnRaySyncFromGmSingle;
+    public static event Action OnClickInEffectManager;
     public Vector3 hitPoint { get; private set; }
 
+
+    //for debug.
 #if UNITY_EDITOR
     private bool _isRaySet;
 #endif
+
+
     protected virtual void OnGmRaySyncedByOnGm()
     {
-
         ray_EffectManager = IGameManager.GameManager_Ray;
-#if UNITY_EDITOR
-        if (!_isRaySet)
-        {
-            Debug.Log($"Ray Synchronized by IGameManager; effectManager is Ready.");
-            _isRaySet = true;
-        }
-        
+
+
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
         {
-            
             hitPoint = hit.point;
-            
-            PlayParticle(particlePool,hit.point);
-            
 
-            if (!Base_Interactable_VideoGameManager._isShaked)
-            {
-                OnRaySyncFromGameManager?.Invoke();
-            }
-            
-            OnRaySyncFromGameManager?.Invoke();
+            PlayParticle(particlePool, hit.point);
+
+
+            if (!Base_Interactable_VideoGameManager._isShaked) OnClickInEffectManager?.Invoke();
+
+            OnClickInEffectManager?.Invoke();
             break;
-            
         }
-     
+
+#if UNITY_EDITOR
+        if (!_isRaySet)
+        {
+            Debug.Log("Ray Synchronized by IGameManager; effectManager is Ready.");
+            _isRaySet = true;
+        }
+
 #endif
     }
 
     protected virtual void Init()
     {
-       
-        
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
-        
-        if(isMultipleRandomClip)SetRandomClip();
+
+        if (isMultipleRandomClip) SetRandomClip();
     }
 
-   
 
     private void Awake()
     {
@@ -166,10 +159,10 @@ public  class  Base_EffectManager : MonoBehaviour
     {
         IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
     }
-    /// <summary>
-    /// 초기 풀 설정 -----------------
-    /// </summary>
 
+    /// <summary>
+    ///     초기 풀 설정 -----------------
+    /// </summary>
     protected virtual void SetPool(ref Queue<ParticleSystem> psQueue)
     {
         psQueue = new Queue<ParticleSystem>();
@@ -207,20 +200,18 @@ public  class  Base_EffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 오디오 초기화 및 재생을 위한 메소드 목록 -----------------
+    ///     오디오 초기화 및 재생을 위한 메소드 목록 -----------------
     /// </summary>
     protected virtual void SetAudio()
     {
-        if (AUDIO_PATH_EFFECT_A!= null && _effectClipA ==null)
-        {
+        if (AUDIO_PATH_EFFECT_A != null && _effectClipA == null)
             _effectClipA = Resources.Load<AudioClip>(AUDIO_PATH_EFFECT_A);
-        }
-        
+
         _audioSourcesA = SetAudioSettings(_audioSourcesA, _effectClipA, audioSize, volumeA);
         if (_effectClipB != null) _audioSourcesB = SetAudioSettings(_audioSourcesB, _effectClipB, audioSize, volumeB);
         if (_effectClipC != null) _audioSourcesC = SetAudioSettings(_audioSourcesC, _effectClipC, audioSize, volumeC);
         if (_effectClipD != null) _audioSourcesD = SetAudioSettings(_audioSourcesD, _effectClipD, audioSize, volumeD);
-        if (_subAudioClip != null && useSubEmitter )
+        if (_subAudioClip != null && useSubEmitter)
             _subAudioSources = SetAudioSettings(_subAudioSources, _subAudioClip, audioSize, volumeSub);
         if (_burstClip != null)
             _burstAudioSources = SetAudioSettings(_burstAudioSources, _burstClip, _burstAudioSize, volumeBurst);
@@ -247,8 +238,8 @@ public  class  Base_EffectManager : MonoBehaviour
 
         return audioSources;
     }
-    
-    
+
+
     protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
         float volume = 0.8f)
     {
@@ -258,11 +249,11 @@ public  class  Base_EffectManager : MonoBehaviour
 
             if (availableAudioSource != null)
             {
-                if(isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
-                
+                if (isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
+
 #if UNITY_EDITOR
-                Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
-                          $" _currentRandomClipIndex :{_currentRandomClipIndex}");
+                // Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
+                //           $" _currentRandomClipIndex :{_currentRandomClipIndex}");
 #endif
                 FadeInSound(availableAudioSource, volume);
             }
@@ -273,6 +264,7 @@ public  class  Base_EffectManager : MonoBehaviour
     }
 
     private int _totalCilpCountWhenUseMultipleClips;
+
     protected void SetRandomClip()
     {
         _audioClips = new List<AudioClip>();
@@ -282,33 +274,36 @@ public  class  Base_EffectManager : MonoBehaviour
             _audioClips.Add(_effectClipA);
             _totalCilpCountWhenUseMultipleClips++;
         }
+
         if (_effectClipB != null)
         {
             _audioClips.Add(_effectClipB);
             _totalCilpCountWhenUseMultipleClips++;
         }
+
         if (_effectClipC != null)
         {
             _audioClips.Add(_effectClipC);
             _totalCilpCountWhenUseMultipleClips++;
         }
+
         if (_effectClipD != null)
         {
             _audioClips.Add(_effectClipD);
             _totalCilpCountWhenUseMultipleClips++;
         }
+
         if (_effectClipD != null)
         {
             _audioClips.Add(_effectClipE);
             _totalCilpCountWhenUseMultipleClips++;
         }
- 
-
     }
+
     protected AudioClip RandomizeClip()
     {
         _currentRandomClipIndex = Random.Range(0, _totalCilpCountWhenUseMultipleClips);
-        AudioClip randomClip = _audioClips[_currentRandomClipIndex];
+        var randomClip = _audioClips[_currentRandomClipIndex];
         return randomClip;
     }
 
@@ -342,7 +337,7 @@ public  class  Base_EffectManager : MonoBehaviour
     }
 
 
-    protected virtual void PlayParticle(Queue<ParticleSystem> psQueue,Vector3 position,  bool isBurstMode = false,
+    protected virtual void PlayParticle(Queue<ParticleSystem> psQueue, Vector3 position, bool isBurstMode = false,
         int burstCount = 10, int burstAmount = 5)
     {
         //UnderFlow를 방지하기 위해서 선제적으로 GrowPool 실행 
@@ -361,13 +356,13 @@ public  class  Base_EffectManager : MonoBehaviour
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
-                TurnOnParticle(psQueue,position);
+                TurnOnParticle(psQueue, position);
                 FindAndPlayAudio(_burstAudioSources, volume: volumeBurst);
                 _currentCountForBurst = 0;
             }
             else
             {
-                TurnOnParticle(psQueue,position);
+                TurnOnParticle(psQueue, position);
                 if (isPlayAltogether)
                 {
                     FindAndPlayAudio(_audioSourcesA, volume: volumeA);
@@ -383,7 +378,7 @@ public  class  Base_EffectManager : MonoBehaviour
                     AudioSource[] currentAudioSourceArray = null;
                     var currentVolume = 0f;
 #if UNITY_EDITOR
-              
+
 #endif
 
                     switch (currentAudioSourceIndex)
@@ -400,7 +395,7 @@ public  class  Base_EffectManager : MonoBehaviour
                             break;
                     }
 
-                    currentAudioSourceIndex = ++currentAudioSourceIndex % (totalActiveAudioSouceSortCount);
+                    currentAudioSourceIndex = ++currentAudioSourceIndex % totalActiveAudioSouceSortCount;
                 }
 
                 _currentCountForBurst++;
@@ -409,10 +404,9 @@ public  class  Base_EffectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 파티클 초기화 및 재생을 위한 메소드 목록 -----------------
+    ///     파티클 초기화 및 재생을 위한 메소드 목록 -----------------
     /// </summary>
     /// <param name="position"></param>
-
     protected void TurnOnParticle(Queue<ParticleSystem> psQueue, Vector3 position)
     {
         for (var i = 0; i < emitAmount; i++)
@@ -420,7 +414,7 @@ public  class  Base_EffectManager : MonoBehaviour
             var ps = psQueue.Dequeue();
             ps.transform.position = position;
             ps.gameObject.SetActive(true);
-            
+
             ps.Play();
 
             StartCoroutine(ReturnToPoolAfterDelay(ps));
@@ -438,10 +432,7 @@ public  class  Base_EffectManager : MonoBehaviour
                 wait_ = new WaitForSeconds(returnWaitForSeconds);
         }
 
-        if (useSubEmitter && subWait_ == null)
-        {
-            subWait_ = new WaitForSeconds(subEmitLifetime);
-        }
+        if (useSubEmitter && subWait_ == null) subWait_ = new WaitForSeconds(subEmitLifetime);
 
 
         yield return wait_;
@@ -458,6 +449,4 @@ public  class  Base_EffectManager : MonoBehaviour
         ps.gameObject.SetActive(false);
         particlePool.Enqueue(ps); // Return the particle system to the pool
     }
-
-
 }

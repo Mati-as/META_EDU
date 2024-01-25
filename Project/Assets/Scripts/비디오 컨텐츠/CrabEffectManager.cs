@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CrabEffectManager : Base_EffectManager
+public class CrabEffectManager : EffectManager
 {
     public static event Action Crab_OnClicked;
     public static event Action Crab_OnClickedSingle;

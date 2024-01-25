@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public abstract class IGameManager : MonoBehaviour
 {
     public static Ray GameManager_Ray { get; private set; }
+    public static RaycastHit[] GameManager_Hits { get; set; }
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME =30;
 
@@ -33,6 +34,7 @@ public abstract class IGameManager : MonoBehaviour
     protected void OnClicked()
     {
         GameManager_Ray = RaySynchronizer.ray_ImageMove;
+        GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
         
 #if UNITY_EDITOR
      
@@ -65,8 +67,7 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void PlayNarration()
     {
-
-        //delay
+        //delay for narration.
         DOVirtual.Float(0, 1, 2f, _ => { })
             .OnComplete(() =>
             {

@@ -53,12 +53,12 @@ public class Hopscotch_PathAnimationController : MonoBehaviour
     {
         if (isSubscribe)
         {
-            Hopscotch_GameManager.onStageClear -=OnReplay;
-            Hopscotch_GameManager.onStageClear +=OnReplay;
+            Hopscotch_GameManager.onStageParticlePlay -=OnReplay;
+            Hopscotch_GameManager.onStageParticlePlay +=OnReplay;
         }
         else
         {
-            Hopscotch_GameManager.onStageClear -=OnReplay;
+            Hopscotch_GameManager.onStageParticlePlay -=OnReplay;
         }
        
     }

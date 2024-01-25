@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 
 
-public class WinterEffectManager : Base_EffectManager
+public class WinterEffectManager : EffectManager
 {
 
    

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KoreanFlagEffectManager : Base_EffectManager
+public class KoreanFlagEffectManager : EffectManager
 {
     protected override void OnGmRaySyncedByOnGm()
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpaceEffectManager : Base_EffectManager
+public class SpaceEffectManager : EffectManager
 {
 
     public int waitCount;

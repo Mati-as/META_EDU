@@ -5,15 +5,15 @@ using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Serialization;
+using Random = System.Random;
 
-public class Hopscotch_GameManager : MonoBehaviour
+public class Hopscotch_GameManager : IGameManager
 {
     
     [FormerlySerializedAs("videoGameManager")]
     [FormerlySerializedAs("effectController")]
     [Header("Reference")] 
-    [SerializeField]
-    private HopscotchEffectManager effectManager;
+
     [Space(20f)]
     
     public Transform stepGroup;
@@ -30,6 +30,13 @@ public class Hopscotch_GameManager : MonoBehaviour
     private bool _isSuccesssParticlePlaying;
     public float offset;
     
+    private float _stepSizeChangeRate =1.11f;
+    private Dictionary<Transform, Quaternion> _defaultQuaternionMap;
+    private Dictionary<Transform, Vector3> _defaultSizeMap;
+    private Dictionary<RectTransform, Vector3> _uiDefaultSizeMap;
+    private Dictionary<Transform, Rigidbody> _rigidbodies;
+    
+    
    
     
     private void Awake()
@@ -39,10 +46,14 @@ public class Hopscotch_GameManager : MonoBehaviour
        
     }
 
+    private CanvasGroup _cg;
+
     private void Start()
     {
         GameObject inPlayTexts = GameObject.Find("InPlayTexts");
-        
+
+        _cg = inPlayTexts.GetComponent<CanvasGroup>();
+        _cg.DOFade(0, 0.01f);
         if (inPlayTexts != null)
         {
             _numberTextRects = inPlayTexts.GetComponentsInChildren<RectTransform>()
@@ -56,8 +67,9 @@ public class Hopscotch_GameManager : MonoBehaviour
 
         foreach (var rect in _numberTextRects)
         {
-            _uiDefaultSizeMap.Add(rect,rect.localScale.x);
+            _uiDefaultSizeMap.Add(rect,rect.localScale);
         }
+        
         
 
         DoIntroMove();
@@ -77,22 +89,9 @@ private void Update()
 }
 #endif
 
-    private void OnClick()
-    {
-        // 발판 밟은 직후에는 다음 발판을 누를 수 없게합니다.
-        if (_isSuccesssParticlePlaying) return;
-
-        if (CheckOnStep())
-        {
-            PlaySuccessParticle(_currentStep);
-        }
-        
-    }
 
     private void BindEvent()
     {
-        HopscotchEffectManager.Hopscotch_OnClick -= OnClick;
-        HopscotchEffectManager.Hopscotch_OnClick += OnClick;
         onStageClear -= OnStageClear;
         onStageClear += OnStageClear;
     }
@@ -100,27 +99,44 @@ private void Update()
     private void OnDestroy()
     {
         onStageClear -= OnStageClear;
-        HopscotchEffectManager.Hopscotch_OnClick -= OnClick;
     }
 
-    private void Init()
+    protected override void Init()
     {
-        BindEvent();
+        base.Init();
         
-        _defaultSizeMap = new Dictionary<Transform, float>();
-        _uiDefaultSizeMap = new Dictionary<RectTransform, float>();
+        
+        BindEvent();
+        _defaultQuaternionMap = new Dictionary<Transform, Quaternion>();
+        _defaultSizeMap = new Dictionary<Transform, Vector3>();
+        _uiDefaultSizeMap = new Dictionary<RectTransform, Vector3>();
+        _rigidbodies = new Dictionary<Transform, Rigidbody>();
         LoadParticles();
         GetSteps();
     }
 
+    protected override void OnRaySynced()
+    {
+        // 발판 밟은 직후에는 다음 발판을 누를 수 없게합니다.
+        if (_isSuccesssParticlePlaying) return;
+        
+        // 게임시작전, 게임초기화 시 클릭 X
+        if (!_isClickable) return;
+
+        if (CheckOnStep())
+        {
+            PlaySuccessParticle(_currentStep);
+        }
+    }
+
     private void LoadParticles()
     {
-        var psPrefab1 = Resources.Load<GameObject>(PATH + "CFX_inducingParticle");
-        var psPrefab2 = Resources.Load<GameObject>(PATH + "CFX_successParticle");
+        var inducingPs = Resources.Load<GameObject>(PATH + "CFX_inducingParticle");
+        var successPs = Resources.Load<GameObject>(PATH + "CFX_successParticle");
         
-        if(psPrefab1 != null)
+        if(inducingPs != null)
         {
-            _inducingParticle = Instantiate(psPrefab1 ,transform).GetComponent<ParticleSystem>();;
+            _inducingParticle = Instantiate(inducingPs ,transform).GetComponent<ParticleSystem>();;
             _inducingParticle.Stop();
         }
         else
@@ -131,9 +147,9 @@ private void Update()
 #endif
         }
         
-        if(psPrefab2 != null)
+        if(successPs != null)
         {
-            _successParticle = Instantiate(psPrefab2,transform).GetComponent<ParticleSystem>();;
+            _successParticle = Instantiate(successPs,transform).GetComponent<ParticleSystem>();;
             _successParticle.Stop();
         }
 
@@ -141,6 +157,7 @@ private void Update()
      
     }
 
+    
     private void GetSteps()
     {
         _stepCount = stepGroup.childCount;
@@ -156,9 +173,14 @@ private void Update()
         
         foreach (var step in _steps)
         {
-            _defaultSizeMap.Add(step, step.localScale.x);
+            _defaultSizeMap.Add(step, step.localScale);
+            _rigidbodies.Add(step,step.GetComponent<Rigidbody>());
+          
+            _defaultQuaternionMap.Add(step,step.rotation);
             step.position += defaultOffset;
         }
+        
+
     }
 
     public float numberDoScaleSize;
@@ -172,7 +194,7 @@ private void Update()
         _scaleBackSequence = DOTween.Sequence();
 
 #if UNITY_EDITOR
-   Debug.Log($"OnScaleSequenceKilled: Rect");
+  
 #endif
         _scaleBackSequence.Append(number.DOScale(_uiDefaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
         _scaleBackSequence.Play();
@@ -185,16 +207,11 @@ private void Update()
         _scaleBackSequence = DOTween.Sequence();
 
 #if UNITY_EDITOR
-        Debug.Log($"OnScaleSequenceKilled: Transform");
 #endif
         _scaleBackSequence
             .Append(number.DOScale(_defaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
         _scaleBackSequence.Play();
     }
-
-    private float _stepSizeChangeRate =1.11f;
-    private Dictionary<Transform, float> _defaultSizeMap;
-    private Dictionary<RectTransform, float> _uiDefaultSizeMap;
 
     private void DoScaleUp(RectTransform number)
     {
@@ -245,6 +262,7 @@ private void Update()
 
     private int _currentStep = 0;
     private bool _isGameFinished;
+    private bool _isClickable;
 
     private void PlayInducingParticle(int currentPosition)
     {
@@ -263,7 +281,7 @@ private void Update()
     public static event Action onStageClear;
     private Vector3 AddOffset(Vector3 position)
     {
-        return position + Vector3.down * offset;
+        return position + Vector3.forward * offset;
     }
 
     public float nextStepInducingParticleDelay;
@@ -271,13 +289,13 @@ private void Update()
     private void PlaySuccessParticle(int currentPosition)
     {
         if (_isSuccesssParticlePlaying) return;
-
+        
         _isSuccesssParticlePlaying = true;
         _currentScaleSequence.Kill();
         _stepCurrentScaleSequence.Kill();
 
 #if UNITY_EDITOR
-        Debug.Log($"Sequence Killed!");
+      
 #endif
 
         _inducingParticle.Stop();
@@ -286,6 +304,8 @@ private void Update()
         _successParticle.gameObject.SetActive(true);
         _successParticle.Play();
 
+        int randomEffectSoundIndex = UnityEngine.Random.Range(1, 7);
+        Managers.Sound.Play(SoundManager.Sound.Effect, path: "Audio/Hopscotch/chime_tinkle_wood_bell_positive_0"+$"{randomEffectSoundIndex}",volume:0.25f);
 
         DOVirtual
             .Float(0, 0, successParticleDuration, val => val++)
@@ -340,9 +360,11 @@ private void Update()
                             .Float(0, 0, 2, val => val++)
                             .OnComplete(() =>
                             {
+                                _cg.DOFade(1, 1);
 #if UNITY_EDITOR
-                                Debug.Log("시작시 1 Doscale");
+                             
 #endif
+                             
                                 if (i1 >= _stepCount - 1)
                                 {
                                     DoScaleUp(_numberTextRects[0]);
@@ -351,6 +373,7 @@ private void Update()
                                 
                                 //DoScaleUp(_numberTextRects[1]);
                                 if (i1 >= _stepCount - 1) PlayInducingParticle(0);
+                                _isClickable = true;
                             });
                     }
                       
@@ -361,12 +384,14 @@ private void Update()
 
     public float waitTimeToRestartGame;
     public ParticleSystem _stageClearBubble;
+    public static event Action onStageParticlePlay; 
 
+    public float downForce;
     private void OnStageClear()
     {
         _currentStep = 0;
-        
-        _stageClearBubble.Play();
+        _cg.DOFade(0, 0.5f);
+      
         
         DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
             .OnComplete(() =>
@@ -374,11 +399,58 @@ private void Update()
                 PlayInducingParticle(_currentStep);
             });
 
+        foreach (var step in _steps)
+        {
+            _rigidbodies[step].constraints = RigidbodyConstraints.None;
+        }
+        
+        
+        DOVirtual.Float(0, 1, 3.3f, _ => { })
+            .OnComplete(() =>
+            {
+                _stageClearBubble.Play();
+                onStageParticlePlay?.Invoke();
+            });
+        
+        DOVirtual.Float(0, 1, 4f, _ => { }).OnComplete(() =>
+        {
+            foreach (var step in _steps)
+            {
+                _rigidbodies[step].constraints = RigidbodyConstraints.FreezeAll;
+            }
+            foreach (var step in _steps)
+            {
+                step.position += defaultOffset;
+              
+                step.rotation = _defaultQuaternionMap[step];
+            }
+            
+            
+        });
+        
+        
+        
+
+        DOVirtual.Float(0, 1, 6f, _ => { })
+   
+            .OnComplete(() =>
+            {
+                
+                DoIntroMove();
+            });
+    
+        
+        
+
+#if UNITY_EDITOR
+Debug.Log("Step_Collapsing!!" );
+#endif
     }
     private bool CheckOnStep()
     {
 
-        foreach (var hit in effectManager.hits)
+       
+        foreach (var hit in GameManager_Hits)
         {
             if (hit.transform.gameObject.name == "Step_" + _currentStep.ToString())
             {

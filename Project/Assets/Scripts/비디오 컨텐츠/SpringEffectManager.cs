@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SpringEffectManager : Base_EffectManager
+public class SpringEffectManager : EffectManager
 {
     
     protected override void OnGmRaySyncedByOnGm()

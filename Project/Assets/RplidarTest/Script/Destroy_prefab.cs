@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Destroy_prefab : RaySynchronizer
 {
-    private Base_EffectManager _baseEffectManager;
+    private EffectManager _effectManager;
     private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
@@ -15,7 +15,7 @@ public class Destroy_prefab : RaySynchronizer
     public override void Init()
     {
         base.Init();
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _baseEffectManager);
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
     }
 
     void Start()

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallEffectManager : Base_EffectManager
+public class FallEffectManager : EffectManager
 {
     protected override void OnGmRaySyncedByOnGm()
     {
