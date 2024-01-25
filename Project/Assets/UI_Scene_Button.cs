@@ -13,7 +13,6 @@ public class UI_Scene_Button : MonoBehaviour
   private Button _btn;
   private Image _btnImage;
   private TMP_Text tmp;
-
   private int _remainTime;
 
   
@@ -23,7 +22,7 @@ public class UI_Scene_Button : MonoBehaviour
    * 구분만 되어있음. 이를 방지하기위해 bool연산자 사용. 
    *
    */
-  public static event Action onBtnClicked;
+  public static event Action onBtnShut;
 
   private void Awake()
   {
@@ -72,11 +71,22 @@ public class UI_Scene_Button : MonoBehaviour
   }
 
   private float _elapsedTime;
+  private float _offset = 0.66f;//시간 증가량 컨트롤
+  private bool _isInvoked;
+  private float _autoShutTime = 12f;
+  
+  
   private void Update()
   {
-      _elapsedTime += Time.deltaTime;
-      _remainTime = (int)(Message_anim_controller._autoShutDelay - _elapsedTime);
+      _elapsedTime += Time.deltaTime*_offset;
+      _remainTime = (int)( _autoShutTime - _elapsedTime);
       tmp.text = $"시작({_remainTime})";
+      
+      if(_remainTime <= 0 && !_isInvoked)
+      {
+          _isInvoked = true; 
+          onBtnShut?.Invoke();
+      }
   }
 
   private void OnDestroy()
@@ -96,8 +106,7 @@ public class UI_Scene_Button : MonoBehaviour
               
               _isBtnEventInvoked = true;
               
-              onBtnClicked?.Invoke();
-         
+              onBtnShut?.Invoke();
               FadeOutBtn();
           }
        
@@ -117,7 +126,7 @@ public class UI_Scene_Button : MonoBehaviour
 
           _isBtnEventInvoked = true;
           
-          onBtnClicked?.Invoke();
+          onBtnShut?.Invoke();
           FadeOutBtn();
     
       }

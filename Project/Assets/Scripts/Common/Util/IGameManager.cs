@@ -7,9 +7,7 @@ public abstract class IGameManager : MonoBehaviour
 {
     public static Ray GameManager_Ray { get; private set; }
     public static event Action On_GmRay_Synced;
-    public int TARGET_FRAME =30; 
-
-
+    private readonly int TARGET_FRAME =30;
 
     protected virtual void Awake()
     {
@@ -27,7 +25,6 @@ public abstract class IGameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-  
         RaySynchronizer.OnGetInputFromUser -= OnClicked;
         On_GmRay_Synced -= OnRaySynced;
     }

@@ -20,13 +20,13 @@ public class AnimalTrip_NewUIManager : MonoBehaviour
         _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
 
       
-        UI_Scene_Button.onBtnClicked -= ShowStoryUI;
-        UI_Scene_Button.onBtnClicked += ShowStoryUI;
+        UI_Scene_Button.onBtnShut -= ShowStoryUI;
+        UI_Scene_Button.onBtnShut += ShowStoryUI;
     }
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnClicked -= ShowStoryUI;
+        UI_Scene_Button.onBtnShut -= ShowStoryUI;
     }
 
 

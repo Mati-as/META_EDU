@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -24,7 +25,7 @@ public class EasternArt_GameManager : IGameManager
 
     private Transform[] _skinnedPictureChildren;
 
-public Animator mainTigerAnimator;
+    public Animator mainTigerAnimator;
     private float _defaultAnimatorSpeed;
     private Sequence mainTigerSequence;
     private bool _isMainTigerAnimPlaying;
@@ -45,28 +46,51 @@ public Animator mainTigerAnimator;
 
     private AudioClip[] _tigerGrowlClips;
     
-    [Header("UI")]
-    public GameObject UI_Message;
+   
+    [SerializeField]
+    private GameObject originalPicture;
+    [SerializeField]
+    private SpriteRenderer newBackground;
 
-
-    public static event Action OnSkinnedAnimStart ;
+    
 
     protected override void Init()
     {
         base.Init();
         
-        UI_Message.SetActive(false);
         
-        _tigerGrowlingAudioSource = gameObject.AddComponent<AudioSource>();
+        LoadAsset();
+        SetAudio();
+        SetPath();
+
+        camera.position = _pathVector[0];
         
-        _tigerGrowlingAudioSource.volume = 0.2f;
-        _tigerGrowlingAudioSource.playOnAwake = false;
-      
+        UI_Scene_Button.onBtnShut -= OnBtnShut;
+        UI_Scene_Button.onBtnShut += OnBtnShut;
+
+    }
+
+    private void OnDestroy()
+    {
+        UI_Scene_Button.onBtnShut -= OnBtnShut;
+    }
+
+    private void LoadAsset()
+    {
         _tigerGrowlA = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlA));
         _tigerGrowlB = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlB));
         _tigerGrowlC = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlC));
+    }
 
+    private void SetAudio()
+    {
+        _tigerGrowlingAudioSource = gameObject.AddComponent<AudioSource>();
+        _tigerGrowlingAudioSource.volume = 0.2f;
+        _tigerGrowlingAudioSource.playOnAwake = false;
+    }
 
+    private void SetPath()
+    {
         _tigerGrowlClips = new AudioClip[3];
         _tigerGrowlClips[0] = _tigerGrowlA;
         _tigerGrowlClips[1] = _tigerGrowlB;
@@ -93,45 +117,34 @@ public Animator mainTigerAnimator;
         }
 
         newBackground.DOFade(0, 0.1f);
-
+        camera.DOLookAt(lookAtA.position, 0.01f);
     }
-
     protected override void OnRaySynced()
     {
         
     }
 
-    [SerializeField]
-    private GameObject originalPicture;
-    [SerializeField]
-    private SpriteRenderer newBackground;
 
-    
-    private void Start()
+    private void OnBtnShut()
     {
-        camera.DOLookAt(lookAtA.position, 0.01f);
+#if UNITY_EDITOR
+        Debug.Log($"{SceneManager.GetActiveScene().name}'s started");
+#endif
+        StartEasternArtAnim();
+    }
 
-        DOVirtual.Float(0, 1, 1.5f, _ => { })
-            .OnComplete(() =>
-            {
-                UI_Message.SetActive(true);
-            });
-        camera.position = _pathVector[0];
-
+    private void StartEasternArtAnim()
+    {
         camera.DOPath(_pathVector, 3.5f, PathType.CatmullRom)
-        
             .SetLookAt(lookAtA, true)
             .OnComplete(() =>
             {
                 newBackground.maskInteraction = SpriteMaskInteraction.None;
                 newBackground.DOFade(1, 1.5f);
-               //  _spriteRenderer.maskInteraction = SpriteMaskInteraction.None;
-               originalSpriteRenderer.DOFade(0, 1.5f)
-                     .OnComplete(() =>
-                 {
-                     originalPicture.SetActive(false);
-                 });
-               
+                //  _spriteRenderer.maskInteraction = SpriteMaskInteraction.None;
+                originalSpriteRenderer.DOFade(0, 1.5f)
+                    .OnComplete(() => { originalPicture.SetActive(false); });
+
                 foreach (var obj in _skinnedPictureChildren) obj.gameObject.SetActive(true);
 
                 _newVector[0] = camera.position;
@@ -155,12 +168,12 @@ public Animator mainTigerAnimator;
                                         mainTigerAnimator.speed = _defaultAnimatorSpeed;
                                         PlayMainTigerAnimation();
                                     });
-
                                 });
                             });
                     });
             })
-            .SetDelay(5.5f);
+            //버튼 클릭 후 시작까지의 대기시간.
+            .SetDelay(1.5f);
     }
 
     private Sequence _pollingSequence;

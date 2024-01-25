@@ -10,8 +10,8 @@ public class Underground_UIManager : MonoBehaviour
     {
         _gameController = GameObject.FindWithTag("GameController").GetComponent<GroundGameController>();
 
-        UI_Scene_Button.onBtnClicked -= TriggerStoryUI;
-        UI_Scene_Button.onBtnClicked += TriggerStoryUI;
+        UI_Scene_Button.onBtnShut -= TriggerStoryUI;
+        UI_Scene_Button.onBtnShut += TriggerStoryUI;
 #if UNITY_EDITOR
         if (_gameController == null)
         {
@@ -23,7 +23,7 @@ public class Underground_UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnClicked -= TriggerStoryUI;
+        UI_Scene_Button.onBtnShut -= TriggerStoryUI;
     }
 
     private void TriggerStoryUI()
