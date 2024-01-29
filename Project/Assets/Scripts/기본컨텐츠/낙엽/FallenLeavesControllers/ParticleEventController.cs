@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
-public class ParticleEventController : MonoBehaviour, IOnClicked
+public class ParticleEventController : IGameManager, IOnClicked
 {
     private ParticleSystem.Particle[] particles;
 
@@ -74,9 +74,12 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
     }
 
     private int _count = 0;
+    
 
-    private void Awake()
+    protected override void Init()
     {
+        base.Init();
+        
         _audioSources = GetComponents<AudioSource>();
 
         _audioSources[(int)FallenLeave_SoundID.RollingLeaves].clip = rollingLeaves;
@@ -106,13 +109,19 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
         PlayAllParticles();
     }
 
-    public Ray ray { get; set; }
+
 
 
 
     private IOnClicked _iOnClicked;
+
+    public new void OnClicked()
+    {
+        
+    }
+    
     RaycastHit _hit;
-    public void OnClicked()
+    protected override void OnRaySynced()
     {
 #if UNITY_EDITOR
      
@@ -132,7 +141,7 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
      
       
 
-        if (Physics.Raycast(ray, out _hit, Mathf.Infinity))
+        if (Physics.Raycast(GameManager_Ray, out _hit, Mathf.Infinity))
         {
             
 
@@ -225,9 +234,7 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
 
     private void Subscribe()
     {
-        FallenLeaves_Image_Move.OnGetInputFromUser -= OnClicked;
-        FallenLeaves_Image_Move.OnGetInputFromUser += OnClicked;
-
+     
 
         FallenLeave_NewUI_Manager.OnStart -= PlayAllParticles;
         FallenLeave_NewUI_Manager.OnStart += PlayAllParticles;
@@ -236,7 +243,6 @@ public class ParticleEventController : MonoBehaviour, IOnClicked
     private void Unsubscribe()
     {
         FallenLeave_NewUI_Manager.OnStart -= PlayAllParticles;
-        FallenLeaves_Image_Move.OnGetInputFromUser -= OnClicked;
     }
 
     private void PlayAllParticles()
