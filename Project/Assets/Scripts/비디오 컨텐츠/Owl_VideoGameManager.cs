@@ -247,7 +247,6 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                                 speed =>
                                 {
 #if UNITY_EDITOR
-
                                     Debug.Log($"부엉이 UI 재생 시작 default Scale: {_defaultScale}");
 #endif
                                     videoPlayer.playbackSpeed = speed;
