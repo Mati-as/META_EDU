@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 ///     5.게임에 좀 더 특화해야할 경우 Interactive_VideoContentPlayer를 상속받아 사용합니다.
 ///     6.단순 클릭 후, 일정시간 정지 및 재생, 리플레이 로직만 포함된 경우 해당 Interactive_VideoContentPlayer만 사용해도 문제되지 않습니다.
 /// </summary>
-public abstract class Base_Interactable_VideoGameManager : Base_VideoGameManager
+public abstract class InteractableVideoGameManager : Video_GameManager
 {
 #if UNITY_EDITOR
     [Header("*****Debug Only*****")] public bool TriggerReplayEvent;

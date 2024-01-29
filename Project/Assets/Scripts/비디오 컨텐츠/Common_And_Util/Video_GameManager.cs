@@ -5,7 +5,7 @@ using UnityEngine.Video;
 using System.IO;
 using UnityEngine.SceneManagement;
 
-public abstract class Base_VideoGameManager : IGameManager
+public class Base_VideoGameManager : IGameManager
 {
     protected VideoPlayer videoPlayer;
     protected bool _initiailized;
