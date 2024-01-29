@@ -92,7 +92,7 @@ public class EffectManager : MonoBehaviour
     public Ray ray_EffectManager { get; private set; }
     public RaycastHit[] hits;
     public static event Action OnClickInEffectManager;
-    public Vector3 hitPoint { get; private set; }
+    public Vector3 currentHitPoint { get; private set; }
 
 
     //for debug.
@@ -104,17 +104,13 @@ public class EffectManager : MonoBehaviour
     protected virtual void OnGmRaySyncedByOnGm()
     {
         ray_EffectManager = IGameManager.GameManager_Ray;
-
-
+        
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
         {
-            hitPoint = hit.point;
+            currentHitPoint = hit.point;
 
             PlayParticle(particlePool, hit.point);
-
-
-            if (!Base_Interactable_VideoGameManager._isShaked) OnClickInEffectManager?.Invoke();
 
             OnClickInEffectManager?.Invoke();
             break;

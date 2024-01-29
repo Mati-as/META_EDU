@@ -1,4 +1,4 @@
-using System;
+ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -24,15 +24,13 @@ public class CrabVideoGameManager : Base_VideoGameManager
     public bool _isCrabAppearable { get; private set; }
 
     public static event Action OnReplay;
-    public GameObject UI_Scene;
+   
     // Start is called before the first frame update
     private void Start()
     {
-        Init();
-        
         _isCrabAppearable = true;
-        CrabEffectManager.Crab_OnClicked -= CrabOnClicked;
-        CrabEffectManager.Crab_OnClicked += CrabOnClicked;
+        // CrabEffectManager.Crab_OnClicked -= CrabOnRaySynced;
+        // CrabEffectManager.Crab_OnClicked += CrabOnRaySynced;
     }
 
     public float replayOffset;
@@ -82,31 +80,26 @@ public class CrabVideoGameManager : Base_VideoGameManager
         }
     }
 
-    private void OnDestroy()
-    {
-        CrabEffectManager.Crab_OnClicked -= CrabOnClicked;
-    }
+
 
     
     protected override void Init()
     {
         base.Init();
-        UI_Scene.SetActive(false);
+
         DOVirtual.Float(1, 0, 1.1f, speed =>
         {
             videoPlayer.playbackSpeed = speed;
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
-        }).OnComplete(() =>
-        {
-            UI_Scene.SetActive(true);
         });
     }
 
     public int crabAppearClickCount;
     private int _currentClickCount;
-
-    public static event Action OnCrabAppear;
-    private void CrabOnClicked()
+    private bool _isOnCrabAppearEventInvoked;
+    
+    public static event Action onCrabAppear;
+    private void CrabOnRaySynced()
     {
         if (!_initiailized) return;
 
@@ -118,14 +111,26 @@ public class CrabVideoGameManager : Base_VideoGameManager
 
         _currentClickCount++;
 
-        if (_currentClickCount > crabAppearClickCount)
+        if (_currentClickCount > crabAppearClickCount && !_isOnCrabAppearEventInvoked)
         {
-            OnCrabAppear?.Invoke();
+            onCrabAppear?.Invoke();
+            //effectManager에서 새로 crab 생성 못하게하는 bool값입니다. 
             _isCrabAppearable = false;
+            //event를 한번만 실행하도록 하는 boo값 입니다.  
+            _isOnCrabAppearEventInvoked = true;
+            
+#if UNITY_EDITOR
+            Debug.Log($"OnCrabAppear Invoke! 꽃게 생성 가능 여부 :  {_isCrabAppearable} ");
+#endif
             DOVirtual.Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
         }
       
+    }
+
+    protected override void OnRaySynced()
+    {
+        CrabOnRaySynced();
     }
     
     private void ReplayTriggerEvent()
@@ -137,6 +142,7 @@ public class CrabVideoGameManager : Base_VideoGameManager
 
         _currentClickCount = 0;
         _isCrabAppearable = true;
+        _isOnCrabAppearEventInvoked = false; 
         SoundManager.FadeInAndOutSound(_particleSystemAudioSource);
         OnReplay?.Invoke();
     }

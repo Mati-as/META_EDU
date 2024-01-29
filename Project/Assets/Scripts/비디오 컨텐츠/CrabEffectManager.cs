@@ -6,28 +6,16 @@ using UnityEngine;
 public class CrabEffectManager : EffectManager
 {
     public static event Action Crab_OnClicked;
-    public static event Action Crab_OnClickedSingle;
-    public Vector3 hitPoint { get; private set; }
+  
+  
 
     protected override void OnGmRaySyncedByOnGm()
     {
-        hits = Physics.RaycastAll(ray_EffectManager);
-        foreach (var hit in hits)
+        base.OnGmRaySyncedByOnGm();
+        
+        if (!CrabVideoGameManager._isShaked)
         {
-            
-            hitPoint = hit.point;
-            
-            PlayParticle(particlePool,hit.point);
-            
-
-            if (!CrabVideoGameManager._isShaked)
-            {
-                Crab_OnClicked?.Invoke();
-            }
-            
-            Crab_OnClickedSingle?.Invoke();
-            break;
-            
+            Crab_OnClicked?.Invoke();
         }
 
     }

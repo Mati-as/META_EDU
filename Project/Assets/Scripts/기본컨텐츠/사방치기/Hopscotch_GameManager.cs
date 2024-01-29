@@ -392,7 +392,7 @@ private void Update()
     public ParticleSystem _stageClearBubble;
     public static event Action onStageParticlePlay; 
 
-    public float downForce;
+    public float randomForceMax;
     private void OnStageClear()
     {
         _currentStep = 0;
@@ -408,6 +408,7 @@ private void Update()
         foreach (var step in _steps)
         {
             _rigidbodies[step].constraints = RigidbodyConstraints.None;
+            _rigidbodies[step].AddForce(Vector3.down * UnityEngine.Random.Range(5,randomForceMax),ForceMode.Impulse);
         }
         
         
