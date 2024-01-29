@@ -6,6 +6,12 @@ public class Underground_UIManager : MonoBehaviour
 {
     private GroundGameController _gameController;
 
+    private GameObject StoryUI;
+    private void Awake()
+    {
+        _gameController = GameObject.FindWithTag("GameController").GetComponent<GroundGameController>();
+    }
+
     private void Start()
     {
         _gameController = GameObject.FindWithTag("GameController").GetComponent<GroundGameController>();

@@ -186,15 +186,12 @@ public class FootstepManager : IGameManager
     public UndergroundUIManager undergroundUIManager;
     private Camera _camera;
     private InputAction _mouseClickAction;
-
-    private void Awake()
-    {
-        Init();
-
-    }
+    
 
     protected override void Init()
     {
+        base.Init();
+        
         _audioSource = GetComponent<AudioSource>();
         
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
@@ -204,10 +201,7 @@ public class FootstepManager : IGameManager
 
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
-
         
-        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-        RaySynchronizer.OnGetInputFromUser += OnRaySynced;
     }
 
 
@@ -241,20 +235,21 @@ public class FootstepManager : IGameManager
 
     public static string currentlyClickedObjectName;
 
-    public Ray ray;
+    
 
     private RaycastHit[] hits;
 
     //public void OnMouseClicked(InputAction.CallbackContext context)
     protected override void OnRaySynced()
     {
-        //ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        hits = Physics.RaycastAll(ray);
+#if UNITY_EDITOR
+        Debug.Log($"{gameObject.name} : OnRaySynced invoked");
+#endif
+        hits = Physics.RaycastAll(GameManager_Ray);
+        
         foreach (var hit in hits)
         {
-#if UNITY_EDITOR
-            Debug.Log($"{gameObject.name} : onMouseClicked invoked");
-#endif
+
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
             var fC = obj.GetComponent<FootstepController>();

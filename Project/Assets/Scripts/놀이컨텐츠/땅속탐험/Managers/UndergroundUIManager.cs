@@ -163,8 +163,7 @@ public class UndergroundUIManager : MonoBehaviour
         DOTween.SetTweensCapacity(2000,100);
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
         FootstepController.onLastFootstepClicked += EveryLastFootstepClicked;
-
-        //popUpUIRectTmp = popUpUIRect.GetComponent<TMP_Text>();
+        popUpUIRectTmp = popUpUIRect.GetComponentInChildren<TMP_Text>();
         
         tutorialUIGameObject.SetActive(true);
 
@@ -332,7 +331,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
             
         }
           
@@ -348,7 +347,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
         }
 
         // 마지막 동물인 여우가 아닐 때만...
@@ -464,7 +463,7 @@ public class UndergroundUIManager : MonoBehaviour
     {
         _gameStartCoroutine = StartCoroutine(OnGameStartCoroutine());
     }
-
+    
     private IEnumerator OnGameStartCoroutine()
     {
         tutorialUIRectTransform.DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y),
