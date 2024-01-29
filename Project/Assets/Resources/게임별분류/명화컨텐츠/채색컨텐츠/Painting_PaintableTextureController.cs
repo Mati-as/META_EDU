@@ -18,13 +18,12 @@ public class Painting_PaintableTextureController : IGameManager
 
      [Header("Shader Setting")] 
      public float burshStrength = 1;
-    void Start()
-    {
-        Init();
-    }
 
     protected override void Init()
     {
+        
+        base.Init();
+        
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
         SetInputSystem();
         
@@ -39,7 +38,7 @@ public class Painting_PaintableTextureController : IGameManager
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
     }
     
-    void StartPainting()
+    void Paint()
     {
         RaycastHit hit;
         if (Physics.Raycast(GameManager_Ray, out hit))
@@ -78,7 +77,7 @@ public class Painting_PaintableTextureController : IGameManager
     {
         // Initialize the paint action
         paintAction = new InputAction(binding: "<Mouse>/leftButton", interactions: "Press");
-        paintAction.performed += ctx => StartPainting();
+        paintAction.performed += ctx => Paint();
         paintAction.Enable();
     }
     
@@ -94,6 +93,6 @@ public class Painting_PaintableTextureController : IGameManager
     
     protected override void OnRaySynced()
     {
-        
+        Paint();
     }
 }

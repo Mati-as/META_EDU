@@ -19,8 +19,7 @@ public class UI_Scene_Button : MonoBehaviour
   /*
    * onBtnClicked와 Message_anim_controller의 onIntroUIOff 이벤트는 같은 기능을 수행
    * 사용자가 버튼을 클릭하여 event를 수행하는지, 혹은 10초(대기시간 제한)이 지나서 이벤트가 수행되는지에 대한
-   * 구분만 되어있음. 이를 방지하기위해 bool연산자 사용. 
-   *
+   * 구분만 되어있음. 이를 방지하기위해 bool연산자 사용.
    */
   public static event Action onBtnShut;
 
@@ -80,7 +79,7 @@ public class UI_Scene_Button : MonoBehaviour
   {
       _elapsedTime += Time.deltaTime*_offset;
       _remainTime = (int)( _autoShutTime - _elapsedTime);
-      tmp.text = $"시작({_remainTime})";
+      tmp.text = $"START ({_remainTime})";
       
       if(_remainTime <= 0 && !_isInvoked)
       {
