@@ -155,8 +155,10 @@ public class StoryUIController : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
+            
+        
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
         UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;

@@ -10,14 +10,12 @@ using UnityEngine;
 /// </summary>
 public class AnimalTrip_NewUIManager : MonoBehaviour
 {
-    [SerializeField] private AudioSource _audioSource;
-
-
+    
     [SerializeField] private StoryUIController _storyUIController;
 
     private void Awake()
     {
-        _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
+        //_storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
 
       
         UI_Scene_Button.onBtnShut -= ShowStoryUI;
