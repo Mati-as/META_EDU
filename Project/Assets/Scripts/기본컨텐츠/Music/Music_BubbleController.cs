@@ -131,25 +131,23 @@ public class Music_BubbleController : MonoBehaviour
 
     private void OnClicked()
     {
-        ray = _gameManager.ray_GameManager;
-
         var layerMask = LayerMask.GetMask("Screen");
 
 
-        if (Physics.Raycast(ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
+        if (Physics.Raycast( Music_GameManager.GameManager_Ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
             RemoveClosestParticle(rayCastHitForBubble.point + hitOffset);
     }
 
     protected virtual void OnDestroy()
     {
-        Music_GameManager.eventAfterAGetRay -= OnClicked;
+        Music_GameManager.On_GmRay_Synced -= OnClicked;
         onPatternEnd -= ClearOffAllBubbles;
     }
 
     protected virtual void BindEvent()
     {
-        Music_GameManager.eventAfterAGetRay -= OnClicked;
-        Music_GameManager.eventAfterAGetRay += OnClicked;
+        Music_GameManager.On_GmRay_Synced -= OnClicked;
+        Music_GameManager.On_GmRay_Synced += OnClicked;
 
         onPatternEnd -= ClearOffAllBubbles;
         onPatternEnd += ClearOffAllBubbles;

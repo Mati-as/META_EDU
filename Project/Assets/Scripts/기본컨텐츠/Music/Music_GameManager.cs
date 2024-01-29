@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Music_GameManager : Base_BasicGameManager
+public class Music_GameManager : IGameManager
 {
-    public static event Action eventAfterAGetRay; 
+
     
-    protected override void OnClicked()
+    protected override void OnRaySynced()
     {
-        hits = Physics.RaycastAll(ray_GameManager);
-        eventAfterAGetRay?.Invoke();
+        GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
 #if UNITY_EDITOR
        // Debug.Log("eventAfterAGetRay Invoke");
 #endif

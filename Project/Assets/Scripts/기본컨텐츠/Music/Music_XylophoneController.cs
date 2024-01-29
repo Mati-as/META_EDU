@@ -252,13 +252,13 @@ public class Music_XylophoneController : MonoBehaviour
 
     private void OnClicked()
     {
-        _ray = _gameManager.ray_GameManager;
+   
 
         //layermask 외부에서 설정 X.
         var layerMask = LayerMask.GetMask("Default");
 
-        if (_gameManager.hits.Length <= 0) return;
-        if (Physics.Raycast(_ray, out RayForXylophone, Mathf.Infinity, layerMask))
+      //  if (Music_GameManager.GameManager_Hits.Length <= 0) return;
+        if (Physics.Raycast(Music_GameManager.GameManager_Ray, out RayForXylophone, Mathf.Infinity, layerMask))
 
             if (_gameManager == null)
             {
@@ -313,13 +313,13 @@ public class Music_XylophoneController : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        Music_GameManager.eventAfterAGetRay -= OnClicked;
+        Music_GameManager.On_GmRay_Synced -= OnClicked;
     }
 
     protected virtual void BindEvent()
     {
-        Music_GameManager.eventAfterAGetRay -= OnClicked;
-        Music_GameManager.eventAfterAGetRay += OnClicked;
+        Music_GameManager.On_GmRay_Synced -= OnClicked;
+        Music_GameManager.On_GmRay_Synced += OnClicked;
     }
 
 
