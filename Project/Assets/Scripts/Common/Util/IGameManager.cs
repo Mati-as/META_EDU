@@ -37,7 +37,7 @@ public abstract class IGameManager : MonoBehaviour
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
         
 #if UNITY_EDITOR
-     
+     Debug.Log("On_GmRay_Synced Invoke!");
 #endif
         On_GmRay_Synced?.Invoke();
     }

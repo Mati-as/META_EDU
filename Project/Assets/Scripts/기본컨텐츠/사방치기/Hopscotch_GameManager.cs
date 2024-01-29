@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = System.Random;
 
@@ -39,12 +40,6 @@ public class Hopscotch_GameManager : IGameManager
     
    
     
-    private void Awake()
-    {
-       
-        Init();
-       
-    }
 
     private CanvasGroup _cg;
 
@@ -105,7 +100,6 @@ private void Update()
     {
         base.Init();
         
-        
         BindEvent();
         _defaultQuaternionMap = new Dictionary<Transform, Quaternion>();
         _defaultSizeMap = new Dictionary<Transform, Vector3>();
@@ -115,8 +109,20 @@ private void Update()
         GetSteps();
     }
 
+#if UNITY_EDITOR
+    private bool isChecked;
+#endif
+
     protected override void OnRaySynced()
     {
+#if UNITY_EDITOR
+        if (!isChecked)
+        {
+            Debug.Log($"{SceneManager.GetActiveScene().name} : OnRaySynced");
+            isChecked = true;
+        }
+
+#endif
         // 발판 밟은 직후에는 다음 발판을 누를 수 없게합니다.
         if (_isSuccesssParticlePlaying) return;
         
@@ -443,7 +449,7 @@ private void Update()
         
 
 #if UNITY_EDITOR
-Debug.Log("Step_Collapsing!!" );
+Debug.Log("step Collapsing!!" );
 #endif
     }
     private bool CheckOnStep()
