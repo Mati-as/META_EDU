@@ -36,7 +36,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     public bool _isReplayAfterPausing { get; private set; }
 
     public static event Action onRewind;
-    public GameObject UI_Scene;
+ 
     [SerializeField] protected float timeStampToStop;
     
     public int maxCount;
@@ -117,9 +117,9 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     protected override void Init()
     {
         base.Init();
-        UI_Scene.SetActive(false);
+    
 
-        DOVirtual.Float(1, 0, 1.5f, _ => _++).OnComplete(() => { UI_Scene.SetActive(true); });
+       
         DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {
             videoPlayer.playbackSpeed = speed;

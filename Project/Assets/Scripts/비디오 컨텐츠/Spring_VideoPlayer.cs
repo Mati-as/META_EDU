@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spring_VideoPlayer : Base_VideoGameManager
+public class Spring_VideoPlayer : Video_GameManager
 {
    
     protected override void Init()

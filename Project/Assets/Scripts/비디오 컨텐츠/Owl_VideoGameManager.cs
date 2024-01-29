@@ -7,10 +7,10 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
+public class Owl_VideoGameManager : InteractableVideoGameManager
 {
     private GameObject Owl_SpeechBubble;
-    private float _defaultScale;
+    private Vector3 _defaultScale;
 
 
     private ParticleSystem _psOnReplayAfterPaused;
@@ -23,6 +23,22 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
     //Rewind로 처음부터 다시 초기화되어 재생되는지 판단
   
     public static event Action onOwlEndLines;
+    
+    private void Awake()
+    {
+        //UI 관련 로직
+        Owl_SpeechBubble = GameObject.Find(nameof(Owl_SpeechBubble));
+        Debug.Assert(Owl_SpeechBubble != null);
+        _tmp = Owl_SpeechBubble.GetComponentInChildren<TMP_Text>();
+        _tmp.text = string.Empty;
+
+
+        _defaultScale = Owl_SpeechBubble.GetComponent<RectTransform>().localScale;
+#if UNITY_EDITOR
+
+        Debug.Log($"부엉이 스케일할당: default Scale: {_defaultScale}");
+#endif
+    }
 
     protected override void Init()
     {
@@ -38,22 +54,15 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
 
     private void UI_Init()
     {
-        //UI 관련 로직
-        Owl_SpeechBubble = GameObject.Find(nameof(Owl_SpeechBubble));
-        Debug.Assert(Owl_SpeechBubble != null);
-        _tmp = Owl_SpeechBubble.GetComponentInChildren<TMP_Text>();
-        _tmp.text = string.Empty;
+      
 
-
-        _defaultScale = Owl_SpeechBubble.transform.localScale.x;
-        Owl_SpeechBubble.transform.localScale = Vector3.zero;
-
+       
         // XML 파일 로드 (Resources 폴더 안에 있어야 함)
         xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Owl_UI_Data");
         _xmlDoc = new XmlDocument();
         _xmlDoc.LoadXml(xmlAsset.text);
 
-
+        Owl_SpeechBubble.transform.localScale = Vector3.zero;
         BindEvent();
     }
 
@@ -229,21 +238,23 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
             .OnComplete(() =>
             {
                 Owl_SpeechBubble.transform
-                    .DOScale(Vector3.one * _defaultScale, 2f)
+                    .DOScale(_defaultScale, 2f)
                     .SetEase(Ease.OutBounce)
                     .OnStart(() =>
                     {
                         //영상 다시 중지
                         DOVirtual.Float(1, 0, 1f,
-                            speed =>
-                            {
+                                speed =>
+                                {
 #if UNITY_EDITOR
 
+                                    Debug.Log($"부엉이 UI 재생 시작 default Scale: {_defaultScale}");
 #endif
-                                videoPlayer.playbackSpeed = speed;
-                            }).OnComplete(() => { PlayNextMessageAnim(currentLineIndex); });
+                                    videoPlayer.playbackSpeed = speed;
+                                }).SetDelay(3f)
+                            .OnComplete(() => { PlayNextMessageAnim(currentLineIndex); });
                     })
-                    .SetDelay(2f);
+                    .SetDelay(5f);
             });
     }
 
@@ -309,7 +320,8 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
             base.OnReplay();
 
             //start delay
-            DOVirtual.Float(0, 1, 1.25f, _ => _++).OnComplete(() =>
+            DOVirtual.Float(0, 1, 1.25f, _ => _++)
+                .OnComplete(() =>
             {
                 _psOnReplayAfterPaused.transform.gameObject.SetActive(true);
                 _psOnReplayAfterPaused.Play();
@@ -328,6 +340,7 @@ public class Owl_VideoGameManager : Base_Interactable_VideoGameManager
             DOVirtual
                 .Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
+                
         }
     }
     public static bool isJustRewind { get;  private set; }

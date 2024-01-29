@@ -96,8 +96,8 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         Owl_VideoGameManager.onOwlEndLines -= OnOwnEndLines;
         Owl_VideoGameManager.onOwlEndLines += OnOwnEndLines;
 
-        Base_Interactable_VideoGameManager.onRewind -= OnRewind;
-        Base_Interactable_VideoGameManager.onRewind += OnRewind;
+        InteractableVideoGameManager.onRewind -= OnRewind;
+        InteractableVideoGameManager.onRewind += OnRewind;
     }
 
     private void OnDestroy()
@@ -105,7 +105,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         IGameManager.On_GmRay_Synced -= OnClicked;
 
 
-        Base_Interactable_VideoGameManager.onRewind -= OnRewind;
+        InteractableVideoGameManager.onRewind -= OnRewind;
         Owl_VideoGameManager.onOwlEndLines += OnOwnEndLines;
     }
 

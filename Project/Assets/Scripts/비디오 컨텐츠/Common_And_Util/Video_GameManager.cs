@@ -5,7 +5,7 @@ using UnityEngine.Video;
 using System.IO;
 using UnityEngine.SceneManagement;
 
-public class Base_VideoGameManager : IGameManager
+public class Video_GameManager : IGameManager
 {
     protected VideoPlayer videoPlayer;
     protected bool _initiailized;
@@ -16,10 +16,7 @@ public class Base_VideoGameManager : IGameManager
 
     [Header("Video Settings")] public float playbackSpeed;
 
-    void Start()
-    {
-        Init();
-    }
+
 
     protected override void Init()
     {
@@ -40,7 +37,7 @@ public class Base_VideoGameManager : IGameManager
         else
         {
             // MP4 파일이 없으면 MOV 파일 재생
-            string movPath = Path.Combine(Application.streamingAssetsPath, $"{gameObject.name}.mov");
+            string movPath = Path.Combine(Application.streamingAssetsPath, $"{SceneManager.GetActiveScene().name.Substring(prefix.Length)}.mov");
             videoPlayer.url = movPath;
         }
         

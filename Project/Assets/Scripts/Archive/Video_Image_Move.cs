@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 public class Video_Image_Move : RaySynchronizer
 {
-    private Base_VideoGameManager vGameManager;
+    private Video_GameManager vGameManager;
     private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
     

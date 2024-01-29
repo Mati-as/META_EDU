@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class CrabVideoGameManager : Base_VideoGameManager
+public class CrabVideoGameManager : Video_GameManager
 {
     
 #if UNITY_EDITOR
