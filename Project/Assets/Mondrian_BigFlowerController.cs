@@ -2,10 +2,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-
-
-
-public class Mondrian_FlowerController : MonoBehaviour
+public class Mondrian_BigFlowerController : MonoBehaviour
 {
     private GameObject[] vegetations;
     private int _currentVeggie = 0;
@@ -23,14 +20,14 @@ public class Mondrian_FlowerController : MonoBehaviour
             vegetations[i] = transform.GetChild(i).gameObject;
         }
         
-        Mondrian_GameManager.onSmallCubeExplosion -=PlayAnim;
-        Mondrian_GameManager.onSmallCubeExplosion +=PlayAnim;
+        Mondrian_GameManager.onBigCubeExplosion -=PlayAnim;
+        Mondrian_GameManager.onBigCubeExplosion +=PlayAnim;
     }
 
 
     private void OnDestroy()
     {
-        Mondrian_GameManager.onSmallCubeExplosion -=PlayAnim;
+        Mondrian_GameManager.onBigCubeExplosion -=PlayAnim;
     }
 
 

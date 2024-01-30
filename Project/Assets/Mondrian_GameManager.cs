@@ -10,8 +10,10 @@ using Random = UnityEngine.Random;
 public class Mondrian_GameManager : IGameManager
 {
     //events
-    public static event Action onCubeExplosion;
+    public static event Action onSmallCubeExplosion;
+    public static event Action onBigCubeExplosion;
     [Header("Reference")] private Mondrian_FlowerController mondrianFlowerController;
+    private Mondrian_BigFlowerController mondrianBigFlowerController;
 
     [Header("Cube Moving Settings")] private Dictionary<Transform, Transform> _cubeDpArrivalMap;
     private float _cubeMoveCurrentTime;
@@ -33,7 +35,7 @@ public class Mondrian_GameManager : IGameManager
     private Color[] _colors;
 
 
-    // 파도타기방식(형태) RayCasting 및 색상변환로직 구현용 RayCaster. 
+    // 파도타기방식(형태) RayCasting 및 색상변환로직 구현용 RayCaster.              
     private GameObject _rayCasterParent;
     private Transform[] _rayCasters;
 
@@ -65,6 +67,8 @@ public class Mondrian_GameManager : IGameManager
 
         mondrianFlowerController =
             GameObject.Find("Mondrian_FlowerController").GetComponent<Mondrian_FlowerController>();
+        mondrianBigFlowerController =
+            GameObject.Find("Mondrian_Big_FlowerController").GetComponent<Mondrian_BigFlowerController>();
 
         var particle = Resources.Load<GameObject>("게임별분류/기본컨텐츠/Mondrian/" + "CFX_explosionPs");
         _explosionParticle = Instantiate(particle).GetComponent<ParticleSystem>();
@@ -287,8 +291,10 @@ public class Mondrian_GameManager : IGameManager
         if (Random.Range(0, 10f) < 7.5f) return;
         if (mondrianFlowerController._onGrowing) return;
 
+        
         var scaleSeq = DOTween.Sequence();
         foreach (var hit in GameManager_Hits)
+            //작은큐브인 경우------------------------------------------
             if (hit.transform.localScale.x < 1.1f)
             {
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
@@ -316,7 +322,7 @@ public class Mondrian_GameManager : IGameManager
                                         _scaleSequence[currentInstance] = scaleSeq;
 
                                         mondrianFlowerController.flowerAppearPosition = hit.transform.position;
-                                        onCubeExplosion?.Invoke();
+                                        onSmallCubeExplosion?.Invoke();
                                     })
                                     .OnComplete(() =>
                                     {
@@ -331,7 +337,7 @@ public class Mondrian_GameManager : IGameManager
                 Debug.Log("---------------------클릭시 Explosion 발생--------------------------");
 #endif
             }
-            else
+            else //큰 큐브인 경우------------------------------------------
             {
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
                 if (_meshRendererMap.ContainsKey(currentInstance))
@@ -355,7 +361,7 @@ public class Mondrian_GameManager : IGameManager
                                     _scaleSequence[currentInstance] = scaleSeq;
 
                                     mondrianFlowerController.flowerAppearPosition = hit.transform.position;
-                                    onCubeExplosion?.Invoke();
+                                    onBigCubeExplosion?.Invoke();
                                 })
                                 .OnComplete(() =>
                                 {
