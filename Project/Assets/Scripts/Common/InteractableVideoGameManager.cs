@@ -129,6 +129,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
         OnRaySyncFromGameManager();
     }
 

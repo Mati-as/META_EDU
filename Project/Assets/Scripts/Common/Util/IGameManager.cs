@@ -7,8 +7,11 @@ public abstract class IGameManager : MonoBehaviour
 {
     public static Ray GameManager_Ray { get; private set; }
     public static RaycastHit[] GameManager_Hits { get; set; }
+    public static bool isStartButtonClicked { get; private set; }
+    public static bool isInitialized { get; private set; }
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME = 30;
+    
 
     protected virtual void Awake()
     {
@@ -18,27 +21,21 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void Init()
     {
+        isStartButtonClicked = false;
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
+        isInitialized = true;
     }
 
 
-    private void OnDestroy()
-    {
-        RaySynchronizer.OnGetInputFromUser -= OnClicked;
-        On_GmRay_Synced -= OnRaySynced;
-    }
 
 
-    protected void OnClicked()
+    protected void OnOriginallyRaySynced()
     {
         GameManager_Ray = RaySynchronizer.ray_ImageMove;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
 
-#if UNITY_EDITOR
-        Debug.Log("On_GmRay_Synced Invoke!");
-#endif
         On_GmRay_Synced?.Invoke();
     }
 
@@ -49,19 +46,42 @@ public abstract class IGameManager : MonoBehaviour
     ///     EffectManager 내부에서 처리할 로직처리
     ///     2. 나머지 RaySync가 필요한 경우의 게임로직 처리..
     /// </summary>
-    protected abstract void OnRaySynced();
+    protected virtual void OnRaySynced()
+    {
+        
+       
+        if (!isStartButtonClicked) return;
+        if (!isInitialized) return;
+
+    }
 
     protected void BindEvent()
     {
 #if UNITY_EDITOR
         Debug.Log("Ray Sync Subscribed");
 #endif
-        RaySynchronizer.OnGetInputFromUser -= OnClicked;
-        RaySynchronizer.OnGetInputFromUser += OnClicked;
+        //1차적으로 하드웨어에서 동기화된 Ray를 GameManger에서 읽어옵니다.
+        RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
+        RaySynchronizer.OnGetInputFromUser += OnOriginallyRaySynced;
 
+        //On_GmRay_Synced에서 나머지 Ray관련 로직 분배 및 처리합니다. 
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;
+
+        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
+        UI_Scene_Button.onBtnShut += OnStartButtonClicked;
     }
+    
+    private void OnDestroy()
+    {
+        RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
+        On_GmRay_Synced -= OnRaySynced;
+        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
+    }
+
+
+    private void OnStartButtonClicked() => isStartButtonClicked = true;
+   
 
     protected virtual void PlayNarration()
     {

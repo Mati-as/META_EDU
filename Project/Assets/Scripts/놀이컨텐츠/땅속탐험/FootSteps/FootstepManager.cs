@@ -242,6 +242,7 @@ public class FootstepManager : IGameManager
     //public void OnMouseClicked(InputAction.CallbackContext context)
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
 #if UNITY_EDITOR
         Debug.Log($"{gameObject.name} : OnRaySynced invoked");
 #endif

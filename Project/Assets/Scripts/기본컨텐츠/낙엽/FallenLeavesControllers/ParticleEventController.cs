@@ -123,6 +123,7 @@ public class ParticleEventController : IGameManager, IOnClicked
     RaycastHit _hit;
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
 #if UNITY_EDITOR
      
 #endif

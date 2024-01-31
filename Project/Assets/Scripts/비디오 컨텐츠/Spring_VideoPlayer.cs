@@ -25,6 +25,6 @@ public class Spring_VideoPlayer : Video_GameManager
 
     protected override void OnRaySynced()
     {
-        
+        base.OnRaySynced();
     }
 }

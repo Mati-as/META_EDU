@@ -609,7 +609,7 @@ public class AnimalTrip_GameManager : IGameManager
 
     protected override void OnRaySynced()
     {
-       
+             base.OnRaySynced();
             var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
           
             var hits = Physics.RaycastAll(GameManager_Ray);

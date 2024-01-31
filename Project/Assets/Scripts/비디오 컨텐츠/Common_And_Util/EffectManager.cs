@@ -103,6 +103,7 @@ public class EffectManager : MonoBehaviour
 
     protected virtual void OnGmRaySyncedByOnGm()
     {
+        if (!IGameManager.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
         hits = Physics.RaycastAll(ray_EffectManager);

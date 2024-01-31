@@ -115,6 +115,7 @@ private void Update()
 
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
 #if UNITY_EDITOR
         if (!isChecked)
         {

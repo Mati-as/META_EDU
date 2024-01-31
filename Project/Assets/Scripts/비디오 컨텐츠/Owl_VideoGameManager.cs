@@ -187,7 +187,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
 
 
     protected override void OnRaySynced()
-    {
+    { 
         base.OnRaySynced();
         if (_isNextUIAppearable)
         {

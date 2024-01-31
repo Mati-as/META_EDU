@@ -16,7 +16,6 @@ public class Mondrian_GameManager : IGameManager
     private Mondrian_BigFlowerController mondrianBigFlowerController;
 
     [Header("Cube Moving Settings")] private Dictionary<Transform, Transform> _cubeDpArrivalMap;
-    private float _cubeMoveCurrentTime;
     private GameObject _movableCubeParent;
     private Transform[] _movableCubes;
     [Range(0, 60)] public float _cubeMoveInterval;
@@ -134,14 +133,13 @@ public class Mondrian_GameManager : IGameManager
 
     private void Update()
     {
-        _cubeMoveCurrentTime += Time.deltaTime;
         rayMoveCurrentTime += Time.deltaTime;
 
         if (rayMoveCurrentTime > raycasterMoveInterval)
         {
             RayCasterMovePlay();
             rayMoveCurrentTime = 0;
-            raycasterMoveInterval = Random.Range(55, 65);
+            raycasterMoveInterval = Random.Range(23.5f, 30);
         }
 
 //         if (_cubeMoveCurrentTime > _cubeMoveInterval)
@@ -192,6 +190,7 @@ public class Mondrian_GameManager : IGameManager
 
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
         RandomlyChangeColor(GameManager_Ray);
         PlayExplosionAnimation();
     }
@@ -211,6 +210,7 @@ public class Mondrian_GameManager : IGameManager
                 // var scaleSeq = DOTween.Sequence();
 
                 var sequence = DOTween.Sequence();
+                
                 // 스케일 애니메이션
                 // var defaultScale = hit.transform.localScale;
                 // var targetScale = defaultScale * _scaleInterval;
@@ -226,6 +226,7 @@ public class Mondrian_GameManager : IGameManager
                                 .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
                                     Random.Range(0.2f, 0.35f))
                             );
+
                         _colorSequences.TryAdd(currentInstance, sequence);
                     }
                 }
@@ -234,6 +235,7 @@ public class Mondrian_GameManager : IGameManager
                     sequence.Append(_meshRendererMap[currentInstance].material
                         .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
                             Random.Range(0.2f, 0.3f)));
+
                     _colorSequences.TryAdd(currentInstance, sequence);
                 }
             }
@@ -295,33 +297,42 @@ public class Mondrian_GameManager : IGameManager
 
         var scaleSeq = DOTween.Sequence();
         foreach (var hit in GameManager_Hits)
+        {
             //작은큐브인 경우------------------------------------------
             if (hit.transform.localScale.z < 1.1f)
             {
                 if (mondrianFlowerController._onGrowing) return;
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
+                Collider currentCollider = hit.transform.gameObject.GetComponent<Collider>();
+                if (_scaleSequence.ContainsKey(currentInstance))
+                {
+#if UNITY_EDITOR
+                    Debug.Log("sequence is already active..try later");
+#endif
+                    if (_scaleSequence[currentInstance].IsActive()) return;
+                }
+                else
+                {
+                    _scaleSequence[currentInstance].Kill();
+                }
+
                 if (_meshRendererMap.ContainsKey(currentInstance))
                 {
                     //DOScale동작 중, Transform 참조 잃어버리는 경우 방지를 위해 로컬 Transform 변수 선언
                     var currentTransform = hit.transform;
                     // 더블클릭시 스케일이 중복되어 움직이는것(시퀀스 에러)을 방지합니다.
-                    if (_scaleSequence.ContainsKey(currentInstance))
-                    {
-                        if (_scaleSequence[currentInstance].IsActive()) return;
-                    }
-                    else
-                    {
-                        _scaleSequence[currentInstance].Kill();
-                    }
 
+                    //중복클릭방지용 콜라이더 비활성화.. sequnece 간헐적 오류로 인해 방어적 코드작성 
+                    currentCollider.enabled = false;
+                    
                     // 스케일 애니메이션
                     var defaultScale = hit.transform.localScale;
                     var targetScale = defaultScale * _scaleInterval;
-                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.53f).SetEase(Ease.InOutSine)
+                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.05f).SetEase(Ease.InOutSine)
                         .OnComplete(() =>
                             {
                                 currentTransform
-                                    .DOScale(0f, 0.9f).SetEase(Ease.InOutSine).SetDelay(0.1f)
+                                    .DOScale(0f, 0.45f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                     .OnStart(() =>
                                     {
                                         if (!_explosionParticle.IsAlive() && hit.transform.localScale.x < 1.5f)
@@ -337,22 +348,42 @@ public class Mondrian_GameManager : IGameManager
                                     .OnComplete(() =>
                                     {
                                         currentTransform
-                                            .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine)
-                                            .SetDelay(Random.Range(5, 10)); //respawnTime
+                                            .DOScale(defaultScale, 0.45f).SetEase(Ease.InOutSine)
+                                            .SetDelay(Random.Range(5, 10)).OnComplete(() =>
+                                            {
+                                                currentCollider.enabled = true;
+                                            }); //respawnTime
+                                            
+
+                                       
                                     });
                             }
                         ));
+
                     _scaleSequence[currentInstance] = scaleSeq;
                 }
-
-#if UNITY_EDITOR
-                Debug.Log("---------------------클릭시 Explosion 발생--------------------------");
-#endif
             }
             else //큰 큐브인 경우------------------------------------------
             {
                 if (mondrianBigFlowerController._onGrowing) return;
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
+
+                //중복클릭방지용 콜라이더 비활성화.. sequnece 간헐적 오류로 인해 방어적 코드작성
+                Collider currentCollider = hit.transform.gameObject.GetComponent<Collider>();
+                currentCollider.enabled = false;
+                
+                if (_scaleSequence.ContainsKey(currentInstance))
+                {
+#if UNITY_EDITOR
+                    Debug.Log("sequence is already active..try later");
+#endif
+                    if (_scaleSequence[currentInstance].IsActive()) return;
+                }
+                else
+                {
+                    _scaleSequence[currentInstance].Kill();
+                }
+
                 if (_meshRendererMap.ContainsKey(currentInstance))
                 {
                     //DOScale동작 중, Transform 참조 잃어버리는 경우 방지를 위해 로컬 Transform 변수 선언
@@ -368,15 +399,16 @@ public class Mondrian_GameManager : IGameManager
                         _scaleSequence[currentInstance].Kill();
                     }
 
+                   
 
                     // 스케일 애니메이션
                     var defaultScale = hit.transform.localScale;
                     var targetScale = defaultScale * _scaleInterval;
-                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.63f).SetEase(Ease.InOutSine)
+                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.05f).SetEase(Ease.InOutSine)
                         .OnComplete(() =>
                         {
                             currentTransform
-                                .DOScale(0f, 0.9f).SetEase(Ease.InOutSine).SetDelay(0.1f)
+                                .DOScale(0f, 0.35f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                 .OnStart(() =>
                                 {
                                     mondrianBigFlowerController.flowerAppearPosition = currentTransform.position;
@@ -384,9 +416,14 @@ public class Mondrian_GameManager : IGameManager
                                 })
                                 .OnComplete(() =>
                                 {
+                                    
                                     currentTransform
-                                        .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine)
-                                        .SetDelay(Random.Range(5, 10)); //respawnTime
+                                        .DOScale(defaultScale, 0.35f).SetEase(Ease.InOutSine)
+                                        .SetDelay(Random.Range(5, 10))
+                                        .OnComplete(() =>
+                                        {
+                                            currentCollider.enabled = true;
+                                        }); //respawnTime
                                 });
                         }));
 
@@ -394,13 +431,13 @@ public class Mondrian_GameManager : IGameManager
                 }
             }
 
-        scaleSeq.Play();
+            scaleSeq.Play();
+            break;
+        }
     }
 
 
     private void PlayVanishAnimation()
     {
     }
-
-    
 }

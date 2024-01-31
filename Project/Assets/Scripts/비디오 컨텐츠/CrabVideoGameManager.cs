@@ -29,8 +29,7 @@ public class CrabVideoGameManager : Video_GameManager
     private void Start()
     {
         _isCrabAppearable = true;
-        // CrabEffectManager.Crab_OnClicked -= CrabOnRaySynced;
-        // CrabEffectManager.Crab_OnClicked += CrabOnRaySynced;
+       
     }
 
     public float replayOffset;
@@ -101,8 +100,8 @@ public class CrabVideoGameManager : Video_GameManager
     public static event Action onCrabAppear;
     private void CrabOnRaySynced()
     {
+        base.OnRaySynced();
         if (!_initiailized) return;
-
         
         if (!_isShaked)
         {
@@ -119,9 +118,7 @@ public class CrabVideoGameManager : Video_GameManager
             //event를 한번만 실행하도록 하는 boo값 입니다.  
             _isOnCrabAppearEventInvoked = true;
             
-#if UNITY_EDITOR
-            Debug.Log($"OnCrabAppear Invoke! 꽃게 생성 가능 여부 :  {_isCrabAppearable} ");
-#endif
+
             DOVirtual.Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
         }
@@ -130,6 +127,9 @@ public class CrabVideoGameManager : Video_GameManager
 
     protected override void OnRaySynced()
     {
+        base.OnRaySynced();
+
+        if (!isStartButtonClicked) return;
         CrabOnRaySynced();
     }
     

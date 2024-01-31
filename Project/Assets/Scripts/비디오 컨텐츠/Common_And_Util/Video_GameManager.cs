@@ -49,9 +49,5 @@ public class Video_GameManager : IGameManager
     }
 
 
-    protected override void OnRaySynced()
-    {
-        
-    }
     
 }
