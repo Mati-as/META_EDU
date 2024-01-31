@@ -41,7 +41,7 @@ public class Mondrian_BigFlowerController : MonoBehaviour
             
             vegetations[_currentVeggie % vegetations.Length].transform.localScale = Vector3.zero;
             vegetations[_currentVeggie % vegetations.Length].transform.position = flowerAppearPosition;
-            vegetations[_currentVeggie % vegetations.Length].transform.DOScale(50f, 0.8f)
+            vegetations[_currentVeggie % vegetations.Length].transform.DOScale(5f, 0.8f)
                 .SetEase(Ease.InOutBounce)
                 .SetDelay(0.2f)
                 .OnComplete(() =>

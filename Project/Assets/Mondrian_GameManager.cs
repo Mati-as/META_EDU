@@ -67,11 +67,13 @@ public class Mondrian_GameManager : IGameManager
 
         mondrianFlowerController =
             GameObject.Find("Mondrian_FlowerController").GetComponent<Mondrian_FlowerController>();
+
         mondrianBigFlowerController =
             GameObject.Find("Mondrian_Big_FlowerController").GetComponent<Mondrian_BigFlowerController>();
 
         var particle = Resources.Load<GameObject>("게임별분류/기본컨텐츠/Mondrian/" + "CFX_explosionPs");
         _explosionParticle = Instantiate(particle).GetComponent<ParticleSystem>();
+        _explosionParticle.Stop();
 
         _cubeDpArrivalMap = new Dictionary<Transform, Transform>();
 
@@ -193,11 +195,12 @@ public class Mondrian_GameManager : IGameManager
         PlayExplosionAnimation();
     }
 
-    private readonly float _scaleInterval = 1.05f;
+    private readonly float _scaleInterval = 1.02f;
 
 
     private void RandomlyChangeColor(Ray ray)
     {
+        
         GameManager_Hits = Physics.RaycastAll(ray);
 
         foreach (var hit in GameManager_Hits)
@@ -205,9 +208,9 @@ public class Mondrian_GameManager : IGameManager
             var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
             if (_meshRendererMap.ContainsKey(currentInstance))
             {
-                //
+                
                 // var scaleSeq = DOTween.Sequence();
-                //
+                
                 var sequence = DOTween.Sequence();
                 // 스케일 애니메이션
                 // var defaultScale = hit.transform.localScale;
@@ -221,8 +224,8 @@ public class Mondrian_GameManager : IGameManager
                     {
                         sequence
                             .Append(_meshRendererMap[currentInstance].material
-                                .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
-                                    Random.Range(0.2f, 0.35f))
+                            .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
+                            Random.Range(0.2f, 0.35f))
                             );
                         _colorSequences.TryAdd(currentInstance, sequence);
                     }
@@ -230,7 +233,7 @@ public class Mondrian_GameManager : IGameManager
                 else
                 {
                     sequence.Append(_meshRendererMap[currentInstance].material
-                        .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
+                            .DOColor(GetRandomColor(_meshRendererMap[currentInstance].material.color),
                             Random.Range(0.2f, 0.3f)));
                     _colorSequences.TryAdd(currentInstance, sequence);
                 }
@@ -240,8 +243,8 @@ public class Mondrian_GameManager : IGameManager
 
     private void RayCasterMovePlay()
     {
-        _rayCasterParent.transform.position = _pathPos[(int)RayCasterMovePosition.Start];
-        _rayCasterParent.transform
+            _rayCasterParent.transform.position = _pathPos[(int)RayCasterMovePosition.Start];
+            _rayCasterParent.transform
             .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], 3.2f)
             .OnStart(() => { _rayCastCoroutine = StartCoroutine(RayCasterMoveCoroutine()); })
             .OnComplete(() =>
@@ -256,8 +259,8 @@ public class Mondrian_GameManager : IGameManager
 
     private void RayCasterMove()
     {
-        // 각 자식 객체의 위치에서 아래 방향으로 레이를 발사합니다.
-        foreach (var childTransform in _rayCasters)
+            // 각 자식 객체의 위치에서 아래 방향으로 레이를 발사합니다.
+            foreach (var childTransform in _rayCasters)
             if (childTransform != transform)
             {
                 var raycasterMoveRay = new Ray(childTransform.position, Vector3.down);
@@ -284,50 +287,58 @@ public class Mondrian_GameManager : IGameManager
 
     public float moveUpAmount;
 
-    
+
     private void PlayExplosionAnimation()
     {
         //확률 및 애니메이션 중복재생 방지..
         if (Random.Range(0, 10f) < 7.5f) return;
-        if (mondrianFlowerController._onGrowing) return;
-
+        
         
         var scaleSeq = DOTween.Sequence();
         foreach (var hit in GameManager_Hits)
             //작은큐브인 경우------------------------------------------
-            if (hit.transform.localScale.x < 1.1f)
+            if (hit.transform.localScale.z < 1.1f)
             {
+               
+                if (mondrianFlowerController._onGrowing) return;
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
                 if (_meshRendererMap.ContainsKey(currentInstance))
                 {
+                    //DOScale동작 중, Transform 참조 잃어버리는 경우 방지를 위해 로컬 Transform 변수 선언
+                    Transform currentTransform = hit.transform;
                     // 더블클릭시 스케일이 중복되어 움직이는것(시퀀스 에러)을 방지합니다.
                     if (_scaleSequence.ContainsKey(currentInstance))
-                        if (_scaleSequence[currentInstance].IsActive())
-                            return;
+                    {
+                        if (_scaleSequence[currentInstance].IsActive()) return;
+                    }
 
                     // 스케일 애니메이션
                     var defaultScale = hit.transform.localScale;
                     var targetScale = defaultScale * _scaleInterval;
-                    scaleSeq.Append(hit.transform.DOScale(targetScale, 0.53f).SetEase(Ease.InOutSine)
+                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.53f).SetEase(Ease.InOutSine)
                         .OnComplete(() =>
                             {
-                                hit.transform
+                                currentTransform
                                     .DOScale(0f, 0.9f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                     .OnStart(() =>
                                     {
-                                        _explosionParticle.Stop();
-                                        _explosionParticle.transform.position = hit.transform.position;
-                                        _explosionParticle.Play();
+                                        if (!_explosionParticle.IsAlive())
+                                        {
+                                            _explosionParticle.transform.position = currentTransform.position;
+                                            _explosionParticle.Play();
+                                        }
+                            
 
                                         _scaleSequence[currentInstance] = scaleSeq;
 
-                                        mondrianFlowerController.flowerAppearPosition = hit.transform.position;
+                                        mondrianFlowerController.flowerAppearPosition = currentTransform.position;
                                         onSmallCubeExplosion?.Invoke();
                                     })
                                     .OnComplete(() =>
                                     {
-                                        hit.transform
-                                            .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine).SetDelay(Random.Range(5,10));//respawnTime
+                                        currentTransform
+                                            .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine)
+                                            .SetDelay(Random.Range(5, 10)); //respawnTime
                                     });
                             }
                         ));
@@ -339,34 +350,41 @@ public class Mondrian_GameManager : IGameManager
             }
             else //큰 큐브인 경우------------------------------------------
             {
+                if (mondrianBigFlowerController._onGrowing) return;
                 var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
                 if (_meshRendererMap.ContainsKey(currentInstance))
                 {
+                    
+                    //DOScale동작 중, Transform 참조 잃어버리는 경우 방지를 위해 로컬 Transform 변수 선언
+                    Transform currentTransform = hit.transform;
+                    
                     // 더블클릭시 스케일이 중복되어 움직이는것(시퀀스 에러)을 방지합니다.
                     if (_scaleSequence.ContainsKey(currentInstance))
-                        if (_scaleSequence[currentInstance].IsActive())
-                            return;
+                    {
+                        if (_scaleSequence[currentInstance].IsActive()) return;
+                    }
+                
 
                     // 스케일 애니메이션
                     var defaultScale = hit.transform.localScale;
                     var targetScale = defaultScale * _scaleInterval;
-                    scaleSeq.Append(hit.transform.DOScale(targetScale, 0.63f).SetEase(Ease.InOutSine)
+                    scaleSeq.Append(currentTransform.DOScale(targetScale, 0.63f).SetEase(Ease.InOutSine)
                         .OnComplete(() =>
                         {
-                            hit.transform
-                                 
-                                .DOScale(0f, 0.9f).SetEase(Ease.InOutSine).SetDelay(0.1f) 
+                            currentTransform
+                                .DOScale(0f, 0.9f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                 .OnStart(() =>
                                 {
                                     _scaleSequence[currentInstance] = scaleSeq;
 
-                                    mondrianFlowerController.flowerAppearPosition = hit.transform.position;
+                                    mondrianBigFlowerController.flowerAppearPosition = currentTransform.position;
                                     onBigCubeExplosion?.Invoke();
                                 })
                                 .OnComplete(() =>
                                 {
-                                    hit.transform
-                                        .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine).SetDelay(Random.Range(5,10)); //respawnTime
+                                    currentTransform
+                                        .DOScale(defaultScale, 0.9f).SetEase(Ease.InOutSine)
+                                        .SetDelay(Random.Range(5, 10)); //respawnTime
                                 });
                         }));
                 }

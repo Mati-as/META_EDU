@@ -1,47 +1,40 @@
-
-using UnityEngine;
 using DG.Tweening;
-
-
-
+using UnityEngine;
 
 public class Mondrian_FlowerController : MonoBehaviour
 {
     private GameObject[] vegetations;
-    private int _currentVeggie = 0;
+    private int _currentVeggie;
     public Vector3 flowerAppearPosition { get; set; }
-    
-    void Start()
-    {
 
+    private void Start()
+    {
         flowerAppearPosition = Vector3.zero;
-        
-        int childrenCount = transform.childCount;
+
+        var childrenCount = transform.childCount;
         vegetations = new GameObject[childrenCount];
 
-        for (int i = 0; i < childrenCount; i++) {
-            vegetations[i] = transform.GetChild(i).gameObject;
-        }
-        
-        Mondrian_GameManager.onSmallCubeExplosion -=PlayAnim;
-        Mondrian_GameManager.onSmallCubeExplosion +=PlayAnim;
+        for (var i = 0; i < childrenCount; i++) vegetations[i] = transform.GetChild(i).gameObject;
+
+        Mondrian_GameManager.onSmallCubeExplosion -= PlayAnim;
+        Mondrian_GameManager.onSmallCubeExplosion += PlayAnim;
     }
 
 
     private void OnDestroy()
     {
-        Mondrian_GameManager.onSmallCubeExplosion -=PlayAnim;
+        Mondrian_GameManager.onSmallCubeExplosion -= PlayAnim;
     }
 
 
-    public bool _onGrowing { get;private set; }
-    
-    void PlayAnim()
+    public bool _onGrowing { get; private set; }
+
+    private void PlayAnim()
     {
         if (!_onGrowing)
         {
             _onGrowing = true;
-            
+
             vegetations[_currentVeggie % vegetations.Length].transform.localScale = Vector3.zero;
             vegetations[_currentVeggie % vegetations.Length].transform.position = flowerAppearPosition;
             vegetations[_currentVeggie % vegetations.Length].transform.DOScale(50f, 0.8f)
@@ -56,12 +49,7 @@ public class Mondrian_FlowerController : MonoBehaviour
                             _currentVeggie++;
                             _onGrowing = false;
                         });
-
-
                 });
         }
-       
-
-        
     }
 }
