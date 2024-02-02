@@ -123,21 +123,34 @@ public abstract class InteractableVideoGameManager : Video_GameManager
         DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {
             videoPlayer.playbackSpeed = speed;
-            // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
     }
 
+    /// <summary>
+    /// #OnRaySynced는 사용자 입력을 기반으로한 게임상 입력의 핵심함수입니다. 
+    /// RaySynchronizer에서 GameManager의 Ray와 처음으로 동기화 하는부분.
+    /// 제일 첫번째로 수행되며, OnRaySyncFromGameManager는 **OnRaySynced에 의존합니다.**
+    /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.  
+    /// </summary>
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
         OnRaySyncFromGameManager();
     }
 
-
+   
+    /// <summary>
+    /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.
+    /// </summary>
     protected virtual void OnRaySyncFromGameManager()
     {
         if (!_initiailized) return;
-        if (!_isShaked) transform.DOShakePosition(2.25f, 1f + 0.1f * _currentClickCount, randomness: 90, vibrato: 5);
+        if (!isStartButtonClicked) return;
+        if (!_isShaked) transform.DOShakePosition(2.25f, 0.5f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
+            .OnComplete(() =>
+            {
+                transform.DOMove(_defaultPosition, 1f).SetEase(Ease.Linear);
+            });;
 
         _currentClickCount++;
 
