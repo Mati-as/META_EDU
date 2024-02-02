@@ -129,6 +129,15 @@ public class Crab_AnimalPathController : MonoBehaviour
         SetPool(_inactiveCrabPool, "CrabB");
         SetPool(_inactiveCrabPool, "CrabC");
         SetPool(_inactiveCrabPool, "CrabD");
+        SetPool(_inactiveCrabPool, "CrabE");
+        SetPool(_inactiveCrabPool, "CrabF");
+        SetPool(_inactiveCrabPool, "CrabG");
+        SetPool(_inactiveCrabPool, "CrabH");
+        SetPool(_inactiveCrabPool, "CrabI");
+        SetPool(_inactiveCrabPool, "CrabJ");
+        SetPool(_inactiveCrabPool, "CrabK");
+        SetPool(_inactiveCrabPool, "CrabL");
+        
 
 
         isInit = true;

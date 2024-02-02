@@ -119,7 +119,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
         base.Init();
     
 
-       
+     
         DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {
             videoPlayer.playbackSpeed = speed;

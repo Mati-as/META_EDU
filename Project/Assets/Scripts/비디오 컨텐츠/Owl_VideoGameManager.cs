@@ -175,6 +175,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
 
     private void OnAllLeaveDarkend()
     {
+        if (!isStartButtonClicked) return;
         _isReplayable = true;
         OnRaySyncFromGameManager();
         _isReplayable = false;
@@ -189,6 +190,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     protected override void OnRaySynced()
     { 
         base.OnRaySynced();
+     
         if (_isNextUIAppearable)
         {
             if (currentLineIndex >= 2) return;
@@ -344,11 +346,15 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     }
     public static bool isJustRewind { get;  private set; }
 
+   
     protected override void OnRewind()
     {
         base.OnRewind();
         _isShaked = false;
-        transform.DOShakePosition(3.0f, 2f + 0.1f, randomness: 90, vibrato: 6);
+        transform.DOShakePosition(3.0f, 2f + 0.1f, randomness: 90, vibrato: 6).OnComplete(() =>
+        {
+            transform.DOMove(_defaultPosition, 1f).SetEase(Ease.Linear);
+        });
     }
     
     protected override void  RewindAndReplayTriggerEvent()
