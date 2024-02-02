@@ -146,7 +146,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     {
         if (!_initiailized) return;
         if (!isStartButtonClicked) return;
-        if (!_isShaked) transform.DOShakePosition(2.25f, 0.5f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
+        if (!_isShaked) transform.DOShakePosition(2.25f, 1f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
             .OnComplete(() =>
             {
                 transform.DOMove(_defaultPosition, 1f).SetEase(Ease.Linear);

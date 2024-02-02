@@ -22,7 +22,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
 
     //Rewind로 처음부터 다시 초기화되어 재생되는지 판단
   
-    public static event Action onOwlEndLines;
+    public static event Action onOwlUIFinished;
     
     private void Awake()
     {
@@ -100,63 +100,12 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                     Debug.Log($"부엉이 대사 끝. 대사 번호: {currentIndex}");
 #endif
                   
-                    onOwlEndLines?.Invoke();
+                    onOwlUIFinished?.Invoke();
                    
                 });
     }
 
 
-    public IEnumerator TypeIn(string str, float offset)
-    {
-        _tmp.text = ""; // 초기화
-        yield return new WaitForSeconds(offset);
-
-        var strTypingLength = str.GetTypingLength();
-        for (var i = 0; i <= strTypingLength; i++)
-        {
-            // 반복문
-            _tmp.text = str.Typing(i);
-            yield return new WaitForSeconds(_textPrintingSpeed);
-        }
-
-
-        yield return new WaitForNextFrameUnit();
-    }
-
-    private void LoadPrefabs()
-    {
-        rewindPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnRewind";
-        rewindParticleAudioPath = "Audio/비디오 컨텐츠/Owl/Leaves";
-
-
-        var prefabRewind = Resources.Load<GameObject>(rewindPsPrefabPath);
-
-        if (prefabRewind == null)
-        {
-            Debug.LogError($"Particle is null. Resource Path : {rewindPsPrefabPath}");
-        }
-        else
-        {
-            var rewindPsPosition = GameObject.Find("Position_Rewind_Particle");
-            _particleOnRewind = Instantiate(prefabRewind, rewindPsPosition.transform.position,
-                rewindPsPosition.transform.rotation).GetComponent<ParticleSystem>();
-        }
-
-        var replayPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnReplayAfterPaused";
-        var prefabReplayPs = Resources.Load<GameObject>(replayPsPrefabPath);
-
-        if (prefabReplayPs == null)
-        {
-            Debug.LogError($"Particle is null. Resource Path : {replayPsPrefabPath}");
-        }
-        else
-        {
-            var replayPosition = GameObject.Find("Position_Replay_Particle");
-            _psOnReplayAfterPaused = Instantiate(prefabReplayPs, replayPosition.transform.position,
-                replayPosition.transform.rotation).GetComponent<ParticleSystem>();
-            _psOnReplayAfterPaused.Stop();
-        }
-    }
 
     private bool _isReplayable;
     private bool _isRewindable;
@@ -169,8 +118,8 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
         Owl_LeavesMaterialController.OnAllLeavesDarkend -= OnAllLeaveDarkend;
         Owl_LeavesMaterialController.OnAllLeavesDarkend += OnAllLeaveDarkend;
 
-        onOwlEndLines -= OnOwlEndLines;
-        onOwlEndLines += OnOwlEndLines;
+        onOwlUIFinished -= OnOwlUIFinished;
+        onOwlUIFinished += OnOwlUIFinished;
     }
 
     private void OnAllLeaveDarkend()
@@ -201,7 +150,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
         
     }
 
-    private void OnOwlEndLines()
+    private void OnOwlUIFinished()
     {
         if (!isJustRewind) return;
 
@@ -248,9 +197,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                         DOVirtual.Float(1, 0, 1f,
                                 speed =>
                                 {
-#if UNITY_EDITOR
-                                    Debug.Log($"부엉이 UI 재생 시작 default Scale: {_defaultScale}");
-#endif
+
                                     videoPlayer.playbackSpeed = speed;
                                 }).SetDelay(3f)
                             .OnComplete(() => { PlayNextMessageAnim(currentLineIndex); });
@@ -309,7 +256,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     {
         Owl_LeavesMaterialController.OnAllLeavesDarkend -= OnAllLeaveDarkend;
         onReplay -= UIOnReplay;
-        onOwlEndLines -= OnOwlEndLines;
+        onOwlUIFinished -= OnOwlUIFinished;
     }
 
 
@@ -321,7 +268,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
             base.OnReplay();
 
             //start delay
-            DOVirtual.Float(0, 1, 1.25f, _ => _++)
+            DOVirtual.Float(0, 1, 1.25f, _ =>{})
                 .OnComplete(() =>
             {
                 _psOnReplayAfterPaused.transform.gameObject.SetActive(true);
@@ -331,11 +278,11 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                 Debug.Log("파티클 재생");
 #endif
                 //Particle Duration
-                DOVirtual.Float(0, 1, 3.5f, _ => _++)
+                DOVirtual.Float(0, 1, 3.5f, _ =>{})
                     .OnComplete(() => { _psOnReplayAfterPaused.Stop(); });
             });
         }
-        //중간에 부엉이 UI가 끝나고 다시 재생되는 상황의 경우
+        // 부엉이 UI가 끝나고 다시 풀이 밝아지며 재생되는 상황의 경우
         else
         {
             DOVirtual
@@ -364,6 +311,59 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
         _tmp.text = string.Empty;
         currentLineIndex = 0;
         base.RewindAndReplayTriggerEvent();
+    }
+    
+    
+    public IEnumerator TypeIn(string str, float offset)
+    {
+        _tmp.text = ""; // 초기화
+        yield return new WaitForSeconds(offset);
+
+        var strTypingLength = str.GetTypingLength();
+        for (var i = 0; i <= strTypingLength; i++)
+        {
+            // 반복문
+            _tmp.text = str.Typing(i);
+            yield return new WaitForSeconds(_textPrintingSpeed);
+        }
+
+
+        yield return new WaitForNextFrameUnit();
+    }
+
+    private void LoadPrefabs()
+    {
+        rewindPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnRewind";
+        rewindParticleAudioPath = "Audio/비디오 컨텐츠/Owl/Leaves";
+
+
+        var prefabRewind = Resources.Load<GameObject>(rewindPsPrefabPath);
+
+        if (prefabRewind == null)
+        {
+            Debug.LogError($"Particle is null. Resource Path : {rewindPsPrefabPath}");
+        }
+        else
+        {
+            var rewindPsPosition = GameObject.Find("Position_Rewind_Particle");
+            _particleOnRewind = Instantiate(prefabRewind, rewindPsPosition.transform.position,
+                rewindPsPosition.transform.rotation).GetComponent<ParticleSystem>();
+        }
+
+        var replayPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnReplayAfterPaused";
+        var prefabReplayPs = Resources.Load<GameObject>(replayPsPrefabPath);
+
+        if (prefabReplayPs == null)
+        {
+            Debug.LogError($"Particle is null. Resource Path : {replayPsPrefabPath}");
+        }
+        else
+        {
+            var replayPosition = GameObject.Find("Position_Replay_Particle");
+            _psOnReplayAfterPaused = Instantiate(prefabReplayPs, replayPosition.transform.position,
+                replayPosition.transform.rotation).GetComponent<ParticleSystem>();
+            _psOnReplayAfterPaused.Stop();
+        }
     }
 
 }
