@@ -8,6 +8,8 @@ Shader "Custom/PaintShader"
         _BrushStrength ("Brush Strength", Float) = 0
         _BrushTex ("Brush Texture", 2D) = "white" {}
         _BrushTexTilingOffset ("Brush Tex Tiling and Offset", Vector) = (1,1,0,0)
+        _TextureRotationAngle("Rotation Angle", Float) = 0.0
+        
     }
     SubShader
     {
@@ -36,6 +38,7 @@ Shader "Custom/PaintShader"
         float4 _MouseUV;
         float _BrushStrength;
         Texture2D _MainTex;Texture2D _BrushTex;
+        float   _TextureRotationAngle;
         SamplerState sampler_MainTex;
         SamplerState sampler_BrushTex;
         float _BrushSize;
@@ -73,6 +76,14 @@ Shader "Custom/PaintShader"
             half4 col = _MainTex.Sample(sampler_MainTex, i.uv);
             float2 brushUV = (uv - _MouseUV.xy) / _BrushSize + 0.5; // 중심을 기준으로 정규화
 
+            // 회전 각도를 라디안으로 변환
+            float rad = _TextureRotationAngle * (PI / 180.0);
+            // 회전을 위한 2D 회전 행렬 계산
+            float2x2 rotationMatrix = float2x2(cos(rad), -sin(rad), sin(rad), cos(rad));
+            // 브러시 UV 중심을 (0.5, 0.5)로 이동 후 회전 적용
+            
+            brushUV = mul(brushUV - 0.5, rotationMatrix) + 0.5;
+            
             brushUV = clamp(brushUV, 0.0, 1.0);
 
             if (brushUV.x == 0.0 || brushUV.x == 1.0 || brushUV.y == 0.0 || brushUV.y == 1.0)

@@ -4,16 +4,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class Painting_PaintableTextureController : IGameManager
+public class Painting_MultipleTexture : IGameManager
 {
-    public Shader paintShader;
+  public Shader paintShader;
     private Material paintMaterial;
     private RenderTexture renderTexture;
     private MeshRenderer _meshRenderer;
-    public Texture2D textureToPaint;
+    public Texture2D textureToPaintOn;
     public float brushSize = 0.1f;
-    public InputAction paintAction;
-    public Texture2D burshTexture;// Define an InputAction for painting
+ 
+    [FormerlySerializedAs("burshTexture")] public Texture2D[] burshTextures;// Define an InputAction for painting
 
 
      [Header("Shader Setting")] 
@@ -25,14 +25,13 @@ public class Painting_PaintableTextureController : IGameManager
         base.Init();
         
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
-        SetInputSystem();
         
-        renderTexture = new RenderTexture(textureToPaint.width, textureToPaint.height, 0, RenderTextureFormat.ARGB32);
+        renderTexture = new RenderTexture(textureToPaintOn.width, textureToPaintOn.height, 0, RenderTextureFormat.ARGB32);
         paintMaterial = new Material(paintShader);
         
         
         // Copy the original texture to the RenderTexture
-        Graphics.Blit(textureToPaint, renderTexture);
+        Graphics.Blit(textureToPaintOn, renderTexture);
 
         // Set the material's texture to the RenderTexture
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
@@ -53,7 +52,7 @@ public class Painting_PaintableTextureController : IGameManager
                 Vector2 uv = hit.textureCoord;
                 paintMaterial.SetFloat("_TextureRotationAngle", currentRotation);
                 paintMaterial.SetFloat("_BrushStrength",burshStrength );
-                paintMaterial.SetTexture("_BrushTex",burshTexture);
+                paintMaterial.SetTexture("_BrushTex",burshTextures[Random.Range(0,burshTextures.Length)]);
               
                 // Convert to "_MouseUV" for the shader
                 paintMaterial.SetVector("_MouseUV", new Vector4(uv.x, uv.y, 0, 0));
@@ -77,24 +76,7 @@ public class Painting_PaintableTextureController : IGameManager
         }
     }
 
-    private void SetInputSystem()
-    {
-        // Initialize the paint action
-        paintAction = new InputAction(binding: "<Mouse>/leftButton", interactions: "Press");
-        paintAction.performed += ctx => Paint();
-        paintAction.Enable();
-    }
-    
-    private void OnEnable()
-    {
-        paintAction.Enable();
-    }
 
-    private void OnDisable()
-    {
-        paintAction.Disable();
-    }
-    
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
