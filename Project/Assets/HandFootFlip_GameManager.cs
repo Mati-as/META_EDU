@@ -229,7 +229,7 @@ public class HandFootFlip_GameManager : IGameManager
                             {
                                 if (_isAnimalMoving)
                                 {
-                                    DOVirtual.Float(0, 1, 1f, _ => { }).OnComplete(() =>
+                                    DOVirtual.Float(0, 1, 1.2f, _ => { }).OnComplete(() =>
                                     {
                                         _PrintMap[currentInstanceID].isNowFlipping = false;
                                     });
@@ -297,7 +297,7 @@ public class HandFootFlip_GameManager : IGameManager
             {
                      _rayCastCoroutine = StartCoroutine(RayCasterMoveCoroutine());
                 
-                    DOVirtual.Float(0, 1, 3f, _ => { })
+                    DOVirtual.Float(0, 1, 2f, _ => { })
                     .OnComplete(() =>
                     {
                         _isAnimalMoving = false;
