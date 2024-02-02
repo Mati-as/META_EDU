@@ -36,6 +36,8 @@ public class Hopscotch_GameManager : IGameManager
     private Dictionary<Transform, Vector3> _defaultSizeMap;
     private Dictionary<RectTransform, Vector3> _uiDefaultSizeMap;
     private Dictionary<Transform, Rigidbody> _rigidbodies;
+
+    private float _stageResetDelay = 4f;
     
     
    
@@ -67,8 +69,9 @@ public class Hopscotch_GameManager : IGameManager
         
         
 
-        DoIntroMove();
+       
     }
+    
     
 #if UNITY_EDITOR
 public bool isManuallyInvoked;
@@ -89,10 +92,14 @@ private void Update()
     {
         onStageClear -= OnStageClear;
         onStageClear += OnStageClear;
+
+        UI_Scene_Button.onBtnShut -= DoIntroMove;
+        UI_Scene_Button.onBtnShut += DoIntroMove;
     }
 
     private void OnDestroy()
     {
+        UI_Scene_Button.onBtnShut -= DoIntroMove;
         onStageClear -= OnStageClear;
     }
 
@@ -203,11 +210,18 @@ private void Update()
 #if UNITY_EDITOR
   
 #endif
+        // step.DORotate(step.transform.rotation.eulerAngles + new Vector3(-20,0,0), 0.2f)
+        //     .OnComplete(() =>
+        //     {
+        //         step.DORotate(step.transform.rotation.eulerAngles + new Vector3(40,0,0), 0.2f);
+        //     });
+
+        
         _scaleBackSequence.Append(number.DOScale(_uiDefaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
         _scaleBackSequence.Play();
     }
 
-    private void OnScaleSequenceKilled(Transform number)
+    private void OnScaleSequenceKilled(Transform step)
     {
         //if (_scaleBackSequence.IsActive()) _scaleBackSequence.Kill();
 
@@ -215,8 +229,29 @@ private void Update()
 
 #if UNITY_EDITOR
 #endif
-        _scaleBackSequence
-            .Append(number.DOScale(_defaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
+
+        step.DORotateQuaternion(_defaultQuaternionMap[step]* Quaternion.Euler(-30, 0, 0), 0.33f)
+            .SetEase(Ease.InOutSine)
+            .OnComplete(() =>
+            {
+                step.DORotateQuaternion(_defaultQuaternionMap[step]* Quaternion.Euler(30, 0, 0), 0.33f)
+                    .OnComplete(() =>
+                    {
+                        _scaleBackSequence.Append(
+                            step.DOScale(_defaultSizeMap[step], 0.2f)
+                                .OnStart(() =>
+                                {
+
+                                    step.DORotateQuaternion(_defaultQuaternionMap[step], 0.5f);
+                                    #if UNITY_EDITOR
+                                        Debug.Log("제자리 돌아오기 및 회전 트윈");                                      
+                                    #endif
+                                })
+                                .SetEase(Ease.Linear));
+                    });
+            });
+
+
         _scaleBackSequence.Play();
     }
 
@@ -297,7 +332,9 @@ private void Update()
     {
         if (_isSuccesssParticlePlaying) return;
         
+        //중복 실행 방지
         _isSuccesssParticlePlaying = true;
+        
         _currentScaleSequence.Kill();
         _stepCurrentScaleSequence.Kill();
 
@@ -331,7 +368,6 @@ private void Update()
 
                         if (_currentStep >= _stepCount)
                         {
-
                             onStageClear?.Invoke();
                         }
                         else
@@ -398,7 +434,8 @@ private void Update()
     {
         _currentStep = 0;
         _cg.DOFade(0, 0.5f);
-      
+
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
         
         DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
             .OnComplete(() =>
@@ -439,11 +476,9 @@ private void Update()
         
         
 
-        DOVirtual.Float(0, 1, 6f, _ => { })
-   
+        DOVirtual.Float(0, 1, _stageResetDelay, _ => { })
             .OnComplete(() =>
             {
-                
                 DoIntroMove();
             });
     
