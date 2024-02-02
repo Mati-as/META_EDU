@@ -80,8 +80,14 @@ public abstract class IGameManager : MonoBehaviour
     }
 
 
-    private void OnStartButtonClicked() => isStartButtonClicked = true;
-   
+    private void OnStartButtonClicked()
+    {
+        // 버튼 클릭시 Ray가 게임로직에 영향미치는 것을 방지하기위한 약간의 Delay 입니다. 
+        DOVirtual
+            .Float(0, 1, 0.5f, _ => { })
+            .OnComplete(() => { isStartButtonClicked = true; });
+    }
+
 
     protected virtual void PlayNarration()
     {

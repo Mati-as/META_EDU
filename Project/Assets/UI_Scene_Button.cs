@@ -14,6 +14,8 @@ public class UI_Scene_Button : MonoBehaviour
   private Image _btnImage;
   private TMP_Text tmp;
   private int _remainTime;
+  
+  private bool _isClickable;
 
   
   /*
@@ -40,15 +42,20 @@ public class UI_Scene_Button : MonoBehaviour
       
       Message_anim_controller.onIntroUIOff -= OnAnimOff;
       Message_anim_controller.onIntroUIOff += OnAnimOff;
+      onBtnShut -= OnButtonShut;
+      onBtnShut += OnButtonShut;
      
       _btnImage.DOFade(0, 0.01f);
+      tmp .DOFade(0, 0.01f);
+      
+      
+      
       _btnImage
           .DOFade(1, 0.5f)
           .SetDelay(3f);
       
-      tmp.DOFade(0, 0.01f);
-      tmp
-          .DOFade(1, 0.5f)
+      tmp .DOFade(1, 0.5f)
+          .OnStart(() => { _isClickable = true;})
           .SetDelay(3f);
   }
   
@@ -91,12 +98,15 @@ public class UI_Scene_Button : MonoBehaviour
   private void OnDestroy()
   {
       Message_anim_controller.onIntroUIOff -= OnAnimOff;
+      onBtnShut -= OnButtonShut;
   }
 
   private bool _isBtnEventInvoked;
 
   private void OnClicked()
   {
+      if(!_isClickable)return;
+      
       if (_animController != null)
       {
           _animController.Animation_Off();
@@ -129,6 +139,14 @@ public class UI_Scene_Button : MonoBehaviour
           FadeOutBtn();
     
       }
+  }
+
+  private void OnButtonShut()
+  {
+      _isClickable = false;
+      _btnImage.DOFade(0, 0.5f);
+      tmp.DOFade(0, 0.5f);
+     
   }
 
   private void FadeOutBtn()

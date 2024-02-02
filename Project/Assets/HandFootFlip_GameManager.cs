@@ -24,6 +24,7 @@ public class HandFootFlip_GameManager : IGameManager
     // 파도타기방식(형태) RayCasting 및 색상변환로직 구현용 RayCaster.              
     private GameObject _animalRayCasterParent;
     private Transform[] _animalRayCasters;
+    private Transform _animals; 
 
     private Vector3[] _pathPos;
 
@@ -165,6 +166,8 @@ public class HandFootFlip_GameManager : IGameManager
             _animalRayCasters = new Transform[_animalRayCasterParent.GetComponentsInChildren<Transform>().Length];
             _animalRayCasters = _animalRayCasterParent.GetComponentsInChildren<Transform>();
             _wait = new WaitForSeconds(0.08f);
+
+            _animals = GameObject.Find("Animals").GetComponent<Transform>();
         }
     }
 
@@ -277,22 +280,34 @@ public class HandFootFlip_GameManager : IGameManager
 
     private void OnRayCasterMoveFin()
     {
-        Debug.Log("RayCasterMoveFin Invoked!");
-
+        
+        _colorPair.Clear();
+        
+        
         ShuffleColors();
         for (var i = 0; i < PRINTS_COUNT; i++)
+        {  
             _colorPair.TryAdd(_prints[i].defaultColorName, colorOptions[i % COLOR_COUNT]);
+            Debug.Log($"suffle Paircolor again...: Color info: {colorOptions[i % COLOR_COUNT]}");
+        }
+     
+         
     }
 
     private bool _isAnimalMoving;
+    private float _animalMoveDuration = 3.65f;
     private void RayCasterMovePlay()
     {
         UnifyColor();
 
         _isAnimalMoving = true;
         _animalRayCasterParent.transform.position = _pathPos[(int)RayCasterMovePosition.Start];
+        _animals.transform.position = _pathPos[(int)RayCasterMovePosition.Start];
+       
+        _animals.DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration);
+        
         _animalRayCasterParent.transform
-            .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], 2.5f)
+            .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
             .OnStart(() =>
             {
                      _rayCastCoroutine = StartCoroutine(RayCasterMoveCoroutine());
@@ -302,6 +317,17 @@ public class HandFootFlip_GameManager : IGameManager
                     {
                         _isAnimalMoving = false;
                     });
+                    
+                    
+                    //동물이 모두 이동하기전 관련 초기화 로직 수행
+                    DOVirtual.Float(0, 1, _animalMoveDuration-0.15f, _ => { })
+                        .OnComplete(() =>
+                        {
+                            onRaycasterMoveFinish?.Invoke();
+                            _isAnimalMoving = false;
+                        });
+                    
+                 
 
 
             })
@@ -312,10 +338,12 @@ public class HandFootFlip_GameManager : IGameManager
                     if (_rayCastCoroutine != null)
                         StopCoroutine(_rayCastCoroutine);
 
-                    onRaycasterMoveFinish?.Invoke();
+                 
                  
             })
             .SetEase(Ease.Linear);
+
+       
     }
 
 
@@ -352,21 +380,21 @@ public class HandFootFlip_GameManager : IGameManager
             }
     }
     
-    void OnDrawGizmos()
-    {
-        if (_animalRayCasters == null) return;
-
-        Gizmos.color = Color.red; // 기즈모 색상 지정
-
-        foreach (var childTransform in _animalRayCasters)
-        {
-            if (childTransform != transform)
-            {
-                // 레이를 시각화
-                Gizmos.DrawRay(childTransform.position, Vector3.down * 100);
-            }
-        }
-    }
+    // void OnDrawGizmos()
+    // {
+    //     if (_animalRayCasters == null) return;
+    //
+    //     Gizmos.color = Color.red; // 기즈모 색상 지정
+    //
+    //     foreach (var childTransform in _animalRayCasters)
+    //     {
+    //         if (childTransform != transform)
+    //         {
+    //             // 레이를 시각화
+    //             Gizmos.DrawRay(childTransform.position, Vector3.down * 100);
+    //         }
+    //     }
+    // }
     
 
     private void ShuffleColors()
