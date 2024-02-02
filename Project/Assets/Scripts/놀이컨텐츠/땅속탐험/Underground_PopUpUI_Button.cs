@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 using Button = UnityEngine.UI.Button;
 
 public class Underground_PopUpUI_Button : MonoBehaviour
 {
-    [SerializeField] 
-    private GroundGameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [SerializeField] 
+    private GroundGameController gameController;
 
     private Button _button;
 
@@ -48,9 +49,9 @@ public class Underground_PopUpUI_Button : MonoBehaviour
             }
 
             
-            if (FootstepManager.currentFootstepGroupOrder >= gameManager.TOTAL_ANIMAL_COUNT )
+            if (FootstepManager.currentFootstepGroupOrder >= gameController.TOTAL_ANIMAL_COUNT )
             {
-                gameManager.isGameFinishedRP.Value = true;
+                gameController.isGameFinishedRP.Value = true;
             }
         }
         

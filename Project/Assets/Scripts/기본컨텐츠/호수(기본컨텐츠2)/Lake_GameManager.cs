@@ -4,37 +4,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class Lake_GameManager : MonoBehaviour
+public class Lake_GameManager : IGameManager
 {
-    public static Ray ray { get; set;}
+  
     private Lake_IAnimalBehavior _lake_IAnimalBehavior;
-    
-    private void Start()
+
+    protected override void Init()
     {
+        base.Init();
         DOTween.SetTweensCapacity(2000,50);
-        Lake_Image_Move.OnStep -= OnStep;
-        Lake_Image_Move.OnStep += OnStep;
     }
 
 
-    private void OnDestroy()
+    protected override void OnRaySynced()
     {
-        Lake_Image_Move.OnStep -= OnStep;
-    }
-
-    public void OnStep()
-    {
-        var hits = Physics.RaycastAll(ray);
+        base.OnRaySynced();
+        var hits = Physics.RaycastAll(GameManager_Ray);
 
         foreach (var hit in hits)
         {
             var obj =hit.transform.gameObject;
-            obj.TryGetComponent<Lake_IAnimalBehavior>(out _lake_IAnimalBehavior);
+            obj.TryGetComponent(out _lake_IAnimalBehavior);
             _lake_IAnimalBehavior?.OnClicked();
-#if UNITY_EDITOR
-
-#endif
-            
         }
     }
+
+
 }

@@ -91,12 +91,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80cd1acf9d5a5134e856263193b8d8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameManager: {fileID: 0}
-  moveSpeed: 15
   UI_Canvas: {fileID: 0}
   _uiCamera: {fileID: 0}
-  GR: {fileID: 0}
-  screenPosition: {x: 0, y: 0, z: 0}
   _spaceAction:
     m_Name: Space
     m_Type: 0
@@ -106,8 +102,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  movement: 0
-  moveDirection: {x: 0, y: 0, z: 0}
+  GR: {fileID: 0}
+  screenPosition: {x: 0, y: 0, z: 0}
   button: {fileID: 0}
 --- !u!1 &879458300550647834
 GameObject:
@@ -4737,8 +4733,6 @@ GameObject:
   - component: {fileID: 990368758066866464}
   - component: {fileID: 990368758066866471}
   - component: {fileID: 990368758066866470}
-  - component: {fileID: 990368758066866465}
-  - component: {fileID: 990368758066866468}
   - component: {fileID: 7666957324183044901}
   - component: {fileID: 7666957324183044906}
   m_Layer: 5
@@ -4797,8 +4791,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 94c02f76eb6454a16956da9e9d0e4dba, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4807,48 +4801,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &990368758066866465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 990368758066866467}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e35780c0986ee5644b7ffe3c5d97da8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  port: COM4
-  BALLPrefab: {fileID: 4389488267611479880, guid: 748675ba476c1a54ba66bc66d3264ca5,
-    type: 3}
-  MOUSEPrefab: {fileID: 886082513674400756, guid: e3ff834810723174db4afebed00c13a7,
-    type: 3}
-  m_onscan: 0
-  Test_check: 0
-  Guideline: {fileID: 990368758313082438}
-  TESTUI: {fileID: 0}
-  min_x: 0
-  min_y: 0
-  max_x: 0
-  max_y: 0
-  Test_degree: 0
-  Test_distance: 0
-  temp_pos: {fileID: 3554720480703101443}
-  Sensor_rotation: -90
---- !u!114 &990368758066866468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 990368758066866467}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78ef0093795fa164d83928b61b93508c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MouseClickOn: 0
 --- !u!114 &7666957324183044901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7180,5 +7132,5 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1856, y: 1022.99994}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}

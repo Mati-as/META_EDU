@@ -12,7 +12,7 @@ using UnityEngine.UIElements;
 using MyCustomizedEditor;
 #endif
 
-public class FootstepManager : MonoBehaviour
+public class FootstepManager : IGameManager
 {
  
     private enum FootstepSounds
@@ -26,7 +26,7 @@ public class FootstepManager : MonoBehaviour
     private AudioSource _audioSource;
     public AudioClip[] _audioClips = new AudioClip[4];
 
-    [Header("Reference")] [SerializeField] private GroundGameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [Header("Reference")] [SerializeField] private GroundGameController gameController;
     [SerializeField] private GroundFootStepData _groundFootStepData;
 
     public GroundFootStepData GetGroundFootStepData()
@@ -186,9 +186,12 @@ public class FootstepManager : MonoBehaviour
     public UndergroundUIManager undergroundUIManager;
     private Camera _camera;
     private InputAction _mouseClickAction;
+    
 
-    private void Awake()
+    protected override void Init()
     {
+        base.Init();
+        
         _audioSource = GetComponent<AudioSource>();
         
         finishPageTriggerProperty = new ReactiveProperty<bool>(false);
@@ -198,26 +201,20 @@ public class FootstepManager : MonoBehaviour
 
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
         Underground_PopUpUI_Button.onPopUpButtonEvent += pageFinishToggle;
-
         
-        Image_Move.OnStep -= OnMouseClicked;
-        Image_Move.OnStep += OnMouseClicked;
     }
 
 
     private readonly float _firstFootstepWaitTime = 4.5f;
 
-    private void Start()
+    protected void Start()
     {
+        
+      
+        
         _camera = Camera.main;
 
-
-        // _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        // _mouseClickAction.performed += OnMouseClicked
-        // _mouseClickAction.Enable();
-
-
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
             .Delay(TimeSpan.FromSeconds(_firstFootstepWaitTime))
             .Subscribe(_ =>
@@ -231,27 +228,29 @@ public class FootstepManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        Image_Move.OnStep -= OnMouseClicked;
+        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 
 
     public static string currentlyClickedObjectName;
 
-    public Ray ray;
+    
 
     private RaycastHit[] hits;
 
     //public void OnMouseClicked(InputAction.CallbackContext context)
-    public void OnMouseClicked()
+    protected override void OnRaySynced()
     {
-        //ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        hits = Physics.RaycastAll(ray);
+        base.OnRaySynced();
+#if UNITY_EDITOR
+        Debug.Log($"{gameObject.name} : OnRaySynced invoked");
+#endif
+        hits = Physics.RaycastAll(GameManager_Ray);
+        
         foreach (var hit in hits)
         {
-#if UNITY_EDITOR
-            Debug.Log($"{gameObject.name} : onMouseClicked invoked");
-#endif
+
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
             var fC = obj.GetComponent<FootstepController>();
@@ -343,27 +342,6 @@ public class FootstepManager : MonoBehaviour
             OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
         }
 
-        // 10/12/23 순회로직의 경우에는 아래 로직을 사용할 것 
-        // foreach (GameObject[] group in _footstepGameObjGroups)
-        // {
-
-        // foreach (GameObject obj in _footstepGameObjGroups[currentFootstepGroupOrder])
-        // {
-
-        // 현재 원소가 마지막 원소인 경우
-        // if (obj == _footstepGameObjGroups[currentFootstepGroupOrder]
-        //         [_footstepGameObjGroups[currentFootstepGroupOrder].Length - 1])
-        // {
-        //     OnLastElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-        //     ActivateNextFootstepGroup();
-        // }
-        // else
-        // {
-        //     OnOtherElementImplemented(_footstepGameObjGroups[currentFootstepGroupOrder]);
-        // }
-
-        // }
-        // }
     }
 
     /// <summary>

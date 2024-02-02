@@ -55,10 +55,7 @@ public class UIFallenLeaveParticleController : MonoBehaviour
     }
     private void Subscribe()
     {
-        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
-            -= StopAllParticles;
-        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
-            += StopAllParticles;
+      
         TextBoxUIController.TextBoxLeftUIEvent -= OnLeftUIActivate;
         TextBoxUIController.TextBoxRightUIEvent -= OnRightUIActivate;
         TextBoxUIController.TextBoxLeftUIEvent += OnLeftUIActivate;
@@ -67,9 +64,7 @@ public class UIFallenLeaveParticleController : MonoBehaviour
 
     private void Unsubscribe()
     {
-        
-        FallenLeafInstructionButtonEventListener.FallenLeaveStartButtonEvent
-            -= StopAllParticles;
+      
         TextBoxUIController.TextBoxLeftUIEvent -= OnLeftUIActivate;
         TextBoxUIController.TextBoxRightUIEvent -= OnRightUIActivate;
     }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spring_VideoPlayer : Base_VideoContentPlayer
+public class Spring_VideoPlayer : Video_GameManager
 {
    
     protected override void Init()
@@ -21,5 +21,10 @@ public class Spring_VideoPlayer : Base_VideoContentPlayer
     private void Update()
     {
         QualitySettings.shadows = ShadowQuality.Disable; 
+    }
+
+    protected override void OnRaySynced()
+    {
+        base.OnRaySynced();
     }
 }

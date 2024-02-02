@@ -140,7 +140,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!GroundGameManager.isGameStartedbool)
+        if (!GroundGameController.isGameStartedbool)
         {
             // gameObject.SetActive(false);
         }
@@ -192,7 +192,7 @@ public class UndergroundAnimalAttachedUIController : MonoBehaviour
 
             _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0));
 
-            if (gameObject.name != "여우" && GroundGameManager.isGameFinishedbool == false)
+            if (gameObject.name != "여우" && GroundGameController.isGameFinishedbool == false)
             {
                 Debug.Log("동물 사라지는 중");
 

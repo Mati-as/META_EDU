@@ -6,6 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -31,9 +32,10 @@ public class GroundCameraController : MonoBehaviour
 
     public float pageChangeInterval;
     
+    [FormerlySerializedAs("gameManager")]
     [Header("References")] 
     [SerializeField] 
-    private GroundGameManager gameManager;
+    private GroundGameController gameController;
 
     [SerializeField] private FootstepManager footstepManager;
     
@@ -70,7 +72,7 @@ public class GroundCameraController : MonoBehaviour
 
         
         
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ =>
             {
@@ -81,7 +83,7 @@ public class GroundCameraController : MonoBehaviour
         
         
         
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(currentState => currentState.GameState == IState.GameStateList.StageStart)
             .Subscribe(_ =>
             {

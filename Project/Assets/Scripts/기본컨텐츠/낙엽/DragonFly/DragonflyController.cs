@@ -1,8 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
+public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClicked
 {
     [Header("DragonFly Movement Settings")] [Space(10f)] [SerializeField]
     private Transform landingPositionA;
@@ -22,8 +21,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
     [SerializeField] private Transform moveAwayPositionE;
 
 
-    private Transform _currentLandingPosition;
-    private string _dragonflyName;
+  
     private float _elapsedTimeForMoveUp;
     private bool _isClicked;
 
@@ -53,14 +51,12 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
     private readonly int DRAGONFLY_ANIM_IDLE_B = Animator.StringToHash("Idle_b");
 
 
-    
     private Animator _animator;
 
 
     private void Awake()
     {
         _randomNumberForFrequency = Random.Range(minIdlePlayRandomTime, maxIdlePlayRandomTime);
-        _currentLandingPosition = transform;
 
         _landingPositions = new Transform[6];
         _moveAwayPositions = new Transform[5];
@@ -83,23 +79,11 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
         _isOnThePlace[5] = true;
 
         _animator = GetComponent<Animator>();
-
-        _dragonflyName = gameObject.name;
-#if DEFINE_TEST
-        Debug.Log($"gameobject name is {_dragonflyName}");
-#endif
+        
     }
 
     private void Start()
     {
-        // _audioSource = GetComponent<AudioSource>();
-        // var trigger = GetComponent<EventTrigger>();
-        // var entry = new EventTrigger.Entry();
-        // entry.eventID = EventTriggerType.PointerClick;
-        // entry.callback.AddListener(data => { OnClicked(); });
-        // trigger.triggers.Add(entry);
-
-
         PlayIdleAnim();
     }
 
@@ -110,6 +94,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
 
     private void Update()
     {
+        _audioSource = gameObject.AddComponent<AudioSource>();
         _elapsed += Time.deltaTime;
         if (_elapsed > _dragonFlySoundInterval)
         {
@@ -121,18 +106,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
 
         PlayIdleAnim();
     }
-    // Update is called once per frame
-    // private void Update()
-    // {
-    //     if (_initialMoveStart)
-    //     {
-    //         PlayIdleAnim();
-    //     }
-    //     else
-    //     {
-    //         LandToGround();
-    //     }
-    // }
+
 
     private bool _isIdleAnimPlayable;
     private int _randomNumberForFrequency;
@@ -156,7 +130,7 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
             _isIdleAnimPlayable = false;
         }
     }
-    
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -168,18 +142,15 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
             _animator.SetBool(DRAGONFLY_ANIM_FLY, false);
             _animator.SetTrigger(LANDING);
         }
-        
     }
 
 
-    [SerializeField]
-    private int _currentIndex;
+    [SerializeField] private int _currentIndex;
+
     private void MoveAway()
     {
         transform.DOLookAt(_moveAwayPositions[_moveAwayPositionIndex].position, 1f)
-            .OnStart(() =>
-            {
-            })
+            .OnStart(() => { })
             .OnComplete(() =>
             {
                 transform.DOMove(_moveAwayPositions[_moveAwayPositionIndex].position, moveAwayDuration)
@@ -224,15 +195,14 @@ public class DragonflyController : MonoBehaviour,Lake_IAnimalBehavior,IOnClicked
             _randomSpeed = Random.Range(0.8f, 2);
 
             while (_isOnThePlace[_landPositionIndex]) _landPositionIndex = Random.Range(0, 6);
-          
+
             _isOnThePlace[_landPositionIndex] = true;
             _isOnThePlace[_currentIndex] = false;
             _currentIndex = _landPositionIndex;
-            // _initialMoveStart = true;
-            // _isInitialLanding = true;
+         
 
             _animator.SetBool(DRAGONFLY_ANIM_FLY, true);
-            //_currentLandingPosition.position = transform.position;
+       
 
             MoveAway();
         }

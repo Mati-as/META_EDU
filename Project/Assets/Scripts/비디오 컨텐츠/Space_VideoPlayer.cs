@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Space_VideoPlayer : Base_VideoContentPlayer
+public class Space_VideoPlayer : Video_GameManager
 {
   
     

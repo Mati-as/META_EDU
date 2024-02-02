@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 public class UIAudioController : MonoBehaviour
 {
@@ -206,6 +207,7 @@ public class UIAudioController : MonoBehaviour
     private IEnumerator PlayHowToPlayAudio()
     {
         yield return GetWaitForSeconds(HTPAAudioWFS);
+        narrationAudioSource.volume = 0f;
         narrationAudioSource.clip = uiAudioClip[(int)UI.HowToPlayA];
         narrationAudioSource.Play();
 
@@ -215,6 +217,7 @@ public class UIAudioController : MonoBehaviour
         narrationAudioSource.Play();
 
         yield return GetWaitForSeconds(HTPAAudioInterval);
+        narrationAudioSource.volume = 0f;
         StopCoroutine(_howToPlayACoroutine);
     }
 
@@ -229,13 +232,21 @@ public class UIAudioController : MonoBehaviour
     public void PlayStoryBAudio()
     {
         _storyBCoroutine = StartCoroutine(PlayStoryAudioB());
+        
     }
 
     private IEnumerator PlayStoryAudioB()
     {
         yield return null;
+        narrationAudioSource.volume = 1f;
         narrationAudioSource.clip = uiAudioClip[(int)UI.StoryB];
         narrationAudioSource.Play();
+        DOVirtual.Float(0, 1, 8f, _ => { }).OnComplete(() =>
+        {
+
+            AnimalTrip_GameManager.isGameStopped = false;
+            StopCoroutine(_storyBCoroutine);
+        });
     }
 
     public float storyBWFS;
@@ -243,6 +254,7 @@ public class UIAudioController : MonoBehaviour
     private IEnumerator PlayStoryAudioA()
     {
         yield return GetWaitForSeconds(HTPAAudioWFS);
+        narrationAudioSource.volume = 1f;
         narrationAudioSource.clip = uiAudioClip[(int)UI.StoryA];
         narrationAudioSource.Play();
     }
@@ -266,6 +278,7 @@ public class UIAudioController : MonoBehaviour
         {
             if (!_isCorrectClipPlayed)
             {
+                narrationAudioSource.volume = 0.2f;
                 yield return GetWaitForSeconds(onCorrectWaitTime);
                 
                 if (UIAudioB[AnimalTrip_GameManager.answer] != null)

@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UniRx;
+using UnityEngine.Serialization;
 
 public class InitialMessageBoxController : MonoBehaviour
 {
-    [SerializeField] 
-    private GroundGameManager gameManager;
+    [FormerlySerializedAs("gameManager")] [SerializeField] 
+    private GroundGameController gameController;
 
     public float maximizedSize;
     
@@ -16,7 +17,7 @@ public class InitialMessageBoxController : MonoBehaviour
     {
         transform.localScale = Vector3.zero;
         
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(CurrentState => CurrentState.GameState == IState.GameStateList.StageStart)
             .Delay(TimeSpan.FromSeconds(1f))
             .Subscribe(_=>
@@ -31,7 +32,7 @@ public class InitialMessageBoxController : MonoBehaviour
                 //     .setEaseInOutBounce();
             });
         
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(CurrentState => CurrentState.GameState == IState.GameStateList.GameOver)
             .Subscribe(_=>
             {

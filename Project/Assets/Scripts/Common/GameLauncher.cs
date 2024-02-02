@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +9,7 @@ public class GameLauncher : MonoBehaviour
     public GameObject Loading;
     public GameObject Main;
     public GameObject Menu;
+    public GameObject Setting;
 
     // Start is called before the first frame update
     [SerializeField]
@@ -18,20 +17,18 @@ public class GameLauncher : MonoBehaviour
     public Text loadingPercent;
     public Image loadingIcon;
 
-
-    public string[] gameSceneNames;
     private bool loadingCompleted;
     private int nextScene;
 
-    private Coroutine _progressBarCoroutine;
-    
+    //로딩 후 홈 화면 전환
+    //홈화면에서 콘텐츠 전환
+    //각 화면에서 씬으로 전환
 
     // Start is called before the first frame update
     void Start()
     {
         //StartCoroutine(LoadScene());
-        
-        _progressBarCoroutine = StartCoroutine(RotateIcon());
+        StartCoroutine(RotateIcon());
 
         loadingCompleted = false;
         nextScene = 0;
@@ -39,48 +36,41 @@ public class GameLauncher : MonoBehaviour
 
     IEnumerator LoadScene()
     {
-        if (_progressBarCoroutine != null)
-        {
-            StopCoroutine(_progressBarCoroutine);
-        }
         //yield return null;
 
-     
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
         op.allowSceneActivation = false;
+
         float timer = 0.0f;
         //while (!op.isDone)
         while (true)
         {
-            yield return null;
-            if (progressBar != null)
+            //yield return null;
+
+            timer += Time.deltaTime;
+
+            if (op.progress >= 0.9f)
             {
-                timer += Time.deltaTime;
+                progressBar.value = Mathf.Lerp(progressBar.value, 1f, timer);
+                loadingPercent.text = "progressBar.value";
 
-                if (op.progress >= 0.9f)
+                if (progressBar.value == 1.0f)
+                    op.allowSceneActivation = true;
+            }
+            else
+            {
+                progressBar.value = Mathf.Lerp(progressBar.value, op.progress, timer);
+                if (progressBar.value >= op.progress)
                 {
-                    progressBar.value = Mathf.Lerp(progressBar.value, 1f, timer);
-                    loadingPercent.text = "progressBar.value";
+                    timer = 0f;
 
-                    if (progressBar.value == 1.0f)
-                        op.allowSceneActivation = true;
-                }
-                else
-                {
-                    progressBar.value = Mathf.Lerp(progressBar.value, op.progress, timer);
-                    if (progressBar.value >= op.progress)
+                    //End of scene index
+                    if (nextScene == 2 && loadingCompleted)
                     {
-                        timer = 0f;
-
-                        //End of scene index
-                        if (nextScene == 2 && loadingCompleted)
-                        {
-                            StopAllCoroutines();
-                        }
+                        StopAllCoroutines();
                     }
                 }
             }
-        
         }
     }
 
@@ -89,33 +79,25 @@ public class GameLauncher : MonoBehaviour
         float timer = 0f;
         while (true)
         {
-            if (progressBar == null)
+            yield return new WaitForSeconds(0.01f);
+            timer += Time.deltaTime;
+
+            Debug.Log(progressBar.value);
+            //Debug.Log("check");
+            if (progressBar.value < 100f)
             {
-                yield return null;
+                progressBar.value = Mathf.RoundToInt(Mathf.Lerp(progressBar.value, 100f, timer / 8));
+                loadingIcon.rectTransform.Rotate(new Vector3(0, 0, 100 * Time.deltaTime));
+                loadingPercent.text = progressBar.value.ToString();
             }
             else
             {
-                yield return new WaitForSeconds(0.01f);
-                timer += Time.deltaTime;
+                StopAllCoroutines();
+                //Debug.Log("100%");
 
-                Debug.Log(progressBar.value);
-                //Debug.Log("check");
-                if (progressBar.value < 100f)
-                {
-                    progressBar.value = Mathf.RoundToInt(Mathf.Lerp(progressBar.value, 100f, timer / 4));
-                    loadingIcon.rectTransform.Rotate(new Vector3(0, 0, 100 * Time.deltaTime));
-                    loadingPercent.text = progressBar.value.ToString();
-                }
-                else
-                {
-                    StopAllCoroutines();
-                    //Debug.Log("100%");
-
-                    Loading.SetActive(false);
-                    Main.SetActive(true);
-                }
+                Loading.SetActive(false);
+                Main.SetActive(true);
             }
-            
         }
     }
 
@@ -124,40 +106,24 @@ public class GameLauncher : MonoBehaviour
         Main.SetActive(false);
         Menu.SetActive(true);
     }
-    enum SceneName
-    {
-        Launcher,
-        fallenLeaves,
-        animalTrip,
-        undergroundAdventure
-    }
     public void Button_Contents(int contentname)
     {
-        switch (contentname)
-        {
-            case -1:
-                Debug.Log("ERROR: Current Scene is Null");
-                break;
-
-            case 0:
-                SceneManager.LoadSceneAsync(gameSceneNames[(int)SceneName.Launcher]);
-                break;
-
-            case 1:
-                SceneManager.LoadSceneAsync(gameSceneNames[(int)SceneName.fallenLeaves]);
-                break;
-            
-            case 2:
-                SceneManager.LoadSceneAsync(gameSceneNames[(int)SceneName.animalTrip]);
-                break;
-            
-            case 3:
-                SceneManager.LoadSceneAsync(gameSceneNames[(int)SceneName.undergroundAdventure]);
-                break;
-
-            default: Debug.Log("ERROR: Current Scene is Null");
-                break;
-
-        }
+        SceneManager.LoadSceneAsync(1);
     }
+
+    public void Button_Setting()
+    {
+        Setting.SetActive(true);
+        //일시정지 기능
+    }
+    public void Button_Close()
+    {
+        Setting.SetActive(false);
+        //일시정지 해제 기능 추가
+    }
+    public void Button_Back_ToMode()
+    {
+        //이전 씬으로 복귀
+    }
+
 }

@@ -28,9 +28,10 @@ public class UndergroundUIManager : MonoBehaviour
     
 
 
+    [FormerlySerializedAs("gameManager")]
     [Header("References")] //-------------------------------
     [SerializeField]
-    private GroundGameManager gameManager;
+    private GroundGameController gameController;
 
     [SerializeField] private FootstepManager footstepManager;
 
@@ -162,8 +163,7 @@ public class UndergroundUIManager : MonoBehaviour
         DOTween.SetTweensCapacity(2000,100);
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
         FootstepController.onLastFootstepClicked += EveryLastFootstepClicked;
-
-        //popUpUIRectTmp = popUpUIRect.GetComponent<TMP_Text>();
+        popUpUIRectTmp = popUpUIRect.GetComponentInChildren<TMP_Text>();
         
         tutorialUIGameObject.SetActive(true);
 
@@ -193,24 +193,24 @@ public class UndergroundUIManager : MonoBehaviour
         soundNode = soundPathXml.SelectSingleNode($"//SoundData[@ID='{soundID}']");
         
         
-        gameManager.isStartButtonClicked
+        gameController.isStartButtonClicked
             .Where(_ => _)
             .Delay(TimeSpan.FromSeconds(INTRO_UI_DELAY))
             .Subscribe(_ => SetUIIntroUsingUniRx())
             .AddTo(this);
 
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(_currentState => _currentState.GameState == IState.GameStateList.GameStart)
             .Subscribe(_ => OnGameStart())
             .AddTo(this);
 
-        gameManager.currentStateRP
+        gameController.currentStateRP
             .Where(_currentState => _currentState.GameState == IState.GameStateList.StageStart)
             // .Delay(TimeSpan.FromSeconds(3f))
             .Subscribe(_ => { _stageStartCoroutine = StartCoroutine(OnStageStartCoroutine()); })
             .AddTo(this);
 
-        gameManager.isGameFinishedRP
+        gameController.isGameFinishedRP
             .Where(value => value)
             .Delay(TimeSpan.FromSeconds(8f))
             .Subscribe(_ => OnGameOver())
@@ -304,7 +304,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                    gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+                    gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -316,7 +316,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void OnAnimalFind()
     {
         //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
-        ChangeImageSource("땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
+        ChangeImageSource("게임별분류/땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
         
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
@@ -331,7 +331,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
             
         }
           
@@ -347,7 +347,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            gameManager.s_soundManager.Play(Define.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
         }
 
         // 마지막 동물인 여우가 아닐 때만...
@@ -463,7 +463,7 @@ public class UndergroundUIManager : MonoBehaviour
     {
         _gameStartCoroutine = StartCoroutine(OnGameStartCoroutine());
     }
-
+    
     private IEnumerator OnGameStartCoroutine()
     {
         tutorialUIRectTransform.DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y),

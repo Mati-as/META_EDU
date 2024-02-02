@@ -77,7 +77,7 @@ public class IdleLakeWaterEffectController : MonoBehaviour,Lake_IAnimalBehavior
     {
        
         RaycastHit hit;
-        if (Physics.Raycast(Lake_GameManager.ray, out hit,12345f,layerMask))
+        if (Physics.Raycast(Lake_GameManager.GameManager_Ray, out hit,12345f,layerMask))
         {
             if (hit.collider.gameObject.name == "Water" && hit.collider.gameObject.name != null)
             {
