@@ -69,6 +69,7 @@ Shader "Custom/PaintShader"
             float2 uv = i.uv.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 
             
+            
             half4 col = _MainTex.Sample(sampler_MainTex, i.uv);
             float2 brushUV = (uv - _MouseUV.xy) / _BrushSize + 0.5; // 중심을 기준으로 정규화
 
@@ -80,7 +81,11 @@ Shader "Custom/PaintShader"
             }
 
             half4 brushColor = _BrushTex.Sample(sampler_BrushTex, brushUV);
-            float brushAlpha = brushColor.a;
+            float brushAlpha = clamp(brushColor.a, 0, 1.0);
+            if(brushAlpha < 0.1)
+            {
+                brushAlpha = 0;
+            }
 
             if (distance(i.uv, _MouseUV.xy) < _BrushSize)
             {

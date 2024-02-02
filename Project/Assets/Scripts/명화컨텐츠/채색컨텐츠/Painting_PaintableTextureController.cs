@@ -94,6 +94,8 @@ public class Painting_PaintableTextureController : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
+        if (!isStartButtonClicked) return;
+        
         Paint();
     }
 }
