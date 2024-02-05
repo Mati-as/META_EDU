@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BOKI.LowPolyNature.Scripts;
 using DG.Tweening;
 using Unity.Mathematics;
 using UnityEngine;
@@ -198,7 +199,12 @@ public class HandFootFlip_GameManager : IGameManager
                             .DOLocalRotate(_rotateVector + _PrintMap[currentInstanceID].printObj.transform.rotation.eulerAngles, 0.38f)
                             .SetEase(Ease.InOutQuint)
                             .OnStart(() =>
-                            { 
+                            {
+                                
+                                
+                                char randomChar = (char)Random.Range('A', 'F'+ 1);
+                                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_"+randomChar,
+                                    0.3f);
                                 
                                 _PrintMap[currentInstanceID].isNowFlipping = true; 
                                 
@@ -215,6 +221,8 @@ public class HandFootFlip_GameManager : IGameManager
                                 }
                                 else
                                 {
+                                    
+                                    
                                     Debug.Log("Changing to Default");
                                     
                                     _meshRendererMap[currentInstanceID].material
@@ -232,7 +240,8 @@ public class HandFootFlip_GameManager : IGameManager
                             {
                                 if (_isAnimalMoving)
                                 {
-                                    DOVirtual.Float(0, 1, 1.2f, _ => { }).OnComplete(() =>
+                                    //객체가 두번 뒤집어 지지않도록 딜레이를 주어 bool값을 변화시킵니다. 
+                                    DOVirtual.Float(0, 1, 1.25f, _ => { }).OnComplete(() =>
                                     {
                                         _PrintMap[currentInstanceID].isNowFlipping = false;
                                     });
@@ -310,24 +319,41 @@ public class HandFootFlip_GameManager : IGameManager
             .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
             .OnStart(() =>
             {
-                     _rayCastCoroutine = StartCoroutine(RayCasterMoveCoroutine());
-                
-                    DOVirtual.Float(0, 1, 2f, _ => { })
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
+
+                DOVirtual.Float(0, 1, 0.35f, _ => { })
+                    .OnStart(() =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A",0.5f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B",0.5f);
+                    })
                     .OnComplete(() =>
                     {
-                        _isAnimalMoving = false;
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
                     });
-                    
+                
+                
+                _rayCastCoroutine = StartCoroutine(RayCasterMoveCoroutine());
+                
+                
+                DOVirtual.Float(0, 1, 2.3f, _ => { })
+                .OnComplete(() =>
+                {
+                    _isAnimalMoving = false;
+                });
+                
                     
                     //동물이 모두 이동하기전 관련 초기화 로직 수행
-                    DOVirtual.Float(0, 1, _animalMoveDuration-0.15f, _ => { })
-                        .OnComplete(() =>
-                        {
-                            onRaycasterMoveFinish?.Invoke();
-                            _isAnimalMoving = false;
-                        });
-                    
-                 
+                DOVirtual.Float(0, 1, _animalMoveDuration-0.15f, _ => { })
+                    .OnComplete(() =>
+                    {
+                        onRaycasterMoveFinish?.Invoke();
+                        _isAnimalMoving = false;
+                        Managers.Sound.FadeOut(SoundManager.Sound.Effect);
+                    });
+                
+             
 
 
             })
