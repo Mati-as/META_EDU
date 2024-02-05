@@ -67,11 +67,19 @@ public class Painting_MultipleTexture : IGameManager
                 Debug.Log($"Brush Strength: {burshStrength}");
                 
 #endif
-                // Update the RenderTexture
-                RenderTexture temp = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
-                Graphics.Blit(renderTexture, temp, paintMaterial);
-                Graphics.Blit(temp, renderTexture);
-             //   RenderTexture.ReleaseTemporary(temp);
+
+                // 알파블렌딩과 렌더링 순서 간 차이로 인해 클릭 시 한번에 전부 지워지지 않는 버그가 있습니다.
+                // 이를 해결하기위해 Blit을 1:n 만큼 수행하여 시각적인 디버그를 완료하였습니다.
+                // 추후 렌더링 RnD통한 최적화 필요할 수도 있음 2/5/2024
+                for (int i = 0; i < 3; i++)
+                {
+                    // Update the RenderTexture
+                    RenderTexture temp = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
+                    Graphics.Blit(renderTexture, temp, paintMaterial);
+                    Graphics.Blit(temp, renderTexture);
+                    //RenderTexture.ReleaseTemporary(temp);
+                }
+           
             }
         }
     }
