@@ -204,7 +204,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         if (!isInit) return;
 
-        if (videoGameManager._isCrabAppearable) DoPathToClickPoint();
+        if (videoGameManager.isCrabAppearable) DoPathToClickPoint();
 
 
 #if UNITY_EDITOR
@@ -323,10 +323,10 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void PlayPath(Crab _crabDoingPath)
     {
-        if (!videoGameManager._isCrabAppearable) return;
+        if (!videoGameManager.isCrabAppearable) return;
         
 #if UNITY_EDITOR
-Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} ");
+//Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager.isCrabAppearable} ");
 #endif
         
         UpdateDistanceFromStartPointToClickedPoint(_crabDoingPath);
@@ -358,7 +358,7 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
 
         if (_crabDoingPath.isNoPath)
         {
-            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 7f, val => val++).OnStart(() =>
+            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 4.5f, val => val++).OnStart(() =>
             {
                 _crabDoingPath.animator.SetBool(IDLE_ANIM, true);
 #if UNITY_EDITOR

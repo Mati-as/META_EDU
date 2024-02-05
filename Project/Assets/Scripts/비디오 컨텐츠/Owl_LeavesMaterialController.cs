@@ -93,8 +93,8 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         IGameManager.On_GmRay_Synced -= OnClicked;
         IGameManager.On_GmRay_Synced += OnClicked;
 
-        Owl_VideoGameManager.onOwlUIFinished -= OnOwnUIFinished;
-        Owl_VideoGameManager.onOwlUIFinished += OnOwnUIFinished;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished -= OnOwnSpeechBubbleFinished;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
 
         InteractableVideoGameManager.onRewind -= OnRewind;
         InteractableVideoGameManager.onRewind += OnRewind;
@@ -106,7 +106,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
 
         InteractableVideoGameManager.onRewind -= OnRewind;
-        Owl_VideoGameManager.onOwlUIFinished += OnOwnUIFinished;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
     }
 
     private void BrightenUp(Material mat)
@@ -123,7 +123,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         foreach (var leaf in _leafs) leaf.isDarkendAndNonClickable = false;
     }
 
-    private void OnOwnUIFinished()
+    private void OnOwnSpeechBubbleFinished()
     {
         _darkendCount = 0;
         if (Owl_VideoGameManager.isJustRewind)
