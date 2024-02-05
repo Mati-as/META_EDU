@@ -202,11 +202,16 @@ public class Mondrian_GameManager : IGameManager
     {
         GameManager_Hits = Physics.RaycastAll(ray);
 
+        
         foreach (var hit in GameManager_Hits)
         {
             var currentInstance = hit.transform.gameObject.GetComponent<MeshRenderer>().GetInstanceID();
             if (_meshRendererMap.ContainsKey(currentInstance))
             {
+                
+                char randomChar = (char)Random.Range('A', 'D'+ 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Mondrian/Click_" + randomChar, 0.2f);
+             
                 // var scaleSeq = DOTween.Sequence();
 
                 var sequence = DOTween.Sequence();
@@ -335,6 +340,8 @@ public class Mondrian_GameManager : IGameManager
                                     .DOScale(0f, 0.45f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                     .OnStart(() =>
                                     {
+                                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Mondrian/OnExplosion", 0.4f);
+                                        
                                         if (!_explosionParticle.IsAlive() && hit.transform.localScale.x < 1.5f)
                                         {
                                             _explosionParticle.transform.position = currentTransform.position;
@@ -347,6 +354,9 @@ public class Mondrian_GameManager : IGameManager
                                     })
                                     .OnComplete(() =>
                                     {
+                                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Mondrian/OnFlowerAppear", 0.4f);
+                                        
+                                       
                                         currentTransform
                                             .DOScale(defaultScale, 0.45f).SetEase(Ease.InOutSine)
                                             .SetDelay(Random.Range(5, 10)).OnComplete(() =>
@@ -401,6 +411,8 @@ public class Mondrian_GameManager : IGameManager
 
                    
 
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Mondrian/OnBunchFlowersAppear", 0.4f);
+                    
                     // 스케일 애니메이션
                     var defaultScale = hit.transform.localScale;
                     var targetScale = defaultScale * _scaleInterval;
