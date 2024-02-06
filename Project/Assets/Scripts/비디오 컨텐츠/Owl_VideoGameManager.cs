@@ -20,6 +20,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     private XmlDocument _xmlDoc;
     private TMP_Text _tmp;
 
+    public static bool isOwlUIFinished { get; private set; }
     //Rewind로 처음부터 다시 초기화되어 재생되는지 판단
   
     public static event Action onOwlSpeechBubbleFinished;
@@ -32,7 +33,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
         _tmp = _owlSpeechBubble.GetComponentInChildren<TMP_Text>();
         _tmp.text = string.Empty;
 
-
+        isOwlUIFinished = true;
         _defaultScale = _owlSpeechBubble.GetComponent<RectTransform>().localScale;
 #if UNITY_EDITOR
 
@@ -97,6 +98,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                     Debug.Log($"부엉이 대사 끝. 대사 번호: {currentIndex}");
 #endif
                   
+                    
                     onOwlSpeechBubbleFinished?.Invoke();
                    
                 });
@@ -158,6 +160,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     {
         if (!isJustRewind) return;
 
+       
         DOVirtual.Float(0, 1, 0.5f, _ => { })
             .OnComplete(() =>
             {
@@ -176,6 +179,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                     })
                     .OnComplete(() =>
                     {
+                        isOwlUIFinished = true;
                         //_isRewind가 false라는 것은, 두번째 나뭇잎이 다시 밝아지기위해 화면이 멈추는 경우를 말합니다. 
                     }).SetDelay(1f);
             });
@@ -197,13 +201,14 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                     .SetEase(Ease.OutBounce)
                     .OnStart(() =>
                     {
+                        isOwlUIFinished = false;
                         //영상 다시 중지
                         DOVirtual.Float(1, 0, 1f,
                                 speed =>
                                 {
 
                                     videoPlayer.playbackSpeed = speed;
-                                }).SetDelay(3f)
+                                }).SetDelay(0.5f)
                             .OnComplete(() => { PlayNextMessageAnim(currentLineIndex); });
                     })
                     .SetDelay(5f);

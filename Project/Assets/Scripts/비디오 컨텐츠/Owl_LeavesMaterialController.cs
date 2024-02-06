@@ -36,6 +36,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     private Owl_VideoGameManager _gameManager;
     private Ray rayForShader;
 
+   
     public static event Action OnAllLeavesDarkend;
 
 
@@ -111,7 +112,11 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
     private void BrightenUp(Material mat)
     {
-        mat.DOColor(mat.color * intensity, 2).SetDelay(4.5f).OnComplete(() => { _isGameInited = true; });
+        mat.DOColor(mat.color * intensity, 1.35f)
+            .SetDelay(4.5f)
+            .OnStart(() => { _isGameInited = false; })
+            .OnComplete(() => { DOVirtual.Float(0, 1, 1f, _ => { })
+                .OnComplete(() => { _isGameInited = true; }); });
     }
 
     private void OnRewind()
@@ -147,11 +152,25 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
     private void OnClicked()
     {
-        if (!_isGameInited) return;
+     
 
         rayForShader = IGameManager.GameManager_Ray;
         RaycastHit hit;
 
+        if (!_isGameInited)
+        {
+#if UNITY_EDITOR
+Debug.Log($"material is glowing yet");
+#endif
+return;
+}
+if (!Owl_VideoGameManager.isOwlUIFinished)
+{
+#if UNITY_EDITOR
+Debug.Log($"owl ui isn't finished yet.");
+#endif
+            return;
+        }
         if (Physics.Raycast(rayForShader, out hit))
             foreach (var leaf in _leafs)
                 if (hit.transform.gameObject.name == leaf.name)
@@ -166,9 +185,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
                             DarkenLeaf(leaf.name);
                             leaf.isDarkendAndNonClickable = true;
 
-#if UNITY_EDITOR
 
-#endif
                             if (CheckAllLeavesDarkend()) OnAllLeavesDarkend?.Invoke();
                         }
                     }
@@ -182,7 +199,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     {
         foreach (var mat in matByNames[objName])
             if (mat != null)
-                mat.DOColor(mat.color / 4, 3.3f);
+                mat.DOColor(mat.color / 4, 2.3f);
     }
 
     private void Init()
