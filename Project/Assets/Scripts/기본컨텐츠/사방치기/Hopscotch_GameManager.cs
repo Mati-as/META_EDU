@@ -46,8 +46,14 @@ public class Hopscotch_GameManager : IGameManager
 
     public float randomForceMax;
 
-
     private CanvasGroup _numCvGrup;
+    private Sequence _currentScaleSequence;
+    private Sequence _stepCurrentScaleSequence;
+    private Sequence _scaleBackSequence;
+    public static event Action onStageClear;
+    public float nextStepInducingParticleDelay;
+
+    private Vector3 _camDefaultPosition;
 
     private void Start()
     {
@@ -63,6 +69,8 @@ public class Hopscotch_GameManager : IGameManager
             Debug.LogError("GameObject named 'InPlayTexts' not found in the scene.");
 
         foreach (var rect in _numberTextRects) _uiDefaultSizeMap.Add(rect, rect.localScale);
+
+   
     }
 
 
@@ -100,7 +108,12 @@ public class Hopscotch_GameManager : IGameManager
         _defaultSizeMap = new Dictionary<Transform, Vector3>();
         _uiDefaultSizeMap = new Dictionary<RectTransform, Vector3>();
         _rigidbodies = new Dictionary<Transform, Rigidbody>();
+
         
+      
+        if (Camera.main != null) _camDefaultPosition = Camera.main.transform.position;
+
+
         base.Init();
         
         BindEvent();
@@ -126,6 +139,7 @@ public class Hopscotch_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
+        
 #if UNITY_EDITOR
         if (!isChecked)
         {
@@ -140,7 +154,7 @@ public class Hopscotch_GameManager : IGameManager
         // 게임시작전, 게임초기화 시 클릭 X
         if (!_isClickable) return;
 
-        if (CheckOnStep()) PlaySuccessParticle(_currentStep);
+        if (CheckOnStep()) OnCorrectStep(_currentStep);
     }
 
     private void LoadParticles()
@@ -165,7 +179,6 @@ public class Hopscotch_GameManager : IGameManager
         if (successPs != null)
         {
             _successParticle = Instantiate(successPs, transform).GetComponent<ParticleSystem>();
-            ;
             _successParticle.Stop();
         }
     }
@@ -301,21 +314,29 @@ public class Hopscotch_GameManager : IGameManager
         _inducingParticle.Play();
     }
 
-    private Sequence _currentScaleSequence;
-    private Sequence _stepCurrentScaleSequence;
-    private Sequence _scaleBackSequence;
-    public static event Action onStageClear;
 
     private Vector3 AddOffset(Vector3 position)
     {
         return position + Vector3.forward * offset;
     }
 
-    public float nextStepInducingParticleDelay;
+
+
+    private void OnCorrectStep(int currentPosIndex)
+    {
+        ShakeCam();
+        PlaySuccessParticle(currentPosIndex);
+        
+    }
+    private void ShakeCam()=> Camera.main.DOShakePosition(1.2f, 0.5f, 7).OnComplete(()=>
+        {
+            Camera.main.transform.DOMove(_camDefaultPosition, 0.5f);
+        });
 
     private void PlaySuccessParticle(int currentPosition)
     {
         if (_isSuccesssParticlePlaying) return;
+        
 
         //중복 실행 방지
         _isSuccesssParticlePlaying = true;
