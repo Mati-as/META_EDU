@@ -11464,22 +11464,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!4 &1871143987
-Transform:
+--- !u!224 &1871143987
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1871143985}
-  m_LocalRotation: {x: -0, y: -0, z: 0.10120865, w: 0.99486524}
-  m_LocalPosition: {x: -65, y: 173.00006, z: 0}
-  m_LocalScale: {x: 62.847298, y: 62.847298, z: 62.847298}
+  m_LocalRotation: {x: -0, y: -0, z: 0.09826492, w: 0.9951603}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 44.672913, y: 44.672913, z: 44.672913}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 802596588}
   m_Father: {fileID: 1333476742}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 24.294}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 138, y: 271.9998}
+  m_SizeDelta: {x: 12, y: 12}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1877440967
 GameObject:
   m_ObjectHideFlags: 0
@@ -16674,18 +16679,6 @@ Transform:
   m_Father: {fileID: 141433446536042569}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!198 &1554782460235796918 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6947896405608722625, guid: e31d436940b2f884f96278199bf21998,
-    type: 3}
-  m_PrefabInstance: {fileID: 8500632879789351287}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &1554782460235796919 stripped
-AudioSource:
-  m_CorrespondingSourceObject: {fileID: 6947896405608722624, guid: e31d436940b2f884f96278199bf21998,
-    type: 3}
-  m_PrefabInstance: {fileID: 8500632879789351287}
-  m_PrefabAsset: {fileID: 0}
 --- !u!199 &1680310405038630909
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -21843,11 +21836,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playbackSpeed: 1
   ManuallyReplay: 0
-  _particleSystems:
-  - {fileID: 1554782460235796918}
-  - {fileID: 486868326}
-  - {fileID: 719666246}
-  _particleSystemAudioSource: {fileID: 1554782460235796919}
+  particleSystems: []
+  particleSystemAudioSource: {fileID: 0}
   replayOffset: 0
   crabAppearClickCount: 50
 --- !u!1 &8122789944726909030

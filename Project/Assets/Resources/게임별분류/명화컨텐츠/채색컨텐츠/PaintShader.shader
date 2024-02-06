@@ -17,7 +17,7 @@ Shader "Custom/PaintShader"
     Tags{
         "RenderPipeline"= "UniversalPipeline"
         "RenderType"= "Transparent"
-        "RenderQueue"= "Transparent"
+            "RenderQueue"= "Transparent"
         }
     
     Pass
@@ -108,4 +108,6 @@ Shader "Custom/PaintShader"
         ENDHLSL
     }
   }
+  // yor can tell the unity to use it's bulit in Diffuse shader if your custom shader fails to compile or isn't supported on the use's hardware
+  Fallback "Diffuse"
 }

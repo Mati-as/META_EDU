@@ -446,7 +446,7 @@ GameObject:
   - component: {fileID: 823463542}
   - component: {fileID: 823463541}
   - component: {fileID: 823463540}
-  - component: {fileID: 823463539}
+  - component: {fileID: 823463544}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -454,32 +454,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &823463539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 823463538}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e531febc19a4f7f83d5b2f197aa9b31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  paintShader: {fileID: 4800000, guid: bae2d80e5c5ef4c4da39caf2cc0e34c9, type: 3}
-  textureToPaint: {fileID: 2800000, guid: 10df5026d940cb44790fe9e2a8cfb13e, type: 3}
-  brushSize: 0.135
-  paintAction:
-    m_Name: Paint
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 649ad3a1-e7f7-445d-b7e0-557fd6d338aa
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  burshTexture: {fileID: 2800000, guid: 1529a4a55a0e5f34cad6a13770e89ea0, type: 3}
-  burshStrength: 1
 --- !u!64 &823463540
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -559,6 +533,25 @@ Transform:
   m_Father: {fileID: 724423712}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &823463544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823463538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b3f076f3d328d4c938de16a58d620a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paintShader: {fileID: 4800000, guid: bae2d80e5c5ef4c4da39caf2cc0e34c9, type: 3}
+  textureToPaintOn: {fileID: 2800000, guid: 10df5026d940cb44790fe9e2a8cfb13e, type: 3}
+  brushSize: 0.08
+  burshTextures:
+  - {fileID: 2800000, guid: 1529a4a55a0e5f34cad6a13770e89ea0, type: 3}
+  burshStrength: 1
+  currentRotation: 0
 --- !u!1 &1591914169
 GameObject:
   m_ObjectHideFlags: 0

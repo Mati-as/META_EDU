@@ -1,19 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class Painting_MultipleTexture : IGameManager
 {
-  public Shader paintShader;
+    [SerializeField]
+    private Shader paintShader;
     private Material paintMaterial;
     private RenderTexture renderTexture;
     private MeshRenderer _meshRenderer;
-    public Texture2D textureToPaintOn;
+    [SerializeField]
+    private Texture2D textureToPaintOn;
     public float brushSize = 0.1f;
- 
-    [FormerlySerializedAs("burshTexture")] public Texture2D[] burshTextures;// Define an InputAction for painting
+    [SerializeField]
+    private Texture2D[] burshTextures;// Define an InputAction for painting
 
 
      [Header("Shader Setting")] 
@@ -26,14 +30,29 @@ public class Painting_MultipleTexture : IGameManager
         
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
         
+
+    }
+
+
+    private void Start()
+    {
+        InitTexture();
+    }
+    
+    
+    /// <summary>
+    /// Awake단게로 옮기지말 것,renderTexture Access Deny되는 버그 발생가능성 있음
+    /// </summary>
+    private void InitTexture()
+    {
         renderTexture = new RenderTexture(textureToPaintOn.width, textureToPaintOn.height, 0, RenderTextureFormat.ARGB32);
         paintMaterial = new Material(paintShader);
         
         
-        // Copy the original texture to the RenderTexture
+     
         Graphics.Blit(textureToPaintOn, renderTexture);
 
-        // Set the material's texture to the RenderTexture
+        // Set the material's texture
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
     }
 
