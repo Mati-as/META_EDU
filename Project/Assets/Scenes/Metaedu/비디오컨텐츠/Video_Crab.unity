@@ -156,7 +156,7 @@ Transform:
   - {fileID: 908984935}
   - {fileID: 932562755}
   m_Father: {fileID: 153908202}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &128062858
 GameObject:
@@ -234,7 +234,6 @@ Transform:
   - {fileID: 6958638131641780568}
   - {fileID: 1028587150}
   - {fileID: 778424655}
-  - {fileID: 286303823}
   - {fileID: 486868327}
   - {fileID: 719666248}
   - {fileID: 8500632879789351288}
@@ -242,37 +241,6 @@ Transform:
   - {fileID: 58547295}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &286303822
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 286303823}
-  m_Layer: 0
-  m_Name: Managers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &286303823
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 286303822}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 153908202}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &439443325
 GameObject:
@@ -5419,7 +5387,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 153908202}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -90, y: -90, z: 0}
 --- !u!1 &592442185
 GameObject:
@@ -10717,7 +10685,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 153908202}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -90, y: -90, z: 0}
 --- !u!1 &778424653
 GameObject:
@@ -10730,7 +10698,7 @@ GameObject:
   - component: {fileID: 778424655}
   - component: {fileID: 778424654}
   m_Layer: 0
-  m_Name: CrabRotater (Spawner)
+  m_Name: Crab_Path_Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21538,7 +21506,7 @@ PrefabInstance:
     - target: {fileID: 4771649814860859883, guid: cbe4a3e00a21fa74e8b141ca47f30ddd,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4771649814860859883, guid: cbe4a3e00a21fa74e8b141ca47f30ddd,
         type: 3}
@@ -21835,11 +21803,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playbackSpeed: 1
+  DEBUG_manuallyTrigger: 0
+  _particleOnRewind: {fileID: 8500632879789351291}
+  timeStampToStop: 11
+  maxCount: 50
+  rewindDuration: 0
+  stopPointSecond: 3
   ManuallyReplay: 0
   particleSystems: []
   particleSystemAudioSource: {fileID: 0}
-  replayOffset: 0
+  replayOffset: 0.1
   crabAppearClickCount: 50
+  nextUIApperableWaitTime: 1
 --- !u!1 &8122789944726909030
 GameObject:
   m_ObjectHideFlags: 0
@@ -21873,7 +21848,7 @@ PrefabInstance:
     - target: {fileID: 6947896405628112139, guid: e31d436940b2f884f96278199bf21998,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6947896405628112139, guid: e31d436940b2f884f96278199bf21998,
         type: 3}
@@ -21930,6 +21905,12 @@ PrefabInstance:
 --- !u!4 &8500632879789351288 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6947896405628112139, guid: e31d436940b2f884f96278199bf21998,
+    type: 3}
+  m_PrefabInstance: {fileID: 8500632879789351287}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8500632879789351291 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6947896405608722625, guid: e31d436940b2f884f96278199bf21998,
     type: 3}
   m_PrefabInstance: {fileID: 8500632879789351287}
   m_PrefabAsset: {fileID: 0}

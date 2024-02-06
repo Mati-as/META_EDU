@@ -8,26 +8,21 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class CrabVideoGameManager : Video_GameManager
+public class CrabVideoGameManager : InteractableVideoGameManager
 {
 #if UNITY_EDITOR
     [Header("Debug Only")] public bool ManuallyReplay;
     
     [Space(15f)]
 #endif
-
-    [Header("Particle and Audio Setting")]
-    [SerializeField]
-    private ParticleSystem[] particleSystems;
-
-    [SerializeField] private AudioSource particleSystemAudioSource;
+    
     public static bool _isShaked;
 
     private bool _isReplayEventTriggered;
 
     public bool isCrabAppearable { get; private set; }
 
-    public static event Action OnReplay;
+    
     private RectTransform _crabSpeechBubbleUI;
     private Vector3 _speechBubbleDefaultSize;
 
@@ -47,77 +42,33 @@ public class CrabVideoGameManager : Video_GameManager
 
 
     // Start is called before the first frame update
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+        
         isCrabAppearable = true;
 
         _crabSpeechBubbleUI = GameObject.Find("Crab_SpeechBubble").GetComponent<RectTransform>();
         _speechBubbleDefaultSize = _crabSpeechBubbleUI.localScale;
         _crabSpeechBubbleUI.localScale = Vector3.zero;
+        _tmp = _crabSpeechBubbleUI.GetComponentInChildren<TMP_Text>();
+        _tmp.text = string.Empty;
 
 
-        _xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Owl_UI_Data");
+        _xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Video_UI_text_Data");
         _xmlDoc = new XmlDocument();
         _xmlDoc.LoadXml(_xmlAsset.text);
 
-        onCrabAppear -= OnCrabAppear;
-        onCrabAppear += OnCrabAppear;
+        SubscribeEvent();
+
+        rewindParticleAudioPath = "Audio/비디오 컨텐츠/Crab/Bubbles";
+
     }
 
-    private void OnDestroy()
-    {
-        onCrabAppear -= OnCrabAppear;
-    }
+
     
-
     public float replayOffset;
-
-    private void Update()
-    {
-        if (videoPlayer.isPlaying && !_isReplayEventTriggered)
-        {
-            // 비디오의 현재 재생 시간과 총 재생 시간을 가져옴
-
-            var currentTime = videoPlayer.time;
-            var totalDuration = videoPlayer.length;
-
-            // 비디오가 95% 이상 재생되었는지 확인
-            if (currentTime / totalDuration >= 0.99
-#if UNITY_EDITOR
-                || ManuallyReplay
-#endif
-               )
-            {
-                DOVirtual.Float(0, 0, replayOffset, nullParam => { })
-                    .OnComplete(() =>
-                    {
-                        _isReplayEventTriggered = true;
-                        ReplayTriggerEvent();
-                    });
-
-
-                DOVirtual.Float(1, 0, 2f, speed => { videoPlayer.playbackSpeed = speed; }).OnComplete(() =>
-                {
-#if UNITY_EDITOR
-                    Debug.Log("RelayTriggerReady");
-#endif
-                    videoPlayer.time = 0;
-
-                    DOVirtual.Float(0, 0, 1f, duration => { })
-                        .OnComplete(() =>
-                        {
-#if UNITY_EDITOR
-                            ManuallyReplay = false;
-#endif
-                            _isReplayEventTriggered = false;
-                            _isShaked = false;
-                        });
-                });
-            }
-        }
-    }
-
-
+    
     protected override void Init()
     {
         base.Init();
@@ -128,6 +79,29 @@ public class CrabVideoGameManager : Video_GameManager
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
     }
+    
+    public void SubscribeEvent()
+    {
+        
+        onCrabAppear -= OnCrabAppear;
+        onCrabAppear += OnCrabAppear;
+        
+        onCrabSpeechBubbleFinished -= OnOwlSpeechBubbleFinished;
+        onCrabSpeechBubbleFinished += OnOwlSpeechBubbleFinished;
+        
+        onReplay -= OnReplay;
+        onReplay += OnReplay;
+        
+    }
+    
+    private void OnDestroy()
+    {
+      
+        onCrabAppear -= OnCrabAppear;
+        onCrabSpeechBubbleFinished -= OnOwlSpeechBubbleFinished;
+        onReplay -= OnReplay;
+    }
+
 
     public int crabAppearClickCount;
     private int _currentClickCount;
@@ -156,11 +130,13 @@ public class CrabVideoGameManager : Video_GameManager
             DOVirtual.Float(0, 1, 1f, speed => { videoPlayer.playbackSpeed = speed; })
                 .OnComplete(() => { _isShaked = true; });
         }
+        
+
     }
 
     private void OnCrabAppear()
     {
-        PlaySpeechBubble(6.5f);
+        PlaySpeechBubble(12.5f);
     }
 
     private void PlaySpeechBubble(float delay)
@@ -171,36 +147,41 @@ public class CrabVideoGameManager : Video_GameManager
                 _crabSpeechBubbleUI.DOScale(_speechBubbleDefaultSize, 0.8f)
                     .OnComplete(() =>
                     {
+#if UNITY_EDITOR
+                            Debug.Log("꽃게 대사 재생시작");
+#endif
+                            PlayNextMessageAnim(_currentLineIndex);
+                            
                         videoPlayer.playbackSpeed = 0;
                     });
             });
     }
 
+    private void Play() => videoPlayer.playbackSpeed = 1;
     private void TurnOffSpeechBubble(float delay)
     {
         DOVirtual.Float(0, 1, delay, _ => { })
             .OnComplete(() => { _crabSpeechBubbleUI.DOScale(Vector3.zero, 0.8f); });
     }
-
+    public int nextUIApperableWaitTime; //10
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
 
         if (!isStartButtonClicked) return;
         CrabOnRaySynced();
-    }
+        
+        if (_isNextUIAppearable)
+        {
+            if (_currentLineIndex >= 2) return;
+            _isNextUIAppearable = false;
+            _currentLineIndex++;
+            PlayNextMessageAnim(_currentLineIndex);
+        }
+    }  
+    
 
-    private void ReplayTriggerEvent()
-    {
-        foreach (var ps in particleSystems) ps.Play();
-
-        _currentClickCount = 0;
-        isCrabAppearable = true;
-        _isOnCrabAppearEventInvoked = false;
-        SoundManager.FadeInAndOutSound(particleSystemAudioSource);
-        OnReplay?.Invoke();
-    }
-
+    
     public IEnumerator TypeIn(string str, float offset)
     {
         _tmp.text = ""; // 초기화
@@ -224,21 +205,26 @@ public class CrabVideoGameManager : Video_GameManager
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
 
 
-        var node = _xmlDoc.SelectSingleNode($"//StringData[@ID='{"Owl_UI_" + _currentLineIndex}']");
+        var node = _xmlDoc.SelectSingleNode($"//StringData[@ID='{"Crab_UI_" + _currentLineIndex}']");
         if (node != null)
         {
             var message = node.Attributes["string"].Value;
             _tmp.text = message;
         }
+        else
+        {
+            
+#if UNITY_EDITOR
+Debug.Log($"the current XML node is null");
+#endif
+        }
 
         _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0.3f));
 
-        DOVirtual.Float(0, 1, 10f, _ => { }).OnComplete(() => { _isNextUIAppearable = true; });
-
-
         //duration -> 10
-        DOVirtual.Float(0, 1, 1f, _ => { })
+        DOVirtual.Float(0, 1, nextUIApperableWaitTime, _ => { })
             .OnComplete(() => { _isNextUIAppearable = true; });
+
 
         if (_currentLineIndex >= 2)
             DOVirtual.Float(0, 1, 0.5f, _ => { })
@@ -252,5 +238,60 @@ public class CrabVideoGameManager : Video_GameManager
                    
                 });
     }
+    private void OnOwlSpeechBubbleFinished()
+    {
+        
+       
+        DOVirtual.Float(0, 1, 0.5f, _ => { })
+            .OnComplete(() =>
+            {
+                _crabSpeechBubbleUI.transform
+                    .DOScale(Vector3.zero, 2f)
+                    .SetEase(Ease.OutBounce)
+                    .OnStart(() =>
+                    {
+                        
+                        StopCoroutine(_typingCoroutine);
+                        Play();
+                    })
+                    .OnComplete(() =>
+                    {
+                     
+                        //_isRewind가 false라는 것은, 두번째 나뭇잎이 다시 밝아지기위해 화면이 멈추는 경우를 말합니다. 
+                    }).SetDelay(1f);
+            });
+    }
 
+    protected override void OnReplay()
+    {
+        //start Delay
+        DOVirtual.Float(0, 1, 6f, _ => { })
+            .OnComplete(() =>
+            {
+                _crabSpeechBubbleUI.transform
+                    .DOScale(_speechBubbleDefaultSize, 2f)
+                    .SetEase(Ease.OutBounce)
+                    .OnStart(() =>
+                    {
+                        DOVirtual.Float(1, 0, 1f,
+                                speed => { videoPlayer.playbackSpeed = speed; }).SetDelay(0.5f)
+                            .OnComplete(() =>
+                            {
+#if UNITY_EDITOR
+                                Debug.Log("꽃게 대사 재생시작");
+#endif
+                                PlayNextMessageAnim(_currentLineIndex);
+                            });
+                    })
+                    .SetDelay(5f);
+            });
+    }
+
+    protected override void OnRewind()
+    {
+        base.OnRewind();
+        _currentClickCount = 0;
+        isCrabAppearable = true;
+        _isOnCrabAppearEventInvoked = false;
+    }
 }

@@ -56,7 +56,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     private void UI_Init()
     {
         // XML 파일 로드 (Resources 폴더 안에 있어야 함)
-        _xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Owl_UI_Data");
+        _xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Video_UI_text_Data");
         _xmlDoc = new XmlDocument();
         _xmlDoc.LoadXml(_xmlAsset.text);
 
@@ -67,6 +67,8 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     private Coroutine _typingCoroutine;
     private readonly float _textPrintingSpeed = 0.03f;
     private int currentLineIndex;
+
+    public int nextUIApperableWaitTime; //10
 
     private void PlayNextMessageAnim(int currentIndex)
     {
@@ -83,11 +85,10 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
 
         _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0.3f));
 
-        DOVirtual.Float(0, 1, 10f, _ => { }).OnComplete(() => { _isNextUIAppearable = true; });
-
-
+      
+        
         //duration -> 10
-        DOVirtual.Float(0, 1, 1f, _ => { })
+        DOVirtual.Float(0, 1, nextUIApperableWaitTime, _ => { })
             .OnComplete(() => { _isNextUIAppearable = true; });
 
         if (currentLineIndex >= 2)
@@ -227,7 +228,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
             // 비디오가 95% 이상 재생되었는지 확인
             if (currentTime / totalDuration >= 0.92f
 #if UNITY_EDITOR
-                || TriggerReplayEvent
+                || DEBUG_manuallyTrigger
 #endif
                )
             {
@@ -250,7 +251,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                         .OnComplete(() =>
                         {
 #if UNITY_EDITOR
-                            TriggerReplayEvent = false;
+                            DEBUG_manuallyTrigger = false;
 #endif
                             _isRewindEventTriggered = false;
                             _isShaked = false;

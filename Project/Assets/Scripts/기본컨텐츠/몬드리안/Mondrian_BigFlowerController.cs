@@ -30,8 +30,12 @@ public class Mondrian_BigFlowerController : MonoBehaviour
         Mondrian_GameManager.onBigCubeExplosion -=PlayAnim;
     }
 
+    [SerializeField] private float targetScale;
+    [SerializeField] private Vector3 offset;
 
     public bool _onGrowing { get;private set; }
+
+    [SerializeField] private Quaternion[] _rotations; 
     
     void PlayAnim()
     {
@@ -40,14 +44,15 @@ public class Mondrian_BigFlowerController : MonoBehaviour
             _onGrowing = true;
             
             vegetations[_currentVeggie % vegetations.Length].transform.localScale = Vector3.zero;
-            vegetations[_currentVeggie % vegetations.Length].transform.position = flowerAppearPosition;
-            vegetations[_currentVeggie % vegetations.Length].transform.DOScale(5f, 0.8f)
+            vegetations[_currentVeggie % vegetations.Length].transform.position = flowerAppearPosition + offset;
+            vegetations[_currentVeggie % vegetations.Length].transform.DORotateQuaternion(_rotations[Random.Range(0, 2)],0.1f);
+            vegetations[_currentVeggie % vegetations.Length].transform.DOScale(targetScale, 0.8f)
                 .SetEase(Ease.InOutBounce)
                 .SetDelay(0.2f)
                 .OnComplete(() =>
                 {
                     vegetations[_currentVeggie % vegetations.Length].transform.DOScale(0f, 1.0f)
-                        .SetDelay(0.8f)
+                        .SetDelay(1.5f)
                         .OnComplete(() =>
                         {
                             _currentVeggie++;
