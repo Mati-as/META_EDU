@@ -15,12 +15,12 @@ using UnityEngine.Serialization;
 /// </summary>
 public abstract class InteractableVideoGameManager : Video_GameManager
 {
-#if UNITY_EDITOR
+
    [Header("*****Debug Only*****")] public bool DEBUG_manuallyTrigger;
 
     [FormerlySerializedAs("_particleSystems")]
     [Space(15f)]
-#endif
+
 
     [Header("Particle and Audio Setting")]
     private static readonly string prefix = "Video_";
