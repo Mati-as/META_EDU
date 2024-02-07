@@ -17,6 +17,10 @@ public class HandFootFlip_GameManager : IGameManager
         Max
     }
 
+    private RaycastHit hit;
+
+
+
     private Color _currentUnifiedColor =Color.red;
     private Color _previousUniColor = Color.black;
     private Print[] _prints;
@@ -40,7 +44,8 @@ public class HandFootFlip_GameManager : IGameManager
 
     private int COLOR_COUNT = 5;
 
-
+    //instance ID를 통한 접근 및 제어
+    private Dictionary<int, Print> _PrintMap;
     //쌍이되는 컬러를  String으로 할당하여, 색상이름(string)에 따라 제어.
     private Dictionary<string, Color> _colorPair;
     private Dictionary<int, MeshRenderer> _meshRendererMap;
@@ -71,8 +76,7 @@ public class HandFootFlip_GameManager : IGameManager
     }
 
 
-    //instance ID를 통한 접근 및 제어
-    private Dictionary<int, Print> _PrintMap;
+  
 
 
     protected override void Init()
@@ -177,10 +181,6 @@ public class HandFootFlip_GameManager : IGameManager
             _animals = GameObject.Find("HandFlippable_Animal").GetComponent<Transform>();
         }
     }
-
-    private RaycastHit[] hits;
-    private RaycastHit hit;
-
 
     private void FlipAndChangeColor(Ray ray)
     {
