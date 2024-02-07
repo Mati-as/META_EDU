@@ -18,6 +18,7 @@ public class HandFootFlip2_GameManager : IGameManager
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
 
+    private bool _isPrintAppearFinished;
    
 
 
@@ -78,9 +79,10 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
                 printObj = printsParent.transform.GetChild(i).gameObject,
                 defaultVector = printsParent.transform.GetChild(i).rotation.eulerAngles,
                 currentColor = _currentColorPair[ i % (int)ColorSide.ColorCount],
-                defaultSize = printsParent.transform.localScale
+                defaultSize =  printsParent.transform.GetChild(i).gameObject.transform.localScale
             };
 
+            
 
 
 #if UNITY_EDITOR
@@ -109,7 +111,18 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
             
             meshRenderer.material.color=_currentColorPair[i % (int)ColorSide.ColorCount];
 
+            printsParent.transform.GetChild(i).gameObject.transform.localScale = Vector3.zero;
+
         }
+
+        
+        UI_Scene_Button.onBtnShut -= OnButtonClicked;
+        UI_Scene_Button.onBtnShut += OnButtonClicked;
+    }
+
+    private void OnDestroy()
+    {
+        UI_Scene_Button.onBtnShut -= OnButtonClicked;
     }
 
     private void SetColor(int round)
@@ -125,6 +138,7 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
         base.OnRaySynced();
 
         if (!isStartButtonClicked) return;
+        if (!_isPrintAppearFinished) return;
         
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
@@ -132,14 +146,25 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
 
     private void OnButtonClicked()
     {
-        
+        PrintsAppear();
     }
 
     private void PrintsAppear()
     {
         foreach(var print in _prints)
         {
-            //print.printObj
+            print.printObj.transform
+                .DOScale(print.defaultSize, 0.5f)
+                .SetEase(Ease.InBounce)
+                .SetDelay(Random.Range(1, 1.8f))
+                .OnComplete(() =>
+                {
+                    DOVirtual.Float(0, 0, 2f, _ => { })
+                        .OnComplete(() =>
+                        {
+                            _isPrintAppearFinished = true;
+                        });
+                });
         }
     }
 

@@ -10,8 +10,8 @@ public class Managers : MonoBehaviour
     private static SoundManager s_soundManager = new SoundManager();
 
     public static SoundManager Sound {  get { Init(); return s_soundManager; } }
-
- 
+    public static UIManager UI { get { Init(); return s_uiManager; } }
+   
     private void Start()
     {
         Init();
