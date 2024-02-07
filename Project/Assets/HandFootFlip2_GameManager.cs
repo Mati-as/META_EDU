@@ -77,7 +77,8 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
             {
                 printObj = printsParent.transform.GetChild(i).gameObject,
                 defaultVector = printsParent.transform.GetChild(i).rotation.eulerAngles,
-                currentColor = _currentColorPair[ i % (int)ColorSide.ColorCount]
+                currentColor = _currentColorPair[ i % (int)ColorSide.ColorCount],
+                defaultSize = printsParent.transform.localScale
             };
 
 
@@ -127,6 +128,19 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
         
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
+    }
+
+    private void OnButtonClicked()
+    {
+        
+    }
+
+    private void PrintsAppear()
+    {
+        foreach(var print in _prints)
+        {
+            print.printObj    
+        }
     }
 
     
@@ -240,7 +254,8 @@ Debug.Log("Flipping Failed");
          public bool side;
          public bool isCurrentlyFlipping;
          public Vector3 defaultVector;
-
+         public Vector3 defaultSize;
+         
          public Sequence seq;
 
          public Color currentColor;
