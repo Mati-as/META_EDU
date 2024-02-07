@@ -139,7 +139,7 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
     {
         foreach(var print in _prints)
         {
-            print.printObj    
+            //print.printObj
         }
     }
 
