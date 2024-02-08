@@ -162,7 +162,7 @@ public class HandFlip2_GameManager : IGameManager
         yield return DOVirtual.Float(0, 0, 5f, _ => { }).WaitForCompletion();
         
        
-        
+        _isRoundFinished = false;
         restart?.Invoke();
     }
 
@@ -176,7 +176,7 @@ public class HandFlip2_GameManager : IGameManager
         Debug.Log("GM ReInit..");
 #endif
         roundInit?.Invoke();
-        _isRoundFinished = false;
+        
         _elapsed = 0;
         _remainTime = _timeLimit;
         _currentRound++;
