@@ -29,7 +29,7 @@ public class HandFlip2_UIManager : UI_PopUp
         Red_Win
     }
 
- 
+    private HandFlip2_GameManager _gm; 
     private CanvasGroup _canvasGroup;
 
     private GameObject _ready;
@@ -46,7 +46,8 @@ public class HandFlip2_UIManager : UI_PopUp
 
     public override bool Init()
     {
-        
+
+        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
         
         BindObject(typeof(HandFlip_UI_Type));
 
@@ -61,14 +62,20 @@ public class HandFlip2_UIManager : UI_PopUp
         
         _blueWin = GetObject((int)HandFlip_UI_Type.Blue_Win);
         _rectBlueWin = _blueWin.GetComponent<RectTransform>();
+        _rectBlueWin.localScale = Vector3.zero;
         _blueWin.SetActive(false);
         
     
         _redWin = GetObject((int)HandFlip_UI_Type.Red_Win);
         _rectRedWin = _redWin.GetComponent<RectTransform>();
+        _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
+        UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
+        
+        HandFlip2_GameManager.onRoundFinishedForUI -= PopUI;
+        HandFlip2_GameManager.onRoundFinishedForUI += PopUI;
         return true;
         
     }
@@ -78,10 +85,10 @@ public class HandFlip2_UIManager : UI_PopUp
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");
 #endif
-        StartCoroutine(SequenceAnimations());
+        StartCoroutine(PlayStartAnimations());
     }
 
-    private IEnumerator SequenceAnimations()
+    private IEnumerator PlayStartAnimations()
     {
         _ready.gameObject.SetActive(true);
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -99,6 +106,42 @@ public class HandFlip2_UIManager : UI_PopUp
         
         onStartUIFinished?.Invoke();
     }
+
+    private void PopUI()
+    {
+        StartCoroutine(PlayWinnerUI());
+    }
+
+    private WaitForSeconds _wait;
+    private float _waitTIme= 4.5f;
+    private IEnumerator PlayWinnerUI()
+    {
+        if (_wait == null)
+        {
+            _wait = new WaitForSeconds(4.5f);
+        }
+        if (_gm.isATeamWin)
+        {
+            _redWin.gameObject.SetActive(true);
+            yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return _wait;
+            yield return DOVirtual.Float(1, 0, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+        }
+        else
+        {
+            _blueWin.gameObject.SetActive(true);
+            yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return _wait;
+            yield return DOVirtual.Float(1, 0, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+        }
+        
+
+        _redWin.gameObject.SetActive(false);
+        _blueWin.gameObject.SetActive(false);
+        
+    }
+    
+
 }
 
 

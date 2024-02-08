@@ -26,7 +26,9 @@ public class HandFlip2_BlackPrintsController : IGameManager
 
 
     
-    public static event Action onAllBlackPrintClicked; 
+    public static event Action onAllBlackPrintClicked;
+    private HandFlip2_GameManager _gm;
+    
 
     protected override void Init()
     {
@@ -36,7 +38,9 @@ public class HandFlip2_BlackPrintsController : IGameManager
         _blackPrints = new Transform[transform.childCount];
         _blinkSeqs = new Sequence[(int)PrintType.Max];
 
-        for (int i = 0; i < transform.childCount; i++)
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFlip2_GameManager>();
+        
+;        for (int i = 0; i < transform.childCount; i++)
         {
             _blackPrints[i] = transform.GetChild(i);
             _defaultScale = _blackPrints[i].localScale.x;
@@ -76,7 +80,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
       
         
       
-            Blink(1.6f);
+            Blink(1.35f);
     }
     
     
@@ -118,7 +122,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
                     Debug.Log($"clicked ID{_firstClickedID}");
 
                     //검정색을 클릭하도록 유도하는 급박한 느낌의 사운드 추가 
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "", 0.3f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/BlackPrint",0.5f);
                 }
                 else
                 {
@@ -140,9 +144,9 @@ public class HandFlip2_BlackPrintsController : IGameManager
    
     private void Blink(float interval)
     {
-       
-        
-        Color targetColor = _defaultColor * _intensity; 
+
+
+        Color targetColor = _gm.CurrentColorPair[Random.Range(0,2)];
         
         _blinkSeqs[(int)PrintType.Hand] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Foot] = DOTween.Sequence();
@@ -152,17 +156,17 @@ public class HandFlip2_BlackPrintsController : IGameManager
         _blinkSeqs[(int)PrintType.Hand] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Hand]
             .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(targetColor, interval).SetEase(Ease.Linear))
-            .AppendInterval(interval) // 지연 시간 추가
+            .AppendInterval(0.2f) // 지연 시간 추가
             .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(_defaultColor, interval).SetEase(Ease.Linear))
-            .SetLoops(-1, LoopType.Restart); // Yoyo 방식으로 무한 반복
+            .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         // 발에 대한 깜박임 설정
         _blinkSeqs[(int)PrintType.Foot] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Foot]
             .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(targetColor, interval).SetEase(Ease.Linear))
-            .AppendInterval(interval) // 지연 시간 추가
+            .AppendInterval(0.2f) // 지연 시간 추가
             .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(_defaultColor, interval).SetEase(Ease.Linear))
-            .SetLoops(-1, LoopType.Restart); // Yoyo 방식으로 무한 반복
+            .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         _blinkSeqs[(int)PrintType.Hand].Play();
         _blinkSeqs[(int)PrintType.Foot].Play();
