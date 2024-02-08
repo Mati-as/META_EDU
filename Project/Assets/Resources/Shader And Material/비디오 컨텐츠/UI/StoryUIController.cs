@@ -160,14 +160,14 @@ public class StoryUIController : MonoBehaviour
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
-        UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
-        UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
 
-        UIManager.SecondStoryUIActivateEvent -= OnRoundReady;
-        UIManager.SecondStoryUIActivateEvent += OnRoundReady;
+        AnimalTrip_UIManager.SecondStoryUIActivateEvent -= OnRoundReady;
+        AnimalTrip_UIManager.SecondStoryUIActivateEvent += OnRoundReady;
             
-        UIManager.GameFinishUIActivateEvent -= OnFinishUIActiavte;
-        UIManager.GameFinishUIActivateEvent += OnFinishUIActiavte;
+        AnimalTrip_UIManager.GameFinishUIActivateEvent -= OnFinishUIActiavte;
+        AnimalTrip_UIManager.GameFinishUIActivateEvent += OnFinishUIActiavte;
             
         AnimalTrip_GameManager.onGameStartEvent -= OnRoundReady;
         AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
@@ -189,11 +189,11 @@ public class StoryUIController : MonoBehaviour
     {
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;
         //     GameManager.onRoundStartedEvent -= OnRoundStarted;
-        UIManager.GameFinishUIActivateEvent  -= OnFinishUIActiavte;
+        AnimalTrip_UIManager.GameFinishUIActivateEvent  -= OnFinishUIActiavte;
         // }
     }
 }

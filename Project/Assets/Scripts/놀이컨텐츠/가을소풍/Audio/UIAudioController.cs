@@ -163,11 +163,11 @@ public class UIAudioController : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
-        UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
-        UIManager.SecondStoryUIActivateEvent += PlayStoryBAudio;
+        AnimalTrip_UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
+        AnimalTrip_UIManager.SecondStoryUIActivateEvent += PlayStoryBAudio;
 
-        // UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
-        // UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
+        // AnimalTrip_UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
+        // AnimalTrip_UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
 
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
@@ -190,8 +190,8 @@ public class UIAudioController : MonoBehaviour
 
     private void UnsubscribeGamaManagerEvents()
     {
-        UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
-        UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
+        AnimalTrip_UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
+        AnimalTrip_UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
 
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;

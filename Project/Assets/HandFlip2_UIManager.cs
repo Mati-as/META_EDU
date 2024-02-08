@@ -7,11 +7,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HandFlip2_UIManager : UI_PopUp
 {
 
+
+    public bool isStart { get; private set; }
+    public static event Action onStartUIFinished;
     enum Buttons
     {
         StartButton
@@ -25,7 +29,7 @@ public class HandFlip2_UIManager : UI_PopUp
         Red_Win
     }
 
-    public float fadeOutDelay;
+ 
     private CanvasGroup _canvasGroup;
 
     private GameObject _ready;
@@ -38,9 +42,12 @@ public class HandFlip2_UIManager : UI_PopUp
     private RectTransform _rectBlueWin;
     private RectTransform _rectRedWin;
 
+    private float  _intervalBtwStartAndReady =1f;
+
     public override bool Init()
     {
-        Init();
+        
+        
         BindObject(typeof(HandFlip_UI_Type));
 
         _ready = GetObject((int)HandFlip_UI_Type.Ready);
@@ -56,24 +63,44 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectBlueWin = _blueWin.GetComponent<RectTransform>();
         _blueWin.SetActive(false);
         
-        _rectRedWin = _redWin.GetComponent<RectTransform>();
+    
         _redWin = GetObject((int)HandFlip_UI_Type.Red_Win);
+        _rectRedWin = _redWin.GetComponent<RectTransform>();
         _redWin.SetActive(false);
 
-        GetButton((int)Buttons.StartButton).gameObject.BindEvent(OnStart);
+        UI_Scene_Button.onBtnShut += OnStart;
         return true;
         
     }
 
     public void OnStart()
     {
-        DOVirtual.Float(-0, -0, 1, _ => { }).OnComplete(() =>
-        {
-            DOVirtual.Float(0, 1, 1, scale =>
-            {
-                _rectReady.localScale = Vector3.one * scale;
-            });
-        });
+#if UNITY_EDITOR
+        Debug.Log("Button Click: UI event binding successful and event execution");
+#endif
+        StartCoroutine(SequenceAnimations());
     }
 
+    private IEnumerator SequenceAnimations()
+    {
+        _ready.gameObject.SetActive(true);
+        yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
+        yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
+
+        _start.gameObject.SetActive(true);
+        _rectStart.localScale = Vector3.zero;
+        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).WaitForCompletion();
+        yield return DOVirtual.Float(1, 0, 0.6f, scale => { _rectStart.localScale = Vector3.one * scale; }).WaitForCompletion();
+        
+        isStart = true;
+
+        _ready.gameObject.SetActive(false);
+        _start.gameObject.SetActive(false);
+        
+        onStartUIFinished?.Invoke();
+    }
 }
+
+
+
+

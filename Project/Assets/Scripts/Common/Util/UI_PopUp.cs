@@ -11,9 +11,9 @@ namespace MyCustomizedEditor.Common.Util
             return true;
         }
 
-        public virtual void ClosePopupUI()
-        {
-            Managers.UI.ClosePopupUI(this);
-        }
+        // public virtual void ClosePopupUI()
+        // {
+        //     Managers.UI.ClosePopupUI(this);
+        // }
     }
 }

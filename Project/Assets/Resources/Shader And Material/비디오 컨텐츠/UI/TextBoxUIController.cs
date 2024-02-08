@@ -57,8 +57,8 @@ public class TextBoxUIController : MonoBehaviour
     
     private void Awake()
     {
-        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
-        UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
 
         _defaultPositionLf = leftAnimFirst;
         _defaultPositionLs = leftAnimSecond;
@@ -92,7 +92,7 @@ public class TextBoxUIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
         
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
         TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;

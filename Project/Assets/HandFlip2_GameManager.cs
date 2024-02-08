@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
+using Random = UnityEngine.Random;
+using Sequence = DG.Tweening.Sequence;
 
-public class HandFootFlip2_GameManager : IGameManager
+public class HandFlip2_GameManager : IGameManager
 {
 
     enum ColorSide
@@ -19,6 +23,7 @@ public class HandFootFlip2_GameManager : IGameManager
     private Vector3 _rotateVector;
 
     private bool _isPrintAppearFinished;
+    private HandFlip2_UIManager _UIManager;
    
 
 
@@ -39,9 +44,23 @@ public class HandFootFlip2_GameManager : IGameManager
     private Color _colorA;
     private Color _colorB;
 
+    public static event Action onStart;
+    public void OnStart() => onStart?.Invoke();
+    
+
 
     protected override void Init()
     {
+        UI_Scene_Button.onBtnShut -= OnButtonClicked;
+        UI_Scene_Button.onBtnShut += OnButtonClicked;
+
+        HandFlip2_UIManager.onStartUIFinished -= OnStart;
+        HandFlip2_UIManager.onStartUIFinished += OnStart;
+
+        HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
+        HandFlip2_BlackPrintsController.onAllBlackPrintClicked += FlipAll;
+        
+        
         base.Init();
 
         _PrintMap = new Dictionary<int, Print>();
@@ -50,6 +69,9 @@ public class HandFootFlip2_GameManager : IGameManager
         _childMeshRendererMap = new Dictionary<int, MeshRenderer>();
         _rotateVector = new Vector3(180, 0, 0);
 
+        _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<HandFlip2_UIManager>();
+            
+            
         Debug.Log($"(start)color option length: {colorOptions.Length}");
         var printsParent = GameObject.Find("Prints");
 
@@ -86,7 +108,7 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
 
 
 #if UNITY_EDITOR
-            Debug.Log($"colorname: {printsParent.transform.GetChild(i).gameObject.name.Substring(5)}");
+            //Debug.Log($"colorname: {printsParent.transform.GetChild(i).gameObject.name.Substring(5)}");
 #endif
 
 
@@ -116,14 +138,9 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
         }
 
         
-        UI_Scene_Button.onBtnShut -= OnButtonClicked;
-        UI_Scene_Button.onBtnShut += OnButtonClicked;
-    }
 
-    private void OnDestroy()
-    {
-        UI_Scene_Button.onBtnShut -= OnButtonClicked;
     }
+    
 
     private void SetColor(int round)
     {
@@ -137,6 +154,7 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
     {
         base.OnRaySynced();
 
+        if (!_UIManager.isStart) return;
         if (!isStartButtonClicked) return;
         if (!_isPrintAppearFinished) return;
         
@@ -156,7 +174,7 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
             print.printObj.transform
                 .DOScale(print.defaultSize, 0.5f)
                 .SetEase(Ease.InBounce)
-                .SetDelay(Random.Range(1, 1.8f))
+                .SetDelay(Random.Range(2, 3.2f))
                 .OnComplete(() =>
                 {
                     DOVirtual.Float(0, 0, 2f, _ => { })
@@ -170,84 +188,53 @@ Debug.Assert(PRINTS_COUNT % 2 == 0);
 
     
      private void FlipAndChangeColor(Ray ray)
-    {
+     {
+         
+         
          if(Physics.Raycast(ray ,out hit))
          {
+
+             if (hit.transform.gameObject.name.ToLower().Contains("black"))
+             {
+                
+                 return;
+             }
+
+             
              var currentInstanceID = hit.transform.gameObject.GetInstanceID();
-             
-            if (_PrintMap.ContainsKey(currentInstanceID) )
-            {
-                if (_PrintMap[currentInstanceID].seq.IsActive()||_PrintMap[currentInstanceID].isCurrentlyFlipping)
-                {
-                    Debug.Log("The seq is currently Active! Click later..");
-                    return;
-                }
-            }
-             
-            _PrintMap[currentInstanceID].seq = DOTween.Sequence();
-         
-                _PrintMap[currentInstanceID].seq
-                    .Append(
-                        hit.transform
-                            .DOLocalRotate(_rotateVector + _PrintMap[currentInstanceID].printObj.transform.rotation.eulerAngles, 0.38f)
-                            .SetEase(Ease.InOutQuint)
-                            .OnStart(() =>
-                            {
-                                
-                                //트윈 도중 중복실행 방지
-                                _PrintMap[currentInstanceID].isCurrentlyFlipping = true; 
-                                
-                                char randomChar = (char)Random.Range('A', 'F'+ 1);
-                                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_"+randomChar,
-                                    0.3f);
-                                
-                                
-                                if (_PrintMap[currentInstanceID].currentColor == _colorA)
-                                {
-                                    _PrintMap[currentInstanceID].currentColor = _colorB;
-                                        
-                                    Debug.Log("Changing to ColorA");
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorB, 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorB, 0.2f)
-                                        .SetDelay(0.235f);
-                                }
-                                else 
-                                {
-                                    _PrintMap[currentInstanceID].currentColor = _colorA;
-                                    
-                                    Debug.Log("Changing to ColorB");
-                                    
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorA, 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorA, 0.2f)
-                                        .SetDelay(0.235f);
-                                }
 
-                              
-                            })
-                            .OnComplete(() =>
-                            {
-                                    //트윈 도중 중복실행 방지
-                                    _PrintMap[currentInstanceID].isCurrentlyFlipping = false;
-        
-                            }));
-    
-            DOVirtual
-                .Float(0, 1, 0.08f, _ => { })
-                .OnComplete(() =>
-                {
-                 
-                });
+             // Check if the object is already flipping or the sequence is active.
+             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) && (printData.seq.IsActive() || printData.isCurrentlyFlipping))
+             {
+                 Debug.Log("The seq is currently Active! Click later..");
+                 return;
+             }
 
-        _PrintMap[currentInstanceID].seq.Play();
+             // Ensure the sequence is initialized.
+             printData.seq = DOTween.Sequence();
 
+             printData.seq.Append(hit.transform.DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+                 .SetEase(Ease.InOutQuint)
+                 .OnStart(() =>
+                 {
+                     printData.isCurrentlyFlipping = true;
+
+                     char randomChar = (char)Random.Range('A', 'F' + 1);
+                     Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}", 0.3f);
+
+                     // Toggle 
+                     Color targetColor = printData.currentColor == _colorA ? _colorB : _colorA;
+                     Debug.Log($"Changing to {(targetColor == _colorA ? "ColorA" : "ColorB")}");
+                     printData.currentColor = targetColor;
+
+                     // Apply the color
+                     Action<Renderer, Color> doColorChange = (renderer, color) => renderer.material.DOColor(color, 0.2f).SetDelay(0.235f);
+                     doColorChange(_meshRendererMap[currentInstanceID], targetColor);
+                     doColorChange(_childMeshRendererMap[currentInstanceID], targetColor);
+                 })
+                 .OnComplete(() => printData.isCurrentlyFlipping = false));
+
+             printData.seq.Play();
          }
          else
          {
@@ -261,30 +248,65 @@ Debug.Log("Flipping Failed");
         
     }
      
-     private void ShuffleColors()
-     {
-         for (var i = 0; i < colorOptions.Length; i++)
-         {
-             var temp = colorOptions[i];
-             var randomIndex = Random.Range(i, colorOptions.Length);
-             colorOptions[i] = colorOptions[randomIndex];
-             colorOptions[randomIndex] = temp;
-         }
-     }
-
-    
-     public class Print
-     {
-         public GameObject printObj;
-         public bool side;
-         public bool isCurrentlyFlipping;
-         public Vector3 defaultVector;
-         public Vector3 defaultSize;
-         
-         public Sequence seq;
-
-         public Color currentColor;
      
+      private void FlipAll()
+     {
          
+             
+#if UNITY_EDITOR
+        Debug.Log($"검은색 모두 뒤집기");         
+#endif
+
+             foreach (var print in _prints)
+             {
+                 var currentInstanceID = print.printObj.GetInstanceID();
+
+                 // Check if the object is already flipping or the sequence is active.
+                 if (_PrintMap.TryGetValue(currentInstanceID, out var printData) && (printData.seq.IsActive() || printData.isCurrentlyFlipping))
+                 {
+                     Debug.Log("The seq is currently Active! Click later..");
+                     return;
+                 }
+
+                 // Ensure the sequence is initialized.
+                 printData.seq = DOTween.Sequence();
+
+                 printData.seq.Append(hit.transform.DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+                     .SetEase(Ease.InOutQuint)
+                     .OnStart(() =>
+                     {
+                         printData.isCurrentlyFlipping = true;
+
+                         char randomChar = (char)Random.Range('A', 'F' + 1);
+                         Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}", 0.3f);
+
+                         // Toggle 
+                         Color targetColor = printData.currentColor == _colorA ? _colorB : _colorA;
+                         Debug.Log($"Changing to {(targetColor == _colorA ? "ColorA" : "ColorB")}");
+                         printData.currentColor = targetColor;
+
+                         // Apply the color
+                         Action<Renderer, Color> doColorChange = (renderer, color) =>
+                             renderer.material.DOColor(color, 0.2f).SetDelay(0.235f);
+                         doColorChange(_meshRendererMap[currentInstanceID], targetColor);
+                         doColorChange(_childMeshRendererMap[currentInstanceID], targetColor);
+                     })
+                     .OnComplete(() => printData.isCurrentlyFlipping = false));
+
+                 printData.seq.Play();
+             }
      }
 }
+
+
+public class Print
+{
+    public GameObject printObj;
+    public bool side;
+    public bool isCurrentlyFlipping;
+    public Vector3 defaultVector;
+    public Vector3 defaultSize;
+    public Sequence seq;
+    public Color currentColor;
+}
+
