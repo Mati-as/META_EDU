@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -14,13 +15,13 @@ public class HandFlip2_GameManager : IGameManager
         ColorCount
     }
 
+    private int _currentRound;
     private Color _currentUnifiedColor = Color.red;
     private Color _previousUniColor = Color.black;
     private Print[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
-
-    private bool _isPrintAppearFinished;
+    
     private HandFlip2_UIManager _UIManager;
 
 
@@ -45,6 +46,8 @@ public class HandFlip2_GameManager : IGameManager
     public static event Action onStart;
     private static event Action onRoundFinished;
     public static event Action onRoundFinishedForUI;
+    public static event Action restart;
+    public static event Action roundInit;
   
     public bool isATeamWin { get; private set; }
     public bool _isRoundFinished { get; private set; }
@@ -65,6 +68,7 @@ public class HandFlip2_GameManager : IGameManager
     {
         if (_isRoundFinished) return;
         if (!isStartButtonClicked) return;
+        if (!_UIManager.isStart) return;
         
         _elapsed += Time.deltaTime;
         _remainTime = _timeLimit - _elapsed;
@@ -72,10 +76,11 @@ public class HandFlip2_GameManager : IGameManager
         if (_remainTime < 0)
         {
             onRoundFinished?.Invoke();
-            _remainTime = _timeLimit;
             _tmp.text = $"그만!";
             _isRoundFinished = true;
         }
+
+        if (!_UIManager.isStart) _remainTime = _timeLimit;
     }
 
     private void OnRoundFinished()
@@ -115,10 +120,66 @@ public class HandFlip2_GameManager : IGameManager
         _tmp.text = _colorACount > _colorBCount ? $"홍팀 이겼다!" : "청팀 이겼다!";
         isATeamWin = _colorACount > _colorBCount;
 
+        StartCoroutine(Initialize());
     }
+    
+    private WaitForSeconds _wait;
+    private float _waitTIme= 4.5f;
+    private IEnumerator Initialize()
+    {
+
+        yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
+        _tmp.text = "곧 놀이를 다시 시작해요!";
+        yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
+       
+        _tmp.text = "준비 됬나요~?";
+      
+        InitializeParams();
+        SetColor(_currentRound);
+        
+        int count=0;
+
+      
+        
+        foreach(var item in _meshRendererMap)
+        {
+            MeshRenderer meshRenderer = item.Value;
+            meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
+            _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
+            count++;
+        }
+        
+        foreach(var item in _childMeshRendererMap)
+        {
+            MeshRenderer meshRenderer = item.Value;
+            meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
+            _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
+            count++;
+        }
+        
+        FlipAll();
+        
+        yield return DOVirtual.Float(0, 0, 5f, _ => { }).WaitForCompletion();
+        
+       
+        
+        restart?.Invoke();
+    }
+
+    
+    
 
     private void InitializeParams()
     {
+        
+#if UNITY_EDITOR
+        Debug.Log("GM ReInit..");
+#endif
+        roundInit?.Invoke();
+        _isRoundFinished = false;
+        _elapsed = 0;
+        _remainTime = _timeLimit;
+        _currentRound++;
         _colorACount = 0;
         _colorBCount = 0;
     }
@@ -216,20 +277,27 @@ public class HandFlip2_GameManager : IGameManager
 
     private void SetColor(int round)
     {
-        CurrentColorPair[(int)ColorSide.ColorA] = colorOptions[round % 3];
-        CurrentColorPair[(int)ColorSide.ColorB] = colorOptions[round % 3 + 1];
+        CurrentColorPair[(int)ColorSide.ColorA] = colorOptions[2 * round % 6 ];
+        CurrentColorPair[(int)ColorSide.ColorB] = colorOptions[2 * round % 6 + 1];
 
         ColorA = CurrentColorPair[(int)ColorSide.ColorA];
         ColorB = CurrentColorPair[(int)ColorSide.ColorB];
+        
     }
 
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
 
+        /* 클릭되면 안되는 경우 상세설명
+         1. UI의 시작버튼 애니메이션이 끝나지 않은 경우
+         2. 처음시작 시, Button 클릭 안 한 경우
+         3. 라운드 끝난경우
+         
+         */
         if (!_UIManager.isStart) return;
         if (!isStartButtonClicked) return;
-        if (!_isPrintAppearFinished) return;
+        if (_isRoundFinished) return;
 
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
@@ -245,13 +313,15 @@ public class HandFlip2_GameManager : IGameManager
         foreach (var print in _prints)
             print.printObj.transform
                 .DOScale(print.defaultSize, 0.5f)
-                .SetEase(Ease.InBounce)
-                .SetDelay(Random.Range(2, 3.2f))
-                .OnComplete(() =>
+                .OnStart(() =>
                 {
-                    DOVirtual.Float(0, 0, 2f, _ => { })
-                        .OnComplete(() => { _isPrintAppearFinished = true; });
-                });
+                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
+                        0.25f);
+
+                })
+                .SetEase(Ease.InBounce)
+                .SetDelay(Random.Range(2, 3.2f));
+
     }
 
 

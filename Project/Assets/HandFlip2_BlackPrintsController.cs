@@ -21,19 +21,36 @@ public class HandFlip2_BlackPrintsController : IGameManager
     private float _defaultScale;
     private MeshRenderer[] _meshRenderers;
     private Color _defaultColor;
-    private float _intensity = 1.3f;
     private Sequence[] _blinkSeqs;
+    private int _firstClickedID;
+    
+    private bool _seqChanged;
+    private bool _isDisappearing;
 
 
     
     public static event Action onAllBlackPrintClicked;
     private HandFlip2_GameManager _gm;
-    
+
+    private void RoundInit()
+    {
+#if UNITY_EDITOR
+        Debug.Log("Black Print ReInit..");
+#endif
+        _firstClickedID = -987654321;
+        _seqChanged = false;
+        _isDisappearing = false;
+    }
 
     protected override void Init()
     {
         base.Init();
+        HandFlip2_GameManager.onStart -= OnStart;
         HandFlip2_GameManager.onStart += OnStart;
+        
+        HandFlip2_GameManager.roundInit -= RoundInit;
+        HandFlip2_GameManager.roundInit += RoundInit;
+        
         _meshRenderers = new MeshRenderer[(int)PrintType.Max];
         _blackPrints = new Transform[transform.childCount];
         _blinkSeqs = new Sequence[(int)PrintType.Max];
@@ -56,9 +73,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
     private float  _blackPrintAppearableTime  = 1f;
     public void OnStart()
     {
-#if UNITY_EDITOR
-        Debug.Log("Button Click Bind{BlackPrintsController}");
-#endif
+
         StartCoroutine(SequenceAnimations(_blackPrintAppearableTime));
     }
 
@@ -69,12 +84,22 @@ public class HandFlip2_BlackPrintsController : IGameManager
         yield return DOVirtual
             .Float(0, _defaultScale, 1,
                 scale => { _blackPrints[(int)PrintType.Hand].localScale = Vector3.one * scale; })
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
+            })
             .SetDelay(Random.Range(delayTime, delayTime+0.5f));
 
         yield return DOVirtual
             .Float(0, _defaultScale, 1,
                 scale => { _blackPrints[(int)PrintType.Foot].localScale = Vector3.one * scale; })
             .SetDelay(Random.Range(delayTime, delayTime+0.5f))
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
+            })
             .WaitForCompletion();
 
       
@@ -95,10 +120,6 @@ public class HandFlip2_BlackPrintsController : IGameManager
     private RaycastHit hit;
     
     //검은 손발바닥 카운트시, 이름 비교를 통한 중복방지 
-    private int _firstClickedID;
-    private int count;
-    private bool _seqChanged;
-    private bool _isDisappearing;
 
     private void OnSync(Ray ray)
     {
@@ -133,7 +154,8 @@ public class HandFlip2_BlackPrintsController : IGameManager
                         Disappear();
 
                         //사라지는 사운드 추가
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "", 0.3f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect,
+                            "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_click_05", 0.3f);
                     }
                 }
             }

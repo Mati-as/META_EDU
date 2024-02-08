@@ -76,6 +76,9 @@ public class HandFlip2_UIManager : UI_PopUp
         
         HandFlip2_GameManager.onRoundFinishedForUI -= PopUI;
         HandFlip2_GameManager.onRoundFinishedForUI += PopUI;
+
+        HandFlip2_GameManager.restart -= OnStart;
+        HandFlip2_GameManager.restart += OnStart;
         return true;
         
     }
@@ -90,6 +93,9 @@ public class HandFlip2_UIManager : UI_PopUp
 
     private IEnumerator PlayStartAnimations()
     {
+        
+       
+
         _ready.gameObject.SetActive(true);
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -97,10 +103,10 @@ public class HandFlip2_UIManager : UI_PopUp
         _start.gameObject.SetActive(true);
         _rectStart.localScale = Vector3.zero;
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).WaitForCompletion();
+        isStart = true;
         yield return DOVirtual.Float(1, 0, 0.6f, scale => { _rectStart.localScale = Vector3.one * scale; }).WaitForCompletion();
         
-        isStart = true;
-
+   
         _ready.gameObject.SetActive(false);
         _start.gameObject.SetActive(false);
         
@@ -116,6 +122,8 @@ public class HandFlip2_UIManager : UI_PopUp
     private float _waitTIme= 4.5f;
     private IEnumerator PlayWinnerUI()
     {
+        isStart = false;
+        
         if (_wait == null)
         {
             _wait = new WaitForSeconds(4.5f);
