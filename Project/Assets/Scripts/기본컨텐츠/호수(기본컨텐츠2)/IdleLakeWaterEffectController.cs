@@ -81,6 +81,8 @@ public class IdleLakeWaterEffectController : MonoBehaviour,Lake_IAnimalBehavior
         {
             if (hit.collider.gameObject.name == "Water" && hit.collider.gameObject.name != null)
             {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/호수/Click",0.3f);
+                
                 ParticleSystem particle = GetFromPool();
                 particle.transform.position = hit.point;
                 particle.gameObject.SetActive(true);

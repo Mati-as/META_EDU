@@ -29,6 +29,8 @@ public class StarryNight_IntroCamController : MonoBehaviour
 
         UI_Scene_Button.onBtnShut -= StartAnimation;
         UI_Scene_Button.onBtnShut += StartAnimation;
+        
+        transform.DOLookAt(lookAtTarget.position, 0.01f);
     }
 
     private void OnDestroy()

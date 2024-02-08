@@ -101,6 +101,9 @@ public class RplidarTest_Ray : MonoBehaviour
         max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x + (Guideline.GetComponent<RectTransform>().rect.width) / 2;
         max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y + (Guideline.GetComponent<RectTransform>().rect.height) / 2;
 
+        #if UNITY_EDITOR
+        TESTUI.SetActive(false);
+        #endif
     }
 
 

@@ -129,6 +129,15 @@ public class Crab_AnimalPathController : MonoBehaviour
         SetPool(_inactiveCrabPool, "CrabB");
         SetPool(_inactiveCrabPool, "CrabC");
         SetPool(_inactiveCrabPool, "CrabD");
+        SetPool(_inactiveCrabPool, "CrabE");
+        SetPool(_inactiveCrabPool, "CrabF");
+        SetPool(_inactiveCrabPool, "CrabG");
+        SetPool(_inactiveCrabPool, "CrabH");
+        SetPool(_inactiveCrabPool, "CrabI");
+        SetPool(_inactiveCrabPool, "CrabJ");
+        SetPool(_inactiveCrabPool, "CrabK");
+        SetPool(_inactiveCrabPool, "CrabL");
+        
 
 
         isInit = true;
@@ -195,7 +204,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         if (!isInit) return;
 
-        if (videoGameManager._isCrabAppearable) DoPathToClickPoint();
+        if (videoGameManager.isCrabAppearable) DoPathToClickPoint();
 
 
 #if UNITY_EDITOR
@@ -314,10 +323,10 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void PlayPath(Crab _crabDoingPath)
     {
-        if (!videoGameManager._isCrabAppearable) return;
+        if (!videoGameManager.isCrabAppearable) return;
         
 #if UNITY_EDITOR
-Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} ");
+//Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager.isCrabAppearable} ");
 #endif
         
         UpdateDistanceFromStartPointToClickedPoint(_crabDoingPath);
@@ -333,7 +342,7 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crabEffectManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _duration)
+            .DOMove(crabEffectManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
@@ -349,7 +358,7 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
 
         if (_crabDoingPath.isNoPath)
         {
-            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 7f, val => val++).OnStart(() =>
+            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 4.5f, val => val++).OnStart(() =>
             {
                 _crabDoingPath.animator.SetBool(IDLE_ANIM, true);
 #if UNITY_EDITOR

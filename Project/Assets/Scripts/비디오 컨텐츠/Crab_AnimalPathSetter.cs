@@ -45,12 +45,12 @@ public class Crab_AnimalPathSetter : MonoBehaviour
     {
         if (isSubscribe)
         {
-            CrabVideoGameManager.OnReplay -=OnReplay;
-            CrabVideoGameManager.OnReplay +=OnReplay;
+            CrabVideoGameManager.onRewind -=OnReplay;
+            CrabVideoGameManager.onRewind +=OnReplay;
         }
         else
         {
-            CrabVideoGameManager.OnReplay -=OnReplay;
+            CrabVideoGameManager.onRewind -=OnReplay;
         }
        
     }
