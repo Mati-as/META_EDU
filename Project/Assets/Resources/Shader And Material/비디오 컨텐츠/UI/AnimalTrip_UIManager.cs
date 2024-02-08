@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class UIManager : MonoBehaviour
+public class AnimalTrip_UIManager : MonoBehaviour
 {
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
     private WaitForSeconds GetWaitForSeconds(float seconds)
