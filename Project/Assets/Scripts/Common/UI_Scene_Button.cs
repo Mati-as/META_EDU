@@ -84,11 +84,6 @@ public class UI_Scene_Button : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        Message_anim_controller.onIntroUIOff -= OnAnimOff;
-        onBtnShut -= OnButtonShut;
-    }
 
     private bool _isBtnEventInvoked;
 

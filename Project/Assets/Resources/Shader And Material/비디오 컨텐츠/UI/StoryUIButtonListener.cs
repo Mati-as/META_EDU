@@ -34,7 +34,7 @@ public class StoryUIButtonListener : MonoBehaviour
         }
         else
         {
-            UIManager.SetFalseAndTriggerStartButtonEvent();
+            AnimalTrip_UIManager.SetFalseAndTriggerStartButtonEvent();
             _storyUIController.gameObject.SetActive(false);
         }
       

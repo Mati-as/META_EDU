@@ -12,6 +12,8 @@ public abstract class IGameManager : MonoBehaviour
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME = 30;
     
+    
+ 
 
     protected virtual void Awake()
     {
