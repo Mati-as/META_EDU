@@ -203,6 +203,8 @@ public class HandFlip2_GameManager : IGameManager
 
         base.Init();
 
+        _defaultPosition = Camera.main.transform.position;
+
         _PrintMap = new Dictionary<int, Print>();
         _colorPair = new Dictionary<string, Color>();
         _meshRendererMap = new Dictionary<int, MeshRenderer>();
@@ -285,6 +287,8 @@ public class HandFlip2_GameManager : IGameManager
         
     }
 
+    private Vector3 _defaultPosition; 
+
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
@@ -299,9 +303,19 @@ public class HandFlip2_GameManager : IGameManager
         if (!isStartButtonClicked) return;
         if (_isRoundFinished) return;
 
+
+       
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
     }
+    
+    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.12f, 0.055f, 9).OnComplete(() =>
+    {
+
+    }).OnComplete(() =>
+    {
+        Camera.main.transform.DOMove(_defaultPosition, 1.1f);
+    });
 
     private void OnButtonClicked()
     {
@@ -329,8 +343,9 @@ public class HandFlip2_GameManager : IGameManager
     {
         if (Physics.Raycast(ray, out hit))
         {
+            
             if (hit.transform.gameObject.name.ToLower().Contains("black")) return;
-
+            ShakeCam();
 
             var currentInstanceID = hit.transform.gameObject.GetInstanceID();
 
