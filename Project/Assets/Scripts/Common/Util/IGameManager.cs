@@ -57,7 +57,7 @@ public abstract class IGameManager : MonoBehaviour
 
     }
 
-    protected void BindEvent()
+    protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
         Debug.Log("Ray Sync Subscribed");
@@ -82,7 +82,7 @@ public abstract class IGameManager : MonoBehaviour
     }
 
 
-    private void OnStartButtonClicked()
+    protected virtual void OnStartButtonClicked()
     {
         // 버튼 클릭시 Ray가 게임로직에 영향미치는 것을 방지하기위한 약간의 Delay 입니다. 
         DOVirtual
