@@ -11,6 +11,9 @@ using Sequence = DG.Tweening.Sequence;
 
 public class HandFootPainting_GameManager : IGameManager
 {
+
+
+    public string gameVersion; //Fish or Tree 
     public static bool isInit { get; private set; }
     
     public Queue<GameObject> printPool { get; set; }
@@ -35,11 +38,11 @@ public class HandFootPainting_GameManager : IGameManager
     protected override void Init()
     {
         base.Init();
-        DOTween.Init().SetCapacity(500,200);
+        DOTween.Init().SetCapacity(1500,500);
         SetPool();
-        _bgSprite = GameObject.Find("handfootPainting_Bg_Outline").GetComponent<SpriteRenderer>();
+        _bgSprite = GameObject.Find(gameVersion +"Mask").GetComponent<SpriteRenderer>();
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
-        _outlineSpRenderer =GameObject.Find("handfootPainting_Bg_Outline").GetComponent<SpriteRenderer>();
+        _outlineSpRenderer =GameObject.Find(gameVersion+"Outline").GetComponent<SpriteRenderer>();
         _glowDefaultColor = _outlineSpRenderer.material.color;
         
         _bgSprite.DOFade(0, 0.00001f).OnComplete(() =>
@@ -62,11 +65,13 @@ public class HandFootPainting_GameManager : IGameManager
     private void Update()
     {
         if (!_isRoundReady) return;
-        
+#if UNITY_EDITOR
+        Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
+#endif
         _elapsed += Time.deltaTime;
         _remainTime = _timeLimit - _elapsed;
         
-        
+
         if (_elapsed > _timeLimit)
         {
             _isRoundReady = false;
@@ -88,17 +93,25 @@ public class HandFootPainting_GameManager : IGameManager
         
         _glowSeq = DOTween.Sequence();
         BlinkOutline();
+        _glowSeq.Play();
 
     }
 
     private void BlinkOutline()
     {
+#if UNITY_EDITOR
+        Debug.Log("Outline Glowing~~!@##~!@#@!~$@~#");
+#endif
         
-        _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor * 1.5f, 0.4f))
-            .Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor*0.5f, 0.4f))
-            .SetLoops(-1, LoopType.Restart);
+        _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor * 1.25f, 2f));
+        _glowSeq.AppendInterval(0.3f);
+        _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor * 0.5f, 0.7f));
+        _glowSeq.AppendInterval(0.99f);
+        _glowSeq.SetLoops(-1, LoopType.Yoyo);
+           
+    
 
-        _glowSeq.Play();
+       
     }
 
     private void OnRoundRestart()
@@ -107,6 +120,7 @@ public class HandFootPainting_GameManager : IGameManager
         _elapsed = 0;
         _bgSprite.DOFade(0, 2f)
             .OnStart(() => { _tmp.text = "놀이 시작!"; }).OnComplete(() => { _isRoundReady = true; });
+        BlinkOutline();
     }
 
     private void OnRoundFinished()
@@ -137,9 +151,9 @@ public class HandFootPainting_GameManager : IGameManager
 
     private void FadeInBg()=> DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
     {
-    #if UNITY_EDITOR
-        Debug.Log("DoFade In");
-    #endif
+#if UNITY_EDITOR
+Debug.Log("DoFade In");
+#endif
         _bgSprite.DOFade(1, 1f);
     });
 
