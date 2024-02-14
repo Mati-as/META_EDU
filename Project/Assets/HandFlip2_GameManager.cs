@@ -21,6 +21,7 @@ public class HandFlip2_GameManager : IGameManager
     private Print[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
+   
     
     private HandFlip2_UIManager _UIManager;
 
@@ -53,7 +54,7 @@ public class HandFlip2_GameManager : IGameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private float _timeLimit=15;
+    private readonly float TIME_LIMIT = 35;
 
     private int _colorACount;
     private int _colorBCount;
@@ -71,16 +72,16 @@ public class HandFlip2_GameManager : IGameManager
         if (!_UIManager.isStart) return;
         
         _elapsed += Time.deltaTime;
-        _remainTime = _timeLimit - _elapsed;
-        _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초 남았어요!";
+        _remainTime = TIME_LIMIT - _elapsed;
+        _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초";
         if (_remainTime < 0)
         {
             onRoundFinished?.Invoke();
-            _tmp.text = $"그만!";
+            _tmp.text = $"";
             _isRoundFinished = true;
         }
 
-        if (!_UIManager.isStart) _remainTime = _timeLimit;
+        if (!_UIManager.isStart) _remainTime = TIME_LIMIT;
     }
 
     private void OnRoundFinished()
@@ -129,10 +130,10 @@ public class HandFlip2_GameManager : IGameManager
     {
 
         yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
-        _tmp.text = "곧 놀이를 다시 시작해요!";
+        _tmp.text = "놀이를 다시 준비하고 있어요";
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
        
-        _tmp.text = "준비 됬나요~?";
+        _tmp.text = "";
       
         InitializeParams();
         SetColor(_currentRound);
@@ -178,7 +179,7 @@ public class HandFlip2_GameManager : IGameManager
         roundInit?.Invoke();
         
         _elapsed = 0;
-        _remainTime = _timeLimit;
+        _remainTime = TIME_LIMIT;
         _currentRound++;
         _colorACount = 0;
         _colorBCount = 0;
@@ -274,6 +275,8 @@ public class HandFlip2_GameManager : IGameManager
 
             printsParent.transform.GetChild(i).gameObject.transform.localScale = Vector3.zero;
         }
+
+    
     }
 
 

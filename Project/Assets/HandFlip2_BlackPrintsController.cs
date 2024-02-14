@@ -10,6 +10,7 @@ using Sequence = DG.Tweening.Sequence;
 
 public class HandFlip2_BlackPrintsController : IGameManager
 {
+  
     enum PrintType
     {
         Hand,
@@ -17,6 +18,9 @@ public class HandFlip2_BlackPrintsController : IGameManager
         Max
     }
 
+    private Vector3[] _appearablePoints;
+    
+    
     private Transform[] _blackPrints;
     private float _defaultScale;
     private MeshRenderer[] _meshRenderers;
@@ -26,20 +30,19 @@ public class HandFlip2_BlackPrintsController : IGameManager
     
     private bool _seqChanged;
     private bool _isDisappearing;
-
-
+    private bool _isClickable;
     
     public static event Action onAllBlackPrintClicked;
     private HandFlip2_GameManager _gm;
 
+
     private void RoundInit()
     {
-#if UNITY_EDITOR
-        Debug.Log("Black Print ReInit..");
-#endif
+
         _firstClickedID = -987654321;
         _seqChanged = false;
         _isDisappearing = false;
+        _isClickable = false;
     }
 
     protected override void Init()
@@ -66,8 +69,15 @@ public class HandFlip2_BlackPrintsController : IGameManager
             _meshRenderers[i] = _blackPrints[i].gameObject.GetComponent<MeshRenderer>();
             _defaultColor = _blackPrints[i].gameObject.GetComponent<MeshRenderer>().material.color;
         }
-
-       
+        var appearablePoints = GameObject.Find("BlackPrintsAppearblePoints");
+        int childCount = appearablePoints.transform.childCount;
+        
+        _appearablePoints = new Vector3[childCount];
+        for (int i = 0; i < childCount; ++i)
+        {
+            _appearablePoints[i] = appearablePoints.transform.GetChild(i).position;
+        }
+           
     }
 
     private float  _blackPrintAppearableTime  = 1f;
@@ -81,6 +91,9 @@ public class HandFlip2_BlackPrintsController : IGameManager
     {
         foreach (var print in _blackPrints) print.gameObject.SetActive(true);
 
+        int handPosIndex = Random.Range(0,_appearablePoints.Length);
+        _blackPrints[(int)PrintType.Hand].position = _appearablePoints[handPosIndex];
+        
         yield return DOVirtual
             .Float(0, _defaultScale, 1,
                 scale => { _blackPrints[(int)PrintType.Hand].localScale = Vector3.one * scale; })
@@ -89,12 +102,27 @@ public class HandFlip2_BlackPrintsController : IGameManager
                 Managers.Sound.Play(SoundManager.Sound.Effect,
                     "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
             })
-            .SetDelay(Random.Range(delayTime, delayTime+0.5f));
+            .OnComplete(() =>
+            {
+                DOVirtual.Float(0, 0, 1f, _ => { })
+                    .OnComplete(() => { _isClickable = true; });
+            })
+            .SetDelay(Random.Range(delayTime, delayTime + 0.5f));
 
+        int footPosIndex = Random.Range(0,_appearablePoints.Length);
+        
+        while (footPosIndex == handPosIndex)
+        {
+            footPosIndex = Random.Range(0,_appearablePoints.Length);
+        }
+        
+        _blackPrints[(int)PrintType.Foot].position = _appearablePoints[footPosIndex];
+        
         yield return DOVirtual
             .Float(0, _defaultScale, 1,
                 scale => { _blackPrints[(int)PrintType.Foot].localScale = Vector3.one * scale; })
-            .SetDelay(Random.Range(delayTime, delayTime+0.5f))
+            .SetDelay(Random.Range(delayTime, delayTime + 0.5f))
+            .OnComplete(() => { _isClickable = true;})
             .OnStart(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect,
@@ -102,10 +130,8 @@ public class HandFlip2_BlackPrintsController : IGameManager
             })
             .WaitForCompletion();
 
-      
-        
-      
-            Blink(1.35f);
+
+        Blink();
     }
     
     
@@ -125,6 +151,14 @@ public class HandFlip2_BlackPrintsController : IGameManager
     {
         if (Physics.Raycast(ray, out hit))
         {
+            if (!_isClickable)
+            {
+#if UNITY_EDITOR
+Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
+#endif
+                return;
+            }
+            
             if (hit.transform.gameObject.name.ToLower().Contains("black"))
             {
                 if (!_seqChanged)
@@ -139,7 +173,8 @@ public class HandFlip2_BlackPrintsController : IGameManager
                     if (_seqChanged) return;
                     
                     _seqChanged  = true;
-                    Blink(0.55f);
+
+                    Blink(0.15f,0.15f);
                     Debug.Log($"clicked ID{_firstClickedID}");
 
                     //검정색을 클릭하도록 유도하는 급박한 느낌의 사운드 추가 
@@ -147,7 +182,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
                 }
                 else
                 {
-                    if (!_isDisappearing && hit.transform.gameObject.GetInstanceID() != _firstClickedID)
+                    if (!_isDisappearing && hit.transform.gameObject.GetInstanceID() != _firstClickedID&&_firstClickedID!=0)
                     {
                         _isDisappearing = true;
                         Debug.Log($"disAppear! current Clicked ID{hit.transform.gameObject.GetInstanceID()}");
@@ -157,6 +192,8 @@ public class HandFlip2_BlackPrintsController : IGameManager
                         Managers.Sound.Play(SoundManager.Sound.Effect,
                             "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_click_05", 0.3f);
                     }
+                      
+                    
                 }
             }
         }
@@ -164,11 +201,11 @@ public class HandFlip2_BlackPrintsController : IGameManager
     }
 
    
-    private void Blink(float interval)
+    private void Blink(float duration=0.9f,float interval =0.15f)
     {
 
 
-        Color targetColor = _gm.CurrentColorPair[Random.Range(0,2)];
+        Color targetColor = _gm.CurrentColorPair[Random.Range(0,2)] *   1.35f;
         
         _blinkSeqs[(int)PrintType.Hand] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Foot] = DOTween.Sequence();
@@ -177,17 +214,17 @@ public class HandFlip2_BlackPrintsController : IGameManager
         // 손에 대한 깜박임 설정
         _blinkSeqs[(int)PrintType.Hand] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Hand]
-            .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(targetColor, interval).SetEase(Ease.Linear))
-            .AppendInterval(0.2f) // 지연 시간 추가
-            .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(_defaultColor, interval).SetEase(Ease.Linear))
+            .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(targetColor, duration).SetEase(Ease.Linear))
+            .AppendInterval(interval) // 지연 시간 추가
+            .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(_defaultColor, duration).SetEase(Ease.Linear))
             .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         // 발에 대한 깜박임 설정
         _blinkSeqs[(int)PrintType.Foot] = DOTween.Sequence();
         _blinkSeqs[(int)PrintType.Foot]
-            .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(targetColor, interval).SetEase(Ease.Linear))
-            .AppendInterval(0.2f) // 지연 시간 추가
-            .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(_defaultColor, interval).SetEase(Ease.Linear))
+            .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(targetColor, duration).SetEase(Ease.Linear))
+            .AppendInterval(interval) // 지연 시간 추가
+            .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(_defaultColor, duration).SetEase(Ease.Linear))
             .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         _blinkSeqs[(int)PrintType.Hand].Play();

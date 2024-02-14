@@ -120,7 +120,10 @@ public class HandFootPainting_GameManager : IGameManager
         _elapsed = 0;
         _bgSprite.DOFade(0, 2f)
             .OnStart(() => { _tmp.text = "놀이 시작!"; }).OnComplete(() => { _isRoundReady = true; });
+     
+        _glowSeq = DOTween.Sequence();
         BlinkOutline();
+        _glowSeq.Play();
     }
 
     private void OnRoundFinished()
