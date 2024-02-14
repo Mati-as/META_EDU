@@ -312,12 +312,9 @@ public class HandFlip2_GameManager : IGameManager
         //  ChangeColor(GameManager_Ray);
     }
     
-    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.12f, 0.055f, 9).OnComplete(() =>
+    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.22f, 0.055f, 5).OnComplete(() =>
     {
-
-    }).OnComplete(() =>
-    {
-        Camera.main.transform.DOMove(_defaultPosition, 1.1f);
+        Camera.main.transform.DOMove(_defaultPosition, 0.3f);
     });
 
     private void OnButtonClicked()

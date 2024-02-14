@@ -104,7 +104,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
             })
             .OnComplete(() =>
             {
-                DOVirtual.Float(0, 0, 1f, _ => { })
+                DOVirtual.Float(0, 0, 2.5f, _ => { })
                     .OnComplete(() => { _isClickable = true; });
             })
             .SetDelay(Random.Range(delayTime, delayTime + 0.5f));

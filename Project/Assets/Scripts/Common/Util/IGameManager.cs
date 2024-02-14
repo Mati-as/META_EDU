@@ -8,7 +8,7 @@ public abstract class IGameManager : MonoBehaviour
     public static Ray GameManager_Ray { get; private set; }
     public static RaycastHit[] GameManager_Hits { get; set; }
     public static bool isStartButtonClicked { get; private set; }
-    public static bool isInitialized { get; private set; }
+    protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME = 30;
     
