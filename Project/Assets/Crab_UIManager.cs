@@ -125,7 +125,7 @@ public class Crab_UIManager : UI_PopUp
 
     private void OnCrabUIStart()
     {
-        DOVirtual.Float(0,1,CrabVideoGameManager.VIDEO_STOP_DELAY - 8, _ => { })
+        DOVirtual.Float(0,1,CrabVideoGameManager.VIDEO_STOP_DELAY - 10, _ => { })
             .OnComplete(() =>
             {
                 Crab_SpeechBubble.SetActive(true);

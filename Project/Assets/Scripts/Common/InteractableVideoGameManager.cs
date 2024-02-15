@@ -152,7 +152,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     {
         if (!_initiailized) return;
         if (!isStartButtonClicked) return;
-        if (!_isShaked) transform.DOShakePosition(2.25f, 1f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
+        if (!_isShaked) transform.DOShakePosition(1.55f, 0.35f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
             .OnComplete(() =>
             {
                 transform.DOMove(_defaultPosition, 1f).SetEase(Ease.Linear);
@@ -162,8 +162,6 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
         if (CheckReplayCondition())
         {
-            
-
             onReplay?.Invoke();
         }
     }

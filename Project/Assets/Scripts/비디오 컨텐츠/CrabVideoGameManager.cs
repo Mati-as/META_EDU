@@ -39,7 +39,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
     //Camera DoShakePosition 강도 설정위한 bool값 입니다.
     private bool isCrabPlayingUI;
     
-    public static readonly float VIDEO_STOP_DELAY = 23.5f;
+    public static readonly float VIDEO_STOP_DELAY = 21.5f;
 
     // Start is called before the first frame update
 
@@ -130,9 +130,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
     {
         base.OnRaySynced();
         if (!_initiailized) return;
-
-        if (!_isShaked) transform.DOShakePosition(1.2f, 0.5f, randomness: 90, vibrato: 6);
-
+        
         _currentClickCount++;
 
         if (_currentClickCount > crabAppearClickCount && !_isOnCrabAppearEventInvoked)
