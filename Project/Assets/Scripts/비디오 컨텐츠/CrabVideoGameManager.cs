@@ -36,6 +36,10 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         
     public float replayOffset;
     
+    //Camera DoShakePosition 강도 설정위한 bool값 입니다.
+    private bool isCrabPlayingUI;
+    
+    public static readonly float VIDEO_STOP_DELAY = 23.5f;
 
     // Start is called before the first frame update
 
@@ -53,7 +57,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
     protected override void Start()
     {
         base.Start();
-        
+        DOTween.Init().SetCapacity(1000,1000);
         isCrabAppearable = true;
         
         SubscribeEvent();
@@ -127,7 +131,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         base.OnRaySynced();
         if (!_initiailized) return;
 
-        if (!_isShaked) transform.DOShakePosition(2.25f, 1f + 0.1f * _currentClickCount, randomness: 90, vibrato: 5);
+        if (!_isShaked) transform.DOShakePosition(1.2f, 0.5f, randomness: 90, vibrato: 6);
 
         _currentClickCount++;
 
@@ -147,10 +151,16 @@ public class CrabVideoGameManager : InteractableVideoGameManager
 
     }
 
-    private bool _clickableForDialogueUI;
     private void OnCrabAppear()
     {
-        _clickableForDialogueUI = true;
+        isCrabPlayingUI = true;
+        DOVirtual.Float(0,0,VIDEO_STOP_DELAY, _ => { }).OnComplete(()=>
+        {
+#if UNITY_EDITOR
+            Debug.Log("Stop Video ------------------");
+#endif
+            videoPlayer.playbackSpeed = 0;
+        });
         
     }
 
@@ -172,11 +182,16 @@ public class CrabVideoGameManager : InteractableVideoGameManager
             });
     }
 
-    private void PlayAgain() => DOVirtual.Float(0,0,3, _ => { }).OnComplete(()=>
+    private void PlayAgain()
     {
-        videoPlayer.playbackSpeed = 1;
-    });
-    
+        isCrabPlayingUI = false;
+        DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
+        {
+            videoPlayer.playbackSpeed = 1;
+           
+        });
+    }
+
     private void TurnOffSpeechBubble(float delay)
     {
         DOVirtual.Float(0, 1, delay, _ => { })
@@ -199,7 +214,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         // }
         
         // 부엉이 대사 관련 UI 제어 파트 -------------------------------------------------
-        if(_clickableForDialogueUI)  onRaySyncForCrabUI?.Invoke();
+         if(isCrabPlayingUI)onRaySyncForCrabUI?.Invoke();
     }  
     
 

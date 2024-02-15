@@ -346,6 +346,8 @@ public class Crab_AnimalPathController : MonoBehaviour
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
+                Debug.Assert( _crabDoingPath.linearPath[0]!=null);
+                
                 _crabDoingPath.linearPath[0] = _crabDoingPath.gameObj.transform.position;
 
                 _crabDoingPath.awayPath[(int)AwayPath.Arrival] =
@@ -356,13 +358,14 @@ public class Crab_AnimalPathController : MonoBehaviour
                 // _crabDoingPath.gameObj.transform.position = _crabDoingPath.loopPath[(int)LoopPath.Start];
             }));
 
-        if (_crabDoingPath.isNoPath)
+        // 두 번째 트윈 3: 점프하는 애니메이션
+        if (_crabDoingPath.isNoPathAndJump)
         {
             _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 4.5f, val => val++).OnStart(() =>
             {
                 _crabDoingPath.animator.SetBool(IDLE_ANIM, true);
 #if UNITY_EDITOR
-                Debug.Log("Idle: 경로없음");
+                Debug.Log("경로X, 점프애니메이션");
 #endif
             }).OnComplete(() =>
             {
@@ -373,7 +376,7 @@ public class Crab_AnimalPathController : MonoBehaviour
         else
         {
             if (_crabDoingPath.isLinearPath)
-                // 두 번째 트윈: 경로 따라 이동
+                // 두 번째 트윈 1: 선형 경로 따라 좌우로 이동하는 애니메이션
                 _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
                     .DOPath(_crabDoingPath.linearPath, 2.5f)
                     .SetLoops(8, LoopType.Yoyo)
@@ -393,7 +396,7 @@ public class Crab_AnimalPathController : MonoBehaviour
                             appearablePoints[Random.Range(0, 4)].position;
                     }));
             else
-                // 두 번째 트윈: 경로 따라 이동
+                // 두번째 트윈 2 :원형 경로에 따른 애니메이션인 경우
                 _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
                     .DOPath(_crabDoingPath.circularPath, 2.5f, PathType.CatmullRom)
                     .SetLoops(8, LoopType.Yoyo)
@@ -466,7 +469,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
     private void SetBool(Crab crab)
     {
         crab.isLinearPath = _isLinearPath;
-        crab.isNoPath = _isNoPath;
+        crab.isNoPathAndJump = _isNoPath;
     }
 
     private void CopyPathArrays(Crab crab)
@@ -534,12 +537,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
             end_Linear = main + transform.forward * linearPathDistance * Random.Range(1, randomDistance);
 
             linearPath[0] = end_Linear;
-
-#if UNITY_EDITOR
-
-#endif
-
-
+            
             _isLinearPath = true;
         }
         else
@@ -560,7 +558,10 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 
         if (prefab != null)
         {
-            var crab = new Crab();
+            var crab = new Crab()
+            {
+                linearPath =new Vector3[2]
+            };
             crab.gameObj = Instantiate(prefab, transform);
 
             crab.animator = crab.gameObj.GetComponent<Animator>();
@@ -626,6 +627,6 @@ public class Crab
 
     public bool isGoingHome { get; set; }
     public bool isLinearPath { get; set; }
-    public bool isNoPath { get; set; }
+    public bool isNoPathAndJump { get; set; }
     public Animator animator { get; set; }
 }
