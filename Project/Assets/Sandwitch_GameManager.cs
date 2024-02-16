@@ -49,6 +49,8 @@ public class Sandwitch_GameManager : IGameManager
     private readonly int INGREDIENT_COUNT = (int)Sandwich.Max;
     private int _ingsPickinigOrder = 1;
     private readonly int ING_MAX_COUNT = 2;
+
+    private ParticleSystem _finishMakingPs;
     
     /*아래 연산자는 두가지 경우에 쓰입니다.
     1. 첫번째, 다섯번째 재료에 빵이 반드시 포함되도록 합니다.
@@ -70,6 +72,10 @@ public class Sandwitch_GameManager : IGameManager
     public static event Action onAnimalEatingFinish;
     
     
+    // animal
+    public static event Action onSandwichArrive;
+    
+    
 
 
     //Positions
@@ -83,6 +89,7 @@ public class Sandwitch_GameManager : IGameManager
     {
         _ingredientGenerationPosition = GameObject.Find("IngredientGenerationPosition").transform.position;
         _currentSmallPlateLocationIndex = new int[INGREDIENT_COUNT];
+        _finishMakingPs = GameObject.Find("CFX_FinishMaking").GetComponent<ParticleSystem>();
         base.Init();
         
         InitUI();
@@ -427,9 +434,21 @@ public class Sandwitch_GameManager : IGameManager
 #if UNITY_EDITOR
         Debug.Log($"Making Sandwich is finished");
 #endif
+      
         DOTween.KillAll();
+
+        PlayParticle(1.5f);
         ScaleAllIngs(3f,true);
         SendSandwichToAnimal();
+    }
+
+    private void PlayParticle(float delay)
+    {
+        DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
+        {
+            _finishMakingPs.Stop();
+            _finishMakingPs.Play();
+        });
     }
 
     private void SendSandwichToAnimal(float delay = 3f)
@@ -442,12 +461,15 @@ public class Sandwitch_GameManager : IGameManager
             _sandWich.transform.DOMove(posUp, 1.8f)
                 .OnComplete(() =>
                 {
-                    _sandWich.transform.DOMove(pos, 3f);
+                    _sandWich.transform.DOMove(pos, 3f).OnComplete(() =>
+                    {
+                        onSandwichArrive?.Invoke();
+                    });
                     
-                    DOVirtual.Float(10, 25, 2f, fov =>
+                    DOVirtual.Float(10, 15, 3f, fov =>
                     {
                         Camera.main.fieldOfView = fov;
-                    }).SetDelay(0.5f);
+                    }).SetEase(Ease.InOutSine).SetDelay(0.5f);
                 });
        
             DOVirtual.Float(0, 0, 5f, _ =>
