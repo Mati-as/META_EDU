@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using Quaternion = System.Numerics.Quaternion;
 using Random = UnityEngine.Random;
-using Sequence = Unity.VisualScripting.Sequence;
 using Vector3 = UnityEngine.Vector3;
 
 public class Sandwitch_GameManager : IGameManager
@@ -61,16 +59,20 @@ public class Sandwitch_GameManager : IGameManager
     
     //중복클릭방지
     private bool _isClickable = true;
-    private float _clickableDelay =7f;
+    private float _clickableDelay =4f;
 
 
     // OnRoundReady 
     // - 1. 인트로에서 샌드위치가 사라지고 일정 시간이 지났을떄 (일정시간을 파라미터로)
     // - 2. 동물이 샌드위치를 다 먹고 일정 시간이 지났을때
+    
+    
+    [Range(0,1000f)]
+    public float fallingSpeed;
+    
     public static event Action onRoundReady;
     public static event Action onSandwichMakingFinish;
     public static event Action onAnimalEatingFinish;
-    
     
     // animal
     public static event Action onSandwichArrive;
@@ -82,6 +84,8 @@ public class Sandwitch_GameManager : IGameManager
     private Vector3 _moveOutP;
     private Vector3 _ingredientGenerationPosition;
     private Vector3[] _ingredientsAppearPosition;
+    private Vector3 defaultLookAt;
+    private GameObject _thisSandwich;
 
     // Events ------------------------------------------------------------------------
 
@@ -90,6 +94,13 @@ public class Sandwitch_GameManager : IGameManager
         _ingredientGenerationPosition = GameObject.Find("IngredientGenerationPosition").transform.position;
         _currentSmallPlateLocationIndex = new int[INGREDIENT_COUNT];
         _finishMakingPs = GameObject.Find("CFX_FinishMaking").GetComponent<ParticleSystem>();
+         posUp = GameObject.Find("SandwichUp").transform.position;
+         sandwichArrival = GameObject.Find("SandwichArrive").transform.position;
+         defaultLookAt = GameObject.Find("MainDefaultLookAt").GetComponent<Transform>().position;
+         _shakeSeqs = new List<Sequence>();
+    
+         Camera.main.transform.LookAt(defaultLookAt);
+         
         base.Init();
         
         InitUI();
@@ -119,6 +130,10 @@ public class Sandwitch_GameManager : IGameManager
 
         onSandwichMakingFinish -= OnSandwichMakingFinish;
         onSandwichMakingFinish += OnSandwichMakingFinish;
+
+        sandwich_AnimalController.onAllFinishAnimOver -= AllFinishAnimOver;
+        sandwich_AnimalController.onAllFinishAnimOver += AllFinishAnimOver;
+
     }
 
     private readonly int NO_VALID_OBJECT = -1;
@@ -134,7 +149,7 @@ public class Sandwitch_GameManager : IGameManager
         if (!_isClickable)
         {
 #if UNITY_EDITOR
-            Debug.Log($"something still animating... not clickable-------@@@@@");
+            Debug.Log($"Can't be clicked : isClickable X");
 #endif
             return;
         }
@@ -145,7 +160,13 @@ public class Sandwitch_GameManager : IGameManager
             _currentClickedIngPosition = currentClickedIng.position;
             
            var selectedIndex =  FindIndexByName(hit.transform.gameObject.name);
-           if (selectedIndex == NO_VALID_OBJECT) return;
+           if (selectedIndex == NO_VALID_OBJECT)
+           {
+#if UNITY_EDITOR
+               Debug.Log($"isNotValid: { hit.transform.gameObject.name} : selectedIndex: {selectedIndex}X");
+#endif
+               return;
+           }
             
            PutOnGenerationPosition(_ingredientsOnBigPlate[selectedIndex].gameObject,2f);
            SetCurrentClickedIngPos(hit.transform);
@@ -184,20 +205,25 @@ public class Sandwitch_GameManager : IGameManager
             _isClickable = true;
         });
     }
-    private void PutOnGenerationPosition(GameObject gameObj,float delay,float fallingDuration= 1.75f)
+
+    private void PutOnGenerationPosition(GameObject gameObj,float delay,float fallingDuration= 1.05f)
     {
-        var obj = Instantiate(gameObj,_sandWich.transform);
+       
+        var obj = Instantiate(gameObj, _thisSandwich.transform);
         DOVirtual.Float(0, 0, delay,_ => { })
         .OnComplete(() =>
         {
             obj.transform.position = _ingredientGenerationPosition;
           
             
-            obj.transform.DOShakeRotation(fallingDuration,1,1,1);
+                //obj.transform.DOShakeRotation(fallingDuration,1,1,1);
             var rb = obj.GetComponent<Rigidbody>();
             SetRbConstraint(rb);
             obj.gameObject.SetActive(true);
+
+            obj.transform.DORotateQuaternion(obj.transform.rotation * UnityEngine.Quaternion.Euler(0, Random.Range(60,240), 0), fallingDuration);
             DOVirtual.Float(0, 0, fallingDuration,_ => { })
+                .OnStart(() => {     rb.AddForce(Vector3.down*fallingSpeed,ForceMode.Impulse);})
                 .OnComplete(() =>
                 {
                    
@@ -260,7 +286,7 @@ public class Sandwitch_GameManager : IGameManager
     private void InitUI()
     {
         Debug.Log("UI Init");
-        var uiInstance = Resources.Load<GameObject>("Prefab/UI/UI_" + SceneManager.GetActiveScene().name);
+        var uiInstance = Resources.Load<GameObject>("Prefab/UI/" + SceneManager.GetActiveScene().name+"_UI_Scene");
         var root = GameObject.Find("@Root");
 
         if (s_UIManager != null)
@@ -302,36 +328,57 @@ public class Sandwitch_GameManager : IGameManager
         _moveOutP = GameObject.Find("MoveOut").transform.position;
     }
 
-    private GameObject _sandWich;
+    private GameObject _sandWichOrigin;
     private void SetSandwich()
     {
         _ingredientsOnBigPlate = new Transform[INGREDIENT_COUNT];
         //초기 샌드위치 할당 및 추후 접시위 
-        _sandWich = GameObject.Find("Sandwich");
-        
+        _sandWichOrigin = GameObject.Find("Sandwich");
+        _thisSandwich = Instantiate(_sandWichOrigin, transform);
         for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
-            _ingredientsOnBigPlate[i] = _sandWich.transform.GetChild(i);
+        {
+            _ingredientsOnBigPlate[i] = _sandWichOrigin.transform.GetChild(i);
+           
+        }
         
+        //샌드위치 복사본의 재료만 Deactivate합니다. 
+       
+       
+        
+        _thisSandwich = Instantiate(_sandWichOrigin,transform);
+        _thisSandwich.transform.position = _sandWichOrigin.transform.position;
+       var copiedIngredientsOnBigPlate = new Transform[INGREDIENT_COUNT];
+        for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
+        {
+            copiedIngredientsOnBigPlate[i] = _thisSandwich.transform.GetChild(i);
+            copiedIngredientsOnBigPlate[i].gameObject.SetActive(false);
+        }
+      
+
     }
 
     private void MoveOutSandwich()
     {
-        for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
-            _ingredientsOnBigPlate[i]
-                .DOMove(_moveOutP , 3.5f)
-                .SetEase(Ease.OutSine)
-                .SetDelay((0.5f * i) + Random.Range(0.5f, 0.7f))
-                .OnComplete(()=>
-                {
-                    _ingredientsOnBigPlate[i].gameObject.SetActive(false);
-                });
+        // DOVirtual.Float(0, 0, 0.12f, _ => { }).OnComplete(() =>
+        // {
+            for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
+                _ingredientsOnBigPlate[i]
+                    .DOMove(_moveOutP , 0.88f)
+                    .SetEase(Ease.OutSine)
+                    .SetDelay((0.1f * i) + Random.Range(0.5f, 0.7f))
+                    .OnComplete(()=>
+                    {
+                        _ingredientsOnBigPlate[i].gameObject.SetActive(false);
+                    });
+        // });
+      
 
         onRoundReady?.Invoke();
     }
 
     private void OnRoundReady()
     {
-        ScaleAllIngs(5f);
+        ScaleAllIngs(1.5f);
     }
 
     
@@ -344,8 +391,8 @@ public class Sandwitch_GameManager : IGameManager
         int count = 0;
         List<int> indices = Enumerable.Range(0, _ingredientsAppearPosition.Length).ToList();
         indices = indices.OrderBy(a => Random.value).ToList();
-
-
+      
+        
         if (sizeZero)
         {
             foreach (var obj in _selectableIngredientsOnSmallPlates)
@@ -356,12 +403,14 @@ public class Sandwitch_GameManager : IGameManager
                 obj.DOScale(Vector3.zero, 2f)
                     .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
 
-                obj.DOShakeRotation(1000f, 3f,vibrato:1,randomness:15);
+              
+                
 
            
                 count++;
             }
         }
+        
         else
         {
             foreach (var obj in _selectableIngredientsOnSmallPlates)
@@ -395,9 +444,23 @@ public class Sandwitch_GameManager : IGameManager
 
             isGameStart = true;
         }
-       
 
+        Sequence seq =DOTween.Sequence();
+        foreach (var obj in _selectableIngredientsOnSmallPlates)
+        {
+            
+            seq.Append(obj.DOShakeRotation(1000f, 2f,vibrato:1,randomness:10));
+            _shakeSeqs.Add(seq);
+            obj.GetComponent<Collider>().enabled = true;
+        
+        }
+
+        foreach (var sequence in _shakeSeqs)
+        {
+            sequence.Play();
+        }
        
+        
     }
 
 
@@ -435,7 +498,7 @@ public class Sandwitch_GameManager : IGameManager
         Debug.Log($"Making Sandwich is finished");
 #endif
       
-        DOTween.KillAll();
+       
 
         PlayParticle(1.5f);
         ScaleAllIngs(3f,true);
@@ -451,17 +514,17 @@ public class Sandwitch_GameManager : IGameManager
         });
     }
 
+    private Vector3 posUp;
+    private Vector3 sandwichArrival;
     private void SendSandwichToAnimal(float delay = 3f)
     {
-        var posUp = GameObject.Find("SandwichUp").transform.position;
-        var pos = GameObject.Find("SandwichArrive").transform.position;
 
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
         {
-            _sandWich.transform.DOMove(posUp, 1.8f)
+            _thisSandwich.transform.DOMove(posUp, 1.8f)
                 .OnComplete(() =>
                 {
-                    _sandWich.transform.DOMove(pos, 3f).OnComplete(() =>
+                    _thisSandwich.transform.DOMove(sandwichArrival, 3f).OnComplete(() =>
                     {
                         onSandwichArrive?.Invoke();
                     });
@@ -474,7 +537,7 @@ public class Sandwitch_GameManager : IGameManager
        
             DOVirtual.Float(0, 0, 5f, _ =>
             {
-                Camera.main.transform.DOLookAt(_sandWich.transform.position, 2.5f);
+                Camera.main.transform.DOLookAt(_thisSandwich.transform.position, 2.5f);
                
                
             });
@@ -482,12 +545,14 @@ public class Sandwitch_GameManager : IGameManager
     
     }
 
+
+
     
     public int FindIndexByName(string nameToFind)
     {
         for (int i = 0; i < _selectableIngredientsOnSmallPlates.Length; i++)
         {
-            if (_selectableIngredientsOnSmallPlates[i].name == nameToFind)
+            if (_selectableIngredientsOnSmallPlates[i].name.Contains($"{nameToFind}"))
             {
                 return i; 
             }
@@ -495,6 +560,7 @@ public class Sandwitch_GameManager : IGameManager
         return -1;
     }
 
+    private List<Sequence> _shakeSeqs;
     
     /// <summary>
     /// 시작시 모든 재료를 스케일업하는 것이 아닌, 사용자가 클릭한 후 하나씩 스케일업 합니다.
@@ -512,14 +578,13 @@ public class Sandwitch_GameManager : IGameManager
                 if (!obj.gameObject.activeSelf)
                 {    
 #if UNITY_EDITOR
-                    Debug.Log($" {obj.name} : ActiveStatue{obj.gameObject.activeSelf}");
+Debug.Log($" {obj.name} : ActiveStatue{obj.gameObject.activeSelf}");
 #endif
                     obj.position = pos;
                     obj.localScale = Vector3.zero;
                     obj.gameObject.SetActive(true);
                     obj.DOScale(_ingredientsDefaultScales[count], 2f)
                         .SetEase(Ease.InOutBounce).SetDelay(Random.Range(0, 0.5f));
-                    obj.DOShakeRotation(1000f, 5f, 1);
                     obj.GetComponent<Collider>().enabled = true;
                     return;
                 }
@@ -529,7 +594,7 @@ public class Sandwitch_GameManager : IGameManager
                 {
                     
 #if UNITY_EDITOR
-                    Debug.Log($"scaleUpAgain: {obj.name}");
+Debug.Log($"scaleUpAgain: {obj.name}");
 #endif
 
                     obj.position = pos;
@@ -537,7 +602,6 @@ public class Sandwitch_GameManager : IGameManager
                     obj.gameObject.SetActive(true);
                     obj.DOScale(_ingredientsDefaultScales[count], 2f)
                         .SetEase(Ease.InOutBounce).SetDelay(Random.Range(0, 0.5f));
-                    obj.DOShakeRotation(1000f, 5f, 1);
                     obj.GetComponent<Collider>().enabled = true;
                     return;
                 }
@@ -549,6 +613,48 @@ public class Sandwitch_GameManager : IGameManager
             
         });
     }
+
+    private void AllFinishAnimOver()
+    {
+        SendBackToDefault();
+    }
     
+   
+    private void SendBackToDefault(float delay = 3f)
+    {
+      
+        DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
+        {
+            DOVirtual.Float(0, 0, 0f, _ =>
+            {
+                Camera.main.transform.DOLookAt(defaultLookAt, 2.5f);
+                DOVirtual.Float(15, 10, 1.5f, fov =>
+                {
+                    Camera.main.fieldOfView = fov;
+                }).SetEase(Ease.InOutSine)
+                    .SetDelay(0.0f)
+                    .OnComplete(() =>
+                    {
+                        Destroy(_thisSandwich);
+                        InitForNewRound();
+                    });
+            });
+        });
     
+    }
+
+    private void InitForNewRound()
+    {
+        foreach (var seq in _shakeSeqs)
+        {
+            seq.Kill(); 
+        }
+        
+        
+        _thisSandwich = Instantiate(_sandWichOrigin);
+        _thisSandwich.transform.position = _sandWichOrigin.transform.position;
+        _isClickable = true;
+        _ingsPickinigOrder = 1;
+        ScaleAllIngs(5f);
+    }
 }

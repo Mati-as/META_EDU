@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class sandwich_AnimalController : MonoBehaviour
 {
-    public static readonly int EAT = Animator.StringToHash("Eat"); 
+    public static readonly int EAT = Animator.StringToHash("Eat");
+
     private enum Animal
     {
         Pig,
@@ -16,30 +16,41 @@ public class sandwich_AnimalController : MonoBehaviour
 
     private Transform[] _animals;
     private Animator[] _controllers;
+
     private void Awake()
     {
         _animals = new Transform[(int)Animal.Max];
         _controllers = new Animator[(int)Animal.Max];
 
-        for (int i = (int)Animal.Pig; i < (int)Animal.Max; i++)
+        for (var i = (int)Animal.Pig; i < (int)Animal.Max; i++)
         {
             _animals[i] = transform.GetChild(i);
             _controllers[i] = transform.GetChild(i).GetComponent<Animator>();
-
         }
 
         Sandwitch_GameManager.onSandwichArrive -= OnSandwichArrive;
         Sandwitch_GameManager.onSandwichArrive += OnSandwichArrive;
     }
 
+    public static event Action onFinishEating;
+    public static event Action onAllFinishAnimOver;
+
     private void OnSandwichArrive()
     {
-#if UNITY_EDITOR
-        Debug.Log($"Sandwich Arrived");
-#endif
-        foreach (var controller in _controllers)
+
+        foreach (var controller in _controllers) controller.SetBool(EAT, true);
+
+        DOVirtual.Float(0, 0, 5, _ => { }).OnComplete(() =>
         {
-            controller.SetBool(EAT,true);
-        }
+            foreach (var controller in _controllers) controller.SetBool(EAT, false);
+            DOVirtual.Float(0, 0, 2, _ => { }).OnComplete(() => { onFinishEating?.Invoke(); });
+            DOVirtual.Float(0, 0, 10, _ => { }).OnComplete(() =>
+            {
+#if UNITY_EDITOR
+Debug.Log("ALL ANIM FINISHED... ROUND IS BEING READY AGAIN");
+#endif
+                onAllFinishAnimOver?.Invoke();
+            });
+        });
     }
 }
