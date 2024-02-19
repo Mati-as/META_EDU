@@ -44,10 +44,12 @@ public class Sandwitch_GameManager : IGameManager
     private int[] _currentSmallPlateLocationIndex;
     private Vector3[] _ingredientsDefaultScales;
     private Vector3 _currentClickedIngPosition; // 새로운 재료 생성시 위치 참조
+    private Vector3[] _path;
     public Transform currentClickedIng;
     private readonly int INGREDIENT_COUNT = (int)Sandwich.Max;
     private int _ingsPickinigOrder = 1;
     private readonly int ING_MAX_COUNT = 5;
+    private Dictionary<Transform, Sequence> _pathSeqMap;
 
     private ParticleSystem _finishMakingPs;
     
@@ -100,6 +102,7 @@ public class Sandwitch_GameManager : IGameManager
          sandwichArrival = GameObject.Find("SandwichArrive").transform.position;
          defaultLookAt = GameObject.Find("MainDefaultLookAt").GetComponent<Transform>().position;
          _shakeSeqs = new List<Sequence>();
+         _pathSeqMap = new Dictionary<Transform, Sequence>();
     
          Camera.main.transform.LookAt(defaultLookAt);
          
@@ -223,7 +226,7 @@ public class Sandwitch_GameManager : IGameManager
 
 
 
-                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(0, 6);
+                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
                 Managers.Sound.Play(SoundManager.Sound.Effect,path,0.25f);
 #if UNITY_EDITOR
                 Debug.Log($"fallingsound : path : {path}");
@@ -424,8 +427,6 @@ public class Sandwitch_GameManager : IGameManager
                 obj.DOScale(Vector3.zero, 2f)
                     .OnStart(() =>
                     {
-                                
-
                         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup", 1f);
                     })
                     .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
@@ -460,7 +461,7 @@ public class Sandwitch_GameManager : IGameManager
          
                 obj.gameObject.SetActive(true);
             
-                obj.DOScale(_ingredientsDefaultScales[count], 2f)
+                obj.DOScale(_ingredientsDefaultScales[count], 1.3456789f)
                     .OnStart(() =>
                     {
 #if UNITY_EDITOR
@@ -480,21 +481,45 @@ public class Sandwitch_GameManager : IGameManager
         }
 
         Sequence seq =DOTween.Sequence();
+        Sequence pathSeq = DOTween.Sequence();
         foreach (var obj in _selectableIngredientsOnSmallPlates)
         {
-            
+            pathSeq = DOTween.Sequence();
             seq.Append(obj.DOShakeRotation(1000f, 2f,vibrato:1,randomness:10));
             _shakeSeqs.Add(seq);
             obj.GetComponent<Collider>().enabled = true;
-        
+
+
+            pathSeq.Append(obj.DOPath(SetPath(obj.transform.position), 5f, PathType.CatmullRom)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetDelay(Random.Range(0.5f, 1.1f))
+                .SetEase((Ease)Random.Range(0, 10)));
+
         }
 
         foreach (var sequence in _shakeSeqs)
         {
             sequence.Play();
+          
+         
         }
-       
         
+        foreach (var obj in _selectableIngredientsOnSmallPlates)
+        {
+
+            _pathSeqMap.TryAdd(obj, pathSeq);
+            pathSeq.Play();
+        }
+        
+    }
+
+
+    private Vector3[] SetPath(Vector3 originPos)
+    {
+        var path = new Vector3[2];
+        path[0] = originPos + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
+        path[1] = originPos + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
+        return path;
     }
 
 
@@ -533,7 +558,7 @@ public class Sandwitch_GameManager : IGameManager
 #endif
 
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0"+ Random.Range(0,5),0.5f);
+            "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0"+ Random.Range(1,5),0.5f);
 
         PlayParticle(0.89f);
         ScaleAllIngs(3f,true);
@@ -559,23 +584,22 @@ public class Sandwitch_GameManager : IGameManager
             _thisSandwich.transform.DOMove(posUp, 1.8f)
                 .OnComplete(() =>
                 {
+                    DOVirtual.Float(0, 0, 5f, _ =>
+                    {
+                        Camera.main.transform.DOLookAt(_thisSandwich.transform.position, 2.5f);
+                    });
                     _thisSandwich.transform.DOMove(sandwichArrival, 3f).OnComplete(() =>
                     {
                         onSandwichArrive?.Invoke();
                     });
                     
-                    DOVirtual.Float(10, 15, 3f, fov =>
+                    DOVirtual.Float(10, 20, 3f, fov =>
                     {
                         Camera.main.fieldOfView = fov;
                     }).SetEase(Ease.InOutSine).SetDelay(0.5f);
                 });
        
-            DOVirtual.Float(0, 0, 5f, _ =>
-            {
-                Camera.main.transform.DOLookAt(_thisSandwich.transform.position, 2.5f);
-               
-               
-            });
+  
         });
     
     }
@@ -665,7 +689,8 @@ Debug.Log($"scaleUpAgain: {obj.name}");
             DOVirtual.Float(0, 0, 0f, _ =>
             {
                 Camera.main.transform.DOLookAt(defaultLookAt, 2.5f);
-                DOVirtual.Float(15, 10, 1.5f, fov =>
+                DOVirtual.Float(
+                        20, 10, 1.5f, fov =>
                 {
                     Camera.main.fieldOfView = fov;
                 }).SetEase(Ease.InOutSine)
@@ -686,7 +711,11 @@ Debug.Log($"scaleUpAgain: {obj.name}");
         {
             seq.Kill(); 
         }
-        
+
+        foreach (var pathSeq in _pathSeqMap.Values.ToList())
+        {
+            pathSeq.Kill();
+        }
         
         _thisSandwich = Instantiate(_sandWichOrigin);
         _thisSandwich.transform.position = _sandWichOrigin.transform.position;
