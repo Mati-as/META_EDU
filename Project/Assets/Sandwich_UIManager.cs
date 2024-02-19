@@ -53,7 +53,15 @@ public class Sandwich_UIManager : UI_PopUp
     private void OnFinishEationg()
     {
         _animalReaction.SetActive(true);
-        _rectAnimalReaction.DOScale(_reactionDefaultScale, 0.75f).SetEase(Ease.OutBounce).OnComplete(() =>
+        _rectAnimalReaction
+            .DOScale(_reactionDefaultScale, 0.75f)
+            .SetEase(Ease.OutBounce)
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03");
+            })
+            .OnComplete(() =>
         {
             DOVirtual.Float(0, 0, 3f,
                 _ => { }).OnComplete(() => { _rectAnimalReaction.DOScale(Vector3.zero, 0.75f).SetEase(Ease.OutBounce);});

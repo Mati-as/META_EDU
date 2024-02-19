@@ -11,6 +11,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Sandwitch_GameManager : IGameManager
 {
+
     private enum Sandwich
     {
         BreadT,
@@ -46,7 +47,7 @@ public class Sandwitch_GameManager : IGameManager
     public Transform currentClickedIng;
     private readonly int INGREDIENT_COUNT = (int)Sandwich.Max;
     private int _ingsPickinigOrder = 1;
-    private readonly int ING_MAX_COUNT = 2;
+    private readonly int ING_MAX_COUNT = 5;
 
     private ParticleSystem _finishMakingPs;
     
@@ -61,6 +62,7 @@ public class Sandwitch_GameManager : IGameManager
     private bool _isClickable = true;
     private float _clickableDelay =4f;
 
+    private readonly float RESTART_DELAY = 1.5f;
 
     // OnRoundReady 
     // - 1. 인트로에서 샌드위치가 사라지고 일정 시간이 지났을떄 (일정시간을 파라미터로)
@@ -149,7 +151,7 @@ public class Sandwitch_GameManager : IGameManager
         if (!_isClickable)
         {
 #if UNITY_EDITOR
-            Debug.Log($"Can't be clicked : isClickable X");
+            Debug.Log($"Can't be clicked : isClickable is false");
 #endif
             return;
         }
@@ -168,6 +170,10 @@ public class Sandwitch_GameManager : IGameManager
                return;
            }
             
+           char randomChar = (char)Random.Range('A', 'F'+ 1);
+           Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_"+randomChar,
+               0.3f);
+
            PutOnGenerationPosition(_ingredientsOnBigPlate[selectedIndex].gameObject,2f);
            SetCurrentClickedIngPos(hit.transform);
            PlayShrinkAnim(_selectableIngredientsOnSmallPlates[selectedIndex]);
@@ -203,51 +209,58 @@ public class Sandwitch_GameManager : IGameManager
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
         {
             _isClickable = true;
+            
         });
     }
 
-    private void PutOnGenerationPosition(GameObject gameObj,float delay,float fallingDuration= 1.05f)
+    private void PutOnGenerationPosition(GameObject gameObj, float delay, float fallingDuration = 0.785f)
     {
-       
         var obj = Instantiate(gameObj, _thisSandwich.transform);
-        DOVirtual.Float(0, 0, delay,_ => { })
-        .OnComplete(() =>
-        {
-            obj.transform.position = _ingredientGenerationPosition;
-          
-            
+        DOVirtual.Float(0, 0, delay, _ => { })
+            .OnComplete(() =>
+            {
+                obj.transform.position = _ingredientGenerationPosition;
+
+
+
+                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(0, 6);
+                Managers.Sound.Play(SoundManager.Sound.Effect,path,0.25f);
+#if UNITY_EDITOR
+                Debug.Log($"fallingsound : path : {path}");
+#endif
                 //obj.transform.DOShakeRotation(fallingDuration,1,1,1);
-            var rb = obj.GetComponent<Rigidbody>();
-            SetRbConstraint(rb);
-            obj.gameObject.SetActive(true);
+                var rb = obj.GetComponent<Rigidbody>();
+                SetRbConstraint(rb);
+                obj.gameObject.SetActive(true);
 
-            obj.transform.DORotateQuaternion(obj.transform.rotation * UnityEngine.Quaternion.Euler(0, Random.Range(60,240), 0), fallingDuration);
-            DOVirtual.Float(0, 0, fallingDuration,_ => { })
-                .OnStart(() => {     rb.AddForce(Vector3.down*fallingSpeed,ForceMode.Impulse);})
-                .OnComplete(() =>
-                {
-                   
-                    rb.constraints = RigidbodyConstraints.FreezeAll;
-
-                    if (_ingsPickinigOrder >= ING_MAX_COUNT)
+                obj.transform.DORotateQuaternion(
+                    obj.transform.rotation * UnityEngine.Quaternion.Euler(0, Random.Range(20, 340), 0),
+                    fallingDuration);
+                
+                DOVirtual.Float(0, 0, fallingDuration, _ => { })
+                    .OnStart(() => { rb.AddForce(Vector3.down * fallingSpeed, ForceMode.Impulse); })
+                    .OnComplete(() =>
                     {
-                        onSandwichMakingFinish?.Invoke();
-                    }
-                    else
-                    {
-                        _ingsPickinigOrder++;
-                    }
+                        rb.constraints = RigidbodyConstraints.FreezeAll;
 
-                });
-        
-        });
-
+                        if (_ingsPickinigOrder >= ING_MAX_COUNT)
+                        {
+                            _isClickable = false;
+                            onSandwichMakingFinish?.Invoke();
+                        }
+                        else
+                        {
+                            _ingsPickinigOrder++;
+                        }
+                    });
+            });
     }
 
     private void SetRbConstraint(Rigidbody rb)
     {
         var constraints = rb.constraints;
         constraints = RigidbodyConstraints.None;
+        constraints = RigidbodyConstraints.FreezeRotation;
         constraints = RigidbodyConstraints.FreezePositionX;
         constraints = RigidbodyConstraints.FreezePositionZ;
         rb.constraints = constraints;
@@ -334,13 +347,15 @@ public class Sandwitch_GameManager : IGameManager
         _ingredientsOnBigPlate = new Transform[INGREDIENT_COUNT];
         //초기 샌드위치 할당 및 추후 접시위 
         _sandWichOrigin = GameObject.Find("Sandwich");
+        
+     
         _thisSandwich = Instantiate(_sandWichOrigin, transform);
-        for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
+        for (var i = (int)Sandwich.BreadT; i<INGREDIENT_COUNT; i++)
         {
             _ingredientsOnBigPlate[i] = _sandWichOrigin.transform.GetChild(i);
            
         }
-        
+
         //샌드위치 복사본의 재료만 Deactivate합니다. 
        
        
@@ -361,14 +376,20 @@ public class Sandwitch_GameManager : IGameManager
     {
         // DOVirtual.Float(0, 0, 0.12f, _ => { }).OnComplete(() =>
         // {
-            for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
+            for (var i = (int)Sandwich.BreadT; i < _ingredientsOnBigPlate.Length; i++)
                 _ingredientsOnBigPlate[i]
                     .DOMove(_moveOutP , 0.88f)
                     .SetEase(Ease.OutSine)
                     .SetDelay((0.1f * i) + Random.Range(0.5f, 0.7f))
+                    .OnStart(()=>{
+                        char randomChar = (char)Random.Range('A', 'F'+ 1);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_"+randomChar,
+                            0.3f);
+                    })
                     .OnComplete(()=>
                     {
-                        _ingredientsOnBigPlate[i].gameObject.SetActive(false);
+                        // 샌드위치 객체 복사생성으로 인해 필요없음 2/19
+                       // _ingredientsOnBigPlate[i].gameObject.SetActive(false);
                     });
         // });
       
@@ -378,7 +399,7 @@ public class Sandwitch_GameManager : IGameManager
 
     private void OnRoundReady()
     {
-        ScaleAllIngs(1.5f);
+        ScaleAllIngs(2.5f);
     }
 
     
@@ -401,6 +422,12 @@ public class Sandwitch_GameManager : IGameManager
                 obj.gameObject.SetActive(true);
             
                 obj.DOScale(Vector3.zero, 2f)
+                    .OnStart(() =>
+                    {
+                                
+
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup", 1f);
+                    })
                     .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
 
               
@@ -434,6 +461,13 @@ public class Sandwitch_GameManager : IGameManager
                 obj.gameObject.SetActive(true);
             
                 obj.DOScale(_ingredientsDefaultScales[count], 2f)
+                    .OnStart(() =>
+                    {
+#if UNITY_EDITOR
+                        Debug.Log($"popup sound");
+#endif
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/pop", 0.3f);
+                    })
                     .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
 
                 obj.DOShakeRotation(1000f, 3f,vibrato:1,randomness:15);
@@ -497,10 +531,11 @@ public class Sandwitch_GameManager : IGameManager
 #if UNITY_EDITOR
         Debug.Log($"Making Sandwich is finished");
 #endif
-      
-       
 
-        PlayParticle(1.5f);
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0"+ Random.Range(0,5),0.5f);
+
+        PlayParticle(0.89f);
         ScaleAllIngs(3f,true);
         SendSandwichToAnimal();
     }
@@ -569,10 +604,12 @@ public class Sandwitch_GameManager : IGameManager
     public void ScaleUpSingleIng(float delay = 5f)
     {
         var count = 0;
-   
+        //position은 delay전에 할당하여, 생성 position이 바뀌지 않도록 합니다. 
+        var pos = currentClickedIng.position;
+        
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
         { 
-            var pos = currentClickedIng.position;
+           
             foreach (var obj in _selectableIngredientsOnSmallPlates)
             {
                 if (!obj.gameObject.activeSelf)
@@ -655,6 +692,9 @@ Debug.Log($"scaleUpAgain: {obj.name}");
         _thisSandwich.transform.position = _sandWichOrigin.transform.position;
         _isClickable = true;
         _ingsPickinigOrder = 1;
-        ScaleAllIngs(5f);
+        ScaleAllIngs(RESTART_DELAY);
+        onSandwichMakingRestart?.Invoke();
     }
+
+    public static event Action onSandwichMakingRestart;
 }

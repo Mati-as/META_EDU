@@ -12,6 +12,7 @@ public abstract class IGameManager : MonoBehaviour
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME = 30;
     
+    protected readonly float BGM_VOLUME = 0.105f;
     
  
 
@@ -101,7 +102,7 @@ public abstract class IGameManager : MonoBehaviour
                     "Audio/Narration/" + $"{SceneManager.GetActiveScene().name}", 0.5f);
             });
 
-        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", 0.115f);
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", BGM_VOLUME);
     }
 
     private void SetResolution(int width, int height, int targetFrame)

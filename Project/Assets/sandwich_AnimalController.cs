@@ -1,6 +1,8 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 public class sandwich_AnimalController : MonoBehaviour
 {
@@ -16,6 +18,7 @@ public class sandwich_AnimalController : MonoBehaviour
 
     private Transform[] _animals;
     private Animator[] _controllers;
+    private int _selectedAnimal;
 
     private void Awake()
     {
@@ -30,6 +33,18 @@ public class sandwich_AnimalController : MonoBehaviour
 
         Sandwitch_GameManager.onSandwichArrive -= OnSandwichArrive;
         Sandwitch_GameManager.onSandwichArrive += OnSandwichArrive;
+
+        Sandwitch_GameManager.onSandwichMakingRestart -= OnSandwichMakingRestart;
+        Sandwitch_GameManager.onSandwichMakingRestart += OnSandwichMakingRestart;
+
+
+        foreach (var animal in _animals)
+        {
+            animal.gameObject.SetActive(false);
+        }
+        _selectedAnimal = Random.Range(0, (int)Animal.Max);
+        _animals[_selectedAnimal].gameObject.SetActive(true);
+        
     }
 
     public static event Action onFinishEating;
@@ -44,7 +59,7 @@ public class sandwich_AnimalController : MonoBehaviour
         {
             foreach (var controller in _controllers) controller.SetBool(EAT, false);
             DOVirtual.Float(0, 0, 2, _ => { }).OnComplete(() => { onFinishEating?.Invoke(); });
-            DOVirtual.Float(0, 0, 10, _ => { }).OnComplete(() =>
+            DOVirtual.Float(0, 0, 6, _ => { }).OnComplete(() =>
             {
 #if UNITY_EDITOR
 Debug.Log("ALL ANIM FINISHED... ROUND IS BEING READY AGAIN");
@@ -52,5 +67,16 @@ Debug.Log("ALL ANIM FINISHED... ROUND IS BEING READY AGAIN");
                 onAllFinishAnimOver?.Invoke();
             });
         });
+    }
+
+    private void OnSandwichMakingRestart()
+    {
+        foreach (var animal in _animals)
+        {
+            animal.gameObject.SetActive(false);
+        }
+        _selectedAnimal = Random.Range(0, (int)Animal.Max);
+        _animals[_selectedAnimal].gameObject.SetActive(true);
+
     }
 }
