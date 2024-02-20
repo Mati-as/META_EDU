@@ -40,7 +40,7 @@ public class Sandwitch_GameManager : IGameManager
     private Transform[] _selectableIngredientsOnSmallPlates;
     private int[] _currentSmallPlateLocationIndex;
     private Vector3[] _ingredientsDefaultScales;
-    private Vector3 _positionToReappear; // 새로운 재료 생성시 위치 참조
+    private Vector3 _previousShrinkingPoint; // 새로운 재료 생성시 위치 참조
     private Vector3[] _path;
     public Transform currentClickedIng;
     private readonly int INGREDIENT_COUNT = (int)Sandwich.Max;
@@ -153,18 +153,14 @@ public class Sandwitch_GameManager : IGameManager
 #endif
             return;
         }
-
-#if UNITY_EDITOR
-        Debug.Log("RaySynced");
-#endif
-
+        
         foreach (var hit in _raycastHits)
         {
           
 #if UNITY_EDITOR
             Debug.Log($"작은접시생성위치 갱신: 클릭오브젝트 이름: {hit.transform.gameObject.name}, " +
                       $"클릭오브젝트 위치: {hit.transform.position}" +
-                      $"갱신위치: {_positionToReappear}");
+                      $"갱신위치: {_previousShrinkingPoint}");
 #endif
             var selectedIndex = FindIndexByName(hit.transform.gameObject.name);
             if (selectedIndex == NO_VALID_OBJECT)
@@ -175,7 +171,6 @@ public class Sandwitch_GameManager : IGameManager
                 return;
             }
 
-            _positionToReappear = hit.transform.position;
             var randomChar = (char)Random.Range('A', 'F' + 1);
             Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,
                 0.3f);
@@ -250,7 +245,6 @@ public class Sandwitch_GameManager : IGameManager
 
                         if (_ingsPickinigOrder >= ING_MAX_COUNT)
                         {
-                            _isClickable = false;
                             onSandwichMakingFinish?.Invoke();
                         }
                         else
@@ -279,18 +273,7 @@ public class Sandwitch_GameManager : IGameManager
 
     private void PlayShrinkAnim(Transform transform)
     {
-        if (!_isClickable)
-        {
-#if UNITY_EDITOR
-            Debug.Log("Can't be clicked : isClickable is false");
-#endif
-            return;
-        }
-
-     
         
-        
-        if (transform.GetComponent<Collider>().enabled == false) return;
         transform.GetComponent<Collider>().enabled = false;
 
         transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBack)
@@ -301,6 +284,8 @@ public class Sandwitch_GameManager : IGameManager
                 DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
                 {
                     transform.gameObject.SetActive(false);
+                    
+                    _previousShrinkingPoint = transform.position;
                     ScaleUpSingleIng();
                     
                 });
@@ -522,7 +507,7 @@ public class Sandwitch_GameManager : IGameManager
             var path = SetPath(obj.transform.position);
             obj.transform.position = path[0];
 
-            pathSeq.Append(obj.DOPath(path, Random.Range(7f, 10.5f), PathType.CatmullRom)
+            pathSeq.Append(obj.DOPath(path, Random.Range(17f, 20.5f))
                 .SetLoops(10, LoopType.Yoyo)
                 .SetDelay(Random.Range(0.5f, 1.1f))
                 .SetEase((Ease)Random.Range(0, 10)));
@@ -531,14 +516,14 @@ public class Sandwitch_GameManager : IGameManager
 
             obj.GetComponent<Collider>().enabled = true;
 
-
+            _pathSeqMap.TryAdd(obj, pathSeq);
+            _shakeSeqMap.TryAdd(obj, shakeSeq);
         }
 
 
         foreach (var obj in _selectableIngredientsOnSmallPlates)
         {
-            _pathSeqMap.TryAdd(obj, pathSeq);
-            _shakeSeqMap.TryAdd(obj, shakeSeq);
+        
             shakeSeq.Play();
             pathSeq.Play();
         }
@@ -548,8 +533,8 @@ public class Sandwitch_GameManager : IGameManager
     private Vector3[] SetPath(Vector3 originPos)
     {
         var path = new Vector3[2];
-        path[0] = originPos + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
-        path[1] = originPos + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
+        path[0] = originPos + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
+        path[1] = originPos + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
         return path;
     }
 
@@ -668,10 +653,10 @@ public class Sandwitch_GameManager : IGameManager
                 !x.gameObject.gameObject.name.Contains("Bread")
                 && !x.gameObject.activeSelf);
 #if UNITY_EDITOR
-            Debug.Log($"재료표출:{obj.gameObject.name} 생성위치 : {_positionToReappear}");
+            Debug.Log($"재료표출:{obj.gameObject.name} 생성위치 : {_previousShrinkingPoint}");
 #endif
-
-            _shakeSeqMap[obj].Play();
+            AppendAnim(obj);
+           
         }
         
         else
@@ -685,14 +670,13 @@ public class Sandwitch_GameManager : IGameManager
             if (obj != null)
             {
 #if UNITY_EDITOR
-                Debug.Log($"빵 표출: 생성위치 : {_positionToReappear}");
+                Debug.Log($"빵 표출: 생성위치 : {_previousShrinkingPoint}");
 #endif
+                AppendAnim(obj);
             }
             else
             {
-#if UNITY_EDITOR
-                Debug.Log($"재료표출: 생성위치 : {_positionToReappear}");
-#endif
+
 
                 obj = _selectableIngredientsOnSmallPlates
                     .FirstOrDefault(x => !x.gameObject.activeSelf);
@@ -701,6 +685,7 @@ public class Sandwitch_GameManager : IGameManager
                     _isScalingUp = false;
                     return;
                 }
+                AppendAnim(obj);
             }
 
 
@@ -712,38 +697,58 @@ public class Sandwitch_GameManager : IGameManager
             _isScalingUp = false;
             return;
         }
-        _pathSeqMap[obj].Kill();
-        var path = SetPath(_positionToReappear);
-        obj.position = _positionToReappear;
+
+   
+      
+        
+   
+       
+
+    }
+
+    private void AppendAnim(Transform obj)
+    {
+        
+        if (_pathSeqMap[obj].IsActive())
+        {
+#if UNITY_EDITOR
+            Debug.Log($"이전트윈 킬!");
+#endif
+            _pathSeqMap[obj].Kill();
+        }
+
+        
         
         obj.localScale = Vector3.zero;
         obj.gameObject.SetActive(true);
+        
         obj.DOScale(_ingredientsDefaultScales[0], 2f)
             .OnStart(() =>
             {
-                obj.GetComponent<Collider>().enabled = true;
-
                 _shakeSeqMap[obj].Kill();
                 _shakeSeqMap[obj] = DOTween.Sequence();
                 _shakeSeqMap[obj].Append(
-                    _selectableIngredientsOnSmallPlates[0]
-                        .DOShakeRotation(1f, 3f, 1, 15));
+                    obj.DOShakeRotation(1f, 3f, 1, 15));
                 _shakeSeqMap[obj].Play();
-        
-        
                 
-                _pathSeqMap[obj] = DOTween.Sequence();
-           
                
-
-                _pathSeqMap[obj].Append(obj.DOPath(path, Random.Range(7f, 10.5f), PathType.CatmullRom)
+                obj.GetComponent<Collider>().enabled = true;
+                
+               
+                var newPath = new Vector3[2];
+                newPath[0] =  _previousShrinkingPoint + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
+                newPath[1] = _previousShrinkingPoint + new Vector3(Random.Range(-0.1f, 0.1f), 0, Random.Range(-0.1f, 0.1f));
+                obj.position = newPath[0];
+                _pathSeqMap[obj] = DOTween.Sequence();
+                _pathSeqMap[obj].
+                    Append(obj.DOPath(newPath, Random.Range(7f, 10.5f), PathType.CatmullRom)
                     .SetLoops(30, LoopType.Yoyo)
-                    .SetDelay(Random.Range(0.5f, 1.1f))
+                    .SetDelay(Random.Range(0.1f, 0.5f))       
                     .SetEase((Ease)Random.Range(0, 10)));
        
                 _pathSeqMap[obj].Play();
             })
-            .SetEase(Ease.InOutBounce).SetDelay(delay)
+            .SetEase(Ease.InOutBounce)
             .OnComplete(() =>
             {
 #if UNITY_EDITOR
@@ -751,8 +756,6 @@ public class Sandwitch_GameManager : IGameManager
 #endif
                 _isScalingUp = false;
             });
-        
-       
 
     }
 
