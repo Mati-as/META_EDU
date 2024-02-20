@@ -203,12 +203,7 @@ public class Sandwitch_GameManager : IGameManager
 
 
     // methods ------------------------------------------------------------------------
-
-    private void SetCurrentClickedIngPos(Transform ing)
-    {
-        // _currentClickedIngPosition = ing.position;
-    }
-
+    
     private void SetClickableAfterDelay(float delay)
     {
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() => { _isClickable = true; });
@@ -216,6 +211,8 @@ public class Sandwitch_GameManager : IGameManager
 
     private void DropBigIng(GameObject gameObj, float delay, float fallingDuration = 0.785f)
     {
+        if(_isRoundFinished) return;
+        
         var obj = Instantiate(gameObj, _thisSandwich.transform);
         DOVirtual.Float(0, 0, delay, _ => { })
             .OnComplete(() =>
@@ -245,6 +242,7 @@ public class Sandwitch_GameManager : IGameManager
 
                         if (_ingsPickinigOrder >= ING_MAX_COUNT)
                         {
+                           
                             onSandwichMakingFinish?.Invoke();
                         }
                         else
@@ -420,19 +418,30 @@ public class Sandwitch_GameManager : IGameManager
 
     // 첫번쨰는 무조건 빵이 포함되도록 섞기위한 불 연산자 입니다. 
 
+    private bool _isFirstRound;
+    private Transform[] _initialLocations;
     private void ShuffleIngredients()
     {
+        if (!_isFirstRound)
+        {
+            _initialLocations = new Transform[_selectableIngredientsOnSmallPlates.Length];
+            _initialLocations = _selectableIngredientsOnSmallPlates;
+            _isFirstRound = true;
+        }
+       
+        
         //첫번째에 빵을 반드시 포함하기위해 1부터 랜덤으로 구성합니다.
         for (var i = 1; i < _selectableIngredientsOnSmallPlates.Length; i++)
         {
-            var temp = _selectableIngredientsOnSmallPlates[i];
+            var temp = _initialLocations[i];
             var randomIndex = Random.Range(i, _selectableIngredientsOnSmallPlates.Length);
-            _selectableIngredientsOnSmallPlates[i] = _selectableIngredientsOnSmallPlates[randomIndex];
+            _selectableIngredientsOnSmallPlates[i] = _initialLocations[randomIndex];
             _selectableIngredientsOnSmallPlates[randomIndex] = temp;
         }
     }
 
-    private void ScaleAllIngs(float delay, bool sizeZero = false)
+   
+    private void ScaleAllIngs(float delay)
     {
         var count = 0;
         var indices = Enumerable.Range(0, _selectableIngredientsOnSmallPlates.Length).ToList();
@@ -440,22 +449,11 @@ public class Sandwitch_GameManager : IGameManager
         var shakeSeq = DOTween.Sequence();
         ShuffleIngredients();
 
-        if (sizeZero)
-        {
-            foreach (var obj in _selectableIngredientsOnSmallPlates)
-            {
-                obj.DOScale(Vector3.zero, 1.0f)
-                    .OnStart(() =>
-                    {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup");
-                    })
-                    .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
+     
+           
+        
 
-                ;
-            }
-        }
-
-        else
+  
         {
             for (var i = 0; i < _selectableIngredientsOnSmallPlates.Length; i++)
                 if (i < 5)
@@ -578,8 +576,29 @@ public class Sandwitch_GameManager : IGameManager
             "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0" + Random.Range(1, 5), 0.5f);
 
         PlayParticle(0.89f);
-        ScaleAllIngs(3f, true);
+
+        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+        {
+            ScaleDown();
+        });
+       
+      
+        
         SendSandwichToAnimal();
+    }
+
+    private void ScaleDown()
+    {
+        foreach (var obj in _selectableIngredientsOnSmallPlates)
+        {
+            obj.DOScale(Vector3.zero, 1.0f)
+                .OnStart(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup");
+                })
+                .SetEase(Ease.InOutBounce);
+            
+        }
     }
 
     private void PlayParticle(float delay)
@@ -775,7 +794,6 @@ public class Sandwitch_GameManager : IGameManager
                 Camera.main.transform.DOLookAt(defaultLookAt, 1.5f);
                 DOVirtual.Float(
                         FOV_FAR, 10, 1.5f, fov => { Camera.main.fieldOfView = fov; }).SetEase(Ease.InOutSine)
-                    .SetDelay(0.0f)
                     .OnComplete(() =>
                     {
                         Destroy(_thisSandwich);
@@ -787,16 +805,24 @@ public class Sandwitch_GameManager : IGameManager
 
     private void InitForNewRound()
     {
-        foreach (var seq in _shakeSeqs) seq.Kill();
-
-        foreach (var pathSeq in _pathSeqMap.Values.ToList()) pathSeq.Kill();
-
-
-        _thisSandwich = Instantiate(_sandWichOrigin);
-        _thisSandwich.transform.position = _sandWichOrigin.transform.position;
+        
         _isClickable = true;
         _ingsPickinigOrder = 1;
         _isRoundFinished = false;
+        
+        _thisSandwich = Instantiate(_sandWichOrigin);
+        _thisSandwich.transform.position = _sandWichOrigin.transform.position;
+     
+        foreach (var obj in _selectableIngredientsOnSmallPlates)
+        {
+
+            DOTween.KillAll();
+        }
+
+                
+#if UNITY_EDITOR
+        Debug.Log($"게임재시작");
+#endif
         ScaleAllIngs(RESTART_DELAY);
 
         onSandwichMakingRestart?.Invoke();
