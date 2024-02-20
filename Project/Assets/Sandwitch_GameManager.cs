@@ -577,7 +577,7 @@ public class Sandwitch_GameManager : IGameManager
 
         PlayParticle(0.89f);
 
-        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 1.5f1, _ => { }).OnComplete(() =>
         {
             ScaleDown();
         });
