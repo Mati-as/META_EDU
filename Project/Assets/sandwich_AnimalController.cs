@@ -53,9 +53,13 @@ public class sandwich_AnimalController : MonoBehaviour
     private void OnSandwichArrive()
     {
 
-        foreach (var controller in _controllers) controller.SetBool(EAT, true);
+        DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+        {
+            foreach (var controller in _controllers) controller.SetBool(EAT, true);
+        });
+     
 
-        DOVirtual.Float(0, 0, 5, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 7, _ => { }).OnComplete(() =>
         {
             foreach (var controller in _controllers) controller.SetBool(EAT, false);
             DOVirtual.Float(0, 0, 2, _ => { }).OnComplete(() => { onFinishEating?.Invoke(); });
