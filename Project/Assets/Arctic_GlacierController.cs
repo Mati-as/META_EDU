@@ -19,7 +19,7 @@ public class Arctic_GlacierController : MonoBehaviour
     private Vector3[] _path;
     private Vector3[] _distance;
 
-    private float _interval =1f;
+    private float _interval =38f;
     private void Awake()
     {
         Init();
@@ -27,6 +27,7 @@ public class Arctic_GlacierController : MonoBehaviour
 
     private void Start()
     {
+        
         MoveGlaciers();
     }
 
@@ -34,9 +35,13 @@ public class Arctic_GlacierController : MonoBehaviour
     private void Init()
     {
          CHILD_COUNT = transform.childCount;
-        _glaciers = new Transform[CHILD_COUNT];
+        
+         _glaciers = new Transform[CHILD_COUNT];
 
-        for (var i = 0; i <= CHILD_COUNT; ++i)
+#if UNITY_EDITOR
+        Debug.Log($"glaciers count : {CHILD_COUNT}");
+#endif
+        for (var i = 0; i < CHILD_COUNT; i++)
         {
             _glaciers[i] = transform.GetChild(i);
         }
@@ -44,18 +49,20 @@ public class Arctic_GlacierController : MonoBehaviour
         _path = new Vector3[(int)Path.Max];
 
         var defaultPos = transform.position;
-        _path[(int)Path.Start] = defaultPos + Vector3.forward * 40;
-        _path[(int)Path.Arrival] = defaultPos + Vector3.back * 10;
+        _path[(int)Path.Start] = defaultPos + Vector3.back * 30;
+        _path[(int)Path.Arrival] = GameObject.Find("GlacierArrivalPoint" +gameObject.name).transform.position;
     }
 
     private void MoveGlaciers()
     {
-        for (var i = 0; i <= CHILD_COUNT; ++i)
+        for (var i = 0; i < CHILD_COUNT; i++)
         {
-            _glaciers[i].DOMove(_path[(int)Path.Arrival], _interval + Random.Range(0.3f, 0.5f))
+            var i1 = i;
+            _glaciers[i]
+                .DOMove(_path[(int)Path.Arrival], (i+1) * _interval + Random.Range(0.3f, 0.5f))
                 .OnComplete(() =>
                 {
-                    _glaciers[i].position = _path[(int)Path.Arrival];
+                    _glaciers[i1].position = _path[(int)Path.Start];
                 });
         };
     }
