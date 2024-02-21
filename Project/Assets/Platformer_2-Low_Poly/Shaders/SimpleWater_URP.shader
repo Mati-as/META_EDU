@@ -7,7 +7,7 @@ Shader "SimpleWater"
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
 		_Pattern("Pattern", 2D) = "white" {}
-		_Color1("Color 1", Color) = (0.1137255,0.3960785,0.6,1)
+		_Color1("Color 1", Color) = (0.1137255,0.3960785,0.6,0.88)
 		_Color2("Color 2", Color) = (0.4453542,0.659279,0.6792453,1)
 		_ScaleDistortion("Scale Distortion", Float) = 2.4
 		_DistortionStr("Distortion Str", Float) = 0.24
