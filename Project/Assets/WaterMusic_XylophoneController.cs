@@ -55,7 +55,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
    
         _materialMap = new Dictionary<string, MeshRenderer>();
         _defaultColorMap = new Dictionary<MeshRenderer, Color>();
-     
+        _isTweening = new Dictionary<int, bool>();
         
         //클릭시 사운드가 나는 실로폰은 위치정보 + 사운드소스 참조가 필요하기 때문에, 따로 다른 배열로 구성합니다.
         _soundProducingXylophoneParent = GameObject.Find("SoundableObjects").transform;
@@ -68,6 +68,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         for (int i = 0; i < TOTAL_SOUNDABLE_COUNT; i++)
         {
             _soundProducingXylophones[i] = _soundProducingXylophoneParent.GetChild(i);
+            _isTweening.TryAdd(_soundProducingXylophones[i].GetInstanceID(), false);
         }
         
         
@@ -135,9 +136,23 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private void DoIntroMove()
     {
         for (var i = 0; i < TOTAL_SOUNDABLE_COUNT; ++i)
+        {
+            var i1 = i;
             _soundProducingXylophones[i].transform.DOMove(targetPos[i], 0.6f + _interval * i)
                 .SetEase(Ease.OutBack)
-                .SetDelay(1f+ _interval * i);
+                .SetDelay(1f+ _interval * i)
+                .OnStart(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                        "Audio/기본컨텐츠/WaterMusic/" + _soundProducingXylophones[i1].transform.gameObject.name, 0.35f);
+                });
+            
+       
+          
+        }
+           
+        
+        
     }
 
     
@@ -151,27 +166,41 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         //layermask 외부에서 설정 X.
         var layerMask = LayerMask.GetMask("Default");
 
+        
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
  
             DoClickMove(RayHitForXylophone.transform);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name);
         }
 
      
 
     }
 
-
+    private Dictionary<int, bool> _isTweening;
     private void DoClickMove(Transform trans)
     {
 #if UNITY_EDITOR
         Debug.Log("Clicked");
 #endif
 
+        if (_isTweening[trans.GetInstanceID()]) return;
+
+        trans.DOShakeRotation(1f, 1f);
+        
         var defaultPos = trans.position;
-        trans.DOMove(trans.position+Vector3.down, 1f).SetEase(Ease.InOutBack)
-            .OnComplete(() => { trans.DOMove(defaultPos, 0.3f);});
+        trans.DOMove(trans.position+ Vector3.down * 0.8f, 1f).SetEase(Ease.InOutBack)
+            .OnStart(() =>
+            {
+                _isTweening[trans.GetInstanceID()] = true;
+            })
+            .OnComplete(() =>
+            {
+                _isTweening[trans.GetInstanceID()] = false;
+                trans.DOMove(defaultPos, 0.3f);
+            });
     }
 
 

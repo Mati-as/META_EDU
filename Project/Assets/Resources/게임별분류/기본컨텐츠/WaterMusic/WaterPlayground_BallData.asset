@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c47e9a34625324bbda5c324e05c3e2, type: 3}
+  m_Name: WaterPlayground_BallData
+  m_EditorClassIdentifier: 
+  sizeRandomInterval: 0.05
+  ballSizes:
+  - 3
+  - 6
+  - 7
+  colorDef:
+  - {r: 1, g: 0.56078434, b: 0.83137256, a: 1}
+  - {r: 1, g: 0.92156863, b: 0, a: 1}
+  - {r: 0.5882353, g: 1, b: 0.95686275, a: 1}
+  offset: 3
+  depth: 7
+  durationIntoHole: 2
+  durationSpawnerToGround: 5
+  volume: 1
+  audioSize: 2
+  departure: {x: -100, y: 0, z: 0}
+  arrival: {x: 0.5, y: 100, z: 0}
+  respawnPower: 20
+  respawnWaitTime: 3.5
