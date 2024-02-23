@@ -15,20 +15,22 @@ public class WaterPlayground_GameManager : IGameManager
 
     public float forceAmount;
     public float upOffset;
-
+   
+    
     public Vector3 particleUpOffset;
     protected override void Init()
     {
       base.Init();
       SetPool(ref particlePool);
+      BGM_VOLUME = 0.85f;
      
     }
     
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-        
-        
+
+     
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {

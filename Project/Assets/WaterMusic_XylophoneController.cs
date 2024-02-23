@@ -37,6 +37,8 @@ public class WaterMusic_XylophoneController : MonoBehaviour
    
     private Dictionary<int, string> noteSemitones;
     private Dictionary<string, MeshRenderer> _materialMap;
+
+    private Dictionary<int, Quaternion> _defaultRotationMap;
     //디폴트로 돌아가기 위한 자료사전
     private Dictionary<MeshRenderer, Color> _defaultColorMap;
     //바뀔 컬러 캐싱용 
@@ -56,6 +58,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         _materialMap = new Dictionary<string, MeshRenderer>();
         _defaultColorMap = new Dictionary<MeshRenderer, Color>();
         _isTweening = new Dictionary<int, bool>();
+        _defaultRotationMap = new Dictionary<int, Quaternion>();
         
         //클릭시 사운드가 나는 실로폰은 위치정보 + 사운드소스 참조가 필요하기 때문에, 따로 다른 배열로 구성합니다.
         _soundProducingXylophoneParent = GameObject.Find("SoundableObjects").transform;
@@ -68,15 +71,14 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         for (int i = 0; i < TOTAL_SOUNDABLE_COUNT; i++)
         {
             _soundProducingXylophones[i] = _soundProducingXylophoneParent.GetChild(i);
-            _isTweening.TryAdd(_soundProducingXylophones[i].GetInstanceID(), false);
+            var instanceID = _soundProducingXylophones[i].GetInstanceID();
+            _isTweening.TryAdd(instanceID, false);
+            _defaultRotationMap.TryAdd(instanceID, _soundProducingXylophones[i].rotation);
         }
         
         
         
         _xylophoneMeshRenderers = new MeshRenderer[SOUND_PRODUCING_CHILD_COUNT];
-        
-    
-
         _gameManager = GameObject.FindWithTag("GameManager").GetComponent<WaterMusic_GameManager>();
 
     }
@@ -85,9 +87,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private void Start()
     {
         if (!_isInit) Init();
-
-
-
+        
         
     }
 
@@ -117,8 +117,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             {
                 x.transform.position += defaultOffset;
             }
-
-    
+       
         count = 0;
 
 
@@ -170,9 +169,20 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
- 
-            DoClickMove(RayHitForXylophone.transform);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name);
+
+            var random = Random.Range(0, 100);
+            if(random > 20)
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+                
+                DoClickMove(RayHitForXylophone.transform);
+            }
+            else
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.5f);
+                DoClickMoveDeeper(RayHitForXylophone.transform);
+            }
+            
         }
 
      
@@ -182,11 +192,14 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private Dictionary<int, bool> _isTweening;
     private void DoClickMove(Transform trans)
     {
+
+        var currentID = trans.GetInstanceID();
+        
 #if UNITY_EDITOR
         Debug.Log("Clicked");
 #endif
 
-        if (_isTweening[trans.GetInstanceID()]) return;
+        if (_isTweening[currentID]) return;
 
         trans.DOShakeRotation(1f, 1f);
         
@@ -199,6 +212,31 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             .OnComplete(() =>
             {
                 _isTweening[trans.GetInstanceID()] = false;
+                trans.DOMove(defaultPos, 0.3f);
+            });
+    }
+
+    private void DoClickMoveDeeper(Transform trans)
+    {
+#if UNITY_EDITOR
+        Debug.Log("Clicked");
+#endif
+        var currentID = trans.GetInstanceID();
+        if (_isTweening[currentID]) return;
+
+        trans.DORotateQuaternion(_defaultRotationMap[currentID]*Quaternion.Euler(40, 0, 0),  1f);
+        
+        
+        var defaultPos = trans.position;
+        trans.DOMove(trans.position+ Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
+            .OnStart(() =>
+            {
+                _isTweening[currentID] = true;
+            })
+            .OnComplete(() =>
+            {
+                trans.DORotateQuaternion(_defaultRotationMap[currentID], 1f);
+                _isTweening[currentID] = false;
                 trans.DOMove(defaultPos, 0.3f);
             });
     }

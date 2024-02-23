@@ -44,7 +44,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     public Vector3 triggerPosition { get; private set; }
     private float _veggiePositionOffset =0.15f;
     private bool _isRespawning;
-    
+    private int currentActivePsCount;
    
 
     private void Start()
@@ -68,9 +68,17 @@ public class WaterPlayground_BallController : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
+      
+       
+
         
         if (other.transform.gameObject.name == "Hole")
         {
+            
+            var randomChar = (char)Random.Range('A', 'C' + 1);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hole" + randomChar,0.5f);
+            
+            
              _dolphinController.currentBallInTheHoleColor = _color;
             
             // 중복클릭방지
@@ -100,20 +108,8 @@ public class WaterPlayground_BallController : MonoBehaviour
                 });
         }
 
-        else if (other.transform.gameObject.name == "Net" && !_isRespawning)
-
-        {
-            _isRespawning = true;
-            //audio
-            
-            transform.DOScale(0, 1.5f).SetEase(Ease.InBounce).OnComplete(() =>
-            {
-                
-                gameObject.SetActive(false);
-                DOVirtual.Float(0, 1, ballInfo.respawnWaitTime, value => value++)
-                    .OnComplete(() => { Respawn(); });
-            });
-        }
+       
+       
      
         
     }
@@ -122,21 +118,32 @@ public class WaterPlayground_BallController : MonoBehaviour
     private bool _isParticlePlaying;
     private void OnCollisionEnter(Collision other)
     {
-   
+        
+      
         if (other.transform.gameObject.name == "Obstacle")
         {
             
 
             foreach (ContactPoint contact in other.contacts)
             {
-                
-             
-                PlayParticle(contact.point +Vector3.up);
+                PlayParticle(contact.point +Vector3.up *1.5f);
                 return;
             }
-            
                
         }
+        
+        var velproportionalVolume = 0.008f *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
+        
+#if UNITY_EDITOR
+Debug.Log($"rb.vel: x: {_rb.velocity.x} y: {_rb.velocity.y} :{_rb.velocity.z}  velvolume :{velproportionalVolume}");
+#endif
+
+        if (velproportionalVolume > 0.25f)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
+                velproportionalVolume );
+        }
+     
     }
 
   
@@ -187,9 +194,6 @@ public class WaterPlayground_BallController : MonoBehaviour
     private int _currentPosition;
     private void Respawn()
     {
-#if UNITY_EDITOR
-//        Debug.Log("Ball is Respawned");
-#endif
 
     
         
@@ -236,7 +240,9 @@ public class WaterPlayground_BallController : MonoBehaviour
     {
         if (particlePool.Count <= 0) return;
         if (_isParticlePlaying) return;
-
+        if (currentActivePsCount > 5) return;
+       
+        currentActivePsCount++;
         
         var randomChar = (char)Random.Range('A', 'C' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hit" + randomChar,0.5f);
@@ -256,6 +262,7 @@ public class WaterPlayground_BallController : MonoBehaviour
                 });
                 
                 ps.gameObject.SetActive(false);
+                currentActivePsCount--;
                 particlePool.Enqueue(ps);
             });
         

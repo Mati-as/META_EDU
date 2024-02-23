@@ -12,7 +12,7 @@ public abstract class IGameManager : MonoBehaviour
     public static event Action On_GmRay_Synced;
     private readonly int TARGET_FRAME = 30;
     
-    protected readonly float BGM_VOLUME = 0.105f;
+    protected  float BGM_VOLUME = 0.105f;
     
  
 

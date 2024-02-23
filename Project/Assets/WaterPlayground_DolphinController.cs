@@ -147,12 +147,7 @@ Debug.Log("idle path");
         Debug.Log("Ball Dolphin Anim");
 #endif
 
-   
-
         
-
-
-       
 
         _seq = DOTween.Sequence();
 
@@ -163,6 +158,16 @@ Debug.Log("idle path");
         _seq.Append(transform.DOScale(_defaultSize, 0.55f)
             .OnStart(() =>
             {
+
+                if (gameObject.name != "IdleDolphin")
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinA" );
+                
+                    var randomChar = (char)Random.Range('A', 'B' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinLaugh" + randomChar,0.5f);
+                }
+           
+              
                 transform.DOLookAt(path[(int)PathOrder.Mid], 0.05f);
                 transform.DOPath(path, duration, PathType.CatmullRom)
                     .SetEase(Ease.InOutSine)
@@ -171,6 +176,9 @@ Debug.Log("idle path");
 #if UNITY_EDITOR
                         Debug.Log($"pathStart---------------------Name: {(PathName)_currentPathIndex}");
 #endif
+                        
+                      
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinB" ,1.0f);
                         DOVirtual.Float(0, 0, 1f, _ => { })
                             .OnComplete(() => { transform.DOLookAt(path[(int)PathOrder.Arrival], 1.45f); });
                     })
