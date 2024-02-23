@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WaterPlayground_GameManager : IGameManager
 {
@@ -15,10 +16,12 @@ public class WaterPlayground_GameManager : IGameManager
     public float forceAmount;
     public float upOffset;
 
+    public Vector3 particleUpOffset;
     protected override void Init()
     {
       base.Init();
       SetPool(ref particlePool);
+     
     }
     
     protected override void OnRaySynced()
@@ -29,10 +32,7 @@ public class WaterPlayground_GameManager : IGameManager
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {
-            if(hit.transform.gameObject.name.Contains("water"))
-            {
-                PlayParticle(hit.point);
-            }
+            
             
             Rigidbody rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
 
@@ -42,12 +42,24 @@ public class WaterPlayground_GameManager : IGameManager
               
                 Vector3 forceDirection =  rb.transform.position - hit.point + Vector3.up*upOffset;
                 
+                var randomChar = (char)Random.Range('A', 'D' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Click" + randomChar,0.5f);
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
             }
 
             
         }
         
+        //Paricle
+        foreach (var hit in _hits)
+        {
+            if(hit.transform.gameObject.name.Contains("WaterCollider"))
+            {
+                PlayParticle(hit.point + particleUpOffset);//offset
+                return;
+            }
+        }
+     
     }
     
     protected virtual void SetPool(ref Queue<ParticleSystem> psQueue)

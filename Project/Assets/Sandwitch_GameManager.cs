@@ -310,7 +310,7 @@ public class Sandwitch_GameManager : IGameManager
     {
         Debug.Log("UI Init");
         var uiInstance =
-            Resources.Load<GameObject>("Prefab/UI/" + SceneManager.GetActiveScene().name.Substring(6) + "_UI_Scene");
+            Resources.Load<GameObject>("Common/Prefab/UI/Sandwich_UI_Scene");
         var root = GameObject.Find("@Root");
 
         if (s_UIManager != null)
