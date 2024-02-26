@@ -173,13 +173,13 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             var random = Random.Range(0, 100);
             if(random > 20)
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+                
                 
                 DoClickMove(RayHitForXylophone.transform);
             }
             else
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.5f);
+                
                 DoClickMoveDeeper(RayHitForXylophone.transform);
             }
             
@@ -192,22 +192,22 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private Dictionary<int, bool> _isTweening;
     private void DoClickMove(Transform trans)
     {
-
+    
         var currentID = trans.GetInstanceID();
-        
+        if (_isTweening[currentID]) return;
+        _isTweening[trans.GetInstanceID()] = true;
 #if UNITY_EDITOR
         Debug.Log("Clicked");
 #endif
-
-        if (_isTweening[currentID]) return;
-
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+   
         trans.DOShakeRotation(1f, 1f);
         
         var defaultPos = trans.position;
         trans.DOMove(trans.position+ Vector3.down * 0.8f, 1f).SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                _isTweening[trans.GetInstanceID()] = true;
+                
             })
             .OnComplete(() =>
             {
@@ -223,15 +223,16 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 #endif
         var currentID = trans.GetInstanceID();
         if (_isTweening[currentID]) return;
-
+        _isTweening[currentID] = true;
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
         trans.DORotateQuaternion(_defaultRotationMap[currentID]*Quaternion.Euler(40, 0, 0),  1f);
-        
         
         var defaultPos = trans.position;
         trans.DOMove(trans.position+ Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                _isTweening[currentID] = true;
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/Deeper",
+                    0.5f);
             })
             .OnComplete(() =>
             {
