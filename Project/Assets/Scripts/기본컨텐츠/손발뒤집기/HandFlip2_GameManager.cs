@@ -55,7 +55,7 @@ public class HandFlip2_GameManager : IGameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private readonly float TIME_LIMIT = 15f;
+    private readonly float TIME_LIMIT = 60f;
 
     private int _colorACount;
     private int _colorBCount;
@@ -76,9 +76,15 @@ public class HandFlip2_GameManager : IGameManager
         if (!isStartButtonClicked) return;
         if (!_UIManager.isStart) return;
         
-        _elapsed += Time.deltaTime *0.9f;
+      
         _remainTime = TIME_LIMIT - _elapsed;
-        _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초";
+        _elapsed += Time.deltaTime *0.9f;
+
+   
+    
+            _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초";
+        
+     
         
         
 
@@ -242,7 +248,8 @@ public class HandFlip2_GameManager : IGameManager
         _childMeshRendererMap = new Dictionary<int, MeshRenderer>();
         _rotateVector = new Vector3(180, 0, 0);
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
-
+        _tmp.text = string.Empty;
+        
         _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<HandFlip2_UIManager>();
 
 
