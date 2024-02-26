@@ -165,7 +165,17 @@ public class EasternArt_GameManager : IGameManager
                                 {
                                     DOVirtual.Float(0, 0, 1f, val => val++).OnComplete(() =>
                                     {
+                                        //맨처음에 호랑이가 커지는 애니메이션을 울움소리 미동반, 애니메이션 빠르게 재생
                                         mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                                        DOVirtual.Float(0, 0, 1.5f, _ =>
+                                        {
+                                            mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.5f;
+                                        }).OnComplete(() =>
+                                        {
+                                            //초반에 Idle상태로 만들기위한 불설정, PlayMainTigerAnimation에는 영향없음
+                                            mainTigerAnimator.SetBool(LEFT_IDLE, true);
+                                            mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                                        });
                                         PlayMainTigerAnimation();
                                     });
                                 });
@@ -182,13 +192,12 @@ public class EasternArt_GameManager : IGameManager
         if(_isMainTigerAnimPlaying) return;
         _isMainTigerAnimPlaying = true;
         
-        
         //1. start에서 Idle 애니메이션 재생상태..
         mainTigerSequence = DOTween.Sequence();
 
         //2. animationInterval 종료 후 왼쪽바라보기
         mainTigerSequence
-            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
+            .Append(DOVirtual.Float(0, 0, animationInterval -3f, val => val++)
                 .OnStart(() =>
                 {
                     //IDLE
@@ -218,6 +227,7 @@ public class EasternArt_GameManager : IGameManager
                     _pollingSequence.Append(DOVirtual.Float(0, 1, growlingDuration, _ =>
                     {
                         CheckAndPlayAudio();
+                        mainTigerAnimator.speed = _defaultAnimatorSpeed * 1.5f;
                     }));
                     
                     mainTigerAnimator.SetBool(LEFT_GROWLING, true);
@@ -227,6 +237,7 @@ public class EasternArt_GameManager : IGameManager
 #if UNITY_EDITOR
                     Debug.Log($"파라미터 전부 초기화: {growlingDuration}");
 #endif
+                    mainTigerAnimator.speed = _defaultAnimatorSpeed;
                     InitializeAnimParams();
                 }))
 
@@ -289,7 +300,7 @@ public class EasternArt_GameManager : IGameManager
             stateInfo = mainTigerAnimator.GetCurrentAnimatorStateInfo(0); // 0은 base layer를 의미
                        
      
-        if (stateInfo.normalizedTime % 1 < 0.05f)
+        if (stateInfo.normalizedTime % 1 < 0.1f &&stateInfo.normalizedTime % 1 > 0.05f)
         {
                             
        

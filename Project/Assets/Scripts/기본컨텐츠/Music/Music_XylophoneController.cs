@@ -250,9 +250,17 @@ public class Music_XylophoneController : MonoBehaviour
     private RaycastHit RayForXylophone;
     private Ray _ray;
 
+    private bool _isPianoAutomaticallyPlaying;
+    public bool isBubbleAboveXyl { get; set; }
     private void OnClicked()
     {
-   
+
+        if (isBubbleAboveXyl)
+        {
+            Debug.Log("bubble is on the xyl");
+            return;
+        }
+        if (_isPianoAutomaticallyPlaying) return;
 
         //layermask 외부에서 설정 X.
         var layerMask = LayerMask.GetMask("Default");
@@ -376,6 +384,7 @@ public class Music_XylophoneController : MonoBehaviour
 
     private IEnumerator PlayAutomatically(bool isIncrease)
     {
+        _isPianoAutomaticallyPlaying = true;
         _playCurrentTime = 0;
         
         //처음 시작에만 짧은 Interval로 동작하고 이후에는 아래처럼 랜덤으로 동작
@@ -404,5 +413,11 @@ Debug.Log($"오디오 Length{_xylophoneAudioSources.Length}");
 
             yield return xylophoneInerval;
         }
+
+        DOVirtual.Float(0, 0, 1.0f, _ => { }).OnComplete(() =>
+        {
+            _isPianoAutomaticallyPlaying = false;
+        });
+
     }
 }

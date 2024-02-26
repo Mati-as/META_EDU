@@ -9,6 +9,7 @@ public class Music_BubbleController : MonoBehaviour
 {
     [Header("Reference")] [SerializeField] private Music_GameManager _gameManager;
 
+    private Music_XylophoneController _xylController;
     public float randomTime;
     private float _currentTime;
 
@@ -85,7 +86,7 @@ public class Music_BubbleController : MonoBehaviour
     private void Start()
     {
         Init();
-
+        _xylController = GameObject.Find("Xylophones").GetComponent<Music_XylophoneController>();
         StartCoroutine(PlayParticleByTurns());
     }
 
@@ -287,9 +288,17 @@ public class Music_BubbleController : MonoBehaviour
         // 가장 가까운 파티클을 제거합니다.
         if (closestParticleSystem != null && closestParticleIndex != -1 && closestDistance < clickRadius)
         {
+           
             var particles = new ParticleSystem.Particle[closestParticleSystem.particleCount];
             closestParticleSystem.GetParticles(particles);
 
+            
+            _xylController.isBubbleAboveXyl = true;
+            DOVirtual.Float(0, 0, 0.2f, _ => { }).OnComplete(() =>
+            {
+                _xylController.isBubbleAboveXyl = false;
+            });
+          
             particles[closestParticleIndex].remainingLifetime = 0;
 
             PlayParticle(_clickEffectPoolSmall, particles[closestParticleIndex].position,
