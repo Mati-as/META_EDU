@@ -25,6 +25,7 @@ public class HandFlip2_UIManager : UI_PopUp
     {
         Ready,
         Start,
+        Stop,
         Blue_Win,
         Red_Win
     }
@@ -34,11 +35,13 @@ public class HandFlip2_UIManager : UI_PopUp
 
     private GameObject _ready;
     private GameObject _start;
+    private GameObject _stop;
     private GameObject _blueWin;
     private GameObject _redWin;
     
     private RectTransform _rectReady;
     private RectTransform _rectStart;
+    private RectTransform _rectStop;
     private RectTransform _rectBlueWin;
     private RectTransform _rectRedWin;
 
@@ -64,8 +67,12 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectBlueWin = _blueWin.GetComponent<RectTransform>();
         _rectBlueWin.localScale = Vector3.zero;
         _blueWin.SetActive(false);
+
+        _stop = GetObject((int)HandFlip_UI_Type.Stop);
+        _rectStop = _stop.GetComponent<RectTransform>();
+        _rectStop.localScale = Vector3.zero;
+        _stop.SetActive(false); 
         
-    
         _redWin = GetObject((int)HandFlip_UI_Type.Red_Win);
         _rectRedWin = _redWin.GetComponent<RectTransform>();
         _rectRedWin.localScale = Vector3.zero;
@@ -74,9 +81,14 @@ public class HandFlip2_UIManager : UI_PopUp
         UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
         
-        HandFlip2_GameManager.onRoundFinishedForUI -= PopUI;
-        HandFlip2_GameManager.onRoundFinishedForUI += PopUI;
-
+        HandFlip2_GameManager.onRoundFinishedForUI -= OnRoundFinish;
+        HandFlip2_GameManager.onRoundFinishedForUI += OnRoundFinish;
+        
+        
+           
+        HandFlip2_GameManager.onRoundFinished -= PopStopUI;
+        HandFlip2_GameManager.onRoundFinished += PopStopUI;
+        
         HandFlip2_GameManager.restart -= OnStart;
         HandFlip2_GameManager.restart += OnStart;
         return true;
@@ -102,8 +114,13 @@ public class HandFlip2_UIManager : UI_PopUp
 
         _start.gameObject.SetActive(true);
         _rectStart.localScale = Vector3.zero;
-        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).WaitForCompletion();
+        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).OnStart(
+            () =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
+            }).WaitForCompletion();
         isStart = true;
+       
         yield return DOVirtual.Float(1, 0, 0.6f, scale => { _rectStart.localScale = Vector3.one * scale; }).WaitForCompletion();
         
    
@@ -113,14 +130,25 @@ public class HandFlip2_UIManager : UI_PopUp
         onStartUIFinished?.Invoke();
     }
 
+    private void OnRoundFinish()
+    {
+        PopUI();
+    }
     private void PopUI()
     {
-        StartCoroutine(PlayWinnerUI());
+        StartCoroutine(PlayWinnerUICoroutine());
+    }
+    
+    private void PopStopUI()
+    {
+        StartCoroutine(PopUpStopUICoroutine());
     }
 
     private WaitForSeconds _wait;
+    private WaitForSeconds _waitForStop;
     private float _waitTIme= 4.5f;
-    private IEnumerator PlayWinnerUI()
+    
+    private IEnumerator PlayWinnerUICoroutine()
     {
         isStart = false;
         
@@ -131,16 +159,29 @@ public class HandFlip2_UIManager : UI_PopUp
         if (_gm.isATeamWin)
         {
             _redWin.gameObject.SetActive(true);
-            yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; })
+                .OnComplete(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/RedWin",0.8f);
+                })
+                .WaitForCompletion();
+          
             yield return _wait;
-            yield return DOVirtual.Float(1, 0, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return DOVirtual.Float(1, 0, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; })
+                .WaitForCompletion();
         }
         else
         {
             _blueWin.gameObject.SetActive(true);
-            yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; })
+                .OnComplete(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/BlueWin",0.8f);
+                }).WaitForCompletion();
+          
             yield return _wait;
-            yield return DOVirtual.Float(1, 0, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; }).WaitForCompletion();
+            yield return DOVirtual.Float(1, 0, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; })
+                .WaitForCompletion();
         }
         
 
@@ -148,7 +189,24 @@ public class HandFlip2_UIManager : UI_PopUp
         _blueWin.gameObject.SetActive(false);
         
     }
-    
+    private IEnumerator PopUpStopUICoroutine()
+    {
+       
+        if (_waitForStop == null)
+        {
+            _waitForStop = new WaitForSeconds(1f);
+        }
+        
+        _stop.gameObject.SetActive(true);
+        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
+            () =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
+            }).WaitForCompletion();
+        yield return _waitForStop;
+        yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();
+        
+    }
 
 }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using Random = UnityEngine.Random;
 
 public class HandFlip2_GameManager : IGameManager
@@ -45,7 +46,7 @@ public class HandFlip2_GameManager : IGameManager
     public Color ColorB {get; private set; }
 
     public static event Action onStart;
-    private static event Action onRoundFinished;
+    public static event Action onRoundFinished;
     public static event Action onRoundFinishedForUI;
     public static event Action restart;
     public static event Action roundInit;
@@ -54,7 +55,7 @@ public class HandFlip2_GameManager : IGameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private readonly float TIME_LIMIT = 35;
+    private readonly float TIME_LIMIT = 15f;
 
     private int _colorACount;
     private int _colorBCount;
@@ -62,8 +63,12 @@ public class HandFlip2_GameManager : IGameManager
 
     public void OnStart()
     {
+        
         onStart?.Invoke();
     }
+
+    private float _elapsedToCount;
+    private bool _isCountNarrationPlaying;
 
     private void Update()
     {
@@ -71,14 +76,36 @@ public class HandFlip2_GameManager : IGameManager
         if (!isStartButtonClicked) return;
         if (!_UIManager.isStart) return;
         
-        _elapsed += Time.deltaTime;
+        _elapsed += Time.deltaTime *0.9f;
         _remainTime = TIME_LIMIT - _elapsed;
         _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초";
+        
+        
+
+        if (_remainTime <= 6f && _remainTime >= 1)
+        {
+           
+            
+            if (!_isCountNarrationPlaying)
+            {
+                Managers.Sound.Play
+                    (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count"+$"{(int)_remainTime}",0.8f);
+                _isCountNarrationPlaying = true;
+                _elapsedToCount = 0;
+            }
+            
+            if (_elapsedToCount > 1f) _isCountNarrationPlaying = false;
+            _elapsedToCount += Time.deltaTime *0.9f;
+
+          
+        }
+        
         if (_remainTime < 0)
         {
             onRoundFinished?.Invoke();
             _tmp.text = $"";
             _isRoundFinished = true;
+           
         }
 
         if (!_UIManager.isStart) _remainTime = TIME_LIMIT;
@@ -118,7 +145,7 @@ public class HandFlip2_GameManager : IGameManager
 
     private void CheckWinner()
     {
-        _tmp.text = _colorACount > _colorBCount ? $"홍팀 이겼다!" : "청팀 이겼다!";
+        _tmp.text = _colorACount > _colorBCount ? $"빨강팀 이겼다!" : "파랑팀 이겼다!";
         isATeamWin = _colorACount > _colorBCount;
 
         StartCoroutine(Initialize());
@@ -131,6 +158,7 @@ public class HandFlip2_GameManager : IGameManager
 
         yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
         _tmp.text = "놀이를 다시 준비하고 있어요";
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
        
         _tmp.text = "";
@@ -183,6 +211,8 @@ public class HandFlip2_GameManager : IGameManager
         _currentRound++;
         _colorACount = 0;
         _colorBCount = 0;
+        _elapsedToCount = 0f;
+        _isCountNarrationPlaying = false;
     }
 
 
@@ -326,7 +356,7 @@ public class HandFlip2_GameManager : IGameManager
     {
         foreach (var print in _prints)
             print.printObj.transform
-                .DOScale(print.defaultSize, 0.5f)
+                .DOScale(print.defaultSize, 0.4f)
                 .OnStart(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
@@ -334,7 +364,7 @@ public class HandFlip2_GameManager : IGameManager
 
                 })
                 .SetEase(Ease.InBounce)
-                .SetDelay(Random.Range(2, 3.2f));
+                .SetDelay(Random.Range(1, 1.8f));
 
     }
 
@@ -459,4 +489,5 @@ public class Print
     public Vector3 defaultSize;
     public Sequence seq;
     public Color currentColor;
+
 }

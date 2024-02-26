@@ -29,6 +29,13 @@ public abstract class IGameManager : MonoBehaviour
         SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
         isInitialized = true;
+
+        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect,
+                "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
+        });
+       
     }
 
 
