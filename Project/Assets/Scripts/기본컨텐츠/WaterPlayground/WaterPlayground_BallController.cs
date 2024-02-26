@@ -131,7 +131,14 @@ public class WaterPlayground_BallController : MonoBehaviour
             }
                
         }
-        
+        if (other.transform.gameObject.name.Contains("Ball"))
+        {
+            
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
+                0.5f );
+               
+            
+        }
         var velproportionalVolume = 0.008f *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
         
 #if UNITY_EDITOR
@@ -143,6 +150,9 @@ Debug.Log($"rb.vel: x: {_rb.velocity.x} y: {_rb.velocity.y} :{_rb.velocity.z}  v
             Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
                 velproportionalVolume );
         }
+        
+         
+ 
      
     }
 
