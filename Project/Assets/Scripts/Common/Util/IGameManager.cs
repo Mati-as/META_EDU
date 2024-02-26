@@ -30,7 +30,7 @@ public abstract class IGameManager : MonoBehaviour
         PlayNarration();
         isInitialized = true;
 
-        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
         {
             Managers.Sound.Play(SoundManager.Sound.Effect,
                 "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");

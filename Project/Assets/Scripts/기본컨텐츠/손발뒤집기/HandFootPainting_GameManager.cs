@@ -6,7 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 using Sequence = DG.Tweening.Sequence;
 
 public class HandFootPainting_GameManager : IGameManager
@@ -22,7 +22,7 @@ public class HandFootPainting_GameManager : IGameManager
     private float _poolSize = 50;
     private SpriteRenderer _bgSprite;
     private float _elapsed;
-    private float _timeLimit= 15f;
+    private float _timeLimit= 30f;
     private float _remainTime;
     private bool _isRoundReady;
     private TextMeshProUGUI _tmp;
@@ -42,6 +42,7 @@ public class HandFootPainting_GameManager : IGameManager
         SetPool();
         _bgSprite = GameObject.Find(gameVersion +"Mask").GetComponent<SpriteRenderer>();
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
+        _tmp.text = String.Empty;
         _outlineSpRenderer =GameObject.Find(gameVersion+"Outline").GetComponent<SpriteRenderer>();
         _glowDefaultColor = _outlineSpRenderer.material.color;
         
@@ -61,7 +62,8 @@ public class HandFootPainting_GameManager : IGameManager
         onRoundRestart -= OnRoundRestart;
         onRoundRestart += OnRoundRestart;
     }
-
+    private float _elapsedToCount;
+    private bool _isCountNarrationPlaying;
     private void Update()
     {
         if (!_isRoundReady) return;
@@ -72,24 +74,50 @@ public class HandFootPainting_GameManager : IGameManager
         _remainTime = _timeLimit - _elapsed;
         
 
+        if (_remainTime <= 6f && _remainTime >= 1)
+        {
+           
+            
+            if (!_isCountNarrationPlaying)
+            {
+                Managers.Sound.Play
+                    (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count"+$"{(int)_remainTime}",0.8f);
+                _isCountNarrationPlaying = true;
+                _elapsedToCount = 0;
+            }
+            
+            if (_elapsedToCount > 1f) _isCountNarrationPlaying = false;
+            _elapsedToCount += Time.deltaTime *0.9f;
+
+          
+        }
+        
+        
         if (_elapsed > _timeLimit)
         {
             _isRoundReady = false;
             onRoundFinished.Invoke();
+               _tmp.text = String.Empty;
          
         }
-
         else
         {
-            _tmp.text = $"남은 시간 : {(int)_remainTime}초";
+            _tmp.text = $"{(int)_remainTime}초";
         }
     }
+    
+    
 
     protected override void OnStartButtonClicked()
     {
         base.OnStartButtonClicked();
-      
-        _isRoundReady = true;
+
+        DOVirtual.Float(0, 0, 1.5f, _ => { })
+            .OnComplete(() =>
+            {
+                _isRoundReady = true;
+            });
+       
         
         _glowSeq = DOTween.Sequence();
         BlinkOutline();
@@ -116,10 +144,18 @@ public class HandFootPainting_GameManager : IGameManager
 
     private void OnRoundRestart()
     {
+        _elapsedToCount = 0f;
+        _isCountNarrationPlaying = false;
+        
         _remainTime = _timeLimit;
         _elapsed = 0;
         _bgSprite.DOFade(0, 2f)
-            .OnStart(() => { _tmp.text = "놀이 시작!"; }).OnComplete(() => { _isRoundReady = true; });
+            .OnStart(() =>
+            {
+               // Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
+
+                _tmp.text = "놀이 시작!";
+            }).OnComplete(() => { _isRoundReady = true; });
      
         _glowSeq = DOTween.Sequence();
         BlinkOutline();
@@ -132,11 +168,13 @@ public class HandFootPainting_GameManager : IGameManager
         _glowSeq.Kill();
         _glowSeq = DOTween.Sequence();
         _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
-        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish",0.8f);
+      
         //"그만" UI 팝업? 
         FadeInBg();
         DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
         {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
             _tmp.text = $"놀이를 다시 준비하고 있어요";
         });
         
@@ -164,6 +202,7 @@ Debug.Log("DoFade In");
     protected override void OnRaySynced()
     {
         if (!_isRoundReady) return;
+        if (!isStartButtonClicked) return;
         
         
         Physics.RaycastAll(GameManager_Ray);
@@ -171,7 +210,9 @@ Debug.Log("DoFade In");
         {
 
             GetFromPool(hit.point);
-            
+            var randomChar = (char)Random.Range('A', 'F' + 1);
+            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                0.3f);
         
             break;
         }
