@@ -49,7 +49,7 @@ public class RaySynchronizer : MonoBehaviour
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
         
-        if(gameManager==null) Debug.Assert(gameManager!=null);
+        Debug.Assert(gameManager!=null);
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
         // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");

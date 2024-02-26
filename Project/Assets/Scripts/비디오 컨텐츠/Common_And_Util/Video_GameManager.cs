@@ -15,7 +15,7 @@ public class Video_GameManager : IGameManager
    
     protected Vector3 _defaultPosition { get; private set; }
 
-    [Header("Video Settings")] [SerializeField] private float playbackSpeed;
+    [Header("Video Settings")] [SerializeField] private float playbackSpeed = 1;
 
 
 
@@ -38,7 +38,7 @@ public class Video_GameManager : IGameManager
         
         string mp4Path =
             Path.Combine(Application.streamingAssetsPath,
-            $"{SceneManager.GetActiveScene().name.Substring(prefix.Length)}.mp4");
+            $"{SceneManager.GetActiveScene().name}.mp4");
     
         if (File.Exists(mp4Path))
         {
@@ -49,7 +49,7 @@ public class Video_GameManager : IGameManager
             // MP4 파일이 없으면 MOV 파일 재생
             string movPath = 
                 Path.Combine(Application.streamingAssetsPath,
-                $"{SceneManager.GetActiveScene().name.Substring(prefix.Length)}.mov");
+                $"{SceneManager.GetActiveScene().name}.mov");
                 videoPlayer.url = movPath;
         }
         

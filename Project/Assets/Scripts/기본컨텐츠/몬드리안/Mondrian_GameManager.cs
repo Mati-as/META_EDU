@@ -69,7 +69,7 @@ public class Mondrian_GameManager : IGameManager
             GameObject.Find("Mondrian_FlowerController").GetComponent<Mondrian_FlowerController>();
 
         mondrianBigFlowerController =
-            GameObject.Find("Mondrian_Big_FlowerController").GetComponent<Mondrian_BigFlowerController>();
+            GameObject.Find("Mondrian_Big_Controller").GetComponent<Mondrian_BigFlowerController>();
 
         var particle = Resources.Load<GameObject>("게임별분류/기본컨텐츠/Mondrian/" + "CFX_explosionPs");
         _explosionParticle = Instantiate(particle).GetComponent<ParticleSystem>();
@@ -196,7 +196,7 @@ public class Mondrian_GameManager : IGameManager
         PlayExplosionAnimation();
     }
 
-    private readonly float _scaleInterval = 1.02f;
+    private readonly float _scaleInterval = 1.01f;
 
 
     private void RandomlyChangeColor(Ray ray)
@@ -338,7 +338,7 @@ public class Mondrian_GameManager : IGameManager
                         .OnComplete(() =>
                             {
                                 currentTransform
-                                    .DOScale(0f, 0.45f).SetEase(Ease.InOutSine).SetDelay(0.1f)
+                                    .DOScale(Vector3.zero, 0.45f).SetEase(Ease.InOutSine).SetDelay(0.1f)
                                     .OnStart(() =>
                                     {
                                         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Mondrian/OnExplosion", 0.4f);

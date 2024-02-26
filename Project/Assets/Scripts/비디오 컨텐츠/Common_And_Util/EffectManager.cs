@@ -322,7 +322,7 @@ public class EffectManager : MonoBehaviour
 #if UNITY_EDITOR
 
 #endif
-        audioSource.Play();
+        audioSource.PlayOneShot(audioSource.clip);
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
 

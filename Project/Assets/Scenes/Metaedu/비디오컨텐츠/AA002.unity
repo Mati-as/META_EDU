@@ -93057,7 +93057,7 @@ Transform:
   - {fileID: 1495096645}
   - {fileID: 948485091}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: -0.972, y: 2.003, z: 0.196}
 --- !u!114 &1028587151
 MonoBehaviour:
@@ -93074,7 +93074,7 @@ MonoBehaviour:
   _particles: []
   usePsMainTime: 1
   returnWaitForSeconds: 0
-  poolSize: 0
+  poolSize: 5
   _mouseClickAction:
     m_Name: 
     m_Type: 0
@@ -93091,11 +93091,11 @@ MonoBehaviour:
   burstCount: 0
   useSubEmitter: 0
   subEmitLifetime: 0
-  audioSize: 5
+  audioSize: 10
   _burstAudioSize: 0
   isPlayAltogether: 0
   _effectClipA: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
-  volumeA: 0
+  volumeA: 0.2
   _effectClipB: {fileID: 0}
   volumeB: 0
   _effectClipC: {fileID: 0}
@@ -127355,7 +127355,7 @@ PrefabInstance:
     - target: {fileID: 8037110317373609005, guid: b00cc97f175c9984496faf0218f6907d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8037110317373609005, guid: b00cc97f175c9984496faf0218f6907d,
         type: 3}
@@ -168460,7 +168460,7 @@ RectTransform:
   - {fileID: 2125886901}
   - {fileID: 2829850560552954745}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -169153,7 +169153,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &6958638131641780569
 MeshFilter:
@@ -169366,10 +169366,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6958638131641780573}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d6b6abd74dae7442b85b86af43e1cf1, type: 3}
+  m_Script: {fileID: 11500000, guid: dcbe4ead8b856904aa132e6fc766b0c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playbackSpeed: 0.55
+  playbackSpeed: 1
 --- !u!222 &6977773212829605923
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -169390,87 +169390,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1368802333744336125}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7465382209269301392
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7465382209269301422}
-  - component: {fileID: 7465382209269301426}
-  m_Layer: 5
-  m_Name: Space_Effect_Maker (Planet)
-  m_TagString: GameManager
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &7465382209269301422
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7465382209269301392}
-  m_LocalRotation: {x: -0.008450109, y: 0.017489137, z: 0.0018555804, w: 0.9998096}
-  m_LocalPosition: {x: -31.897627, y: 3.8968208, z: 101.20349}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: -0.972, y: 2.003, z: 0.196}
---- !u!114 &7465382209269301426
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7465382209269301392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29ef64d6fd934504e80657d0830016af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _particles: []
-  usePsMainTime: 0
-  returnWaitForSeconds: 0
-  poolSize: 0
-  _mouseClickAction:
-    m_Name: Mouse Click
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: f712c760-9807-4476-a714-55fa0c06453d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  emitAmount: 1
-  isMultipleRandomClip: 0
-  useBurstMode: 0
-  burstEmitAmount: 0
-  burstCount: 0
-  useSubEmitter: 0
-  subEmitLifetime: 0
-  audioSize: 30
-  _burstAudioSize: 0
-  isPlayAltogether: 0
-  _effectClipA: {fileID: 0}
-  volumeA: 0
-  _effectClipB: {fileID: 0}
-  volumeB: 0
-  _effectClipC: {fileID: 0}
-  volumeC: 0
-  _effectClipD: {fileID: 0}
-  volumeD: 0
-  _effectClipE: {fileID: 0}
-  _subAudioClip: {fileID: 0}
-  volumeSub: 0
-  _burstClip: {fileID: 8300000, guid: 9731db023a62abe4d83d7daecce6d005, type: 3}
-  volumeBurst: 0
-  waitCount: 4
 --- !u!114 &7708619268736582622
 MonoBehaviour:
   m_ObjectHideFlags: 0
