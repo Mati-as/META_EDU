@@ -12,14 +12,9 @@ public class HandFootFlip_CollisionController : MonoBehaviour
     {
         _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFootFlip_GameManager>();
     }
-
-
     
-       
-
-
-        private void OnTriggerEnter(Collider other)
-        {
-            _gm.FlipAndChangeColor(other.transform);
-        }
+    private void OnTriggerEnter(Collider other)
+    {
+        _gm.FlipAndChangeColor(other.transform);
+    }
 }

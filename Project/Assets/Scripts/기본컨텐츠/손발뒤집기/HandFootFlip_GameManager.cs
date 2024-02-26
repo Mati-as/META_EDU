@@ -425,7 +425,7 @@ public class HandFootFlip_GameManager : IGameManager
     }
 
     private bool _isAnimalMoving;
-    private float _animalMoveDuration = 3.65f;
+    private float _animalMoveDuration = 6.0f;
     private void RayCasterMovePlay()
     {
         UnifyColor();
