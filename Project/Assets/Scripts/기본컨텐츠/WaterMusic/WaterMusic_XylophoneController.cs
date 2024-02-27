@@ -34,15 +34,14 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
     // Cache Audio Source
     //클릭시, gameObjecet.name(string)값에 대한 AudioSource를 플레이하기 위해 자료사전을 사용합니다. 
-   
-    private Dictionary<int, string> noteSemitones;
-    private Dictionary<string, MeshRenderer> _materialMap;
-
+    
+    private Dictionary<int, Material> materalMap;
+    
     private Dictionary<int, Quaternion> _defaultRotationMap;
     //디폴트로 돌아가기 위한 자료사전
-    private Dictionary<MeshRenderer, Color> _defaultColorMap;
-    //바뀔 컬러 캐싱용 
-
+    private Dictionary<int, Color> _defaultColorMap;
+    //바뀔 컬러 캐싱용
+    private Dictionary<int, Color> _colorChangeMap;
     private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Piano/";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
 
@@ -55,11 +54,11 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         allXylophones = GetComponentsInChildren<Transform>();
    
-        _materialMap = new Dictionary<string, MeshRenderer>();
-        _defaultColorMap = new Dictionary<MeshRenderer, Color>();
+        materalMap = new Dictionary<int, Material>();
+        _defaultColorMap = new Dictionary<int, Color>();
         _isTweening = new Dictionary<int, bool>();
         _defaultRotationMap = new Dictionary<int, Quaternion>();
-        
+        _colorChangeMap = new Dictionary<int, Color>();
         //클릭시 사운드가 나는 실로폰은 위치정보 + 사운드소스 참조가 필요하기 때문에, 따로 다른 배열로 구성합니다.
         _soundProducingXylophoneParent = GameObject.Find("SoundableObjects").transform;
       
@@ -74,9 +73,9 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             var instanceID = _soundProducingXylophones[i].GetInstanceID();
             _isTweening.TryAdd(instanceID, false);
             _defaultRotationMap.TryAdd(instanceID, _soundProducingXylophones[i].rotation);
+            _colorChangeMap.TryAdd(instanceID,colorsToChange[i]);
         }
-        
-        
+  
         
         _xylophoneMeshRenderers = new MeshRenderer[SOUND_PRODUCING_CHILD_COUNT];
         _gameManager = GameObject.FindWithTag("GameManager").GetComponent<WaterMusic_GameManager>();
@@ -108,6 +107,25 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         for (var i = 0; i < TOTAL_SOUNDABLE_COUNT; i++)
         {
             targetPos[i] = _soundProducingXylophones[i].transform.position;
+            var instanceID = _soundProducingXylophones[i].GetInstanceID();
+
+            MeshRenderer meshRenderer = null;
+            _soundProducingXylophones[i].TryGetComponent(out meshRenderer);
+            if (meshRenderer != null)
+            {
+                materalMap.TryAdd(instanceID,meshRenderer.material);
+                _defaultColorMap.TryAdd(instanceID, materalMap[instanceID].color);
+            }
+            
+            SkinnedMeshRenderer skinnedMeshRenderer = null;
+            _soundProducingXylophones[i].TryGetComponent(out skinnedMeshRenderer);
+            if (skinnedMeshRenderer != null)
+            {
+                materalMap.TryAdd(instanceID,skinnedMeshRenderer.material);
+                _defaultColorMap.TryAdd(instanceID, materalMap[instanceID].color);
+            }
+            
+           
         }
         var count = 0;
 
@@ -124,6 +142,25 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         _isInit = true;
     }
 
+    private Material ChangeColor(Transform transform, float duration = 0.5f)
+    {
+        var ID = transform.GetInstanceID();
+        var thisMaterial = new Material(materalMap[ID]);
+        
+        
+        thisMaterial.DOColor(_colorChangeMap[ID] * brightenIntensity, BASE_MAP, duration).OnComplete(() =>
+        {
+            thisMaterial.DOColor(_defaultColorMap[transform.GetInstanceID()],
+                BASE_MAP, duration);
+        });
+     
+#if UNITY_EDITOR
+        Debug.Log($"color map ");
+#endif
+
+
+        return thisMaterial;
+    }
     private readonly float _interval = 0.03f;
 
 
@@ -169,16 +206,47 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
-
+            MeshRenderer meshRenderer = null;
+            SkinnedMeshRenderer skinnedMeshRenderer = null;
             var random = Random.Range(0, 100);
             if(random > 20)
             {
+               
+                RayHitForXylophone.transform.TryGetComponent(out meshRenderer);
+                if (meshRenderer != null)
+                {
+                    meshRenderer.material = ChangeColor(RayHitForXylophone.transform);
+                    DoClickMove(RayHitForXylophone.transform);
+                }
                 
+                skinnedMeshRenderer = null;
+                RayHitForXylophone.transform.TryGetComponent(out skinnedMeshRenderer);
+                if (skinnedMeshRenderer != null)
+                {
+                    skinnedMeshRenderer.material = ChangeColor(RayHitForXylophone.transform);
+                    DoClickMove(RayHitForXylophone.transform);
+                }
                 
-                DoClickMove(RayHitForXylophone.transform);
+               
+               
             }
             else
             {
+               
+                   RayHitForXylophone.transform.TryGetComponent(out meshRenderer);
+                if (meshRenderer != null)
+                {
+                    meshRenderer.material = ChangeColor(RayHitForXylophone.transform);
+                    DoClickMove(RayHitForXylophone.transform);
+                }
+                
+                skinnedMeshRenderer = null;
+                RayHitForXylophone.transform.TryGetComponent(out skinnedMeshRenderer);
+                if (skinnedMeshRenderer != null)
+                {
+                    skinnedMeshRenderer.material = ChangeColor(RayHitForXylophone.transform);
+                    DoClickMove(RayHitForXylophone.transform);
+                }
                 
                 DoClickMoveDeeper(RayHitForXylophone.transform);
             }

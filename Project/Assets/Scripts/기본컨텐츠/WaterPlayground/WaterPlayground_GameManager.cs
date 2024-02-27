@@ -30,7 +30,8 @@ public class WaterPlayground_GameManager : IGameManager
     {
         base.OnRaySynced();
 
-     
+        if (!isStartButtonClicked) return;
+        
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {

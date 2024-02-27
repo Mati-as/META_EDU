@@ -123,8 +123,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     protected override void Init()
     {
         base.Init();
-    
-
+        
      
         DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {

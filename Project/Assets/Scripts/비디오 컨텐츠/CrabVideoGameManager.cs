@@ -86,7 +86,6 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         if (isInitialized) return;
         base.Init();
         
-        
         DOVirtual.Float(1, 0, 1.1f, speed =>
         {
             videoPlayer.playbackSpeed = speed;

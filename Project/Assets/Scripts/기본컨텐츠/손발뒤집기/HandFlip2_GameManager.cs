@@ -55,7 +55,7 @@ public class HandFlip2_GameManager : IGameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private readonly float TIME_LIMIT = 60f;
+    private readonly float TIME_LIMIT = 70f;
 
     private int _colorACount;
     private int _colorBCount;
@@ -65,6 +65,7 @@ public class HandFlip2_GameManager : IGameManager
     {
         
         onStart?.Invoke();
+        
     }
 
     private float _elapsedToCount;
@@ -82,7 +83,7 @@ public class HandFlip2_GameManager : IGameManager
 
    
     
-            _tmp.text = $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초";
+        _tmp.text = _remainTime > 60? $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초" : $"{(int)_remainTime % 60}초";
         
      
         
@@ -149,9 +150,28 @@ public class HandFlip2_GameManager : IGameManager
       
     }
 
+    private TextMeshProUGUI _red;
+    private TextMeshProUGUI _vs;
+    private TextMeshProUGUI _blue;
+    private void UpdateResultTMP(string red ="",string blue="",string vs ="vs")
+    {
+        _red.text = red;
+        _blue.text = blue;
+        _vs.text = vs;
+    }
+
+    private void GetResultTMPs()
+    {
+        _red = GameObject.Find("Red").GetComponent<TextMeshProUGUI>();
+        _red.text = string.Empty;
+        _blue = GameObject.Find("Blue").GetComponent<TextMeshProUGUI>();
+        _blue.text = string.Empty;
+        _vs = GameObject.Find("Vs").GetComponent<TextMeshProUGUI>();
+        _vs.text = string.Empty;
+    }
     private void CheckWinner()
     {
-        _tmp.text = _colorACount > _colorBCount ? $"빨강팀 이겼다!" : "파랑팀 이겼다!";
+        UpdateResultTMP(_colorACount.ToString(),_colorBCount.ToString());
         isATeamWin = _colorACount > _colorBCount;
 
         StartCoroutine(Initialize());
@@ -163,6 +183,7 @@ public class HandFlip2_GameManager : IGameManager
     {
 
         yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
+        UpdateResultTMP(String.Empty,String.Empty,String.Empty);
         _tmp.text = "놀이를 다시 준비하고 있어요";
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
@@ -249,7 +270,7 @@ public class HandFlip2_GameManager : IGameManager
         _rotateVector = new Vector3(180, 0, 0);
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
-        
+        GetResultTMPs();
         _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<HandFlip2_UIManager>();
 
 

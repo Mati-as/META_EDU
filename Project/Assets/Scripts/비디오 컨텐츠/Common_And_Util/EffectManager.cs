@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -106,7 +107,11 @@ public class EffectManager : MonoBehaviour
         if (!IGameManager.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
-        if (_gm.isStageClearUIOn) return;
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            if (_gm.isStageClearUIOn) return;
+        }
+     
         
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
@@ -131,10 +136,18 @@ public class EffectManager : MonoBehaviour
 
     protected virtual void Init()
     {
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+        }
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
-        _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+        }
+       
 
         if (isMultipleRandomClip) SetRandomClip();
     }

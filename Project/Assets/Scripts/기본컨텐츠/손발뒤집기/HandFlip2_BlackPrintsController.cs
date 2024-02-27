@@ -50,6 +50,10 @@ public class HandFlip2_BlackPrintsController : IGameManager
         base.Init();
         HandFlip2_GameManager.onStart -= OnStart;
         HandFlip2_GameManager.onStart += OnStart;
+
+        HandFlip2_GameManager.onRoundFinished -= DisappearOnRestart;
+        HandFlip2_GameManager.onRoundFinished += DisappearOnRestart;
+            
         
         HandFlip2_GameManager.roundInit -= RoundInit;
         HandFlip2_GameManager.roundInit += RoundInit;
@@ -243,6 +247,19 @@ Debug.Log("Black Print isn't currently Clickable!-------------------------------
 
         DOVirtual
             .Float(_defaultScale, 0, 1,
+                scale => { _blackPrints[(int)PrintType.Foot].localScale = Vector3.one * scale; });
+
+    }
+    
+    private void DisappearOnRestart()
+    {
+        
+        DOVirtual.Float(_blackPrints[(int)PrintType.Hand].localScale.x,0, 1,
+            scale => { _blackPrints[(int)PrintType.Hand].localScale = Vector3.one * scale; });
+
+
+        DOVirtual
+            .Float(_blackPrints[(int)PrintType.Hand].localScale.x, 0, 1,
                 scale => { _blackPrints[(int)PrintType.Foot].localScale = Vector3.one * scale; });
 
     }

@@ -19,6 +19,7 @@ public class Crab_UIManager : UI_PopUp
     enum CrabDialogue
     {
         Crab_SpeechBubble,
+        Crab_SpeechBubble_Flipped,
         Crab_Dialogue1,
         Crab_Dialogue2,
         Crab_Dialogue3,
@@ -35,6 +36,7 @@ public class Crab_UIManager : UI_PopUp
 
     private RectTransform[] _dialogues;
     private GameObject Crab_SpeechBubble;
+    private GameObject Crab_SpeechBubbleFlpped;
     private GameObject Crab_Dialogue1;
     private GameObject Crab_Dialogue2;
     private GameObject Crab_Dialogue3;
@@ -42,12 +44,15 @@ public class Crab_UIManager : UI_PopUp
     private GameObject Crab_Dialogue5;
     
     
+    
     private RectTransform _rectSpeechBubble;
+    private RectTransform _rectSpeechBubbleFlipped;
     private RectTransform _rectDialogue1;
     private RectTransform _rectDialogue2;
     private RectTransform _rectDialogue3;
     private RectTransform _rectDialogue4;
     private RectTransform _rectDialogue5;
+    private Vector3[] defaultScales;
 
     private float  _intervalBtwStartAndReady =1f;
     
@@ -61,13 +66,14 @@ public class Crab_UIManager : UI_PopUp
       
         _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
         _dialogues = new RectTransform[(int)CrabDialogue.Max];
-        
+        defaultScales = new Vector3[(int)CrabDialogue.Max];
         BindObject(typeof(CrabDialogue));
 
         
         Crab_SpeechBubble = GetObject((int)CrabDialogue.Crab_SpeechBubble);
         _rectSpeechBubble = Crab_SpeechBubble.GetComponent<RectTransform>();
         _SpeechBubbleDefaultScale = _rectSpeechBubble.localScale;
+        defaultScales[(int)CrabDialogue.Crab_SpeechBubble] = _rectSpeechBubble.localScale;
         _rectSpeechBubble.localScale = Vector3.zero;
         Crab_SpeechBubble.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_SpeechBubble] = _rectSpeechBubble;
@@ -75,34 +81,44 @@ public class Crab_UIManager : UI_PopUp
         
         Crab_Dialogue1 = GetObject((int)CrabDialogue.Crab_Dialogue1);
         _rectDialogue1 = Crab_Dialogue1.GetComponent<RectTransform>();
-        _defaultScale = _rectDialogue1.localScale;
+        defaultScales[(int)CrabDialogue.Crab_Dialogue1] = _rectDialogue1.localScale;
         _rectDialogue1.localScale = Vector3.zero;
         Crab_Dialogue1.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_Dialogue1] = _rectDialogue1;
         
         Crab_Dialogue2 = GetObject((int)CrabDialogue.Crab_Dialogue2);
         _rectDialogue2 =Crab_Dialogue2.GetComponent<RectTransform>();
+        defaultScales[(int)CrabDialogue.Crab_Dialogue2] = _rectDialogue2.localScale;
         _rectDialogue2.localScale = Vector3.zero;
         Crab_Dialogue2.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_Dialogue2] = _rectDialogue2;
         
         Crab_Dialogue3 = GetObject((int)CrabDialogue.Crab_Dialogue3);
         _rectDialogue3 = Crab_Dialogue3.GetComponent<RectTransform>();
+        defaultScales[(int)CrabDialogue.Crab_Dialogue3] = _rectDialogue3.localScale;
         _rectDialogue3.localScale = Vector3.zero;
         Crab_Dialogue3.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_Dialogue3] = _rectDialogue3;
         
         Crab_Dialogue4 = GetObject((int)CrabDialogue.Crab_Dialogue4);
         _rectDialogue4 = Crab_Dialogue4.GetComponent<RectTransform>();
+        defaultScales[(int)CrabDialogue.Crab_Dialogue4] = _rectDialogue4.localScale;
         _rectDialogue4.localScale = Vector3.zero;
         Crab_Dialogue4.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_Dialogue4] = _rectDialogue4;
         
         Crab_Dialogue5 = GetObject((int)CrabDialogue.Crab_Dialogue5);
         _rectDialogue5 = Crab_Dialogue5.GetComponent<RectTransform>();
+        defaultScales[(int)CrabDialogue.Crab_Dialogue5] = _rectDialogue5.localScale;
         _rectDialogue5.localScale = Vector3.zero;
         Crab_Dialogue5.SetActive(false);
         _dialogues[(int)CrabDialogue.Crab_Dialogue5] = _rectDialogue5;
+        
+        Crab_SpeechBubbleFlpped = GetObject((int)CrabDialogue.Crab_SpeechBubble_Flipped);
+        _rectSpeechBubbleFlipped = Crab_SpeechBubbleFlpped.GetComponent<RectTransform>();
+        _rectSpeechBubbleFlipped.localScale = Vector3.zero;
+        Crab_SpeechBubbleFlpped.SetActive(false);
+        _dialogues[(int)CrabDialogue.Crab_SpeechBubble_Flipped] = _rectSpeechBubbleFlipped;
 
 
         CrabVideoGameManager.onRewind -= OnCrabReWind;
@@ -129,12 +145,13 @@ public class Crab_UIManager : UI_PopUp
             .OnComplete(() =>
             {
                 Crab_SpeechBubble.SetActive(true);
+                Crab_SpeechBubbleFlpped.SetActive(true);
                 _rectSpeechBubble.DOScale(_SpeechBubbleDefaultScale, 0.75f).SetEase(Ease.OutBounce);
             
                 _currentUiIndex = (int)CrabDialogue.Crab_Dialogue1;
                 
                 _dialogues[_currentUiIndex].gameObject.SetActive(true);
-                _dialogues[_currentUiIndex].DOScale(_defaultScale, 1.2f).SetEase(Ease.OutBounce);
+                _dialogues[_currentUiIndex].DOScale(defaultScales[(int)CrabDialogue.Crab_Dialogue1], 1.2f).SetEase(Ease.OutBounce);
 
 
 
@@ -143,8 +160,6 @@ public class Crab_UIManager : UI_PopUp
                 {
                     _currentUiIndex++; 
                     _isNextUIPlayable = true;
-                  
-                    
                               
                 });
                
@@ -170,7 +185,6 @@ public class Crab_UIManager : UI_PopUp
         if (_currentUiIndex < (int)CrabDialogue.Max)
         {
             
-            
             _dialogues[_currentUiIndex - 1].DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBounce).OnComplete(() =>
             {
 #if UNITY_EDITOR
@@ -183,7 +197,21 @@ public class Crab_UIManager : UI_PopUp
                     {
                        
                         _dialogues[_currentUiIndex].gameObject.SetActive(true);
-                        _dialogues[_currentUiIndex].DOScale(_defaultScale, 0.35f).SetEase(Ease.OutBounce).OnComplete(() =>
+                        if (_currentUiIndex % 2 == (int)CrabDialogue.Crab_SpeechBubble)
+                        {
+                            _dialogues[(int)CrabDialogue.Crab_SpeechBubble].DOScale(_SpeechBubbleDefaultScale, 0.35f).SetEase(Ease.OutBounce);
+                            _dialogues[(int)CrabDialogue.Crab_SpeechBubble_Flipped].DOScale(Vector3.zero, 0.35f).SetEase(Ease.OutBounce);
+                            
+                        }
+
+                        if (_currentUiIndex % 2 == (int)CrabDialogue.Crab_SpeechBubble_Flipped)
+                        {
+                            _dialogues[(int)CrabDialogue.Crab_SpeechBubble_Flipped].DOScale(_SpeechBubbleDefaultScale, 0.35f).SetEase(Ease.OutBounce);
+                            _dialogues[(int)CrabDialogue.Crab_SpeechBubble].DOScale(Vector3.zero, 0.35f).SetEase(Ease.OutBounce);
+                        }
+                        
+                      
+                        _dialogues[_currentUiIndex].DOScale(defaultScales[_currentUiIndex], 0.35f).SetEase(Ease.OutBounce).OnComplete(() =>
                         {
                             DOVirtual.Float(0, 0, 5f, _ => { })
                                 .OnComplete(() =>
