@@ -194,6 +194,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     
     private RaycastHit RayHitForXylophone;
     private Ray _ray;
+    private bool _isMoveTweening;
 
     private void OnClicked()
     {
@@ -206,6 +207,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
+          
             MeshRenderer meshRenderer = null;
             SkinnedMeshRenderer skinnedMeshRenderer = null;
             var random = Random.Range(0, 100);
@@ -237,7 +239,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
                 if (meshRenderer != null)
                 {
                     meshRenderer.material = ChangeColor(RayHitForXylophone.transform);
-                    DoClickMove(RayHitForXylophone.transform);
+                    DoClickMoveDeeper(RayHitForXylophone.transform);
                 }
                 
                 skinnedMeshRenderer = null;
@@ -245,10 +247,10 @@ public class WaterMusic_XylophoneController : MonoBehaviour
                 if (skinnedMeshRenderer != null)
                 {
                     skinnedMeshRenderer.material = ChangeColor(RayHitForXylophone.transform);
-                    DoClickMove(RayHitForXylophone.transform);
+                    DoClickMoveDeeper(RayHitForXylophone.transform);
                 }
                 
-                DoClickMoveDeeper(RayHitForXylophone.transform);
+             
             }
             
         }
@@ -290,8 +292,11 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         Debug.Log("Clicked");
 #endif
         var currentID = trans.GetInstanceID();
+        
         if (_isTweening[currentID]) return;
         _isTweening[currentID] = true;
+        
+        
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
         trans.DORotateQuaternion(_defaultRotationMap[currentID]*Quaternion.Euler(40, 0, 0),  1f);
         
@@ -305,8 +310,15 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             .OnComplete(() =>
             {
                 trans.DORotateQuaternion(_defaultRotationMap[currentID], 1f);
-                _isTweening[currentID] = false;
-                trans.DOMove(defaultPos, 0.3f);
+               
+                trans.DOMove(defaultPos, 0.3f).OnComplete(() =>
+                {
+                    DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                    {
+                        _isTweening[currentID] = false;
+                    });
+                   
+                });
             });
     }
 

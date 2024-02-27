@@ -2563,7 +2563,7 @@ Shader "SimpleWater"
 				#endif
 				
 				#ifdef _WRITE_RENDERING_LAYERS
-			   //		uint renderingLayers = GetMeshRenderingLayer();
+					uint renderingLayers = GetMeshRenderingLayer();
 					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
 				#endif
 			}
