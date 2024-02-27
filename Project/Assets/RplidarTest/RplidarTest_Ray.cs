@@ -65,8 +65,12 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private float x;
     private float y;
+    private float pre_x;
+    private float pre_y;
 
-    private bool Check_1 = false;
+    private bool UI_Active = false;
+    private bool BALL_Active = true;
+    private bool SF_Active = false;
 
     private void Awake()
     {
@@ -101,9 +105,9 @@ public class RplidarTest_Ray : MonoBehaviour
         max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x + (Guideline.GetComponent<RectTransform>().rect.width) / 2;
         max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y + (Guideline.GetComponent<RectTransform>().rect.height) / 2;
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         TESTUI.SetActive(false);
-        #endif
+#endif
     }
 
 
@@ -126,24 +130,14 @@ public class RplidarTest_Ray : MonoBehaviour
     //1212 수정
     void Update()
     {
+        //하나는 UI ONOFF이고
+        //나머지 하나는 공 삭제 또는 공 있음이니깐
+        //나머지 하나는 계속 찍을지 아니면 변할 때마다 찍을지 결정하는 걸로
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Test_check = !Test_check;
         }
 
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            Check_1 = !Check_1;
-
-            if (Check_1)
-            {
-                TESTUI.SetActive(false);
-            }
-            else if (Check_1 == false)
-            {
-                TESTUI.SetActive(true);
-            }
-        }
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -160,28 +154,49 @@ public class RplidarTest_Ray : MonoBehaviour
 
                 if (i % 4 == 0)
                 {
-
-
-                    if (x != 0 || y != 0)
+                    if (min_x < x && x < max_x)
                     {
-                        if (min_x < x && x < max_x)
+                        if (min_y < y && y < max_y)
                         {
-                            if (min_y < y && y < max_y)
+                            //이전 지점이 다음 지점이랑 한 발자국 이상의 차이가 있으면 찍고 아니면 찍지 않음
+                            //30만큼의 차이가 나지 않으면 찍지 않음
+                           
+                            if (SF_Active)
                             {
-                                if (Test_check)
+                                if (pre_x - x < -30 || pre_x - x > 30)
+                                {
+                                    if (pre_y - y < -30 || pre_y - y > 30)
+                                    {
+                                        //필터 On
+                                        if (BALL_Active)
+                                        {
+                                            //데모용, 마우스
+                                            Instant_Ball(x, y);
+
+                                            pre_x = x;
+                                            pre_x = y;
+                                        }
+                                        else
+                                        {
+                                            //개발자용, 공
+                                            //Instant_Mouse(x, y);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //필터 off
+                                if (BALL_Active)
                                 {
                                     //데모용, 마우스
-                                    TESTUI.SetActive(false);
                                     Instant_Ball(x, y);
                                 }
                                 else
                                 {
                                     //개발자용, 공
-                                    TESTUI.SetActive(true);
-                                    Instant_Mouse(x, y);
+                                    //Instant_Mouse(x, y);
                                 }
-
-
                             }
                         }
                     }
@@ -217,5 +232,32 @@ public class RplidarTest_Ray : MonoBehaviour
         m_thread?.Abort();
 
         m_onscan = false;
+    }
+
+    public bool UI_Active_ONOFF()
+    {
+        UI_Active = !UI_Active;
+
+        if (UI_Active)
+        {
+            TESTUI.SetActive(true);
+        }
+        else if (UI_Active == false)
+        {
+            TESTUI.SetActive(false);
+        }
+        return UI_Active;
+    }
+    public bool Ball_Active_ONOFF()
+    {
+        BALL_Active = !BALL_Active;
+
+        return BALL_Active;
+    }
+    public bool SF_Active_ONOFF()
+    {
+        SF_Active = !SF_Active;
+
+        return SF_Active;
     }
 }

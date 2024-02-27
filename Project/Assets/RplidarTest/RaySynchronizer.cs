@@ -90,7 +90,6 @@ public class RaySynchronizer : MonoBehaviour
     
     public void Temp_1203()
     {
-        Debug.Log("Temp_1230");
         ShootRay();
 
         //GameManager의 RayCast를 발생 
