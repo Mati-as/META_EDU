@@ -16,8 +16,9 @@ public class RplidarTest_Ray : MonoBehaviour
     private RectTransform Img_Rect_transform;
 
     //=====0714
-    public GameObject BALLPrefab; //spherePrefab을 받을 변수 
-    public GameObject MOUSEPrefab; //spherePrefab을 받을 변수 
+    public GameObject BALLPrefab; 
+    public GameObject MOUSEPrefab;
+    public GameObject FPPrefab; 
 
     public bool m_onscan = false;
     private Thread m_thread;
@@ -149,8 +150,8 @@ public class RplidarTest_Ray : MonoBehaviour
             {
                 //센서 데이터 data[i].theta, distant
                 //1. 화면과 센서를 일치화 시키기 위해서 theta를 마이너스 곱해줌, 추가로 회전 시켜주기 위해 Sensor_rotation 추가했고 위에서 아래 방향으로 내려다 보는것 기준으 90도 입력하면 댐
-                x = 0.74f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.05f);
-                y = 540 + 0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.05f);
+                x = 0.74f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
+                y = 540 + 0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
 
                 if (i % 4 == 0)
                 {
@@ -158,30 +159,16 @@ public class RplidarTest_Ray : MonoBehaviour
                     {
                         if (min_y < y && y < max_y)
                         {
-                            //이전 지점이 다음 지점이랑 한 발자국 이상의 차이가 있으면 찍고 아니면 찍지 않음
-                            //30만큼의 차이가 나지 않으면 찍지 않음
-                           
                             if (SF_Active)
                             {
-                                if (pre_x - x < -30 || pre_x - x > 30)
+                                //필터 On
+                                if (BALL_Active)
                                 {
-                                    if (pre_y - y < -30 || pre_y - y > 30)
-                                    {
-                                        //필터 On
-                                        if (BALL_Active)
-                                        {
-                                            //데모용, 마우스
-                                            Instant_Ball(x, y);
-
-                                            pre_x = x;
-                                            pre_x = y;
-                                        }
-                                        else
-                                        {
-                                            //개발자용, 공
-                                            //Instant_Mouse(x, y);
-                                        }
-                                    }
+                                    Instant_FP(x, y);
+                                }
+                                else
+                                {
+                                    //데모용 마우스?
                                 }
                             }
                             else
@@ -189,13 +176,11 @@ public class RplidarTest_Ray : MonoBehaviour
                                 //필터 off
                                 if (BALL_Active)
                                 {
-                                    //데모용, 마우스
                                     Instant_Ball(x, y);
                                 }
                                 else
                                 {
-                                    //개발자용, 공
-                                    //Instant_Mouse(x, y);
+                                    //데모용 마우스?
                                 }
                             }
                         }
@@ -217,6 +202,12 @@ public class RplidarTest_Ray : MonoBehaviour
     public void Instant_Mouse(float temp_x, float temp_y)
     {
         GameObject Prefab_pos = Instantiate(MOUSEPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
+        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+    }
+    public void Instant_FP(float temp_x, float temp_y)
+    {
+        GameObject Prefab_pos = Instantiate(FPPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
     }

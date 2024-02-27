@@ -1,17 +1,20 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class Destroy_prefab : RaySynchronizer
+public class FP_Prefab : RaySynchronizer
 {
     private EffectManager _effectManager;
-    //private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
-    private float timer=0f;
+    public FP_controller FPC;
+    private float Timer = 0f;
+    private float Limit_Time = 1.3f;
 
+    private RectTransform FP;
+    private GameObject Image;
     public override void Init()
     {
         base.Init();
@@ -20,28 +23,34 @@ public class Destroy_prefab : RaySynchronizer
 
     void Start()
     {
-        //1212 수정
-        base.Start();
-        base.Temp_1203();
-    }
 
+        FP = this.GetComponent<RectTransform>();
+        FPC = Manager_Sensor.instance.Get_RPC();
+        Image = this.transform.GetChild(0).gameObject;
+
+        //Debug.Log(FP.anchoredPosition.x + "," + FP.anchoredPosition.y);
+        if (FPC.Check_FPposition(FP))
+        {
+            Image.SetActive(true);
+            FPC.Add_FPposition(FP);
+            //��ġ �߻� (3)
+            base.Start();
+            base.Temp_1203();
+        }
+        else
+        {
+            Destroy_obj();
+        }
+    }
     public override void ShootRay()
     {
         screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
 
-        //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
-        //  Event처리로 미사용1/19
-        //Debug.Assert(_baseEffectManager != null);
-
         ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
-        
-        //  Event처리로 미사용1/19
-        // _baseEffectManager.ray_EffectManager = ray_ImageMove;
+
 
 #if UNITY_EDITOR
 #endif
-
-   
 
 
         PED.position = screenPosition;
@@ -52,23 +61,24 @@ public class Destroy_prefab : RaySynchronizer
             for (var i = 0; i < results.Count; i++)
             {
 #if UNITY_EDITOR
-                //Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
+                //Debug.Log($"UI ���� ������Ʈ �̸�: {results[i].gameObject.name}");
 #endif
                 results[i].gameObject.TryGetComponent(out Button button);
                 button?.onClick?.Invoke();
             }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (timer < 0.5f)
+        if (Timer < Limit_Time)
         {
-            timer += Time.deltaTime;
+            Timer += Time.deltaTime;
         }
         else
         {
-            timer = 0f;
+            Timer = 0f;
+
+            FPC.Delete_FPposition();
             Destroy_obj();
         }
     }
