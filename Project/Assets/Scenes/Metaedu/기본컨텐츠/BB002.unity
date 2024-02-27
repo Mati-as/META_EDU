@@ -418,7 +418,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 127501623}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -2091,6 +2091,7 @@ GameObject:
   - component: {fileID: 1251131157}
   - component: {fileID: 1251131156}
   - component: {fileID: 1251131155}
+  - component: {fileID: 1251131158}
   m_Layer: 0
   m_Name: Popup
   m_TagString: Untagged
@@ -2176,6 +2177,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1251131153}
   m_CullTransparentMesh: 0
+--- !u!225 &1251131158
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251131153}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1301949355
 GameObject:
   m_ObjectHideFlags: 0
@@ -2372,7 +2385,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 0.1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -2976,12 +2989,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepGroup: {fileID: 960920606}
-  successParticleDuration: 2.5
+  successParticleDuration: 2.3
   offset: 8
   waitTimeToRestartGame: 5
   _stageClearBubble: {fileID: 1130492152}
   randomForceMax: 10
-  nextStepInducingParticleDelay: 1.65
+  nextStepInducingParticleDelay: 0
   isManuallyInvoked: 0
   numberDoScaleSize: 3
   targetPos: []

@@ -100,11 +100,13 @@ public class EffectManager : MonoBehaviour
     private bool _isRaySet;
 #endif
 
-
+    private Hopscotch_GameManager _gm;
     protected virtual void OnGmRaySyncedByOnGm()
     {
         if (!IGameManager.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
+        
+        if (_gm.isStageClearUIOn) return;
         
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
@@ -132,6 +134,7 @@ public class EffectManager : MonoBehaviour
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
+        _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
 
         if (isMultipleRandomClip) SetRandomClip();
     }

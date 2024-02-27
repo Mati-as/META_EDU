@@ -139,7 +139,8 @@ public class Hopscotch_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-        
+
+        if (isStageClearUIOn) return;
 #if UNITY_EDITOR
         if (!isChecked)
         {
@@ -232,8 +233,8 @@ public class Hopscotch_GameManager : IGameManager
     {
         //if (_scaleBackSequence.IsActive()) _scaleBackSequence.Kill();
 
-        _scaleBackSequence = DOTween.Sequence();
-
+     
+      
 #if UNITY_EDITOR
 #endif
 
@@ -244,6 +245,7 @@ public class Hopscotch_GameManager : IGameManager
                 step.DORotateQuaternion(_defaultQuaternionMap[step] * Quaternion.Euler(30, 0, 0), 0.33f)
                     .OnComplete(() =>
                     {
+                        _scaleBackSequence = DOTween.Sequence();
                         _scaleBackSequence.Append(
                             step.DOScale(_defaultSizeMap[step], 0.2f)
                                 .OnStart(() =>
@@ -267,13 +269,13 @@ public class Hopscotch_GameManager : IGameManager
 
         _currentScaleSequence
             .Append(number
-                .DOScale(numberDoScaleSize, 0.45f)
-                .OnKill(() => { OnScaleSequenceKilled(number); })
-                .SetEase(Ease.Linear))
+            .DOScale(numberDoScaleSize, 0.45f)
+            .OnKill(() => { OnScaleSequenceKilled(number); })
+            .SetEase(Ease.Linear))
             .Append(number
-                .DOScale(_uiDefaultSizeMap[number], 0.45f)
-                .OnKill(() => { OnScaleSequenceKilled(number); })
-                .SetEase(Ease.Linear))
+            .DOScale(_uiDefaultSizeMap[number], 0.45f)
+            .OnKill(() => { OnScaleSequenceKilled(number); })
+            .SetEase(Ease.Linear))
             .AppendInterval(0.5f)
             .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
 
@@ -286,13 +288,13 @@ public class Hopscotch_GameManager : IGameManager
 
         _stepCurrentScaleSequence
             .Append(step
-                .DOScale(_defaultSizeMap[step] * _stepSizeChangeRate, 0.45f)
-                .OnKill(() => { OnScaleSequenceKilled(step); })
-                .SetEase(Ease.Linear))
+            .DOScale(_defaultSizeMap[step] * _stepSizeChangeRate, 0.45f)
+            .OnKill(() => { OnScaleSequenceKilled(step); })
+            .SetEase(Ease.Linear))
             .Append(step
-                .DOScale(_defaultSizeMap[step], 0.45f)
-                .OnKill(() => { OnScaleSequenceKilled(step); })
-                .SetEase(Ease.Linear))
+            .DOScale(_defaultSizeMap[step], 0.45f)
+            .OnKill(() => { OnScaleSequenceKilled(step); })
+            .SetEase(Ease.Linear))
             .AppendInterval(0.5f)
             .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
 
@@ -354,9 +356,10 @@ public class Hopscotch_GameManager : IGameManager
         _successParticle.gameObject.SetActive(true);
         _successParticle.Play();
 
-        var randomEffectSoundIndex = Random.Range(1, 7);
+       
+        var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/Hopscotch/chime_tinkle_wood_bell_positive_0" + $"{randomEffectSoundIndex}", 0.25f);
+            "Audio/Hopscotch/Click_" + $"{randomChar}", 0.25f);
 
         DOVirtual
             .Float(0, 0, successParticleDuration, val => val++)
@@ -409,7 +412,11 @@ public class Hopscotch_GameManager : IGameManager
                             .Float(0, 0, 2, val => val++)
                             .OnComplete(() =>
                             {
-                                _numCvGrup.DOFade(1, 1);
+                               
+                                _numCvGrup.DOFade(1, 1)
+                                    .OnComplete(
+                                    () => {  isStageClearUIOn = false;}
+                                        );
 #if UNITY_EDITOR
 
 #endif
@@ -429,13 +436,16 @@ public class Hopscotch_GameManager : IGameManager
         }
     }
 
+    public bool isStageClearUIOn { get; private set; }
+
     private void OnStageClear()
     {
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
-     
+        
         _currentStep = 0;
         _numCvGrup.DOFade(0, 0.4f);
-
+        isStageClearUIOn = true;
+       
         _stageClearUI.transform.gameObject.SetActive(true);
         _stageClearUI.localScale = Vector3.zero;
         _stageClearUI
@@ -449,6 +459,7 @@ public class Hopscotch_GameManager : IGameManager
                                 .DOScale(Vector3.zero, 1.2f)
                                 .OnComplete(() =>
                                 {
+                                    
                                     _stageClearUI.transform.gameObject.SetActive(false);
                                 });
                         });
@@ -456,7 +467,7 @@ public class Hopscotch_GameManager : IGameManager
             ).SetDelay(2f);// 성공 시 - 성공 애니메이션 표출까지 걸리는 시간에 대한 Delay값  
 
         
-
+  
         DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
             .OnComplete(() => { PlayInducingParticle(_currentStep); });
 
@@ -487,7 +498,11 @@ public class Hopscotch_GameManager : IGameManager
 
 
         DOVirtual.Float(0, 1, _stageResetDelay, _ => { })
-            .OnComplete(() => { DoIntroMove(); });
+            .OnComplete(() =>
+            {
+                
+                DoIntroMove();
+            });
 
 
 #if UNITY_EDITOR
