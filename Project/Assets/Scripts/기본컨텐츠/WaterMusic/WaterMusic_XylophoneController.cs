@@ -207,7 +207,9 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
-          
+            
+   
+            
             MeshRenderer meshRenderer = null;
             SkinnedMeshRenderer skinnedMeshRenderer = null;
             var random = Random.Range(0, 100);
@@ -265,25 +267,27 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     
         var currentID = trans.GetInstanceID();
         if (_isTweening[currentID]) return;
-        _isTweening[trans.GetInstanceID()] = true;
+        _isTweening[currentID] = true;
+        
 #if UNITY_EDITOR
         Debug.Log("Clicked");
 #endif
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
    
-        trans.DOShakeRotation(1f, 1f);
+        trans.DOShakeRotation(1f, 1f).OnComplete(() =>
+        {
+          
+        });
         
         var defaultPos = trans.position;
-        trans.DOMove(trans.position+ Vector3.down * 0.8f, 1f).SetEase(Ease.InOutBack)
-            .OnStart(() =>
+        trans.DOMove(trans.position + Vector3.down * 0.8f, 1f).SetEase(Ease.InOutBack).OnComplete(() =>
+        {
+            trans.DOMove(defaultPos, 0.3f).OnComplete(() =>
             {
-                
-            })
-            .OnComplete(() =>
-            {
-                _isTweening[trans.GetInstanceID()] = false;
-                trans.DOMove(defaultPos, 0.3f);
+                DOVirtual.Float(0, 0, 0.6f, _ => { }).OnComplete(() => { _isTweening[currentID] = false; });
             });
+        });
+
     }
 
     private void DoClickMoveDeeper(Transform trans)
@@ -292,16 +296,17 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         Debug.Log("Clicked");
 #endif
         var currentID = trans.GetInstanceID();
-        
         if (_isTweening[currentID]) return;
         _isTweening[currentID] = true;
         
-        
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
-        trans.DORotateQuaternion(_defaultRotationMap[currentID]*Quaternion.Euler(40, 0, 0),  1f);
-        
+
+
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/기본컨텐츠/WaterMusic/" + RayHitForXylophone.transform.gameObject.name, 0.3f);
+        trans.DORotateQuaternion(_defaultRotationMap[currentID] * Quaternion.Euler(40, 0, 0), 1f);
+
         var defaultPos = trans.position;
-        trans.DOMove(trans.position+ Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
+        trans.DOMove(trans.position + Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/Deeper",
@@ -309,19 +314,18 @@ public class WaterMusic_XylophoneController : MonoBehaviour
             })
             .OnComplete(() =>
             {
-                trans.DORotateQuaternion(_defaultRotationMap[currentID], 1f);
                
                 trans.DOMove(defaultPos, 0.3f).OnComplete(() =>
                 {
-                    DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                    trans.DORotateQuaternion(_defaultRotationMap[currentID], 1f).OnComplete(() =>
                     {
-                        _isTweening[currentID] = false;
+                        DOVirtual.Float(0, 0, 0.6f, _ => { }).OnComplete(() => { _isTweening[currentID] = false; });
                     });
-                   
+
                 });
+
             });
     }
-
 
     protected virtual void BindEvent()
     {

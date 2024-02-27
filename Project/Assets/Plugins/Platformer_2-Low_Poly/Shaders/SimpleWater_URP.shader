@@ -267,9 +267,9 @@ Shader "SimpleWater"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DBuffer.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			#if defined(LOD_FADE_CROSSFADE)
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
-            #endif
+			// #if defined(LOD_FADE_CROSSFADE)
+   //          #include "Packages/com.unity.render-pipelines.universal@14.0.9/ShaderLibrary/LODCrossFade.hlsl"
+   //          #endif
 
 			#if defined(UNITY_INSTANCING_ENABLED) && defined(_TERRAIN_INSTANCED_PERPIXEL_NORMAL)
 				#define ENABLE_TERRAIN_PERPIXEL_NORMAL
@@ -608,9 +608,9 @@ Shader "SimpleWater"
 				UNITY_SETUP_INSTANCE_ID(IN);
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(IN);
 
-				#ifdef LOD_FADE_CROSSFADE
-					LODFadeCrossFade( IN.positionCS );
-				#endif
+				// #ifdef LOD_FADE_CROSSFADE
+				// 	LODFadeCrossFade( IN.positionCS );
+				// #endif
 
 				#if defined(ENABLE_TERRAIN_PERPIXEL_NORMAL)
 					float2 sampleCoords = (IN.lightmapUVOrVertexSH.zw / _TerrainHeightmapRecipSize.zw + 0.5f) * _TerrainHeightmapRecipSize.xy;
@@ -924,10 +924,10 @@ Shader "SimpleWater"
 					outputDepth = DepthValue;
 				#endif
 
-				#ifdef _WRITE_RENDERING_LAYERS
-					uint renderingLayers = GetMeshRenderingLayer();
-					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
-				#endif
+				// #ifdef _WRITE_RENDERING_LAYERS
+				// 	uint renderingLayers = GetMeshRenderingLayer();
+				// 	outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
+				// #endif
 
 				return color;
 			}
@@ -976,9 +976,9 @@ Shader "SimpleWater"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			#if defined(LOD_FADE_CROSSFADE)
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
-            #endif
+			// #if defined(LOD_FADE_CROSSFADE)
+   //          #include "Packages/com.unity.render-pipelines.universal@14.0.9/ShaderLibrary/LODCrossFade.hlsl"
+   //          #endif
 
 			#define ASE_NEEDS_VERT_NORMAL
 
@@ -1268,9 +1268,9 @@ Shader "SimpleWater"
 					clip(Alpha - AlphaClipThreshold);
 				#endif
 
-				#ifdef LOD_FADE_CROSSFADE
-					LODFadeCrossFade( IN.positionCS );
-				#endif
+				// #ifdef LOD_FADE_CROSSFADE
+				// 	LODFadeCrossFade( IN.positionCS );
+				// #endif
 
 				#ifdef ASE_DEPTH_WRITE_ON
 					outputDepth = DepthValue;
@@ -2182,9 +2182,9 @@ Shader "SimpleWater"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			#if defined(LOD_FADE_CROSSFADE)
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
-            #endif
+			// #if defined(LOD_FADE_CROSSFADE)
+   //          #include "Packages/com.unity.render-pipelines.universal@14.0.9/ShaderLibrary/LODCrossFade.hlsl"
+   //          #endif
 
 			#define ASE_NEEDS_VERT_NORMAL
 			#define ASE_NEEDS_FRAG_WORLD_POSITION
@@ -2532,9 +2532,9 @@ Shader "SimpleWater"
 					clip(Alpha - AlphaClipThreshold);
 				#endif
 
-				#ifdef LOD_FADE_CROSSFADE
-					LODFadeCrossFade( IN.positionCS );
-				#endif
+				// #ifdef LOD_FADE_CROSSFADE
+				// 	LODFadeCrossFade( IN.positionCS );
+				// #endif
 
 				#ifdef ASE_DEPTH_WRITE_ON
 					outputDepth = DepthValue;
@@ -2562,10 +2562,10 @@ Shader "SimpleWater"
 					outNormalWS = half4(NormalizeNormalPerPixel(normalWS), 0.0);
 				#endif
 				
-				#ifdef _WRITE_RENDERING_LAYERS
-					uint renderingLayers = GetMeshRenderingLayer();
-					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
-				#endif
+				// #ifdef _WRITE_RENDERING_LAYERS
+				// 	uint renderingLayers = GetMeshRenderingLayer();
+				// 	outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
+				// #endif
 			}
 			ENDHLSL
 		}
@@ -2641,9 +2641,9 @@ Shader "SimpleWater"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DBuffer.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
 
-			#if defined(LOD_FADE_CROSSFADE)
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
-            #endif
+			// #if defined(LOD_FADE_CROSSFADE)
+   //          #include "Packages/com.unity.render-pipelines.universal@14.0.9/ShaderLibrary/LODCrossFade.hlsl"
+   //          #endif
 			
 			#if defined(UNITY_INSTANCING_ENABLED) && defined(_TERRAIN_INSTANCED_PERPIXEL_NORMAL)
 				#define ENABLE_TERRAIN_PERPIXEL_NORMAL
@@ -2975,9 +2975,9 @@ Shader "SimpleWater"
 				UNITY_SETUP_INSTANCE_ID(IN);
 				UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(IN);
 
-				#ifdef LOD_FADE_CROSSFADE
-					LODFadeCrossFade( IN.positionCS );
-				#endif
+				// #ifdef LOD_FADE_CROSSFADE
+				// 	LODFadeCrossFade( IN.positionCS );
+				// #endif
 
 				#if defined(ENABLE_TERRAIN_PERPIXEL_NORMAL)
 					float2 sampleCoords = (IN.lightmapUVOrVertexSH.zw / _TerrainHeightmapRecipSize.zw + 0.5f) * _TerrainHeightmapRecipSize.xy;
