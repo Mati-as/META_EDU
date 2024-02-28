@@ -115,7 +115,7 @@ public class Sandwitch_GameManager : IGameManager
 
         base.Init();
 
-        InitUI();
+       
         
         SetSandwich();
         InitIngredients();
@@ -128,7 +128,7 @@ public class Sandwitch_GameManager : IGameManager
     private void Start()
     {
         Debug.Assert(isInitialized);
-
+        InitUI();
         StackCamera();
     }
 
