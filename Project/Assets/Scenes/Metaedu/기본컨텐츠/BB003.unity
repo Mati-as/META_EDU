@@ -777,7 +777,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 9.7, z: 24.97}
+  m_Size: {x: 3.7, y: 9.7, z: 24.97}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &236400259
 MonoBehaviour:
@@ -1521,6 +1521,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CastShadows
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3318933615064798019, guid: 4699345ae6c55354c9adc53aa1c6fb96,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 3318933615064798019, guid: 4699345ae6c55354c9adc53aa1c6fb96,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.33
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4699345ae6c55354c9adc53aa1c6fb96, type: 3}
@@ -3218,7 +3228,7 @@ PrefabInstance:
     - target: {fileID: 982140784907851273, guid: 90e5e2710fb2d9a40add88c804fdc308,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 982140784907851273, guid: 90e5e2710fb2d9a40add88c804fdc308,
         type: 3}
@@ -3228,7 +3238,7 @@ PrefabInstance:
     - target: {fileID: 982140784907851273, guid: 90e5e2710fb2d9a40add88c804fdc308,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1.95
       objectReference: {fileID: 0}
     - target: {fileID: 982140784907851275, guid: 90e5e2710fb2d9a40add88c804fdc308,
         type: 3}
@@ -6335,7 +6345,7 @@ MonoBehaviour:
   - {r: 0.7565082, g: 0.4449537, b: 0.9528302, a: 1}
   - {r: 0.39684942, g: 0.9245283, b: 0.92023826, a: 1}
   - {r: 0.6576938, g: 0.9433962, b: 0.28924885, a: 1}
-  raycasterMoveInterval: 8
+  raycasterMoveInterval: 5
   movePath:
   - {fileID: 1495117210}
   - {fileID: 1735970744}

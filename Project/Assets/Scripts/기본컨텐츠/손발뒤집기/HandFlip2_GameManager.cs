@@ -55,7 +55,7 @@ public class HandFlip2_GameManager : IGameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private readonly float TIME_LIMIT = 70f;
+    private readonly float TIME_LIMIT = 30f;
 
     private int _colorACount;
     private int _colorBCount;

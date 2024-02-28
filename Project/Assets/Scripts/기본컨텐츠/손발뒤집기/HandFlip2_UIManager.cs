@@ -56,6 +56,7 @@ public class HandFlip2_UIManager : UI_PopUp
 
         _ready = GetObject((int)HandFlip_UI_Type.Ready);
         _rectReady = _ready.GetComponent<RectTransform>();
+        _rectReady.localScale = Vector3.zero;
         _ready.SetActive(false);
         
         _start = GetObject((int)HandFlip_UI_Type.Start);
@@ -107,8 +108,9 @@ public class HandFlip2_UIManager : UI_PopUp
     {
         
        
-
+        yield return DOVirtual.Float(0, 1.8f, 1, _ => { }).WaitForCompletion();
         _ready.gameObject.SetActive(true);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",1.0f);
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
 
@@ -117,6 +119,7 @@ public class HandFlip2_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).OnStart(
             () =>
             {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
             }).WaitForCompletion();
         isStart = true;
