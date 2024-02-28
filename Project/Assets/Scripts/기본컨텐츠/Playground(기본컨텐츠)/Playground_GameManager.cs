@@ -27,12 +27,16 @@ public class Playground_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-        
+        if (!isStartButtonClicked) return;
         
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {
-            
+            if(hit.transform.gameObject.name == "Small" ||
+               hit.transform.gameObject.name == "Medium"||
+            hit.transform.gameObject.name == "Large")
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Playground/Ball",0.3f);
+           
             //hit.transform.TryGetComponent(out _currentRigidBody);
             Rigidbody rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
 

@@ -356,10 +356,10 @@ public class Hopscotch_GameManager : IGameManager
         _successParticle.gameObject.SetActive(true);
         _successParticle.Play();
 
-       
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMoveB", 0.10f);
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/Hopscotch/Click_" + $"{randomChar}", 0.25f);
+            "Audio/Hopscotch/Click_" + $"{randomChar}", 0.6f);
 
         DOVirtual
             .Float(0, 0, successParticleDuration, val => val++)
@@ -405,8 +405,14 @@ public class Hopscotch_GameManager : IGameManager
             var i1 = i;
             _steps[i].transform
                 .DOMove(targetPos[i], 1f + stackInterval * i)
+                .OnStart(() =>
+                {
+                    
+                })
                 .OnComplete(() =>
                 {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMove", 0.05f);
+                   
                     if (i1 >= _stepCount - 1)
                         DOVirtual
                             .Float(0, 0, 2, val => val++)
@@ -428,7 +434,11 @@ public class Hopscotch_GameManager : IGameManager
                                 }
 
                                 //DoScaleUp(_numberTextRects[1]);
-                                if (i1 >= _stepCount - 1) PlayInducingParticle(0);
+                                if (i1 >= _stepCount - 1)
+                                {
+                                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish", 0.10f);
+                                    PlayInducingParticle(0);
+                                }
                                 _isClickable = true;
                             });
                 })

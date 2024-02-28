@@ -61,9 +61,18 @@ public class HandFootPainting_GameManager : IGameManager
 
         onRoundRestart -= OnRoundRestart;
         onRoundRestart += OnRoundRestart;
+
+        HandPainting_UIManager.onStartUI -= OnStartUI;
+        HandPainting_UIManager.onStartUI += OnStartUI;
+
     }
     private float _elapsedToCount;
     private bool _isCountNarrationPlaying;
+
+    private void OnStartUI()
+    {
+        _isRoundReady = true;
+    }
     private void Update()
     {
         if (!_isRoundReady) return;
@@ -112,11 +121,7 @@ public class HandFootPainting_GameManager : IGameManager
     {
         base.OnStartButtonClicked();
 
-        DOVirtual.Float(0, 0, 1.5f, _ => { })
-            .OnComplete(() =>
-            {
-                _isRoundReady = true;
-            });
+       
        
         
         _glowSeq = DOTween.Sequence();
@@ -164,28 +169,34 @@ public class HandFootPainting_GameManager : IGameManager
 
     private void OnRoundFinished()
     {
-        
-        _glowSeq.Kill();
-        _glowSeq = DOTween.Sequence();
-        _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish",0.8f);
-      
-        //"그만" UI 팝업? 
-        FadeInBg();
-        DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 1f, _ =>{}).OnComplete(() =>
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
-            _tmp.text = $"놀이를 다시 준비하고 있어요";
-        });
-        
-        DOVirtual.Float(0, 0, 4.5f, _ => { }).OnComplete(() =>
-        {
-            printInitEvent?.Invoke();
-        });
-        
-        DOVirtual.Float(0, 0, 7, _ => { }).OnComplete(() =>
-        {
-            onRoundRestart?.Invoke();
+            _glowSeq.Kill();
+            _glowSeq = DOTween.Sequence();
+            _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish",0.8f);
+            FadeInBg();
+            
+            DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() =>
+            {
+                //"그만" UI 팝업? 
+
+                DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
+                    _tmp.text = $"놀이를 다시 준비하고 있어요";
+                });
+
+                DOVirtual.Float(0, 0, 4.5f, _ => { }).OnComplete(() =>
+                {
+                    printInitEvent?.Invoke();
+                });
+
+                DOVirtual.Float(0, 0, 7, _ => { }).OnComplete(() =>
+                {
+                    onRoundRestart?.Invoke();
+                });
+            });
         });
       
     }
