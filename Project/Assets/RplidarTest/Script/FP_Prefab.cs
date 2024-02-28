@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using TMPro;
 
 public class FP_Prefab : RaySynchronizer
 {
@@ -11,14 +12,16 @@ public class FP_Prefab : RaySynchronizer
 
     public FP_controller FPC;
     private float Timer = 0f;
-    private float Limit_Time = 1.3f;
+    public static float Limit_Time = 1.3f;
 
     private RectTransform FP;
     private GameObject Image;
+
     public override void Init()
     {
         base.Init();
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
+      
     }
 
     void Start()
@@ -33,7 +36,7 @@ public class FP_Prefab : RaySynchronizer
         {
             Image.SetActive(true);
             FPC.Add_FPposition(FP);
-            //ÅÍÄ¡ ¹ß»ý (3)
+            //ï¿½ï¿½Ä¡ ï¿½ß»ï¿½ (3)
             base.Start();
             base.Temp_1203();
         }
@@ -61,7 +64,7 @@ public class FP_Prefab : RaySynchronizer
             for (var i = 0; i < results.Count; i++)
             {
 #if UNITY_EDITOR
-                //Debug.Log($"UI °ü·Ã ¿ÀºêÁ§Æ® ÀÌ¸§: {results[i].gameObject.name}");
+                //Debug.Log($"UI ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ì¸ï¿½: {results[i].gameObject.name}");
 #endif
                 results[i].gameObject.TryGetComponent(out Button button);
                 button?.onClick?.Invoke();
@@ -77,10 +80,12 @@ public class FP_Prefab : RaySynchronizer
         else
         {
             Timer = 0f;
-
+          
+           
             FPC.Delete_FPposition();
             Destroy_obj();
         }
+       
     }
 
     void Destroy_obj()

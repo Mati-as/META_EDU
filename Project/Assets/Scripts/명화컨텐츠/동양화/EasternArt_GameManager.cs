@@ -36,7 +36,7 @@ public class EasternArt_GameManager : IGameManager
     public static readonly int LEFT_IDLE = Animator.StringToHash("Left");
     public static readonly int LEFT_GROWLING = Animator.StringToHash("LeftGrowling");
     public float animationInterval = 10f;
-    public float growlingDuration = 3.0f;
+    public float growlingDuration = 2.0f;
 
     private AudioSource _tigerGrowlingAudioSource;
 
@@ -167,9 +167,9 @@ public class EasternArt_GameManager : IGameManager
                                     {
                                         //맨처음에 호랑이가 커지는 애니메이션을 울움소리 미동반, 애니메이션 빠르게 재생
                                         mainTigerAnimator.speed = _defaultAnimatorSpeed;
-                                        DOVirtual.Float(0, 0, 1.5f, _ =>
+                                        DOVirtual.Float(0, 0, 1.8f, _ =>
                                         {
-                                            mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.5f;
+                                            mainTigerAnimator.speed = _defaultAnimatorSpeed * 3f;
                                         }).OnComplete(() =>
                                         {
                                             //초반에 Idle상태로 만들기위한 불설정, PlayMainTigerAnimation에는 영향없음
@@ -221,13 +221,14 @@ public class EasternArt_GameManager : IGameManager
                     Debug.Log($"Left_GROWLING Duration: {growlingDuration}");
 #endif
                     _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
-                    _tigerGrowlingAudioSource.Play();
-
+                   
+                  
+                    
                     _pollingSequence = DOTween.Sequence();
                     _pollingSequence.Append(DOVirtual.Float(0, 1, growlingDuration, _ =>
                     {
                         CheckAndPlayAudio();
-                        mainTigerAnimator.speed = _defaultAnimatorSpeed * 1.5f;
+                        mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
                     }));
                     
                     mainTigerAnimator.SetBool(LEFT_GROWLING, true);
@@ -270,12 +271,14 @@ public class EasternArt_GameManager : IGameManager
                     Debug.Log($"RIGHT_GROWLING Duration: {growlingDuration}");
 #endif
                     _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
-                    _tigerGrowlingAudioSource.Play();
+                    
+                    
                     mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
                     
                     _pollingSequence = DOTween.Sequence();
                     _pollingSequence.Append(DOVirtual.Float(0, 1, animationInterval, _ =>
                     {
+                        mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
                         CheckAndPlayAudio();
                     }));
                 }))
@@ -294,21 +297,49 @@ public class EasternArt_GameManager : IGameManager
         mainTigerSequence.Play();
     }
 
+    private int _growlingCount;
+    private bool _isGrowling;
     private void CheckAndPlayAudio()
     {
         AnimatorStateInfo
             stateInfo = mainTigerAnimator.GetCurrentAnimatorStateInfo(0); // 0은 base layer를 의미
-                       
-     
-        if (stateInfo.normalizedTime % 1 < 0.1f &&stateInfo.normalizedTime % 1 > 0.05f)
+        
+        
+        if (_growlingCount < 1)
         {
-                            
-       
-
-            _tigerGrowlingAudioSource.Play();
-
-                           
+            if (stateInfo.normalizedTime % 1 < 0.1f &&stateInfo.normalizedTime % 1 > 0.05f)
+            {
+                
+               
+                if (!_isGrowling)
+                {
+                    _isGrowling = true;
+                    _growlingCount++;
+                    _tigerGrowlingAudioSource.Play();
+                    //호랑이 울음횟수 제한을 위한 _roraCount
+                    DOVirtual.Float(0, 0, 2.35f, _ => { })
+                        .OnComplete(() =>
+                        {
+                            _isGrowling = false;
+                            _growlingCount--;
+#if UNITY_EDITOR
+                            Debug.Log($"growlingCount-- => {_growlingCount}");
+#endif
+                        });
+                    
+                }
+              
+              
+            }
         }
+        else
+        {
+#if UNITY_EDITOR
+            Debug.Log($"_growlingCount 미충족: {_growlingCount}");
+#endif
+        }
+  
+      
     }
     private void InitializeAnimParams()
     {

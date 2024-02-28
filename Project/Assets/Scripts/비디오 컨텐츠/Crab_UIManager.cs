@@ -153,7 +153,9 @@ public class Crab_UIManager : UI_PopUp
                 _dialogues[_currentUiIndex].gameObject.SetActive(true);
                 _dialogues[_currentUiIndex].DOScale(defaultScales[(int)CrabDialogue.Crab_Dialogue1], 1.2f).SetEase(Ease.OutBounce);
 
-
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                    "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
+                    0,0.5f);
 
                 DOVirtual.Float(0, 0, 5f, _ => { })
                 .OnComplete(() =>
@@ -187,6 +189,10 @@ public class Crab_UIManager : UI_PopUp
             
             _dialogues[_currentUiIndex - 1].DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBounce).OnComplete(() =>
             {
+                
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                    "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
+                    (_currentUiIndex-2).ToString(),0.5f);
 #if UNITY_EDITOR
                 Debug.Log($"현재 대사 순서 {(CrabDialogue)_currentUiIndex}");
 #endif 

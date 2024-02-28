@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using System.Threading;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -72,10 +73,18 @@ public class RplidarTest_Ray : MonoBehaviour
     private bool UI_Active = false;
     private bool BALL_Active = true;
     private bool SF_Active = false;
-
+    
+    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+    private Slider _sensitivitySlider;
+    private TextMeshProUGUI _sensitivityText;
+    
     private void Awake()
     {
         data = new LidarData[720];
+        
+        //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+        _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
+        _sensitivityText = GameObject.Find("SensitivityText").GetComponent<TextMeshProUGUI>();
     }
 
     void Start()
@@ -138,6 +147,10 @@ public class RplidarTest_Ray : MonoBehaviour
         {
             Test_check = !Test_check;
         }
+        
+        //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+        FP_Prefab.Limit_Time = _sensitivitySlider.value * 2f;
+        _sensitivityText.text = $"sensitivity : {FP_Prefab.Limit_Time:F2}";
 
     }
     // Update is called once per frame
