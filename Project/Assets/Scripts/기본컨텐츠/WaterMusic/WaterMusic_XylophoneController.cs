@@ -207,7 +207,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
-            
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
    
             
             MeshRenderer meshRenderer = null;
@@ -272,7 +272,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log("Clicked");
 #endif
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+      
    
         trans.DOShakeRotation(1f, 1f).OnComplete(() =>
         {

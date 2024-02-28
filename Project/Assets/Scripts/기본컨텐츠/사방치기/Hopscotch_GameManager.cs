@@ -411,7 +411,7 @@ public class Hopscotch_GameManager : IGameManager
                 })
                 .OnComplete(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMove", 0.05f);
+                    
                    
                     if (i1 >= _stepCount - 1)
                         DOVirtual
