@@ -156,7 +156,9 @@ public class Sandwitch_GameManager : IGameManager
         if (!isInitialized) return;
         if (!isStartButtonClicked) return;
         if (_isRoundFinished) return;
-      
+        if (!isGameStart) return;
+        
+        
         if (!_isClickable)
         {
 #if UNITY_EDITOR
@@ -473,6 +475,7 @@ public class Sandwitch_GameManager : IGameManager
                         = _ingredientsAppearPosition[i];
                     _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(true);
 
+                    var i1 = i;
                     _selectableIngredientsOnSmallPlates[i].DOScale(_ingredientsDefaultScales[count], 1.3456789f)
                         .OnStart(() =>
                         {
@@ -481,7 +484,22 @@ public class Sandwitch_GameManager : IGameManager
 #endif
                             Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/pop", 0.3f);
                         })
-                        .SetEase(Ease.InOutBounce).SetDelay(delay + Random.Range(0, 0.5f));
+                        .SetEase(Ease.InOutBounce)
+                        .SetDelay(delay + Random.Range(0, 0.5f))
+                        .OnComplete(() =>
+                        {
+                            if (i1 >= 4)
+                            {
+                                //ScaleUp이후 클릭가능시작시점 딜레이
+                                var gameStartDelay = 0.75f;
+                                DOVirtual.Float(0, 0, gameStartDelay, _ => { }).OnComplete(() =>
+                                {
+                                    isGameStart = true;
+                                });
+                              
+                            }
+                     
+                        });
 
                     shakeSeq.Append(
                         _selectableIngredientsOnSmallPlates[i]
@@ -492,7 +510,7 @@ public class Sandwitch_GameManager : IGameManager
                     _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(false);
                 }
 
-            isGameStart = true;
+           
         
 
        
@@ -528,8 +546,8 @@ public class Sandwitch_GameManager : IGameManager
     private Vector3[] SetPath(Vector3 originPos)
     {
         var path = new Vector3[2];
-        path[0] = originPos + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
-        path[1] = originPos + new Vector3(Random.Range(-0.2f, 0.2f), 0, Random.Range(-0.2f, 0.2f));
+        path[0] = originPos + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
+        path[1] = originPos + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
         return path;
     }
 
@@ -538,6 +556,7 @@ public class Sandwitch_GameManager : IGameManager
     private void OnSandwichMakingFinish()
     {
         _isRoundFinished = true;
+        isGameStart = false;
 #if UNITY_EDITOR
         Debug.Log("Making Sandwich is finished");
 #endif
@@ -578,12 +597,13 @@ public class Sandwitch_GameManager : IGameManager
     private Vector3 _cameraLookAtSec;
     private Vector3 sandwichArrival;
     private readonly int FOV_FAR = 12;
+    public Vector3 cameraLookAtOffsetOfSandwich;
 
     private void SendSandwichToAnimal(float delay = 3f)
     {
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
         {
-            DOVirtual.Float(0, 0, 2.8f, _ => { Camera.main.transform.DOLookAt(_thisSandwich.transform.position, 0.5f); });
+            DOVirtual.Float(0, 0, 2.8f, _ => { Camera.main.transform.DOLookAt(_thisSandwich.transform.position + cameraLookAtOffsetOfSandwich, 0.5f); });
 
             _thisSandwich.transform
                 .DOMove(posMid, 1.8f)

@@ -159,8 +159,8 @@ public class HandFootPainting_GameManager : IGameManager
             {
                // Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
 
-                _tmp.text = "놀이 시작!";
-            }).OnComplete(() => { _isRoundReady = true; });
+                _tmp.text = "";
+            }).OnComplete(() => { });
      
         _glowSeq = DOTween.Sequence();
         BlinkOutline();
@@ -174,13 +174,14 @@ public class HandFootPainting_GameManager : IGameManager
             _glowSeq.Kill();
             _glowSeq = DOTween.Sequence();
             _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish",0.8f);
-            FadeInBg();
+        
             
             DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() =>
             {
+                FadeInBg();
                 //"그만" UI 팝업? 
-
+               
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish",0.8f);
                 DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
@@ -201,7 +202,7 @@ public class HandFootPainting_GameManager : IGameManager
       
     }
 
-    private void FadeInBg()=> DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+    private void FadeInBg()=> DOVirtual.Float(0, 0, 0.2f, _ => { }).OnComplete(() =>
     {
 #if UNITY_EDITOR
 Debug.Log("DoFade In");
