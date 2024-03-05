@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -15,16 +16,20 @@ public class WaterPlayground_GameManager : IGameManager
 
     public float forceAmount;
     public float upOffset;
-   
+    protected override int TARGET_FRAME { get; } = 45;
     
     public Vector3 particleUpOffset;
     protected override void Init()
     {
-      base.Init();
+     
+  
       SetPool(ref particlePool);
       BGM_VOLUME = 0.85f;
+      base.Init();
      
     }
+
+    private RaycastHit _hitForPs;
     
     protected override void OnRaySynced()
     {
@@ -54,7 +59,8 @@ public class WaterPlayground_GameManager : IGameManager
             
         }
         
-        //Paricle
+   
+        
         foreach (var hit in _hits)
         {
             if(hit.transform.gameObject.name.Contains("WaterCollider"))
@@ -62,6 +68,7 @@ public class WaterPlayground_GameManager : IGameManager
                 PlayParticle(hit.point + particleUpOffset);//offset
                 return;
             }
+            
         }
      
     }

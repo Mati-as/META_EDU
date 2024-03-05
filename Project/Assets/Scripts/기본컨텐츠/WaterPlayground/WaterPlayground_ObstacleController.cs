@@ -32,6 +32,8 @@ public class WaterPlayground_ObstacleController : MonoBehaviour
             _propellers[i].gameObject.SetActive(false);
         }
     }
+    
+    
 
     private void Update()
     {

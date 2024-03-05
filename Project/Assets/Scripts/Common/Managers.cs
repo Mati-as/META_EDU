@@ -32,10 +32,7 @@ public class Managers : MonoBehaviour
             
             Application.targetFrameRate = 30;
             
-#if UNITY_EDITOR
 
-            Debug.Log($"current targetFrameRate : {Application.targetFrameRate}");
-#endif
         }
     }
 }

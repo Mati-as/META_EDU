@@ -119,14 +119,17 @@ public class WaterPlayground_BallController : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         
-      
+        var velproportionalVolume = 0.008f *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
+ 
         if (other.transform.gameObject.name == "Obstacle")
         {
-            
-
             foreach (ContactPoint contact in other.contacts)
             {
-                PlayParticle(contact.point +Vector3.up *1.5f);
+                        
+#if UNITY_EDITOR
+                Debug.Log($"Obstacle particle played");
+#endif
+                PlayParticle(contact.point +Vector3.up *2.0f);
                 return;
             }
                
@@ -139,11 +142,8 @@ public class WaterPlayground_BallController : MonoBehaviour
                
             
         }
-        var velproportionalVolume = 0.008f *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
-        
-#if UNITY_EDITOR
-Debug.Log($"rb.vel: x: {_rb.velocity.x} y: {_rb.velocity.y} :{_rb.velocity.z}  velvolume :{velproportionalVolume}");
-#endif
+       
+
 
         if (velproportionalVolume > 0.25f)
         {
