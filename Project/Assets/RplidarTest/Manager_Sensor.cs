@@ -10,6 +10,7 @@ public class Manager_Sensor : MonoBehaviour
     public GameObject UI_Canvas;
     public Camera UI_Camera;
 
+    private FP_controller FPC;
     //1212 수정
     public RectTransform Ray_position;
 
@@ -41,6 +42,7 @@ public class Manager_Sensor : MonoBehaviour
         UI_Camera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
         UI_Canvas = GameObject.FindWithTag("UIManager");
 
+        FPC = this.GetComponent<FP_controller>();
         //1212 수정
         Ray_position = this.gameObject.GetComponent<RectTransform>();
         Prev_Ray_position_x = 0f;
@@ -54,6 +56,10 @@ public class Manager_Sensor : MonoBehaviour
     public Camera Get_UIcamera()
     {
         return UI_Camera;
+    }
+    public FP_controller Get_RPC()
+    {
+        return FPC;
     }
     //1212 수정
     public void Set_RayPosition(RectTransform RayPos)

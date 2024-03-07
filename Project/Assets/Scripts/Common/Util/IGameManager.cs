@@ -8,10 +8,13 @@ public abstract class IGameManager : MonoBehaviour
     public static Ray GameManager_Ray { get; private set; }
     public static RaycastHit[] GameManager_Hits { get; set; }
     public static bool isStartButtonClicked { get; private set; }
-    public static bool isInitialized { get; private set; }
+    protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
-    private readonly int TARGET_FRAME = 30;
+    protected virtual int TARGET_FRAME { get; } = 45;
     
+    protected  float BGM_VOLUME = 0.105f;
+    
+ 
 
     protected virtual void Awake()
     {
@@ -26,6 +29,13 @@ public abstract class IGameManager : MonoBehaviour
         SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
         isInitialized = true;
+
+        DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect,
+                "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
+        });
+       
     }
 
 
@@ -55,7 +65,7 @@ public abstract class IGameManager : MonoBehaviour
 
     }
 
-    protected void BindEvent()
+    protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
         Debug.Log("Ray Sync Subscribed");
@@ -80,7 +90,7 @@ public abstract class IGameManager : MonoBehaviour
     }
 
 
-    private void OnStartButtonClicked()
+    protected virtual void OnStartButtonClicked()
     {
         // 버튼 클릭시 Ray가 게임로직에 영향미치는 것을 방지하기위한 약간의 Delay 입니다. 
         DOVirtual
@@ -99,7 +109,7 @@ public abstract class IGameManager : MonoBehaviour
                     "Audio/Narration/" + $"{SceneManager.GetActiveScene().name}", 0.5f);
             });
 
-        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", 0.115f);
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", BGM_VOLUME);
     }
 
     private void SetResolution(int width, int height, int targetFrame)
@@ -110,7 +120,8 @@ public abstract class IGameManager : MonoBehaviour
 
 #if UNITY_EDITOR
         Debug.Log(
-            $"Game Info: name: {SceneManager.GetActiveScene().name}, Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}");
+            $"Game Title: {SceneManager.GetActiveScene().name}," +
+            $" Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}");
 #endif
     }
 }

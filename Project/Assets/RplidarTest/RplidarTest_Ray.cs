@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using System.Threading;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -16,8 +17,9 @@ public class RplidarTest_Ray : MonoBehaviour
     private RectTransform Img_Rect_transform;
 
     //=====0714
-    public GameObject BALLPrefab; //spherePrefab을 받을 변수 
-    public GameObject MOUSEPrefab; //spherePrefab을 받을 변수 
+    public GameObject BALLPrefab; 
+    public GameObject MOUSEPrefab;
+    public GameObject FPPrefab; 
 
     public bool m_onscan = false;
     private Thread m_thread;
@@ -65,12 +67,24 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private float x;
     private float y;
+    private float pre_x;
+    private float pre_y;
 
-    private bool Check_1 = false;
-
+    private bool UI_Active = false;
+    private bool BALL_Active = true;
+    private bool SF_Active = false;
+    
+    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+    private Slider _sensitivitySlider;
+    private TextMeshProUGUI _sensitivityText;
+    
     private void Awake()
     {
         data = new LidarData[720];
+        
+        //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+        _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
+        _sensitivityText = GameObject.Find("SensitivityText").GetComponent<TextMeshProUGUI>();
     }
 
     void Start()
@@ -101,6 +115,9 @@ public class RplidarTest_Ray : MonoBehaviour
         max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x + (Guideline.GetComponent<RectTransform>().rect.width) / 2;
         max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y + (Guideline.GetComponent<RectTransform>().rect.height) / 2;
 
+#if UNITY_EDITOR
+        TESTUI.SetActive(false);
+#endif
     }
 
 
@@ -123,24 +140,18 @@ public class RplidarTest_Ray : MonoBehaviour
     //1212 수정
     void Update()
     {
+        //하나는 UI ONOFF이고
+        //나머지 하나는 공 삭제 또는 공 있음이니깐
+        //나머지 하나는 계속 찍을지 아니면 변할 때마다 찍을지 결정하는 걸로
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Test_check = !Test_check;
         }
+        
+        //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
+        FP_Prefab.Limit_Time = _sensitivitySlider.value * 2f;
+        _sensitivityText.text = $"sensitivity : {FP_Prefab.Limit_Time:F2}";
 
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            Check_1 = !Check_1;
-
-            if (Check_1)
-            {
-                TESTUI.SetActive(false);
-            }
-            else if (Check_1 == false)
-            {
-                TESTUI.SetActive(true);
-            }
-        }
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -152,33 +163,38 @@ public class RplidarTest_Ray : MonoBehaviour
             {
                 //센서 데이터 data[i].theta, distant
                 //1. 화면과 센서를 일치화 시키기 위해서 theta를 마이너스 곱해줌, 추가로 회전 시켜주기 위해 Sensor_rotation 추가했고 위에서 아래 방향으로 내려다 보는것 기준으 90도 입력하면 댐
-                x = 0.74f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.05f);
-                y = 540 + 0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.05f);
+                x = 0.74f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
+                y = 540 + 0.74f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
 
                 if (i % 4 == 0)
                 {
-
-
-                    if (x != 0 || y != 0)
+                    if (min_x < x && x < max_x)
                     {
-                        if (min_x < x && x < max_x)
+                        if (min_y < y && y < max_y)
                         {
-                            if (min_y < y && y < max_y)
+                            if (SF_Active)
                             {
-                                if (Test_check)
+                                //필터 On
+                                if (BALL_Active)
                                 {
-                                    //데모용, 마우스
-                                    TESTUI.SetActive(false);
+                                    Instant_FP(x, y);
+                                }
+                                else
+                                {
+                                    //데모용 마우스?
+                                }
+                            }
+                            else
+                            {
+                                //필터 off
+                                if (BALL_Active)
+                                {
                                     Instant_Ball(x, y);
                                 }
                                 else
                                 {
-                                    //개발자용, 공
-                                    TESTUI.SetActive(true);
-                                    Instant_Mouse(x, y);
+                                    //데모용 마우스?
                                 }
-
-
                             }
                         }
                     }
@@ -202,6 +218,12 @@ public class RplidarTest_Ray : MonoBehaviour
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
     }
+    public void Instant_FP(float temp_x, float temp_y)
+    {
+        GameObject Prefab_pos = Instantiate(FPPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
+        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+    }
     void OnDestroy()
     {
         RplidarBinding.EndScan();
@@ -214,5 +236,32 @@ public class RplidarTest_Ray : MonoBehaviour
         m_thread?.Abort();
 
         m_onscan = false;
+    }
+
+    public bool UI_Active_ONOFF()
+    {
+        UI_Active = !UI_Active;
+
+        if (UI_Active)
+        {
+            TESTUI.SetActive(true);
+        }
+        else if (UI_Active == false)
+        {
+            TESTUI.SetActive(false);
+        }
+        return UI_Active;
+    }
+    public bool Ball_Active_ONOFF()
+    {
+        BALL_Active = !BALL_Active;
+
+        return BALL_Active;
+    }
+    public bool SF_Active_ONOFF()
+    {
+        SF_Active = !SF_Active;
+
+        return SF_Active;
     }
 }

@@ -59,8 +59,8 @@ public class GroundTutorialUiBoxController : MonoBehaviour
     
     private void Awake()
     {
-        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
-        UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnUIFinished;
         
 
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
@@ -91,7 +91,7 @@ public class GroundTutorialUiBoxController : MonoBehaviour
 
     private void OnDestroy()
     {
-        UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
+        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnUIFinished;
         
         TextBoxLeftUIEvent -= OnTextBoxLeftUILetterTyping;
         TextBoxRightUIEvent -= OnTextBoxRightUILetterTyping;

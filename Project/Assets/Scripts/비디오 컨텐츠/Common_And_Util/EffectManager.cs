@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -100,11 +101,17 @@ public class EffectManager : MonoBehaviour
     private bool _isRaySet;
 #endif
 
-
+    private Hopscotch_GameManager _gm;
     protected virtual void OnGmRaySyncedByOnGm()
     {
         if (!IGameManager.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
+        
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            if (_gm.isStageClearUIOn) return;
+        }
+     
         
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
@@ -129,9 +136,18 @@ public class EffectManager : MonoBehaviour
 
     protected virtual void Init()
     {
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+        }
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
+        if (SceneManager.GetActiveScene().name == "BB002")
+        {
+            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+        }
+       
 
         if (isMultipleRandomClip) SetRandomClip();
     }
@@ -322,7 +338,7 @@ public class EffectManager : MonoBehaviour
 #if UNITY_EDITOR
 
 #endif
-        audioSource.Play();
+        audioSource.PlayOneShot(audioSource.clip);
         audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
     }
 

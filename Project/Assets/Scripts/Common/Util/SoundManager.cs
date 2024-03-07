@@ -147,6 +147,25 @@ public class SoundManager : MonoBehaviour
         _audioClips.Add(path, audioClip);
         return audioClip;
     }
+    
+    
+    // Sound관련 메소드 (legacy) 가을낙엽 컨텐츠에서 사용중.
+    // 추후 가을소풍 전용으로 사용하도록 클래스 구분하거나 리팩토링 필요 12/18/23
+    public  void FadeOut(Sound type,float volumeTarget = 0, float waitTime = 0.3f,
+        float outDuration = 0.5f, bool rollBack = false)
+    {
+        
+        var audioSource = _audioSources[(int)type];
+        audioSource.DOFade(0f, outDuration)
+            .SetDelay(waitTime)
+            .OnComplete(() =>
+            {
+                if (!rollBack)
+                    audioSource.Pause();
+                else
+                    audioSource.Stop();
+            });
+    }
 
 
     // Sound관련 메소드 (legacy) 가을낙엽 컨텐츠에서 사용중.

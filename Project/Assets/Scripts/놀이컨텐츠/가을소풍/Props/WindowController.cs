@@ -22,7 +22,7 @@ public class WindowController : MonoBehaviour
     private bool _isInvoked;
     private void Update()
     {
-        if (UIManager.isHowToPlayUIFinished)
+        if (AnimalTrip_UIManager.isHowToPlayUIFinished)
         {
             _elapsed += Time.deltaTime;
             _waitingTimeRemaining = waitingTime - _elapsed;

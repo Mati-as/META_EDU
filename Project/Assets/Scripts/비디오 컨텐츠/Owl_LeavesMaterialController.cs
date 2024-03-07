@@ -7,7 +7,7 @@ using UnityEngine;
 public class LeafInfo
 {
     public string name;
-    public bool isDarkend;
+    public bool isDarkendAndNonClickable;
 }
 
 internal enum LeaveLocation
@@ -36,6 +36,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     private Owl_VideoGameManager _gameManager;
     private Ray rayForShader;
 
+   
     public static event Action OnAllLeavesDarkend;
 
 
@@ -93,8 +94,8 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         IGameManager.On_GmRay_Synced -= OnClicked;
         IGameManager.On_GmRay_Synced += OnClicked;
 
-        Owl_VideoGameManager.onOwlEndLines -= OnOwnEndLines;
-        Owl_VideoGameManager.onOwlEndLines += OnOwnEndLines;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished -= OnOwnSpeechBubbleFinished;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
 
         InteractableVideoGameManager.onRewind -= OnRewind;
         InteractableVideoGameManager.onRewind += OnRewind;
@@ -106,12 +107,16 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
 
         InteractableVideoGameManager.onRewind -= OnRewind;
-        Owl_VideoGameManager.onOwlEndLines += OnOwnEndLines;
+        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
     }
 
     private void BrightenUp(Material mat)
     {
-        mat.DOColor(mat.color * intensity, 2).SetDelay(4.5f).OnComplete(() => { _isGameInited = true; });
+        mat.DOColor(mat.color * intensity, 1.35f)
+            .SetDelay(4.5f)
+            .OnStart(() => { _isGameInited = false; })
+            .OnComplete(() => { DOVirtual.Float(0, 1, 1f, _ => { })
+                .OnComplete(() => { _isGameInited = true; }); });
     }
 
     private void OnRewind()
@@ -120,27 +125,52 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
         BrightenLeaves();
         foreach (var leaves in isCountedMap.Keys.ToList()) isCountedMap[leaves] = false;
-        foreach (var leaf in _leafs) leaf.isDarkend = false;
+        foreach (var leaf in _leafs) leaf.isDarkendAndNonClickable = false;
     }
 
-    private void OnOwnEndLines()
+    private void OnOwnSpeechBubbleFinished()
     {
         _darkendCount = 0;
         if (Owl_VideoGameManager.isJustRewind)
         {
             BrightenLeaves();
             foreach (var leaves in isCountedMap.Keys.ToList()) isCountedMap[leaves] = false;
-            foreach (var leaf in _leafs) leaf.isDarkend = false;
+
+            //나뭇잎이 다시 밝아질 시간을 충분히 준 후, isDarkend를 적용
+            DOVirtual.Float(0, 1, 7f, _ => { })
+            .OnComplete(() =>
+            {
+                
+#if UNITY_EDITOR
+                Debug.Log($"나뭇잎 클릭가능");
+#endif
+                foreach (var leaf in _leafs) leaf.isDarkendAndNonClickable = false;
+            });
+           
         }
     }
 
     private void OnClicked()
     {
-        if (!_isGameInited) return;
+     
 
         rayForShader = IGameManager.GameManager_Ray;
         RaycastHit hit;
 
+        if (!_isGameInited)
+        {
+#if UNITY_EDITOR
+Debug.Log($"material is glowing yet");
+#endif
+return;
+}
+if (!Owl_VideoGameManager.isOwlUIFinished)
+{
+#if UNITY_EDITOR
+Debug.Log($"owl ui isn't finished yet.");
+#endif
+            return;
+        }
         if (Physics.Raycast(rayForShader, out hit))
             foreach (var leaf in _leafs)
                 if (hit.transform.gameObject.name == leaf.name)
@@ -150,14 +180,12 @@ public class Owl_LeavesMaterialController : MonoBehaviour
                         isCountedMap[leaf.name] = true;
                         _darkendCount++;
 
-                        if (!leaf.isDarkend)
+                        if (!leaf.isDarkendAndNonClickable)
                         {
                             DarkenLeaf(leaf.name);
-                            leaf.isDarkend = true;
+                            leaf.isDarkendAndNonClickable = true;
 
-#if UNITY_EDITOR
 
-#endif
                             if (CheckAllLeavesDarkend()) OnAllLeavesDarkend?.Invoke();
                         }
                     }
@@ -171,7 +199,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     {
         foreach (var mat in matByNames[objName])
             if (mat != null)
-                mat.DOColor(mat.color / 4, 3.3f);
+                mat.DOColor(mat.color / 4, 2.3f);
     }
 
     private void Init()

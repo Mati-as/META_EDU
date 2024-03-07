@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class Destroy_prefab : RaySynchronizer
 {
     private EffectManager _effectManager;
-    private GameObject uiCamera;
+    //private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
     private float timer=0f;
@@ -52,7 +52,7 @@ public class Destroy_prefab : RaySynchronizer
             for (var i = 0; i < results.Count; i++)
             {
 #if UNITY_EDITOR
-                Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
+                //Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
 #endif
                 results[i].gameObject.TryGetComponent(out Button button);
                 button?.onClick?.Invoke();

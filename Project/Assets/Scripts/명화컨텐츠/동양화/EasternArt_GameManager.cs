@@ -1,16 +1,20 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 public class EasternArt_GameManager : IGameManager
 {
+    
+    public static readonly int RIGHT_IDLE = Animator.StringToHash("Right");
+    public static readonly int RIGHT_GROWLING = Animator.StringToHash("RightGrowling");
+    public static readonly int LEFT_IDLE = Animator.StringToHash("Left");
+    public static readonly int LEFT_GROWLING = Animator.StringToHash("LeftGrowling");
+    
+    
     [Header("gameObjs")] public Transform camera;
     public SpriteRenderer originalSpriteRenderer;
 
-    
+
     [Space(15f)] [Header("LookAt")] public Transform lookAtA;
     public Transform lookAtB;
 
@@ -21,7 +25,8 @@ public class EasternArt_GameManager : IGameManager
     private Vector3[] _pathVector;
     private Vector3[] _newVector;
 
-    [Header("Skinned Picture")] public GameObject skinnedPicture;
+    [Header("Skinned Picture")] 
+    public GameObject skinnedPicture;
 
     private Transform[] _skinnedPictureChildren;
 
@@ -29,14 +34,10 @@ public class EasternArt_GameManager : IGameManager
     private float _defaultAnimatorSpeed;
     private Sequence mainTigerSequence;
     private bool _isMainTigerAnimPlaying;
+
     
-    public static readonly int RIGHT_IDLE = Animator.StringToHash("Right"); 
-    public static readonly int RIGHT_GROWLING = Animator.StringToHash("RightGrowling"); 
-    
-    public static readonly int LEFT_IDLE = Animator.StringToHash("Left");
-    public static readonly int LEFT_GROWLING = Animator.StringToHash("LeftGrowling");
     public float animationInterval = 10f;
-    public float growlingDuration = 3.0f;
+    public float growlingDuration = 2.0f;
 
     private AudioSource _tigerGrowlingAudioSource;
 
@@ -45,35 +46,27 @@ public class EasternArt_GameManager : IGameManager
     private AudioClip _tigerGrowlC;
 
     private AudioClip[] _tigerGrowlClips;
-    
-   
-    [SerializeField]
-    private GameObject originalPicture;
-    [SerializeField]
-    private SpriteRenderer newBackground;
 
-    
+
+    [SerializeField] private GameObject originalPicture;
+    [SerializeField] private SpriteRenderer newBackground;
+
 
     protected override void Init()
     {
         base.Init();
-        
-        
+
+
         LoadAsset();
         SetAudio();
         SetPath();
 
         camera.position = _pathVector[0];
-        
+
         UI_Scene_Button.onBtnShut -= OnBtnShut;
         UI_Scene_Button.onBtnShut += OnBtnShut;
-
     }
 
-    private void OnDestroy()
-    {
-        UI_Scene_Button.onBtnShut -= OnBtnShut;
-    }
 
     private void LoadAsset()
     {
@@ -95,35 +88,24 @@ public class EasternArt_GameManager : IGameManager
         _tigerGrowlClips[0] = _tigerGrowlA;
         _tigerGrowlClips[1] = _tigerGrowlB;
         _tigerGrowlClips[2] = _tigerGrowlC;
-            
+
         _defaultAnimatorSpeed = mainTigerAnimator.speed;
         mainTigerAnimator.speed = 0;
-        
+
         _pathVector = new Vector3[3];
         _newVector = new Vector3[2];
 
-        for (var i = 0; i < cameraPath.Length; i++)
-        {
-            _pathVector[i] = cameraPath[i].position;
-         
-        }
+        for (var i = 0; i < cameraPath.Length; i++) _pathVector[i] = cameraPath[i].position;
 
         _skinnedPictureChildren = new Transform[skinnedPicture.transform.childCount];
-        
-        
-        for (int i = 0; i < _skinnedPictureChildren.Length; i++)
-        {
+
+
+        for (var i = 0; i < _skinnedPictureChildren.Length; i++)
             _skinnedPictureChildren[i] = skinnedPicture.transform.GetChild(i);
-        }
 
         newBackground.DOFade(0, 0.1f);
         camera.DOLookAt(lookAtA.position, 0.01f);
     }
-    protected override void OnRaySynced()
-    {
-        
-    }
-
 
     private void OnBtnShut()
     {
@@ -165,8 +147,17 @@ public class EasternArt_GameManager : IGameManager
                                 {
                                     DOVirtual.Float(0, 0, 1f, val => val++).OnComplete(() =>
                                     {
+                                        //맨처음에 호랑이가 커지는 애니메이션을 울움소리 미동반, 애니메이션 빠르게 재생
                                         mainTigerAnimator.speed = _defaultAnimatorSpeed;
                                         PlayMainTigerAnimation();
+                                        DOVirtual.Float(0, 0, 1.8f,
+                                            _ => { mainTigerAnimator.speed = _defaultAnimatorSpeed * 3f; }).OnComplete(
+                                            () =>
+                                            {
+                                                //초반에 Idle상태로 만들기위한 설정, PlayMainTigerAnimation에는 영향없음
+                                                mainTigerAnimator.SetBool(LEFT_IDLE, true);
+                                                mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                                            });
                                     });
                                 });
                             });
@@ -177,133 +168,126 @@ public class EasternArt_GameManager : IGameManager
     }
 
     private Sequence _pollingSequence;
+
     private void PlayMainTigerAnimation()
     {
-        if(_isMainTigerAnimPlaying) return;
+        if (_isMainTigerAnimPlaying) return;
         _isMainTigerAnimPlaying = true;
-        
-        
-        //1. start에서 Idle 애니메이션 재생상태..
+
+        // Clear existing sequence if needed
+        if (mainTigerSequence != null && mainTigerSequence.IsActive()) mainTigerSequence.Kill();
+
         mainTigerSequence = DOTween.Sequence();
 
-        //2. animationInterval 종료 후 왼쪽바라보기
+        // Start with Idle animation
         mainTigerSequence
-            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
-                .OnStart(() =>
-                {
-                    //IDLE
-                }))
+            .AppendCallback(() => { mainTigerAnimator.speed = _defaultAnimatorSpeed; })
+            .AppendInterval(animationInterval - 3f)
 
-            .Append(DOVirtual.Float(0, 0, animationInterval, val => val++)
-                .OnStart(() =>
-                {
+            // Left Idle
+            .AppendCallback(() =>
+            {
 #if UNITY_EDITOR
-                    Debug.Log("LEFT_IDLE");
+                Debug.Log("LEFT_IDLE");
 #endif
-                    
-                    mainTigerAnimator.SetBool(LEFT_IDLE, true);
-                }))
+                mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                _growlingCount = 0;
+                mainTigerAnimator.SetBool(LEFT_IDLE, true);
+            })
+            .AppendInterval(animationInterval)
 
-            //2. animationInterval 종료 후 LeftIdle및 Growling 재생
-            .Append(DOVirtual.Float(0, 0, growlingDuration, _ => _++)
-                .OnStart(() =>
-                {
+            // Left Growling
+            .AppendCallback(() =>
+            {
 #if UNITY_EDITOR
-                    Debug.Log($"Left_GROWLING Duration: {growlingDuration}");
+                Debug.Log($"Left_GROWLING Duration: {growlingDuration}");
 #endif
-                    _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
-                    _tigerGrowlingAudioSource.Play();
+                _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                mainTigerAnimator.SetBool(LEFT_GROWLING, true);
+                mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
+                DOVirtual.Float(0, 1, growlingDuration, _ => { CheckAndPlayAudio(); });
+            })
+            .AppendInterval(growlingDuration)
 
-                    _pollingSequence = DOTween.Sequence();
-                    _pollingSequence.Append(DOVirtual.Float(0, 1, growlingDuration, _ =>
-                    {
-                        CheckAndPlayAudio();
-                    }));
-                    
-                    mainTigerAnimator.SetBool(LEFT_GROWLING, true);
-                })
-                .OnComplete(() =>
-                {
+            // Reset parameters and prepare for Right Idle
+            .AppendCallback(() =>
+            {
 #if UNITY_EDITOR
-                    Debug.Log($"파라미터 전부 초기화: {growlingDuration}");
+                Debug.Log("Parameters reset and preparing for RIGHT_IDLE");
 #endif
-                    InitializeAnimParams();
-                }))
+                InitializeAnimParams();
+            })
 
-            .Append(DOVirtual.Float(0, 0, animationInterval, _ => _++)
-                .OnStart(() =>
-                {
+            // Right Idle
+            .AppendCallback(() =>
+            {
 #if UNITY_EDITOR
-                    Debug.Log("IDLE");
+                Debug.Log("RIGHT_IDLE");
 #endif
-                    _pollingSequence.Kill();
-                    InitializeAnimParams();
-                }))
+                mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                _growlingCount = 0;
+                mainTigerAnimator.SetBool(RIGHT_IDLE, true);
+            })
+            .AppendInterval(animationInterval)
 
-            //3. LeftGrowling 종료 후 RightIdle 및 RightGrowling 재생
-            .Append(DOVirtual.Float(0, 0, animationInterval, _ => _++)
-                .OnStart(() =>
-                {
+            // Right Growling
+            .AppendCallback(() =>
+            {
 #if UNITY_EDITOR
-                    Debug.Log("RIGHT_IDLE");
+                Debug.Log($"RIGHT_GROWLING Duration: {growlingDuration}");
 #endif
-                    mainTigerAnimator.SetBool(RIGHT_IDLE, true);
-                
-                }))
-            
-            //4. 초기화 및 무한 반복 
-            .Append(DOVirtual.Float(0, 0, growlingDuration, _ => _++)
-                .OnStart(() =>
-                {
-#if UNITY_EDITOR
-                    Debug.Log($"RIGHT_GROWLING Duration: {growlingDuration}");
-#endif
-                    _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
-                    _tigerGrowlingAudioSource.Play();
-                    mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
-                    
-                    _pollingSequence = DOTween.Sequence();
-                    _pollingSequence.Append(DOVirtual.Float(0, 1, animationInterval, _ =>
-                    {
-                        CheckAndPlayAudio();
-                    }));
-                }))
-            
-            .Append(DOVirtual.Float(0, 0, animationInterval, _ => _++)
-                .OnStart(() =>
-                {
-                    _pollingSequence.Kill();
-                    InitializeAnimParams();
-                }))
-      
-           
-            .SetLoops(-1,LoopType.Restart);
+                _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
+                mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
+                DOVirtual.Float(0, 1, growlingDuration, _ => { CheckAndPlayAudio(); });
+            })
+            .AppendInterval(growlingDuration) // Wait for growlingDuration seconds
 
+            // Final reset before loop
+            .AppendCallback(() =>
+            {
+#if UNITY_EDITOR
+                Debug.Log("Final reset, sequence will restart");
+#endif
+                mainTigerAnimator.speed = _defaultAnimatorSpeed;
+                InitializeAnimParams(); // Ensure all parameters are reset before looping
+            })
+            .SetLoops(-1, LoopType.Restart);
 
         mainTigerSequence.Play();
     }
 
+    private int _growlingCount;
+    private bool _isGrowling;
+
     private void CheckAndPlayAudio()
     {
-        AnimatorStateInfo
+        var
             stateInfo = mainTigerAnimator.GetCurrentAnimatorStateInfo(0); // 0은 base layer를 의미
-                       
-     
-        if (stateInfo.normalizedTime % 1 < 0.05f)
-        {
-                            
-       
 
-            _tigerGrowlingAudioSource.Play();
 
-                           
-        }
+        if (_growlingCount < 1)
+            if (stateInfo.normalizedTime % 1 < 0.1f && stateInfo.normalizedTime % 1 > 0.05f)
+                if (!_isGrowling)
+                {
+                    _isGrowling = true;
+                    _growlingCount++;
+                    _tigerGrowlingAudioSource.Play();
+                    //호랑이 울음횟수 제한을 위한 _roraCount
+                    DOVirtual.Float(0, 0, 3.35f, _ => { })
+                        .OnComplete(() =>
+                        {
+                            _isGrowling = false;
+                            _growlingCount--;
+                        });
+                }
     }
+
     private void InitializeAnimParams()
     {
-        mainTigerAnimator.SetBool(RIGHT_IDLE,false);
-        mainTigerAnimator.SetBool(LEFT_IDLE,false);
-        mainTigerAnimator.SetBool(RIGHT_GROWLING,false);
-        mainTigerAnimator.SetBool(LEFT_GROWLING,false);
+        mainTigerAnimator.SetBool(RIGHT_IDLE, false);
+        mainTigerAnimator.SetBool(LEFT_IDLE, false);
+        mainTigerAnimator.SetBool(RIGHT_GROWLING, false);
+        mainTigerAnimator.SetBool(LEFT_GROWLING, false);
     }
 }

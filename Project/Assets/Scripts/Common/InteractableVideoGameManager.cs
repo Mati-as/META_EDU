@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -14,12 +15,12 @@ using UnityEngine.Serialization;
 /// </summary>
 public abstract class InteractableVideoGameManager : Video_GameManager
 {
-#if UNITY_EDITOR
-    [Header("*****Debug Only*****")] public bool TriggerReplayEvent;
+
+   [Header("*****Debug Only*****")] public bool DEBUG_manuallyTrigger;
 
     [FormerlySerializedAs("_particleSystems")]
     [Space(15f)]
-#endif
+
 
     [Header("Particle and Audio Setting")]
     private static readonly string prefix = "Video_";
@@ -45,22 +46,30 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
     // 주로 동물이 나타나거나, 상호작용이 일어나는 시점에 OnRepalyStart 설정.
     public static event Action onReplay;
+    private double _totalDuration;
 
-    private void Start()
+    protected virtual void Start()
     {
         Init();
 
         _isReplayAfterPausing = true;
-
+     
+        
         onReplay -= OnReplay;
         onReplay += OnReplay;
         
         onRewind -= OnRewind;
         onRewind += OnRewind;
     }
+    private void OnDestroy()
+    {
+        onReplay -= OnReplay;
+        onRewind -= OnRewind;
+    }
 
 
     public float rewindDuration;
+ 
 
     protected virtual void Update()
     {
@@ -69,19 +78,21 @@ public abstract class InteractableVideoGameManager : Video_GameManager
             // 비디오의 현재 재생 시간과 총 재생 시간을 가져옴
 
             var currentTime = videoPlayer.time;
-            var totalDuration = videoPlayer.length;
+            _totalDuration = videoPlayer.length;
 
             // 비디오가 95% 이상 재생되었는지 확인
-            if (currentTime / totalDuration >= 0.94
-#if UNITY_EDITOR
-                || TriggerReplayEvent
-#endif
-               )
+            if (currentTime / _totalDuration >= 0.97 || DEBUG_manuallyTrigger)
             {
-                DOVirtual.Float(0, 0, rewindDuration, nullParam => { })
+                DOVirtual.Float(0, 0, 0, _ => { })
                     .OnComplete(() =>
                     {
+#if UNITY_EDITOR
+                        Debug.Log($"처음부터 다시 재생 영상전체길이: {_totalDuration}");
+#endif
+
+                        DEBUG_manuallyTrigger = false;
                         _isRewindEventTriggered = true;
+                        
                         RewindAndReplayTriggerEvent();
                     });
 
@@ -90,11 +101,11 @@ public abstract class InteractableVideoGameManager : Video_GameManager
                 {
                     videoPlayer.time = 0;
 
-                    DOVirtual.Float(0, 0, 1f, duration => { })
+                    DOVirtual.Float(0, 0, 1f, _ => { })
                         .OnComplete(() =>
                         {
 #if UNITY_EDITOR
-                            TriggerReplayEvent = false;
+                            DEBUG_manuallyTrigger = false;
 #endif
                             _isRewindEventTriggered = false;
                             _isShaked = false;
@@ -105,11 +116,6 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     }
 
 
-    private void OnDestroy()
-    {
-        onReplay -= OnReplay;
-        onRewind -= OnRewind;
-    }
 
 
     public float stopPointSecond;
@@ -117,36 +123,44 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     protected override void Init()
     {
         base.Init();
-    
-
-       
+        
+     
         DOVirtual.Float(1, 0, timeStampToStop, speed =>
         {
             videoPlayer.playbackSpeed = speed;
-            // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
     }
 
+    /// <summary>
+    /// #OnRaySynced는 사용자 입력을 기반으로한 게임상 입력의 핵심함수입니다. 
+    /// RaySynchronizer에서 GameManager의 Ray와 처음으로 동기화 하는부분.
+    /// 제일 첫번째로 수행되며, OnRaySyncFromGameManager는 **OnRaySynced에 의존합니다.**
+    /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.  
+    /// </summary>
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
         OnRaySyncFromGameManager();
     }
 
-
+   
+    /// <summary>
+    /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.
+    /// </summary>
     protected virtual void OnRaySyncFromGameManager()
     {
         if (!_initiailized) return;
-        if (!_isShaked) transform.DOShakePosition(2.25f, 1f + 0.1f * _currentClickCount, randomness: 90, vibrato: 5);
+        if (!isStartButtonClicked) return;
+        if (!_isShaked) transform.DOShakePosition(1.55f, 0.35f + 0.1f * (_currentClickCount % maxCount), randomness: 90, vibrato: 5)
+            .OnComplete(() =>
+            {
+                transform.DOMove(_defaultPosition, 1f).SetEase(Ease.Linear);
+            });;
 
         _currentClickCount++;
 
         if (CheckReplayCondition())
         {
-            
-#if UNITY_EDITOR       
-            Debug.Log("OnReplayAfterPasued Event Invoked------------------------");
-#endif
             onReplay?.Invoke();
         }
     }
@@ -166,18 +180,23 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
     protected virtual void RewindAndReplayTriggerEvent()
     {
-#if UNITY_EDITOR       
-        Debug.Log("OnRewind Event Invoked------------------------");
-#endif
+
         onRewind?.Invoke();
+#if UNITY_EDITOR       
+        Debug.Log("onRewind ------------------invoke!");
+#endif
     }
 
     protected virtual void OnRewind()
     {
+#if UNITY_EDITOR       
+        Debug.Log("Rewind파티클 재생");
+#endif
+        _particleOnRewind.Stop();
         _particleOnRewind.Play();
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
-        
+    
         Managers.Sound.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
       
     }

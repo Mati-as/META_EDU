@@ -26,14 +26,14 @@ public class S1_Controller : MonoBehaviour
         //Set_AnimalALL();    
     }
    
-    //¾À ÄÁÆ®·Ñ·¯ÀÇ ´ÙÀ½ ½ºÅÇ
-    //¾À ÄÁÆ®·Ñ·¯ÀÇ ´ÙÀ½ Ã©ÅÍ
-    //¾À ÄÁÆ®·Ñ·¯ÀÇ ¸¶Áö¸· Ã©ÅÍ
+    //ì”¬ ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë‹¤ìŒ ìŠ¤íƒ­
+    //ì”¬ ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë‹¤ìŒ ì±•í„°
+    //ì”¬ ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë§ˆì§€ë§‰ ì±•í„°
 
     public void ActNextstep()
     {
-        GameManager.AddStep();
-        step = GameManager.GetStep();
+        AnimalFallTrip_GameManager.AddStep();
+        step = AnimalFallTrip_GameManager.GetStep();
 
         StartCoroutine(Set_Footstep(step));
         Animal_animation("Jump");
@@ -41,10 +41,10 @@ public class S1_Controller : MonoBehaviour
 
     public void ActNextchapter()
     {
-        GameManager.AddStep();
-        GameManager.AddChapter();
-        step = GameManager.GetStep();
-        chapter = GameManager.GetChapter();
+        AnimalFallTrip_GameManager.AddStep();
+        AnimalFallTrip_GameManager.AddChapter();
+        step = AnimalFallTrip_GameManager.GetStep();
+        chapter = AnimalFallTrip_GameManager.GetChapter();
 
         StartCoroutine(Set_Footstep(step));
         StartCoroutine(Set_Animal(chapter));
@@ -53,41 +53,41 @@ public class S1_Controller : MonoBehaviour
 
     public void ActNextlevel()
     {
-        GameManager.AddLevel();
-        level = GameManager.GetLevel();  
+        AnimalFallTrip_GameManager.AddLevel();
+        level = AnimalFallTrip_GameManager.GetLevel();  
 
-        //¸¶Áö¸·ÀÏ °æ¿ì
+        //ë§ˆì§€ë§‰ì¼ ê²½ìš°
         //isGameStarted =true
-        //·¹º§ Àü´ŞÇÏ¸é¼­ 
+        //ë ˆë²¨ ì „ë‹¬í•˜ë©´ì„œ 
 
         if (level < 4)
         {
-            GameManager.SetisRoudnFinished();
+            AnimalFallTrip_GameManager.SetisRoudnFinished();
         }
         else
         {
             Debug.Log("END CHECK");
-            GameManager.SetisGameFinished();
+            AnimalFallTrip_GameManager.SetisGameFinished();
             Set_AnimalALL();
         }
 
     }
     IEnumerator Set_Footstep(int num_step)
     {
-        FootstepObj = GameManager.GetFootstep(num_step - 1);
+        FootstepObj = AnimalFallTrip_GameManager.GetFootstep(num_step - 1);
         FootstepObj.SetActive(false);
 
        //yield return new WaitForSeconds(1f);
 
-        FootstepObj = GameManager.GetFootstep(num_step);
+        FootstepObj = AnimalFallTrip_GameManager.GetFootstep(num_step);
         FootstepObj.SetActive(true);
         yield break;
     }
 
     IEnumerator Set_Animal(int num_chap)
     {
-        AnimalObj_prev = GameManager.GetAnimal(num_chap - 1);
-        AnimalObj_next = GameManager.GetAnimal(num_chap);
+        AnimalObj_prev = AnimalFallTrip_GameManager.GetAnimal(num_chap - 1);
+        AnimalObj_next = AnimalFallTrip_GameManager.GetAnimal(num_chap);
         Set_Message(AnimalObj_prev, 1, true);
         AnimalObj_next.SetActive(true);
 
@@ -103,27 +103,27 @@ public class S1_Controller : MonoBehaviour
         yield break;
     }
 
-    //Å×½ºÆ® ´Ü°è¿¡¼­ ÀÏ½ÃÀûÀ¸·Î ¸¸µë, ÃßÈÄ Á÷Á¢ ÄÚµå ³Ö´Â ¹æ½ÄÀ¸·Î?
+    //í…ŒìŠ¤íŠ¸ ë‹¨ê³„ì—ì„œ ì¼ì‹œì ìœ¼ë¡œ ë§Œë“¬, ì¶”í›„ ì§ì ‘ ì½”ë“œ ë„£ëŠ” ë°©ì‹ìœ¼ë¡œ?
     void Set_Message(GameObject animal,int num_message,bool onoff)
     {
-        //µ¿¹° ¿ÀºêÁ§Æ®ÀÇ 0: follow, 1:found
+        //ë™ë¬¼ ì˜¤ë¸Œì íŠ¸ì˜ 0: follow, 1:found
         animal.transform.GetChild(num_message).gameObject.SetActive(onoff);
     }
 
     void Set_AnimalALL()
     {
-        //12½ÃÀÛ ÀÏ µí
+        //12ì‹œì‘ ì¼ ë“¯
         for(int i= chapter-1; i== 0; i--)
         {
             Debug.Log("Check"+i);
                 
-            AnimalObj_next = GameManager.GetAnimal(i);
+            AnimalObj_next = AnimalFallTrip_GameManager.GetAnimal(i);
             AnimalObj_next.SetActive(true);
         }
     }
     void Animal_animation(string anim)
     {
-        //±×³É ´õ¹Ì ÇÔ¼ö
+        //ê·¸ëƒ¥ ë”ë¯¸ í•¨ìˆ˜
         Debug.Log("Animal animation :"+ anim);
     }
 }

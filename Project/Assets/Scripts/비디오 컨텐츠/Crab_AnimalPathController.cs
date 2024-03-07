@@ -129,6 +129,15 @@ public class Crab_AnimalPathController : MonoBehaviour
         SetPool(_inactiveCrabPool, "CrabB");
         SetPool(_inactiveCrabPool, "CrabC");
         SetPool(_inactiveCrabPool, "CrabD");
+        SetPool(_inactiveCrabPool, "CrabE");
+        SetPool(_inactiveCrabPool, "CrabF");
+        SetPool(_inactiveCrabPool, "CrabG");
+        SetPool(_inactiveCrabPool, "CrabH");
+        SetPool(_inactiveCrabPool, "CrabI");
+        SetPool(_inactiveCrabPool, "CrabJ");
+        SetPool(_inactiveCrabPool, "CrabK");
+        SetPool(_inactiveCrabPool, "CrabL");
+        
 
 
         isInit = true;
@@ -136,6 +145,10 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void OnCrabAppear()
     {
+        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
+            ,Random.Range(0.1f,0.2f));
+        
         foreach (var crab in _activeCrabPool)
         {
             //시퀀스 중단으로 인해, AwayPath.Start를 한번더 할당해줘야 합니다. 
@@ -195,7 +208,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         if (!isInit) return;
 
-        if (videoGameManager._isCrabAppearable) DoPathToClickPoint();
+        if (videoGameManager.isCrabAppearable) DoPathToClickPoint();
 
 
 #if UNITY_EDITOR
@@ -314,10 +327,10 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void PlayPath(Crab _crabDoingPath)
     {
-        if (!videoGameManager._isCrabAppearable) return;
+        if (!videoGameManager.isCrabAppearable) return;
         
 #if UNITY_EDITOR
-Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} ");
+//Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager.isCrabAppearable} ");
 #endif
         
         UpdateDistanceFromStartPointToClickedPoint(_crabDoingPath);
@@ -333,10 +346,12 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crabEffectManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _duration)
+            .DOMove(crabEffectManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
+                Debug.Assert( _crabDoingPath.linearPath[0]!=null);
+                
                 _crabDoingPath.linearPath[0] = _crabDoingPath.gameObj.transform.position;
 
                 _crabDoingPath.awayPath[(int)AwayPath.Arrival] =
@@ -347,13 +362,14 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
                 // _crabDoingPath.gameObj.transform.position = _crabDoingPath.loopPath[(int)LoopPath.Start];
             }));
 
-        if (_crabDoingPath.isNoPath)
+        // 두 번째 트윈 3: 점프하는 애니메이션
+        if (_crabDoingPath.isNoPathAndJump)
         {
-            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 7f, val => val++).OnStart(() =>
+            _crabDoingPath.currentSequence.Append(DOVirtual.Float(0, 0, 4.5f, val => val++).OnStart(() =>
             {
                 _crabDoingPath.animator.SetBool(IDLE_ANIM, true);
 #if UNITY_EDITOR
-                Debug.Log("Idle: 경로없음");
+                Debug.Log("경로X, 점프애니메이션");
 #endif
             }).OnComplete(() =>
             {
@@ -364,7 +380,7 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
         else
         {
             if (_crabDoingPath.isLinearPath)
-                // 두 번째 트윈: 경로 따라 이동
+                // 두 번째 트윈 1: 선형 경로 따라 좌우로 이동하는 애니메이션
                 _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
                     .DOPath(_crabDoingPath.linearPath, 2.5f)
                     .SetLoops(8, LoopType.Yoyo)
@@ -384,7 +400,7 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
                             appearablePoints[Random.Range(0, 4)].position;
                     }));
             else
-                // 두 번째 트윈: 경로 따라 이동
+                // 두번째 트윈 2 :원형 경로에 따른 애니메이션인 경우
                 _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
                     .DOPath(_crabDoingPath.circularPath, 2.5f, PathType.CatmullRom)
                     .SetLoops(8, LoopType.Yoyo)
@@ -411,6 +427,8 @@ Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager._isCrabAppearable} 
             .OnStart(() =>
             {
                 DeactivateAnim(_crabDoingPath.animator);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
+                    ,Random.Range(0.05f,0.11f));
 #if UNITY_EDITOR
                 Debug.Log($"{_crabDoingPath.awayPath[0]}, {_crabDoingPath.awayPath[1]} 꽃게 집에보내기");
 #endif
@@ -457,7 +475,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
     private void SetBool(Crab crab)
     {
         crab.isLinearPath = _isLinearPath;
-        crab.isNoPath = _isNoPath;
+        crab.isNoPathAndJump = _isNoPath;
     }
 
     private void CopyPathArrays(Crab crab)
@@ -525,12 +543,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
             end_Linear = main + transform.forward * linearPathDistance * Random.Range(1, randomDistance);
 
             linearPath[0] = end_Linear;
-
-#if UNITY_EDITOR
-
-#endif
-
-
+            
             _isLinearPath = true;
         }
         else
@@ -551,7 +564,10 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 
         if (prefab != null)
         {
-            var crab = new Crab();
+            var crab = new Crab()
+            {
+                linearPath =new Vector3[2]
+            };
             crab.gameObj = Instantiate(prefab, transform);
 
             crab.animator = crab.gameObj.GetComponent<Animator>();
@@ -617,6 +633,6 @@ public class Crab
 
     public bool isGoingHome { get; set; }
     public bool isLinearPath { get; set; }
-    public bool isNoPath { get; set; }
+    public bool isNoPathAndJump { get; set; }
     public Animator animator { get; set; }
 }
