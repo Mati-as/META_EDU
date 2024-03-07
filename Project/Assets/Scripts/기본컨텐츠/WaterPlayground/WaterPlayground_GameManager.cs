@@ -18,7 +18,7 @@ public class WaterPlayground_GameManager : IGameManager
     public float upOffset;
     
  
-    protected override int TARGET_FRAME { get; } = 45;
+    protected override int TARGET_FRAME { get; } = 30;
     
     public Vector3 particleUpOffset;
     protected override void Init()
