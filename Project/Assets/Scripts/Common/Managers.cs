@@ -30,7 +30,7 @@ public class Managers : MonoBehaviour
             
             s_soundManager.Init();
             
-            Application.targetFrameRate = 30;
+          
             
 
         }

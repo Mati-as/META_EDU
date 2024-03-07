@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class GameManager : MonoBehaviour
+public class AnimalFallTrip_GameManager : IGameManager
 {
     private static Dictionary<int, GameObject> animalGameObjectList = new();
     private static Dictionary<int, GameObject> footstepGameObjectList = new();
@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     public static bool isCameraArrivedToPlay { get; set; }
     public static bool isGameStarted { get; private set; }
-    private bool _initialRoundIsReady; //ÃÖÃÊ ¶ó¿îµå ½ÃÀÛ ÀÌÀüÀ» ÄÁÆ®·Ñ ÇÏ±â À§ÇÑ ³í¸®¿¬»êÀÚ ÀÔ´Ï´Ù. 
+    private bool _initialRoundIsReady; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô´Ï´ï¿½. 
     public static bool isRoundReady { get; private set; }
     public static bool isRoundStarted { get; private set; }
     public static bool isCorrected { get; private set; }
@@ -33,9 +33,9 @@ public class GameManager : MonoBehaviour
     private static int Chapter = 0;
     private static int level = 0;
 
-    //¸Ç ¸¶Áö¸· ¿¹¿ÜÃ³¸® ¹× °ÔÀÓ Á¾·á ºÎºÐ ±¸Çö
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    // UI Ãâ·ÂÀ» À§ÇÑ Event Ã³¸®
+    // UI ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Event Ã³ï¿½ï¿½
     [Header("UI Events")]
     [Space(10f)]
 
@@ -51,15 +51,16 @@ public class GameManager : MonoBehaviour
     //private UnityEvent _messageInitializeEvent;
 
 
+    
 
     // Start is called before the first frame update
     void Start()
     {
+        
         SetAnimalIntoDictionaryAndList();
         SetFootstepIntoDictionaryAndList();
-
-        SetResolution(1920, 1080);
-        Application.targetFrameRate = 30;
+        
+     
 
         isGameStarted = true;
         isGameFinished = false;
@@ -73,21 +74,21 @@ public class GameManager : MonoBehaviour
         {
             if (isRoundReady)
             {
-                Debug.Log("°ÔÀÓ ½ÃÀÛ");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                 _IntroMessageEvent.Invoke();
                 isRoundReady=false;
             }
 
             if (isRoudnFinished)
             {
-                Debug.Log("´ÙÀ½ ·¹º§");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
                 _EndofLevelMessageEvent.Invoke();
                 isRoudnFinished = false;
             }
         }
         if (isGameFinished)
         {
-            Debug.Log("°ÔÀÓ Á¾·á");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             isGameFinished = false;
             isGameStarted = false;
             _finishedMessageEvent.Invoke();
@@ -102,7 +103,7 @@ public class GameManager : MonoBehaviour
 
     private void SetAnimalIntoDictionaryAndList()
     {
-        //group¿¡ ÀúÀåµÇ¾îÀÖ´Â ¼ø¼­´ë·Î ÀúÀå
+        //groupï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < Animal_group.transform.childCount; i++)
         {
             animalGameObjectList.Add(i, Animal_group.transform.GetChild(i).gameObject);
@@ -111,7 +112,7 @@ public class GameManager : MonoBehaviour
     }
     private void SetFootstepIntoDictionaryAndList()
     {
-        //group parent¿¡ ÀúÀåµÇ¾îÀÖ´Â ¼ø¼­´ë·Î ÀúÀå
+        //group parentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < Footstep_group.transform.childCount; i++)
         {
             footstepGameObjectList.Add(i, Footstep_group.transform.GetChild(i).gameObject);
@@ -159,29 +160,29 @@ public class GameManager : MonoBehaviour
         isGameFinished = true;
     }
 
-    //°¡Àå Ã¹ ¹øÀç µ¿¹°Àº ¾î¶»°Ô Ã³¸®ÇÒÁö ¿¹¿ÜÃ³¸® ÇÊ¿ä
+    //ï¿½ï¿½ï¿½ï¿½ Ã¹ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½î¶»ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½Ê¿ï¿½
 
-    //°ÔÀÓ ¸Å´ÏÀú´Â µ¥ÀÌÅÍ ÀúÀå ¿ëµµ·Î¸¸ »ç¿ëÇÑ´Ù
-    //UI È­¸é¿¡ º¸¿©ÁÖ´Â ¿ëµµ·Î È°¿ëÇÏ´Â°É·Î
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½Å´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ëµµï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½
+    //UI È­ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ëµµï¿½ï¿½ È°ï¿½ï¿½ï¿½Ï´Â°É·ï¿½
 
     /*
      * 
-     *  ** µ¿¹° ¹× ¹ßÆÇÀº Ã³À½ºÎÅÍ ÁØºñµÈ »óÅÂ¿¡¼­ ½ÃÀÛ
+     *  ** ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      *  
-     * 1. µ¿¹°ÀúÀå
-     *  - ¼øÂ÷ÀûÀ¸·Î ºÎ¸£±â À§ÇØ
+     * 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     *  - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      *    
-     * 2. ¹ßÆÇÀúÀå
-     *  - ¼øÂ÷ÀûÀ¸·Î ºÎ¸£±â À§ÇØ
+     * 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     *  - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      *  
-     * 3. Ã©ÅÍ ¹× ½ºÅÇ(°¢ µ¿¹°º° ½ÃÀÛ ¹× ³¡) ÀúÀå
-     *  - ³ª·¹ÀÌ¼Ç Àç»ý, Ã©ÅÍ º¯°æ, ¸Þ½ÃÁö Àç»ýÀ» À§ÇØ
+     * 3. Ã©ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½
+     *  - ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½, Ã©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      * 
-     * ÀÎÅÍ·¢¼Ç ¿ä¼Ò
-     * ** º¸µå
+     * ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+     * ** ï¿½ï¿½ï¿½ï¿½
      * 
-     * Å¬¸¯ÇÒ °æ¿ì, 
-     * ** µ¿¹° ÀÌµ¿, ´ÙÀ½ ¹ßÆÇ È°¼ºÈ­, UI ¸Þ½ÃÁö
+     * Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, 
+     * ** ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­, UI ï¿½Þ½ï¿½ï¿½ï¿½
      *
      */
 
