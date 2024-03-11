@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class N01_Loading : MonoBehaviour
+public class loadScene : MonoBehaviour
 {
     [SerializeField]
     public Slider progressBar;
@@ -14,11 +15,10 @@ public class N01_Loading : MonoBehaviour
     private bool loadingCompleted;
     private int nextScene;
 
-    //로딩 후 홈 화면 전환
-    //홈화면에서 콘텐츠 전환
-    //각 화면에서 씬으로 전환
 
-    // Start is called before the first frame update
+    public static event Action onLoadComplete;
+
+
     void Start()
     {
         //StartCoroutine(LoadScene());
@@ -86,9 +86,10 @@ public class N01_Loading : MonoBehaviour
             else
             {
                 StopAllCoroutines();
-                Debug.Log("100%1");
+                onLoadComplete?.Invoke();
+                Debug.Log("loadComplete");
             }
-            //Debug.Log("check");
+            
         }
     }
 }
