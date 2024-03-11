@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class InstructionUI : MonoBehaviour
+public class LauncherInstructionUI : MonoBehaviour
 {
 
     public GameObject Gameboard;
@@ -27,7 +27,7 @@ public class InstructionUI : MonoBehaviour
 
     private bool flag_num_1 = false;
     //[FormerlySerializedAs("startTimeOffset")]
-    //public float startTimeOffsetSeconds; // °ÔÀÓ½ÃÀÛÈÄ ¸î ÃÊ ÈÄ UIÀç»ýÇÒ °ÇÁö
+    //public float startTimeOffsetSeconds; // ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ UIï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
     private void Start()
@@ -43,7 +43,7 @@ public class InstructionUI : MonoBehaviour
     {
         if (flag_num_1 == true)
         {
-            //ÀÎÆ®·Î¿¡¼­´Â ¼Óµµ 0.5, ±× ¿Ü¿¡ 1.5 ¼öÁ¤ ÇÊ¿ä
+            //ï¿½ï¿½Æ®ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ 0.5, ï¿½ï¿½ ï¿½Ü¿ï¿½ 1.5 ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
             GB_transform.localPosition = GB_transform.localPosition
                 = Vector3.Lerp(GB_transform.localPosition, GB_targetVector3, 0.5f * Time.deltaTime);
 
@@ -76,24 +76,24 @@ public class InstructionUI : MonoBehaviour
         }
         else
         {
-            //°ÔÀÓÁ¾·á½Ã ÀüÃ¼¸¦ º¸¿©ÁÖ±â À§ÇÑ ¿¹¿ÜÃ³¸®
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
             GB_targetVector3 = GB_positionList[1];
         }
     }
 
-    //½ÃÀÛÀ§Ä¡ 0 ±âÁØ, 0~5±îÁö
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ 0 ï¿½ï¿½ï¿½ï¿½, 0~5ï¿½ï¿½ï¿½ï¿½
     public void Move_GBPosition()
     {
         flag_num_1 = true;
-        GB_Listindex++; //´ÙÀ½ À§Ä¡·Î ÀÚµ¿ ÀüÈ¯ÇÏ±â À§ÇØ
+        GB_Listindex++; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½È¯ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
         Set_GBPosition(GB_Listindex);
     }
 
     IEnumerator Set_UIIntro()
     {
-        //Introhowto º¸¿©ÁÖ°í
-        //Introstory º¸¿©ÁÖ°í
-        //ÄÜÅÙÃ÷ ½ÇÇà ÁØºñ : È­¸é ÀÌµ¿
+        //Introhowto ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½
+        //Introstory ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½ : È­ï¿½ï¿½ ï¿½Ìµï¿½
 
         Message_Intro_Howto.SetActive(true);
 
@@ -112,9 +112,9 @@ public class InstructionUI : MonoBehaviour
 
     IEnumerator Set_UINextlevel()
     {
-        //È­¸é ÀÌµ¿
-        //Endchapter º¸¿©ÁÖ°í
-        //Ready º¸¿©ÁÖ°í
+        //È­ï¿½ï¿½ ï¿½Ìµï¿½
+        //Endchapter ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½
+        //Ready ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½
 
         Move_GBPosition();
 

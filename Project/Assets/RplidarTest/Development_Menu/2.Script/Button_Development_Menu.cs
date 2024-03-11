@@ -17,7 +17,7 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
         txt = this.transform.GetChild(0).gameObject.GetComponent<Text>();
         
         // 2.28 임시로 코드 추가 (민석)
-        rplidar = GameObject.Find("Lidar_object (Scripts)").GetComponent<RplidarTest_Ray>();
+        rplidar = GameObject.Find("RaySynchronizer").GetComponent<RplidarTest_Ray>();
     }
     public void OnPointerClick(PointerEventData eventData)
     {

@@ -43,7 +43,7 @@ public abstract class IGameManager : MonoBehaviour
 
     protected void OnOriginallyRaySynced()
     {
-        GameManager_Ray = RaySynchronizer.ray_ImageMove;
+        GameManager_Ray = RaySynchronizer.initialRay;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
 
         On_GmRay_Synced?.Invoke();
@@ -68,7 +68,7 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("Ray Sync Subscribed");
+        Debug.Log("Ray Sync Bind");
 #endif
         //1차적으로 하드웨어에서 동기화된 Ray를 GameManger에서 읽어옵니다.
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;

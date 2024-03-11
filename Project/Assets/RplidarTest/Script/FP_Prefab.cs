@@ -49,7 +49,7 @@ public class FP_Prefab : RaySynchronizer
     {
         screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
 
-        ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+        initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
 
 #if UNITY_EDITOR

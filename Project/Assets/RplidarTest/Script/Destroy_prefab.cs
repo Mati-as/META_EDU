@@ -33,7 +33,7 @@ public class Destroy_prefab : RaySynchronizer
         //  Event처리로 미사용1/19
         //Debug.Assert(_baseEffectManager != null);
 
-        ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+        initialRay = Camera.main.ScreenPointToRay(screenPosition);
         
         //  Event처리로 미사용1/19
         // _baseEffectManager.ray_EffectManager = ray_ImageMove;

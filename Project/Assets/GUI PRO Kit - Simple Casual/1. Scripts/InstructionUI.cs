@@ -27,7 +27,7 @@ public class InstructionUI : MonoBehaviour
 
     private bool flag_num_1 = false;
     //[FormerlySerializedAs("startTimeOffset")]
-    //public float startTimeOffsetSeconds; // °ÔÀÓ½ÃÀÛÈÄ ¸î ÃÊ ÈÄ UIÀç»ıÇÒ °ÇÁö
+    //public float startTimeOffsetSeconds; // ê²Œì„ì‹œì‘í›„ ëª‡ ì´ˆ í›„ UIì¬ìƒí•  ê±´ì§€
 
 
     private void Start()
@@ -43,7 +43,7 @@ public class InstructionUI : MonoBehaviour
     {
         if (flag_num_1 == true)
         {
-            //ÀÎÆ®·Î¿¡¼­´Â ¼Óµµ 0.5, ±× ¿Ü¿¡ 1.5 ¼öÁ¤ ÇÊ¿ä
+            //ì¸íŠ¸ë¡œì—ì„œëŠ” ì†ë„ 0.5, ê·¸ ì™¸ì— 1.5 ìˆ˜ì • í•„ìš”
             GB_transform.localPosition = GB_transform.localPosition
                 = Vector3.Lerp(GB_transform.localPosition, GB_targetVector3, 0.5f * Time.deltaTime);
 
@@ -76,24 +76,24 @@ public class InstructionUI : MonoBehaviour
         }
         else
         {
-            //°ÔÀÓÁ¾·á½Ã ÀüÃ¼¸¦ º¸¿©ÁÖ±â À§ÇÑ ¿¹¿ÜÃ³¸®
+            //ê²Œì„ì¢…ë£Œì‹œ ì „ì²´ë¥¼ ë³´ì—¬ì£¼ê¸° ìœ„í•œ ì˜ˆì™¸ì²˜ë¦¬
             GB_targetVector3 = GB_positionList[1];
         }
     }
 
-    //½ÃÀÛÀ§Ä¡ 0 ±âÁØ, 0~5±îÁö
+    //ì‹œì‘ìœ„ì¹˜ 0 ê¸°ì¤€, 0~5ê¹Œì§€
     public void Move_GBPosition()
     {
         flag_num_1 = true;
-        GB_Listindex++; //´ÙÀ½ À§Ä¡·Î ÀÚµ¿ ÀüÈ¯ÇÏ±â À§ÇØ
+        GB_Listindex++; //ë‹¤ìŒ ìœ„ì¹˜ë¡œ ìë™ ì „í™˜í•˜ê¸° ìœ„í•´
         Set_GBPosition(GB_Listindex);
     }
 
     IEnumerator Set_UIIntro()
     {
-        //Introhowto º¸¿©ÁÖ°í
-        //Introstory º¸¿©ÁÖ°í
-        //ÄÜÅÙÃ÷ ½ÇÇà ÁØºñ : È­¸é ÀÌµ¿
+        //Introhowto ë³´ì—¬ì£¼ê³ 
+        //Introstory ë³´ì—¬ì£¼ê³ 
+        //ì½˜í…ì¸  ì‹¤í–‰ ì¤€ë¹„ : í™”ë©´ ì´ë™
 
         Message_Intro_Howto.SetActive(true);
 
@@ -112,9 +112,9 @@ public class InstructionUI : MonoBehaviour
 
     IEnumerator Set_UINextlevel()
     {
-        //È­¸é ÀÌµ¿
-        //Endchapter º¸¿©ÁÖ°í
-        //Ready º¸¿©ÁÖ°í
+        //í™”ë©´ ì´ë™
+        //Endchapter ë³´ì—¬ì£¼ê³ 
+        //Ready ë³´ì—¬ì£¼ê³ 
 
         Move_GBPosition();
 

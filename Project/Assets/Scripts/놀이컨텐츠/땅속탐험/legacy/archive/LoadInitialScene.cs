@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class loadScene : MonoBehaviour
+public class LoadInitialScene : MonoBehaviour
 {
     [SerializeField]
     public Slider progressBar;
@@ -16,7 +16,7 @@ public class loadScene : MonoBehaviour
     private int nextScene;
 
 
-    public static event Action onLoadComplete;
+    public static event Action onInitialLoadComplete;
 
 
     void Start()
@@ -86,8 +86,9 @@ public class loadScene : MonoBehaviour
             else
             {
                 StopAllCoroutines();
-                onLoadComplete?.Invoke();
+                onInitialLoadComplete?.Invoke();
                 Debug.Log("loadComplete");
+                gameObject.SetActive(false);
             }
             
         }

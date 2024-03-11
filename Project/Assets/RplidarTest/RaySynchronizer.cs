@@ -13,7 +13,7 @@ using UnityEngine.UI;
 /// </summary>
 public class RaySynchronizer : MonoBehaviour
 {
-    public static Ray ray_ImageMove { get; set; }
+    public static Ray initialRay { get; set; }
    
     private IGameManager gameManager;
     private GameObject uiCamera;
@@ -26,8 +26,9 @@ public class RaySynchronizer : MonoBehaviour
     public Camera _uiCamera;
     
     public InputAction _spaceAction;
-    public GraphicRaycaster GR;
-    public PointerEventData PED;
+    public GraphicRaycaster GR { get; private set; }
+    public PointerEventData PED{ get; private set; }
+    public List<RaycastResult> raycastResults{ get; private set; }
     public Vector3 screenPosition;
     public Button button;
 
@@ -65,7 +66,7 @@ public class RaySynchronizer : MonoBehaviour
     {
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         GR = UI_Canvas.GetComponent<GraphicRaycaster>();
-        PED = new PointerEventData(null);
+        PED = new PointerEventData(EventSystem.current);
     }
 
 
@@ -118,19 +119,23 @@ public class RaySynchronizer : MonoBehaviour
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         
-        ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+        initialRay = Camera.main.ScreenPointToRay(screenPosition);
       
 
         PED.position = screenPosition;
-        var results = new List<RaycastResult>();
-        GR.Raycast(PED, results);
+        raycastResults = new List<RaycastResult>();
+        GR.Raycast(PED, raycastResults);
 
-        if (results.Count > 0)
-            for (var i = 0; i < results.Count; i++)
+        if (raycastResults.Count > 0)
+            for (var i = 0; i < raycastResults.Count; i++)
             {
-                results[i].gameObject.TryGetComponent<Button>(out button);
+                raycastResults[i].gameObject.TryGetComponent<Button>(out button);
                 button?.onClick?.Invoke();
             }
+        
+#if UNITY_EDITOR
+        Debug.Log($"Raysynchronizer : { raycastResults.Count}");
+#endif
         OnGetInputFromUser?.Invoke();
        
 #if UNITY_EDITOR
