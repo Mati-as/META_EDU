@@ -9,12 +9,19 @@ public class Manager_audio : MonoBehaviour
     private AudioSource Click;
     private AudioSource BGM;
     private AudioSource Narration;
+    private AudioSource Warm;
+    private AudioSource Carrot;
+    private AudioSource Corn;
+    private AudioSource Aloe;
 
 
     //private float All_volume = 1f;
     private float Effect_volume = 0.5f;
+    private float Narration_volume = 0.5f;
     private float BGM_volume = 0.3f;
 
+
+    public GameObject Launcher;
     private void Awake()
     {
         if (instance == null)
@@ -45,6 +52,10 @@ public class Manager_audio : MonoBehaviour
     public float Get_BGM_volume()
     {
         return BGM_volume;
+    }
+    public float Get_Narration_volume()
+    {
+        return Narration_volume;
     }
 
     public void Get_click()
@@ -86,8 +97,13 @@ public class Manager_audio : MonoBehaviour
 
         BGM = this.transform.GetChild(0).gameObject.GetComponent<AudioSource>();
         Click = this.transform.GetChild(1).gameObject.GetComponent<AudioSource>();
-        Narration = this.transform.GetChild(2).gameObject.GetComponent<AudioSource>();
-        
+        Narration = Launcher.GetComponent<AudioSource>();
+
+        Warm = this.transform.GetChild(3).gameObject.GetComponent<AudioSource>(); 
+        Carrot = this.transform.GetChild(4).gameObject.GetComponent<AudioSource>();
+        Corn = this.transform.GetChild(5).gameObject.GetComponent<AudioSource>();
+        Aloe = this.transform.GetChild(6).gameObject.GetComponent<AudioSource>();
+
         //Correct_answer = this.transform.GetChild(7).gameObject.GetComponent<AudioSource>();
         //Wrong_answer = this.transform.GetChild(10).gameObject.GetComponent<AudioSource>();
 
@@ -101,32 +117,31 @@ public class Manager_audio : MonoBehaviour
             Click.mute = true;
             BGM.mute = true;
 
-            //Hover.mute = true;
-            //Correct_answer.mute = true;
-            //Wrong_answer.mute = true;
         }
         else if (volume == 1)
         {
             Click.mute = false;
             BGM.mute = false;
 
-            //Hover.mute = false;
-            //Correct_answer.mute = false;
-            //Wrong_answer.mute = false;
         }
     }
 
     public void Set_effect_sound_volume(float volume)
     {
         Click.volume = volume;
-        //Hover.volume = volume;
-        //Correct_answer.volume = volume;
-        //Wrong_answer.volume = volume;
     }
 
     public void Set_BGM_volume(float volume)
     {
         BGM.volume = volume;
+        Warm.volume = volume;
+        Carrot.volume = volume;
+        Corn.volume = volume;
+        Aloe.volume = volume;
+    }
+    public void Set_Narration_volume(float volume)
+    {
+        Narration.volume = volume;
     }
 
 }

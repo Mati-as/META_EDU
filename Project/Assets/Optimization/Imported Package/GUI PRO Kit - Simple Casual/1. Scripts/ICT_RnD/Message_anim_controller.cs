@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,48 +10,28 @@ public class Message_anim_controller : MonoBehaviour
     public Text Message_text;
     public Text Message_text_sub;
 
-    // underground UIì—ì„œ êµ¬ë…
-    public static event Action onIntroUIOff; 
     //0 : On, 1 : Off
     /*
      * 
-     *  1. Message Tool , í´ë¦­ì— ë”°ë¼ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
-     *  2. Message Intro , OnOff ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
-     *  3. Message Content_func,  OnOff ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
+     *  1. Message Tool , Å¬¸¯¿¡ µû¶ó ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+     *  2. Message Intro , OnOff ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+     *  3. Message Content_func,  OnOff ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
      *  
      */
     void Start()
     {
-       
-        
         Message_anim = this.GetComponent<Animation>();
         Init_Animation();
-        Animation_On();
-#if UNITY_EDITOR
-        Debug.Log("UI Animation On");
-#endif
-
-        UI_Scene_Button.onBtnShut -= DeactivateUI;
-        UI_Scene_Button.onBtnShut += DeactivateUI;
-    }
-
-    private void OnDestroy()
-    {
-        UI_Scene_Button.onBtnShut -= DeactivateUI;
     }
 
     public void Animation_On()
     {
         Message_anim.Play(Animation_clip[0]);
-      //  StartCoroutine(DeactivateAfterDelay());
     }
     public void Animation_Off()
     {
         Message_anim.Play(Animation_clip[1]);
         StartCoroutine(Active_false());
-#if UNITY_EDITOR
-        Debug.Log("UI Animation Off");
-#endif
     }
 
     public void Animation_On_Off()
@@ -84,24 +62,7 @@ public class Message_anim_controller : MonoBehaviour
         yield return new WaitForSeconds(1f);
         this.gameObject.SetActive(false);
     }
-    
 
-//     IEnumerator DeactivateAfterDelay()
-//     {
-// #if UNITY_EDITOR
-//         Debug.Log("UI Animation Off");
-// #endif
-//        // yield return new WaitForSeconds(_autoShutDelay);
-//         onIntroUIOff?.Invoke();
-//         
-//     }
-
-
-    private void DeactivateUI()
-    {
-        Animation_Off();
-        
-    }
     //IEnumerator Active_false_time(float timer_1, float timer_2)
     //{
     //    yield return new WaitForSeconds(timer_1);

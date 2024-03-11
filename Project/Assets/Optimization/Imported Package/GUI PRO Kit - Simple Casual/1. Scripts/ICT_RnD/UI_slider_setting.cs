@@ -15,6 +15,7 @@ public class UI_slider_setting : MonoBehaviour
     public bool All_sound = false;
     public bool Effect = false;
     public bool BGM = false;
+    public bool Narration = false;
 
     private float tmp_volume;
     private float volume;
@@ -37,6 +38,10 @@ public class UI_slider_setting : MonoBehaviour
             {
                 volume_slider.value = Manager_audio.instance.Get_BGM_volume();
             }
+            else if (Narration == true)
+            {
+                volume_slider.value = Manager_audio.instance.Get_Narration_volume();
+            }
         }
         //초기 값을 가져오는게 필요할 듯?
     }
@@ -58,6 +63,10 @@ public class UI_slider_setting : MonoBehaviour
             else if (BGM == true)
             {
                 Manager_audio.instance.Set_BGM_volume(volume_slider.value);
+            }
+            else if (Narration == true)
+            {
+                Manager_audio.instance.Set_Narration_volume(volume_slider.value);
             }
         }
         tmp_volume = volume;
