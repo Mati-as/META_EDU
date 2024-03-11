@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17277253, g: 0.21589704, b: 0.2978321, a: 1}
+  m_IndirectSpecularColor: {r: 0.17551674, g: 0.21961461, b: 0.30193755, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2238,7 +2238,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &369407713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2984,7 +2984,7 @@ Light:
     m_Strength: 1
     m_Bias: 0.05
     m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_NearPlane: 0.1
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -3029,14 +3029,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 541038740}
-  m_LocalRotation: {x: 0.67846775, y: -0.18422244, z: 0.18179487, w: 0.6875276}
+  m_LocalRotation: {x: 0.800081, y: -0.14501053, z: 0.21438104, w: 0.54118675}
   m_LocalPosition: {x: 720.4693, y: 262.87256, z: 574.5752}
   m_LocalScale: {x: -6.79, y: 0.67293, z: 0.67293}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 89.24, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 111.85, y: -30, z: 0}
 --- !u!114 &541038744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3398,7 +3398,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &631003260
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3470,7 +3470,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 631003258}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.98, y: -0.04, z: 21.9}
+  m_LocalPosition: {x: 11.55, y: 0.3, z: 17.23}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9368,7 +9368,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &1032637393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10895,6 +10895,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2974987909576360342, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2974987909576360342, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3026692795556904543, guid: b00cc97f175c9984496faf0218f6907d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -10923,6 +10933,32 @@ PrefabInstance:
     - target: {fileID: 5493070159323814652, guid: b00cc97f175c9984496faf0218f6907d,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5522775977476521903, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 5522775977476521903, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8037110316094377348, guid: b00cc97f175c9984496faf0218f6907d,
@@ -11064,7 +11100,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &1561457213
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -12754,7 +12790,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1827506879}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.2214127, y: -0.01, z: 13.48}
+  m_LocalPosition: {x: -11.58, y: -1.21, z: 14.42}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12776,7 +12812,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &1827506882
 SphereCollider:
   m_ObjectHideFlags: 0

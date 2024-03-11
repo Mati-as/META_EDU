@@ -12,27 +12,20 @@ public class WaterPlayground_GameManager : IGameManager
     public Queue<ParticleSystem> particlePool;
        
     private RaycastHit[] _hits;
-    //  private Rigidbody _currentRigidBody;
-
+    private RaycastHit _hitForPs; //클릭시 이펙트 효과전용
+    
     public float forceAmount;
     public float upOffset;
     
- 
-    protected override int TARGET_FRAME { get; } = 30;
-    
+    protected override int TARGET_FRAME { get; } = 45;
+  
     public Vector3 particleUpOffset;
     protected override void Init()
     {
-     
-  
       SetPool(ref particlePool);
       BGM_VOLUME = 0.85f;
       base.Init();
-     
     }
-
-    private RaycastHit _hitForPs;
-    
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
