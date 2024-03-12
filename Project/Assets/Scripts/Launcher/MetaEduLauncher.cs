@@ -20,7 +20,6 @@ public class MetaEduLauncher : UI_PopUp
 	}
 	public enum UIType
     {
-	    None,
       Home,
       Result,
       SelectMode,
@@ -46,7 +45,7 @@ public class MetaEduLauncher : UI_PopUp
 		//SurveyButton
 	}
 
-	private UIType _UItab = UIType.None;
+	private int _UItab = -1;
 
     private readonly string UI_CLICK_SOUND_PATH;
     private GameObject[] _UIs; 
@@ -55,16 +54,18 @@ public class MetaEduLauncher : UI_PopUp
 
     private void Awake()
     {
-	    
-	    DontDestroyOnLoad(this.gameObject);
-	    
-	    
 	    _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
 	    LoadInitialScene.onInitialLoadComplete -= InitLauncher;
 	    LoadInitialScene.onInitialLoadComplete += InitLauncher;
 	    
 	    RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
 	    RaySynchronizer.OnGetInputFromUser += OnRaySynced;
+    }
+
+    private void OnDestroy()
+    {
+	    LoadInitialScene.onInitialLoadComplete -= InitLauncher;
+	    RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
     }
     public void InitLauncher()
 	{
@@ -104,10 +105,10 @@ public class MetaEduLauncher : UI_PopUp
 
     public void ShowTab(UIType tab)
 	{
-		if (_UItab == tab)
+		if ((UIType)_UItab == tab)
 			return;
 
-		_UItab = tab;
+		_UItab = (int)tab;
         
 		
 		GetObject((int)UIType.Home).gameObject.SetActive(false);
@@ -209,6 +210,8 @@ public class MetaEduLauncher : UI_PopUp
 
 	    foreach (var result in _results)
 	    {
+		    if(result.gameObject == null) continue;
+		    
 		    // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
 		    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI))
 		    {
@@ -225,11 +228,6 @@ public class MetaEduLauncher : UI_PopUp
 		    }
 		    
 	    }
-            
-        
-	    
-    
-		   
     }
 
 
@@ -239,6 +237,8 @@ public class MetaEduLauncher : UI_PopUp
 
 	    string originalName = sceneName;
 	    string modifiedName = originalName.Substring("SceneName_".Length);
+	    
+	    gameObject.SetActive(false);
 	    SceneManager.LoadScene(modifiedName);
     }
 

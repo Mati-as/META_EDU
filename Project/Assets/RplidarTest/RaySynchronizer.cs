@@ -122,14 +122,9 @@ public class RaySynchronizer : MonoBehaviour
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
-
         
-
         PED.position = screenPosition;
         
-#if UNITY_EDITOR
-        Debug.Log($"screenPosition : { screenPosition}");
-#endif
         raycastResults = new List<RaycastResult>();
         GR.Raycast(PED, raycastResults);
 
@@ -140,9 +135,7 @@ public class RaySynchronizer : MonoBehaviour
                 button?.onClick?.Invoke();
             }
         
-#if UNITY_EDITOR
-        Debug.Log($"Raysynchronizer : { raycastResults.Count}");
-#endif
+
         OnGetInputFromUser?.Invoke();
        
 #if UNITY_EDITOR

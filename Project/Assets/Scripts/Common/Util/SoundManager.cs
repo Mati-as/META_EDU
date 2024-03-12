@@ -23,7 +23,7 @@ public class SoundManager : MonoBehaviour
     }
 
     private readonly AudioSource[] _audioSources = new AudioSource[(int)Sound.Max];
-    private readonly Dictionary<string, AudioClip> _audioClips = new();
+    private  Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
     private GameObject _soundRoot;
     public void Init()
     {

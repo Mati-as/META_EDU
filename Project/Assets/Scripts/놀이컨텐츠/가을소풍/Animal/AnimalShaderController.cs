@@ -96,7 +96,7 @@ public class AnimalShaderController : MonoBehaviour
                     .OnComplete(() =>
                     {
 #if UNITY_EDITOR
-                        Debug.Log($"{gameObject.name}'s Blinking its Body");
+                     
 #endif
 
                         BlinkBodyColor();
@@ -254,6 +254,7 @@ public class AnimalShaderController : MonoBehaviour
     }
     
     
+    
     private void GetAndInitializeMat()
     {
 //         _bodyMeshRenderer = Util.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
@@ -265,30 +266,31 @@ public class AnimalShaderController : MonoBehaviour
 // #endif
 //
 //        
-      
         _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
         _glowMeshRenderer.enabled = false;
-            
-        _glowMat = _glowMeshRenderer.material; // material instance를 가져옵니다.
-        _glowMat.EnableKeyword("_EMISSION");        // emission을 활성화합니다.
-        _glowMat.SetColor(EMISSION_COLOR, _animalData.outlineColor);
 
-        
-        
-        // 리소스 폴더에서 머티리얼 불러오기
+// Instead of creating a new material, use a MaterialPropertyBlock
+        MaterialPropertyBlock block = new MaterialPropertyBlock();
+
+// Load the material from the Resources folder as before
         var tempMat = Resources.Load<Material>("게임별분류/가을소풍/" + _animalData.englishName);
         _bodyMat = tempMat;
-      
 
-        // SkinnedMeshRenderer 가져오기
+// Get the SkinnedMeshRenderer
         _bodyMeshRenderer = Utils.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
         _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
-        
+
         if (_bodyMeshRenderer != null && _bodyMat != null)
         {
-            _bodyMeshRenderer.material = _bodyMat; // 새로운 인스턴스 생성
-            _bodyMeshRenderer.material.EnableKeyword("_Color");
-            _bodyMeshRenderer.material.SetColor(BODY_COLOR, _animalData.defaultColor);
+            // Apply the material to the mesh renderer
+            _bodyMeshRenderer.material = _bodyMat;
+
+            // Use the block to set properties
+            block.SetColor("_Color", _animalData.defaultColor);
+            block.SetColor("_EmissionColor", _animalData.outlineColor);
+
+            // Apply the block to the renderer
+            _bodyMeshRenderer.SetPropertyBlock(block);
         }
 
 

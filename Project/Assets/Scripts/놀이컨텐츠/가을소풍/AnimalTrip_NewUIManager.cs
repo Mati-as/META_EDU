@@ -11,28 +11,5 @@ using UnityEngine;
 public class AnimalTrip_NewUIManager : MonoBehaviour
 {
     
-    [SerializeField] private StoryUIController _storyUIController;
 
-    private void Awake()
-    {
-        //_storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
-
-      
-        UI_Scene_Button.onBtnShut -= ShowStoryUI;
-        UI_Scene_Button.onBtnShut += ShowStoryUI;
-    }
-
-    private void OnDestroy()
-    {
-        UI_Scene_Button.onBtnShut -= ShowStoryUI;
-    }
-
-
-
-    private bool _isUIPlayed;
-
-    private void ShowStoryUI()
-    {
-       _storyUIController.OnHowToPlayUIFinished(); 
-    }
 }
