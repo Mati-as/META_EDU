@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -54,7 +55,11 @@ public class MetaEduLauncher : UI_PopUp
 
     private void Awake()
     {
-	    _raySynchronizer = GameObject.Find("RaySynchronizer").GetComponent<RaySynchronizer>();
+	    
+	    DontDestroyOnLoad(this.gameObject);
+	    
+	    
+	    _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
 	    LoadInitialScene.onInitialLoadComplete -= InitLauncher;
 	    LoadInitialScene.onInitialLoadComplete += InitLauncher;
 	    
@@ -127,9 +132,7 @@ public class MetaEduLauncher : UI_PopUp
 				GetObject((int)UIType.Home).GetComponent<ScrollRect>().ResetVertical();
 				// GetButton((int)Buttons.AbilityButton).image.sprite = Managers.Resource.Load<Sprite>("Sprites/Main/Common/btn_18");
 				// GetImage((int)Images.AbilityBox).sprite = Managers.Resource.Load<Sprite>("Sprites/Main/Common/btn_12");
-				        
-    	
-
+                
 				break;
 			
 			case UIType.SelectMode:
@@ -183,10 +186,11 @@ public class MetaEduLauncher : UI_PopUp
 			// 	break;
 		}
 		
-		ShowTab(UIType.Home);
+	
 	}
 
     private RaySynchronizer _raySynchronizer;
+    private List<RaycastResult> _results;
 
     public void OnRaySynced()
     {
@@ -194,32 +198,60 @@ public class MetaEduLauncher : UI_PopUp
 	    Debug.Log($"RAY SYNCED { _raySynchronizer.raycastResults.Count}");
 #endif
 	
+	    
+	    _results = new List<RaycastResult>();
+	    _results = _raySynchronizer.raycastResults;
+	    
+	    if (_results.Count <= 0) return;
+	    
+	    
 	    UIType clickedUI = 0;
 
-
-		    for (var i = 0; i < _raySynchronizer.raycastResults.Count; i++)
+	    foreach (var result in _results)
+	    {
+		    // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
+		    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI))
 		    {
-			    string originalName = _raySynchronizer.raycastResults[i].gameObject.name;
-			    string modifiedName = originalName.Substring(0, originalName.Length - 6);
 #if UNITY_EDITOR
-			    Debug.Log($"modifiedName: {modifiedName}");
+			    Debug.Log($"ShowTap : {clickedUI}");
 #endif
-			    
-			    if (Enum.TryParse(modifiedName, out clickedUI))
-			    {
-#if UNITY_EDITOR
-				    Debug.Log($"Current UI : {clickedUI}");
-#endif
-				    ShowTab(clickedUI);
-			    }
-
+			    ShowTab(clickedUI);
 		    }
+            
+		    // ** 씬 로드** ---------------------------------------------------------
+		    if (result.gameObject.name.Contains("SceneName_"))
+		    {
+			    LoadScene(result.gameObject.name);
+		    }
+		    
+	    }
+            
+        
 	    
+    
 		   
     }
 
 
+    private void LoadScene(string sceneName)
+    {  
+	   
 
+	    string originalName = sceneName;
+	    string modifiedName = originalName.Substring("SceneName_".Length);
+	    SceneManager.LoadScene(modifiedName);
+    }
+
+    private string SetButtonString(string input)
+    {
+	    if (!input.Contains("Button")) return null;
+
+	    string originalName = input;
+	    string modifiedName = originalName.Substring(0, originalName.Length - 6);
+	    return modifiedName;
+    }
+    
+ 
 
 
     IEnumerator Active_false()

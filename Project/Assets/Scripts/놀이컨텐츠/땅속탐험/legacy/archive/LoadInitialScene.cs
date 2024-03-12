@@ -77,7 +77,7 @@ public class LoadInitialScene : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
             timer += Time.deltaTime;
 
-            if (timer <= 6.0f)
+            if (timer <= 2.0f)
             {
                 progressBar.value = Mathf.Lerp(progressBar.value, 100f, timer/6);
                 loadingIcon.rectTransform.Rotate(new Vector3(0, 0, 100 * Time.deltaTime));

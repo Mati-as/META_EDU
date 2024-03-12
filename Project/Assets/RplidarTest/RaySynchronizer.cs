@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -47,7 +48,8 @@ public class RaySynchronizer : MonoBehaviour
     public virtual void Init()
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
-        GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
+
+        if (SceneManager.GetActiveScene().name != "Launcher_METAEDU") GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
         
         Debug.Assert(gameManager!=null);
@@ -120,9 +122,14 @@ public class RaySynchronizer : MonoBehaviour
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
-      
+
+        
 
         PED.position = screenPosition;
+        
+#if UNITY_EDITOR
+        Debug.Log($"screenPosition : { screenPosition}");
+#endif
         raycastResults = new List<RaycastResult>();
         GR.Raycast(PED, raycastResults);
 

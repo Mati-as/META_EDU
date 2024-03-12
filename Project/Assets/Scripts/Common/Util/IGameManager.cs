@@ -10,7 +10,7 @@ public abstract class IGameManager : MonoBehaviour
     public static bool isStartButtonClicked { get; private set; }
     protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
-    protected virtual int TARGET_FRAME { get; } = 45;
+    protected virtual int TARGET_FRAME { get; } = 30;
     
     protected  float BGM_VOLUME = 0.105f;
     

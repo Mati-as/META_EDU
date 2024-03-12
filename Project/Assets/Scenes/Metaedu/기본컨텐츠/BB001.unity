@@ -10442,6 +10442,36 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2974987909576360342, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2974987909576360342, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5522775978121774894, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -1570.0249
+      objectReference: {fileID: 0}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5724902537724552501, guid: b00cc97f175c9984496faf0218f6907d,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8037110316094377348, guid: b00cc97f175c9984496faf0218f6907d,
         type: 3}
       propertyPath: m_IsActive
@@ -22835,7 +22865,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &3726712036739667383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22859,7 +22889,6 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  GR: {fileID: 0}
   screenPosition: {x: 0, y: 0, z: 0}
   button: {fileID: 0}
 --- !u!1 &3954786845333625899
@@ -23075,6 +23104,7 @@ MonoBehaviour:
     type: 3}
   MOUSEPrefab: {fileID: 886082513674400756, guid: e3ff834810723174db4afebed00c13a7,
     type: 3}
+  FPPrefab: {fileID: 0}
   m_onscan: 0
   Test_check: 0
   Guideline: {fileID: 3319879600648026607}
@@ -23210,9 +23240,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: FPS Counter
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fd501376e6b539b4387d3dadfc2abb04, type: 2}
-  m_sharedMaterial: {fileID: 877592314881560857, guid: fd501376e6b539b4387d3dadfc2abb04,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -23318,7 +23347,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961edc89834e96e4380cebd143c85645, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsText: {fileID: 5380800657306099464}
 --- !u!1 &5380800657306099469
 GameObject:
   m_ObjectHideFlags: 0
