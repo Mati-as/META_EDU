@@ -186,7 +186,7 @@ public class UndergroundUIManager : MonoBehaviour
     {
 
 
-        xmlAsset = Resources.Load<TextAsset>("Data/Path/SoundPathData");
+        xmlAsset = Resources.Load<TextAsset>("Common/Data/Path/SoundPathData");
         soundPathXml = new XmlDocument();
         soundPathXml.LoadXml(xmlAsset.text);
         

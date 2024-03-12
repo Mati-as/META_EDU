@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public abstract class IGameManager : MonoBehaviour
@@ -12,11 +10,9 @@ public abstract class IGameManager : MonoBehaviour
     public static bool isStartButtonClicked { get; private set; }
     protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
-    protected virtual int TARGET_FRAME { get; } = 30;
+    protected virtual int TARGET_FRAME { get; } = 45;
     
     protected  float BGM_VOLUME = 0.105f;
-
-    protected RaySynchronizer _raySynchronizer;
     
  
 
@@ -34,9 +30,6 @@ public abstract class IGameManager : MonoBehaviour
         PlayNarration();
         isInitialized = true;
 
-        _raySynchronizer = 
-            GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
-
         DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
         {
             Managers.Sound.Play(SoundManager.Sound.Effect,
@@ -46,41 +39,12 @@ public abstract class IGameManager : MonoBehaviour
     }
 
 
-    private List<RaycastResult> _results;
 
-    protected void OnInitiallyRaySynced()
+
+    protected void OnOriginallyRaySynced()
     {
         GameManager_Ray = RaySynchronizer.initialRay;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
-        
-	    
-        _results = new List<RaycastResult>();
-        _results = _raySynchronizer.raycastResults;
-	    
-        if (_results.Count <= 0) return;
-	    
-	    
-        MetaEduLauncher.UIType clickedUI = 0;
-
-        foreach (var result in _results)
-        {
-            if (result.gameObject.name.Contains("Button")
-                && SceneManager.GetActiveScene().name != "Launcher_MetaEdu")
-            {
-                if (result.gameObject.name == "HomeButton"
-                    && SceneManager.GetActiveScene().name != "Launcher_MetaEdu")
-                {
-                    SceneManager.LoadScene("Launcher_MetaEdu");
-                }
-                if (result.gameObject.name == "SettingButton")
-                {
-                    var launcher = GameObject.FindWithTag("Launcher");
-                        launcher.gameObject.SetActive(true);
-                }
-                    
-            }
-
-        }
 
         On_GmRay_Synced?.Invoke();
     }
@@ -104,11 +68,11 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("Ray Syncs' Combined to GameManager");
+        Debug.Log("Ray Sync Subscribed");
 #endif
         //1차적으로 하드웨어에서 동기화된 Ray를 GameManger에서 읽어옵니다.
-        RaySynchronizer.OnGetInputFromUser -= OnInitiallyRaySynced;
-        RaySynchronizer.OnGetInputFromUser += OnInitiallyRaySynced;
+        RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
+        RaySynchronizer.OnGetInputFromUser += OnOriginallyRaySynced;
 
         //On_GmRay_Synced에서 나머지 Ray관련 로직 분배 및 처리합니다. 
         On_GmRay_Synced -= OnRaySynced;
@@ -120,7 +84,7 @@ public abstract class IGameManager : MonoBehaviour
     
     private void OnDestroy()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnInitiallyRaySynced;
+        RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
         On_GmRay_Synced -= OnRaySynced;
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
     }

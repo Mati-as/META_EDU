@@ -52,6 +52,8 @@ public class MetaEduLauncher : UI_PopUp
     private Animation messageAnim;
     private List<string> _animClips = new List<string>();
 
+    
+    public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
     private void Awake()
     {
 	    _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
@@ -99,7 +101,12 @@ public class MetaEduLauncher : UI_PopUp
 #if UNITY_EDITOR
         Debug.Log("Launcher Init Completed");
 #endif
-		ShowTab(UIType.Home);
+		if (!isBackButton)
+		{
+			isBackButton = false;
+			ShowTab(UIType.Home);
+		}
+		else ShowTab(UIType.SelectMode);
 	}
     
 

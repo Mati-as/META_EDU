@@ -397,16 +397,6 @@ public class AnimalTrip_GameManager : IGameManager
 
     // ------------------------- ▼ 메소드 목록 ------------------------------------------------
 
-    /// <summary>
-    ///     디버그용 씬 재로드 함수 입니다. static 변수는 초기화 되지 않으므로 사용 시 주의합니다.
-    /// </summary>
-    private void ReloadCurrentScene()
-    {
-        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-
-        // 해당 인덱스의 씬을 다시 로드합니다.
-        SceneManager.LoadScene(currentSceneIndex);
-    }
 
     /// <summary>
     ///     디버그용 재생속도 컨트롤 함수 입니다.
@@ -612,16 +602,15 @@ public class AnimalTrip_GameManager : IGameManager
     protected override void OnRaySynced()
     {
             base.OnRaySynced();
-            var hits = Physics.RaycastAll(GameManager_Ray);
+            
+         
 #if UNITY_EDITOR
-            Debug.Log("Ray Sync Click!");
+            Debug.Log("GameManager Raysynced!");
 #endif
 
-            foreach (var hit in hits)
+            foreach (var hit in GameManager_Hits)
             {
-#if UNITY_EDITOR
-                Debug.Log($"hit.collider.name{hit.collider.name}");
-#endif
+
                 if (hit.collider.name == "Screen")
                 {
 #if UNITY_EDITOR

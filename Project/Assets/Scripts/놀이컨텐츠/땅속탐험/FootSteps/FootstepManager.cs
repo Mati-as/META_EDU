@@ -228,7 +228,6 @@ public class FootstepManager : IGameManager
 
     private void OnDestroy()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 
@@ -243,9 +242,7 @@ public class FootstepManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-#if UNITY_EDITOR
-        Debug.Log($"{gameObject.name} : OnRaySynced invoked");
-#endif
+
         hits = Physics.RaycastAll(GameManager_Ray);
         
         foreach (var hit in hits)
