@@ -139,7 +139,7 @@ public class RaySynchronizer : MonoBehaviour
         OnGetInputFromUser?.Invoke();
        
 #if UNITY_EDITOR
-        Debug.Log("User Input!");
+        
 #endif
       
     }

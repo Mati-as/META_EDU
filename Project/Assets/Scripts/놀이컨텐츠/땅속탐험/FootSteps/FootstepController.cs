@@ -61,6 +61,7 @@ public class FootstepController : MonoBehaviour
 
     private void Start()
     {
+        _footstepManager=  GameObject.FindWithTag("GameManager").GetComponent<FootstepManager>();
         _spriteRenderer.DOFade(0, 0.05f);
         UpScale();
     }
@@ -119,6 +120,8 @@ public class FootstepController : MonoBehaviour
     private bool _isClicked =false;
   
     public static event Action onLastFootstepClicked; 
+
+    private FootstepManager _footstepManager;
     public void OnButtonClicked()
     {
        
@@ -132,7 +135,7 @@ public class FootstepController : MonoBehaviour
        
             if (animalByLastFootstep != null && animalNameToCall != string.Empty)
             {
-                if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
+                if (_footstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
                 {
                     
                    //animal 객체의 OnEnable로직을 활용하기위해 false,true 동시사용.

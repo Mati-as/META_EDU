@@ -215,15 +215,13 @@ public class MetaEduLauncher : UI_PopUp
 
     public void OnRaySynced()
     {
-#if UNITY_EDITOR
-	    Debug.Log($"RAY SYNCED { _raySynchronizer.raycastResults.Count}");
-#endif
-	
+
 	    if (!_isLoadFinished) return;
 	    
 	    _results = new List<RaycastResult>();
 	    _results = _raySynchronizer.raycastResults;
-	    
+
+
 	    if (_results.Count <= 0) return;
 	    
 	    

@@ -29,6 +29,8 @@ public class AnimalSummoner : MonoBehaviour
     {
         targetScale = new Vector3(maximizedScale, maximizedScale, maximizedScale);
         SetTransforms();
+
+        _footstepManager=  GameObject.FindWithTag("GameManager").GetComponent<FootstepManager>();
     }
 
     private void SetTransforms()
@@ -46,6 +48,8 @@ public class AnimalSummoner : MonoBehaviour
 
 
     private bool isUIPlaying;
+    [SerializeField]
+    private FootstepManager _footstepManager;
 
     public void Move()
     {
@@ -55,7 +59,7 @@ public class AnimalSummoner : MonoBehaviour
         {
             isUIPlaying = true;
 
-            transform.DOMove(messageTransformByName[FootstepManager.currentlyClickedObjectName].transform.position, 1f)
+            transform.DOMove(messageTransformByName[_footstepManager.currentlyClickedObjectName].transform.position, 1f)
                 .OnComplete(() => isUIPlaying = false);
         }
     }

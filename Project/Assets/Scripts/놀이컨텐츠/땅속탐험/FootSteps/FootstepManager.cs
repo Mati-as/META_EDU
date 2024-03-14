@@ -231,7 +231,7 @@ public class FootstepManager : IGameManager
     }
 
 
-    public static string currentlyClickedObjectName;
+    public string currentlyClickedObjectName { get; private set; }
 
     
 
@@ -249,11 +249,12 @@ public class FootstepManager : IGameManager
 
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
-            var fC = obj.GetComponent<FootstepController>();
+            FootstepController fc;
+            obj.TryGetComponent(out fc);
 #if UNITY_EDITOR
             Debug.Log($"raycasted object name :{obj}");
 #endif
-            currentlyClickedObjectName = fC.animalNameToCall;
+            if(fc!=null)currentlyClickedObjectName = fc.animalNameToCall;
             InspectObject(clickedObject);
         }
     }

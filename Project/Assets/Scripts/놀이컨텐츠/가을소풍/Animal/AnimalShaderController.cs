@@ -81,11 +81,11 @@ public class AnimalShaderController : MonoBehaviour
             if (_elapsedForInPlayGlowOn > _shaderAndCommon.waitTimeForTurningOnGlow)
             {
                 fresnelElapsedTime += Time.deltaTime;
-                _glowMeshRenderer.enabled = true;
+                //_glowMeshRenderer.enabled = true;
                 isGlowOn = true;
                 BrightenOutlineWithLerp();
-                SetIntensity(_shaderAndCommon.colorIntensityRange);
-                ChangeFresnelOfAnimalOutlineColor();
+               //    SetIntensity(_shaderAndCommon.colorIntensityRange);
+               // ChangeFresnelOfAnimalOutlineColor();
             }
 
             _elapsedForBlink += Time.deltaTime;
@@ -158,7 +158,7 @@ public class AnimalShaderController : MonoBehaviour
             .Color(_animalData.defaultColor, _animalData.darkenedColor, duration, color =>
             {
 
-                
+             
                 _bodyMat.SetColor(BODY_COLOR, color);
                 _bodyMeshRenderer.material = _bodyMat;
             });
@@ -166,7 +166,7 @@ public class AnimalShaderController : MonoBehaviour
 
     private void BlinkBodyColor(float duration =0.3f ,float interval=0.3f)
     {
-
+    
        _blinkTween = DOVirtual
             .Color(_animalData.darkenedColor, _animalData.defaultColor, duration, color =>
             {
@@ -275,22 +275,19 @@ public class AnimalShaderController : MonoBehaviour
 // Load the material from the Resources folder as before
         var tempMat = Resources.Load<Material>("게임별분류/가을소풍/" + _animalData.englishName);
         _bodyMat = tempMat;
-
+        _glowMat = tempMat;
+     
+    
 // Get the SkinnedMeshRenderer
         _bodyMeshRenderer = Utils.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
-        _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+        
+      
+            // _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
 
         if (_bodyMeshRenderer != null && _bodyMat != null)
         {
-            // Apply the material to the mesh renderer
-            _bodyMeshRenderer.material = _bodyMat;
-
-            // Use the block to set properties
-            block.SetColor("_Color", _animalData.defaultColor);
-            block.SetColor("_EmissionColor", _animalData.outlineColor);
-
-            // Apply the block to the renderer
-            _bodyMeshRenderer.SetPropertyBlock(block);
+            Debug.Log("dark material assigned");
+       
         }
 
 

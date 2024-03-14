@@ -33,7 +33,7 @@ public class UndergroundUIManager : MonoBehaviour
     [SerializeField]
     private GroundGameController gameController;
 
-    [SerializeField] private FootstepManager footstepManager;
+     private FootstepManager _footstepManager;
     
     public RectTransform popUpUIRect;
     [Space(30f)]
@@ -164,7 +164,7 @@ public class UndergroundUIManager : MonoBehaviour
     private XmlDocument soundPathXml;
     private void Start()
     {
-
+        _footstepManager=  GameObject.FindWithTag("GameManager").GetComponent<FootstepManager>();
 
         xmlAsset = Resources.Load<TextAsset>("Common/Data/Path/SoundPathData");
         soundPathXml = new XmlDocument();
@@ -196,13 +196,13 @@ public class UndergroundUIManager : MonoBehaviour
             .Subscribe(_ => OnGameOver())
             .AddTo(this);
 
-        footstepManager.finishPageTriggerProperty
+        _footstepManager.finishPageTriggerProperty
             .Where(value => value)
             .Delay(TimeSpan.FromSeconds(3.5f))
             .Subscribe(_ => OnPageChange())
             .AddTo(this);
 
-        footstepManager.lastElementClickedProperty
+        _footstepManager.lastElementClickedProperty
             .Where(_ => _)
             .Delay(TimeSpan.FromSeconds(0.1f))
             .Subscribe(_ => OnAnimalFind())
@@ -284,7 +284,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                    gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
+                   Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -296,7 +296,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void OnAnimalFind()
     {
         //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
-        ChangeImageSource("게임별분류/땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
+        ChangeImageSource("게임별분류/땅속탐험/image/" + _footstepManager.currentlyClickedObjectName);
         
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
