@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -191,6 +188,8 @@ public class FootstepManager : IGameManager
     protected override void Init()
     {
         base.Init();
+        DOTween.Init();
+        DOTween.SetTweensCapacity(2000,100);
         
         _audioSource = GetComponent<AudioSource>();
         
@@ -270,17 +269,23 @@ public class FootstepManager : IGameManager
         Debug.Log("Clicked on: " + obj.name);
 #endif
         var footstepController = obj.GetComponent<FootstepController>();
+        
         if (footstepController != null)
         {
             currentFootstepGroupOrder = footstepController.footstepGroupOrder - 1;
-            
-            if(footstepController.animalNameToCall!=null && currentlyClickedObjectName!=string.Empty || currentlyClickedObjectName == "")
-                
+
+            if (footstepController.animalNameToCall != null && currentlyClickedObjectName != string.Empty ||
+                currentlyClickedObjectName == "")
+            {
                 undergroundUIManager.popUpUIRectTmp.text = currentlyClickedObjectName;
+                OnFootstepClicked?.Invoke();
+                DoNext();
+                footstepController.OnButtonClicked();
+            }   
+               
             
             
-            OnFootstepClicked?.Invoke();
-            DoNext();
+          
         }
     }
 
