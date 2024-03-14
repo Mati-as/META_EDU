@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.WSA;
+
 
 
 public class MetaEduLauncher : UI_PopUp
@@ -52,13 +51,15 @@ public class MetaEduLauncher : UI_PopUp
     private Animation messageAnim;
     private List<string> _animClips = new List<string>();
 
+    private bool _isLoadFinished;
+
     
     public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
     private void Awake()
     {
 	    _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
-	    LoadInitialScene.onInitialLoadComplete -= InitLauncher;
-	    LoadInitialScene.onInitialLoadComplete += InitLauncher;
+	    LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
+	    LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
 	    
 	    RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
 	    RaySynchronizer.OnGetInputFromUser += OnRaySynced;
@@ -67,11 +68,23 @@ public class MetaEduLauncher : UI_PopUp
     private void OnDestroy()
     {
 	    LoadInitialScene.onInitialLoadComplete -= InitLauncher;
+	    LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
 	    RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
+
+	    Managers.Sound.Stop(SoundManager.Sound.Bgm);
+
     }
+
+    private void OnLoadFinished()
+    {
+	    InitLauncher();
+	    _isLoadFinished = true;
+    }
+    
     public void InitLauncher()
-	{
-		
+    {
+
+	    Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/Launcher", 0.05f);
 		
         BindObject(typeof(UIType));
         BindButton(typeof(UIButtons));
@@ -111,9 +124,9 @@ public class MetaEduLauncher : UI_PopUp
     
 
     public void ShowTab(UIType tab)
-	{
-		if ((UIType)_UItab == tab)
-			return;
+    {
+	  
+		if ((UIType)_UItab == tab) return;
 
 		_UItab = (int)tab;
         
@@ -206,6 +219,7 @@ public class MetaEduLauncher : UI_PopUp
 	    Debug.Log($"RAY SYNCED { _raySynchronizer.raycastResults.Count}");
 #endif
 	
+	    if (!_isLoadFinished) return;
 	    
 	    _results = new List<RaycastResult>();
 	    _results = _raySynchronizer.raycastResults;
