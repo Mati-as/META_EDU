@@ -40,7 +40,8 @@ public class Manager_Sensor : MonoBehaviour
 
     private void Init()
     {
-        if (SceneManager.GetActiveScene().name != "Launcher_METAEDU") UI_Camera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+       
+        UI_Camera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
         UI_Canvas = GameObject.FindWithTag("UIManager");
 
         FPC = this.GetComponent<FP_controller>();

@@ -38,7 +38,7 @@ public class FP_Prefab : RaySynchronizer
             FPC.Add_FPposition(FP);
             //��ġ �߻� (3)
             base.Start();
-            base.Temp_1203();
+            base.InvokeRayEvent();
         }
         else
         {
