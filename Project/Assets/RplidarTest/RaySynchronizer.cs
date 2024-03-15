@@ -144,13 +144,5 @@ public class RaySynchronizer : MonoBehaviour
       
     }
     
-    // ball position 사용시 move() 사용
-    // public void Move()
-    // {
-    //     var horizontalInput = Input.GetAxis("Horizontal");
-    //     var verticalInput = Input.GetAxis("Vertical");
-    //     moveDirection = new Vector3(horizontalInput, verticalInput, 0f).normalized;
-    //     movement = moveSpeed * Time.deltaTime;
-    //     transform.Translate(moveDirection * movement);
-    // }
+
 }
