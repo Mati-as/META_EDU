@@ -145,6 +145,8 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private Material ChangeColor(Transform transform, float duration = 0.5f)
     {
         var ID = transform.GetInstanceID();
+        if(!materalMap.ContainsKey(ID)) return null;
+        
         var thisMaterial = new Material(materalMap[ID]);
         
         

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -53,6 +54,8 @@ public class MetaEduLauncher : UI_PopUp
 	private GameObject[] _UIs;
 	private Animation messageAnim;
 	private List<string> _animClips = new List<string>();
+	private float _clickableInterval = 0.5f;
+	private bool _isClikcable = true;
 
 	private bool _isLoadFinished;
     
@@ -138,6 +141,11 @@ public class MetaEduLauncher : UI_PopUp
 	public void ShowTab(UIType tab)
 	{
 
+		if (!_isClikcable) return;
+		_isClikcable = false;
+		DOVirtual.Float(0, 0, _clickableInterval, _ => { })
+			.OnComplete(() => { _isClikcable = true; });
+		
 		if ((UIType)_UItab == tab) return;
 
 		_UItab = (int)tab;
@@ -157,6 +165,7 @@ public class MetaEduLauncher : UI_PopUp
 #if UNITY_EDITOR
 		Debug.Log($"Current UI : {tab}");
 #endif
+		
 		switch (tab)
 		{
 			case UIType.Home:
@@ -314,32 +323,28 @@ public class MetaEduLauncher : UI_PopUp
 	}
 
 
-
 	public void ShowTabOrLoadScene(List<RaycastResult> results)
 	{
-		UIType clickedUI = 0;
-#if UNITY_EDITOR
-		Debug.Log($"LAUNCHER RAY");
-#endif
-		foreach (var result in results)
-		{
-#if UNITY_EDITOR
-			Debug.Log($" result Name:{result.gameObject.name}");
-#endif
-			// 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
-			if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI))
+		if(!_isClikcable) return;
+		DOVirtual.Float(0, 0, 0.1f, _ => { })
+			.OnComplete(() =>
 			{
+				UIType clickedUI = 0;
+#if UNITY_EDITOR
+				Debug.Log("LAUNCHER RAY");
+#endif
+				foreach (var result in results)
+				{
+#if UNITY_EDITOR
+					Debug.Log($" result Name:{result.gameObject.name}");
+#endif
+					// 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
+					if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI)) ShowTab(clickedUI);
 
-				ShowTab(clickedUI);
-			}
-
-			// ** 씬 로드** ---------------------------------------------------------
-			if (result.gameObject.name.Contains("SceneName_"))
-			{
-				LoadScene(result.gameObject.name);
-			}
-
-		}
+					// ** 씬 로드** ---------------------------------------------------------
+					if (result.gameObject.name.Contains("SceneName_")) LoadScene(result.gameObject.name);
+				}
+			});
 	}
 
 

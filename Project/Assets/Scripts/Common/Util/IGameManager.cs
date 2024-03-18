@@ -39,12 +39,13 @@ public abstract class IGameManager : MonoBehaviour
     }
 
 
-
+    public LayerMask layerMask;
 
     protected void OnOriginallyRaySynced()
     {
+
         GameManager_Ray = RaySynchronizer.initialRay;
-        GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
+        GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
         On_GmRay_Synced?.Invoke();
     }
