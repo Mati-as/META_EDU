@@ -265,10 +265,16 @@ public class MetaEduLauncher : UI_PopUp
 	public Vector3 currentPrefabPosition { private get; set; }
 	private Vector3 _screenPositionByPrefab;
 	
+	
+	
+	/// <summary>
+	/// 하드웨어(빔 프로젝터) 상에서 프리팹으로 클릭하는 로직을 위한 OnRaySync 커스텀 이벤트 함수입니다.
+	/// 씬변경 후 일반 게임로직에서는 동작하지 않습닌다
+	/// </summary>
 	private void OnRaySyncByPrefab()
 	{
 
-		// _screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
+		 //_screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
 		// _ray = _uiCamera.ScreenPointToRay(_screenPositionByPrefab);
 		
 		_launcherPED.position = currentPrefabPosition;

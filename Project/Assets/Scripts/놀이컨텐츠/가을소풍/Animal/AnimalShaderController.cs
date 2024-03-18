@@ -257,15 +257,7 @@ public class AnimalShaderController : MonoBehaviour
     
     private void GetAndInitializeMat()
     {
-//         _bodyMeshRenderer = Util.FindComponentInSiblings<SkinnedMeshRenderer>(transform);
-//         _bodyMat = _bodyMeshRenderer.sharedMaterial;
-//         _bodyMat.EnableKeyword("_Color");
-//         _bodyMat.SetColor(COLOR, _animalData.defaultColor);
-// #if UNITY_EDITOR
-//         Debug.Log($" bodyMat name is.......{_bodyMat}");
-// #endif
-//
-//        
+
         _glowMeshRenderer = GetComponent<SkinnedMeshRenderer>();
         _glowMeshRenderer.enabled = false;
 

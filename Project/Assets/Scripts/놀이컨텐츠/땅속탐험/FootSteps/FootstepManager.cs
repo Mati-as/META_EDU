@@ -461,21 +461,6 @@ public class FootstepManager : IGameManager
     }
 
     
-    //pageFinishToggle()에서 처리하도록 로직 변경, 함수 미사용 중 11/22/23
-    // private IEnumerator TurnOnNextGroupFirstFootstep()
-    // {
-    //     if (currentFootstepGroupOrder % 3 == 0)
-    //         //그룹이 넘어갈때 시간 간격
-    //         yield return GetWaitForSeconds(12.5f);
-    //     else
-    //         // 동일 그룹 내 발자국 끼리의 시간간격
-    //         yield return GetWaitForSeconds(8.5f);
-    //     
-    //     // _audioSource.clip = footstepAppearingSound;
-    //     // _audioSource.Play();
-    //    
-    // }
-    
 
     public AudioClip footstepAppearingSound;
 

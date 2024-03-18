@@ -10,7 +10,7 @@ public abstract class IGameManager : MonoBehaviour
     public static bool isStartButtonClicked { get; private set; }
     protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
-    protected virtual int TARGET_FRAME { get; } = 45;
+    protected virtual int TARGET_FRAME { get; } = 60;
     
     protected  float BGM_VOLUME = 0.105f;
     
@@ -115,7 +115,7 @@ public abstract class IGameManager : MonoBehaviour
     private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
-        QualitySettings.vSyncCount = 0;
+        QualitySettings.vSyncCount = 1;
         Application.targetFrameRate = targetFrame;
 
 #if UNITY_EDITOR
