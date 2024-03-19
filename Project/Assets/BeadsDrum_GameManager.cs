@@ -1,0 +1,59 @@
+using System.Collections;
+using System.Collections.Generic;
+using DefaultNamespace;
+using UnityEngine;
+
+public class BeadsDrum_GameManager : IGameManager
+{
+    [SerializeField]
+    [Range(0,10)]
+    public float clickRadius;
+    
+    protected override void OnRaySynced()
+    {
+        if (Physics.Raycast(GameManager_Ray, out GameManager_Hits[0]))
+        {
+            Collider[] hitColliders = Physics.OverlapSphere(GameManager_Hits[0].point, clickRadius);
+            foreach (var hitCollider in hitColliders)
+            {
+                IBeadOnClicked clickable = hitCollider.GetComponent<IBeadOnClicked>();
+                if (clickable != null)
+                {
+                    clickable.OnClicked();
+                }
+            }
+            
+            
+            foreach (var hit in GameManager_Hits)
+            {
+           
+                
+                
+                if (hit.transform.gameObject.name.Contains("Drum"))
+                {
+                    var randomChar = (char)Random.Range('A', 'B' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
+                    return;
+                }
+                
+                if (hit.transform.gameObject.name.Contains("Frame"))
+                {
+                    var randomChar = (char)Random.Range('A', 'C' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Plastic" + randomChar);
+                    return;
+                }
+                
+              
+
+            }
+            
+            if (GameManager_Hits[0].transform.gameObject.name.Contains("Background"))
+            {
+                var randomChar = (char)Random.Range('A', 'D' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Bubble"+randomChar,0.25f);
+                  
+            }
+        }
+        
+    }
+}

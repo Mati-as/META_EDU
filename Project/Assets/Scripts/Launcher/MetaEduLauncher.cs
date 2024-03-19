@@ -54,7 +54,7 @@ public class MetaEduLauncher : UI_PopUp
 	private GameObject[] _UIs;
 	private Animation messageAnim;
 	private List<string> _animClips = new List<string>();
-	private float _clickableInterval = 0.5f;
+	private float _clickableInterval = 0.28f;
 	private bool _isClikcable = true;
 
 	private bool _isLoadFinished;

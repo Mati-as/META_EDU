@@ -35,7 +35,11 @@ public abstract class IGameManager : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect,
                 "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
         });
-       
+        
+        int uiLayer = LayerMask.NameToLayer("UI");
+        LayerMask maskWithoutUI = ~(1 << uiLayer);
+        layerMask = maskWithoutUI;
+
     }
 
 

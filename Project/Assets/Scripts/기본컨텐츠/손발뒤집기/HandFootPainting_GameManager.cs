@@ -76,9 +76,9 @@ public class HandFootPainting_GameManager : IGameManager
     private void Update()
     {
         if (!_isRoundReady) return;
-#if UNITY_EDITOR
-        Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
-#endif
+// #if UNITY_EDITOR
+//         Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
+// #endif
         _elapsed += Time.deltaTime;
         _remainTime = _timeLimit - _elapsed;
         
