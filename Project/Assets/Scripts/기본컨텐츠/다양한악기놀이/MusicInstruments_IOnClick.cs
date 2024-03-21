@@ -1,18 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class MusicInstruments_IOnClick : MonoBehaviour
+namespace 기본컨텐츠.다양한악기놀이
 {
-    // Start is called before the first frame update
-    void Start()
+    public interface IMusicInstrumentsIOnClick 
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void OnClicked(){}
     }
 }
