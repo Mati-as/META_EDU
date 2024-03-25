@@ -94,7 +94,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
             yield return new WaitForSeconds(0.015f);
 
 #if UNITY_EDITOR
-            Debug.Log($"Beads generating....{_beadsContainer.Count}");
+     //       Debug.Log($"Beads generating....{_beadsContainer.Count}");
 #endif
 
             i++;

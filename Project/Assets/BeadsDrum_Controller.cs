@@ -18,6 +18,9 @@ public class BeadsDrum_Controller : MonoBehaviour
     private Quaternion _defaultQuatLeft;
     private Quaternion _defaultQuatRight;
 
+    public static event Action OnStickHitLeft; 
+    public static event Action OnStickHitRight; 
+
     enum BeadsDrum
     {
         Left,
@@ -44,62 +47,66 @@ public class BeadsDrum_Controller : MonoBehaviour
         _defaultQuatLeft = _drumStickLeft.rotation;
         _defaultQuatRight = _drurmStickRight.rotation;
 
-        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
-        UI_Scene_Button.onBtnShut += OnStartButtonClicked;
+
+        BeadsDrum_GameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
+        BeadsDrum_GameManager.OnLeftDrumClicked += OnLeftDrumClicked;
+        
+        BeadsDrum_GameManager.OnRightDrumClicked -= OnRightDrumClicked;
+        BeadsDrum_GameManager.OnRightDrumClicked += OnRightDrumClicked;
 
 
     }
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
+        BeadsDrum_GameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
+        BeadsDrum_GameManager.OnRightDrumClicked -= OnRightDrumClicked;
     }
 
-    private void OnStartButtonClicked()
-    {
-        PlayBeadsDrumAnimation(_beadsDrumLeft,_drumStickLeft, 10, _defaultQuatLeft);
-        //PlayDrumStickAnimation(_drumStickLeft, 10, _defaultQuatLeft);
-        DOVirtual.Float(0, 0, 1, _ => { }).OnComplete(() =>
-        {
-            PlayBeadsDrumAnimation(_beadsDrumRight,_drurmStickRight, 10, _defaultQuatRight);
-          //  PlayDrumStickAnimation(_drurmStickRight, 10, _defaultQuatRight);
-        });
+    // private void OnStartButtonClicked()
+    // {
+    //     PlayDrumAndStickAnimation(_beadsDrumLeft,_drumStickLeft, -10, _defaultQuatLeft,OnStickHitLeft);
+    //     
+    //     DOVirtual.Float(0, 0, 1, _ => { }).OnComplete(() =>
+    //     {
+    //         PlayDrumAndStickAnimation(_beadsDrumRight,_drurmStickRight, 10, _defaultQuatRight,OnStickHitRight);
+    //     });
+    //
+    // }
 
+    private void OnLeftDrumClicked()
+    {
+        PlayDrumAndStickAnimation(_beadsDrumLeft,_drumStickLeft, -10, _defaultQuatLeft,OnStickHitLeft);
+    }
+
+    private void OnRightDrumClicked()
+    {
+        PlayDrumAndStickAnimation(_beadsDrumRight,_drurmStickRight, 10, _defaultQuatRight,OnStickHitRight);
     }
 
     private Sequence _seq;
     private Sequence _stickSeq;
-    private void PlayBeadsDrumAnimation(Transform drum,Transform stick,float rotateAmount,Quaternion defaultRotation)
+    private void PlayDrumAndStickAnimation(Transform drum,Transform stick,float rotateAmount,Quaternion defaultRotation,Action action)
     {
-#if UNITY_EDITOR
-        Debug.Log("Beads Drum Animation Going On");
-#endif
+
+        if (_seq != null && _seq.IsActive() && _seq.IsPlaying()) return;
         _seq = DOTween.Sequence();
-        
-        _seq.AppendInterval(1.0f)
-            .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(rotateAmount,0,0), 0.08f).SetEase(Ease.InOutSine))
-            .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(-rotateAmount,0,0),0.08f).SetEase(Ease.OutQuint))
-            .Append(drum.DOScale(_shrinkAmount, 0.15f).SetEase(Ease.InOutSine))
-            .AppendInterval(0.05f)
-            .Append(drum.DOScale(_defaultSize, 0.15f).SetEase(Ease.InOutSine))
-            .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(-rotateAmount,0,0), 0.08f).SetEase(Ease.InOutSine))
-            .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(rotateAmount,0,0),0.08f).SetEase(Ease.OutQuint))
-            .AppendInterval(1.0f)
-            .SetLoops(-1,LoopType.Yoyo);
+
+        _seq.Append(stick.DORotateQuaternion(defaultRotation * Quaternion.Euler
+                (rotateAmount, 0, 0), 0.07f).SetEase(Ease.InOutSine))
+            .AppendCallback(() =>
+            {
+
+                action?.Invoke();
+            })
+            .AppendInterval(0.02f)
+            .Append(drum.DOScale(_shrinkAmount, 0.10f).SetEase(Ease.InOutSine))
+            .AppendInterval(0.01f)
+            .Append(drum.DOScale(_defaultSize, 0.08f).SetEase(Ease.InOutSine))
+            .Append(stick.DORotateQuaternion(defaultRotation, 0.04f).SetEase(Ease.InOutSine))
+            .AppendCallback(() => { _seq = null;});
+
+
     }
 
-    // private void PlayDrumStickAnimation(Transform stick,float rotateAmount,Quaternion defaultRotation)
-    // {
-    //     _stickSeq = DOTween.Sequence();
-    //     
-    //     _stickSeq.AppendInterval(0.85f)
-    //         .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(rotateAmount,0,0), 0.08f).SetEase(Ease.InOutSine))
-    //         .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(-rotateAmount,0,0),0.08f).SetEase(Ease.OutQuint))
-    //         .AppendInterval(0.05f)
-    //         .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(rotateAmount,0,0), 0.08f).SetEase(Ease.InOutSine))
-    //         .Append(stick.DORotateQuaternion(defaultRotation*Quaternion.Euler(-rotateAmount,0,0),0.08f).SetEase(Ease.OutQuint))
-    //         .AppendInterval(0.85f)
-    //         .SetLoops(-1,LoopType.Yoyo);
-    // }
-    //
 }
