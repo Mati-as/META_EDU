@@ -18,45 +18,61 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
 
     private Sequence _autoSeq;
     private Quaternion _defaultQuat;
-
+    private ParticleSystem _ps;
+    private bool _isParticlePlaying;
+   
     private void Start()
     {
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
-        _parrotAnimator = GetComponent<Animator>();
+        _ps = GameObject.Find("CFX_MusicInstruments").GetComponent<ParticleSystem>();
         
+        _parrotAnimator = GetComponent<Animator>();
         _defaultQuat = transform.rotation;
-
         PlayAutomatic(transform,80f,_defaultQuat);
+        
+        _parrotSlider.onValueChanged.AddListener(HandleSliderValueChanged);
+
     }
 
-    private void Update()
+    private void OnDestroy()
     {
+        _parrotSlider.onValueChanged.RemoveListener(HandleSliderValueChanged);
+    }
 
+    private void HandleSliderValueChanged(float value)
+    {
         var currentVal = _parrotSlider.value;
         if (currentVal < 0.3f)
         {
-            _parrotAnimator.SetBool(FLY_ANIM,false);
-            _parrotAnimator.SetBool(SPIN_ANIM,false);
-            
-            _parrotAnimator.SetBool(IDLE_ANIM,true);
+            _parrotAnimator.SetBool(FLY_ANIM, false);
+            _parrotAnimator.SetBool(SPIN_ANIM, false);
+
+            _parrotAnimator.SetBool(IDLE_ANIM, true);
         }
-        
+
         if (currentVal > 0.3f && currentVal < 0.66f)
         {
-            _parrotAnimator.SetBool(IDLE_ANIM,false);
-            _parrotAnimator.SetBool(SPIN_ANIM,false);
-            
-            _parrotAnimator.SetBool(FLY_ANIM,true);
+            _parrotAnimator.SetBool(IDLE_ANIM, false);
+            _parrotAnimator.SetBool(SPIN_ANIM, false);
+
+            _parrotAnimator.SetBool(FLY_ANIM, true);
+            _isParticlePlaying = false;
         }
-        
-        if ( currentVal > 0.66f)
+
+        if (currentVal > 0.66f)
         {
-            _parrotAnimator.SetBool(IDLE_ANIM,false);
-            _parrotAnimator.SetBool(FLY_ANIM,false);
-            
-            _parrotAnimator.SetBool(SPIN_ANIM,true);
+            _parrotAnimator.SetBool(IDLE_ANIM, false);
+            _parrotAnimator.SetBool(FLY_ANIM, false);
+            if (!_isParticlePlaying)
+            {
+                _isParticlePlaying = true;
+                _ps.Play();
+            }
+
+            _parrotAnimator.SetBool(SPIN_ANIM, true);
         }
     }
+ 
 
     private void PlayAutomatic(Transform thisTransform, float rotateAmount, Quaternion defaultRotation)
     {

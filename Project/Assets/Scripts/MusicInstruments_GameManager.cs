@@ -10,11 +10,13 @@ public class MusicInstruments_GameManager : IGameManager
 {
     private Stack<ParticleSystem> _effectContainer;
     private Slider _parrotSlider;
+    
 
     protected override void Init()
     {
         base.Init();
         _effectContainer = new Stack<ParticleSystem>();
+    
         SetPool(_effectContainer,"게임별분류/기본컨텐츠/다양한악기놀이/MusicInstruments_CFX_Click");
         
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
@@ -22,7 +24,7 @@ public class MusicInstruments_GameManager : IGameManager
 
     private void Update()
     {
-        _parrotSlider.value -= (Time.deltaTime /12);//감소속도
+        _parrotSlider.value -= (Time.deltaTime /20);//감소속도
     }
 
     protected override void OnRaySynced()
@@ -37,7 +39,7 @@ public class MusicInstruments_GameManager : IGameManager
 
             if (_iOnClicked != null)
             {
-                DOVirtual.Float(0, 0.008f, 0.2f, val =>
+                DOVirtual.Float(0, 0.004f, 0.2f, val =>
                 {
                     _parrotSlider.value += val;
                 }).SetEase(Ease.InSine);
