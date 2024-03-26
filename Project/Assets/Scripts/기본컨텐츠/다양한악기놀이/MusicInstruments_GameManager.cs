@@ -17,7 +17,7 @@ public class MusicInstruments_GameManager : IGameManager
         base.Init();
         _effectContainer = new Stack<ParticleSystem>();
     
-        SetPool(_effectContainer,"게임별분류/기본컨텐츠/다양한악기놀이/MusicInstruments_CFX_Click");
+        SetPool(_effectContainer,"게임별분류/기본컨텐츠/MusicInstruments/MusicInstruments_CFX_Click");
         
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
     }
@@ -39,7 +39,7 @@ public class MusicInstruments_GameManager : IGameManager
 
             if (_iOnClicked != null)
             {
-                DOVirtual.Float(0, 0.004f, 0.2f, val =>
+                DOVirtual.Float(0, 0.011f, 0.2f, val =>
                 {
                     _parrotSlider.value += val;
                 }).SetEase(Ease.InSine);

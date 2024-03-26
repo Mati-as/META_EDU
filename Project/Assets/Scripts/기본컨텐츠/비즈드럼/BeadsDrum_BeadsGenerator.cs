@@ -13,7 +13,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
 
     private void Init()
     {
-        SetPool(_beadsContainer, "게임별분류/기본컨텐츠/ColorBeadsDrum/Prefabs/Bead", beadsCount);
+        SetPool(_beadsContainer, "게임별분류/기본컨텐츠/BeadsDrum/Prefabs/Bead", beadsCount);
 
         _spawnPosA = transform.GetChild(0).transform.Find("GeneratePositionRight").position;
         _spawnPosB = transform.GetChild(0).transform.Find("GeneratePositionLeft").position;

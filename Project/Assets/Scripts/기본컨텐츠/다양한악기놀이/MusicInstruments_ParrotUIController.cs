@@ -11,6 +11,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
     private Slider _parrotSlider;
     private Animator _parrotAnimator;
 
+    private readonly int RUN_ANIM = Animator.StringToHash("Run");
     private readonly int IDLE_ANIM = Animator.StringToHash("Idle");
     private readonly int FLY_ANIM = Animator.StringToHash("Fly");
     private readonly int SPIN_ANIM = Animator.StringToHash("Spin");
@@ -39,6 +40,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
         _parrotSlider.onValueChanged.RemoveListener(HandleSliderValueChanged);
     }
 
+    private bool _isSoundPlaying;
     private void HandleSliderValueChanged(float value)
     {
         var currentVal = _parrotSlider.value;
@@ -46,32 +48,75 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
         {
             _parrotAnimator.SetBool(FLY_ANIM, false);
             _parrotAnimator.SetBool(SPIN_ANIM, false);
+            _parrotAnimator.SetBool(RUN_ANIM, false);
 
             _parrotAnimator.SetBool(IDLE_ANIM, true);
+            
+            
+            _isSoundPlaying = false;
         }
 
         if (currentVal > 0.3f && currentVal < 0.66f)
         {
             _parrotAnimator.SetBool(IDLE_ANIM, false);
             _parrotAnimator.SetBool(SPIN_ANIM, false);
+            _parrotAnimator.SetBool(FLY_ANIM, false);
 
-            _parrotAnimator.SetBool(FLY_ANIM, true);
+            _parrotAnimator.SetBool(RUN_ANIM, true);
+            
             _isParticlePlaying = false;
+
+            if (!_isSoundPlaying)
+            {
+                _isSoundPlaying = true;
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Run",0.3f);
+            }
+       
+            
+          
+        
         }
 
-        if (currentVal > 0.66f)
+        if (currentVal > 0.66f && currentVal < 0.90f)
+        {
+            if (currentVal < 0.77f)
+            {
+                _isSoundPlaying = false;
+            }
+            _parrotAnimator.SetBool(IDLE_ANIM, false);
+            _parrotAnimator.SetBool(SPIN_ANIM, false);
+            _parrotAnimator.SetBool(RUN_ANIM, false);
+
+          
+            _parrotAnimator.SetBool(FLY_ANIM, true);
+        }
+
+        if (currentVal > 0.90f)
         {
             _parrotAnimator.SetBool(IDLE_ANIM, false);
+            _parrotAnimator.SetBool(RUN_ANIM, false);
             _parrotAnimator.SetBool(FLY_ANIM, false);
+            _parrotAnimator.SetBool(SPIN_ANIM, true);
+            if (!_isSoundPlaying)
+            {
+                _isSoundPlaying = true;
+#if UNITY_EDITOR
+                Debug.Log("spinSound");
+#endif
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Spin",0.2f);
+            }
+            
+            
+          
             if (!_isParticlePlaying)
             {
                 _isParticlePlaying = true;
                 _ps.Play();
             }
-
-            _parrotAnimator.SetBool(SPIN_ANIM, true);
         }
     }
+    
+    
  
 
     private void PlayAutomatic(Transform thisTransform, float rotateAmount, Quaternion defaultRotation)
