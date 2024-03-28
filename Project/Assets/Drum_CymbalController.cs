@@ -4,28 +4,33 @@ using 기본컨텐츠.다양한악기놀이;
 
 public class Drum_CymbalController : MonoBehaviour,IMusicInstrumentsIOnClick
 {
-    public void OnClicked()
-    {
-        PlayBeadsDrumAnimation(transform,Random.Range(-10f,10f),_defaultQuat);
-       // var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Cymbal" ,
-            0.3f,pitch:Random.Range(0.9f,1.1f));
-    }
+
 
     private float _shrinkAmount = 0.92f;
     private Vector3 _defaultSize;
     private Sequence _seq;
     private Sequence _automaticSeq;
     private Quaternion _defaultQuat;
+    
+    [Range(0.5f,1.5f)]
+    public float pitch;
     private void Start()
     {
         _defaultSize = transform.localScale;
         _defaultQuat = transform.rotation;
         
-        PlayAutomatic(transform,Random.Range(-10f,10f),_defaultQuat);
+        PlayAutomatic(transform,Random.Range(-8f,8f),_defaultQuat);
     }
 
+    
+    public void OnClicked()
+    {
+        PlayBeadsDrumAnimation(transform,Random.Range(-15f,15f),_defaultQuat);
+        // var randomChar = (char)Random.Range('A', 'B' + 1);
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/기본컨텐츠/MusicInstruments/Cymbal" ,
+            0.3f,pitch:pitch);
+    }
 
     private void PlayBeadsDrumAnimation(Transform guitar, float rotateAmount, Quaternion defaultRotation)
     {
@@ -39,13 +44,23 @@ public class Drum_CymbalController : MonoBehaviour,IMusicInstrumentsIOnClick
 
 
         _seq = DOTween.Sequence();
+        
+        _automaticSeq.Kill();
+        _automaticSeq = null;
 
+        
+        var rarndomValue = Random.Range(-rotateAmount, rotateAmount);
+        var rotateValue = Mathf.Abs(rarndomValue) < 10? 10 : rarndomValue;
         _seq
-            .Append(guitar.DORotateQuaternion(defaultRotation * Quaternion.Euler(rotateAmount, 0, 0), 0.08f)
+            .Append(guitar.DORotateQuaternion(defaultRotation * Quaternion.Euler(rotateValue, 0, 0), 0.08f)
                 .SetEase(Ease.InOutSine))
-            .Append(guitar.DORotateQuaternion(defaultRotation * Quaternion.Euler(0, 0, 0), 0.08f)
+            .Append(guitar.DORotateQuaternion(defaultRotation * Quaternion.Euler(0, 0, 0), 0.10f)
                 .SetEase(Ease.OutQuint))
-            .OnComplete(() => _seq = null);
+            .OnComplete(() =>
+            {
+                PlayAutomatic(transform,Random.Range(-8f,8f),_defaultQuat);
+                _seq = null;
+            });
     }
     
     private void PlayAutomatic(Transform cymbal, float rotateAmount, Quaternion defaultRotation)
