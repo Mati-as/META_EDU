@@ -214,25 +214,25 @@ public class Piano_MusicController : IGameManager
                 var psPos = posToMove + _ps.gameObject.transform.up * UP_OFFSET_PS + Vector3.back * BACK_OFFSET;
                 _ps.gameObject.transform.position = psPos;
                 _ps.gameObject.SetActive(true);
-                yield return DOVirtual.Float(0, 0, 1.55f, _ => { }).WaitForCompletion();
+                yield return DOVirtual.Float(0, 0, 0.35f, _ => { }).WaitForCompletion();
 
 
                 // ------ 2.앵무새이동--------------------------------------------------------------
                 var arrival = posToMove + Vector3.back * BACK_OFFSET + Vector3.up * UP_OFFSET;
 
                 _currentPath = SetPath(_parrot, arrival, PATH_HEIGHT);
-                yield return _parrot.DOPath(_currentPath, 0.25f).SetEase(Ease.InOutSine)
+                yield return _parrot.DOPath(_currentPath, 0.15f).SetEase(Ease.InOutSine)
                     .OnStart(() =>
                     {
-                        _parrot.DOLookAt(posToMove + Vector3.back * 5f + Vector3.up * 3f, 0.2f);
+                        _parrot.DOLookAt(posToMove + Vector3.back * 5f + Vector3.up * 3f, 0.1f);
                         _animator.SetBool(FLY, true);
                     }).OnComplete(() => { _animator.SetBool(FLY, false); }).WaitForCompletion();
 
 
                 // ------ 3.앵무새 도착한 위치에서 제자리점프----------------------------------------------
-                yield return DOVirtual.Float(0, 0, 0.2f, _ => { }).WaitForCompletion();
+                yield return DOVirtual.Float(0, 0, 0.10f, _ => { }).WaitForCompletion();
                 _currentPath = SetPath(_parrot, arrival, JUMP_HEIGHT);
-                yield return _parrot.DOPath(_currentPath, 0.25f).SetEase(Ease.InOutSine).WaitForCompletion();
+                yield return _parrot.DOPath(_currentPath, 0.10f).SetEase(Ease.InOutSine).WaitForCompletion();
 
 
                 // ------ 4.건반 클릭 -------------------------------------------------------------------
@@ -243,7 +243,7 @@ public class Piano_MusicController : IGameManager
 
 
                 // ------ 5.클릭 이후-------------------------------------------------------------------
-                yield return DOVirtual.Float(0, 0, 0.18f, _ => { }).WaitForCompletion();
+                yield return DOVirtual.Float(0, 0, 0.08f, _ => { }).WaitForCompletion();
                 _ps.Stop();
                 _ps.gameObject.SetActive(false);
             }

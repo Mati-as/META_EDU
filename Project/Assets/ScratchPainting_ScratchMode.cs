@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class ScratchPainting_ScratchMode : MonoBehaviour
 {
@@ -17,32 +14,52 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
     [SerializeField]
     private Texture2D[] burshTextures;// Define an InputAction for painting
 
+    private ScratchPainting_ScratchMode _scratchMode;
+
     public new float bgmVol;
 
      [Header("Shader Setting")] 
      public float burshStrength = 1;
 
+     private bool _isPaintable; // 도장직기 중에는 플레아금지 
 
      private void Awake()
      {
          IGameManager.On_GmRay_Synced -= Paint;
          IGameManager.On_GmRay_Synced += Paint;
+         ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
+         ScratchPainting_GameManager.OnStampingFinished += OnStampingFinished;
      }
 
      private void OnDestroy()
      {
-         IGameManager.On_GmRay_Synced -= Paint;
+         ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
      }
 
      private void Start()
     {
         InitTexture();
     }
-    
-    
-    /// <summary>
+
+     private void OnStampingFinished()
+     {
+         _isPaintable = true;
+         ActivateTextrue();
+     }
+
+     private void ActivateTextrue()
+     {
+      
+         
+         DOVirtual.Float(0, 0, 6.5f, _ => { })
+             .OnComplete(() => { _meshRenderer.material.DOFade(1, 1.5f); });
+ 
+     }
+
+     /// <summary>
     /// Awake단게로 옮기지말 것,renderTexture Access Deny되는 버그 발생가능성 있음
     /// </summary>
+    
     private void InitTexture()
     {
         renderTexture = new RenderTexture(textureToPaintOn.width, textureToPaintOn.height, 0, RenderTextureFormat.ARGB32);
@@ -51,15 +68,23 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
         
      
         Graphics.Blit(textureToPaintOn, renderTexture);
+        
 
-        // Set the material's texture
-        GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
+        // Set the material's texture\
+        _meshRenderer = GetComponent<MeshRenderer>();
+        
+        _meshRenderer.material.mainTexture = renderTexture;
+        
+        _meshRenderer.material.DOFade(0, 0.001f);
+      
     }
 
     public float currentRotation;
+    private RenderTexture currentlyPaintedTexture;
     void Paint()
     {
-     
+        if (!_isPaintable) return;
+        
         currentRotation = Random.Range(0,360);
       
         RaycastHit hit;
@@ -93,9 +118,9 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     // Update the RenderTexture
-                    RenderTexture temp = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
-                    Graphics.Blit(renderTexture, temp, paintMaterial);
-                    Graphics.Blit(temp, renderTexture);
+                    currentlyPaintedTexture = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
+                    Graphics.Blit(renderTexture, currentlyPaintedTexture, paintMaterial);
+                    Graphics.Blit(currentlyPaintedTexture, renderTexture);
                     //RenderTexture.ReleaseTemporary(temp);
                 }
            

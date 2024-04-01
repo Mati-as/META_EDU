@@ -12,24 +12,30 @@ public class ScratchPainting_UIManager : UI_PopUp
     {
         Ready,
         Start,
-        Stop
+        Stop,
+        LetsPaint
     }
 
     //  private IGameManager _gm; 
     private CanvasGroup _canvasGroup;
     
-    private GameObject _start;
     private GameObject _ready;
+    private GameObject _start;
     private GameObject _stop;
-
+    private GameObject _letsPaint;
     
-
-    private RectTransform _rectStart;
     private RectTransform _rectReady;
+    private RectTransform _rectStart;
     private RectTransform _rectStop;
+    private RectTransform _rectLetsPaint;
 
     private float  _intervalBtwStartAndReady =1f;
-    public static event Action onStartUI; 
+    public static event Action onStartUI;
+
+    private WaitForSeconds _wait;
+    private WaitForSeconds _waitInterval;
+    private WaitForSeconds _waitForReady;
+    private float _waitTIme= 4.5f;
 
     public override bool Init()
     {
@@ -53,15 +59,19 @@ public class ScratchPainting_UIManager : UI_PopUp
         _rectStop.localScale = Vector3.zero;
         _stop.SetActive(false);
         
-
+        _letsPaint = GetObject((int)HandFlip_UI_Type.LetsPaint);
+        _rectLetsPaint =_letsPaint.GetComponent<RectTransform>();
+        _rectLetsPaint.localScale = Vector3.zero;
+        _letsPaint.SetActive(false);
+        
         UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
         
         ScratchPainting_GameManager.onRoundRestart -= OnStart;
         ScratchPainting_GameManager.onRoundRestart += OnStart;
 
-        ScratchPainting_GameManager.onRoundFinished -= PopUpStopUI;
-        ScratchPainting_GameManager.onRoundFinished += PopUpStopUI;
+        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
+        ScratchPainting_GameManager.OnStampingFinished += PopUpStopUI;
     
         return true;
         
@@ -70,7 +80,7 @@ public class ScratchPainting_UIManager : UI_PopUp
     private void OnDestroy()
     {
         ScratchPainting_GameManager.onRoundRestart -= OnStart;
-        ScratchPainting_GameManager.onRoundFinished -= PopUpStopUI;
+        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
     }
 
     public void OnStart()
@@ -92,11 +102,6 @@ public class ScratchPainting_UIManager : UI_PopUp
         StartCoroutine(PopUpStopUICoroutine());
     }
 
-
-    private WaitForSeconds _wait;
-    private WaitForSeconds _waitInterval;
-    private WaitForSeconds _waitForReady;
-    private float _waitTIme= 4.5f;
     
 
     private IEnumerator PopUpStartUICoroutine()
@@ -146,7 +151,7 @@ public class ScratchPainting_UIManager : UI_PopUp
         }
         
     
-        
+        //1.그만!
         yield return _waitInterval;
         _stop.gameObject.SetActive(true);
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
@@ -155,8 +160,24 @@ public class ScratchPainting_UIManager : UI_PopUp
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
             }).WaitForCompletion();
-        yield return _waitInterval;
+        yield return _waitInterval; 
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();
         
+        
+        //2.그림을 그려보세요
+      
+        yield return _waitInterval;
+        _rectLetsPaint.gameObject.SetActive(true);
+        yield return DOVirtual.Float(0, 1, 1, scale => { _rectLetsPaint.localScale = Vector3.one * scale; }).OnStart(
+            () =>
+            {
+               //Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
+               //Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+            }).WaitForCompletion();
+        yield return _waitInterval;
+        yield return DOVirtual.Float(1, 0, 3f, _ => { }).WaitForCompletion();
+    
+        yield return DOVirtual.Float(1, 0, 1, scale => { _rectLetsPaint.localScale = Vector3.one * scale; }).WaitForCompletion();
+
     }
 }

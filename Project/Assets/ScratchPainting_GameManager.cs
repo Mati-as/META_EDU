@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class ScratchPainting_GameManager : IGameManager
 {
-    public string gameVersion; //Fish or Tree 
     public static bool isInit { get; private set; }
 
     public Queue<GameObject> printPool { get; set; }
@@ -16,7 +16,9 @@ public class ScratchPainting_GameManager : IGameManager
     private readonly float _poolSize = 50;
     private SpriteRenderer _bgSprite;
     private float _elapsed;
-    private readonly float _timeLimit = 30f;
+    
+   [Range(0,30)]
+    public  float timeLimit = 30f;
     private float _remainTime;
     private bool _isRoundReady;
     private TextMeshProUGUI _tmp;
@@ -28,7 +30,7 @@ public class ScratchPainting_GameManager : IGameManager
 
     private Vector3 _defaultPrintScale;
 
-    public static event Action onRoundFinished;
+    public static event Action OnStampingFinished;
     public static event Action printInitEvent;
     public static event Action onRoundRestart;
 
@@ -37,13 +39,9 @@ public class ScratchPainting_GameManager : IGameManager
         base.Init();
         DOTween.Init().SetCapacity(1500, 500);
         SetPool();
-        
-        
-        //_bgSprite = GameObject.Find(gameVersion + "Mask").GetComponent<SpriteRenderer>();
+
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
-        //_outlineSpRenderer = GameObject.Find(gameVersion + "Outline").GetComponent<SpriteRenderer>();
-        //_glowDefaultColor = _outlineSpRenderer.material.color;
 
         _bgSprite.DOFade(0, 0.00001f).OnComplete(() => { isInit = true; });
     }
@@ -52,8 +50,8 @@ public class ScratchPainting_GameManager : IGameManager
     {
         base.BindEvent();
 
-        onRoundFinished -= OnRoundFinished;
-        onRoundFinished += OnRoundFinished;
+        OnStampingFinished -= OnRoundFinished;
+        OnStampingFinished += OnRoundFinished;
 
         onRoundRestart -= OnRoundRestart;
         onRoundRestart += OnRoundRestart;
@@ -64,7 +62,7 @@ public class ScratchPainting_GameManager : IGameManager
 
     private void OnDestroy()
     {
-        onRoundFinished -= OnRoundFinished;
+        OnStampingFinished -= OnRoundFinished;
         onRoundRestart -= OnRoundRestart;
         ScratchPainting_UIManager.onStartUI -= OnStartUI;
     }
@@ -84,7 +82,7 @@ public class ScratchPainting_GameManager : IGameManager
 //         Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
 // #endif
         _elapsed += Time.deltaTime;
-        _remainTime = _timeLimit - _elapsed;
+        _remainTime = timeLimit - _elapsed;
 
 
         if (_remainTime <= 6f && _remainTime >= 1)
@@ -102,10 +100,10 @@ public class ScratchPainting_GameManager : IGameManager
         }
 
 
-        if (_elapsed > _timeLimit)
+        if (_elapsed > timeLimit)
         {
             _isRoundReady = false;
-            onRoundFinished.Invoke();
+            OnStampingFinished.Invoke();
             _tmp.text = string.Empty;
         }
         else
@@ -143,7 +141,7 @@ public class ScratchPainting_GameManager : IGameManager
         _elapsedToCount = 0f;
         _isCountNarrationPlaying = false;
 
-        _remainTime = _timeLimit;
+        _remainTime = timeLimit;
         _elapsed = 0;
         _bgSprite.DOFade(0, 2f)
             .OnStart(() =>
@@ -203,14 +201,15 @@ public class ScratchPainting_GameManager : IGameManager
 
         Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in GameManager_Hits)
-        {
-            GetFromPool(hit.point);
-            var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
-                0.3f);
+            if (hit.transform.gameObject.name.Contains("CrayonBg"))
+            {
+                GetFromPool(hit.point);
+                var randomChar = (char)Random.Range('A', 'F' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    0.3f);
 
-            break;
-        }
+                break;
+            }
     }
 
     private void SetPool()
@@ -236,20 +235,17 @@ public class ScratchPainting_GameManager : IGameManager
                 if (obj != null)
                 {
                     var print = Instantiate(obj, transform);
-                    
-                        _defaultPrintScale = print.transform.localScale;
-                    
-                 
+
+                    _defaultPrintScale = print.transform.localScale;
+
+
                     print.transform.DORotate(new Vector3(0f, Random.Range(-180f, 180f), 0f), 0.01f);
                     print.gameObject.SetActive(false);
                     printPool.Enqueue(print);
-
-                   
                 }
-    
     }
 
-    private readonly float RETRUN_WAIT_TIME = 70;
+    private readonly float RETRUN_WAIT_TIME = 250;
 
     private void GetFromPool(Vector3 spawnPosition)
     {
