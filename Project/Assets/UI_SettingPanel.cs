@@ -9,7 +9,7 @@ public class UI_SettingPanel : MonoBehaviour
 {
   private Button _button;
   private Vector3 _defaultPos;
-  private float _moveAmount= 1.20f;
+  private float _moveAmount= 145f;
   private RectTransform _panel;
   private bool _isPanelOn;
       
@@ -21,14 +21,14 @@ public class UI_SettingPanel : MonoBehaviour
 
       _panel = transform.parent.Find("TopMenuUI").GetComponent<RectTransform>();
       
-      _defaultPos = _panel.position;
+      _defaultPos = _panel.anchoredPosition;
   }
 
   private void OnClick()
   {
       if (!_isPanelOn)
       {
-          _panel.DOMove(_panel.position + Vector3.left * _moveAmount, 0.33f).SetEase(Ease.InOutSine)
+          _panel.DOAnchorPos(_defaultPos + Vector3.left * _moveAmount, 0.33f).SetEase(Ease.InOutSine)
               .OnComplete(() =>
               {
                   _isPanelOn = true;
@@ -37,7 +37,7 @@ public class UI_SettingPanel : MonoBehaviour
     
       else
       {
-          _panel.DOMove(_defaultPos, 0.33f).SetEase(Ease.InOutSine)
+          _panel.DOAnchorPos(_defaultPos, 0.33f).SetEase(Ease.InOutSine)
               .OnComplete(() =>
               {
                   _isPanelOn = false;

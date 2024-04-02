@@ -16,8 +16,8 @@ Shader "Custom/PaintShader"
         
     Tags{
         "RenderPipeline"= "UniversalPipeline"
-        "RenderType"= "Transparent"
-            "RenderQueue"= "Transparent"
+        "RenderType"= "Opaque"
+        "RenderQueue"= "Opaque"
         }
     
     Pass
@@ -35,16 +35,19 @@ Shader "Custom/PaintShader"
         #pragma fragment frag
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-        float4 _MouseUV;
-        float _BrushStrength;
         Texture2D _MainTex;Texture2D _BrushTex;
+
+        float _BrushStrength;
         float   _TextureRotationAngle;
+        float _BrushSize;
+
         SamplerState sampler_MainTex;
         SamplerState sampler_BrushTex;
-        float _BrushSize;
-        float4 _BrushTexTilingOffset;
 
+        float4 _MouseUV;
+        float4 _BrushTexTilingOffset;
         float4 _MainTex_ST;
+
         
         struct VertexInput
         {
@@ -93,7 +96,7 @@ Shader "Custom/PaintShader"
 
             half4 brushColor = _BrushTex.Sample(sampler_BrushTex, brushUV);
             float brushAlpha = clamp(brushColor.a, 0, 1.0);
-            if(brushAlpha < 0.1)
+            if(brushAlpha < 0.58)
             {
                 brushAlpha = 0;
             }
