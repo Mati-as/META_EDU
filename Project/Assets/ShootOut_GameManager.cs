@@ -197,29 +197,36 @@ public class ShootOut_GameManager : IGameManager
         var forceDirection = new Vector3(direction.x < 0? direction.x : -direction.x, 0,-direction.z).normalized;
         
 
-        var kickPower = Mathf.Abs(_clickedpoints[(int)HitPointName.End].x - _clickedpoints[(int)HitPointName.Middle].x);
-
-        kickPower = Mathf.Clamp(kickPower, 0.4f, 1f);
+        var kickPower = Mathf.Abs(_clickedpoints[(int)HitPointName.End].x - _clickedpoints[(int)HitPointName.Start].x);
+        kickPower /= 2; //0.5~1.0 사이에 오도록 보정값 연산
+        
+#if UNITY_EDITOR
+        Debug.Log($"KickPower Before Clamp: { kickPower:F4}");
+#endif
+        
+        
+        kickPower = Mathf.Clamp(kickPower, 0.5f, 1f);
+        
+        
 #if UNITY_EDITOR
         Debug.Log($"KickPower { kickPower}");
         Debug.Log($"direction : {forceDirection}  (y ignored)");
 #endif
         
         _ballRb.AddForce(forceDirection * power * kickPower,ForceMode.Impulse);
-      
+ 
+        _isBallLaunched = true;
         _isSoccerBallClicked = false;
-        
         _clickedpoints = new Vector3[(int)HitPointName.Max]
             {Vector3.zero,Vector3.zero,Vector3.zero};
 
       
 
-        _isBallLaunched = true;
+       
+        
         OnLaunchBall?.Invoke();
-        DOVirtual.Float(0, 0, 1.2f, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 2.0f, _ => { }).OnComplete(() =>
         {
-            _isBallLaunched = false;
-            _isFirstPointSet = false;
             PutBallOnDefaultPos();
         });
         
@@ -232,17 +239,20 @@ public class ShootOut_GameManager : IGameManager
     }
 
     private bool _isBallMovingToDefaultPos;
-    private void PutBallOnDefaultPos(float delay = 2.5f)
+    private void PutBallOnDefaultPos(float delay = 3.2f)
     {
         _ball.DOMove(_ballDefaultPos, 0.6f).OnStart(() =>
         {
             _isBallMovingToDefaultPos = true;
         }).OnComplete(() =>
         {
+            _isFirstPointSet = false;
+            _isBallLaunched = false;
+            _isBallMovingToDefaultPos = false;
+            
             _ballRb.velocity = Vector3.zero;
             _ballRb.angularVelocity = Vector3.zero;
             _ball.DORotateQuaternion(_defaultRotation, 0.5f);
-            _isBallMovingToDefaultPos = false;
         }).SetDelay(delay);
 
     }

@@ -179,7 +179,7 @@ public class ShootOut_AnimalController : MonoBehaviour
                 
                 var randomAnimal = _animals[currentAutoAnimationgAnimIndex];
                 var randomPath = _animalPaths[Random.Range(0, (int)Path.Max)];
-                var randomDuration = Random.Range(2.5f, 5f);
+                var randomDuration = Random.Range(1.6f,2.7f);
 
                 
                 randomAnimal.transform.position = randomPath[0];
@@ -211,7 +211,7 @@ public class ShootOut_AnimalController : MonoBehaviour
         animal.position = currentPath[0];
         animal.DOLookAt(_lookAts[(int)LookAt.OnPath], 0.01f);
         animal.DORotateQuaternion(Quaternion.Euler(0,0,30), 0.5f);
-        animal.DOPath(currentPath, Random.Range(2.5f,4f),PathType.CatmullRom).SetEase(Ease.InOutSine);
+        animal.DOPath(currentPath, Random.Range(1.6f,2.5f),PathType.CatmullRom).SetEase(Ease.InOutSine);
     }
 
     private Vector3 _currentDefaultPos;
@@ -228,16 +228,16 @@ public class ShootOut_AnimalController : MonoBehaviour
 #endif
 
         
-        animal.DOScale(_currentDefaultSize, 1.5f).SetEase(Ease.InOutSine)
+        animal.DOScale(_currentDefaultSize, 1.2f).SetEase(Ease.InOutSine)
             .OnStart(() =>
             {
                 animal.DOLookAt(_lookAts[(int)LookAt.OnPop],0.12f);
             })
             .OnComplete(() =>
         {
-            animal.DOScale(Vector3.zero, Random.Range(0.8f,2.0f)).SetEase(Ease.InOutSine)
+            animal.DOScale(Vector3.zero, Random.Range(0.8f,1.4f)).SetEase(Ease.InOutSine)
                 .SetEase(Ease.InOutBounce)
-                .SetDelay(1f)
+                .SetDelay(0.5f)
                 .OnComplete(() =>
                 {
                     animal.localScale = _currentDefaultSize;
