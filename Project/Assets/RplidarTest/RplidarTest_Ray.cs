@@ -85,6 +85,8 @@ public class RplidarTest_Ray : MonoBehaviour
         //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
         _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
         _sensitivityText = GameObject.Find("SensitivityText").GetComponent<TextMeshProUGUI>();
+
+       
     }
 
     void Start()
@@ -117,6 +119,9 @@ public class RplidarTest_Ray : MonoBehaviour
 
         TESTUI.SetActive(false);
 
+        
+        //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
+        _sensitivitySlider.value = IGameManager.defaultSensitivity / 2;
     }
 
 

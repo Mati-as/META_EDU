@@ -27,7 +27,7 @@ public class RaySynchronizer : MonoBehaviour
     public InputAction _spaceAction;
     public GraphicRaycaster GR;
     public PointerEventData PED { get; private set; }
-    public List<RaycastResult> raycastResults { get; private set; }
+    public List<RaycastResult> raycastResults { get; protected set; }
     public Vector3 screenPosition;
     public Button button;
 
@@ -56,6 +56,8 @@ public class RaySynchronizer : MonoBehaviour
         // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
         _spaceAction.performed += OnKeyPressed;
+        
+        
     }
 
     public void Start()

@@ -13,6 +13,8 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual int TARGET_FRAME { get; } = 60;
     
     protected  float BGM_VOLUME = 0.105f;
+
+    public static float defaultSensitivity { get; set; }
     
  
 
