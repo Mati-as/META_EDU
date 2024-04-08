@@ -29,6 +29,7 @@ public class ShootOut_GameManager : IGameManager
 
     private Transform _ball;
     private Rigidbody _ballRb;
+    private ParticleSystem _kickPs;
     private Vector3 _ballDefaultPos;
     private Quaternion _defaultRotation;
 
@@ -41,13 +42,17 @@ public class ShootOut_GameManager : IGameManager
     protected override void Init()
     {
         base.Init();
-       
+
+      
+         
         _clickedpoints = new Vector3[(int)HitPointName.Max]
             {Vector3.zero,Vector3.zero,Vector3.zero};
         
         defaultSensitivity = 0.011f;
         
         _ball = GameObject.Find("SoccerBall").transform;
+        var ParticleIndex =0;
+        transform.GetChild(ParticleIndex).TryGetComponent<ParticleSystem>(out _kickPs);
         _defaultRotation = _ball.rotation;
         _ballRb = _ball.GetComponent<Rigidbody>();
         _ballDefaultPos = _ball.position;
@@ -155,7 +160,8 @@ public class ShootOut_GameManager : IGameManager
          {
              
              if (point.x < _clickedpoints[(int)HitPointName.Middle].x) return;
-             if (Mathf.Abs(point.x - _clickedpoints[(int)HitPointName.Middle].x) < 0.1f) return;
+             var epsilon = 0.1f;// to ignore value that is smaller than epsilon.
+             if (Mathf.Abs(point.x - _clickedpoints[(int)HitPointName.Middle].x) < epsilon) return;
          }
 
         _clickedpoints[index % (int)HitPointName.Max] = point;
@@ -225,6 +231,7 @@ public class ShootOut_GameManager : IGameManager
        
         
         OnLaunchBall?.Invoke();
+        _kickPs.Play();
         DOVirtual.Float(0, 0, 2.0f, _ => { }).OnComplete(() =>
         {
             PutBallOnDefaultPos();
