@@ -92,7 +92,6 @@ public class FishOnWater_GameManager : IGameManager
 
         DOTween.Init().SetCapacity(300,300);
         
-        //_fishesQueue = new Queue<Transform>(); //물고기 순서대로 경로를 설정하고 컨트롤하기 위한 트랜스폼 큐 입니다.
         _fishesTransforms = new Transform[FISH_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
         _animSeq = new Dictionary<int, Sequence>();
         _isOnBucket = new Dictionary<int, bool>();
@@ -115,7 +114,7 @@ public class FishOnWater_GameManager : IGameManager
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
 
             _defaultSize = fish.localScale;
-            var randomChar = Random.Range('A', 'C' + 1);
+            var randomChar = Random.Range('A', 'E' + 1);
             var path = "게임별분류/기본컨텐츠/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
@@ -351,7 +350,7 @@ Debug.Log("BucktPathIsSet");
         // 양동이 안의 경로 설정 부분
         var loopType = LoopType.Restart;
         var pathInBucketWithRandomOffset = inBucketPath;
-        var OFFSET_AMOUNT = 1.0f;
+        var OFFSET_AMOUNT = 0.7f;
         
 #if UNITY_EDITOR
         Debug.Log($"path info : {pathInBucketWithRandomOffset[0]}");
