@@ -30,7 +30,7 @@ public class FishOnWater_GameManager : IGameManager
     }
     
     private Transform[] _fishesTransforms;
-    private readonly int FISH_COUNT = 8;
+    private readonly int FISH_COUNT = 15;
     private readonly float _animInterval = 5.5f;
     private readonly float _sizeInBucket = 0.4f;
     // private readonly float DURATION = 3.0f;
@@ -61,7 +61,7 @@ public class FishOnWater_GameManager : IGameManager
     private void Start()
     {
         Init();
-        PlayPathAnim();
+        
     }
 
 
@@ -72,7 +72,7 @@ public class FishOnWater_GameManager : IGameManager
 
         if (_elapsedForInterval > _animInterval && !_isOnReInit)
         {
-            PlayPathAnim();
+            PlayPathAnim(Random.Range(1,4));
             _elapsedForInterval = 0;
         }
 
@@ -155,14 +155,17 @@ public class FishOnWater_GameManager : IGameManager
 
 
 
-    private void PlayPathAnim()
+    private void PlayPathAnim(int fishCount)
     {
         if (_isOnReInit) return;
-        var currentPath = SetPath();
-        var moveAnimSeq = DOTween.Sequence();
+
+        for (int i = 0; i < fishCount; i++)
+        {
+            var currentPath = SetPath();
+            var moveAnimSeq = DOTween.Sequence();
 
 
-        var currentFish = _fishesTransforms[_currentFishIndex % FISH_COUNT];
+            var currentFish = _fishesTransforms[_currentFishIndex % FISH_COUNT];
             var id = currentFish.GetInstanceID();
 
             if (_isOnBucket[id])
@@ -183,10 +186,12 @@ public class FishOnWater_GameManager : IGameManager
                 });
             
             //순서만을 관리하므로, 동작컨트롤 후 바로 Enqueue 해줍니다. 
-           // _fishesQueue.Enqueue(currentFish);
-           _animSeq[id] = moveAnimSeq;
+            // _fishesQueue.Enqueue(currentFish);
+            _animSeq[id] = moveAnimSeq;
             moveAnimSeq.Play();
             _currentFishIndex++;
+        }
+       
     }
     
 
@@ -375,3 +380,7 @@ Debug.Log("BucktPathIsSet");
         if (_isOnBucket.ContainsKey(id)) _isOnBucket[id] = true;
     }
 }
+
+
+
+
