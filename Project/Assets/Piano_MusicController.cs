@@ -230,7 +230,7 @@ public class Piano_MusicController : IGameManager
 
 
                 // ------ 3.앵무새 도착한 위치에서 제자리점프----------------------------------------------
-                yield return DOVirtual.Float(0, 0, 0.10f, _ => { }).WaitForCompletion();
+                yield return DOVirtual.Float(0, 0, 0.35f, _ => { }).WaitForCompletion();
                 _currentPath = SetPath(_parrot, arrival, JUMP_HEIGHT);
                 yield return _parrot.DOPath(_currentPath, 0.10f).SetEase(Ease.InOutSine).WaitForCompletion();
 
