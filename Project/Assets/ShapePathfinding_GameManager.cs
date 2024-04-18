@@ -41,7 +41,8 @@ public class ShapePathfinding_GameManager : IGameManager
     private readonly float _rollHeight = 2.5f;
     private Vector3[] _diceRollPath;
     private bool _isDiceBtnClickable = true;
-
+    private bool _isStepClickable = false;
+    
     private Vector3 _diceDetector; //해당위치에서 아래로 Ray발사 및 모양판별 
 
 
@@ -121,16 +122,24 @@ public class ShapePathfinding_GameManager : IGameManager
 #if UNITY_EDITOR
                         Debug.Log($"Correct Step --- step starting to move...");
 #endif
-                        _correctPs.Stop();
-                        _correctPs.transform.position = hit.transform.position;
-                        _correctPs.Play();
-                        
-                        hit.transform.DOScale(_defaultScale*1.5f, 0.2f).SetEase(Ease.InBounce)
-                            .OnComplete(() =>
-                            {
-                                hit.transform.DOScale(_defaultScale, 0.2f).SetEase(Ease.InOutSine)
-                                    .OnComplete(() => {  });
-                            });
+
+                        if (_isStepClickable)
+                        {
+                            
+                            _correctPs.Stop();
+                            _correctPs.transform.position = hit.transform.position;
+                            _correctPs.Play();
+                            
+                            
+                            _isStepClickable = false;
+                            hit.transform.DOScale(_defaultScale*1.5f, 0.2f).SetEase(Ease.InBounce)
+                                .OnComplete(() =>
+                                {
+                                    hit.transform.DOScale(_defaultScale, 0.21f).SetEase(Ease.InOutSine)
+                                        .OnComplete(() => {    _isStepClickable = true; });
+                                });
+                        }
+                     
 
                     }
                        
@@ -291,6 +300,7 @@ public class ShapePathfinding_GameManager : IGameManager
     private void RollDice()
     {
         _isDiceBtnClickable = false;
+        _isStepClickable = false;
 
         _dice.DORotateQuaternion(_dice.rotation *
                                  Quaternion.Euler(UnityEngine.Random.Range(300, 480),
@@ -304,6 +314,7 @@ public class ShapePathfinding_GameManager : IGameManager
                     DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
                     {
                         _isDiceBtnClickable = true;
+                        _isStepClickable = true;
                         DetectDice();
                     });
                 }).SetDelay(2.0f);
