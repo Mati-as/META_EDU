@@ -105,7 +105,7 @@ public class UI_Scene_Button : MonoBehaviour
         else
         {
 #if UNITY_EDITOR
-            Debug.Log("AnimalController is null");
+            Debug.Log("AnimationController is null");
 #endif
         }
     }
