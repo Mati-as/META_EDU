@@ -31,8 +31,13 @@ public class ShapePathfinding_GameManager : IGameManager
     private Material[] _colorMat;
 
     private Transform _dice;
+    
     private Transform _diceBtnLeft;
     private Transform _diceBtnRight;
+    
+    private Vector3 _btnDefaultPosLeft;
+    private Vector3 _btnDefaultPosRight;
+    
 
     private ParticleSystem _correctPs;
 
@@ -92,15 +97,39 @@ public class ShapePathfinding_GameManager : IGameManager
         SuffleAndSet();
     }
 
+    private readonly float BTN_DOWN_DEPTH =0.035f;
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
 
         foreach (var hit in GameManager_Hits)
-            if (hit.transform.gameObject.name == _gameObjectNames[Pathfinder_GameObject.Btn_Dice])
+            if (hit.transform.gameObject.name.Contains(_gameObjectNames[Pathfinder_GameObject.Btn_Dice]))
             {
-                if(_isDiceBtnClickable) RollDice();
+                if (_isDiceBtnClickable)
+                {
+                    if (hit.transform.gameObject.name.Contains("Left"))
+                    {
+                        _diceBtnLeft.DOMove( _btnDefaultPosLeft+ Vector3.down * BTN_DOWN_DEPTH, 0.22F)
+                            .SetEase(Ease.InSine)
+                            .OnComplete(() =>
+                        {
+                            _diceBtnLeft.DOMove(_btnDefaultPosLeft, 0.14F).SetEase(Ease.InOutBack).SetDelay(0.07F);
+
+                        });
+                    }
+                    else
+                    {
+                        _diceBtnRight.DOMove(_btnDefaultPosRight + Vector3.down * BTN_DOWN_DEPTH, 0.22F)
+                            .OnComplete(() =>
+                        {
+                            _diceBtnRight.DOMove(_btnDefaultPosRight, 0.14F).SetEase(Ease.InOutBack).SetDelay(0.07F);
+
+                        });
+                    }
+                   
+                    RollDice();
+                }
                 return;
             }
 
@@ -153,6 +182,7 @@ public class ShapePathfinding_GameManager : IGameManager
                 }
             }
     }
+
 
     private void CacheEnumNames()
     {
@@ -207,10 +237,12 @@ public class ShapePathfinding_GameManager : IGameManager
         _meshRenderMap = new Dictionary<int, MeshRenderer>();
 
         _dice = transform.Find(Pathfinder_GameObject.Dice.ToString());
-
+        
         _diceBtnLeft = transform.Find(Pathfinder_GameObject.Btn_Dice.ToString()).GetChild(0);
         _diceBtnRight = transform.Find(Pathfinder_GameObject.Btn_Dice.ToString()).GetChild(1);
 
+        _btnDefaultPosLeft = _diceBtnLeft.position;
+        _btnDefaultPosRight = _diceBtnRight.position;
         _diceDetector = transform.Find(Pathfinder_GameObject.DiceDetector.ToString()).position;
 
         //주사위 돌리는 과정은 고정경로.. 
