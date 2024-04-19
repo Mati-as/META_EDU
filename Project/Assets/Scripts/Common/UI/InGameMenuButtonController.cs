@@ -24,7 +24,7 @@ public class InGameMenuButtonController : MonoBehaviour
         MetaEduLauncher.isBackButton =
             gameObject.name.Contains("Back") ? true : false;
                 
-        SceneManager.LoadScene("Launcher_METAEDU");
+        SceneManager.LoadScene("METAEDU_LAUNCHER");
 
     }
 }
