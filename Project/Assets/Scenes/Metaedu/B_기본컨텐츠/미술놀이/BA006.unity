@@ -672,14 +672,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7620ecfab34d64441a0b4be5d1795bea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   paintShader: {fileID: 4800000, guid: bae2d80e5c5ef4c4da39caf2cc0e34c9, type: 3}
   textureToPaintOn: {fileID: 2800000, guid: 2e9952b5fd8588a4198d71c37c99cb4e, type: 3}
-  brushSize: 0.08
-  burshTextures:
-  - {fileID: 2800000, guid: 52b01f3975395c74c950d0237df79f0b, type: 3}
+  brushSize: 0.01
+  burshTexture: {fileID: 2800000, guid: 52b01f3975395c74c950d0237df79f0b, type: 3}
   bgmVol: 0.6
-  burshStrength: 0.6
-  currentRotation: 0
+  brushStrength: 1
 --- !u!65 &823463546
 BoxCollider:
   m_ObjectHideFlags: 0

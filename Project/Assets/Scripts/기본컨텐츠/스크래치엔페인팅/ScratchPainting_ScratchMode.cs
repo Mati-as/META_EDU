@@ -1,26 +1,27 @@
 using System.Collections;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
-public class ScratchPainting_ScratchMode : MonoBehaviour
+public class ScratchPainting_ScratchMode : IGameManager
 {
      [SerializeField]
     private Shader paintShader;
     private Material paintMaterial;
-    private RenderTexture renderTexture;
+    private Texture2D renderTexture;
     private MeshRenderer _meshRenderer;
     [SerializeField]
     private Texture2D textureToPaintOn;
     public float brushSize = 0.1f;
-    [SerializeField]
-    private Texture2D[] burshTextures;// Define an InputAction for painting
+    [FormerlySerializedAs("burshTextures")] [SerializeField]
+    private Texture2D burshTexture;// Define an InputAction for painting
 
     private ScratchPainting_ScratchMode _scratchMode;
 
     public new float bgmVol;
 
-     [Header("Shader Setting")] 
-     public float burshStrength = 1;
+  [Header("Shader Setting")] 
+     public float brushStrength = 1;
 
      private bool _isPaintable; // 도장직기 중에는 플레아금지 
 
@@ -57,60 +58,69 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
      /// <summary>
     /// Awake단게로 옮기지말 것,renderTexture Access Deny되는 버그 발생가능성 있음
     /// </summary>
-    
-    private void InitTexture()
-    {
-        renderTexture = new RenderTexture(textureToPaintOn.width, textureToPaintOn.height, 0, RenderTextureFormat.ARGB32);
-        paintMaterial = new Material(paintShader);
      
-        Graphics.Blit(textureToPaintOn, renderTexture);
-        
-        // Set the material's texture\
-        _meshRenderer = GetComponent<MeshRenderer>();
-        _meshRenderer.material.mainTexture = renderTexture;
-        _meshRenderer.material.DOFade(0, 0.001f);
-        
-       
-        paintMaterial.SetFloat("_BrushStrength",burshStrength );
-        paintMaterial.SetTexture("_BrushTex",burshTextures[Random.Range(0,burshTextures.Length)]);
-        paintMaterial.SetFloat("_BrushSize", brushSize);
+    private Texture2D paintTexture;
+     private void InitTexture()
+     {
+         // If textureToPaintOn has mipmaps, ensure paintTexture does as well.
+         bool hasMipMaps = textureToPaintOn.mipmapCount > 1;
+         paintTexture = new Texture2D(textureToPaintOn.width, textureToPaintOn.height, textureToPaintOn.format, hasMipMaps);
 
-        _width = renderTexture.width;
-        _height = renderTexture.height;
+         // Copy the texture, including mipmaps if present
+         Graphics.CopyTexture(textureToPaintOn, paintTexture);
 
-    }
+         _meshRenderer = GetComponent<MeshRenderer>();
+         _meshRenderer.material.mainTexture = paintTexture;
+         _meshRenderer.material.DOFade(0, 0.001f);
 
-    public float currentRotation;
-    private RenderTexture _currentlyPaintedTexture;
-    private RenderTexture _tempTexture;
-    private int _height;
-    private int _width;
+         // No need to use paintMaterial if we're not using RenderTextures anymore.
+     }
 
-    void Paint()
+    private void Paint()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(IGameManager.GameManager_Ray, out hit) && hit.transform == transform)
+        if (!_isPaintable) return;
+
+        // Assume GameManager_Hits is an array of RaycastHit from the game manager
+        foreach (var hit in GameManager_Hits)
         {
+            if (hit.transform == transform)
+            {
 #if UNITY_EDITOR
-            Debug.Log($"Painting (clicked)");
+                Debug.Log($"Painting (clicked)");
 #endif
-            Vector2 uv = hit.textureCoord;
-            paintMaterial.SetFloat("_TextureRotationAngle", currentRotation);
-            paintMaterial.SetVector("_MouseUV", new Vector4(uv.x, uv.y, 0, 0));
+                Vector2 uv = hit.textureCoord;
 
-            _tempTexture = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
-            RenderTexture.active = _tempTexture;
-            GL.PushMatrix();
-            GL.LoadPixelMatrix(0, _width, _height, 0);
-            Graphics.DrawTexture(new Rect(0, 0, _width, _height), renderTexture, paintMaterial);
-            GL.PopMatrix();
-            RenderTexture.active = null;
+                // Convert textureCoord to pixel coordinates
+                int x = (int)(uv.x * paintTexture.width);
+                int y = (int)(uv.y * paintTexture.height);
+                int brushSizePixels = (int)(brushSize * Mathf.Max(paintTexture.width, paintTexture.height));
 
-            Graphics.CopyTexture(_tempTexture, renderTexture);
-            RenderTexture.ReleaseTemporary(_tempTexture);
+                // Paint a circle at the hit position
+                for (int i = -brushSizePixels; i <= brushSizePixels; i++)
+                {
+                    for (int j = -brushSizePixels; j <= brushSizePixels; j++)
+                    {
+                        if (i * i + j * j <= brushSizePixels * brushSizePixels)
+                        {
+                            int px = Mathf.Clamp(x + i, 0, paintTexture.width - 1);
+                            int py = Mathf.Clamp(y + j, 0, paintTexture.height - 1);
+
+                            // Use brush color here if needed instead of Color.clear
+                            Color brushColor = burshTexture.GetPixel(0, 0);
+
+                            Color existingColor = paintTexture.GetPixel(px, py);
+                            Color finalColor = Color.Lerp(existingColor, brushColor, brushStrength);
+
+                            paintTexture.SetPixel(px, py, finalColor);
+                        }
+                    }
+                }
+
+                // Apply all SetPixel changes
+                paintTexture.Apply(updateMipmaps: true);
+            }
         }
     }
-    
 
 
 }
