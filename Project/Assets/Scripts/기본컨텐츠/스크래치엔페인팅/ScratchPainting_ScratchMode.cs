@@ -13,8 +13,8 @@ public class ScratchPainting_ScratchMode : IGameManager
     [SerializeField]
     private Texture2D textureToPaintOn;
     public float brushSize = 0.1f;
-    [FormerlySerializedAs("burshTextures")] [SerializeField]
-    private Texture2D burshTexture;// Define an InputAction for painting
+    [FormerlySerializedAs("burshTexture")] [FormerlySerializedAs("burshTextures")] [SerializeField]
+    private Texture2D brushTexture;// Define an InputAction for painting
 
     private ScratchPainting_ScratchMode _scratchMode;
 
@@ -31,28 +31,63 @@ public class ScratchPainting_ScratchMode : IGameManager
          IGameManager.On_GmRay_Synced += Paint;
          ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
          ScratchPainting_GameManager.OnStampingFinished += OnStampingFinished;
+         
+         
      }
 
      private void OnDestroy()
      {
          ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
      }
+     Color _glowDefaultColor;
+         
+     private Sequence _glowSeq;
+     private SpriteRenderer _outlineSpRenderer;
 
      private void Start()
     {
         InitTexture();
+        
+        _outlineSpRenderer = GameObject.Find("GlowTexture").GetComponent<SpriteRenderer>();
+        _glowDefaultColor = _outlineSpRenderer.material.color;
+        _outlineSpRenderer.enabled = false;
     }
 
+     
      private void OnStampingFinished()
      {
          _isPaintable = true;
          ActivateTextrue();
+         
+         BlinkOutline();
+         _outlineSpRenderer.DOFade(0,  0.001f).OnComplete(() =>
+         {
+             _outlineSpRenderer.DOFade(1,  2f);
+         });
+       
+         _outlineSpRenderer.enabled = true;
      }
 
      private void ActivateTextrue()
      {
          DOVirtual.Float(0, 0, 6.5f, _ => { })
              .OnComplete(() => { _meshRenderer.material.DOFade(1, 1.5f); });
+     }
+ 
+     private void BlinkOutline()
+     {
+#if UNITY_EDITOR
+         Debug.Log("Outline Glowing~~!@##~!@#@!~$@~#");
+#endif
+         _glowSeq = DOTween.Sequence();
+         
+         _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor * 2f, 1.0f));
+         _glowSeq.AppendInterval(0.1f);
+         _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor * 0.5f, 0.7f));
+         _glowSeq.AppendInterval(0.5f);
+         _glowSeq.SetLoops(-1, LoopType.Yoyo);
+
+         _glowSeq.Play();
      }
 
      /// <summary>
@@ -106,7 +141,7 @@ public class ScratchPainting_ScratchMode : IGameManager
                             int py = Mathf.Clamp(y + j, 0, paintTexture.height - 1);
 
                             // Use brush color here if needed instead of Color.clear
-                            Color brushColor = burshTexture.GetPixel(0, 0);
+                            Color brushColor = brushTexture.GetPixel(0, 0);
 
                             Color existingColor = paintTexture.GetPixel(px, py);
                             Color finalColor = Color.Lerp(existingColor, brushColor, brushStrength);

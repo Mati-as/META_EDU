@@ -85,17 +85,16 @@ Shader "Custom/PaintShader"
 
         // Sample the brush texture
         half4 brushColor = _BrushTex.Sample(sampler_BrushTex, brushUV);
-        float brushAlpha = brushColor.a >0.5? 1:0;
+        float brushAlpha = brushColor.a;
 
         // Determine if we're within the brush area and blend accordingly
         if (distance(uv, _MouseUV.xy) < _BrushSize)
         {
             col.a = lerp(col.a, 0, brushAlpha * _BrushStrength);
-            col.a = col.a > 0.5? 1:0; 
         }
 
         return col;
-       }
+    }
         ENDHLSL
     }
   }
