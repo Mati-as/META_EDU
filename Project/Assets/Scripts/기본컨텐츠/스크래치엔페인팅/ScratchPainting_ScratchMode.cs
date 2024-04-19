@@ -50,11 +50,8 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
 
      private void ActivateTextrue()
      {
-      
-         
          DOVirtual.Float(0, 0, 6.5f, _ => { })
              .OnComplete(() => { _meshRenderer.material.DOFade(1, 1.5f); });
- 
      }
 
      /// <summary>
@@ -77,55 +74,43 @@ public class ScratchPainting_ScratchMode : MonoBehaviour
         paintMaterial.SetFloat("_BrushStrength",burshStrength );
         paintMaterial.SetTexture("_BrushTex",burshTextures[Random.Range(0,burshTextures.Length)]);
         paintMaterial.SetFloat("_BrushSize", brushSize);
-      
+
+        _width = renderTexture.width;
+        _height = renderTexture.height;
+
     }
 
     public float currentRotation;
-    private RenderTexture currentlyPaintedTexture;
+    private RenderTexture _currentlyPaintedTexture;
+    private RenderTexture _tempTexture;
+    private int _height;
+    private int _width;
+
     void Paint()
     {
-        if (!_isPaintable) return;
-        StartCoroutine(PaintCoroutine());
-    }
-
-    IEnumerator PaintCoroutine()
-    {
-        yield return null;
-        _isPaintable = false;
-        currentRotation = Random.Range(-360,360);
-      
         RaycastHit hit;
-        if (Physics.Raycast(IGameManager.GameManager_Ray, out hit))
+        if (Physics.Raycast(IGameManager.GameManager_Ray, out hit) && hit.transform == transform)
         {
-           
-            if (hit.transform == transform)
-            {
-                Vector2 uv = hit.textureCoord;
-               
-                // Convert to "_MouseUV" for the shader
-                paintMaterial.SetFloat("_TextureRotationAngle", currentRotation);
-                paintMaterial.SetVector("_MouseUV", new Vector4(uv.x, uv.y, 0, 0));
-                
-                // 알파블렌딩과 렌더링 순서 간 차이로 인해 클릭 시 한번에 전부 지워지지 않는 버그가 있습니다.
-                // 이를 해결하기위해 Blit을 1:n 만큼 수행하여 시각적인 디버그를 완료하였습니다.
-                // 추후 렌더링 RnD통한 최적화 필요할 수도 있음 2/5/2024
-                // Update the RenderTexture
-                currentlyPaintedTexture = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
-                var temp = currentlyPaintedTexture;
-                Graphics.Blit(renderTexture, currentlyPaintedTexture, paintMaterial);
-                Graphics.Blit(currentlyPaintedTexture, renderTexture);
-                yield return DOVirtual.Float(0, 0, 0.001f, _ => { }).WaitForCompletion();
-                //RenderTexture.ReleaseTemporary(temp);
-                 
-                
-                
-                // 중복 클릭으로 인한 함수에러 방지를 위한 방어적 코드 추가입니다. 4/1/2024
-                _isPaintable = true;
+#if UNITY_EDITOR
+            Debug.Log($"Painting (clicked)");
+#endif
+            Vector2 uv = hit.textureCoord;
+            paintMaterial.SetFloat("_TextureRotationAngle", currentRotation);
+            paintMaterial.SetVector("_MouseUV", new Vector4(uv.x, uv.y, 0, 0));
 
-            }
+            _tempTexture = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height, 0, RenderTextureFormat.ARGB32);
+            RenderTexture.active = _tempTexture;
+            GL.PushMatrix();
+            GL.LoadPixelMatrix(0, _width, _height, 0);
+            Graphics.DrawTexture(new Rect(0, 0, _width, _height), renderTexture, paintMaterial);
+            GL.PopMatrix();
+            RenderTexture.active = null;
+
+            Graphics.CopyTexture(_tempTexture, renderTexture);
+            RenderTexture.ReleaseTemporary(_tempTexture);
         }
     }
-
+    
 
 
 }

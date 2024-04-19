@@ -14,7 +14,7 @@ public class ScratchPainting_GameManager : IGameManager
     private GameObject[] _prints;
 
     private readonly float _poolSize = 50;
-    private SpriteRenderer _bgSprite;
+    //private SpriteRenderer _bgSprite;
     private float _elapsed;
     
    [Range(0,30)]
@@ -42,8 +42,6 @@ public class ScratchPainting_GameManager : IGameManager
 
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
-
-        _bgSprite.DOFade(0, 0.00001f).OnComplete(() => { isInit = true; });
     }
 
     protected override void BindEvent()
@@ -78,9 +76,6 @@ public class ScratchPainting_GameManager : IGameManager
     private void Update()
     {
         if (!_isRoundReady) return;
-// #if UNITY_EDITOR
-//         Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
-// #endif
         _elapsed += Time.deltaTime;
         _remainTime = timeLimit - _elapsed;
 
@@ -112,16 +107,7 @@ public class ScratchPainting_GameManager : IGameManager
         }
     }
 
-
-    protected override void OnStartButtonClicked()
-    {
-        base.OnStartButtonClicked();
-
-
-        // _glowSeq = DOTween.Sequence();
-        // BlinkOutline();
-        // _glowSeq.Play();
-    }
+    
 
     private void BlinkOutline()
     {
@@ -143,17 +129,6 @@ public class ScratchPainting_GameManager : IGameManager
 
         _remainTime = timeLimit;
         _elapsed = 0;
-        _bgSprite.DOFade(0, 2f)
-            .OnStart(() =>
-            {
-                // Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
-
-                _tmp.text = "";
-            }).OnComplete(() => { });
-
-        _glowSeq = DOTween.Sequence();
-        BlinkOutline();
-        _glowSeq.Play();
     }
 
     private void OnRoundFinished()
@@ -162,7 +137,7 @@ public class ScratchPainting_GameManager : IGameManager
         {
             _glowSeq.Kill();
             _glowSeq = DOTween.Sequence();
-            _glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
+            //_glowSeq.Append(_outlineSpRenderer.material.DOColor(_glowDefaultColor, 0.3f));
 
 
             DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() =>
@@ -174,12 +149,12 @@ public class ScratchPainting_GameManager : IGameManager
                 DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
-                    _tmp.text = "놀이를 다시 준비하고 있어요";
+                  //  _tmp.text = "놀이를 다시 준비하고 있어요";
                 });
 
-                DOVirtual.Float(0, 0, 4.5f, _ => { }).OnComplete(() => { printInitEvent?.Invoke(); });
+                DOVirtual.Float(0, 0, 120f, _ => { }).OnComplete(() => { printInitEvent?.Invoke(); });
 
-                DOVirtual.Float(0, 0, 7, _ => { }).OnComplete(() => { onRoundRestart?.Invoke(); });
+                DOVirtual.Float(0, 0, 120, _ => { }).OnComplete(() => { onRoundRestart?.Invoke(); });
             });
         });
     }
@@ -189,7 +164,7 @@ public class ScratchPainting_GameManager : IGameManager
 #if UNITY_EDITOR
         Debug.Log("DoFade In");
 #endif
-        _bgSprite.DOFade(1, 1f);
+       // _bgSprite.DOFade(1, 1f);
     });
 
 
