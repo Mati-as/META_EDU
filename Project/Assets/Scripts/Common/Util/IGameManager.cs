@@ -10,9 +10,11 @@ public abstract class IGameManager : MonoBehaviour
     public static bool isStartButtonClicked { get; private set; }
     protected static bool isInitialized { get;  set; }
     public static event Action On_GmRay_Synced;
-    protected virtual int TARGET_FRAME { get; } = 45;
+    protected virtual int TARGET_FRAME { get; } = 60;
     
     protected  float BGM_VOLUME = 0.105f;
+
+    public static float defaultSensitivity { get; set; }
     
  
 
@@ -35,16 +37,21 @@ public abstract class IGameManager : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect,
                 "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
         });
-       
+        
+        int uiLayer = LayerMask.NameToLayer("UI");
+        LayerMask maskWithoutUI = ~(1 << uiLayer);
+        layerMask = maskWithoutUI;
+
     }
 
 
-
+    public LayerMask layerMask;
 
     protected void OnOriginallyRaySynced()
     {
-        GameManager_Ray = RaySynchronizer.ray_ImageMove;
-        GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
+
+        GameManager_Ray = RaySynchronizer.initialRay;
+        GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
         On_GmRay_Synced?.Invoke();
     }
@@ -115,7 +122,7 @@ public abstract class IGameManager : MonoBehaviour
     private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
-        QualitySettings.vSyncCount = 0;
+        QualitySettings.vSyncCount = 1;
         Application.targetFrameRate = targetFrame;
 
 #if UNITY_EDITOR

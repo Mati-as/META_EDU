@@ -8,7 +8,7 @@ public class Button_audio_controller : MonoBehaviour, IPointerEnterHandler, IPoi
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        Manager_audio.instance.Get_click();
+//        Manager_audio.instance.Get_click();
     }
     public void OnPointerEnter(PointerEventData eventData)
     {

@@ -45,14 +45,23 @@ public class StoryUIController : MonoBehaviour
     // 유니티 루프---------------------------------------------------
     private void Awake()
     {
-      
-        Deactivate();
+        
         SubscribeGameManagerEvents();
     }
 
     private void Start()
     {
         _storyUITmp.text = _firstUIMessage;
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("storyUI *비*활성화");
+    }
+
+    private void OnEnable()
+    {
+        Debug.Log("storyUI 활성화");
     }
 
     private void OnDestroy()
@@ -63,7 +72,6 @@ public class StoryUIController : MonoBehaviour
     //  이벤트 상태별 로직------------------------------------------
     public void OnHowToPlayUIFinished()
     {
-        Activate();
         Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/가을소풍/UI/AnimalTrip_Story_A");
         _coroutineA = StartCoroutine(ActivateFirstStoryUICoroutine());
         _coroutineB = StartCoroutine(MovePlayerIcon());
@@ -72,7 +80,7 @@ public class StoryUIController : MonoBehaviour
     public void OnRoundReady()
     {
      
-        Debug.Log("UI내용 변경");
+    
     
     }
 
@@ -91,8 +99,7 @@ public class StoryUIController : MonoBehaviour
     }
 
     // 메소드 및 코루틴
-    private void Activate() => gameObject.SetActive(true);
-    private void Deactivate() => gameObject.SetActive(false);
+   
 
     public float waitTimeForFirstActivation;
     public float waitTimeForSecondActivation;
@@ -160,8 +167,8 @@ public class StoryUIController : MonoBehaviour
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
 
-        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
-        AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
+        // AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
+        // AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
 
         AnimalTrip_UIManager.SecondStoryUIActivateEvent -= OnRoundReady;
         AnimalTrip_UIManager.SecondStoryUIActivateEvent += OnRoundReady;
@@ -189,7 +196,7 @@ public class StoryUIController : MonoBehaviour
     {
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
+        // AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;
         //     GameManager.onRoundStartedEvent -= OnRoundStarted;

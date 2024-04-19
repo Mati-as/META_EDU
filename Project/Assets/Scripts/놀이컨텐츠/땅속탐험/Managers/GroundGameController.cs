@@ -72,8 +72,7 @@ public class GroundGameController : MonoBehaviour
 
     private void Awake()
     {
-        SetResolution(1920, 1080);
-        Application.targetFrameRate = 30;
+       
         //---------------------------------------------
         TOTAL_ANIMAL_COUNT = 12;
             
@@ -172,12 +171,6 @@ public class GroundGameController : MonoBehaviour
     }
 
     private float _mainElapsedTime;
-
-
-    private void SetResolution(int width, int height)
-    {
-        Screen.SetResolution(width, height, Screen.fullScreen);
-    }
 
     public List<GameObject> AllAnimals;
     private void SetAnimalIntoDictionaryAndList()

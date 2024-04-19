@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Manager_Sensor : MonoBehaviour
@@ -11,7 +12,7 @@ public class Manager_Sensor : MonoBehaviour
     public Camera UI_Camera;
 
     private FP_controller FPC;
-    //1212 ¼öÁ¤
+    //1212 ï¿½ï¿½ï¿½ï¿½
     public RectTransform Ray_position;
 
     public float Prev_Ray_position_x;
@@ -39,11 +40,12 @@ public class Manager_Sensor : MonoBehaviour
 
     private void Init()
     {
+       
         UI_Camera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
         UI_Canvas = GameObject.FindWithTag("UIManager");
 
         FPC = this.GetComponent<FP_controller>();
-        //1212 ¼öÁ¤
+        //1212 ï¿½ï¿½ï¿½ï¿½
         Ray_position = this.gameObject.GetComponent<RectTransform>();
         Prev_Ray_position_x = 0f;
         Prev_Ray_position_y = 0f;
@@ -61,7 +63,7 @@ public class Manager_Sensor : MonoBehaviour
     {
         return FPC;
     }
-    //1212 ¼öÁ¤
+    //1212 ï¿½ï¿½ï¿½ï¿½
     public void Set_RayPosition(RectTransform RayPos)
     {
         Ray_position = RayPos;

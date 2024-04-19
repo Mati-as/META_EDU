@@ -220,6 +220,7 @@ public class Manager_login : CLASS_XmlData
             Is_Logindatasaved = true;
 
             Init_Registermenu();
+            Launcher.Button_Message_Login_Completed();
         }
         else
         {

@@ -109,7 +109,6 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
-        
         Paint();
     }
 }

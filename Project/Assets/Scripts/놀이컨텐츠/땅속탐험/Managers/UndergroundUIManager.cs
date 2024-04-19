@@ -33,33 +33,13 @@ public class UndergroundUIManager : MonoBehaviour
     [SerializeField]
     private GroundGameController gameController;
 
-    [SerializeField] private FootstepManager footstepManager;
-
-    [Header("Intervals")] //-------------------------------
-    public float stagesInterval;
-
-    public float UIInterval;
-
-
-    [Space(30f)] [Header("Tutorial UI Parts")] //-------------------------------
-    public GameObject tutorialUIGameObject;
-
-    public CanvasGroup tutorialUICvsGroup;
-    public TMP_Text tutorialTMPText;
-    public RectTransform tutorialUIRectTransform;
-
-    public RectTransform tutorialAwayRectransfrom;
+     private FootstepManager _footstepManager;
     
     public RectTransform popUpUIRect;
-
-    [Space(10f)] [Header("Tutorial Message Settings")]
-    public string tutorialMessage;
-
     [Space(30f)]
     [Header("Story UI")] //-------------------------------
     [Space(10f)]
     public GameObject storyUIGameObject;
-
     public CanvasGroup storyUICvsGroup;
     public RectTransform storyUIRectTransform;
     [SerializeField] private RectTransform _storyUIInitialRectPos;
@@ -68,7 +48,6 @@ public class UndergroundUIManager : MonoBehaviour
 
     [Space(10f)] [Header("Story Message Settings")] [Space(10f)]
     public string _firstUIMessage = " 땅속에는 다양한 동물친구가 살고 있어요!     저를 따라오면서 구경해볼까요?";
-
     public string _lastUIMessage = "와~ 동물친구들을 모두 찾았어요!";
 
     [Space(30f)] [Header("Audio")] [Space(10f)] //-------------------------------
@@ -158,21 +137,22 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void Awake()
     {
-        popUpUIRect.localScale = Vector3.zero;
+       
+        Init();
+
         
-        DOTween.SetTweensCapacity(2000,100);
+        
+        popUpUIRect.localScale = Vector3.zero;
+      
         FootstepController.onLastFootstepClicked -= EveryLastFootstepClicked;
         FootstepController.onLastFootstepClicked += EveryLastFootstepClicked;
         popUpUIRectTmp = popUpUIRect.GetComponentInChildren<TMP_Text>();
-        
-        tutorialUIGameObject.SetActive(true);
+  
 
         _uiPlayCoroutine = StartCoroutine(PlayTutorialAudio());
 
         _storyUIInitialRectPos = storyUIRectTransform;
-        DOTween.Init();
-        Init();
-        tutorialUICvsGroup.DOFade(1, 1);
+
 
         Underground_PopUpUI_Button.onPopUpButtonEvent -= OnPopUpUIClicked;
         Underground_PopUpUI_Button.onPopUpButtonEvent += OnPopUpUIClicked;
@@ -184,9 +164,9 @@ public class UndergroundUIManager : MonoBehaviour
     private XmlDocument soundPathXml;
     private void Start()
     {
+        _footstepManager=  GameObject.FindWithTag("GameManager").GetComponent<FootstepManager>();
 
-
-        xmlAsset = Resources.Load<TextAsset>("Data/Path/SoundPathData");
+        xmlAsset = Resources.Load<TextAsset>("Common/Data/Path/SoundPathData");
         soundPathXml = new XmlDocument();
         soundPathXml.LoadXml(xmlAsset.text);
         
@@ -216,13 +196,13 @@ public class UndergroundUIManager : MonoBehaviour
             .Subscribe(_ => OnGameOver())
             .AddTo(this);
 
-        footstepManager.finishPageTriggerProperty
+        _footstepManager.finishPageTriggerProperty
             .Where(value => value)
             .Delay(TimeSpan.FromSeconds(3.5f))
             .Subscribe(_ => OnPageChange())
             .AddTo(this);
 
-        footstepManager.lastElementClickedProperty
+        _footstepManager.lastElementClickedProperty
             .Where(_ => _)
             .Delay(TimeSpan.FromSeconds(0.1f))
             .Subscribe(_ => OnAnimalFind())
@@ -304,7 +284,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                    gameController.s_soundManager.Play(SoundManager.Sound.Effect, soundPath);
+                   Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -316,7 +296,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void OnAnimalFind()
     {
         //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
-        ChangeImageSource("게임별분류/땅속탐험/image/" + FootstepManager.currentlyClickedObjectName);
+        ChangeImageSource("게임별분류/땅속탐험/image/" + _footstepManager.currentlyClickedObjectName);
         
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
@@ -379,7 +359,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void Init()
     {
         storyUICvsGroup.alpha = 0;
-        tutorialUICvsGroup.alpha = 0;
+     
     }
 
     private Coroutine _stageStartCoroutine;
@@ -466,10 +446,7 @@ public class UndergroundUIManager : MonoBehaviour
     
     private IEnumerator OnGameStartCoroutine()
     {
-        tutorialUIRectTransform.DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y),
-                3f)
-            .SetEase(Ease.InOutBack)
-            .OnComplete(() => tutorialUIGameObject.SetActive(false));
+    
         
         yield return GetWaitForSeconds(3.5f);
 
@@ -520,9 +497,6 @@ public class UndergroundUIManager : MonoBehaviour
 
     private void OnStageStart()
     {
-        storyUIRectTransform
-            .DOAnchorPos(new Vector2(0, tutorialAwayRectransfrom.anchoredPosition.y), 3f)
-            .SetEase(Ease.InOutBack);
    
 #if UNITY_EDITOR
         Debug.Log("UI OnstageStart");
@@ -555,13 +529,13 @@ public class UndergroundUIManager : MonoBehaviour
     private float cameraMoveElapsed;
 
     public static float INTRO_UI_DELAY = 4.5f;
-    public GameObject howToPlayUI;
+    
 
     private void SetUIIntroUsingUniRx()
     {
-        howToPlayUI.SetActive(true);
-
-        if (_uiPlayCoroutine != null) StopCoroutine(_uiPlayCoroutine);
+        // howToPlayUI.SetActive(true);
+        
+         if (_uiPlayCoroutine != null) StopCoroutine(_uiPlayCoroutine);
 
         PlayAudio(uiAudioClips[(int)AudioClips.Story]);
         

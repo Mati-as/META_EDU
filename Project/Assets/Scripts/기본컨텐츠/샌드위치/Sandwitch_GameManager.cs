@@ -128,8 +128,8 @@ public class Sandwitch_GameManager : IGameManager
     private void Start()
     {
         Debug.Assert(isInitialized);
-        InitUI();
-        StackCamera();
+        //InitUI();
+        //StackCamera();
     }
 
     protected override void BindEvent()
@@ -319,18 +319,18 @@ public class Sandwitch_GameManager : IGameManager
 
     private void InitUI()
     {
-        Debug.Log("UI Init");
-        var uiInstance =
-            Resources.Load<GameObject>("Common/Prefab/UI/Sandwich_UI_Scene");
-        var root = GameObject.Find("@Root");
-
-        if (s_UIManager != null)
-        {
-            Debug.LogError("more than two UIManagers");
-            return;
-        }
-
-        s_UIManager = Instantiate(uiInstance, root.transform);
+        // Debug.Log("UI Init");
+        // var uiInstance =
+        //     Resources.Load<GameObject>("Common/Prefab/UI/Sandwich_UI_Scene");
+        // var root = GameObject.Find("@Root");
+        //
+        // if (s_UIManager != null)
+        // {
+        //     Debug.LogError("more than two UIManagers");
+        //     return;
+        // }
+        //
+        // s_UIManager = Instantiate(uiInstance, root.transform);
     }
 
     private void InitIngredients()

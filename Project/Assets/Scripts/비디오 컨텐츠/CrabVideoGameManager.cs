@@ -65,16 +65,16 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         rewindParticleAudioPath = "Audio/비디오 컨텐츠/Crab/Bubbles";
      
        
-        Camera uiCamera = _UIManager.GetComponentInChildren<Camera>();
-        
-        if (Camera.main.TryGetComponent<UniversalAdditionalCameraData>(out var mainCameraData))
-        {
-            mainCameraData.cameraStack.Add(uiCamera);
-        }
-        else
-        {
-            Debug.LogError("Main camera does not have UniversalAdditionalCameraData component.");
-        }
+        // Camera uiCamera = _UIManager.GetComponentInChildren<Camera>();
+        //
+        // if (Camera.main.TryGetComponent<UniversalAdditionalCameraData>(out var mainCameraData))
+        // {
+        //     mainCameraData.cameraStack.Add(uiCamera);
+        // }
+        // else
+        // {
+        //     Debug.LogError("Main camera does not have UniversalAdditionalCameraData component.");
+        // }
 
     
     }
@@ -92,11 +92,11 @@ public class CrabVideoGameManager : InteractableVideoGameManager
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
 
-    
-        Debug.Log("UI Init");
-        var UIinstance = Resources.Load<GameObject>("게임별분류/비디오컨텐츠/Crab/Prefab/Crab_UI_Scene");
-        var root = GameObject.Find("@Root");
-        _UIManager = Instantiate(UIinstance, root.transform);
+        
+        // Debug.Log("UI Init");
+        // var UIinstance = Resources.Load<GameObject>("게임별분류/비디오컨텐츠/Crab/Prefab/Crab_UI_Scene");
+        // var root = GameObject.Find("@Root");
+        // _UIManager = Instantiate(UIinstance, root.transform);
       
         isInitialized = true;
     }

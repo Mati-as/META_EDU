@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -237,18 +236,28 @@ public class AnimalTrip_GameManager : IGameManager
   
     private ParticleSystem _particle;
     private UIAudioController _uiAudioController;
-    private StoryUIController _storyUIController;
+    private GameObject _storyUIController;
 
 
+    protected override void OnStartButtonClicked()
+    {
+        _storyUIController.SetActive(true);
+        _storyUIController.SetActive(true);
+        
+        
+        var script = _storyUIController.GetComponent<StoryUIController>();
+        script.OnHowToPlayUIFinished(); 
+    }
 
     protected override void Init()
     {
         
         base.Init();
-        
-        _storyUIController = GameObject.Find("StoryUI").GetComponent<StoryUIController>();
+
+        _storyUIController = GameObject.Find("StoryUI");
         _uiAudioController = GameObject.Find("AudioManager").GetComponent<UIAudioController>();
-        
+
+        _storyUIController.SetActive(false);
         
         SetPhysicsLayer();
         Reset();
@@ -338,7 +347,7 @@ public class AnimalTrip_GameManager : IGameManager
                     if (AnimalShaderController.isGlowOn)
                     {
 #if UNITY_EDITOR
-                        Debug.Log("동물 선택 가능");
+                        
 #endif
                        // ClickOnObject();
                     }
@@ -385,24 +394,9 @@ public class AnimalTrip_GameManager : IGameManager
         }
     }
 
-    // private void OnDestroy()
-    // {
-    //  //   RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-    // }
-
 
     // ------------------------- ▼ 메소드 목록 ------------------------------------------------
 
-    /// <summary>
-    ///     디버그용 씬 재로드 함수 입니다. static 변수는 초기화 되지 않으므로 사용 시 주의합니다.
-    /// </summary>
-    private void ReloadCurrentScene()
-    {
-        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-
-        // 해당 인덱스의 씬을 다시 로드합니다.
-        SceneManager.LoadScene(currentSceneIndex);
-    }
 
     /// <summary>
     ///     디버그용 재생속도 컨트롤 함수 입니다.
@@ -601,22 +595,29 @@ public class AnimalTrip_GameManager : IGameManager
     ///     오브젝트를 선택하는 함수 입니다.
     ///     Linked lIst를 활용해 자료를 검색하고 해당하는 메세지를 카메라 및, 게임 다음 동작에 전달합니다.
     /// </summary>
-    ///
-    private readonly string LAYER_NAME = "Screen";
 
     
 
 
     protected override void OnRaySynced()
     {
-             base.OnRaySynced();
-            var layerMask = 1 << LayerMask.NameToLayer(LAYER_NAME);
-          
-            var hits = Physics.RaycastAll(GameManager_Ray);
+            base.OnRaySynced();
+            
+         
+#if UNITY_EDITOR
+            Debug.Log("GameManager Raysynced!");
+#endif
 
-            foreach (var hit in hits)
+            foreach (var hit in GameManager_Hits)
             {
-                if (hit.collider.name == "Screen") PlayClickOnScreenEffect(hit);
+
+                if (hit.collider.name == "Screen")
+                {
+#if UNITY_EDITOR
+                    Debug.Log("Ray General Particle!");
+#endif
+                    PlayClickOnScreenEffect(hit);
+                }
 
 
                 if (animalGameOjbectDictionary.ContainsKey(hit.collider.name) && AnimalShaderController.isGlowOn)
@@ -647,10 +648,13 @@ public class AnimalTrip_GameManager : IGameManager
                     }
                 }
             }
-            
-            //-----게임이 가을소풍인 경우에만 실행-----
-        
-        CloseStoryUI();
+
+
+            if (isGameStopped)
+            {
+                CloseStoryUI();
+            }  
+     
         
     }
     
@@ -658,7 +662,7 @@ public class AnimalTrip_GameManager : IGameManager
     
     private void CloseStoryUI()
     {
-        if (_uiAudioController != null)
+        if (_uiAudioController != null && isCameraArrivedToPlay)
         {
             if (_uiAudioController.narrationAudioSource != null
                 && !_uiAudioController.narrationAudioSource.isPlaying)

@@ -33,7 +33,7 @@ public class GameLauncher_ICT : MonoBehaviour
     private GameObject Message_L_SelectedStudentCheck;
     private GameObject Message_L_Nonselect;
     private GameObject Message_Survey_StudentCheck;
-    private GameObject Message_Answer_NonSelected;
+    private GameObject Message_L_Completed;
 
     private GameObject Message_EndMusicContent;
     private Message_anim_controller MAC;
@@ -603,16 +603,14 @@ public class GameLauncher_ICT : MonoBehaviour
     {
         Message_L_FieldEmpty.SetActive(true);
     }
-
+    public void Button_Message_Login_Completed()
+    {
+        Message_L_Completed.SetActive(true);
+        Login.SetActive(false);
+    }
 
     public void Save_Data()
     {
-        //그럼 여기 데이터는 무엇을 입력해야하나?
-        //기존 결과 데이터 창에서는 임의로 평균값을 입력해서 변화하는 추이를 확인할 수 있게끔 해줌
-        //현행은 우리가 데이터의 정답률이나 어떤 데이터를 주지 않기 때문에 판단 불가
-        //그럼 앞으로 이거는 어떻게 할지 숙대랑 한 번 얘기를 해봐야할 듯
-
-
         //여기서 부터 result에 저장 하는 부분
         DialogueData Saved_data = new DialogueData();
 
@@ -638,6 +636,7 @@ public class GameLauncher_ICT : MonoBehaviour
 
     void Init_page()
     {
+        //Page
         Loading = ICT_RnD_UI.transform.GetChild(0).gameObject;
         Home = ICT_RnD_UI.transform.GetChild(1).gameObject;
         Tool = ICT_RnD_UI.transform.GetChild(2).gameObject;
@@ -654,6 +653,7 @@ public class GameLauncher_ICT : MonoBehaviour
         Login = ICT_RnD_UI.transform.GetChild(12).gameObject;
         Survey = ICT_RnD_UI.transform.GetChild(13).gameObject;
 
+        //Message
         Message_Tool = Message_UI.transform.GetChild(0).gameObject;
         Message_Content_StudentCheck = Message_UI.transform.GetChild(1).gameObject;
         Message_Intro = Message_UI.transform.GetChild(2).gameObject;
@@ -663,6 +663,7 @@ public class GameLauncher_ICT : MonoBehaviour
         Message_L_Nonselect = Message_UI.transform.GetChild(6).gameObject;
         Message_Survey_StudentCheck = Message_UI.transform.GetChild(7).gameObject;
         Message_EndMusicContent = Message_UI.transform.GetChild(8).gameObject;
+        Message_L_Completed = Message_UI.transform.GetChild(9).gameObject;
 
         //Message_Intro setting, Inspector에서 scale 0,0,0으로 변경
         Message_Intro.SetActive(true);
@@ -670,7 +671,6 @@ public class GameLauncher_ICT : MonoBehaviour
 
     }
 
-    //1122 콘텐츠 정상종료 후 다시 콘텐츠 실행할 때 저장된 데이터 초기화 하는 기능 필요
     public void UI_Back()
     {
         Prev_page.SetActive(true);

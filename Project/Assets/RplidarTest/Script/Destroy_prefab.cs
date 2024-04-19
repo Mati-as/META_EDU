@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 public class Destroy_prefab : RaySynchronizer
 {
@@ -12,6 +15,7 @@ public class Destroy_prefab : RaySynchronizer
 
     private float timer=0f;
 
+    public static event Action onPrefabInput; 
     public override void Init()
     {
         base.Init();
@@ -22,28 +26,17 @@ public class Destroy_prefab : RaySynchronizer
     {
         //1212 수정
         base.Start();
-        base.Temp_1203();
+        base.InvokeRayEvent();
     }
 
+    private MetaEduLauncher _launcher;
     public override void ShootRay()
     {
+      
         screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
-
-        //GameManager에서 Cast할 _Ray를 업데이트.. (플레이 상 클릭)
-        //  Event처리로 미사용1/19
-        //Debug.Assert(_baseEffectManager != null);
-
-        ray_ImageMove = Camera.main.ScreenPointToRay(screenPosition);
+        initialRay = Camera.main.ScreenPointToRay(screenPosition);
+  
         
-        //  Event처리로 미사용1/19
-        // _baseEffectManager.ray_EffectManager = ray_ImageMove;
-
-#if UNITY_EDITOR
-#endif
-
-   
-
-
         PED.position = screenPosition;
         var results = new List<RaycastResult>();
         GR.Raycast(PED, results);
@@ -51,14 +44,28 @@ public class Destroy_prefab : RaySynchronizer
         if (results.Count > 0)
             for (var i = 0; i < results.Count; i++)
             {
-#if UNITY_EDITOR
-                //Debug.Log($"UI 관련 오브젝트 이름: {results[i].gameObject.name}");
-#endif
+
                 results[i].gameObject.TryGetComponent(out Button button);
                 button?.onClick?.Invoke();
             }
+        
+        if (SceneManager.GetActiveScene().name == "Launcher_METAEDU")
+        {
+            UI_Canvas.TryGetComponent(out _launcher);
+
+            if (_launcher != null)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"prefabInput invoke-------------------");
+#endif
+                _launcher.currentPrefabPosition = this.transform.position;
+                onPrefabInput.Invoke();
+            }
+        }
+
     }
 
+  
     // Update is called once per frame
     void Update()
     {

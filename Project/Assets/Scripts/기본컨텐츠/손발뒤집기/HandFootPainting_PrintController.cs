@@ -7,7 +7,9 @@ using UnityEngine;
 public class HandFootPainting_PrintController : MonoBehaviour
 {
     private Vector3 _defaultSize;
-
+    private HandFootPainting_GameManager _gm;
+    
+    
     private void Awake()
     {
         _defaultSize = transform.localScale;
@@ -44,9 +46,7 @@ public class HandFootPainting_PrintController : MonoBehaviour
             gameObject.SetActive(false);
         });
     }
-
-
-    private HandFootPainting_GameManager _gm;
+  
     private void OnDisable()
     {
         if (!HandFootPainting_GameManager.isInit) return;
