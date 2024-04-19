@@ -70,14 +70,15 @@ public class Piano_MusicController : IGameManager
     //animationPart - Parrot
     private readonly float PATH_HEIGHT = 0.25f;
     private readonly float JUMP_HEIGHT = 0.6f;
-    private Transform _parrot;
+    private Transform _feetSprite;
     private Animator _animator;
     private Vector3[] _currentPath;
 
     private readonly int FLY = Animator.StringToHash("Fly");
 
-    private readonly float BACK_OFFSET = 1.8f;
-    private readonly float UP_OFFSET = 0.1f;
+    //파티클 및 발자국 객체 위치 조정용 
+    private readonly float BACK_OFFSET = 2.1f;
+    private readonly float UP_OFFSET = 0.125f;
     private readonly float UP_OFFSET_PS = 0.1f;
 
 
@@ -109,12 +110,19 @@ public class Piano_MusicController : IGameManager
     }
 
 
+    private ParticleSystem _clickPs;
     protected override void Init()
     {
         base.Init();
-        _parrot = GameObject.Find("Parrot").GetComponent<Transform>();
+        var psPrefab = Resources.Load<ParticleSystem>("게임별분류/기본컨텐츠/Piano/CFX_PianoClick");
+        _clickPs = Instantiate(psPrefab);
+        _clickPs.Stop();
+        
+        _feetSprite = GameObject.Find("FeetSprite").GetComponent<Transform>();
         _ps = GameObject.Find("CFX_ParticleInducing").GetComponent<ParticleSystem>();
-        _animator = _parrot.GetComponent<Animator>();
+        _animator = _feetSprite.GetComponent<Animator>();
+        
+        
 
         _scoreList = new string[(int)SongList.Max];
         _songTitleList = new string[(int)SongList.Max];
@@ -220,27 +228,30 @@ public class Piano_MusicController : IGameManager
                 // ------ 2.앵무새이동--------------------------------------------------------------
                 var arrival = posToMove + Vector3.back * BACK_OFFSET + Vector3.up * UP_OFFSET;
 
-                _currentPath = SetPath(_parrot, arrival, PATH_HEIGHT);
-                yield return _parrot.DOPath(_currentPath, 0.15f).SetEase(Ease.InOutSine)
+                _currentPath = SetPath(_feetSprite, arrival, PATH_HEIGHT);
+                yield return _feetSprite.DOPath(_currentPath, 0.15f).SetEase(Ease.InOutSine)
                     .OnStart(() =>
                     {
-                        _parrot.DOLookAt(posToMove + Vector3.back * 5f + Vector3.up * 3f, 0.1f);
+                        //_feetSprite.DOLookAt(posToMove + Vector3.back * 5f + Vector3.up * 3f, 0.1f);
                         _animator.SetBool(FLY, true);
                     }).OnComplete(() => { _animator.SetBool(FLY, false); }).WaitForCompletion();
 
 
                 // ------ 3.앵무새 도착한 위치에서 제자리점프----------------------------------------------
                 yield return DOVirtual.Float(0, 0, 0.35f, _ => { }).WaitForCompletion();
-                _currentPath = SetPath(_parrot, arrival, JUMP_HEIGHT);
-                yield return _parrot.DOPath(_currentPath, 0.10f).SetEase(Ease.InOutSine).WaitForCompletion();
+                _currentPath = SetPath(_feetSprite, arrival, JUMP_HEIGHT);
+                yield return _feetSprite.DOPath(_currentPath, 0.10f).SetEase(Ease.InOutSine).WaitForCompletion();
 
 
-                // ------ 4.건반 클릭 -------------------------------------------------------------------
+                // ------ 4.건반 클릭 & 파티클재생 -------------------------------------------------------------------
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
                 PlayKeyAnim(_transformMap["Piano" + scoreString[i]], _defaultPosMap["Piano" + scoreString[i]]);
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/Piano" + scoreString[i]);
+                _clickPs.transform.position = arrival;
+                _clickPs.Play();
 
+                
 
                 // ------ 5.클릭 이후-------------------------------------------------------------------
                 yield return DOVirtual.Float(0, 0, 0.08f, _ => { }).WaitForCompletion();
@@ -274,7 +285,7 @@ public class Piano_MusicController : IGameManager
     {
         var path = new Vector3[3];
         path[0] = transform.position;
-        path[1] = (transform.position + arrival) / 2 + _parrot.up * height;
+        path[1] = (transform.position + arrival) / 2 + _feetSprite.up * height;
         path[2] = arrival;
         return path;
     }
