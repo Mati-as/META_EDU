@@ -43,6 +43,7 @@ public class ScratchPainting_ScratchMode : IGameManager
          
      private Sequence _glowSeq;
      private SpriteRenderer _outlineSpRenderer;
+     private Color _defaultColor;
 
      private void Start()
     {
@@ -50,28 +51,39 @@ public class ScratchPainting_ScratchMode : IGameManager
         
         _outlineSpRenderer = GameObject.Find("GlowTexture").GetComponent<SpriteRenderer>();
         _glowDefaultColor = _outlineSpRenderer.material.color;
-        _outlineSpRenderer.enabled = false;
+        
+        _outlineSpRenderer.material.DOColor(Color.black, 0.01f).OnComplete(() =>
+        {
+            _outlineSpRenderer.enabled = false;
+
+        });
     }
 
      
      private void OnStampingFinished()
      {
-         _isPaintable = true;
          ActivateTextrue();
-         
-         BlinkOutline();
-         _outlineSpRenderer.DOFade(0,  0.001f).OnComplete(() =>
-         {
-             _outlineSpRenderer.DOFade(1,  2f);
-         });
-       
-         _outlineSpRenderer.enabled = true;
      }
 
      private void ActivateTextrue()
      {
-         DOVirtual.Float(0, 0, 6.5f, _ => { })
-             .OnComplete(() => { _meshRenderer.material.DOFade(1, 1.5f); });
+         DOVirtual.Float(0, 0, 6.5f, _ => { }) //delay
+             .OnComplete(() =>
+             {
+                 
+                 _meshRenderer.material.DOFade(1, 1.8f)
+                     .OnComplete(() =>
+                     {
+                         _outlineSpRenderer.enabled = true;
+                         _isPaintable = true;
+                         _outlineSpRenderer.material.DOColor(_glowDefaultColor, 3f)
+                             .OnComplete(() =>
+                             {
+                                
+                                 BlinkOutline();
+                             });
+                     });
+             });
      }
  
      private void BlinkOutline()
@@ -159,3 +171,4 @@ public class ScratchPainting_ScratchMode : IGameManager
 
 
 }
+ 
