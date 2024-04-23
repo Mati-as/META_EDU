@@ -66,11 +66,11 @@ public class EvaArmisen_UIManager : UI_PopUp
         UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
         
-        ScratchPainting_GameManager.onRoundRestart -= OnStart;
-        ScratchPainting_GameManager.onRoundRestart += OnStart;
+        EvaArmisen_GameManager.onRoundRestart -= OnStart;
+        EvaArmisen_GameManager.onRoundRestart += OnStart;
 
-        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
-        ScratchPainting_GameManager.OnStampingFinished += PopUpStopUI;
+        EvaArmisen_GameManager.OnStampingFinished -= PopUpStopUI;
+        EvaArmisen_GameManager.OnStampingFinished += PopUpStopUI;
     
         return true;
         
@@ -78,8 +78,8 @@ public class EvaArmisen_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        ScratchPainting_GameManager.onRoundRestart -= OnStart;
-        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
+        EvaArmisen_GameManager.onRoundRestart -= OnStart;
+        EvaArmisen_GameManager.OnStampingFinished -= PopUpStopUI;
     }
 
     public void OnStart()
@@ -162,21 +162,6 @@ public class EvaArmisen_UIManager : UI_PopUp
         yield return _waitInterval; 
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();
         
-        
-        //2.그림을 그려보세요
-      
-        yield return _waitInterval;
-        _rectLetsPaint.gameObject.SetActive(true);
-        yield return DOVirtual.Float(0, 1, 1, scale => { _rectLetsPaint.localScale = Vector3.one * scale; }).OnStart(
-            () =>
-            {
-               //Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
-               //Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
-            }).WaitForCompletion();
-        yield return _waitInterval;
-        yield return DOVirtual.Float(1, 0, 3f, _ => { }).WaitForCompletion();
-    
-        yield return DOVirtual.Float(1, 0, 1, scale => { _rectLetsPaint.localScale = Vector3.one * scale; }).WaitForCompletion();
 
     }
 }

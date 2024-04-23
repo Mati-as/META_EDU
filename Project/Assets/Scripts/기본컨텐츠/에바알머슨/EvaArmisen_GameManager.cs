@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,11 +15,13 @@ public class EvaArmisen_GameManager : IGameManager
     public Queue<GameObject> printPool { get; set; }
     private GameObject[] _prints;
 
+    private ParticleSystem[] _ps;
+
     private readonly float _poolSize = 50;
     private float _elapsed;
-    private readonly float _timeLimit = 8f;
+    private readonly float _timeLimit = 15f;
     private float _remainTime;
-    private bool _isRoundReady;
+    private bool _isRoundReadyToStart;
     private Animator _pictureAnimator;
     private readonly int IDLE_ANIM = Animator.StringToHash("Idle");
     private TextMeshProUGUI _tmp;
@@ -26,7 +29,7 @@ public class EvaArmisen_GameManager : IGameManager
     //Glowing Outline MeshRenderer
     private Color _glowDefaultColor;
 
-    public static event Action onRoundFinished;
+    public static event Action OnStampingFinished;
     public static event Action printInitEvent;
     public static event Action onRoundRestart;
 
@@ -42,6 +45,10 @@ public class EvaArmisen_GameManager : IGameManager
         _pictureAnimator = GameObject.Find("EvaArmisenAnimation").GetComponent<Animator>();
 
 
+        _ps = new ParticleSystem[2];
+        _ps[0] = GameObject.Find("CFX_EvaRight").GetComponent<ParticleSystem>();
+        _ps[1] = GameObject.Find("CFX_EvaLeft").GetComponent<ParticleSystem>();
+
 
     }
 
@@ -49,8 +56,8 @@ public class EvaArmisen_GameManager : IGameManager
     {
         base.BindEvent();
 
-        onRoundFinished -= OnRoundFinished;
-        onRoundFinished += OnRoundFinished;
+        OnStampingFinished -= OnRoundFinished;
+        OnStampingFinished += OnRoundFinished;
 
         onRoundRestart -= OnRoundRestart;
         onRoundRestart += OnRoundRestart;
@@ -64,12 +71,12 @@ public class EvaArmisen_GameManager : IGameManager
 
     private void OnStartUI()
     {
-        _isRoundReady = true;
+        _isRoundReadyToStart = true;
     }
 
     private void Update()
     {
-        if (!_isRoundReady) return;
+        if (!_isRoundReadyToStart) return;
 // #if UNITY_EDITOR
 //         Debug.Log($"current glow Color{_outlineSpRenderer.material.color}");
 // #endif
@@ -94,8 +101,9 @@ public class EvaArmisen_GameManager : IGameManager
 
         if (_elapsed > _timeLimit)
         {
-            _isRoundReady = false;
-            onRoundFinished.Invoke();
+            _isRoundReadyToStart = false;
+            _elapsed = 0;
+            OnStampingFinished.Invoke();
             _tmp.text = string.Empty;
         }
         else
@@ -104,48 +112,55 @@ public class EvaArmisen_GameManager : IGameManager
         }
     }
 
-
-    protected override void OnStartButtonClicked()
-    {
-        base.OnStartButtonClicked();
-
-        
-    }
-
- 
+    
 
     private void OnRoundRestart()
     {
+        _elapsed = 0;
         _elapsedToCount = 0f;
         _isCountNarrationPlaying = false;
-
         _remainTime = _timeLimit;
-        _elapsed = 0;
-        
+       
     }
 
+    private readonly string ON_READY_MESSAGE = "놀이를 다시 준비하고 있어요";
     private void OnRoundFinished()
     {
         DOVirtual.Float(0, 0, 1f, _ => { }).OnComplete(() =>
         {
             
 
-            DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() =>
+            DOVirtual.Float(0, 0, 4f, _ => { }).OnComplete(() =>
             {
-                //"그만" UI 팝업? 
-
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
                 
                 _pictureAnimator.SetBool(IDLE_ANIM,true);
-                DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
+                _ps[0].Play();
+                _ps[1].Play();
+                DOVirtual.Float(0, 0, 3f, _ => { }).OnComplete(() =>
+                {
+                    _ps[0].Stop();
+                    _ps[1].Stop();
+                    _pictureAnimator.SetBool(IDLE_ANIM,false); 
+                });
+           
+                DOVirtual.Float(0, 0, 5, _ => { }).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
-                    _tmp.text = "놀이를 다시 준비하고 있어요";
+                    _tmp.text = ON_READY_MESSAGE;
+                    DOVirtual.Float(0, 0, 3f, _ => { }).OnComplete(() =>
+                    {
+                        _tmp.text = string.Empty;
+                    });
+                    
+                    DOVirtual.Float(0, 0, 5, _ => { }).OnComplete(() =>
+                    {
+
+                        onRoundRestart?.Invoke();
+                    });
                 });
-
-                DOVirtual.Float(0, 0, 4.5f, _ => { }).OnComplete(() => { printInitEvent?.Invoke(); });
-
-                DOVirtual.Float(0, 0, 7, _ => { }).OnComplete(() => { onRoundRestart?.Invoke(); });
+               
+              
             });
         });
     }
@@ -153,11 +168,7 @@ public class EvaArmisen_GameManager : IGameManager
     protected override void OnRaySynced()
     {
 
-        if (!_isRoundReady) return;
-        
-#if UNITY_EDITOR
-        Debug.Log("클릭");
-#endif
+        if (!_isRoundReadyToStart) return;
         if (!isStartButtonClicked) return;
     
         
@@ -212,11 +223,11 @@ public class EvaArmisen_GameManager : IGameManager
         print.transform.position = spawnPosition;
         print.gameObject.SetActive(true);
 
-        DOVirtual.Float(0, 0, RETRUN_WAIT_TIME, _ => { }).OnComplete(() =>
-        {
-            print.gameObject.SetActive(false);
-            printPool.Enqueue(print); // Return the particle system to the pool
-        });
+        // DOVirtual.Float(0, 0, RETRUN_WAIT_TIME, _ => { }).OnComplete(() =>
+        // {
+        //     print.gameObject.SetActive(false);
+        //     printPool.Enqueue(print); // Return the particle system to the pool
+        // });
     }
 
     protected void GrowPool()
