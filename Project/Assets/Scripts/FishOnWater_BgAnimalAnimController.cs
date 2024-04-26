@@ -80,7 +80,7 @@ public class FishOnWater_BgAnimalAnimController : UI_Base
     {
         for (int i = 0; i < _mrAnimals.Length; i++)
         {
-            _mrAnimals[i].DOPath(_paths[i], Random.Range(55f,65f), PathType.CatmullRom)
+            _mrAnimals[i].DOPath(_paths[i], Random.Range(35f,50f), PathType.CatmullRom)
                 .SetEase(Ease.InSine)
                 .SetLookAt(-0.01f)
                 .SetLoops(-1, LoopType.Restart).SetDelay(0.5f);

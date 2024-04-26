@@ -77,5 +77,17 @@ using System.Xml;
                 return transform.gameObject;
             return null;
         }
+        
+        
+        public static void Shuffle<T>(T[] array) where T : UnityEngine.Object
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                T temp = array[i];
+                int randomIndex = UnityEngine.Random.Range(i, array.Length);
+                array[i] = array[randomIndex];
+                array[randomIndex] = temp;
+            }
+        }
 
     }
