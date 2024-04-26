@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 using System.Threading;
+using UnityEngine.UI;
 
 public class RplidarTest : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class RplidarTest : MonoBehaviour
     private void Awake()
     {
         data = new LidarData[720];
+        
+     
     }
 
     private void Sensing()
@@ -102,6 +105,9 @@ public class RplidarTest : MonoBehaviour
 
         Img_Rect_transform = this.GetComponent<RectTransform>();
         CANVAS = GameObject.Find("UIManager");
+        
+        //0426/24 민석
+        Guideline.GetComponent<Image>().enabled = false;
         //CANVAS = GameObject.Find("UI 캔버스 (UI Manager)");
 
         //기준점 position입력해주고 기준 위치 0,0,0에 생성

@@ -165,8 +165,8 @@ public class Twister_GameManager : IGameManager
             if (hit.transform.gameObject.name.Contains("T_Twister"))
             {
                 var id = hit.transform.GetInstanceID();
-              
-                IsOnStepCheck(id);
+
+         
                 
                 if (_currentSpotElementIndex + 1 < _spotTransforms[_currentSpotGroupIndex].Length)
                 {
@@ -175,6 +175,7 @@ public class Twister_GameManager : IGameManager
                 }
                 else
                 {
+                    IsOnStepCheck(id);
                     CheckAndMoveOnToNextGroup();
                 }
             }
@@ -197,7 +198,7 @@ public class Twister_GameManager : IGameManager
         foreach (var spot in _spotTransforms[_currentSpotGroupIndex])
         {
             var spotId = spot.GetInstanceID();
-            if (!_isOnSteppedMap[spotId]) return;
+           
         }
 
         if (_isMovingOnToNextGroup) return;
@@ -289,11 +290,11 @@ Debug.Log($"Default Size: {_defaultSize}");
     ///     지속적으로 발판위에 플레이어가 올라가있는지 체크하기 위해, 발판에 물체가 없는경우 약간의 딜레이를 주어 논리값을 수정합니다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator IsStepOnCheck(int id, float delay = 1.7f)
+    private IEnumerator IsStepOnCheck(int id, float delay = 1.8f)
     {
-        _isOnSteppedMap[id] = true;
+     
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
-        _isOnSteppedMap[id] = false;
+        _isOnSteppedMap[id] = true;
     }
     
     
