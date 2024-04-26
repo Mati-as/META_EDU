@@ -10,7 +10,7 @@ public class RayCast_test : MonoBehaviour
     GraphicRaycaster GR;
     PointerEventData PED;
 
-    public float moveSpeed = 5f; // ÀÌ¹ÌÁöÀÇ ÀÌµ¿ ¼Óµµ
+    public float moveSpeed = 5f; // ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Óµï¿½
 
     // Start is called before the first frame update
     void Start()
@@ -22,19 +22,19 @@ public class RayCast_test : MonoBehaviour
     }
     // Update is called once per frame
 
-    //1. ¸¶¿ì½º Å¬¸¯ ÇÒ ¶§ ·¹ÀÌÄ³½ºÆ® »ý¼º ÇÏ´Â°Å È®ÀÎ
-    //2. ·¹ÀÌ Ä³½ºÆ®¶û UI ÀÌ¹ÌÁö¶û ¹ÝÀÀÇÏ´Â °Í È®ÀÎ
-    //3. ¸¶¿ì½º°¡ ¾Æ´Ï¶ó ³»°¡ Á¦¾îÇÏ´Â ÀÌ¹ÌÁö·Î ±×·¸°Ô µÇ´ÂÁö È®ÀÎ ÇÊ¿ä
-    //3. ÃÖÁ¾ ¿¬µ¿ ÀÛ¾÷ >> 3D ¿ÀºêÁ§Æ®¶û 2D UI¸¦ °¢°¢ ±¸ºÐÇØ¼­ ÀÛµ¿ÇÏµµ·Ï ¹æ¹ýÀÌ ÇÊ¿äÇÒ °ÍÀ¸·Î »ý°¢µÊ
+    //1. ï¿½ï¿½ï¿½ì½º Å¬ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Â°ï¿½ È®ï¿½ï¿½
+    //2. ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½Æ®ï¿½ï¿½ UI ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ È®ï¿½ï¿½
+    //3. ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ê¿ï¿½
+    //3. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¾ï¿½ >> 3D ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ 2D UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ûµï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("MOUSE CLICKED");
+//            Debug.Log("MOUSE CLICKED");
             
 
-            //¸ÞÀÎ Ä«¸Þ¶ó ·¹ÀÌ Ä³½ºÆ®
+            //ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½Æ®
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
@@ -43,12 +43,12 @@ public class RayCast_test : MonoBehaviour
 
             }
 
-            //UI Ä«¸Þ¶ó ·¹ÀÌ Ä³½ºÆ®
+            //UI Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½Æ®
             PED.position = Input.mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();
             GR.Raycast(PED, results);
 
-            //¿¹¿ÜÃ³¸®ÇÏ¸é µÉ µí?
+            //ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ ï¿½ï¿½?
             if (results.Count>0)
             {
                 Debug.Log(results[0].gameObject.name);
