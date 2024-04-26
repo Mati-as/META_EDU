@@ -60,8 +60,27 @@ public class Twister_GameManager : IGameManager
     private void Start()
     {
         SetTwisterSpots();
-        DoScaleAnimation(_currentSpotGroupIndex,_currentSpotElementIndex);
+
+        float loadTime= 1;
+        foreach (var spots in _spotTransforms)
+        {
+            foreach (var spot in spots)
+            {
+                var id = spot.GetInstanceID();
+                var seq = DOTween.Sequence();
+                seq.Append(spot.DOScale(Vector3.zero, loadTime).SetEase(Ease.InOutBounce).SetDelay(Random.Range(1.0f,1.5f)));
+                seq.Play();
+                _scaleSeq[id] = seq;
+            }
+        }
+
+        DOVirtual.Float(0, 0, loadTime + 3f, _ => { }).OnComplete(() =>
+        {
+            DoScaleAnimation(_currentSpotGroupIndex, _currentSpotElementIndex);
+        });
     }
+
+
 
     private void BindObjects()
     {
@@ -94,13 +113,6 @@ public class Twister_GameManager : IGameManager
     {
         _currentSpotGroupIndex = 0;
         SetTwisterSpots();
-        foreach (var spots in _spotTransforms)
-        {
-            foreach (var spot in spots)
-            {
-                spot.DOScale(_defaultSize, 1f).SetEase(Ease.InOutBounce).SetDelay(Random.Range(2.0f,2.5f));
-            }
-        }
 
         DOVirtual.Float(0, 0, 3f, _ => { }).OnComplete(() =>
         {
@@ -119,13 +131,11 @@ public class Twister_GameManager : IGameManager
             Utils.Shuffle(_spotSsprites);
             string[] textListForEachGroup = new string[3];
             
-            
             _stepRowCount = transform.GetChild(c).childCount;// 그룹마다 크기가 다르므로 자식개수 체크 로직 필요 
             for(int r = 0; r < _stepRowCount ;r++ )
             {  
                 
                 var id = _spotTransforms[c][r].GetInstanceID();
-                
                 _spotTransforms[c][r].localRotation =_defaultRotation * Quaternion.Euler(0, 0,Random.Range(-25,25));
 
                 //마지막 인덱스이고, 0,1인덱스가 "손""손" 혹은 "발""발"일 경우.
@@ -136,25 +146,24 @@ public class Twister_GameManager : IGameManager
                 else
                 {
                     _textMap[id].text = Random.Range(0, 100) > 50 ? "손" : "발";
-                    
                     textListForEachGroup[r] = _textMap[id].text;
                 }
-
                 _spriteMap[id].sprite = _spotSsprites[r];
-
             }
         }
         
     }
 
+    private bool _isClickable; // 단계마다 스팟이 커질때, 완전히 커지고 나야만 클릭가능
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-
+        if (!isStartButtonClicked) return;
+        if (!_isClickable) return; 
+        
         foreach (var hit in GameManager_Hits)
             if (hit.transform.gameObject.name.Contains("T_Twister"))
             {
-
                 var id = hit.transform.GetInstanceID();
               
                 IsOnStepCheck(id);
@@ -168,9 +177,6 @@ public class Twister_GameManager : IGameManager
                 {
                     CheckAndMoveOnToNextGroup();
                 }
-          
-              
-                       
             }
     }
 
@@ -188,8 +194,6 @@ public class Twister_GameManager : IGameManager
 
     private void CheckAndMoveOnToNextGroup()
     {
-
-        
         foreach (var spot in _spotTransforms[_currentSpotGroupIndex])
         {
             var spotId = spot.GetInstanceID();
@@ -199,16 +203,29 @@ public class Twister_GameManager : IGameManager
         if (_isMovingOnToNextGroup) return;
         _isMovingOnToNextGroup = true;
         
+        
         for (int i = 0; i < _spotTransforms[_currentSpotGroupIndex].Length; i++)
         {
-
-            _spotTransforms[_currentSpotGroupIndex][i].DOScale(Vector3.zero, 1f).SetEase(Ease.InOutBounce);
             var spotId = _spotTransforms[_currentSpotGroupIndex][i].GetInstanceID();
             _scaleSeq[spotId].Kill();
+        }
+        
+        for (int i = 0; i < _spotTransforms[_currentSpotGroupIndex].Length; i++)
+        {
+            var spotId = _spotTransforms[_currentSpotGroupIndex][i].GetInstanceID();
+            var zeroScaleSeq = DOTween.Sequence();
+            zeroScaleSeq.Append(_spotTransforms[_currentSpotGroupIndex][i].DOScale(Vector3.zero, 1f)
+                .SetEase(Ease.InOutBounce)
+                .OnComplete(() => { zeroScaleSeq.Kill();
+                    zeroScaleSeq = null;
+                }));
+
+            zeroScaleSeq.Play();
             _scaleSeq[spotId] = null;
+            _scaleSeq[spotId] = zeroScaleSeq;
         }
 
-        DOVirtual.Float(0, 0, 1f,_ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 1.5f,_ => { }).OnComplete(() =>
         {
             // 초기화로직 -----------------------------------------------------------
             _currentSpotGroupIndex++;
@@ -232,18 +249,39 @@ public class Twister_GameManager : IGameManager
     private void DoScaleAnimation(int groupIndex, int elementIndex)
     {
         if (_isEverySpotClickedInGroup) return;
-        
-        Sequence scaleSeq = DOTween.Sequence();
-        scaleSeq.Append(_spotTransforms[groupIndex][elementIndex].DOScale(_defaultSize * 1.1f, 0.5f)).SetEase(Ease.InOutSine);
-        scaleSeq.AppendInterval(0.1f);
-        scaleSeq.Append(_spotTransforms[groupIndex][elementIndex].DOScale(_defaultSize * 0.9f, 0.5f)).SetEase(Ease.InOutSine);
-        scaleSeq.SetLoops(-1,LoopType.Yoyo);
-
         var id = _spotTransforms[groupIndex][elementIndex].GetInstanceID();
-        _scaleSeq[id] = scaleSeq;
-
         
-    
+        if (_scaleSeq.ContainsKey(id) && _scaleSeq[id].IsActive() && !_scaleSeq[id].IsComplete())
+        {
+            return;
+        }
+        _scaleSeq[id].Kill();
+        _scaleSeq[id] = null;
+        
+        _isClickable = false;
+       
+#if UNITY_EDITOR
+Debug.Log($"Default Size: {_defaultSize}");
+#endif
+        Sequence scaleSeq = DOTween.Sequence();
+        scaleSeq.Append(_spotTransforms[groupIndex][elementIndex].DOScale(_defaultSize * 1.1f, 0.5f)).SetEase(Ease.InOutSine); //1
+        scaleSeq.InsertCallback(0.35f, () =>
+        {
+           
+            //위와 다르게 무한루프 넣을 로직을 아래에 추가. 
+            Sequence loopScaleSeq = DOTween.Sequence();
+            loopScaleSeq.Append(_spotTransforms[groupIndex][elementIndex].DOScale(_defaultSize * 1.1f, 0.5f)).SetEase(Ease.InOutSine);
+            loopScaleSeq.AppendInterval(0.1f);
+            loopScaleSeq.Append(_spotTransforms[groupIndex][elementIndex].DOScale(_defaultSize * 0.9f, 0.5f)).SetEase(Ease.InOutSine);
+            loopScaleSeq.SetLoops(-1,LoopType.Yoyo);
+            _scaleSeq[id] = loopScaleSeq;
+        });
+        
+        scaleSeq.InsertCallback(1f, () =>
+        {
+            _isClickable = true;
+        });
+
     }
 
 
@@ -251,7 +289,7 @@ public class Twister_GameManager : IGameManager
     ///     지속적으로 발판위에 플레이어가 올라가있는지 체크하기 위해, 발판에 물체가 없는경우 약간의 딜레이를 주어 논리값을 수정합니다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator IsStepOnCheck(int id, float delay = 0.6f)
+    private IEnumerator IsStepOnCheck(int id, float delay = 1.7f)
     {
         _isOnSteppedMap[id] = true;
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
@@ -260,16 +298,6 @@ public class Twister_GameManager : IGameManager
     
     
     
-    // private void Shuffle<T>(T[] array) where T : UnityEngine.Object
-    // {
-    //     for (int i = 0; i < array.Length; i++)
-    //     {
-    //         T temp = array[i];
-    //         int randomIndex = Random.Range(i, array.Length);
-    //         array[i] = array[randomIndex];
-    //         array[randomIndex] = temp;
-    //     }
-    // }
 
     
 }
