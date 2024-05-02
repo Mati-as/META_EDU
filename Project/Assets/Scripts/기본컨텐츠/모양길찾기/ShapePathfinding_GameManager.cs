@@ -144,7 +144,7 @@ public class ShapePathfinding_GameManager : IGameManager
 #if UNITY_EDITOR
                     Debug.Log($"this mat name: {_meshRenderMap[currentID].material.name},  currentShape(dicen)Name: {_currentShape}");
 #endif
-                 
+                    if (!_meshRenderMap.ContainsKey(currentID)) return;
 
                     if (_meshRenderMap[currentID].material.name.Contains(_currentShape))
                     {

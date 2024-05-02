@@ -137,7 +137,8 @@ public class EvaArmisen_GameManager : IGameManager
                 _pictureAnimator.SetBool(IDLE_ANIM,true);
                 _ps[0].Play();
                 _ps[1].Play();
-                DOVirtual.Float(0, 0, 3f, _ => { }).OnComplete(() =>
+                //그림 애니메이션 플레이 Duration입니다. 
+                DOVirtual.Float(0, 0, 3.55f, _ => { }).OnComplete(() =>
                 {
                     _ps[0].Stop();
                     _ps[1].Stop();
