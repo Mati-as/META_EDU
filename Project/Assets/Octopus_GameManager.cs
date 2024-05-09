@@ -130,8 +130,8 @@ public class Octopus_GameManager : IGameManager
         for (var i = 0; i < (int)Shoe.Count; i++)
         {
             _shoes[i] = shoeParent.GetChild(i);
+            _defaultLocationMap.Add(_shoes[i].GetInstanceID(),_shoes[i].position);
             _shoeMuzzles[i] = shoeParent.GetChild(i).GetChild(0);
-            _defaultLocationMap.Add(_shoeMuzzles[i].GetInstanceID(),_shoeMuzzles[i] .position);
             _muzzleDefaultRotationMap.Add(_shoeMuzzles[i].GetInstanceID(), _shoeMuzzles[i].rotation);
         }
 
@@ -169,7 +169,11 @@ public class Octopus_GameManager : IGameManager
         if (_ballColliderMap.TryGetValue(CurrentBallId, out var col)) col.enabled = true;
         if (_rigidbodies.TryGetValue(CurrentBallId, out var rigid)) rigid.constraints = RigidbodyConstraints.None;
 
-        MoveBallsOneSpace();
+        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
+        {
+            MoveBallsOneSpace();
+        });
+
     }
 
 
@@ -309,7 +313,7 @@ public class Octopus_GameManager : IGameManager
                 _currentOrderMap[id] = currentOrder - 1;
                 if (_currentOrderMap[id] == 0) _ballColliderMap[id].enabled = true;
 
-                ball.DORotate(new Vector3(100, 100, 100), 1.2f);
+                ball.DORotate(new Vector3(Random.Range(-100,100), Random.Range(-100,100), Random.Range(-100,100)), 1.2f);
                 ball.DOPath(path, 1f).OnComplete(() => { ReInitPerClick(); });
             }
         }
@@ -346,7 +350,7 @@ public class Octopus_GameManager : IGameManager
         body.DOShakeRotation(0.9f, 0.8f).OnComplete(() =>
         {
             body.DOMove(_defaultLocationMap[body.GetInstanceID()], 0.1f); //shake로 인한 초기위치 손실방지
-            foreach (var shoe in _shoeMuzzles)
+            foreach (var shoe in _shoes)
             {
                 shoe.DOShakePosition(0.7f, 0.010f).SetDelay(Random.Range(0.3f, 0.8f)).OnComplete(() =>
                 {
