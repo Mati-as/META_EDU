@@ -175,7 +175,7 @@ public class FishOnWater_GameManager : IGameManager
             }
 
             currentFish.position = currentPath[(int)PathColumn.Start];
-            var randomDuration = Random.Range(2.0f, 3.1f);
+            var randomDuration = Random.Range(4.0f, 5.0f);
             moveAnimSeq.Append(currentFish.DOPath(currentPath, randomDuration, PathType.CatmullRom)
                     .SetLookAt(-0.01f)
                     .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)))

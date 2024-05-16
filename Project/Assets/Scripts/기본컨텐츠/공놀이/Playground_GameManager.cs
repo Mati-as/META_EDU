@@ -23,7 +23,13 @@ public class Playground_GameManager : IGameManager
     public float forceAmount;
     public float upOffset;
 
-    
+    protected override void Init()
+    {
+        SHADOW_MAX_DISTANCE = 86.5f;
+        base.Init();
+      
+    }
+
     protected override void OnRaySynced()
     {
         base.OnRaySynced();

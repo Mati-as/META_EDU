@@ -36,6 +36,7 @@ public class EvaArmisen_GameManager : IGameManager
     protected override void Init()
     {
         base.Init();
+        defaultSensitivity = 0.3f;
         DOTween.Init().SetCapacity(1500, 500);
         SetPool();
        // _bgSprite = GameObject.Find(gameVersion + "Mask").GetComponent<SpriteRenderer>();

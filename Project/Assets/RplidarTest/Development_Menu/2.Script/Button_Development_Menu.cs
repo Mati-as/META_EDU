@@ -9,7 +9,7 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
 
     public bool UI_ONOFF = false;
     public bool BALL_ONOFF = false;
-    public bool SF_ONOFF = false;
+    public bool SF_ONOFF = true; // 기본값 true로 변경 0516/24
 
     private Text txt;
     public void Start()
@@ -18,6 +18,9 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
         
         // 2.28 임시로 코드 추가 (민석)
         rplidar = GameObject.FindWithTag("RaySynchronizer").GetComponent<RplidarTest_Ray>();
+
+        
+       
     }
     public void OnPointerClick(PointerEventData eventData)
     {

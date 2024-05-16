@@ -1,6 +1,8 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 public abstract class IGameManager : MonoBehaviour
@@ -15,6 +17,7 @@ public abstract class IGameManager : MonoBehaviour
     protected  float BGM_VOLUME = 0.105f;
 
     public static float defaultSensitivity { get; set; }
+    protected float SHADOW_MAX_DISTANCE { get; set; }
     
  
 
@@ -41,7 +44,22 @@ public abstract class IGameManager : MonoBehaviour
         int uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
+        
+        
+        // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
+        var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
 
+        if (urpAsset != null)
+        {
+            // Max Distance 값을 설정합니다.
+            urpAsset.shadowDistance = SHADOW_MAX_DISTANCE;
+            Debug.Log("Shadow Max Distance set to: " + SHADOW_MAX_DISTANCE);
+        }
+        else
+        {
+            Debug.LogError("Current Render Pipeline is not Universal Render Pipeline.");
+        }
+    
     }
 
 

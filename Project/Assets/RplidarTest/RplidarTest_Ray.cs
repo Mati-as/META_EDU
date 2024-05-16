@@ -72,7 +72,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private bool UI_Active = false;
     private bool BALL_Active = true;
-    private bool SF_Active = false;
+    private bool SF_Active = true;
     
     //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
     private Slider _sensitivitySlider;
