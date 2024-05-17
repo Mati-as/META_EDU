@@ -178,9 +178,9 @@ public class EmotionTrafficLights_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-
         if (!_isClickable) return;
 
+        
         foreach (var hit in GameManager_Hits)
         {
             var hitBalloonID = hit.transform.GetInstanceID();
@@ -219,7 +219,10 @@ public class EmotionTrafficLights_GameManager : IGameManager
 #endif
         if (_isInitializing) return;
         _isInitializing = true;
-        StartCoroutine(FlyAwayCo());
+        _collectedBalloon = 0;
+        _currentBalloonPopCount = 0;
+        StartCoroutine(FlyAwayCo(delay:0.5f));
+       
     }
 
     private void OnFirstStageFinished()
@@ -233,64 +236,53 @@ public class EmotionTrafficLights_GameManager : IGameManager
             DOVirtual.Float(0, 0, 6.5f, _ => { })
                 .OnComplete(() =>
                 {
+                    _collectedBalloon = 0;
+                    _currentBalloonPopCount = 0;
                     RandomSetPosition();
                     PlayBalloonAppearAnim(3f);
                 });
         
     }
 
-    private IEnumerator FlyAwayCo()
+    private IEnumerator FlyAwayCo(float delay)
     {
-        if (_isInitializing) yield break;
-        
+        yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
         foreach (var balloon in _balloons)
         {
             var ballId = balloon.GetInstanceID();
-       
+
             //애니메이션 할당전 초기화-------
-            if (_seqMap.ContainsKey(ballId) && _seqMap[ballId].IsActive())
-            {
-                _seqMap[ballId].Kill();
-                _seqMap[ballId] = null;
-            }
-            
+            _seqMap[ballId].Kill();
+            _seqMap[ballId] = null;
         }
-    
+
         foreach (var balloon in _balloons)
-        {
             if (balloon.name.Contains(_currentAnswer))
             {
-               
-                
-                yield return balloon.DOPath(_balloonFlyAwayPath, 2.8f,PathType.CatmullRom).WaitForCompletion();
-               
-                
+#if UNITY_EDITOR
+                Debug.Log("----------is Flying Away-----------");
+#endif
+                yield return balloon.DOPath(_balloonFlyAwayPath, 2.8f, PathType.CatmullRom).WaitForCompletion();
+
+
                 var randomVec1 = Random.Range(-3f, 3f);
                 randomVec1 = randomVec1 > 0 ? Mathf.Clamp(randomVec1, -3, -2) : Mathf.Clamp(randomVec1, 2, 3);
-               
+
                 var randomVec2 = Random.Range(-3f, 3f);
                 randomVec2 = randomVec2 > 0 ? Mathf.Clamp(randomVec2, -3, -2) : Mathf.Clamp(randomVec2, 2, 3);
-                
-                balloon.DOMove(balloon.position+ 
-                               new Vector3(randomVec1, 0, randomVec2),0.6f);
-            }
-        }
-        
-        PopAll();
-        
-        _trafficLight
-            .DOScale(_tlDefaultSize, 1.0f)
-            .SetEase(Ease.InOutBack)
-            .OnComplete(() => { PlayChangeTrafficLightAnim(); })
-            .SetDelay(1.5f);
 
-        DOVirtual.Float(0, 0, 6.5f, _ => { })
-            .OnComplete(() =>
-            {
-                RandomSetPosition();
-                PlayBalloonAppearAnim(3f);
-            });
+                yield return balloon.DOMove(balloon.position +
+                                           new Vector3(randomVec1, 0, randomVec2), 0.6f).WaitForCompletion();
+            }
+
+        PopAll(); 
+        yield return  DOVirtual.Float(0, 0, 2.0f, _ => { }).WaitForCompletion();
+        PlayChangeTrafficLightAnim();
         
+        yield return  DOVirtual.Float(0, 0, 4.5f, _ => { }).WaitForCompletion();
+        RandomSetPosition();
+        PlayBalloonAppearAnim(3f);
+            
         
     }
 
@@ -362,11 +354,9 @@ public class EmotionTrafficLights_GameManager : IGameManager
             _seqMap[ballId] = balloonSeq;
         }
 
-        DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
         {
-#if UNITY_EDITOR
-            Debug.Log("----------is Clickable-----------");
-#endif
+
             _isInitializing = false;
             _isClickable = true;
         });
@@ -475,29 +465,25 @@ public class EmotionTrafficLights_GameManager : IGameManager
         // 비동기 처리로 인한 PopCount 중복Writing 방지를 위한 변수선언 입니다.
         // 예를들어 빠르게 클릭하는 경우 popCount가 아래로직에서 더 높은 숫자로 비교되는 것을 방지하기 위함입니다.
         var popCount = _currentBalloonPopCount;
+        if (_collectedBalloon >= _countToCollect && _isFirstStageFinished)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect,
+                "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04", 0.3f);
+        }
         yield return DOVirtual.Float(0, 0, 2.5f, _ => { }).WaitForCompletion();
 
         if (popCount >= BALLOON_TOTAL_COUNT || _collectedBalloon > _countToCollect && !_isFirstStageFinished)
         {
             FirstStageFinished?.Invoke();
-            _currentBalloonPopCount = 0;
-            _isClickable = false;
         }
         else
         {
             OtherStageFinished?.Invoke();
-            
-            _currentBalloonPopCount = 0;
-            _isClickable = false;
+           
         }
 
+        _isClickable = false;
         yield return null;
-        // while (!_isOtherStageFinished)
-        // {
-        //     _rigidbodyMap[hitBalloonID].AddForce(Vector3.forward * 2f,ForceMode.Acceleration);
-        //     yield return null;
-        //     yield return DOVirtual.Float(0, 0, 0.5f,_ => { }).WaitForCompletion();
-        // }
     }
 
     private void PopAll()
@@ -507,11 +493,9 @@ public class EmotionTrafficLights_GameManager : IGameManager
             var ballId = balloon.GetInstanceID();
 
             //시퀀스 할당전 초기화-------
-            if (_seqMap.ContainsKey(ballId) && _seqMap[ballId].IsActive())
-            {
-                _seqMap[ballId].Kill();
-                _seqMap[ballId] = null;
-            }
+            _seqMap[ballId].Kill();
+            _seqMap[ballId] = null;
+            
 
 
             balloon.DOScale(Vector3.zero, Random.Range(0.12f, 0.35f))

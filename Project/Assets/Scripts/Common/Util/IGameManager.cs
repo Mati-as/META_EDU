@@ -16,19 +16,21 @@ public abstract class IGameManager : MonoBehaviour
     
     protected  float BGM_VOLUME = 0.105f;
 
-    public static float defaultSensitivity { get; set; }
+    public static float DEFAULT_SENSITIVITY { get; set; }
     protected float SHADOW_MAX_DISTANCE { get; set; }
     
  
 
     protected virtual void Awake()
     {
+        ManageProjectSettings();
         Init();
     }
 
 
     protected virtual void Init()
     {
+        
         isStartButtonClicked = false;
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
@@ -45,20 +47,8 @@ public abstract class IGameManager : MonoBehaviour
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
         
-        
-        // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
-        var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
-
-        if (urpAsset != null)
-        {
-            // Max Distance 값을 설정합니다.
-            urpAsset.shadowDistance = SHADOW_MAX_DISTANCE;
-            Debug.Log("Shadow Max Distance set to: " + SHADOW_MAX_DISTANCE);
-        }
-        else
-        {
-            Debug.LogError("Current Render Pipeline is not Universal Render Pipeline.");
-        }
+       
+      
     
     }
 
@@ -74,6 +64,24 @@ public abstract class IGameManager : MonoBehaviour
         On_GmRay_Synced?.Invoke();
     }
 
+    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance = 50f, float defaultSensitivity =0.1f)
+    {
+
+        DEFAULT_SENSITIVITY = defaultSensitivity;
+        // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
+        var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+
+        if (urpAsset != null)
+        {
+            // Max Distance 값을 설정합니다.
+            urpAsset.shadowDistance = defaultShadowMaxDistance;
+            Debug.Log("Shadow Max Distance set to: " + defaultShadowMaxDistance);
+        }
+        else
+        {
+            Debug.LogError("Current Render Pipeline is not Universal Render Pipeline.");
+        }
+    }
 
     /// <summary>
     ///     onRaySync 구현 포인트

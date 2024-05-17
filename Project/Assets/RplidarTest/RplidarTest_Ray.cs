@@ -120,7 +120,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
         
         //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
-        _sensitivitySlider.value = IGameManager.defaultSensitivity / 2;
+        _sensitivitySlider.value = IGameManager.DEFAULT_SENSITIVITY / 2;
     }
 
 

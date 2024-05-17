@@ -43,7 +43,7 @@ public class ScratchPainting_GameManager : IGameManager
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
         
-        defaultSensitivity = 0.11f;
+        DEFAULT_SENSITIVITY = 0.11f;
     }
 
     protected override void BindEvent()
@@ -156,7 +156,7 @@ public class ScratchPainting_GameManager : IGameManager
 
                 DOVirtual.Float(0, 0, 120f, _ => { }).OnComplete(() => { printInitEvent?.Invoke(); });
 
-                defaultSensitivity = 0.05f;
+                DEFAULT_SENSITIVITY = 0.05f;
                 DOVirtual.Float(0, 0, 120, _ => { }).OnComplete(() => { onRoundRestart?.Invoke(); });
             });
         });

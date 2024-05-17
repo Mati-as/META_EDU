@@ -28,10 +28,10 @@ public class Playground_Ball_Base : MonoBehaviour
     private int _audioSize = 5;
 
     [Header("Reference")] 
-    [SerializeField]
+
     private Playground_VegetationController _vegetaionController;
 
-    [SerializeField] 
+
     private Playground_BallSpawner _ballSpawner;
    
     
@@ -52,26 +52,31 @@ public class Playground_Ball_Base : MonoBehaviour
     private float _veggiePositionOffset =0.15f;
     private bool _isRespawning;
 
-    private void Start()
+    private void Awake()
     {
         Init();
     }
 
-    private void Init()
+    protected virtual void Init()
     {
         _path = new Vector3[3];
 
         SetAudio();
-
         //material은 static이기 때문에, 직접적으로 수정하지 않기 위한 tempMat 설정  .
         GetComponents();
         ColorInit(); 
         SetColor();
         SetScale();
+
+        _vegetaionController = GameObject.Find("Vegetation").GetComponent<Playground_VegetationController>();
+        if(_vegetaionController ==null) Debug.LogError("There's no Vegetation Controller");
+
+        _ballSpawner = GameObject.Find("BallSpawner").GetComponent<Playground_BallSpawner>();
+        if(_ballSpawner ==null) Debug.LogError("There's no Vegetation Controller");
     }
     
     
-    private void OnTriggerEnter(Collider other)
+    public virtual void OnTriggerEnter(Collider other)
     {
         if (size == (int)BallInfo.BallSize.Small && other.transform.gameObject.name == "Hole")
         {
@@ -116,7 +121,7 @@ public class Playground_Ball_Base : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision other)
+    public virtual void OnCollisionEnter(Collision other)
     {
         if (other.transform.gameObject.name == "Wall")
         {
@@ -161,7 +166,7 @@ public class Playground_Ball_Base : MonoBehaviour
     private void SetColor()
     {
 
-        if (this.gameObject.name != "Rainbow")
+        if (!gameObject.name.Contains("Rainbow"))
         {
             _currentColorIndex = Random.Range((int)BallInfo.BallColor.Red, (int)BallInfo.BallColor.Blue + 1);
             _color = colors[_currentColorIndex];

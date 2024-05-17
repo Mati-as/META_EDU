@@ -30,6 +30,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     [SerializeField] protected ParticleSystem _particleOnRewind;
 
 
+    private float videoGameDefaultSensitivity = 0.15f;
     public static bool _isShaked;
 
     protected bool _isRewindEventTriggered;
@@ -50,11 +51,11 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
     protected virtual void Start()
     {
+        ManageProjectSettings(defaultSensitivity:videoGameDefaultSensitivity);
+        
         Init();
 
         _isReplayAfterPausing = true;
-     
-        
         onReplay -= OnReplay;
         onReplay += OnReplay;
         
