@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class PlaygroundEX1_Ball : Playground_Ball_Base
+public class PlaygroundVer3_Ball : Playground_Ball_Base
 {
     private static Stack<ParticleSystem> _collisionPs;
     private readonly int DEFAULT_POOL_SIZE = 30;
