@@ -50,7 +50,7 @@ public class Playground_Ball_Base : MonoBehaviour
     private Vector3[] _path;
     public Vector3 triggerPosition { get; private set; }
     private float _veggiePositionOffset =0.15f;
-    private bool _isRespawning;
+    protected bool _isRespawning;
 
     private void Awake()
     {
@@ -103,12 +103,13 @@ public class Playground_Ball_Base : MonoBehaviour
                 });
         }
 
-        else if (other.transform.gameObject.name == "Net" && !_isRespawning)
+        else if (other.transform.gameObject.name.Contains("Net") && !_isRespawning)
 
         {
             _isRespawning = true;
             FindAndPlayAudio(netSoundSource);
             
+            _collider.enabled = false;
             transform.DOScale(0, 1.5f).SetEase(Ease.InBounce).OnComplete(() =>
             {
                 

@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class BB001EX1_ArrowAnimController : MonoBehaviour
+public class PlaygroundVer3_ArrowAnimController : MonoBehaviour
 {
     private Vector3 _defaultSize;
 

@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 
 
-public class BB001EX1_HoleController : MonoBehaviour
+public class PlaygroundVer3_HoleController : MonoBehaviour
 {
     private Transform[] _holes;
     private Sequence[] _seqs;

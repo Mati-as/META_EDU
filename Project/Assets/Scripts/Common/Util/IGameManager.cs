@@ -74,8 +74,9 @@ public abstract class IGameManager : MonoBehaviour
         if (urpAsset != null)
         {
             // Max Distance 값을 설정합니다.
-            urpAsset.shadowDistance = defaultShadowMaxDistance;
-            Debug.Log("Shadow Max Distance set to: " + defaultShadowMaxDistance);
+            SHADOW_MAX_DISTANCE = defaultShadowMaxDistance;
+            urpAsset.shadowDistance = SHADOW_MAX_DISTANCE;
+           
         }
         else
         {
@@ -154,7 +155,8 @@ public abstract class IGameManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log(
             $"Game Title: {SceneManager.GetActiveScene().name}," +
-            $" Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}");
+            $" Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}" +
+            $"Shadow Max Distance: {SHADOW_MAX_DISTANCE}," );
 #endif
     }
 }
