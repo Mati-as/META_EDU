@@ -85,6 +85,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         {
             if (_isUIAnimWorking[(int)ToolList.Stamp]) return;
             _isUIAnimWorking[(int)ToolList.Stamp] = true;
+            _toolTexts[(int)ToolList.Stamp].text = _isUIOn[(int)ToolList.Stamp] ? "도장 고르기\nOFF" : "도장 고르기\nON";
             var target = _isUIOn[(int)ToolList.Stamp] ? hidePos : flowerStampDefaultPos;
             OnUIClicked(rectFlowerStamp, target, ToolList.Stamp);
         });
@@ -97,7 +98,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
             
             _isUIAnimWorking[(int)ToolList.Eraser] = true;
             _isEraserMode = !_isEraserMode;
-            _toolTexts[(int)ToolList.Eraser].text = _isEraserMode ? "지우개\nOn" : "지우개\nOff";
+            _toolTexts[(int)ToolList.Eraser].text = _isEraserMode ? "지우개\nON" : "지우개\nOFF";
             StartCoroutine(OnClickCo(ToolList.Eraser));
         });
 

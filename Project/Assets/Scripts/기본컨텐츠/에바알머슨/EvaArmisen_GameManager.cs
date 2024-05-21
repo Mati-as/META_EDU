@@ -12,7 +12,7 @@ public class EvaArmisen_GameManager : IGameManager
 {
    // public string gameVersion; //Fish or Tree 
    // private SpriteRenderer _bgSprite;
-   private EvaArmisen_ToolManager s_toolManager;
+   private static EvaArmisen_ToolManager S_toolManager;
     public static bool isInit { get; private set; }
 
     public Queue<GameObject>[] stampPools { get; set; }
@@ -22,7 +22,7 @@ public class EvaArmisen_GameManager : IGameManager
 
     private ParticleSystem[] _ps;
 
-    private readonly float _poolSize = 50;
+    private readonly float _poolSize = 10;
     private float _elapsed;
     private readonly float _timeLimit = 987654321f;
     private float _remainTime;
@@ -47,18 +47,18 @@ public class EvaArmisen_GameManager : IGameManager
         _raySync = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
         
         
-        if (s_toolManager == null)
+        if (S_toolManager == null)
         {
-            s_toolManager = GameObject.Find("EvaArmisen_ToolManager").AddComponent<EvaArmisen_ToolManager>();
+            S_toolManager = GameObject.Find("EvaArmisen_ToolManager").AddComponent<EvaArmisen_ToolManager>();
         }
-        s_toolManager.Init();
+        S_toolManager.Init();
         
 
         DEFAULT_SENSITIVITY = 0.3f;
-        DOTween.Init().SetCapacity(1500, 500);
+        DOTween.Init().SetCapacity(5000, 300);
 
 
-        stampPools = new Queue<GameObject>[s_toolManager.FLOWER_STAMP_COUNT];
+        stampPools = new Queue<GameObject>[S_toolManager.FLOWER_STAMP_COUNT];
         allStamps = new Queue<Transform>();
         _poolIDMap = new Dictionary<int, Queue<GameObject>>();
         SetPool();
@@ -175,8 +175,24 @@ public class EvaArmisen_GameManager : IGameManager
         // if (!_isRoundReadyToStart) return;
         if (!isStartButtonClicked) return;
 
+        
+        // 1.1 지우개 모드인 경우 -----------------------
+        if (S_toolManager._isEraserMode)
+        {
+            foreach (var hit in GameManager_Hits)
+            {
+                if (hit.transform.gameObject.name.Contains("Flower"))
+                {
+                    EraseStamp(hit.transform.gameObject);
+                }
+            }
+            return;
+        }
+        
         foreach (var hit in GameManager_Hits)
         {
+            
+            // 1.1 버튼클릭인 경우 -----------------------
             Button button = null;
             if (_raySync.raycastResults.Count > 0)
             {
@@ -190,22 +206,12 @@ public class EvaArmisen_GameManager : IGameManager
                     if (button != null) return;
                 }
             }
+                
             
-
-            if (s_toolManager._isEraserMode)
-            {
-                if (hit.transform.gameObject.name.Contains("Flower"))
-                {
-                    EraseStamp(hit.transform.gameObject);
-                    
-                }
-
-                return;
-            }
             else
             {
                 
-                GetFromPool(hit.point,s_toolManager.currentStampIndex);
+                GetFromPool(hit.point,S_toolManager.currentStampIndex);
                 var randomChar = (char)Random.Range('A', 'F' + 1);
                 Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                     0.3f);
@@ -220,7 +226,7 @@ public class EvaArmisen_GameManager : IGameManager
 
     private void SetPool()
     {
-        for (int i = 0; i < s_toolManager.FLOWER_STAMP_COUNT; i++)
+        for (int i = 0; i < S_toolManager.FLOWER_STAMP_COUNT; i++)
         {
             var currentStampToCopy = transform.GetChild(i).gameObject;
             stampPools[i] = new Queue<GameObject>();
