@@ -23,33 +23,32 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void Awake()
     {
-        ManageProjectSettings();
+      
         Init();
     }
 
 
     protected virtual void Init()
     {
+        if(isInitialized) return;
         
         isStartButtonClicked = false;
+        ManageProjectSettings();
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
-        isInitialized = true;
-
         DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
         {
             Managers.Sound.Play(SoundManager.Sound.Effect,
                 "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
         });
-        
         int uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
-        
-       
-      
-    
+        isInitialized = true;
+
+
+
     }
 
 
@@ -102,7 +101,7 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("Ray Sync Subscribed");
+        Debug.Log("Ray Sync Subscribed, RayHits being Shared");
 #endif
         //1차적으로 하드웨어에서 동기화된 Ray를 GameManger에서 읽어옵니다.
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
@@ -119,8 +118,8 @@ public abstract class IGameManager : MonoBehaviour
     private void OnDestroy()
     {
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
-        On_GmRay_Synced -= OnRaySynced;
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
+        On_GmRay_Synced -= OnRaySynced;
     }
 
 
