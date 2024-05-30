@@ -17,7 +17,7 @@ public class WaterPlayground_GameManager : IGameManager
     public float forceAmount;
     public float upOffset;
     
-    protected override int TARGET_FRAME { get; } = 45;
+   
   
     public Vector3 particleUpOffset;
     protected override void Init()
@@ -51,6 +51,7 @@ public class WaterPlayground_GameManager : IGameManager
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
             }
 
+            
             
         }
         

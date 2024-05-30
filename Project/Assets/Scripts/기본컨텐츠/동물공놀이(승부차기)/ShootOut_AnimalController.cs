@@ -88,6 +88,7 @@ public class ShootOut_AnimalController : MonoBehaviour
     private void OnDestroy()
     {
         ShootOut_GameManager.OnLaunchBall -= OnLaunchBall;
+        DOTween.Clear();
     }
 
 

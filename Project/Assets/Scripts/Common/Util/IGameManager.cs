@@ -5,35 +5,68 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
+
+/// <summary>
+/// IGameManager는 UI,Resource,GameLogic Manager를 모두 포함합니다.
+/// 이는 Singleton Managers 방식입니다. 
+/// </summary>
 public abstract class IGameManager : MonoBehaviour
 {
-    public static Ray GameManager_Ray { get; private set; }
-    public static RaycastHit[] GameManager_Hits { get; set; }
-    public static bool isStartButtonClicked { get; private set; }
-    protected static bool isInitialized { get;  set; }
-    public static event Action On_GmRay_Synced;
-    protected virtual int TARGET_FRAME { get; } = 60;
     
-    protected  float BGM_VOLUME = 0.105f;
+    private static ResourceManager s_resourceManager = new ResourceManager();
+    public static Managers s_instance = null;
+    public static Managers Instance { get { return s_instance; } }
+    public static ResourceManager Resource
+    {
+        get{ InitManagers(); return s_resourceManager;}
+    }
 
-    public static float DEFAULT_SENSITIVITY { get; set; }
-    protected float SHADOW_MAX_DISTANCE { get; set; }
-    
- 
+
+    public bool isStartButtonClicked { get; private set; } // startButton 클릭 이전,이후 동작 구분용입니다. 
+    protected bool isInitialized { get; set; }
+    protected int TARGET_FRAME { get; } = 60; //
+
+    protected float BGM_VOLUME { get; set; } = 0.105f;
+
+    public static float DEFAULT_SENSITIVITY { get; protected set; } //런타임에서 고정
+    protected float SHADOW_MAX_DISTANCE { get; set; } //런타임에서 고정
+
+    public LayerMask layerMask;
+
+    // Ray 및 상호작용 관련 멤버
+    public static Ray GameManager_Ray { get; private set; } // 마우스, 발로밟은 위치에 Ray 발사. 
+
+    public RaycastHit[] GameManager_Hits { get; set; } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
+    public static event Action On_GmRay_Synced;
 
     protected virtual void Awake()
     {
-      
         Init();
+    }
+
+    private static void InitManagers()
+    {
+        GameObject go = GameObject.Find("@Managers");
+        if (go == null)
+            go = new GameObject { name = "@Managers" };
+
+        s_instance = Utils.GetOrAddComponent<Managers>(go);
+        DontDestroyOnLoad(go);
+
+        s_resourceManager.Init();
+        // s_sceneManager.Init();
+        // s_adsManager.Init();
+        // s_iapManager.Init();
+        // s_dataManager.Init();
+        // s_soundManager.Init();
     }
 
 
     protected virtual void Init()
     {
         if(isInitialized) return;
-        
         isStartButtonClicked = false;
-        ManageProjectSettings();
+        ManageProjectSettings(SHADOW_MAX_DISTANCE,DEFAULT_SENSITIVITY);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
         PlayNarration();
@@ -47,14 +80,12 @@ public abstract class IGameManager : MonoBehaviour
         layerMask = maskWithoutUI;
         isInitialized = true;
 
-
-
     }
 
 
-    public LayerMask layerMask;
 
-    protected void OnOriginallyRaySynced()
+
+    protected  void OnOriginallyRaySynced()
     {
 
         GameManager_Ray = RaySynchronizer.initialRay;
@@ -63,7 +94,7 @@ public abstract class IGameManager : MonoBehaviour
         On_GmRay_Synced?.Invoke();
     }
 
-    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance = 50f, float defaultSensitivity =0.1f)
+    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensitivity)
     {
 
         DEFAULT_SENSITIVITY = defaultSensitivity;
@@ -145,7 +176,7 @@ public abstract class IGameManager : MonoBehaviour
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", BGM_VOLUME);
     }
 
-    private void SetResolution(int width, int height, int targetFrame)
+    private  void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
         QualitySettings.vSyncCount = 1;
@@ -158,4 +189,6 @@ public abstract class IGameManager : MonoBehaviour
             $"Shadow Max Distance: {SHADOW_MAX_DISTANCE}," );
 #endif
     }
+    
+    private static void PrintGameInfo(){}
 }

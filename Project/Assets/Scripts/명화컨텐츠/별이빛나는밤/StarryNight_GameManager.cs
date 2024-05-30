@@ -16,6 +16,8 @@ public class StarryNight_GameManager : MonoBehaviour
         {
             _gameManager = new StarryNight_GameManager();
         }
+
+        Application.targetFrameRate = 60; 
     }
 
 

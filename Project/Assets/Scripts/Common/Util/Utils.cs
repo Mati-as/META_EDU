@@ -69,6 +69,22 @@ using System.Xml;
 
             return null;
         }
+        
+        public static T FindSomething<T>(GameObject go,string name) where T : UnityEngine.Object
+        {
+            if (go == null)
+                return null;
+            
+            {
+                foreach (T component in go.GetComponentsInChildren<T>())
+                {
+                    if (string.IsNullOrEmpty(name) || component.name == name)
+                        return component;
+                }
+            }
+
+            return null;
+        }
 
         public static GameObject FindChild(GameObject go, string name = null, bool recursive = false)
         {

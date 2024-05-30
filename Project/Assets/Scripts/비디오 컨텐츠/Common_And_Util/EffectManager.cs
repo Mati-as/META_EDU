@@ -98,13 +98,13 @@ public class EffectManager : MonoBehaviour
 
     //for debug.
 #if UNITY_EDITOR
-    private bool _isRaySet;
+private bool _isRaySet;
 #endif
 
     private Hopscotch_GameManager _gm;
     protected virtual void OnGmRaySyncedByOnGm()
     {
-        if (!IGameManager.isStartButtonClicked) return;
+        if (!_gm.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
         if (SceneManager.GetActiveScene().name == "BB002")
@@ -125,11 +125,11 @@ public class EffectManager : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        if (!_isRaySet)
-        {
-            Debug.Log("Ray Synchronized by IGameManager; effectManager is Ready.");
-            _isRaySet = true;
-        }
+if (!_isRaySet)
+{
+    Debug.Log("Ray Synchronized by IGameManager; effectManager is Ready.");
+    _isRaySet = true;
+}
 
 #endif
     }

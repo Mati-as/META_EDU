@@ -24,7 +24,8 @@ public class Playground_GameManager : IGameManager
 
     protected override void Init()
     {
-        ManageProjectSettings(defaultShadowMaxDistance: 87f, defaultSensitivity: 0.1f);
+        DEFAULT_SENSITIVITY = 0.1f;
+        SHADOW_MAX_DISTANCE = 80f;
         base.Init();
     }
 

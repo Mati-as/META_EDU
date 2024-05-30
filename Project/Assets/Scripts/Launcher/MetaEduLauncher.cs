@@ -26,9 +26,10 @@ public class MetaEduLauncher : UI_PopUp
 		Home,
 		Result,
 		SelectMode,
-		ContentA,
-		ContentB,
-		ContentC,
+		ContentA, // 신체놀이
+		ContentB, // 미술놀이
+		ContentC, // 음악놀이
+		ContentD, // 영상놀이
 		Setting,
 		Loading,
 		//Login,
@@ -111,6 +112,7 @@ public class MetaEduLauncher : UI_PopUp
 		GetObject((int)UIType.ContentA).gameObject.SetActive(false);
 		GetObject((int)UIType.ContentB).gameObject.SetActive(false);
 		GetObject((int)UIType.ContentC).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentD).gameObject.SetActive(false);
 		GetObject((int)UIType.Setting).gameObject.SetActive(false);
 		GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
@@ -157,6 +159,7 @@ public class MetaEduLauncher : UI_PopUp
 		GetObject((int)UIType.ContentA).gameObject.SetActive(false);
 		GetObject((int)UIType.ContentB).gameObject.SetActive(false);
 		GetObject((int)UIType.ContentC).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentD).gameObject.SetActive(false);
 		GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
 		//GetObject((int)UIType.Login).gameObject.SetActive(false);
@@ -202,6 +205,12 @@ public class MetaEduLauncher : UI_PopUp
 				GetObject((int)UIType.ContentC).gameObject.SetActive(true);
 				GetObject((int)UIType.ContentC).GetComponent<ScrollRect>().ResetHorizontal();
 				break;
+			
+			case UIType.ContentD:
+				Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+				GetObject((int)UIType.ContentD).gameObject.SetActive(true);
+				GetObject((int)UIType.ContentD).GetComponent<ScrollRect>().ResetHorizontal();
+				break;
 
 			case UIType.Setting:
 				Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
@@ -230,9 +239,7 @@ public class MetaEduLauncher : UI_PopUp
 
 
 	}
-
-
-
+    
 
 	private GraphicRaycaster _launcherGR;
 	private PointerEventData _launcherPED;

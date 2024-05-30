@@ -97,16 +97,6 @@ public class FishOnWater_GameManager : IGameManager
         _isOnBucket = new Dictionary<int, bool>();
         _psPool = new Stack<ParticleSystem>();
         
-        
-        _pathPoints = new Vector3[(int)PathRow.Max, (int)PathColumn.Max];
-
-        for (var row = 0; row < (int)PathRow.Max; row++)
-        {
-            var pathParent = transform.GetChild(row);
-
-            for (var column = 0; column < (int)PathColumn.Max; column++)
-                _pathPoints[row, column] = pathParent.GetChild(column).position;
-        }
 
         var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_Fish");
         for (var i = 0; i < FISH_COUNT; i++)
