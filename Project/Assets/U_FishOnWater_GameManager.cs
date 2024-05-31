@@ -1,12 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class U_FishOnWater_GameManager : IGameManager
 {
+    private TextAsset xmlAsset;
+    private XmlNode soundNode;
+    public XmlDocument xmlDoc; // GameManager에서만 문서 수정, UIMAnager에서는 읽기만 수행
+
+    private readonly string xmlPath = "Common/Data/BB008_UserRankingData";
+    private string _xmlSavePath = "Resources/Common/Data/BB008_UserRankingData.xml";
+
+
+    //ResourceManage
+    private Dictionary<string, Sprite> _userIconMap;
+    public string currentUserName { get; private set; }
+    public string currentUserScore { get; private set; }
+
+    private readonly string[] adjectives =
+    {
+        "귀여운", "활기넘치는", "우아한", "시원한", "따뜻한",
+        "편안한", "멋진", "화려한", "아름다운", "소박한",
+        "현대적인", "고전적인", "차분한", "대담한", "풍부한",
+        "산뜻한", "깔끔한", "화사한", "기발한", "재치넘치는"
+    };
+
+    private readonly string[] clothes =
+    {
+        "청바지", "스웨터", "셔츠", "티셔츠", "재킷",
+        "코트", "드레스", "치마", "바지", "반바지",
+        "운동복", "잠옷", "점퍼", "블라우스", "베스트",
+        "가디건", "레깅스", "양복", "조끼", "한복", "목도리"
+    };
     /*
      4x4구성의 애니메이션 경로 관련 enum 선언입니다.
    경료지점 변경 관련 유지보수가 용이하도록 설계하였습니다.
@@ -58,6 +87,7 @@ public class U_FishOnWater_GameManager : IGameManager
     public float remainTime { get; private set; }
 
     private int _fishCaughtCount;
+
     public int FishCaughtCount
     {
         get => _fishCaughtCount;
@@ -83,7 +113,7 @@ public class U_FishOnWater_GameManager : IGameManager
     private int _currentFishIndex;
 
     public static event Action OnReady;
-    public static event Action OnFinished;
+    public static event Action OnRoundFinished;
     public static event Action OnFishCaught;
 
     private void Update()
@@ -94,45 +124,58 @@ public class U_FishOnWater_GameManager : IGameManager
         _elapsedForReInit += Time.deltaTime;
         remainTime = timeLimit - _elapsedForReInit;
 
-        if (_elapsedForReInit > timeLimit && !isOnReInit)
-        {
-            InvokeFinishAndReInit();
-        }
+        if (_elapsedForReInit > timeLimit && !isOnReInit) InvokeFinishAndReInit();
     }
 
     private void InvokeFinishAndReInit()
     {
         isOnReInit = true;
         _elapsedForReInit = 0;
-        OnFinished?.Invoke();
+
+        currentUserName = adjectives[Random.Range(0, adjectives.Length)]
+                           + clothes[Random.Range(0, clothes.Length)]
+                           + Random.Range(0, 1000);
+        currentUserScore = ((_fishCaughtCount + remainTime) * 100f).ToString("F2");
+#if UNITY_EDITOR
+        Debug.Log($"remainTime : {remainTime}" + $"fishCount : {_fishCaughtCount}");
+#endif
+
+        Utils.AddUser(ref xmlDoc, currentUserName, currentUserScore);
+        Utils.SaveXML(ref xmlDoc, _xmlSavePath);
+
+        OnRoundFinished?.Invoke();
         ReInit();
     }
 
     protected override void BindEvent()
     {
         base.BindEvent();
-        
+
         OnFishCaught -= PlayPathAnimOneTime;
         OnFishCaught += PlayPathAnimOneTime;
-        
+
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         U_FishOnWater_UIManager.OnStartUIAppear += OnRoundStart;
-        
-        U_FishOnWater_UIManager.OnUIFinished -= OnStopUIFinished;
-        U_FishOnWater_UIManager.OnUIFinished += OnStopUIFinished;
+
+        U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
+        U_FishOnWater_UIManager.OnRestartBtnClicked += OnRestartBtnClicked;
     }
 
     protected void OnDestroy()
     {
-        U_FishOnWater_UIManager.OnUIFinished -= OnStopUIFinished;
+        U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         OnFishCaught -= PlayPathAnimOneTime;
     }
 
+
     protected override void Init()
     {
         base.Init();
+        Utils.LoadXML(ref xmlAsset, ref xmlDoc, xmlPath, ref _xmlSavePath);
+
         DOTween.Init().SetCapacity(300, 300);
+        ManageProjectSettings(90, 0.15f);
         remainTime = timeLimit;
 
 
@@ -212,7 +255,8 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         isOnReInit = false;
         _isGameStart = true;
-        
+
+
         PlayPathAnim();
     }
 
@@ -242,12 +286,18 @@ public class U_FishOnWater_GameManager : IGameManager
             if (_isOnBucket[id])
                 //_fishesQueue.Enqueue(currentFish);
                 return;
-
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.15f);
             currentFish.position = currentPath[(int)Path.Start];
             var randomDuration = Random.Range(1.0f, 2.5f);
-            moveAnimSeq.Append(currentFish.DOPath(currentPath, randomDuration, PathType.CatmullRom)
-                .SetLookAt(-0.01f)
-                .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)));
+            moveAnimSeq
+                .Append(currentFish
+                    .DOPath(currentPath, randomDuration, PathType.CatmullRom)
+                    .OnStart(() =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.15f);
+                    })
+                    .SetLookAt(-0.01f)
+                    .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)));
             moveAnimSeq.OnComplete(() => { DoAnimAfterArrival(currentFish, currentFish.position); });
             //순서만을 관리하므로, 동작컨트롤 후 바로 Enqueue 해줍니다. 
             // _fishesQueue.Enqueue(currentFish);
@@ -293,14 +343,14 @@ public class U_FishOnWater_GameManager : IGameManager
         else
         {
             var nextLocation = _pathArrivalPoints[Random.Range(0, _pathArrivalPoints.Length)];
-            var direction = ( - currentFish.position + nextLocation ).normalized;
+            var direction = (-currentFish.position + nextLocation).normalized;
             var lookRotation = Quaternion.LookRotation(direction);
 
             randomAnimSeq.Append(currentFish.DORotateQuaternion(lookRotation, 0.52f));
-            randomAnimSeq.AppendInterval(0.18f);
-            randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathArrivalPoints.Length)],0.6f));
-            randomAnimSeq.OnComplete(() => { PlayPathAnimOneTime();});
-
+            randomAnimSeq.AppendInterval(0.13f);
+            randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathArrivalPoints.Length)],
+                0.6f));
+            randomAnimSeq.OnComplete(() => { PlayPathAnimOneTime(); });
         }
 
         _animSeq[id] = randomAnimSeq;
@@ -329,7 +379,7 @@ public class U_FishOnWater_GameManager : IGameManager
                         SendToBucket(fish);
                     }
             }
-          
+
 
         foreach (var hit in GameManager_Hits)
             if (hit.transform.gameObject.name.Contains("Screen"))
@@ -339,9 +389,10 @@ public class U_FishOnWater_GameManager : IGameManager
                 var ps = _psPool.Pop();
                 ps.transform.position = hit.point;
                 ps.Play();
-                
-                
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1),0.5f);
+
+
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1), 0.5f);
                 DOVirtual.Float(0, 1, ps.main.startLifetime.constant + 0.5f, _ => { }).OnComplete(() =>
                 {
                     _psPool.Push(ps);
@@ -355,7 +406,7 @@ public class U_FishOnWater_GameManager : IGameManager
         _elapsedForReInit = 0;
         remainTime = timeLimit;
         isOnReInit = true;
-        
+
         foreach (var key in _animSeq.Keys.ToList())
         {
             _animSeq[key].Kill();
@@ -366,7 +417,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
         var escapePath = new Vector3[2];
-       
+
         var count = 0;
         _currentFishIndex = 0;
 
@@ -390,7 +441,7 @@ public class U_FishOnWater_GameManager : IGameManager
                 .SetAutoKill(true);
 
 #if UNITY_EDITOR
-            Debug.Log("ReInit, Fish Escape Anim");
+            //  Debug.Log("ReInit, Fish Escape Anim");
 #endif
         }
     }
@@ -401,20 +452,19 @@ public class U_FishOnWater_GameManager : IGameManager
 
         path[0] = _pathStartPoints[Random.Range(0, _pathStartPoints.Length)];
         path[1] = _pathArrivalPoints[Random.Range(0, _pathArrivalPoints.Length)]
-                  + new Vector3(Random.Range(-0.5f,0.5f),Random.Range(-0.5f,0.5f),Random.Range(-0.5f,0.5f));
+                  + new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
 
         return path;
     }
 
-    private void OnStopUIFinished()
+    private void OnRestartBtnClicked()
     {
         DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() =>
         {
-            FishCaughtCount = 0; 
+            FishCaughtCount = 0;
             OnReady?.Invoke();
         });
     }
-    
 
 
     private void SendToBucket(Transform fish)
@@ -422,18 +472,18 @@ public class U_FishOnWater_GameManager : IGameManager
 #if UNITY_EDITOR
         Debug.Log("BucktPathIsSet");
 #endif
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'C' + 1),0.5f);
-        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'C' + 1),
+            0.5f);
+
         var id = fish.GetInstanceID();
         _animSeq[id]?.Kill();
 
         var bucketSeq = DOTween.Sequence();
 
         var pathToBucket = new Vector3[3]; // 물고기 클릭위치 에서 버킷까지의 경로 
-        var inBucketPath = Random.Range(0, 100) > 50 ?
-            _pathInBucketA 
-            : 
-            _pathInBucketB; //버킷에 도착 후 경로
+        var inBucketPath = Random.Range(0, 100) > 50
+            ? _pathInBucketA
+            : _pathInBucketB; //버킷에 도착 후 경로
         inBucketPath[1] +=
             new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
         inBucketPath[2] +=
@@ -450,7 +500,6 @@ public class U_FishOnWater_GameManager : IGameManager
         pathToBucket[bucketIndex] = inBucketPath[0];
 
 
-    
         bucketSeq.Append
         (fish.DOPath(pathToBucket, Random.Range(1.0f, 2.0f))
             .SetLookAt(-0.01f)
@@ -468,9 +517,7 @@ public class U_FishOnWater_GameManager : IGameManager
         var pathInBucketWithRandomOffset = inBucketPath;
         var OFFSET_AMOUNT = 0.7f;
 
-#if UNITY_EDITOR
-        Debug.Log($"path info : {pathInBucketWithRandomOffset[0]}");
-#endif
+
         for (var i = 1; i < pathInBucketWithRandomOffset.Length; i++)
             pathInBucketWithRandomOffset[i] +=
                 Random.Range(-1.0f, 1.0f) * Vector3.forward + Random.Range(-1.0f, 1.0f) * Vector3.left;
@@ -490,5 +537,49 @@ public class U_FishOnWater_GameManager : IGameManager
         FishCaughtCount++;
         _animatorSeq[id].speed = 0.6f;
         OnFishCaught?.Invoke();
+    }
+
+
+    //xml 파일 핸들링.. 테스트 후 Util 클래스로 이동여부 검토 해야합니다. 5/30/24 민석
+    // Load the XML file
+    private void LoadXML()
+    {
+        xmlAsset = Resources.Load<TextAsset>("Common/Data/BB008_UserRankingData");
+        xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xmlAsset.text);
+
+        // Get the path to save the file later
+        _xmlSavePath = System.IO.Path.Combine(Application.dataPath, "Common/Data/BB008_UserRankingData");
+    }
+
+    // Add a new user to the XML
+    private void AddUser(string score, string username)
+    {
+        XmlNode root = xmlDoc.DocumentElement;
+
+        // Find the highest userID
+        var highestUserID = -1;
+        foreach (XmlNode node in root.SelectNodes("StringData"))
+        {
+            var userID = int.Parse(node.Attributes["userID"].Value);
+            if (userID > highestUserID) highestUserID = userID;
+        }
+
+        // Create a new user with the next available userID
+        var newUserID = highestUserID + 1;
+
+        var newUser = xmlDoc.CreateElement("StringData");
+        newUser.SetAttribute("userID", newUserID.ToString());
+        newUser.SetAttribute("username", username);
+        newUser.SetAttribute("score", score);
+
+        root.AppendChild(newUser);
+    }
+
+    // Save the XML file
+    private void SaveXML()
+    {
+        xmlDoc.Save(_xmlSavePath);
+        Debug.Log("XML file saved to: " + _xmlSavePath);
     }
 }

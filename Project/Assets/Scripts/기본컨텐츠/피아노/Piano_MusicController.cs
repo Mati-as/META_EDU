@@ -46,7 +46,7 @@ public class Piano_MusicController : IGameManager
     // 동요악보를 숫자형태로 아래 파일, "BD005_SheetMusic.xml"에 저장
     private TextAsset _xmlAsset;
     private XmlDocument _xmlDoc;
-    private readonly string _path = "Common/Data/BD005_SheetMusic";
+    private  string _path = "Common/Data/BD005_SheetMusic";
 
     private Coroutine _songCr;
     [Range(0, 5)] public float interval;
@@ -184,7 +184,7 @@ public class Piano_MusicController : IGameManager
 
     private void SetXML()
     {
-        Utils.LoadXML(ref _xmlAsset, ref _xmlDoc, _path);
+        Utils.LoadXML(ref _xmlAsset, ref _xmlDoc, _path,ref _path);
 
         for (var i = (int)SongList.WhatIsTheSame; i < (int)SongList.Max; i++)
         {

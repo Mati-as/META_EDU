@@ -31,12 +31,48 @@ using System.Xml;
             return null;
         }
 
-        public static void LoadXML(ref TextAsset xmlAsset,ref XmlDocument xmlDoc, string path)
+        //XML 관련 ----------------------------------------------------------------------------
+        public static void LoadXML(ref TextAsset xmlAsset,ref XmlDocument xmlDoc, string path, ref string savePath)
         {
             xmlAsset = Resources.Load<TextAsset>(path); 
             xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlAsset.text);
+            // Get the path to save the file later
+            savePath = System.IO.Path.Combine(Application.dataPath, savePath);
         }
+        public static void AddUser(ref XmlDocument xmlDoc,string username,string score)
+        {
+            XmlNode root = xmlDoc.DocumentElement;
+
+            // Find the highest userID
+            int highestUserID = -1;
+            foreach (XmlNode node in root.SelectNodes("StringData"))
+            {
+                int userID = int.Parse(node.Attributes["userID"].Value);
+                if (userID > highestUserID)
+                {
+                    highestUserID = userID;
+                }
+            }
+
+            // Create a new user with the next available userID
+            int newUserID = highestUserID + 1;
+
+            XmlElement newUser = xmlDoc.CreateElement("StringData");
+            newUser.SetAttribute("userID", newUserID.ToString());
+            newUser.SetAttribute("username", username);
+            newUser.SetAttribute("score", score.ToString());
+
+            root.AppendChild(newUser);
+        }
+
+        // Save the XML file
+        public static void SaveXML(ref XmlDocument xmlDoc,string xmlFilePath)
+        {
+            xmlDoc.Save(xmlFilePath);
+            Debug.Log("XML file saved to: " + xmlFilePath);
+        }
+        //------------------------------------------------------------------------------------------
         
         public static T GetOrAddComponent<T>(GameObject go) where T : UnityEngine.Component
         {
