@@ -25,16 +25,16 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         "귀여운", "활기넘치는", "우아한", "시원한", "따뜻한",
         "편안한", "멋진", "화려한", "아름다운", "소박한",
-        "현대적인", "고전적인", "차분한", "대담한", "풍부한",
-        "산뜻한", "깔끔한", "화사한", "기발한", "재치넘치는"
+        "현대적인", "고풍스러운", "차분한", "대담한", "풍부한",
+        "산뜻한", "깔끔한", "화사한", "기발한", "재치넘치는" ,"발랄한","미소가이쁜"
     };
 
     private readonly string[] clothes =
     {
         "청바지", "스웨터", "셔츠", "티셔츠", "재킷",
         "코트", "드레스", "치마", "바지", "반바지",
-        "운동복", "잠옷", "점퍼", "블라우스", "베스트",
-        "가디건", "레깅스", "양복", "조끼", "한복", "목도리"
+        "운동복", "잠옷", "점퍼", "블라우스", "패딩",
+        "가디건", "레깅스", "양복", "조끼", "한복", "목도리",
     };
     /*
      4x4구성의 애니메이션 경로 관련 enum 선언입니다.
@@ -120,10 +120,11 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         if (isOnReInit || !_isGameStart) return;
 
-        _elapsedForInterval += Time.deltaTime;
-        _elapsedForReInit += Time.deltaTime;
-        remainTime = timeLimit - _elapsedForReInit;
-
+       
+            _elapsedForInterval += Time.deltaTime;
+            _elapsedForReInit += Time.deltaTime;
+            remainTime = timeLimit - _elapsedForReInit;
+            
         if (_elapsedForReInit > timeLimit && !isOnReInit) InvokeFinishAndReInit();
     }
 
@@ -135,7 +136,11 @@ public class U_FishOnWater_GameManager : IGameManager
         currentUserName = adjectives[Random.Range(0, adjectives.Length)]
                            + clothes[Random.Range(0, clothes.Length)]
                            + Random.Range(0, 1000);
-        currentUserScore = ((_fishCaughtCount + remainTime) * 100f).ToString("F2");
+
+        var currentremainTime = Mathf.Clamp(remainTime,0f,60f);
+        float score = (float)(_fishCaughtCount + currentremainTime) * 100f;
+        currentUserScore = score.ToString("F2");
+       
 #if UNITY_EDITOR
         Debug.Log($"remainTime : {remainTime}" + $"fishCount : {_fishCaughtCount}");
 #endif
@@ -156,9 +161,15 @@ public class U_FishOnWater_GameManager : IGameManager
 
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         U_FishOnWater_UIManager.OnStartUIAppear += OnRoundStart;
+        U_FishOnWater_UIManager.OnReadyUIAppear += OnReadyUIAppear;
 
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnRestartBtnClicked += OnRestartBtnClicked;
+    }
+
+    private void OnReadyUIAppear()
+    {
+        
     }
 
     protected void OnDestroy()
@@ -286,7 +297,7 @@ public class U_FishOnWater_GameManager : IGameManager
             if (_isOnBucket[id])
                 //_fishesQueue.Enqueue(currentFish);
                 return;
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.15f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             currentFish.position = currentPath[(int)Path.Start];
             var randomDuration = Random.Range(1.0f, 2.5f);
             moveAnimSeq
@@ -294,7 +305,7 @@ public class U_FishOnWater_GameManager : IGameManager
                     .DOPath(currentPath, randomDuration, PathType.CatmullRom)
                     .OnStart(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.15f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
                     })
                     .SetLookAt(-0.01f)
                     .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)));
@@ -361,7 +372,7 @@ public class U_FishOnWater_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-
+        if (!isStartButtonClicked) return;
         // 초기화 등, 기타 로직에서 클릭을 무시해야할 경우
         if (isOnReInit) return;
 
@@ -457,10 +468,14 @@ public class U_FishOnWater_GameManager : IGameManager
         return path;
     }
 
+    private bool _isRestartBtnClicked;// 중복클릭방지
     private void OnRestartBtnClicked()
     {
+        if (_isRestartBtnClicked) return;
+        _isRestartBtnClicked=true;
         DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() =>
         {
+            _isRestartBtnClicked = false;
             FishCaughtCount = 0;
             OnReady?.Invoke();
         });
@@ -485,9 +500,9 @@ public class U_FishOnWater_GameManager : IGameManager
             ? _pathInBucketA
             : _pathInBucketB; //버킷에 도착 후 경로
         inBucketPath[1] +=
-            new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
+            new Vector3(Random.Range(-0.12f, 0.12f), Random.Range(-0.12f, 0.12f), Random.Range(-0.12f, 0.12f));
         inBucketPath[2] +=
-            new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f));
+            new Vector3(Random.Range(-0.12f, 0.12f), Random.Range(-0.12f, 0.12f), Random.Range(-0.12f, 0.12f));
 
         var startIndex = 0;
         var middleIndex = 1;

@@ -37,6 +37,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         Name,
         Score,
+        ScoreSub,
         Max
     }
 
@@ -70,6 +71,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private RectTransform _timerRect;
     private RectTransform _restartRect;
     private RectTransform _rankingSystemRect;
+    private RectTransform[] _usersOnRankingRects;
 
     private Button _restartButton;
     
@@ -80,15 +82,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private float _intervalBtwStartAndReady = 1f;
     private bool _isAnimating; // 더블클릭 방지 논리연산자 입니다. 
     public static event Action OnStartUIAppear; // 시작 UI가 표출될 때 의 이벤트입니다. 
+    public static event Action OnReadyUIAppear; // 준비~! UI 표출 시
     public static event Action OnRestartBtnClicked; // 그만 이후 초기화가 끝난경우
 
     private U_FishOnWater_GameManager _gm;
 
     public override bool Init()
     {
-      
-        
-        
         _gm = GameObject.FindWithTag("GameManager").GetComponent<U_FishOnWater_GameManager>();
 
         BindObject(typeof(UI_Type));
@@ -111,7 +111,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         // 타이머, 잡은 물고기 갯수 ---------------------------------------------------------------
         _timer = GetObject((int)UI_Type.Timer);
         _timerRect = _stop.GetComponent<RectTransform>();
-        _timerTMP = _timer.GetComponent<TextMeshProUGUI>();
+        _timerTMP = _timer.GetComponentInChildren<TextMeshProUGUI>();
 
         _fishCount = GetObject((int)UI_Type.Count);
         _fishCountRect = _fishCount.GetComponent<RectTransform>();
@@ -120,6 +120,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
         // 랭킹시스템 다시시작, 잡은 물고기 갯수 -----------------------------------------------------
         _usersOnRankingObj = GetObject((int)UI_Type.OnRankingUsers);
         _rankingSystemRect = _usersOnRankingObj.GetComponent<RectTransform>();
+       
+        _usersOnRankingRects = new RectTransform[USER_ON_RANKINNG_COUNT];
+        for (int i = 0; i < USER_ON_RANKINNG_COUNT; i++)
+        {
+            var userTransform = _usersOnRankingObj.transform;
+            _usersOnRankingRects[i] = userTransform.GetChild(i).GetComponent<RectTransform>();
+        }
         //_usersOnRankingObj.SetActive(false);
 
 
@@ -170,26 +177,26 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _TMP_currentUser = new TextMeshProUGUI[(int)RankUserInfo.Max];
         _TMP_currentUser[(int)RankUserInfo.Name] = _currentUserTransform.GetChild(1).GetComponent<TextMeshProUGUI>();
         _TMP_currentUser[(int)RankUserInfo.Score] = _currentUserTransform.GetChild(2).GetComponent<TextMeshProUGUI>();
+        _TMP_currentUser[(int)RankUserInfo.ScoreSub] = _currentUserTransform.GetChild(3).GetComponent<TextMeshProUGUI>();
 
         _restart = GetObject((int)UI_Type.Btn_Restart);
         _restartRect = _restart.GetComponent<RectTransform>();
         _restartButton = _restart.GetComponent<Button>();
 
+        _restartButton.onClick.AddListener(OnRestartBtnClick);
         _restart.BindEvent(OnRestartBtnClicked);
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
         U_FishOnWater_GameManager.OnReady += OnReadyAndStart;
 
         U_FishOnWater_GameManager.OnRoundFinished -= PopUpStopUI;
         U_FishOnWater_GameManager.OnRoundFinished += PopUpStopUI;
-
-        OnRestartBtnClicked -= OnRestartBtnClick;
-        OnRestartBtnClicked += OnRestartBtnClick;
+        
+        
         return true;
     }
 
     private void OnDestroy()
     {
-        OnRestartBtnClicked -= OnRestartBtnClick;
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
         U_FishOnWater_GameManager.OnRoundFinished -= PopUpStopUI;
     }
@@ -220,7 +227,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             string username = node.Attributes["username"].Value;
             float score = float.Parse(node.Attributes["score"].Value);
 
-            userScores.Add(new Tuple<string, string>(username, score.ToString()));
+            userScores.Add(new Tuple<string, string>(username, score.ToString("F2")));
         }
         
         userScores = userScores.OrderByDescending(x => float.Parse(x.Item2)).ToList();
@@ -235,13 +242,24 @@ public class U_FishOnWater_UIManager : UI_PopUp
         {
             _TMP_usersOnRankingData[i][(int)RankUserInfo.Name] = userScores[i].Item1;
             _TMP_usersOnRankingData[i][(int)RankUserInfo.Score] = userScores[i].Item2;
-#if UNITY_EDITOR
-            Debug.Log($"ranking data {i} : { userScores[i].Item1} ");
-            Debug.Log($"ranking data {i} : { userScores[i].Item2} ");
-#endif
+
 
             _TMP_usersOnRankNames[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Name];
             _TMP_usersOnRankScores[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Score];
+
+            // 현재 유저가 랭킹에 오르는 것에 성공한 경우 애니메이션 --------------------
+            if (_TMP_usersOnRankNames[i].text == _gm.currentUserName && _TMP_usersOnRankScores[i].text == _gm.currentUserScore)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"On Ranking! {i} ");
+               # endif
+                var seq = DOTween.Sequence();
+                seq.Append(_usersOnRankingRects[i].DOScale(1.05f, 0.15f).SetEase(Ease.InOutSine));
+                seq.Append(_usersOnRankingRects[i].DOScale(0.95f, 0.15f).SetEase(Ease.InOutSine));
+                seq.SetLoops(10);
+                
+                seq.Append(_usersOnRankingRects[i].DOScale(1f, 0.5f));
+            }
         }
         
         
@@ -265,29 +283,34 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private WaitForSeconds _waitForReady;
     private float _waitTIme = 4.5f;
 
+    private readonly float ANIM_DURATION_START_AND_READY_STOP = 0.35f;
 
     private IEnumerator PopUpStartUICoroutine()
     {
-        if (_waitInterval == null) _waitInterval = new WaitForSeconds(1f);
-
-        if (_waitForReady == null) _waitForReady = new WaitForSeconds(1f);
-
+        if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.4f);
+        
+        
+        if (_waitForReady == null) _waitForReady = new WaitForSeconds(0.4f);
         yield return _waitForReady;
         _ready.gameObject.SetActive(true);
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
+                OnReadyUIAppear?.Invoke();
+                _fishCountTMP.enabled = true;
+                _timerTMP.enabled = true;
                 _fishCountTMP.text = _gm.FishCaughtCount + " 마리";
+                _timerTMP.text = _gm.remainTime.ToString("F1") + "초";
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready", 0.8f);
             }).WaitForCompletion();
         yield return _waitInterval;
-        yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; })
+        yield return DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP, scale => { _rectReady.localScale = Vector3.one * scale; })
             .WaitForCompletion();
 
 
         yield return _waitInterval;
         _start.gameObject.SetActive(true);
-        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
+        yield return DOVirtual.Float(0, 1, ANIM_DURATION_START_AND_READY_STOP, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start", 0.8f);
@@ -331,12 +354,18 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         
         _TMP_currentUser[(int)RankUserInfo.Name].text = _gm.currentUserName;
-        _TMP_currentUser[(int)RankUserInfo.Score].text = _gm.currentUserScore;
+      
+        _TMP_currentUser[(int)RankUserInfo.ScoreSub].text = $"잡은 물고기 수: {_gm.FishCaughtCount} 마리\n+ 남은 시간: {_gm.remainTime}초)";
+        
+        _TMP_currentUser[(int)RankUserInfo.Score].text = "= " +_gm.currentUserScore;
         ParseXML();
     }
     private IEnumerator PopUpRankSystemCo()
     {
         if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
+
+        _fishCountTMP.enabled = false;
+        _timerTMP.enabled = false;
 
         LoadRankingInfo();
         yield return _waitInterval;
@@ -350,23 +379,29 @@ public class U_FishOnWater_UIManager : UI_PopUp
         StartCoroutine(PopUpRankSystemCo());
     }
 
-    private void OnRestartBtnClick()
+    public void OnRestartBtnClick()
     {
+        if (_isAnimating)
+        {
+#if UNITY_EDITOR
+            Debug.Log("UI이미 실행됨");
+#endif
+            return;
+        }
         StartCoroutine(OnRestartBtnClickCo());
     }
 
 
     private IEnumerator OnRestartBtnClickCo()
     {
-        if (_isAnimating) yield break;
-
-        
-        
-        yield return _waitInterval;
         _isAnimating = true;
+        yield return _waitInterval;
        
-        
-        yield return DOVirtual.Float(1, 0, 0.45f, scale => { _rankingParentRect.localScale = Vector3.one * scale; })
+#if UNITY_EDITOR
+Debug.Log($"다시 작아지기");
+#endif
+        yield return DOVirtual.Float(1, 0, 0.45f,
+                scale => { _rankingParentRect.localScale = Vector3.one * scale; })
             .WaitForCompletion();
         _rankingParent.SetActive(false);
         
