@@ -104,6 +104,8 @@ public class UI_Scene_Button : MonoBehaviour
         }
         else
         {
+            onBtnShut?.Invoke();
+            FadeOutBtn();
 #if UNITY_EDITOR
             Debug.Log("AnimationController is null");
 #endif

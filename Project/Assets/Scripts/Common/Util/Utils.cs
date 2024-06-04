@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
 using System.Xml;
+using UnityEngine.SocialPlatforms.Impl;
 
 
-    public class Utils :MonoBehaviour
+public class Utils :MonoBehaviour
     {
         
         public static T FindComponentInSiblings<T>(Transform  transform) where T : Component
@@ -38,7 +39,7 @@ using System.Xml;
             xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlAsset.text);
             // Get the path to save the file later
-            savePath = System.IO.Path.Combine(Application.dataPath, savePath);
+           // savePath = System.IO.Path.Combine(Application.dataPath, savePath);
         }
         public static void AddUser(ref XmlDocument xmlDoc,string username,string score)
         {
@@ -58,10 +59,12 @@ using System.Xml;
             // Create a new user with the next available userID
             int newUserID = highestUserID + 1;
 
+            
+          
             XmlElement newUser = xmlDoc.CreateElement("StringData");
             newUser.SetAttribute("userID", newUserID.ToString());
             newUser.SetAttribute("username", username);
-            newUser.SetAttribute("score", score.ToString());
+            newUser.SetAttribute("score", score);
 
             root.AppendChild(newUser);
         }

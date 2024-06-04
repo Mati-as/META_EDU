@@ -9,10 +9,11 @@ public class Message_anim_controller : MonoBehaviour
 {
     private List<string> Animation_clip = new List<string>();
     private Animation Message_anim;
-    public Text Message_text;
-    public Text Message_text_sub;
-
-    // underground UI에서 구독
+    
+    [HideInInspector]public Text Message_text;
+    
+    [HideInInspector] public Text Message_text_sub;
+    
     public static event Action onIntroUIOff; 
     //0 : On, 1 : Off
     /*
