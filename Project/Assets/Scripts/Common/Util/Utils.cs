@@ -41,7 +41,7 @@ public class Utils :MonoBehaviour
             // Get the path to save the file later
            // savePath = System.IO.Path.Combine(Application.dataPath, savePath);
         }
-        public static void AddUser(ref XmlDocument xmlDoc,string username,string score)
+        public static void AddUser(ref XmlDocument xmlDoc,string username,string score,string iconNumber)
         {
             XmlNode root = xmlDoc.DocumentElement;
 
@@ -63,8 +63,9 @@ public class Utils :MonoBehaviour
           
             XmlElement newUser = xmlDoc.CreateElement("StringData");
             newUser.SetAttribute("userID", newUserID.ToString());
-            newUser.SetAttribute("username", username);
-            newUser.SetAttribute("score", score);
+            newUser.SetAttribute(nameof(username), username);
+            newUser.SetAttribute((nameof(score)), score);
+            newUser.SetAttribute("iconnumber", iconNumber);
 
             root.AppendChild(newUser);
         }

@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using DG.Tweening;
 using Microsoft.SqlServer.Server;
+using Unity.VisualScripting;
 using UnityEngine;
+using Image = UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
+using Sequence = DG.Tweening.Sequence;
 
 public class U_FishOnWater_GameManager : IGameManager
 {
@@ -19,9 +23,10 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
     //ResourceManage
-    private Dictionary<string, Sprite> _userIconMap;
+    public Dictionary<char, Sprite> _characterImageMap;
     public string currentUserName { get; private set; }
     public string currentUserScore { get; private set; }
+    public char currentImageChar { get; private set; }
 
 
     private readonly string[] adjectives =
@@ -94,6 +99,8 @@ public class U_FishOnWater_GameManager : IGameManager
     // 물고기가 버킷에 있는지 체크하기 위한 딕셔너리
     private Dictionary<int, bool> _isOnBucket;
     private Dictionary<int, Collider> _colliderMap;
+    private Dictionary<int, ParticleSystem> _psMap;
+
 
     public float timeLimit;
     public float remainTime { get; private set; }
@@ -147,6 +154,15 @@ public class U_FishOnWater_GameManager : IGameManager
                           + clothes[Random.Range(0, clothes.Length)]
                           + Random.Range(1, 10);
         
+        
+        
+        int randomInt = Random.Range('A', 'F' + 1); //Random.Range().ToString()으로 변환하면 아스키숫자로 변환되니 주의.
+        char randomChar = (char)randomInt;
+        currentImageChar = randomChar;
+        currentImageChar = (char)Random.Range('A', 'F' + 1);
+        Debug.Log($"currentIconNumber : {currentImageChar}");
+
+
         //스프라이트 설정 (아이콘) 로직 필요 --------------------------
     }
 
@@ -158,14 +174,14 @@ public class U_FishOnWater_GameManager : IGameManager
     
 
         var currentremainTime = Mathf.Clamp(remainTime, 0f, 60f);
-        var score = (_fishCaughtCount + currentremainTime);
-        currentUserScore = $"{_fishCaughtCount} / {currentremainTime}";
+        var remainTimeToString = currentremainTime.ToString("F1");
+        currentUserScore = $"{_fishCaughtCount} / " + remainTimeToString;
 
 #if UNITY_EDITOR
         Debug.Log($"remainTime : {currentremainTime}" + $"fishCount : {_fishCaughtCount}");
 #endif
 
-        Utils.AddUser(ref xmlDoc, currentUserName, currentUserScore);
+        Utils.AddUser(ref xmlDoc, currentUserName, currentUserScore,currentImageChar.ToString());
         Utils.SaveXML(ref xmlDoc, _xmlSavePath);
 #if UNITY_EDITOR
         Debug.Log($"Saved :  {currentUserName}/{_fishCaughtCount}");
@@ -204,34 +220,82 @@ public class U_FishOnWater_GameManager : IGameManager
 
     protected override void Init()
     {
-        _animatorSeq = new Dictionary<int, Animator>();
-        _fishesTransforms = new Transform[FISH_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
-        _animSeq = new Dictionary<int, Sequence>();
-        _isOnBucket = new Dictionary<int, bool>();
-        _psPool = new Stack<ParticleSystem>();
-        _colliderMap = new Dictionary<int, Collider>();
+        DOTween.Init().SetCapacity(300, 300);
+        ManageProjectSettings(90, 0.15f);
         
-      
-        // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
 #if UNITY_EDITOR
-       
+        // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
         _xmlSavePath = "BB008_UserRankingData.xml";
         _xmlSavePath = System.IO.Path.Combine(Application.persistentDataPath, _xmlSavePath);
         
         _xmlPath = "Assets/Resources/Common/Data/BB008_UserRankingData.xml"; 
         _xmlPath = System.IO.Path.Combine(Application.dataPath, _xmlPath);
      
-#else 
-      _xmlPath = "BB008_UserRankingData.xml";
-           _xmlSavePath = System.IO.Path.Combine(Application.dataPath, "", "BB008_UserRankingData.xml");
-         _xmlSavePath = System.IO.Path.Combine(Application.persistentDataPath, _xmlSavePath);
+#elif RELEASE
+_xmlPath = "BB008_UserRankingData.xml";
+string xmlResourcePath = System.IO.Path.Combine("Resources", _xmlPath);
         
-        _xmlPath = System.IO.Path.Combine(Application.dataPath, _xmlPath);
+_xmlSavePath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
+        
+if (!File.Exists(_xmlSavePath))
+{
+    
+    TextAsset xmlAsset = Resources.Load<TextAsset>(_xmlPath.Replace(".xml", ""));
+    if (xmlAsset != null)
+    {
+ 
+        xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xmlAsset.text);
+        
+        File.WriteAllText(_xmlSavePath, xmlAsset.text);
+    }
+    else
+    {
+        Debug.LogError("No XML file exists in Resources or persistent data path!");
+        xmlDoc = new XmlDocument();
+    }
+}
+else
+{
+    xmlDoc = new XmlDocument();
+    xmlDoc.Load(_xmlSavePath);
+}
+
+Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
 #endif
-      
-      
-     
-       
+        
+        _animatorSeq = new Dictionary<int, Animator>();
+        _fishesTransforms = new Transform[FISH_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
+        _animSeq = new Dictionary<int, Sequence>();
+        _isOnBucket = new Dictionary<int, bool>();
+        _psPool = new Stack<ParticleSystem>();
+        _colliderMap = new Dictionary<int, Collider>();
+        _psMap = new Dictionary<int, ParticleSystem>();
+        _characterImageMap = new Dictionary<char, Sprite>();
+        
+        for (int i = 'A'; i < 'G'; i++)
+        {
+           
+            char character = (char)i;
+            string characterString = character.ToString();
+
+            
+            var sprite = Resources.Load<Sprite>("게임별분류/BB008_U/Character" + characterString);
+            if (sprite != null)
+            {
+                Debug.Log($"{"게임별분류/BB008_U/Character" + characterString} : image loaded");
+                // var newGameObject = new GameObject("Character" + characterString);
+                // var image = newGameObject.AddComponent<Image>();
+                // image.sprite = sprite;
+                _characterImageMap.TryAdd((char)i, sprite);
+            }
+            else
+            {
+                Debug.LogError("Failed to load Sprite for character " + characterString);
+            }
+        }
+
+        
         if (!File.Exists("Assets/Resources/Common/Data/BB008_UserRankingData.xml"))
         {
             Debug.LogError("no xml file exist!");
@@ -240,16 +304,19 @@ public class U_FishOnWater_GameManager : IGameManager
         
         Utils.LoadXML(ref xmlAsset, ref xmlDoc, "Common/Data/BB008_UserRankingData", ref _xmlSavePath);
         
-        
         base.Init();
         
-  
-
-        DOTween.Init().SetCapacity(300, 300);
-        ManageProjectSettings(90, 0.15f);
         remainTime = timeLimit;
+        LoadAsset();
+        InitializePath();
+        
+        // 유저 정보 --------------------------------------
+        SetUserInfo();
+    }
+    
 
-
+    private void InitializePath()
+    {
         var pathStartParent = transform.GetChild((int)Path.Start);
         _pathStartPoints = new Vector3[pathStartParent.childCount];
 
@@ -259,33 +326,43 @@ public class U_FishOnWater_GameManager : IGameManager
         _pathArrivalPoints = new Vector3[pathArrivalParent.childCount];
         for (var i = 0; i < _pathArrivalPoints.Length; i++)
             _pathArrivalPoints[i] = pathArrivalParent.GetChild(i).position;
+  
 
-        var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_Fish");
+        _bucket = GameObject.Find("Bucket").transform;
+        _bucketDefaultQuat = _bucket.rotation;
+    }
+
+    private void LoadAsset()
+    {
+        var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_FishA");
         for (var i = 0; i < FISH_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
-
+            var fishId = fish.GetInstanceID();
             _defaultSize = fish.localScale;
             var randomChar = Random.Range('A', 'E' + 1);
             var path = "게임별분류/기본컨텐츠/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
-            fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =
-                mat; // prefab상 2번째 자식에 SkinnedMeshRenderer 할당되어 있어 하드코딩 4/8/24
+            fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =mat; // prefab상 2번째 자식에 SkinnedMeshRenderer 할당되어 있어 하드코딩 4/8/24
 
             //_fishesQueue.Enqueue(fish);
-            _fishesTransforms[i] = fish;
-            _isOnBucket.TryAdd(fish.GetInstanceID(), false);
-            _animatorSeq.TryAdd(fish.GetInstanceID(), fish.GetComponent<Animator>());
+            _psMap.TryAdd(fishId,fish.GetComponentInChildren<ParticleSystem>());
+            _psMap[fishId].Stop();
+            
+            _isOnBucket.TryAdd(fishId, false);
+            _animatorSeq.TryAdd(fishId, fish.GetComponent<Animator>());
+           
             var fishCollider = fish.GetComponent<Collider>();
             fishCollider.enabled = false;
-            _colliderMap.TryAdd(fish.GetInstanceID(),fishCollider);
-
+            _colliderMap.TryAdd(fishId,fishCollider);
             _defaultQuaternion = fish.rotation;
+            
+            _fishesTransforms[i] = fish;
         }
 
 
-        var pathInBucketParent = GameObject.Find("PathInBucket").transform;
+        var pathInBucketParent = GameObject.Find("PathInBucketA").transform;
         _pathInBucketA = new Vector3[pathInBucketParent.childCount + 1];
         for (var i = 0; i < pathInBucketParent.childCount; i++)
             _pathInBucketA[i] = pathInBucketParent.GetChild(i).position;
@@ -306,14 +383,7 @@ public class U_FishOnWater_GameManager : IGameManager
             var ps = psObj.GetComponent<ParticleSystem>();
             _psPool.Push(ps);
         }
-
-        _bucket = GameObject.Find("Bucket").transform;
-        _bucketDefaultQuat = _bucket.rotation;
-        
-        // 유저 정보 --------------------------------------
-        SetUserInfo();
     }
-
 
     protected override void OnStartButtonClicked()
     {
@@ -375,19 +445,21 @@ public class U_FishOnWater_GameManager : IGameManager
             //추후 계산수식에 따른 에러 방지를 위한 방어적 클랭핑입니다. 
             fishPathDuration = Mathf.Clamp(fishPathDuration, minDuration, maxDuration);
             var randomDuration = Random.Range(fishPathDuration, fishPathDuration + 0.5f);
-
+            _psMap[id].Play();
             moveAnimSeq
                 .Append(currentFish
                     .DOPath(currentPath, randomDuration, PathType.CatmullRom)
-                    .OnStart(() =>
-                    {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
-                    })
                     .SetLookAt(-0.01f)
                     .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)));
+            moveAnimSeq.OnStart(() =>
+            {
+                _psMap[id].Play();
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
+            });
             moveAnimSeq.OnComplete(() =>
             {
                 _colliderMap[id].enabled = true;
+                _psMap[id].Stop();
                 DoAnimAfterArrival(currentFish, currentFish.position);
             });
             //순서만을 관리하므로, 동작컨트롤 후 바로 Enqueue 해줍니다. 
@@ -587,37 +659,36 @@ public class U_FishOnWater_GameManager : IGameManager
         var bucketSeq = DOTween.Sequence();
 
         var pathToBucket = new Vector3[3]; // 물고기 클릭위치 에서 버킷까지의 경로 
-        var inBucketPath = Random.Range(0, 100) > 50
-            ? _pathInBucketA
-            : _pathInBucketB; //버킷에 도착 후 경로
-        inBucketPath[1] +=
-            new Vector3(Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f));
-        inBucketPath[2] +=
-            new Vector3(Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f));
-
-
+        //물고기가 버킷에 도착한 다음 움직이는 경로
+        
         var startIndex = 0;
         var middleIndex = 1;
         var bucketIndex = 2;
         var archHegiht = fish.up * 20;
 
+        
         //경로설정
+        var inBucketPath = Random.Range(0, 100) > 50
+            ? _pathInBucketA
+            : _pathInBucketB; //버킷에 도착 후 경로
+        
+        
         pathToBucket[startIndex] = fish.position;
         pathToBucket[middleIndex] = (inBucketPath[0] + fish.position) / 2 + archHegiht;
-        pathToBucket[bucketIndex] = inBucketPath[0];
+        pathToBucket[bucketIndex] = inBucketPath[0] + new Vector3(1, 0, 1) * Random.Range(-0.2f, 0.2f);
 
 
         bucketSeq.Append
-        (fish.DOPath(pathToBucket, Random.Range(1.0f, 2.0f))
+        (fish.DOPath(pathToBucket, Random.Range(0.5f, 0.8f))
             .SetLookAt(-0.005f)
-            .OnStart(() => { fish.DORotateQuaternion(fish.rotation * Quaternion.Euler(0, 1080, 0), 1f); })
-            .OnComplete(() => { fish.position = inBucketPath[0]; })
+            .OnStart(() => { fish.DORotateQuaternion(fish.rotation * Quaternion.Euler(0, 1080, 0), 0.1f); })
         );
-
+        
+      
         bucketSeq.Append(
-            fish.DOScale(SIZE_IN_BUCKET * _defaultSize, 1f));
+            fish.DOScale(SIZE_IN_BUCKET * _defaultSize, 0.35f));
         // .OnStart(() => { fish.DORotate(Vector3.zero, 0.1f); });
-
+        bucketSeq.OnComplete(() => { fish.position = inBucketPath[0];});
 
         // 양동이 안의 경로 설정 부분
         var loopType = LoopType.Restart;
@@ -627,7 +698,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
         for (var i = 1; i < pathInBucketWithRandomOffset.Length; i++)
             pathInBucketWithRandomOffset[i] +=
-                Random.Range(-1.0f, 1.0f) * Vector3.forward + Random.Range(-1.0f, 1.0f) * Vector3.left;
+                Random.Range(-0.25f, 0.25f) * Vector3.forward + Random.Range(-0.25f, 0.25f) * Vector3.left;
 
 
         var randomChance = Random.Range(0, 100);
@@ -639,10 +710,10 @@ public class U_FishOnWater_GameManager : IGameManager
         }
         
         
-        bucketSeq.Append(fish.DOPath(pathInBucketWithRandomOffset, Random.Range(3.5f, 6.5f), PathType.CatmullRom)
+        bucketSeq.Append(fish.DOPath(pathInBucketWithRandomOffset, Random.Range(2.5f, 6.5f), PathType.CatmullRom)
             .SetEase(Ease.InOutSine)
             .SetLookAt(-0.005f)
-            .SetDelay(Random.Range(0.8f,2.0f))
+            .SetDelay(Random.Range(0.1f,0.3f))
             .SetLoops(10, LoopType.Restart));
 
 
