@@ -14,7 +14,7 @@ public class DevelopmentUIManager : MonoBehaviour
     private void Start()
     {
         _imagesPool = new Stack<Image>();
-        _developerMenu = transform.GetChild(0).gameObject;
+        _developerMenu = transform.GetChild(2).gameObject;
         var images = _developerMenu.GetComponentsInChildren<Image>();
         _fpsCounter = _developerMenu.GetComponentInChildren<TextMeshProUGUI>();
         foreach (var image in images)

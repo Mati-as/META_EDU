@@ -9,7 +9,7 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
 
     public bool UI_ONOFF = false;
     public bool BALL_ONOFF = false;
-    public bool SF_ONOFF = true; // 기본값 true로 변경 0516/24
+    public bool SF_ONOFF = false; // 기본값 false로 변경 0516/24
 
     private Text txt;
     public void Start()

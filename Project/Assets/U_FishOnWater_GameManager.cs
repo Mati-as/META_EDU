@@ -134,6 +134,8 @@ public class U_FishOnWater_GameManager : IGameManager
     public static event Action OnReady;
     public static event Action OnRoundFinished;
     public static event Action OnFishCaught;
+    private bool _isCountNarrationPlaying;
+    private float _elapsedToCount;
 
     private void Update()
     {
@@ -143,7 +145,20 @@ public class U_FishOnWater_GameManager : IGameManager
         _elapsedForInterval += Time.deltaTime;
         _elapsedForReInit += Time.deltaTime;
         remainTime = timeLimit - _elapsedForReInit;
-
+        
+        if (!_isCountNarrationPlaying)
+        {
+            Managers.Sound.Play
+                (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count"+$"{(int)remainTime}",0.8f);
+            _isCountNarrationPlaying = true;
+            _elapsedToCount = 0;
+        }
+        
+        if (_elapsedToCount > 1f) _isCountNarrationPlaying = false;
+        _elapsedToCount += Time.deltaTime *0.9f;
+        
+        
+        
         if (_elapsedForReInit > timeLimit && !isOnReInit) InvokeFinishAndReInit();
     }
 
@@ -182,7 +197,8 @@ public class U_FishOnWater_GameManager : IGameManager
 #endif
 
         Utils.AddUser(ref xmlDoc, currentUserName, currentUserScore,currentImageChar.ToString());
-        Utils.SaveXML(ref xmlDoc, _xmlSavePath);
+        WriteXML(xmlDoc,_xmlPath);
+     
 #if UNITY_EDITOR
         Debug.Log($"Saved :  {currentUserName}/{_fishCaughtCount}");
 #endif
@@ -225,44 +241,24 @@ public class U_FishOnWater_GameManager : IGameManager
         
 #if UNITY_EDITOR
         // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
-        _xmlSavePath = "BB008_UserRankingData.xml";
-        _xmlSavePath = System.IO.Path.Combine(Application.persistentDataPath, _xmlSavePath);
-        
-        _xmlPath = "Assets/Resources/Common/Data/BB008_UserRankingData.xml"; 
-        _xmlPath = System.IO.Path.Combine(Application.dataPath, _xmlPath);
-     
-#elif RELEASE
-_xmlPath = "BB008_UserRankingData.xml";
-string xmlResourcePath = System.IO.Path.Combine("Resources", _xmlPath);
-        
-_xmlSavePath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
-        
-if (!File.Exists(_xmlSavePath))
-{
-    
-    TextAsset xmlAsset = Resources.Load<TextAsset>(_xmlPath.Replace(".xml", ""));
-    if (xmlAsset != null)
-    {
- 
-        xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(xmlAsset.text);
-        
-        File.WriteAllText(_xmlSavePath, xmlAsset.text);
-    }
-    else
-    {
-        Debug.LogError("No XML file exists in Resources or persistent data path!");
-        xmlDoc = new XmlDocument();
-    }
-}
-else
-{
-    xmlDoc = new XmlDocument();
-    xmlDoc.Load(_xmlSavePath);
-}
 
-Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
+
+
+        _xmlPath = "Assets/Resources/Common/Data/BB008_UserRankingData.xml";
+        Read(_xmlPath);
+
+
+#else
+        Check_XmlFile("BB008_UserRankingData");
+        _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
+        Read(_xmlPath);
+     
+        
+
+
 #endif
+     
+        //Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
         
         _animatorSeq = new Dictionary<int, Animator>();
         _fishesTransforms = new Transform[FISH_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
@@ -295,14 +291,6 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
             }
         }
 
-        
-        if (!File.Exists("Assets/Resources/Common/Data/BB008_UserRankingData.xml"))
-        {
-            Debug.LogError("no xml file exist!");
-            xmlDoc = new XmlDocument();
-        }
-        
-        Utils.LoadXML(ref xmlAsset, ref xmlDoc, "Common/Data/BB008_UserRankingData", ref _xmlSavePath);
         
         base.Init();
         
@@ -424,7 +412,7 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
         for (var i = 0; i < fishCount; i++)
         {   
             var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_COUNT];
-            
+           
             var id = currentFish.GetInstanceID();
             
             var currentPath = SetPath();
@@ -433,7 +421,7 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
      
             _colliderMap[id].enabled = false;
             _animatorSeq[id].speed = 1f;
- 
+            _psMap[id].Play();
             if (_isOnBucket[id])
                 //_fishesQueue.Enqueue(currentFish);
                 return;
@@ -449,6 +437,7 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
             moveAnimSeq
                 .Append(currentFish
                     .DOPath(currentPath, randomDuration, PathType.CatmullRom)
+                    .OnStart(()=>{ _psMap[id].Play();})
                     .SetLookAt(-0.01f)
                     .SetEase((Ease)Random.Range((int)Ease.InSine, (int)Ease.InOutCubic)));
             moveAnimSeq.OnStart(() =>
@@ -537,9 +526,11 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
                 if (_animSeq.ContainsKey(id) && _isOnBucket.ContainsKey(id))
                     if (!_isOnBucket[id])
                     {
+                         _isOnBucket[id] = true;
+                        _colliderMap[id].enabled = false;
+                        
                         _animSeq[fish.GetInstanceID()].Kill();
                         _animSeq[fish.GetInstanceID()] = null;
-                        _colliderMap[id].enabled = false;
                         SendToBucket(fish);
                     }
             }
@@ -726,6 +717,42 @@ Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
        
     }
 
+    public void Read(string path)
+    {
+        XmlDocument Document = new XmlDocument();
+        Document.Load(path);
+        xmlDoc = Document;
+        
+    }
+    
+    public void Check_XmlFile(string fileName)
+    {
+        //string filePath = Path.Combine(Application.persistentDataPath, "LOGININFO.xml");
+        string filePath = System.IO.Path.Combine(Application.persistentDataPath, fileName+".xml");
+
+        if (File.Exists(filePath))
+        {
+            Debug.Log(fileName+"XML FILE EXIST");
+        }
+        else
+        {
+            //TextAsset XmlFilepath = Resources.Load<TextAsset>("LOGININFO");
+            TextAsset XmlFilepath = Resources.Load<TextAsset>(fileName);
+            xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(XmlFilepath.ToString());
+            xmlDoc.Save(filePath);
+
+            Debug.Log(fileName+".xml FILE NOT EXIST");
+        }
+    }
+    
+    public void WriteXML(XmlDocument document,string path)
+    {
+        
+        document.Save(path);
+        Debug.Log($"{path}");
+        //Debug.Log("SAVED DATA WRITE");
+    }
 
  
 }

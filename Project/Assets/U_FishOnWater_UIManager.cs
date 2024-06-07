@@ -61,6 +61,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private TextMeshProUGUI _fishCountTMP;
     private TextMeshProUGUI _timerTMP;
+    private TextMeshProUGUI _timerSliderTMP;
 
     private TextMeshProUGUI[] _TMP_usersOnRankScores;
     private TextMeshProUGUI[] _TMP_usersOnRankNames;
@@ -89,6 +90,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private U_FishOnWater_GameManager _gm;
     private bool _isOnFirstRound = true; //초기 버튼 관련 로직
     public Slider _fishSpeedSlider { get; private set; }
+    public Slider _timerSlider { get; private set; }
     private TextMeshProUGUI _TMP_fishSpeed;
     private TextMeshProUGUI _TMP_introUserName;
     private Vector3[] _defaultanchorPosArray;
@@ -106,6 +108,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _gm = GameObject.FindWithTag("GameManager").GetComponent<U_FishOnWater_GameManager>();
 
         var sliderParent = GameObject.Find("Slider_FishSpeed");
+        _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
         _fishSpeedSlider = sliderParent.GetComponent<Slider>();
         _fishSpeedSlider.onValueChanged.AddListener(_ =>
         {
@@ -113,7 +116,21 @@ public class U_FishOnWater_UIManager : UI_PopUp
             _TMP_fishSpeed.text = "물고기 속도: " + _gm.fishSpeed;
         });
 
-        _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
+        var timerSldierParent = GameObject.Find("Slider_Timer");
+        _timerSliderTMP = timerSldierParent.GetComponentInChildren<TextMeshProUGUI>();
+        _timerSlider = timerSldierParent.GetComponent<Slider>();
+        {
+            _timerSlider.value = 1; 
+            _gm.timeLimit = _timerSlider.value * 30;
+            _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
+        }
+        
+        _timerSlider.onValueChanged.AddListener(_ =>
+        {
+            _gm.timeLimit =_timerSlider.value * 30;
+            _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
+        });
+      
        
         BindObject(typeof(UI_Type));
 
@@ -251,7 +268,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
                         .OnComplete(()=>
                         {
                             _isOnFirstRound = false;
-                        }).SetDelay(1f);
+                        }).SetDelay(0.5f);
                     
                 }
                 else
@@ -395,9 +412,10 @@ public class U_FishOnWater_UIManager : UI_PopUp
                 Debug.Log($"On Ranking! {i} ");
 # endif
                 var seq = DOTween.Sequence();
-                seq.Append(_usersOnRankingRects[i].DOScale(1.05f, 0.15f).SetEase(Ease.InOutSine));
-                seq.Append(_usersOnRankingRects[i].DOScale(0.95f, 0.15f).SetEase(Ease.InOutSine));
-                seq.SetLoops(10);
+                seq.Append(_usersOnRankingRects[i].DOScale(1.06f, 0.1f).SetEase(Ease.InOutSine));
+                seq.Append(_usersOnRankingRects[i].DOScale(0.94f, 0.1f).SetEase(Ease.InOutSine));
+                seq.SetDelay(0.2f);
+                seq.SetLoops(20);
 
                 seq.Append(_usersOnRankingRects[i].DOScale(1f, 0.5f));
             }
@@ -495,12 +513,20 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         _TMP_currentUser[(int)RankUserInfo.Name].text = _gm.currentUserName;
 
-        _TMP_currentUser[(int)RankUserInfo.ScoreSub].text =
-            $"{_gm.FishCaughtCount} 마리 / {_gm.remainTime:F2} 초 ";
-
-        _TMP_currentUser[(int)RankUserInfo.Score].text = "= " + _gm.currentUserScore;
+        // _TMP_currentUser[(int)RankUserInfo.ScoreSub].text =
+        //     $"{_gm.FishCaughtCount} 마리 / {_gm.remainTime:F2} 초 ";
+        var splitScore = _gm.currentUserScore.Split('/');
+        _TMP_currentUser[(int)RankUserInfo.Score].text = $"{splitScore[0]}마리 / " + $"{splitScore[1]}초"
+        ;
         _currentUserIconSpriteImage.sprite = _gm._characterImageMap[_gm.currentImageChar];
         ParseXML();
+
+        var seq = DOTween.Sequence();
+        var rect = _uiGameObjects[(int)UI_Type.Btn_Restart].transform.GetChild(1).GetComponent<RectTransform>();
+        seq.Append(rect.DOScale(1.02f, 0.25f).SetEase(Ease.InOutSine));
+        seq.Append(rect.DOScale(0.98f, 0.25f).SetEase(Ease.InOutSine));
+        seq.SetLoops(15);
+        seq.SetDelay(0.15f);
     }
 
     private IEnumerator PopUpRankSystemCo()
