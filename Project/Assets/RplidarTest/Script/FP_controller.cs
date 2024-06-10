@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FP_controller : MonoBehaviour
 {
-    //È­¸é»ó¿¡ È°¼ºÈ­ µÇ¾îÀÖ´Â FP RT¸®½ºÆ®
+    //í™”ë©´ìƒì— í™œì„±í™” ë˜ì–´ìˆëŠ” FP RTë¦¬ìŠ¤íŠ¸
     private List<RectTransform> FP_pos_controller = new List<RectTransform>();
 
     private float FP_x, FP_y;
@@ -19,7 +19,7 @@ public class FP_controller : MonoBehaviour
     {
         for(int i =0;i< FP_pos_controller.Count; i++)
         {
-            Debug.Log("Á¸ÀçÇÏ´Â FP Ä«¿îÆ®" + FP_pos_controller.Count);
+            Debug.Log("ì¡´ì¬í•˜ëŠ” FP ì¹´ìš´íŠ¸" + FP_pos_controller.Count);
             FP_x = FP_pos_controller[i].anchoredPosition.x;
             FP_y = FP_pos_controller[i].anchoredPosition.y;
 
@@ -27,12 +27,12 @@ public class FP_controller : MonoBehaviour
             {
                 if (FP_y - FP.anchoredPosition.y < -FP_Gap || FP_y - FP.anchoredPosition.y > FP_Gap)
                 {
-                    //µ¿½Ã¿¡ ¿©·¯ ÁÂÇ¥°¡ ÂïÈ÷´Â ¼ø°£ ¼­·Î °£¼·ÇÏ´Â ¹®Á¦ ¹ß»ıÇÔ
-                    //¼ø½Ä°£¿¡ 2¿µ¿ªÀÇ ÁÂÇ¥µéÀÌ ÀÔ·ÂµÇ¸é¼­ ÇØ´ç ¿µ¿ª ±ÙÃ³ÀÇ º¼À» ¼­·ÎÀÇ ¿µ¿ª¿¡¼­ ÂüÀ¸·Î ÆÇº°ÇÔ
+                    //ë™ì‹œì— ì—¬ëŸ¬ ì¢Œí‘œê°€ ì°íˆëŠ” ìˆœê°„ ì„œë¡œ ê°„ì„­í•˜ëŠ” ë¬¸ì œ ë°œìƒí•¨
+                    //ìˆœì‹ê°„ì— 2ì˜ì—­ì˜ ì¢Œí‘œë“¤ì´ ì…ë ¥ë˜ë©´ì„œ í•´ë‹¹ ì˜ì—­ ê·¼ì²˜ì˜ ë³¼ì„ ì„œë¡œì˜ ì˜ì—­ì—ì„œ ì°¸ìœ¼ë¡œ íŒë³„í•¨
 
-                    //for¹® ´Ù µ¹°í ÃÖÁ¾ÀûÀ¸·Î false ÇÇÇØ°¡¸é true ÆÇÁ¤
+                    //forë¬¸ ë‹¤ ëŒê³  ìµœì¢…ì ìœ¼ë¡œ false í”¼í•´ê°€ë©´ true íŒì •
 
-                    //ÀÏ´Ü º¸·ù
+                    //ì¼ë‹¨ ë³´ë¥˜
                 }
                 else
                 {
@@ -44,7 +44,7 @@ public class FP_controller : MonoBehaviour
                 return false;
             }
         }
-        //for¹®À» ¾ÖÃÊ¿¡ µ¹Áö ¾ÊÀ½ ÃÖÁ¾ true ÆÇÁ¤
+        //forë¬¸ì„ ì• ì´ˆì— ëŒì§€ ì•ŠìŒ ìµœì¢… true íŒì •
         return true;
     }
 

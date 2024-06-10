@@ -75,7 +75,7 @@ public class UI_Scene_Button : MonoBehaviour
     {
         _elapsedTime += Time.deltaTime * _offset;
         _remainTime = (int)(_autoShutTime - _elapsedTime);
-        tmp.text = $"START ({_remainTime})";
+        tmp.text = $"시작하기 ({_remainTime})";
 
         if (_remainTime <= 0 && !_isInvoked)
         {

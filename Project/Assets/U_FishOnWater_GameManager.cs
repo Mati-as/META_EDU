@@ -8,6 +8,7 @@ using DG.Tweening;
 using Microsoft.SqlServer.Server;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Image = UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
 using Sequence = DG.Tweening.Sequence;
@@ -75,8 +76,12 @@ public class U_FishOnWater_GameManager : IGameManager
     public float fishSpeed { get=>_fishSpeed;
                             set => _fishSpeed = Mathf.Clamp(value,0,2f); }
     private Transform[] _fishesTransforms;
-    public readonly int FISH_COUNT = 50;
-    public readonly int FISH_COUNT_GOAL = 20;
+    public readonly int FISH_POOL_COUNT = 60;
+   
+    
+    private int _fishCountGoal = 30;
+    public int fishCountGoal { get=>_fishCountGoal; set=> _fishCountGoal = value; }
+   
     private readonly float ANIM_INTERVAL = 5.5f;
     private readonly float SIZE_IN_BUCKET = 0.4f;
     // private readonly float DURATION = 3.0f;
@@ -100,6 +105,7 @@ public class U_FishOnWater_GameManager : IGameManager
     private Dictionary<int, bool> _isOnBucket;
     private Dictionary<int, Collider> _colliderMap;
     private Dictionary<int, ParticleSystem> _psMap;
+    private Stack<ParticleSystem> _onFishCatchPsPool;
 
 
     public float timeLimit;
@@ -114,9 +120,9 @@ public class U_FishOnWater_GameManager : IGameManager
         {
             _fishCaughtCount = value;
             if (isOnReInit) return;
-            if (_fishCaughtCount >= FISH_COUNT_GOAL)
+            if (_fishCaughtCount >= _fishCountGoal)
             {
-                _fishCaughtCount = FISH_COUNT_GOAL;
+                _fishCaughtCount = _fishCountGoal;
                 InvokeFinishAndReInit();
             }
         }
@@ -259,9 +265,19 @@ public class U_FishOnWater_GameManager : IGameManager
 #endif
      
         //Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
+        _onFishCatchPsPool = new Stack<ParticleSystem>();
+        var prefab = Resources.Load("게임별분류/BB008_U/CFX_OnFishCatch");
+        
+        for (int i = 0; i < 10; i++)
+        {
+            var cfx = Instantiate(prefab).GetComponent<ParticleSystem>();
+            _onFishCatchPsPool.Push(cfx);
+        }
+        
+        
         
         _animatorSeq = new Dictionary<int, Animator>();
-        _fishesTransforms = new Transform[FISH_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
+        _fishesTransforms = new Transform[FISH_POOL_COUNT]; //전체 물고기 컨트롤용입니다. (초기화로직 수행 등)
         _animSeq = new Dictionary<int, Sequence>();
         _isOnBucket = new Dictionary<int, bool>();
         _psPool = new Stack<ParticleSystem>();
@@ -323,7 +339,7 @@ public class U_FishOnWater_GameManager : IGameManager
     private void LoadAsset()
     {
         var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_FishA");
-        for (var i = 0; i < FISH_COUNT; i++)
+        for (var i = 0; i < FISH_POOL_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
             var fishId = fish.GetInstanceID();
@@ -411,7 +427,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
         for (var i = 0; i < fishCount; i++)
         {   
-            var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_COUNT];
+            var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_POOL_COUNT];
            
             var id = currentFish.GetInstanceID();
             
@@ -475,7 +491,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
         var randomAnimSeq = DOTween.Sequence();
 
-        if (randomValue <= 0.33f)
+        if (randomValue <= 0.18f)
         {
             var animator = currentFish.GetComponent<Animator>();
             _animatorSeq[id].speed = 0.3f;
@@ -526,9 +542,10 @@ public class U_FishOnWater_GameManager : IGameManager
                 if (_animSeq.ContainsKey(id) && _isOnBucket.ContainsKey(id))
                     if (!_isOnBucket[id])
                     {
+                        PlayParticleAndReturn(hit.transform.position);
+                        
                          _isOnBucket[id] = true;
                         _colliderMap[id].enabled = false;
-                        
                         _animSeq[fish.GetInstanceID()].Kill();
                         _animSeq[fish.GetInstanceID()] = null;
                         SendToBucket(fish);
@@ -553,6 +570,19 @@ public class U_FishOnWater_GameManager : IGameManager
                     _psPool.Push(ps);
                 });
             }
+    }
+
+    private void PlayParticleAndReturn(Vector3 position)
+    {
+        var ps = _onFishCatchPsPool.Pop();
+        ps.Stop();
+        ps.transform.position = position;
+        ps.Play();
+        DOVirtual.Float(0, 0, 1.2f, _ => { }).OnComplete(() =>
+        {
+            _onFishCatchPsPool.Push(ps);
+        });
+    
     }
 
     private void ReInit()
@@ -641,8 +671,10 @@ public class U_FishOnWater_GameManager : IGameManager
         
          OnFishCaught?.Invoke();
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'C' + 1),
-            0.5f);
+         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
+             0.8f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
+            0.4f);
 
         var id = fish.GetInstanceID();
         _animSeq[id]?.Kill();

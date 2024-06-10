@@ -1,14 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Net.Mime;
 using System.Xml;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
@@ -62,6 +59,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private TextMeshProUGUI _fishCountTMP;
     private TextMeshProUGUI _timerTMP;
     private TextMeshProUGUI _timerSliderTMP;
+    private TextMeshProUGUI _fishCountSliderTMP;
 
     private TextMeshProUGUI[] _TMP_usersOnRankScores;
     private TextMeshProUGUI[] _TMP_usersOnRankNames;
@@ -91,6 +89,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private bool _isOnFirstRound = true; //초기 버튼 관련 로직
     public Slider _fishSpeedSlider { get; private set; }
     public Slider _timerSlider { get; private set; }
+    public Slider _fishCountSlider { get; private set; }
     private TextMeshProUGUI _TMP_fishSpeed;
     private TextMeshProUGUI _TMP_introUserName;
     private Vector3[] _defaultanchorPosArray;
@@ -121,14 +120,27 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _timerSlider = timerSldierParent.GetComponent<Slider>();
         {
             _timerSlider.value = 1; 
-            _gm.timeLimit = _timerSlider.value * 30;
+            _gm.timeLimit = (int)_timerSlider.value * 30;
             _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
         }
         
         _timerSlider.onValueChanged.AddListener(_ =>
         {
-            _gm.timeLimit =_timerSlider.value * 30;
+            _gm.timeLimit =(int)_timerSlider.value * 30;
             _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
+        });
+
+        var fishCountParent = GameObject.Find("Slider_FishCount");
+        _fishCountSlider = fishCountParent.GetComponent<Slider>();
+        _fishCountSliderTMP = fishCountParent.GetComponentInChildren<TextMeshProUGUI>();
+        _fishCountSlider.value = _gm.fishCountGoal; 
+        _fishCountSliderTMP.text = "잡을 물고기 수 :" + _gm.fishCountGoal.ToString();
+      
+        _fishCountSlider.onValueChanged.AddListener(_ =>
+        {  
+            int sliderSteps = 12;
+            _gm.fishCountGoal = Mathf.RoundToInt(_fishCountSlider.value * (sliderSteps - 1)) * 5 + 5;
+            _fishCountSliderTMP.text = "잡을 물고기 수 :" + _gm.fishCountGoal.ToString();
         });
       
        
@@ -217,7 +229,11 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private void ShowUserInfo()
     {
-        if (!_isAnimating) StartCoroutine(ShowUserInfoCo());
+        if (!_isAnimating)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+            StartCoroutine(ShowUserInfoCo());
+        }
     }
 
     private IEnumerator ShowUserInfoCo()
@@ -355,7 +371,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         {
             _timerTMP.text = _gm.remainTime.ToString("00") + "초";
             _fishCountTMP.text =
-                _gm.FishCaughtCount == _gm.FISH_COUNT ? "모든 물고기를 다 잡았어요!" : _gm.FishCaughtCount + " 마리";
+                _gm.FishCaughtCount == _gm.FISH_POOL_COUNT ? "모든 물고기를 다 잡았어요!" : _gm.FishCaughtCount + " 마리";
         }
     }
 
@@ -486,7 +502,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
 
-        _fishCountTMP.text = _gm.FishCaughtCount >= 20 ? "물고기를 전부 잡았어요!" : "시간이 다 지났어요!";
+        _fishCountTMP.text = _gm.FishCaughtCount >= _gm.fishCountGoal ? "물고기를 전부 잡았어요!" : "시간이 다 지났어요!";
 
 
         yield return _waitInterval;
@@ -521,12 +537,21 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _currentUserIconSpriteImage.sprite = _gm._characterImageMap[_gm.currentImageChar];
         ParseXML();
 
+        StartCoroutine(PlayReplayTextAnim());
+
+    }
+
+    private IEnumerator PlayReplayTextAnim()
+    {
+
+        yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
+        
         var seq = DOTween.Sequence();
         var rect = _uiGameObjects[(int)UI_Type.Btn_Restart].transform.GetChild(1).GetComponent<RectTransform>();
         seq.Append(rect.DOScale(1.02f, 0.25f).SetEase(Ease.InOutSine));
         seq.Append(rect.DOScale(0.98f, 0.25f).SetEase(Ease.InOutSine));
-        seq.SetLoops(15);
-        seq.SetDelay(0.15f);
+        seq.SetLoops(30);
+        seq.SetDelay(0.2f);
     }
 
     private IEnumerator PopUpRankSystemCo()
@@ -566,6 +591,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             return;
         }
        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
        StartCoroutine(OnRestartBtnClickCo());
        
        
@@ -576,7 +602,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         if (_isAnimating) return;
         _isAnimating = true;
-        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         OnRestartBtnClicked?.Invoke();
         _screenDim.DOFade(0, 0.55f);
         _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
@@ -595,6 +621,10 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private void ShowTuorial()
     {
+        
+        _timerTMP.text = _gm.timeLimit.ToString("00") + "초";
+        
+        
         _uiRectTransforms[(int)UI_Type.Tutorial].anchoredPosition = _defaultanchorPosArray[(int)UI_Type.Tutorial];
         _uiGameObjects[(int)UI_Type.Tutorial].SetActive(true);
         _uiRectTransforms[(int)UI_Type.Tutorial].localScale = Vector3.zero;

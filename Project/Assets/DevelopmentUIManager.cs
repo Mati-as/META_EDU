@@ -8,7 +8,7 @@ public class DevelopmentUIManager : MonoBehaviour
 {
     private Stack<Image> _imagesPool;
     private TextMeshProUGUI _fpsCounter;
-    private bool _currentStatus = false;
+    private bool _currentStatus = true;
     private GameObject _developerMenu;
 
     private void Start()
@@ -21,6 +21,7 @@ public class DevelopmentUIManager : MonoBehaviour
         {
             _imagesPool.Push(image);
         }
+        DisableAllImages();
     }
 
     private void Update()
