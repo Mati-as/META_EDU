@@ -1,6 +1,10 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using System.Xml;
+using KoreanTyper;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine.SocialPlatforms.Impl;
 
 
@@ -160,5 +164,7 @@ public class Utils :MonoBehaviour
                 array[randomIndex] = temp;
             }
         }
+
+   
 
     }

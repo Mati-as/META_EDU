@@ -32,7 +32,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1577924703514745523}
-  - {fileID: 1577924703137492320}
   - {fileID: 8328218102936980708}
   m_Father: {fileID: 8741051353243461369}
   m_RootOrder: 0
@@ -134,7 +133,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1577924701997619730}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8864237910018850060
 MonoBehaviour:
@@ -344,12 +343,17 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 1577924701997619730}
+    m_TransformParent: {fileID: 8100897117422466994}
     m_Modifications:
     - target: {fileID: 5956227045375024770, guid: e95b900de5f9be241810e7b8ffa3fd93,
         type: 3}
       propertyPath: m_Name
       value: InGame_Top_Menu_Bar
+      objectReference: {fileID: 0}
+    - target: {fileID: 5956227045375024770, guid: e95b900de5f9be241810e7b8ffa3fd93,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5956227045375024771, guid: e95b900de5f9be241810e7b8ffa3fd93,
         type: 3}
@@ -458,12 +462,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e95b900de5f9be241810e7b8ffa3fd93, type: 3}
---- !u!224 &1577924703137492320 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5956227045375024771, guid: e95b900de5f9be241810e7b8ffa3fd93,
-    type: 3}
-  m_PrefabInstance: {fileID: 5137814259408172003}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6984275699054318281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -471,6 +469,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1577924701997619730}
     m_Modifications:
+    - target: {fileID: 441399026530651158, guid: fa61e3c921ca4074ead68bf3e31bfa72,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1521176035093977339, guid: fa61e3c921ca4074ead68bf3e31bfa72,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1963867359468129576, guid: fa61e3c921ca4074ead68bf3e31bfa72,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -485,6 +493,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rplidar_DevelopmentMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 8433214148108208249, guid: fa61e3c921ca4074ead68bf3e31bfa72,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8433214148108208250, guid: fa61e3c921ca4074ead68bf3e31bfa72,
         type: 3}
@@ -611,6 +624,12 @@ PrefabInstance:
 --- !u!224 &1577924703514745523 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8433214148108208250, guid: fa61e3c921ca4074ead68bf3e31bfa72,
+    type: 3}
+  m_PrefabInstance: {fileID: 6984275699054318281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8100897117422466994 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1189243581092930939, guid: fa61e3c921ca4074ead68bf3e31bfa72,
     type: 3}
   m_PrefabInstance: {fileID: 6984275699054318281}
   m_PrefabAsset: {fileID: 0}
