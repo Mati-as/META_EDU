@@ -16,7 +16,8 @@ public class Launcher_DevelopmentUIManager : MonoBehaviour
     {
         _imagesPool = new Stack<Image>();
         var images = transform.GetComponentsInChildren<Image>();
-        _fpsCounter = transform.GetComponentInChildren<TextMeshProUGUI>();
+        
+        _fpsCounter = Utils.FindChild(gameObject, "FPSCounter").transform.GetComponentInChildren<TextMeshProUGUI>();
         foreach (var image in images)
         {
             _imagesPool.Push(image);

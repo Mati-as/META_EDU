@@ -368,8 +368,6 @@ public class FavoriteOne_GameManager : IGameManager
             foreach (var animal in _animals)
             {
                
-             //   animal.DORotateQuaternion(animal.rotation * Quaternion.Euler(0f, -180f, 0f), 1f)
-                  //  .SetDelay(Random.Range(0f, 0.5f));
 
                 if ((Stage)_currentStage == Stage.Animal) _animators[btnCombinedObj].SetTrigger(ON_SELECTED);
             }
@@ -398,24 +396,45 @@ public class FavoriteOne_GameManager : IGameManager
         });
         
         
+        // 선택된 동물,과일 제외 사라지는 애니메이션 재생 --------------------------------------------
         if (_currentStage == (int)Stage.Animal)foreach (var animal in _animals)
         {
+            var dealyTime =3f;
+            if (_btnToObjectMap[currentStageButtonID].GetInstanceID() == animal.GetInstanceID())
+            {
+                _animators[animal.GetInstanceID()].SetBool(ON_AWAY, true);
+                animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                    .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(dealyTime);
+            }
+            else
+            {
+             animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                 .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
+            }
+            
             _animators[animal.GetInstanceID()].SetBool(ON_AWAY,true);
-             animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce).OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
-          //  animal.DOMove(animal.forward * 1f, 4.5f).SetEase(Ease.InOutSine)
-           //     .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(0.15f);
         }
             
         
+        
+        
+        // 선택된 동물,과일 제외 사라지는 애니메이션 재생 --------------------------------------------
         if (_currentStage == (int)Stage.Fruit)
         {
             foreach (var fruit in _fruits)
             {
-                fruit.DOScale(Vector3.zero, 0.125f).SetEase(Ease.InOutBounce).SetDelay(Random.Range(0.1f,0.55f)).OnComplete(
-                    () =>
-                    {
-                        fruit.gameObject.SetActive(false);
-                    });
+                var dealyTime =3f;
+                if (_btnToObjectMap[currentStageButtonID].GetInstanceID() == fruit.GetInstanceID())
+                {
+                    _animators[fruit.GetInstanceID()].SetBool(ON_AWAY, true);
+                    fruit.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                        .OnComplete(() => fruit.gameObject.SetActive(false)).SetDelay(dealyTime);
+                }
+                else
+                {
+                    fruit.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                        .OnComplete(() => fruit.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
+                }
             }
              
 
@@ -431,7 +450,7 @@ public class FavoriteOne_GameManager : IGameManager
         }
          
 
-        yield return DOVirtual.Float(0, 0, 2f, _ => { }).WaitForCompletion();
+        yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
 
         if (_currentStage == (int)Stage.Animal) TypeIn(_narrations[(int)Narration.Narration_Fruit]);
         if (_currentStage == (int)Stage.Fruit) TypeIn(_narrations[(int)Narration.Narration_Color]);
