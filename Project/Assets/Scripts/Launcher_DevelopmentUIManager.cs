@@ -7,17 +7,17 @@ using UnityEngine.UI;
 public class Launcher_DevelopmentUIManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    private Stack<Image> _imagesPool;
-    private TextMeshProUGUI _fpsCounter;
+    private Stack<Image> _imagesPool =new ();
+    private TextMeshProUGUI _fpsCounter = new ();
     private bool _currentStatus = true;
     private GameObject _developerMenu;
 
     private void Start()
     {
-        _imagesPool = new Stack<Image>();
+       
         var images = transform.GetComponentsInChildren<Image>();
+        _fpsCounter = Utils.FindChild(gameObject, "NewFPSCounter",recursive:true).GetComponent<TextMeshProUGUI>();
         
-        _fpsCounter = Utils.FindChild(gameObject, "FPSCounter").transform.GetComponentInChildren<TextMeshProUGUI>();
         foreach (var image in images)
         {
             _imagesPool.Push(image);

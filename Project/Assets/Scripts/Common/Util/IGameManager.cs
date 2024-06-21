@@ -5,20 +5,23 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
-
 /// <summary>
-/// IGameManager는 UI,Resource,GameLogic Manager를 모두 포함합니다.
-/// 이는 Singleton Managers 방식입니다. 
+///     IGameManager는 UI,Resource,GameLogic Manager를 모두 포함합니다.
+///     이는 Singleton Managers 방식입니다.
 /// </summary>
 public abstract class IGameManager : MonoBehaviour
 {
-    
-    private static ResourceManager s_resourceManager = new ResourceManager();
-    public static Managers s_instance = null;
-    public static Managers Instance { get { return s_instance; } }
+    private static readonly ResourceManager s_resourceManager = new();
+    public static Managers s_instance;
+    public static Managers Instance => s_instance;
+
     public static ResourceManager Resource
     {
-        get{ InitManagers(); return s_resourceManager;}
+        get
+        {
+            InitManagers();
+            return s_resourceManager;
+        }
     }
 
 
@@ -36,7 +39,9 @@ public abstract class IGameManager : MonoBehaviour
     // Ray 및 상호작용 관련 멤버
     public static Ray GameManager_Ray { get; private set; } // 마우스, 발로밟은 위치에 Ray 발사. 
 
-    public RaycastHit[] GameManager_Hits { get; set; } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
+    public RaycastHit[]
+        GameManager_Hits { get; set; } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
+
     public static event Action On_GmRay_Synced;
 
     protected virtual void Awake()
@@ -46,7 +51,7 @@ public abstract class IGameManager : MonoBehaviour
 
     private static void InitManagers()
     {
-        GameObject go = GameObject.Find("@Managers");
+        var go = GameObject.Find("@Managers");
         if (go == null)
             go = new GameObject { name = "@Managers" };
 
@@ -64,30 +69,32 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void Init()
     {
-        if(isInitialized) return;
+        if (isInitialized) return;
         isStartButtonClicked = false;
-        ManageProjectSettings(SHADOW_MAX_DISTANCE,DEFAULT_SENSITIVITY);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, DEFAULT_SENSITIVITY);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
-        PlayNarration();
-        DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
+
+        if (SceneManager.GetActiveScene().name.Contains("LAUNCHER"))
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect,
-                "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
-        });
-        int uiLayer = LayerMask.NameToLayer("UI");
+            PlayNarration();
+            DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
+            });
+        }
+
+
+        var uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
         isInitialized = true;
-
     }
 
 
-
-
-    protected  void OnOriginallyRaySynced()
+    protected void OnOriginallyRaySynced()
     {
-
         GameManager_Ray = RaySynchronizer.initialRay;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
@@ -96,7 +103,6 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensitivity)
     {
-
         DEFAULT_SENSITIVITY = defaultSensitivity;
         // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
         var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
@@ -106,7 +112,6 @@ public abstract class IGameManager : MonoBehaviour
             // Max Distance 값을 설정합니다.
             SHADOW_MAX_DISTANCE = defaultShadowMaxDistance;
             urpAsset.shadowDistance = SHADOW_MAX_DISTANCE;
-           
         }
         else
         {
@@ -122,11 +127,8 @@ public abstract class IGameManager : MonoBehaviour
     /// </summary>
     protected virtual void OnRaySynced()
     {
-        
-       
         if (!isStartButtonClicked) return;
         if (!isInitialized) return;
-
     }
 
     protected virtual void BindEvent()
@@ -145,7 +147,7 @@ public abstract class IGameManager : MonoBehaviour
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         UI_Scene_Button.onBtnShut += OnStartButtonClicked;
     }
-    
+
     private void OnDestroy()
     {
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
@@ -165,18 +167,28 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void PlayNarration()
     {
-        //delay for narration.
-        DOVirtual.Float(0, 1, 2f, _ => { })
-            .OnComplete(() =>
-            {
-                Managers.Sound.Play(SoundManager.Sound.Narration,
-                    "Audio/Narration/" + $"{SceneManager.GetActiveScene().name}", 0.5f);
-            });
+        // skip narration if it is the launcher scene
+        if (!IsLauncherScene())
+        {
+            // delay for narration
+            DOVirtual.Float(0, 1, 2f, _ => { })
+                .OnComplete(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration,
+                        $"Audio/Narration/{SceneManager.GetActiveScene().name}", 0.5f);
+                });
 
-        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/" + $"{SceneManager.GetActiveScene().name}", BGM_VOLUME);
+            Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
+                BGM_VOLUME);
+        }
     }
 
-    private  void SetResolution(int width, int height, int targetFrame)
+    private bool IsLauncherScene()
+    {
+        return SceneManager.GetActiveScene().name.Contains("LAUNCHER");
+    }
+
+    private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
         QualitySettings.vSyncCount = 1;
@@ -186,9 +198,11 @@ public abstract class IGameManager : MonoBehaviour
         Debug.Log(
             $"Game Title: {SceneManager.GetActiveScene().name}," +
             $" Frame Rate: {TARGET_FRAME}, vSync: {QualitySettings.vSyncCount}" +
-            $"Shadow Max Distance: {SHADOW_MAX_DISTANCE}," );
+            $"Shadow Max Distance: {SHADOW_MAX_DISTANCE},");
 #endif
     }
-    
-    private static void PrintGameInfo(){}
+
+    private static void PrintGameInfo()
+    {
+    }
 }

@@ -32,9 +32,18 @@ public class MetaEduLauncher : UI_PopUp
 		ContentD, // 영상놀이
 		Setting,
 		Loading,
+		MainVolume,
+		BGMVolume,
+		EffectVolume,
+		NarrationVolume,
 		//Login,
 		//Survey
 	}
+
+
+
+	private Slider[] _volumeSliders= new Slider[(int)SoundManager.Sound.Max];
+	
 
 	enum UIButtons
 	{
@@ -50,15 +59,16 @@ public class MetaEduLauncher : UI_PopUp
 	}
 
 	private int _UItab = -1;
-
 	private readonly string UI_CLICK_SOUND_PATH;
 	private GameObject[] _UIs;
 	private Animation messageAnim;
 	private List<string> _animClips = new List<string>();
 	private float _clickableInterval = 0.28f;
 	private bool _isClikcable = true;
-
 	private bool _isLoadFinished;
+	
+
+	
     
 	public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
 
@@ -103,18 +113,8 @@ public class MetaEduLauncher : UI_PopUp
 		Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/Launcher", 0.05f);
 
 		BindObject(typeof(UIType));
+		
 		BindButton(typeof(UIButtons));
-
-		GetObject((int)UIType.Loading).gameObject.SetActive(false);
-		GetObject((int)UIType.Home).gameObject.SetActive(false);
-		GetObject((int)UIType.Result).gameObject.SetActive(false);
-		GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
-		GetObject((int)UIType.ContentA).gameObject.SetActive(false);
-		GetObject((int)UIType.ContentB).gameObject.SetActive(false);
-		GetObject((int)UIType.ContentC).gameObject.SetActive(false);
-		GetObject((int)UIType.ContentD).gameObject.SetActive(false);
-		GetObject((int)UIType.Setting).gameObject.SetActive(false);
-		GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
 		GetButton((int)UIButtons.HomeButton).gameObject.BindEvent(() => ShowTab(UIType.Home));
 		GetButton((int)UIButtons.SelectModeButton).gameObject.BindEvent(() => ShowTab(UIType.SelectMode));
@@ -126,8 +126,86 @@ public class MetaEduLauncher : UI_PopUp
 		// GetButton((int)UIButtons.LoginButton).gameObject.BindEvent(() => ShowTab(UIType.Login));
 		// GetButton((int)UIButtons.SurveyButton).gameObject.BindEvent(() => ShowTab(UIType.Survey));
 
+		_volumeSliders= new Slider[(int)SoundManager.Sound.Max];
+		
+		_volumeSliders[(int)SoundManager.Sound.Main] = GetObject((int)UIType.MainVolume).GetComponent<Slider>();
+		_volumeSliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UIType.BGMVolume).GetComponent<Slider>();
+		_volumeSliders[(int)SoundManager.Sound.Effect] = GetObject((int)UIType.EffectVolume).GetComponent<Slider>();
+		_volumeSliders[(int)SoundManager.Sound.Narration] = GetObject((int)UIType.NarrationVolume).GetComponent<Slider>();
+
+		for (var i = 0; i < (int)SoundManager.Sound.Max; i++)
+		{
+			_volumeSliders[i].maxValue = Managers.Sound.VOLUME_MAX[i];
+		}
 
 
+		// default Volume값은 SoundManager에서 관리하며, 초기화 이후, UI Slider가 이를 참조하여 표출하도록 합니다.
+		// default Value는 시연 테스트에 결과에 따라 수정가능합니다. 
+		_volumeSliders[(int)SoundManager.Sound.Main].onValueChanged.AddListener(_ =>
+		{
+
+		
+			
+			Managers.Sound.volumes[(int)SoundManager.Sound.Main] = _volumeSliders[(int)SoundManager.Sound.Main].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Main].volume = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+
+			
+			var maxVol = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _volumeSliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					maxVol);
+			
+			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _volumeSliders[(int)SoundManager.Sound.Effect].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					maxVol);
+			
+			Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _volumeSliders[(int)SoundManager.Sound.Narration].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Narration],
+					maxVol);
+			
+			
+		});
+		_volumeSliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
+		{
+			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _volumeSliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+		});
+
+		_volumeSliders[(int)SoundManager.Sound.Effect].onValueChanged.AddListener(_ =>
+		{
+			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _volumeSliders[(int)SoundManager.Sound.Effect].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+		});
+
+		_volumeSliders[(int)SoundManager.Sound.Narration].onValueChanged.AddListener(_ =>
+		{
+			Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _volumeSliders[(int)SoundManager.Sound.Narration].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Narration],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+		});
+
+
+		
+		GetObject((int)UIType.Loading).gameObject.SetActive(false);
+		GetObject((int)UIType.Home).gameObject.SetActive(false);
+		GetObject((int)UIType.Result).gameObject.SetActive(false);
+		GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentA).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentB).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentC).gameObject.SetActive(false);
+		GetObject((int)UIType.ContentD).gameObject.SetActive(false);
+		GetObject((int)UIType.Setting).gameObject.SetActive(false);
+		GetObject((int)UIType.Setting).gameObject.SetActive(false);
+		
+		
 #if UNITY_EDITOR
 		Debug.Log("Launcher Init Completed");
 #endif
@@ -265,10 +343,10 @@ public class MetaEduLauncher : UI_PopUp
 
 		//마우스 및 포인터 위치를 기반으로 하고싶은경우.
 		screenPosition = Mouse.current.position.ReadValue();
-	//	_ray = Camera.main.ScreenPointToRay(screenPosition);
+	
 		_launcherPED.position = screenPosition;
 #if UNITY_EDITOR
-		Debug.Log($"클릭 시 PED Position : {_launcherPED.position}");
+//		Debug.Log($"클릭 시 PED Position : {_launcherPED.position}");
 #endif
 		_results = new List<RaycastResult>();
 		_launcherGR.Raycast(_launcherPED, _results);
@@ -338,12 +416,12 @@ public class MetaEduLauncher : UI_PopUp
 			{
 				UIType clickedUI = 0;
 #if UNITY_EDITOR
-				Debug.Log("LAUNCHER RAY");
+	//			Debug.Log("LAUNCHER RAY");
 #endif
 				foreach (var result in results)
 				{
 #if UNITY_EDITOR
-					Debug.Log($" result Name:{result.gameObject.name}");
+//					Debug.Log($" result Name:{result.gameObject.name}");
 #endif
 					// 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
 					if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI)) ShowTab(clickedUI);

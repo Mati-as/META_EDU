@@ -2,65 +2,111 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 /// <summary>
-/// 1. EffectManager에도, SoundPlay 시스템은 구현되어있으나, 파티클 플레이에 관해서만 특화되어있는 클래스입니다.
-/// 2. 스토리 중심의 게임 (가을소풍, 땅속탐험)에 적합합니다. 
-/// 3. SoundManager ,EffectManager 사용예시.
-///     a. SoundManager - 단발성,Bgm,나레이션 등 사운드 소스가 파괴되면 안되며, 겹치지않게 단발성으로 나는 사운드를 낼 때 사용합니다.
-///     b. EffectManager - 클릭효과처럼, 짧은시간안에 여러번 사운드 소스가 재생되어야하는 경우 적합합니다. 런타임 성능에 취약할 수 있으니 주의바랍니다
+/// 사운드 재생과 사운드관련 파라미터를 관리합니다.
+/// 설정창의 UI가 참조합니다. 
 /// </summary>
 public class SoundManager : MonoBehaviour
 {
-    
     public enum Sound
     {
-     Bgm,
-     Narration,
-     Effect,
-     Max
+        Main,
+        Bgm,
+        Effect,
+        Narration,
+        Max
     }
 
-    private readonly AudioSource[] _audioSources = new AudioSource[(int)Sound.Max];
+    private float[] _volumes = new float[(int)Sound.Max];
+    public float[] VOLUME_MAX = new float[(int)Sound.Max];
+    
+    private readonly float VOLUME_MAX_MAIN = 1f;
+    private readonly float VOLUME_MAX_BGM =0.5f;
+    private readonly float VOLUME_MAX_EFFECT = 1f;
+    private readonly float VOLUME_MAX_NARRATION = 1f;
+    
+    
+    
+
+    public float[] volumes
+    {
+        get => _volumes;
+        set
+        {
+            if (_volumes == null || _volumes.Length != value.Length)
+            {
+                _volumes = new float[value.Length];
+            }
+            
+        }
+    }
+
+
+    [FormerlySerializedAs("_audioSources")]
+    public AudioSource[] audioSources;
     private  Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
     private GameObject _soundRoot;
     public void Init()
     {
+        volumes = new float[(int)Sound.Max];
+        
         if (_soundRoot == null)
         {
             _soundRoot = GameObject.Find("@SoundRoot");
             if (_soundRoot == null)
             {
+                audioSources = new AudioSource[(int)Sound.Max];
+                VOLUME_MAX = new float[(int)Sound.Max];
                 _soundRoot = new GameObject { name = "@SoundRoot" };
                 DontDestroyOnLoad(_soundRoot);
 
-                var soundTypeNames = Enum.GetNames(typeof(Define.Sound));
+                var soundTypeNames = Enum.GetNames(typeof(Sound));
                 for (var count = 0; count < soundTypeNames.Length - 1; count++)
                 {
                     var go = new GameObject { name = soundTypeNames[count] };
-                    _audioSources[count] = go.AddComponent<AudioSource>();
+                    audioSources[count] = go.AddComponent<AudioSource>();
                     go.transform.parent = _soundRoot.transform;
                 }
 
-                _audioSources[(int)Sound.Bgm].loop = true;
+                audioSources[(int)Sound.Bgm].loop = true;
 
-                Play(Sound.Bgm, "");
+                volumes = new float[(int)Sound.Max];
+                for (int i = 0; i < (int)Sound.Max; i++)
+                {
+                    volumes[(int)Sound.Main] = 0.5f;
+                    volumes[(int)Sound.Bgm] = 0.3f;
+                    volumes[(int)Sound.Effect] = 0.5f;
+                    volumes[(int)Sound.Narration] = 0.5f;
+                    
+                }
+                
+                for (int i = 0; i < (int)Sound.Max; i++)
+                {
+                    VOLUME_MAX[(int)Sound.Main] = VOLUME_MAX_MAIN;
+                    VOLUME_MAX[(int)Sound.Bgm] = VOLUME_MAX_BGM;
+                    VOLUME_MAX[(int)Sound.Effect] = VOLUME_MAX_EFFECT;
+                    VOLUME_MAX[(int)Sound.Narration] = VOLUME_MAX_NARRATION;
+
+                }
             }
+            
         }
         
     }
 
     public void Clear()
     {
-        foreach (var audioSource in _audioSources)
+        foreach (var audioSource in audioSources)
             audioSource.Stop();
         _audioClips.Clear();
     }
 
     public void SetPitch(Define.Sound type, float pitch = 1.0f)
     {
-        var audioSource = _audioSources[(int)type];
+        var audioSource = audioSources[(int)type];
         if (audioSource == null)
             return;
 
@@ -72,7 +118,7 @@ public class SoundManager : MonoBehaviour
         if (string.IsNullOrEmpty(path))
             return false;
 
-        var audioSource = _audioSources[(int)type];
+        var audioSource = audioSources[(int)type];
         if (path.Contains("Audio/") == false)
             path = string.Format("Audio/{0}", path);
 
@@ -125,7 +171,7 @@ public class SoundManager : MonoBehaviour
 
     public void Stop(Sound type)
     {
-        var audioSource = _audioSources[(int)type];
+        var audioSource = audioSources[(int)type];
         audioSource.Stop();
     }
 
@@ -155,7 +201,7 @@ public class SoundManager : MonoBehaviour
         float outDuration = 0.5f, bool rollBack = false)
     {
         
-        var audioSource = _audioSources[(int)type];
+        var audioSource = audioSources[(int)type];
         audioSource.DOFade(0f, outDuration)
             .SetDelay(waitTime)
             .OnComplete(() =>
