@@ -129,13 +129,21 @@ public class MetaEduLauncher : UI_PopUp
 		_volumeSliders= new Slider[(int)SoundManager.Sound.Max];
 		
 		_volumeSliders[(int)SoundManager.Sound.Main] = GetObject((int)UIType.MainVolume).GetComponent<Slider>();
+		_volumeSliders[(int)SoundManager.Sound.Main].value = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+#if UNITY_EDITOR
+		Debug.Log($" 메인 볼륨 {Managers.Sound.volumes[(int)SoundManager.Sound.Main]}");
+#endif
+
 		_volumeSliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UIType.BGMVolume).GetComponent<Slider>();
-		_volumeSliders[(int)SoundManager.Sound.Effect] = GetObject((int)UIType.EffectVolume).GetComponent<Slider>();
-		_volumeSliders[(int)SoundManager.Sound.Narration] = GetObject((int)UIType.NarrationVolume).GetComponent<Slider>();
+		
+        _volumeSliders[(int)SoundManager.Sound.Effect] = GetObject((int)UIType.EffectVolume).GetComponent<Slider>();
+		
+        _volumeSliders[(int)SoundManager.Sound.Narration] = GetObject((int)UIType.NarrationVolume).GetComponent<Slider>();
 
 		for (var i = 0; i < (int)SoundManager.Sound.Max; i++)
 		{
 			_volumeSliders[i].maxValue = Managers.Sound.VOLUME_MAX[i];
+			_volumeSliders[i].value = Managers.Sound.volumes[i];
 		}
 
 
@@ -144,52 +152,59 @@ public class MetaEduLauncher : UI_PopUp
 		_volumeSliders[(int)SoundManager.Sound.Main].onValueChanged.AddListener(_ =>
 		{
 
-		
-			
+            
 			Managers.Sound.volumes[(int)SoundManager.Sound.Main] = _volumeSliders[(int)SoundManager.Sound.Main].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Main].volume = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
-
 			
-			var maxVol = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+			
+		
+		
 			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _volumeSliders[(int)SoundManager.Sound.Bgm].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
-					maxVol);
-			
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Bgm].value);
+            
 			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _volumeSliders[(int)SoundManager.Sound.Effect].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
-					maxVol);
-			
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Effect].value);
+            
 			Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _volumeSliders[(int)SoundManager.Sound.Narration].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Narration],
-					maxVol);
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Narration].value);
 			
 			
 		});
 		_volumeSliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
 		{
+			
 			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _volumeSliders[(int)SoundManager.Sound.Bgm].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Bgm].value);
 		});
 
 		_volumeSliders[(int)SoundManager.Sound.Effect].onValueChanged.AddListener(_ =>
 		{
+			Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/TestSound/Test_Effect");
+			
 			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _volumeSliders[(int)SoundManager.Sound.Effect].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Effect].value);
 		});
 
 		_volumeSliders[(int)SoundManager.Sound.Narration].onValueChanged.AddListener(_ =>
 		{
+			if (!Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].isPlaying)
+			{
+				Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/TestSound/Test_Narration");
+			}
 			Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _volumeSliders[(int)SoundManager.Sound.Narration].value;
 			Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
 				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Narration],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main]);
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _volumeSliders[(int)SoundManager.Sound.Narration].value);
 		});
 
 
