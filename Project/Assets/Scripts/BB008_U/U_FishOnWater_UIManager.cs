@@ -7,6 +7,8 @@ using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
 
@@ -14,23 +16,33 @@ public class U_FishOnWater_UIManager : UI_PopUp
 {
     private enum UI_Type
     {
+        Timer,
         Ready,
         Start,
         Stop,
-        Timer,
         Count,
-        RankingParent,
+        ModeSelection,
         Tutorial,
-        Btn_InitialStart, // 버튼 자체 클래스로 컨트롤하며, 현재는 미사용 6/4
-        Btn_Restart,
-        Btn_Next, // Tutorial -> UserInfo
         CurrentUserNameInfo,
         CurrentUser,
+        RankingParent,
         OnRankingUsers,
         UIHidePosition,
         ScreenDim,
-        Btn_StartOnUserInfo
-        
+        Text_Tutorial,
+        //Text_CurrentUserInfoText,
+        Slider_Restart
+    }
+    
+
+    private enum UI_Button
+    {
+        Btn_StartOnUserInfo,
+        Btn_Restart,
+        Btn_ShowUserInfo,
+        Btn_SinglePlay,
+        Btn_MultiPlay
+        // Btn_ShowTutorial, // Tutorial -> UserInfo
     }
 
     private enum RankingUI
@@ -67,9 +79,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private RectTransform[] _usersOnRankingRects;
 
+
+    private Button[] _uiBtns;
+    private RectTransform[] _btnRects;
+    
     private Button _restartButton;
     private Button _nextButton;
-    private Button _initialStartButton;
+    //private Button _initialStartButton;
     private Button _startButtonOnUserInfo;
 
     private Image currentUserChracterImage; // 처음 사용자 정보 인트로 표출 시 
@@ -81,6 +97,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private Image _currentUserIconSpriteImage;
     private float _intervalBtwStartAndReady = 2f;
     private bool _isAnimating; // 더블클릭 방지 논리연산자 입니다. 
+    private bool _isRestartBtnClickable; // 게임종료 후 바로 다시시작 버튼이 눌리지 않도록 방지합니다.
+    private int RESTART_CLIICKABLE_DELAY = 3;
     public static event Action OnStartUIAppear; // 시작 UI가 표출될 때 의 이벤트입니다. 
     public static event Action OnReadyUIAppear; // 준비~! UI 표출 시
     public static event Action OnRestartBtnClicked; // 그만 이후 초기화가 끝난경우
@@ -90,8 +108,29 @@ public class U_FishOnWater_UIManager : UI_PopUp
     public Slider _fishSpeedSlider { get; private set; }
     public Slider _timerSlider { get; private set; }
     public Slider _fishCountSlider { get; private set; }
+
+    private float _restartSliderFillAmount;
+    private Image _restartSliderImage; // 슬라이더 처럼 동작하지만 실제로는 슬라이더는 아님에 주의합니다.
+    public float restartSliderFillAmount
+    {
+        get => _restartSliderFillAmount;
+        private set
+        {
+            Mathf.Clamp(value, 0, 1);
+            _restartSliderFillAmount = value;
+            if (value > 0.99f)
+            {
+             _restartSliderFillAmount = 0;
+             OnRestartBtnGaugeFullyFilled();
+            }
+        }
+    }
+    
+    
+    
     private TextMeshProUGUI _TMP_fishSpeed;
     private TextMeshProUGUI _TMP_introUserName;
+    private TextMeshProUGUI _TMP_tutorialUI;
     private Vector3[] _defaultanchorPosArray;
     private Vector3[] _defaultSizeArray;
 
@@ -105,7 +144,10 @@ public class U_FishOnWater_UIManager : UI_PopUp
     public override bool Init()
     {
         _gm = GameObject.FindWithTag("GameManager").GetComponent<U_FishOnWater_GameManager>();
-
+        
+        BindObject(typeof(UI_Type));
+        BindButton(typeof(UI_Button));
+        
         var sliderParent = GameObject.Find("Slider_FishSpeed");
         _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
         _fishSpeedSlider = sliderParent.GetComponent<Slider>();
@@ -114,6 +156,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
             _gm.fishSpeed = _fishSpeedSlider.value;
             _TMP_fishSpeed.text = "물고기 속도: " + _gm.fishSpeed;
         });
+
+      
 
         var timerSldierParent = GameObject.Find("Slider_Timer");
         _timerSliderTMP = timerSldierParent.GetComponentInChildren<TextMeshProUGUI>();
@@ -142,32 +186,22 @@ public class U_FishOnWater_UIManager : UI_PopUp
             _gm.fishCountGoal = Mathf.RoundToInt(_fishCountSlider.value * (sliderSteps - 1)) * 5 + 5;
             _fishCountSliderTMP.text = "잡을 물고기 수 :" + _gm.fishCountGoal.ToString();
         });
-      
-       
-        BindObject(typeof(UI_Type));
 
         InitializeUIElements();
         InitializeRankingElements();
 
+       
+        
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
         U_FishOnWater_GameManager.OnReady += OnReadyAndStart;
 
-        U_FishOnWater_GameManager.OnRoundFinished -= PopUpStopUI;
-        U_FishOnWater_GameManager.OnRoundFinished += PopUpStopUI;
-        
-        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
-        UI_Scene_Button.onBtnShut += OnStartButtonClicked;
+        U_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
+        U_FishOnWater_GameManager.OnRoundFinished += ShowStopUI;
         
         
-
-        _uiGameObjects[(int)UI_Type.Tutorial].SetActive(true);
-        ShowTuorial();
-  
         return true;
     }
     
-    
-
     private void InitializeUIElements()
     {
         var uiElementCount = Enum.GetValues(typeof(UI_Type)).Length;
@@ -175,7 +209,6 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _uiRectTransforms = new RectTransform[uiElementCount];
         _defaultanchorPosArray = new Vector3[uiElementCount];
         _defaultSizeArray = new Vector3[uiElementCount];
-      
         
         for (var i = 0; i < uiElementCount; i++)
         {
@@ -185,22 +218,38 @@ public class U_FishOnWater_UIManager : UI_PopUp
             _defaultanchorPosArray[i] = _uiRectTransforms[i].anchoredPosition;
             _uiGameObjects[i].SetActive(false);
         }
+
+        _TMP_tutorialUI = _uiGameObjects[(int)UI_Type.Text_Tutorial].GetComponent<TextMeshProUGUI>();
         
+        var btnElementCount = Enum.GetValues(typeof(UI_Button)).Length;
+        _uiBtns = new Button[btnElementCount];
+        _btnRects = new RectTransform[btnElementCount];
+        
+        //GetButton((int)UI_Button.Btn_InitialStart).gameObject.BindEvent(() => ));
+        //GetButton((int)UI_Button.Btn_ShowTutorial).gameObject.BindEvent(() =>ShowTuorial());
+        
+        for (var i = 0; i < btnElementCount; i++)
+        {
+            _uiBtns[i] = GetButton(i);
+            _btnRects[i] = _uiBtns[i].transform.GetComponent<RectTransform>();
+        }
+
+        //_uiBtns[(int)UI_Button.Btn_InitialStart].gameObject.BindEvent(() => OnStartBtnOnUserInfoClicked());
+        
+        _uiBtns[(int)UI_Button.Btn_StartOnUserInfo].gameObject.BindEvent(() => OnStartBtnOnUserInfoClicked());
+        _uiBtns[(int)UI_Button.Btn_ShowUserInfo].gameObject.BindEvent(() => ShowUserInfo());
+        _uiBtns[(int)UI_Button.Btn_Restart].gameObject.BindEvent(() => OnRestartBtnPerCLicked());
+        _uiBtns[(int)UI_Button.Btn_SinglePlay].gameObject.BindEvent(() => OnSinglePlayBtnClicked());
+        _uiBtns[(int)UI_Button.Btn_MultiPlay].gameObject.BindEvent(() => OnMultiPlayBtnClicked());
+
         
         _uiGameObjects[(int)UI_Type.ScreenDim].SetActive(true);
-
-
         _uiGameObjects[(int)UI_Type.CurrentUser].transform.Find("CurrentUserIcon");
-        
         _uiGameObjects[(int)UI_Type.Timer].SetActive(true);
         _uiRectTransforms[(int)UI_Type.Timer].localScale = _defaultSizeArray[(int)UI_Type.Timer];
-  
-        
         
         _uiGameObjects[(int)UI_Type.Count].SetActive(true);
         _uiRectTransforms[(int)UI_Type.Count].localScale = _defaultSizeArray[(int)UI_Type.Count];
-
-        
         
         _timerTMP = _uiGameObjects[(int)UI_Type.Timer].GetComponentInChildren<TextMeshProUGUI>();
         _fishCountTMP = _uiGameObjects[(int)UI_Type.Count].GetComponent<TextMeshProUGUI>();
@@ -210,53 +259,51 @@ public class U_FishOnWater_UIManager : UI_PopUp
         currentUserChracterImage = userNameUIParentTransform.Find("CharacterImage").GetComponent<Image>();
         _TMP_introUserName = userNameUIParentTransform.Find("Text_Name")
             .GetComponent<TextMeshProUGUI>();
-
-
-
+        
         var currentUser = _uiGameObjects[(int)UI_Type.CurrentUser].transform;
         _currentUserIconSpriteImage = currentUser.Find("CharacterFrame").GetChild(0).GetComponent<Image>();
-        _restartButton = _uiGameObjects[(int)UI_Type.Btn_Restart].GetComponent<Button>();
-        _restartButton.onClick.AddListener(OnRestartBtnClick);
+       
+        _uiGameObjects[(int)UI_Type.ModeSelection].SetActive(true);
+        _uiGameObjects[(int)UI_Type.ModeSelection].transform.localScale = _defaultSizeArray[(int)UI_Type.ModeSelection];
 
-        _initialStartButton = _uiGameObjects[(int)UI_Type.Btn_InitialStart].GetComponent<Button>();
-
-        _startButtonOnUserInfo = _uiGameObjects[(int)UI_Type.Btn_StartOnUserInfo].GetComponent<Button>();
-        _startButtonOnUserInfo.onClick.AddListener(OnrRestartBtnOnUserInfoClicked);
+        _uiGameObjects[(int)UI_Type.Slider_Restart].SetActive(true);
+        _restartSliderImage = _uiGameObjects[(int)UI_Type.Slider_Restart].GetComponent<Image>();
+        _restartSliderImage.fillAmount = 0;
         
-        _nextButton = _uiGameObjects[(int)UI_Type.Btn_Next].GetComponent<Button>();
-        _nextButton.onClick.AddListener(ShowUserInfo);
+        ShowModeSelectionMode();
+        
     }
 
     private void ShowUserInfo()
     {
-        if (!_isAnimating)
-        {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
-            StartCoroutine(ShowUserInfoCo());
-        }
+        if (!_isBtnClickable || _isAnimating) return;
+        //중복클릭방지
+        _isAnimating = true;
+        _isBtnClickable = false;
+        DOVirtual.Float(0, 0, 3f, _ => { _isBtnClickable = false; }).OnComplete(() => { _isBtnClickable = true; });
+
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        StartCoroutine(ShowUserInfoCo());
+        
     }
 
     private IEnumerator ShowUserInfoCo()
     {
-        _isAnimating = true;
-        yield return _waitInterval;
-        currentUserChracterImage.sprite = _gm._characterImageMap[(char)_gm.currentImageChar];
-        
-        
-        
-        if (_uiGameObjects[(int)UI_Type.Tutorial].activeSelf)
-        {
-            yield return _uiRectTransforms[(int)UI_Type.Tutorial]
-                .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.8f)
-                .SetEase(Ease.InOutSine)
-                .WaitForCompletion();
+        if (!_uiGameObjects[(int)UI_Type.Tutorial].activeSelf && _isAnimating) yield break;
 
-         
-            
-            _uiGameObjects[(int)UI_Type.Tutorial].SetActive(false);
-            _uiGameObjects[(int)UI_Type.Btn_Next].SetActive(false);
-        }
-      
+
+        yield return _waitInterval;
+        currentUserChracterImage.sprite = _gm._characterImageMap[_gm.currentImageChar];
+
+        yield return _uiRectTransforms[(int)UI_Type.Tutorial]
+            .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.8f)
+            .SetEase(Ease.InOutSine)
+            .WaitForCompletion();
+
+
+        _uiGameObjects[(int)UI_Type.Tutorial].SetActive(false);
+        _btnRects[(int)UI_Button.Btn_ShowUserInfo].gameObject.SetActive(false);
+
 
         _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo].anchoredPosition =
             _defaultanchorPosArray[(int)UI_Type.CurrentUserNameInfo];
@@ -274,41 +321,24 @@ public class U_FishOnWater_UIManager : UI_PopUp
             .DOAnchorPos(_defaultanchorPosArray[(int)UI_Type.CurrentUserNameInfo], 0.8f).SetEase(Ease.InOutSine)
             .OnComplete(() =>
             {
-                if (_isOnFirstRound)
                 {
-                    _uiGameObjects[(int)UI_Type.Btn_InitialStart].SetActive(true);
-                    
-                    _uiRectTransforms[(int)UI_Type.Btn_InitialStart].localScale = Vector3.zero;
+                    _uiGameObjects[(int)UI_Button.Btn_StartOnUserInfo].SetActive(true);
+                    _uiRectTransforms[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.zero;
                     DOVirtual.Float(0, 1, 0.5f,
-                            value => { _uiRectTransforms[(int)UI_Type.Btn_InitialStart].localScale = Vector3.one * value; })
-                        .OnComplete(()=>
-                        {
-                            _isOnFirstRound = false;
-                        }).SetDelay(0.5f);
-                    
-                }
-                else
-                {
-                  
-                    _uiGameObjects[(int)UI_Type.Btn_StartOnUserInfo].SetActive(true);
-                    _uiRectTransforms[(int)UI_Type.Btn_StartOnUserInfo].localScale = Vector3.zero;
-                    DOVirtual.Float(0, 1, 0.5f,
-                            value => { _uiRectTransforms[(int)UI_Type.Btn_Restart].localScale = Vector3.one * value; })
+                            value =>
+                            {
+                                _uiRectTransforms[(int)UI_Button.Btn_Restart].localScale = Vector3.one * value;
+                            })
                         .SetDelay(1f).OnComplete(() =>
                         {
                             DOVirtual.Float(0, 1, 0.45f, scale
                                 =>
                             {
-                                _uiRectTransforms[(int)UI_Type.Btn_StartOnUserInfo].localScale = Vector3.one * scale;
+                                _uiRectTransforms[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.one * scale;
                             });
                         });
                 }
-
-
-                
-                
             });
-        
 
         _isAnimating = false;
     }
@@ -318,6 +348,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private float _defaultAlpha;
     private void OnStartButtonClicked()
     {
+        if (!_isBtnClickable || _isAnimating) return;
+        
         _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();
         _defaultAlpha = _screenDim.material.color.a; 
         _screenDim.DOFade(0, 0.55f);
@@ -362,30 +394,44 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
-        U_FishOnWater_GameManager.OnRoundFinished -= PopUpStopUI;
+        U_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
     }
 
     private void Update()
     {
-        if (!_gm.isOnReInit)
+        if (!_gm.isOnReInit && _uiGameObjects[(int)UI_Type.Timer].activeSelf)
         {
             _timerTMP.text = _gm.remainTime.ToString("00") + "초";
             _fishCountTMP.text =
                 _gm.FishCaughtCount == _gm.FISH_POOL_COUNT ? "모든 물고기를 다 잡았어요!" : _gm.FishCaughtCount + " 마리";
         }
+
+
+        _timeSinceLastTouch = Mathf.Clamp(_timeSinceLastTouch, 0, 2) + Time.deltaTime;
+        
+        if (_timeSinceLastTouch > 1f)
+        {
+            _restartSliderImage.fillAmount = 0;
+        }
+
     }
+    
+    //-------------------------------------------------------------
 
     public void OnReadyAndStart()
     {
-        PopUpStartUI();
+        ShowStartUI();
+        OnStartButtonClicked();
     }
+    
+
 
     private void ParseXML()
     {
         XmlNode root = _gm.xmlDoc.DocumentElement;
         var nodes = root.SelectNodes("StringData");
 
-        var userScores = new List<(string username, string score, string iconNumber)>();
+        var userScores = new List<(string mode,string username, string score, string iconNumber)>();
 
         foreach (XmlNode node in nodes)
         {
@@ -393,64 +439,159 @@ public class U_FishOnWater_UIManager : UI_PopUp
             var score = node.Attributes["score"].Value;
             var icon = node.Attributes["iconnumber"].Value;
 
-            userScores.Add((username, score,icon));
+            var mode = node.Attributes["mode"].Value;
+
+            if (mode == _gm.currentMode.ToString())
+            {
+                userScores.Add((mode,username, score,icon));
+            }
+        
         }
 
-        // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
-        userScores = userScores.OrderByDescending(x =>
-            {
-                var splitScore = x.score.Split('/');
-                return int.Parse(splitScore[0]); // A 값을 기준으로 정렬
-            })
-            .ThenByDescending(x =>
-            {
-                var splitScore = x.score.Split('/');
-                return float.Parse(splitScore[1]).ToString("F1"); // B 값을 기준으로 정렬
-            })
-            .ToList();
-
-
-        for (var i = 0; i < USER_ON_RANKING_COUNT && i < userScores.Count; i++)
+        if (_gm.currentMode == (int)U_FishOnWater_GameManager.PlayMode.MultiPlay)
         {
-            _TMP_usersOnRankingData[i][(int)RankUserInfo.Name] = userScores[i].Item1;
-            _TMP_usersOnRankingData[i][(int)RankUserInfo.Score] = userScores[i].Item2;
-
-
-            _TMP_usersOnRankNames[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Name];
-            _TMP_usersOnRankScores[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Score];
-            _usersOnRankingIconSpriteImages[i].sprite = _gm._characterImageMap[userScores[i].Item3[0]];
             
-            // 현재 유저가 랭킹에 오르는 것에 성공한 경우 애니메이션 --------------------
-            if (_TMP_usersOnRankNames[i].text == _gm.currentUserName &&
-                _TMP_usersOnRankScores[i].text == _gm.currentUserScore)
-            {
-#if UNITY_EDITOR
-                Debug.Log($"On Ranking! {i} ");
-# endif
-                var seq = DOTween.Sequence();
-                seq.Append(_usersOnRankingRects[i].DOScale(1.06f, 0.1f).SetEase(Ease.InOutSine));
-                seq.Append(_usersOnRankingRects[i].DOScale(0.94f, 0.1f).SetEase(Ease.InOutSine));
-                seq.SetDelay(0.2f);
-                seq.SetLoops(20);
+            // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
+            userScores = userScores.OrderByDescending(x => int.Parse(x.score)).ToList();
+                
 
-                seq.Append(_usersOnRankingRects[i].DOScale(1f, 0.5f));
+            for (var i = 0; i < USER_ON_RANKING_COUNT && i < userScores.Count; i++)
+            {
+                _TMP_usersOnRankingData[i][(int)RankUserInfo.Name] = userScores[i].Item2;
+                _TMP_usersOnRankingData[i][(int)RankUserInfo.Score] = userScores[i].Item3;
+
+
+                _TMP_usersOnRankNames[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Name];
+                _TMP_usersOnRankScores[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Score];
+                _usersOnRankingIconSpriteImages[i].sprite = _gm._characterImageMap[userScores[i].Item4[0]];
+            
+                // 현재 유저가 랭킹에 오르는 것에 성공한 경우 애니메이션 --------------------
+                if (_TMP_usersOnRankNames[i].text == _gm.currentUserName &&
+                    _TMP_usersOnRankScores[i].text == _gm.currentUserScore)
+                {
+#if UNITY_EDITOR
+                    Debug.Log($"On Ranking! {i} ");
+# endif
+                    var seq = DOTween.Sequence();
+                    seq.Append(_usersOnRankingRects[i].DOScale(1.06f, 0.1f).SetEase(Ease.InOutSine));
+                    seq.Append(_usersOnRankingRects[i].DOScale(0.94f, 0.1f).SetEase(Ease.InOutSine));
+                    seq.SetDelay(0.2f);
+                    seq.SetLoops(20);
+
+                    seq.Append(_usersOnRankingRects[i].DOScale(1f, 0.5f));
+                }
             }
         }
+        else
+        {
+            
+            // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
+            userScores = userScores.OrderByDescending(x =>
+                {
+                    var splitScore = x.score.Split('/');
+                    return int.Parse(splitScore[0]); // A 값을 기준으로 정렬
+                })
+                .ThenByDescending(x =>
+                {
+                    var splitScore = x.score.Split('/');
+                    return float.Parse(splitScore[1]).ToString("F1"); // B 값을 기준으로 정렬
+                })
+                .ToList();
+
+
+            for (var i = 0; i < USER_ON_RANKING_COUNT && i < userScores.Count; i++)
+            {
+                _TMP_usersOnRankingData[i][(int)RankUserInfo.Name] = userScores[i].Item2;
+                _TMP_usersOnRankingData[i][(int)RankUserInfo.Score] = userScores[i].Item3;
+
+
+                _TMP_usersOnRankNames[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Name];
+                _TMP_usersOnRankScores[i].text = _TMP_usersOnRankingData[i][(int)RankUserInfo.Score];
+                _usersOnRankingIconSpriteImages[i].sprite = _gm._characterImageMap[userScores[i].Item4[0]];
+            
+                // 현재 유저가 랭킹에 오르는 것에 성공한 경우 애니메이션 --------------------
+                if (_TMP_usersOnRankNames[i].text == _gm.currentUserName &&
+                    _TMP_usersOnRankScores[i].text == _gm.currentUserScore)
+                {
+#if UNITY_EDITOR
+                    Debug.Log($"On Ranking! {i} ");
+# endif
+                    var seq = DOTween.Sequence();
+                    seq.Append(_usersOnRankingRects[i].DOScale(1.06f, 0.1f).SetEase(Ease.InOutSine));
+                    seq.Append(_usersOnRankingRects[i].DOScale(0.94f, 0.1f).SetEase(Ease.InOutSine));
+                    seq.SetDelay(0.2f);
+                    seq.SetLoops(20);
+
+                    seq.Append(_usersOnRankingRects[i].DOScale(1f, 0.5f));
+                }
+            }
+        }
+
     }
 
-    private void PopUpStartUI()
+
+    private bool _isBtnClickable =true; // 짧은시간 내 중복클릭방지 
+
+
+    private void ShowModeSelectionMode()
     {
-        StartCoroutine(PopUpStartUICoroutine());
+        StartCoroutine(ShowModeSelectionModeCo());
     }
-
-    private void PopUpStopUI()
+    IEnumerator ShowModeSelectionModeCo()
     {
-        StartCoroutine(PopUpStopUICoroutine());
+        _isBtnClickable = false;
+        DOVirtual.Float(0,0,2.5f, _ => { }).OnComplete(()=>
+        {
+            _isBtnClickable = true;
+        });
+        
+        _uiRectTransforms[(int)UI_Type.ModeSelection].anchoredPosition = _defaultanchorPosArray[(int)UI_Type.ModeSelection];
+        _uiGameObjects[(int)UI_Type.ModeSelection].SetActive(true);
+        _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.zero;
+
+        yield return DOVirtual.Float(0, 1, ANIM_DURATION_START_AND_READY_STOP,
+            scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; }).SetDelay(0.5f);
+        
+    }
+    private void OnSinglePlayBtnClicked()
+    {
+        if (!_isBtnClickable) return;
+        _isBtnClickable = false;
+            
+        DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
+            scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
+        
+        _gm.currentMode = (int)U_FishOnWater_GameManager.PlayMode.SinglePlay;
+        ShowTutorial();
+
+      
     }
 
+    private void OnMultiPlayBtnClicked()
+    {
+        if (!_isBtnClickable) return;
+        _isBtnClickable = false;
+        
+        _gm.currentMode = (int)U_FishOnWater_GameManager.PlayMode.MultiPlay;
+        
+        DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
+                scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
+        ShowTutorial();
+    }
+    private void ShowStartUI()
+    {
+        StartCoroutine(ShowReadyAndStartUICoroutine());
+    }
+
+    private void ShowStopUI()
+    {
+        StartCoroutine(ShowStopUICo());
+    }
+
+    
 
 
-    private IEnumerator PopUpStartUICoroutine()
+    private IEnumerator ShowReadyAndStartUICoroutine()
     {
         //ready와 start사이 시간간격
         yield return DOVirtual.Float(0, 0, 0.5f, _ => { }).WaitForCompletion();
@@ -498,7 +639,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             .WaitForCompletion();
     }
 
-    private IEnumerator PopUpStopUICoroutine()
+    private IEnumerator ShowStopUICo()
     {
         if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
 
@@ -522,7 +663,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         _fishCountTMP.text = _gm.FishCaughtCount >= 20 ? "물고기를 전부 잡았어요!" : $"물고기를 {_gm.FishCaughtCount}마리 잡았어요";
 
-        PopUpRankingSystem();
+        ShowRankingPanel();
     }
 
     private void LoadRankingInfo()
@@ -537,25 +678,35 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _currentUserIconSpriteImage.sprite = _gm._characterImageMap[_gm.currentImageChar];
         ParseXML();
 
-        StartCoroutine(PlayReplayTextAnim());
+        StartCoroutine(PlayReplayTextAnimCo());
 
     }
 
-    private IEnumerator PlayReplayTextAnim()
+    private IEnumerator PlayReplayTextAnimCo()
     {
 
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
         
         var seq = DOTween.Sequence();
-        var rect = _uiGameObjects[(int)UI_Type.Btn_Restart].transform.GetChild(1).GetComponent<RectTransform>();
-        seq.Append(rect.DOScale(1.02f, 0.25f).SetEase(Ease.InOutSine));
-        seq.Append(rect.DOScale(0.98f, 0.25f).SetEase(Ease.InOutSine));
+        var rect = _btnRects[(int)UI_Button.Btn_Restart].transform.GetChild(1);
+        seq.Append(rect.DOScale(1.02f, 0.35f).SetEase(Ease.InOutSine));
+        seq.Append(rect.DOScale(0.98f, 0.35f).SetEase(Ease.InOutSine));
         seq.SetLoops(30);
-        seq.SetDelay(0.2f);
+        seq.SetDelay(0.3f);
     }
 
-    private IEnumerator PopUpRankSystemCo()
+    private IEnumerator ShowRankingPanelCo()
     {
+        //btn
+        _isAnimating = true;
+         _isBtnClickable = false;
+        DOVirtual.Float(0,0,2.5f, _ => { }).OnComplete(()=>
+        {
+            _isBtnClickable = true;
+        });
+        //delay
+        yield return DOVirtual.Float(0, 0, 1.5f, _ => { }).WaitForCompletion();
+        
         if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
 
         _fishCountTMP.enabled = false;
@@ -567,21 +718,65 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _uiGameObjects[(int)UI_Type.RankingParent].SetActive(true);
         _uiGameObjects[(int)UI_Type.CurrentUser].SetActive(true);
         _uiGameObjects[(int)UI_Type.OnRankingUsers].SetActive(true);
-        _uiGameObjects[(int)UI_Type.Btn_Restart].SetActive(true);
+        
+        _uiBtns[(int)UI_Button.Btn_Restart].transform.gameObject.SetActive(true);
         yield return
             DOVirtual.Float(0, 1, 0.45f, scale
                 =>
             {
                 _uiRectTransforms[(int)UI_Type.RankingParent].localScale = Vector3.one * scale;
             });
+
+        yield return DOVirtual.Float(0, 0, RESTART_CLIICKABLE_DELAY, _ => { }).WaitForCompletion();
+        _isRestartBtnClickable = true;
+        
+        DOVirtual.Float(0, 0, 2.5f, _ => { _isBtnClickable = true;});
+
+        _isAnimating = false;
     }
 
-    private void PopUpRankingSystem()
+    private void ShowRankingPanel()
     {
-        StartCoroutine(PopUpRankSystemCo());
+        
+        StartCoroutine(ShowRankingPanelCo());
     }
 
-    public void OnRestartBtnClick()
+
+    private void OnRestartButtonClicked()
+    {
+        _isRestartBtnBeingClicked = true;
+    }
+
+    private float _guageIncreaseSensitiviy = 0.025f;
+    private bool _isRestartBtnBeingClicked;
+
+    IEnumerator OnRestartBtnClickedCo()
+    {
+        if(_isRestartBtnBeingClicked) yield break;
+        _isRestartBtnBeingClicked = true;
+        
+        _timeSinceLastTouch = 0;
+        restartSliderFillAmount = _restartSliderImage.fillAmount;
+        yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ =>
+        {
+            _restartSliderImage.fillAmount += 0.01f;
+        }).WaitForCompletion();
+        _isRestartBtnBeingClicked = false;
+      
+    }
+
+ 
+
+    private float _timeSinceLastTouch = 0.0f;
+    private Coroutine _fillCoroutine;
+
+
+    private void OnRestartBtnPerCLicked()
+    {
+        StartCoroutine(OnRestartBtnClickedCo());
+    }
+
+    public void OnRestartBtnGaugeFullyFilled()
     {
         if (_isAnimating)
         {
@@ -590,20 +785,24 @@ public class U_FishOnWater_UIManager : UI_PopUp
 #endif
             return;
         }
-       
+        
+#if UNITY_EDITOR
+        Debug.Log("Restarting------------------------------------------------------------");
+#endif
+        _isAnimating = true;
+        _isRestartBtnClickable = false;
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
-       StartCoroutine(OnRestartBtnClickCo());
-       
-       
-     
+        StartCoroutine(OnRestartAndShowSelectionMode());
+
     }
 
-    private void OnrRestartBtnOnUserInfoClicked()
+    private void OnStartBtnOnUserInfoClicked()
     {
-        if (_isAnimating) return;
-        _isAnimating = true;
+        if (!_isBtnClickable || _isAnimating) return;
+        
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         OnRestartBtnClicked?.Invoke();
+        
         _screenDim.DOFade(0, 0.55f);
         _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
             .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.5f)
@@ -611,7 +810,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         DOVirtual.Float(1, 0, 0.35f, scale
             =>
         {
-            _uiRectTransforms[(int)UI_Type.Btn_StartOnUserInfo].localScale = Vector3.one * scale;
+            _btnRects[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.one * scale;
         }).OnComplete(() =>
         {
             _isAnimating = false;
@@ -619,35 +818,47 @@ public class U_FishOnWater_UIManager : UI_PopUp
     }
 
 
-    private void ShowTuorial()
+    private string _currentModeInKorean;
+    private void ShowTutorial()
     {
+#if UNITY_EDITOR
+        Debug.Log($"CurrentMode: {(U_FishOnWater_GameManager.PlayMode)_gm.currentMode}");
+#endif
+        _currentModeInKorean = _gm.currentMode == (int)(U_FishOnWater_GameManager.PlayMode.SinglePlay)
+            ? _gm.SINGLE_PLAY_IN_KOREAN: _gm.MULTI_PLAY_IN_KOREAN;
+        _TMP_tutorialUI.text = $"{_currentModeInKorean} - 놀이방법";
+        _isBtnClickable = false;
+        DOVirtual.Float(0,0,2.5f, _ =>
+        {
+            _isBtnClickable = false;
+        }).OnComplete(()=>
+        {
+            _isBtnClickable = true;
+        });
         
         _timerTMP.text = _gm.timeLimit.ToString("00") + "초";
-        
         
         _uiRectTransforms[(int)UI_Type.Tutorial].anchoredPosition = _defaultanchorPosArray[(int)UI_Type.Tutorial];
         _uiGameObjects[(int)UI_Type.Tutorial].SetActive(true);
         _uiRectTransforms[(int)UI_Type.Tutorial].localScale = Vector3.zero;
-        
         DOVirtual.Float(0, 1, 0.5f,
-            value => { _uiRectTransforms[(int)UI_Type.Tutorial].localScale = Vector3.one * value; }).OnComplete(() =>
-        {
-            _uiGameObjects[(int)UI_Type.Btn_Next].SetActive(true);
-            _uiRectTransforms[(int)UI_Type.Btn_Next].localScale = Vector3.zero;
-            DOVirtual.Float(0, 1, 0.5f,
-                value => { _uiRectTransforms[(int)UI_Type.Btn_Next].localScale = Vector3.one * value; }).SetDelay(1f);
-        });
+            value => { _uiRectTransforms[(int)UI_Type.Tutorial].localScale = Vector3.one * value; });
+        
+        _btnRects[(int)UI_Button.Btn_ShowUserInfo].gameObject.SetActive(true);
+        _btnRects[(int)UI_Button.Btn_ShowUserInfo].localScale = Vector3.zero;
+        DOVirtual.Float(0, 1, 0.5f,
+            value => { _btnRects[(int)UI_Button.Btn_ShowUserInfo].localScale = Vector3.one * value; }).SetDelay(1.5f);
 
     }
 
 
-    private IEnumerator OnRestartBtnClickCo()
+    private IEnumerator OnRestartAndShowSelectionMode()
     {
-        _isAnimating = true;
+
         yield return _waitInterval;
 
 #if UNITY_EDITOR
-        Debug.Log("Shrink");
+        Debug.Log("Restart!");
 #endif
         
         _gm.SetUserInfo();
@@ -659,7 +870,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             .WaitForCompletion();
         _screenDim.DOFade(0.55f, 0.5f);
         _uiGameObjects[(int)UI_Type.RankingParent].SetActive(false);
-        ShowTuorial();
+        ShowModeSelectionMode();
         _isAnimating = false;
         
        

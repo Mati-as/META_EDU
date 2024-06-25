@@ -18,11 +18,25 @@ public class U_FishOnWater_GameManager : IGameManager
     private TextAsset xmlAsset;
     private XmlNode soundNode;
     public XmlDocument xmlDoc; // GameManager에서만 문서 수정, UIMAnager에서는 읽기만 수행
-
     private  string _xmlPath;
     private string _xmlSavePath;
 
-
+    private int _currentMode;
+    public readonly string SINGLE_PLAY_IN_KOREAN = "1인 플레이";
+    public readonly string MULTI_PLAY_IN_KOREAN = "2인 플레이";
+    public int currentMode
+    {
+        get => _currentMode;
+        set => Math.Clamp(value, (int)PlayMode.SinglePlay, (int)PlayMode.MultiPlay);
+    }
+ 
+     public enum PlayMode
+    {
+        SinglePlay,
+        MultiPlay,
+        Max
+    }
+     
     //ResourceManage
     public Dictionary<char, Sprite> _characterImageMap;
     public string currentUserName { get; private set; }
@@ -120,7 +134,7 @@ public class U_FishOnWater_GameManager : IGameManager
         {
             _fishCaughtCount = value;
             if (isOnReInit) return;
-            if (_fishCaughtCount >= _fishCountGoal)
+            if (_fishCaughtCount >= _fishCountGoal && (PlayMode)currentMode == PlayMode.SinglePlay)
             {
                 _fishCaughtCount = _fishCountGoal;
                 InvokeFinishAndReInit();
@@ -202,8 +216,17 @@ public class U_FishOnWater_GameManager : IGameManager
         Debug.Log($"remainTime : {currentremainTime}" + $"fishCount : {_fishCaughtCount}");
 #endif
 
-        Utils.AddUser(ref xmlDoc, currentUserName, currentUserScore,currentImageChar.ToString());
-        WriteXML(xmlDoc,_xmlPath);
+        if (currentMode == (int)PlayMode.MultiPlay)
+        {
+            Utils.AddUser(ref xmlDoc,_currentMode.ToString(),currentUserName, _fishCaughtCount.ToString(),currentImageChar.ToString());
+            WriteXML(xmlDoc,_xmlPath);
+        }
+        else if(currentMode ==(int)PlayMode.SinglePlay)
+        {
+            Utils.AddUser(ref xmlDoc,_currentMode.ToString(),currentUserName, currentUserScore,currentImageChar.ToString());
+            WriteXML(xmlDoc,_xmlPath);
+        }
+ 
      
 #if UNITY_EDITOR
         Debug.Log($"Saved :  {currentUserName}/{_fishCaughtCount}");
@@ -251,6 +274,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
         _xmlPath = "Assets/Resources/Common/Data/BB008_UserRankingData.xml";
+        Check_XmlFile(_xmlPath);
         Read(_xmlPath);
 
 
@@ -389,11 +413,7 @@ public class U_FishOnWater_GameManager : IGameManager
         }
     }
 
-    protected override void OnStartButtonClicked()
-    {
-        base.OnStartButtonClicked();
-        OnReady?.Invoke();
-    }
+
 
 
     private void OnRoundStart()
@@ -529,7 +549,6 @@ public class U_FishOnWater_GameManager : IGameManager
     protected override void OnRaySynced()
     {
         base.OnRaySynced();
-        if (!isStartButtonClicked) return;
         // 초기화 등, 기타 로직에서 클릭을 무시해야할 경우
         if (isOnReInit) return;
 
@@ -771,9 +790,8 @@ public class U_FishOnWater_GameManager : IGameManager
             //TextAsset XmlFilepath = Resources.Load<TextAsset>("LOGININFO");
             TextAsset XmlFilepath = Resources.Load<TextAsset>(fileName);
             xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(XmlFilepath.ToString());
-            xmlDoc.Save(filePath);
-
+//            xmlDoc.LoadXml(XmlFilepath.ToString());
+ //           xmlDoc.Save(filePath);
             Debug.Log(fileName+".xml FILE NOT EXIST");
         }
     }

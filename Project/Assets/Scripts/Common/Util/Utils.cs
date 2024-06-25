@@ -60,7 +60,7 @@ public class Utils :MonoBehaviour
                 xmlDoc = new XmlDocument();
             }
         }
-        public static void AddUser(ref XmlDocument xmlDoc,string username,string score,string iconNumber)
+        public static void AddUser(ref XmlDocument xmlDoc,String mode,string username,string score,string iconNumber)
         {
             XmlNode root = xmlDoc.DocumentElement;
 
@@ -81,6 +81,7 @@ public class Utils :MonoBehaviour
             
           
             XmlElement newUser = xmlDoc.CreateElement("StringData");
+            newUser.SetAttribute(nameof(mode), mode);
             newUser.SetAttribute("userID", newUserID.ToString());
             newUser.SetAttribute(nameof(username), username);
             newUser.SetAttribute((nameof(score)), score);
