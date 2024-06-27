@@ -26,11 +26,18 @@ public class U_FishOnWater_GameManager : IGameManager
     public readonly string MULTI_PLAY_IN_KOREAN = "2인 플레이";
     public int currentMode
     {
-        get => _currentMode;
-        set => Math.Clamp(value, (int)PlayMode.SinglePlay, (int)PlayMode.MultiPlay);
+        get =>_currentMode;
+        set
+        {
+#if UNITY_EDITOR12
+            Debug.Log($"current Mode{(PlayMode)_currentMode}");
+#endif
+            _currentMode = Math.Clamp(value, (int)PlayMode.SinglePlay, (int)PlayMode.MultiPlay);
+        }
+
     }
- 
-     public enum PlayMode
+
+    public enum PlayMode
     {
         SinglePlay,
         MultiPlay,
@@ -41,6 +48,7 @@ public class U_FishOnWater_GameManager : IGameManager
     public Dictionary<char, Sprite> _characterImageMap;
     public string currentUserName { get; private set; }
     public string currentUserScore { get; private set; }
+    
     public char currentImageChar { get; private set; }
 
 
@@ -57,7 +65,7 @@ public class U_FishOnWater_GameManager : IGameManager
         "청바지", "스웨터", "셔츠", "티셔츠", "재킷",
         "코트", "드레스", "치마", "바지", "반바지",
         "운동복", "잠옷", "점퍼", "장갑", "패딩", 
-        "가디건", "슬리퍼", "양복", "조끼", "한복", "목도리"
+        "가디건", "슬리퍼", "양복", "조끼", "한복", "목도리","블라우스"
     };
     /*
      4x4구성의 애니메이션 경로 관련 enum 선언입니다.
@@ -125,18 +133,18 @@ public class U_FishOnWater_GameManager : IGameManager
     public float timeLimit;
     public float remainTime { get; private set; }
 
-    private int _fishCaughtCount;
+    public int fishCaughtCount { get; private set; }
 
     public int FishCaughtCount
     {
-        get => _fishCaughtCount;
+        get => fishCaughtCount;
         private set
         {
-            _fishCaughtCount = value;
+            fishCaughtCount = value;
             if (isOnReInit) return;
-            if (_fishCaughtCount >= _fishCountGoal && (PlayMode)currentMode == PlayMode.SinglePlay)
+            if (fishCaughtCount >= _fishCountGoal && (PlayMode)currentMode == PlayMode.SinglePlay)
             {
-                _fishCaughtCount = _fishCountGoal;
+                fishCaughtCount = _fishCountGoal;
                 InvokeFinishAndReInit();
             }
         }
@@ -210,15 +218,15 @@ public class U_FishOnWater_GameManager : IGameManager
 
         var currentremainTime = Mathf.Clamp(remainTime, 0f, 60f);
         var remainTimeToString = currentremainTime.ToString("F1");
-        currentUserScore = $"{_fishCaughtCount} / " + remainTimeToString;
+        currentUserScore = $"{fishCaughtCount} / " + remainTimeToString;
 
 #if UNITY_EDITOR
-        Debug.Log($"remainTime : {currentremainTime}" + $"fishCount : {_fishCaughtCount}");
+        Debug.Log($"remainTime : {currentremainTime}" + $"fishCount : {fishCaughtCount}");
 #endif
 
         if (currentMode == (int)PlayMode.MultiPlay)
         {
-            Utils.AddUser(ref xmlDoc,_currentMode.ToString(),currentUserName, _fishCaughtCount.ToString(),currentImageChar.ToString());
+            Utils.AddUser(ref xmlDoc,_currentMode.ToString(),currentUserName, fishCaughtCount.ToString(),currentImageChar.ToString());
             WriteXML(xmlDoc,_xmlPath);
         }
         else if(currentMode ==(int)PlayMode.SinglePlay)
@@ -229,7 +237,7 @@ public class U_FishOnWater_GameManager : IGameManager
  
      
 #if UNITY_EDITOR
-        Debug.Log($"Saved :  {currentUserName}/{_fishCaughtCount}");
+        Debug.Log($"Saved :  {currentUserName}/{fishCaughtCount}");
 #endif
 
         OnRoundFinished?.Invoke();
@@ -265,7 +273,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
     protected override void Init()
     {
-        DOTween.Init().SetCapacity(300, 300);
+        DOTween.Init().SetCapacity(500, 500);
         ManageProjectSettings(90, 0.15f);
         
 #if UNITY_EDITOR
@@ -391,11 +399,9 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
         var pathInBucketParent = GameObject.Find("PathInBucketA").transform;
-        _pathInBucketA = new Vector3[pathInBucketParent.childCount + 1];
+        _pathInBucketA = new Vector3[pathInBucketParent.childCount];
         for (var i = 0; i < pathInBucketParent.childCount; i++)
             _pathInBucketA[i] = pathInBucketParent.GetChild(i).position;
-        // 제자리로 돌아오게끔 (경로를 원형으로) 만들기 위한 추가 로직 
-        _pathInBucketA[pathInBucketParent.childCount] = pathInBucketParent.GetChild(0).position;
 
         var pathInBucketBParent = GameObject.Find("PathInBucketB").transform;
         _pathInBucketB = new Vector3[pathInBucketBParent.childCount];
@@ -424,8 +430,11 @@ public class U_FishOnWater_GameManager : IGameManager
         
         foreach (var key in _animSeq.Keys.ToList())
         {
-            _animSeq[key].Kill();
-            _animSeq[key] = null;
+            if (_animSeq[key] != null)
+            {
+                _animSeq[key].Kill();
+                _animSeq[key] = null;
+            }
         }
         
 
@@ -481,9 +490,9 @@ public class U_FishOnWater_GameManager : IGameManager
                 _psMap[id].Play();
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             });
+            moveAnimSeq.InsertCallback(randomDuration * 0.68f, () => { _colliderMap[id].enabled = true; });
             moveAnimSeq.OnComplete(() =>
             {
-                _colliderMap[id].enabled = true;
                 _psMap[id].Stop();
                 DoAnimAfterArrival(currentFish, currentFish.position);
             });
@@ -508,7 +517,8 @@ public class U_FishOnWater_GameManager : IGameManager
         var id = currentFish.GetInstanceID();
         _animSeq[currentFish.GetInstanceID()]?.Kill();
         _animSeq[currentFish.GetInstanceID()] = null;
-
+        _colliderMap[id].enabled = true;
+        
         var randomAnimSeq = DOTween.Sequence();
 
         if (randomValue <= 0.18f)
@@ -535,9 +545,9 @@ public class U_FishOnWater_GameManager : IGameManager
             var lookRotation = Quaternion.LookRotation(direction);
 
             randomAnimSeq.Append(currentFish.DORotateQuaternion(lookRotation, 0.52f));
-            randomAnimSeq.AppendInterval(0.13f);
-            randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathArrivalPoints.Length)],
-                0.6f));
+            randomAnimSeq.AppendInterval(0.23f);
+            randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathStartPoints.Length)],
+                0.7f));
             randomAnimSeq.OnComplete(() => { PlayPathAnimOneTime(); });
         }
 
@@ -674,14 +684,19 @@ public class U_FishOnWater_GameManager : IGameManager
     private void OnRestartBtnClicked()
     {
         if (_isRestartBtnClicked) return;
-      
         _isRestartBtnClicked = true;
+        
         DOVirtual.Float(0, 0, 0.55f, _ => { }).OnComplete(() =>
         {
-            _isRestartBtnClicked = false;
             FishCaughtCount = 0;
             OnReady?.Invoke();
         });
+        DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() =>
+        {
+            _isRestartBtnClicked = false;
+        });
+        
+      
     }
 
 
@@ -734,28 +749,17 @@ public class U_FishOnWater_GameManager : IGameManager
 
         // 양동이 안의 경로 설정 부분
         var loopType = LoopType.Restart;
-        var pathInBucketWithRandomOffset = inBucketPath;
+
         var OFFSET_AMOUNT = 0.7f;
-
-
-        for (var i = 1; i < pathInBucketWithRandomOffset.Length; i++)
-            pathInBucketWithRandomOffset[i] +=
-                Random.Range(-0.25f, 0.25f) * Vector3.forward + Random.Range(-0.25f, 0.25f) * Vector3.left;
-
-
-        var randomChance = Random.Range(0, 100);
-        if (randomChance >= 50)
-        {
-            var temp = pathInBucketWithRandomOffset[2];
-            pathInBucketWithRandomOffset[1] = pathInBucketWithRandomOffset[2];
-            pathInBucketWithRandomOffset[2] = temp;
-        }
         
+
+       
         
-        bucketSeq.Append(fish.DOPath(pathInBucketWithRandomOffset, Random.Range(2.5f, 6.5f), PathType.CatmullRom)
+        Debug.Log($"buck path vertex count : {inBucketPath.Length}");
+        bucketSeq.Append(fish.DOPath(inBucketPath, Random.Range(3.5f, 11.5f), PathType.CatmullRom)
             .SetEase(Ease.InOutSine)
             .SetLookAt(-0.005f)
-            .SetDelay(Random.Range(0.1f,0.3f))
+            .SetDelay(Random.Range(0.1f,0.45f))
             .SetLoops(10, LoopType.Restart));
 
 
@@ -764,7 +768,7 @@ public class U_FishOnWater_GameManager : IGameManager
         if (_isOnBucket.ContainsKey(id)) _isOnBucket[id] = true;
         
         FishCaughtCount++;
-        _animatorSeq[id].speed = 0.6f;
+        _animatorSeq[id].speed = 0.5f;
        
     }
 
