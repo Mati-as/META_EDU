@@ -733,7 +733,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         }
         else
         {
-            _TMP_currentUser[(int)RankUserInfo.ScoreFishCaughtCount].text = $"{splitScore[0]} 마리";
+            _TMP_currentUser[(int)RankUserInfo.ScoreFishCaughtCount].text = $"{splitScore[0]}마리";
             _TMP_currentUser[(int)RankUserInfo.ScoreRemainTime].gameObject.SetActive(false);
             _TMP_currentUser[(int)RankUserInfo.ScoreRemainTime].text = string.Empty;
         }

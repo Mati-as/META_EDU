@@ -15,9 +15,9 @@ public class DevelopmentUIManager : MonoBehaviour
     private void Start()
     {
         _imagesPool = new Stack<Image>();
-        _developerMenu = Utils.FindChild(gameObject, "Rplidar_DevelopmentMenu");
-        var images = _developerMenu.GetComponentsInChildren<Image>();
-        _fpsCounter = _developerMenu.GetComponentInChildren<TextMeshProUGUI>();
+        
+        var images = gameObject.GetComponentsInChildren<Image>();
+        _fpsCounter = Utils.FindChild(gameObject,"FPSCounter").GetComponent<TextMeshProUGUI>();
         foreach (var image in images)
         {
             _imagesPool.Push(image);

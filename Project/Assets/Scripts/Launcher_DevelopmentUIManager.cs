@@ -16,7 +16,7 @@ public class Launcher_DevelopmentUIManager : MonoBehaviour
     {
        
         var images = transform.GetComponentsInChildren<Image>();
-        _fpsCounter = Utils.FindChild(gameObject, "NewFPSCounter",recursive:true).GetComponent<TextMeshProUGUI>();
+//        _fpsCounter = Utils.FindChild(gameObject, "NewFPSCounter",recursive:true).GetComponent<TextMeshProUGUI>();
         
         foreach (var image in images)
         {
@@ -38,7 +38,11 @@ public class Launcher_DevelopmentUIManager : MonoBehaviour
             image.enabled = _currentStatus;
         }
 
-        _fpsCounter.enabled = _currentStatus;
+        if (_fpsCounter != null)
+        {
+            _fpsCounter.enabled = _currentStatus;
+        }
+        
 
         // _developerMenu.SetActive(_currentStatus);
 

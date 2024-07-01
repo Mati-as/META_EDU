@@ -130,6 +130,17 @@ public class U_FishOnWater_GameManager : IGameManager
     private Stack<ParticleSystem> _onFishCatchPsPool;
 
 
+    private readonly int MAX_FISH_COUNT_ON_SCREEN=2; // 최대활성화 가능 물고기 수
+    private int _fishOnScreen; // 현재 클릭가능하도록 활성화되어있는 물고기 수.
+    public int fishOnScreen
+    {
+        get => _fishOnScreen;
+        private set
+        {
+            if (value >= 0) _fishOnScreen = value;
+        }
+
+    }
     public float timeLimit;
     public float remainTime { get; private set; }
 
@@ -248,8 +259,8 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         base.BindEvent();
 
-        OnFishCaught -= PlayPathAnimOneTime;
-        OnFishCaught += PlayPathAnimOneTime;
+        OnFishCaught -= PlayFishPathAnimOneTime;
+        OnFishCaught += PlayFishPathAnimOneTime;
 
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         U_FishOnWater_UIManager.OnStartUIAppear += OnRoundStart;
@@ -267,7 +278,7 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
-        OnFishCaught -= PlayPathAnimOneTime;
+        OnFishCaught -= PlayFishPathAnimOneTime;
     }
 
 
@@ -443,8 +454,12 @@ public class U_FishOnWater_GameManager : IGameManager
     }
 
 
-    private void PlayPathAnimOneTime()
+    private void PlayFishPathAnimOneTime()
     {
+        //화면에 두마리 이상 보이지 않도록
+        if( fishOnScreen > MAX_FISH_COUNT_ON_SCREEN) return;
+        
+        fishOnScreen++;
         PlayPathAnim(1);
     }
 
@@ -452,8 +467,8 @@ public class U_FishOnWater_GameManager : IGameManager
     private void PlayPathAnim(int fishCount = 2)
     {
         if (isOnReInit) return;
-
-
+       
+        
         for (var i = 0; i < fishCount; i++)
         {   
             var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_POOL_COUNT];
@@ -548,7 +563,7 @@ public class U_FishOnWater_GameManager : IGameManager
             randomAnimSeq.AppendInterval(0.23f);
             randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathStartPoints.Length)],
                 0.7f));
-            randomAnimSeq.OnComplete(() => { PlayPathAnimOneTime(); });
+            randomAnimSeq.OnComplete(() => { PlayFishPathAnimOneTime(); });
         }
 
         _animSeq[id] = randomAnimSeq;
@@ -620,6 +635,8 @@ public class U_FishOnWater_GameManager : IGameManager
         _elapsedForInterval = 0;
         _elapsedForReInit = 0;
         _currentFishIndex = 0;
+        fishOnScreen = 0; 
+        
         remainTime = timeLimit;
         
         
@@ -703,8 +720,9 @@ public class U_FishOnWater_GameManager : IGameManager
     private void SendToBucket(Transform fish)
     {
         
-         OnFishCaught?.Invoke();
-
+        OnFishCaught?.Invoke();
+        fishOnScreen--;
+        
          Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
              0.8f);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
@@ -751,9 +769,9 @@ public class U_FishOnWater_GameManager : IGameManager
         var loopType = LoopType.Restart;
 
         var OFFSET_AMOUNT = 0.7f;
-        
+     
 
-       
+
         
         Debug.Log($"buck path vertex count : {inBucketPath.Length}");
         bucketSeq.Append(fish.DOPath(inBucketPath, Random.Range(3.5f, 11.5f), PathType.CatmullRom)
