@@ -21,13 +21,13 @@ internal enum LeaveLocation
 
 public class Owl_LeavesMaterialController : MonoBehaviour
 {
-    private Material[][] materalGroup;
+    private Material[][] materialGroup;
     private Transform[] tempChildren;
 
     private List<LeafInfo> _leafs;
-    public float intensity = 1.15f;
+  
 
-    public Dictionary<Material, Color> defaultColorMap;
+    private Dictionary<int, Color> _defaultDarkenColorMap;
     public Dictionary<Material, Sequence> sequenceMap;
     public Dictionary<string, Material[]> matByNames;
     public Dictionary<string, bool> isCountedMap;
@@ -35,7 +35,8 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
     private Owl_VideoGameManager _gameManager;
     private Ray rayForShader;
-
+    [SerializeField] private float _intensity = 4.5f;
+    private Color _brightenColor;
    
     public static event Action OnAllLeavesDarkend;
 
@@ -66,19 +67,19 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         Debug.Log("Material Brightness Changing");
 #endif
 
-        foreach (var mat in materalGroup[(int)LeaveLocation.BottomLeft])
+        foreach (var mat in materialGroup[(int)LeaveLocation.BottomLeft])
             if (mat != null)
                 BrightenUp(mat);
 
-        foreach (var mat in materalGroup[(int)LeaveLocation.BottomRight])
+        foreach (var mat in materialGroup[(int)LeaveLocation.BottomRight])
             if (mat != null)
                 BrightenUp(mat);
 
-        foreach (var mat in materalGroup[(int)LeaveLocation.TopRight])
+        foreach (var mat in materialGroup[(int)LeaveLocation.TopRight])
             if (mat != null)
                 BrightenUp(mat);
 
-        foreach (var mat in materalGroup[(int)LeaveLocation.TopLeft])
+        foreach (var mat in materialGroup[(int)LeaveLocation.TopLeft])
             if (mat != null)
                 BrightenUp(mat);
     }
@@ -112,7 +113,8 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
     private void BrightenUp(Material mat)
     {
-        mat.DOColor(mat.color * intensity, 1.35f)
+        
+        mat.DOColor(_brightenColor, 1.35f)
             .SetDelay(4.5f)
             .OnStart(() => { _isGameInited = false; })
             .OnComplete(() => { DOVirtual.Float(0, 1, 1f, _ => { })
@@ -199,7 +201,7 @@ Debug.Log($"owl ui isn't finished yet.");
     {
         foreach (var mat in matByNames[objName])
             if (mat != null)
-                mat.DOColor(mat.color / 4, 2.3f);
+                mat.DOColor(_defaultDarkenColorMap[mat.GetInstanceID()], 2.3f);
     }
 
     private void Init()
@@ -210,12 +212,12 @@ Debug.Log($"owl ui isn't finished yet.");
 
         var CHILD_COUNT = transform.childCount;
         matByNames = new Dictionary<string, Material[]>();
-        materalGroup = new Material[CHILD_COUNT][];
-
+        materialGroup = new Material[CHILD_COUNT][];
+        _defaultDarkenColorMap = new Dictionary<int, Color>();
         _leafs = new List<LeafInfo>();
         tempChildren = new Transform[CHILD_COUNT];
 
-        for (var i = 0; i < CHILD_COUNT; ++i) materalGroup[i] = new Material[30];
+        for (var i = 0; i < CHILD_COUNT; ++i) materialGroup[i] = new Material[30];
 
         for (var i = 0; i < CHILD_COUNT; ++i)
         {
@@ -225,7 +227,7 @@ Debug.Log($"owl ui isn't finished yet.");
             //복사본 가져오는 방식.
             var childRenderer = tempChildren[i].GetComponentsInChildren<Renderer>();
 
-            defaultColorMap = new Dictionary<Material, Color>();
+           
             var count = 0;
 
             foreach (var renderer in childRenderer)
@@ -234,8 +236,8 @@ Debug.Log($"owl ui isn't finished yet.");
 
                 if (renderer != null && renderer.material != null) // null 체크
                 {
-                    materalGroup[i][count] = renderer.material;
-                    defaultColorMap.TryAdd(materalGroup[i][count], renderer.material.color);
+                    materialGroup[i][count] = renderer.material;
+                    _defaultDarkenColorMap.TryAdd(materialGroup[i][count].GetInstanceID(), renderer.material.color);
 
                     count++;
 #if UNITY_EDITOR
@@ -249,9 +251,11 @@ Debug.Log($"owl ui isn't finished yet.");
                 leaf.name = tempChildren[i].gameObject.name;
                 //클릭시 이름을 비교하여 쉐이더 컨트롤 
 
-                matByNames.TryAdd(leaf.name, materalGroup[i]);
+                matByNames.TryAdd(leaf.name, materialGroup[i]);
                 isCountedMap.TryAdd(leaf.name, false);
                 _leafs.Add(leaf);
+                
+                _brightenColor = renderer.material.color*_intensity;
             }
         }
     }

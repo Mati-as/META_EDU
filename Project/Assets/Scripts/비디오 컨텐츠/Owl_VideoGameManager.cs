@@ -72,7 +72,9 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
 
     private void PlayNextMessageAnim(int currentIndex)
     {
-     
+#if UNITY_EDITOR
+        Debug.Log($"부엉이 대사 재생중. 대사 번호: {currentIndex}");
+#endif
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
 
 
@@ -88,8 +90,11 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
       
         
         //duration -> 10
-        DOVirtual.Float(0, 1, nextUIApperableWaitTime, _ => { })
-            .OnComplete(() => { _isNextUIAppearable = true; });
+        DOVirtual.Float(0, 3f, nextUIApperableWaitTime, _ => { })
+            .OnComplete(() =>
+            {
+                _isNextUIAppearable = true;
+            });
 
         if (currentLineIndex >= 2)
             DOVirtual.Float(0, 1, 0.5f, _ => { })
@@ -99,7 +104,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                     Debug.Log($"부엉이 대사 끝. 대사 번호: {currentIndex}");
 #endif
                   
-                    
+                  
                     onOwlSpeechBubbleFinished?.Invoke();
                    
                 });
@@ -149,9 +154,14 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
      
         if (_isNextUIAppearable)
         {
-            if (currentLineIndex >= 2) return;
+            if (currentLineIndex >= 2)
+            {
+                return;
+            }
+         
             _isNextUIAppearable = false;
             currentLineIndex++;
+            
             PlayNextMessageAnim(currentLineIndex);
         }
         

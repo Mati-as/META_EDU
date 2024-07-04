@@ -19,23 +19,28 @@ public class EffectManager : MonoBehaviour
     public bool usePsMainTime;
     public float returnWaitForSeconds;
 
-    [Header("ObjectPool Setting")] public int poolSize;
-
+    [Header("ObjectPool Setting")] 
+    public int poolSize;
     private readonly string AUDIO_PATH_EFFECT_A;
     [HideInInspector] public InputAction _mouseClickAction;
     public Queue<ParticleSystem> particlePool;
     public WaitForSeconds wait_;
     public WaitForSeconds subWait_;
 
-    [Header("Particle Emission Setting")] private int _count;
+    [Header("Audio Setting")] 
+    private string [] _audioPath;
+    
+    [Header("Particle Emission Setting")]
+    private int _count;
     public int emitAmount;
 
     //여러 오디오클립을 랜덤하게 사용하고싶은 경우 체크하여 사용
     //_effectClip A,B,C..에 할당하면됨
     public bool isMultipleRandomClip;
 
-    [Header("Burst Setting")] public bool useBurstMode;
-    [FormerlySerializedAs("burstAmount")] public int burstEmitAmount;
+    [Header("Burst Setting")] 
+    public bool useBurstMode;
+     public int burstEmitAmount;
     public int burstCount;
 
     [Header("SubEmitter Setting")] public bool useSubEmitter;
@@ -46,7 +51,7 @@ public class EffectManager : MonoBehaviour
 
     public int _burstAudioSize;
 
-    [FormerlySerializedAs("playAltogether")] [Space(15f)]
+    [Space(15f)]
     //하나씩 랜덤으로 재생하고싶은경우 false, 동시에 재생하고싶은 경우, true
     public bool isPlayAltogether;
 
@@ -104,7 +109,7 @@ private bool _isRaySet;
     private Hopscotch_GameManager _gm;
     protected virtual void OnGmRaySyncedByOnGm()
     {
-        if (!_gm.isStartButtonClicked) return;
+        if (_gm!=null && !_gm.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
         if (SceneManager.GetActiveScene().name == "BB002")
@@ -119,7 +124,6 @@ private bool _isRaySet;
             currentHitPoint = hit.point;
 
             PlayParticle(particlePool, hit.point);
-
             OnClickInEffectManager?.Invoke();
             break;
         }
@@ -140,6 +144,7 @@ if (!_isRaySet)
         {
             _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
         }
+        
         SetPool(ref particlePool);
         SetAudio();
         BindEvent();
@@ -217,6 +222,9 @@ if (!_isRaySet)
     /// </summary>
     protected virtual void SetAudio()
     {
+      
+        
+        
         if (AUDIO_PATH_EFFECT_A != null && _effectClipA == null)
             _effectClipA = Resources.Load<AudioClip>(AUDIO_PATH_EFFECT_A);
 
@@ -254,8 +262,16 @@ if (!_isRaySet)
 
 
     protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
-        float volume = 0.8f)
+        float volume = 0.8f,string audioPath =null)
     {
+        if (audioPath != null)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect,audioPath, volume);
+            return;
+        }
+        
+        
+        
         if (!isBurst)
         {
             var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
@@ -264,10 +280,10 @@ if (!_isRaySet)
             {
                 if (isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
                 // Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
                 //           $" _currentRandomClipIndex :{_currentRandomClipIndex}");
-#endif
+        #endif
                 FadeInSound(availableAudioSource, volume);
             }
 
