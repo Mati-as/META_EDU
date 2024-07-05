@@ -80,7 +80,6 @@ public class SoundManager : MonoBehaviour
                     volumes[(int)Sound.Bgm] = 0.3f;
                     volumes[(int)Sound.Effect] = 0.5f;
                     volumes[(int)Sound.Narration] = 0.5f;
-                    
                 }
                 
                 for (int i = 0; i < (int)Sound.Max; i++)
@@ -89,7 +88,6 @@ public class SoundManager : MonoBehaviour
                     VOLUME_MAX[(int)Sound.Bgm] = VOLUME_MAX_BGM;
                     VOLUME_MAX[(int)Sound.Effect] = VOLUME_MAX_EFFECT;
                     VOLUME_MAX[(int)Sound.Narration] = VOLUME_MAX_NARRATION;
-
                 }
             }
             

@@ -75,14 +75,10 @@ public abstract class IGameManager : MonoBehaviour
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
-        if (SceneManager.GetActiveScene().name.Contains("LAUNCHER"))
+        if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER"))
         {
             PlayNarration();
-            DOVirtual.Float(0, 0, 1.25f, _ => { }).OnComplete(() =>
-            {
-                Managers.Sound.Play(SoundManager.Sound.Effect,
-                    "Audio/나레이션/Narrations/" + SceneManager.GetActiveScene().name + "_Intro");
-            });
+        
         }
 
 
@@ -166,7 +162,7 @@ public abstract class IGameManager : MonoBehaviour
 
 
     protected virtual void PlayNarration()
-    {
+    {   
         // skip narration if it is the launcher scene
         if (!IsLauncherScene())
         {
@@ -174,8 +170,12 @@ public abstract class IGameManager : MonoBehaviour
             DOVirtual.Float(0, 1, 2f, _ => { })
                 .OnComplete(() =>
                 {
+#if UNITY_EDITOR
+                    Debug.Log(
+                        $"Intro Narration Playing........");
+#endif
                     Managers.Sound.Play(SoundManager.Sound.Narration,
-                        $"Audio/Narration/{SceneManager.GetActiveScene().name}", 0.5f);
+                        "Audio/나레이션/Intro" + SceneManager.GetActiveScene().name + "_Intro", 0.5f);
                 });
 
             Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
