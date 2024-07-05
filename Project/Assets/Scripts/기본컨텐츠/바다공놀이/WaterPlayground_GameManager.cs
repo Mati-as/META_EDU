@@ -25,6 +25,7 @@ public class WaterPlayground_GameManager : IGameManager
       SetPool(ref particlePool);
       BGM_VOLUME = 0.85f;
       base.Init();
+      ManageProjectSettings(150,0.15f);
     }
     protected override void OnRaySynced()
     {

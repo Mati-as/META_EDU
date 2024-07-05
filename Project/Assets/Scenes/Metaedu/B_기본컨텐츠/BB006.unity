@@ -2017,8 +2017,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballInfo: {fileID: 11400000, guid: b62d289a286854140a1d166ccc7eed15, type: 2}
   size: 1
-  _vegetaionController: {fileID: 1268695195}
-  _ballSpawner: {fileID: 0}
 --- !u!54 &351847916
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2986,7 +2984,7 @@ Light:
     m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.454
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.1
@@ -9365,6 +9363,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_Scene_0426v
       objectReference: {fileID: 0}
+    - target: {fileID: 7751385765212302507, guid: ba9f03e89a7df964b97ad3692b9150fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8911549762576293857, guid: ba9f03e89a7df964b97ad3692b9150fc,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -12014,8 +12017,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballInfo: {fileID: 11400000, guid: b62d289a286854140a1d166ccc7eed15, type: 2}
   size: 1
-  _vegetaionController: {fileID: 1268695195}
-  _ballSpawner: {fileID: 0}
 --- !u!54 &1715736963
 Rigidbody:
   m_ObjectHideFlags: 0
