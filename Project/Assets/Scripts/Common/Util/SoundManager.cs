@@ -153,14 +153,18 @@ public class SoundManager : MonoBehaviour
         {
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"narration clip is null{path}");
+#endif
                 return false;
-
-            if (audioSource.isPlaying)
-                audioSource.Stop();
+                
+            }
+            
 
             audioSource.clip = audioClip;
             audioSource.pitch = pitch;
-            audioSource.Play();
+            audioSource.PlayOneShot(audioClip);
             return true;
         }
 

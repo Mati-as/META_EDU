@@ -12,8 +12,8 @@ using UnityEngine.SceneManagement;
 public abstract class IGameManager : MonoBehaviour
 {
     private static readonly ResourceManager s_resourceManager = new();
-    public static Managers s_instance;
-    public static Managers Instance => s_instance;
+    public static Managers s_Managers;
+    public static Managers Managers => s_Managers;
 
     public static ResourceManager Resource
     {
@@ -55,7 +55,7 @@ public abstract class IGameManager : MonoBehaviour
         if (go == null)
             go = new GameObject { name = "@Managers" };
 
-        s_instance = Utils.GetOrAddComponent<Managers>(go);
+        s_Managers = Utils.GetOrAddComponent<Managers>(go);
         DontDestroyOnLoad(go);
 
         s_resourceManager.Init();
@@ -170,12 +170,14 @@ public abstract class IGameManager : MonoBehaviour
             DOVirtual.Float(0, 1, 2f, _ => { })
                 .OnComplete(() =>
                 {
+
+                   var isPlaying=  Managers.Sound.Play(SoundManager.Sound.Narration,
+                        "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.5f);
+                    
 #if UNITY_EDITOR
                     Debug.Log(
-                        $"Intro Narration Playing........");
+                        $"Intro Narration Playing........{isPlaying}");
 #endif
-                    Managers.Sound.Play(SoundManager.Sound.Narration,
-                        "Audio/나레이션/Intro" + SceneManager.GetActiveScene().name + "_Intro", 0.5f);
                 });
 
             Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
