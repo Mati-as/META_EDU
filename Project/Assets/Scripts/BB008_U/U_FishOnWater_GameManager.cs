@@ -15,6 +15,9 @@ using Sequence = DG.Tweening.Sequence;
 
 public class U_FishOnWater_GameManager : IGameManager
 {
+
+    public bool easyVersion; 
+    
     private TextAsset xmlAsset;
     private XmlNode soundNode;
     public XmlDocument xmlDoc; // GameManager에서만 문서 수정, UIMAnager에서는 읽기만 수행
@@ -180,7 +183,7 @@ public class U_FishOnWater_GameManager : IGameManager
     {
         if (isOnReInit || !_isGameStart) return;
 
-
+        
         _elapsedForInterval += Time.deltaTime;
         _elapsedForReInit += Time.deltaTime;
         remainTime = timeLimit - _elapsedForReInit;
@@ -199,6 +202,10 @@ public class U_FishOnWater_GameManager : IGameManager
         
         
         if (_elapsedForReInit > timeLimit && !isOnReInit) InvokeFinishAndReInit();
+
+
+
+    
     }
 
     public void SetUserInfo()
@@ -214,7 +221,7 @@ public class U_FishOnWater_GameManager : IGameManager
         char randomChar = (char)randomInt;
         currentImageChar = randomChar;
         currentImageChar = (char)Random.Range('A', 'F' + 1);
-        Debug.Log($"currentIconNumber : {currentImageChar}");
+        
 
 
         //스프라이트 설정 (아이콘) 로직 필요 --------------------------
@@ -359,6 +366,8 @@ public class U_FishOnWater_GameManager : IGameManager
         
         // 유저 정보 --------------------------------------
         SetUserInfo();
+        fishSpeed = easyVersion ? 0.3f : fishSpeed;
+        Debug.Log($"easyVersion : {easyVersion}, fishSpeed : {fishSpeed}");
     }
     
 
@@ -773,7 +782,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
         
-        Debug.Log($"buck path vertex count : {inBucketPath.Length}");
+        
         bucketSeq.Append(fish.DOPath(inBucketPath, Random.Range(3.5f, 11.5f), PathType.CatmullRom)
             .SetEase(Ease.InOutSine)
             .SetLookAt(-0.005f)

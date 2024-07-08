@@ -5,6 +5,7 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using Random = UnityEngine.Random;
 
 public class ShootOut_GameManager : IGameManager
 {
@@ -32,12 +33,15 @@ public class ShootOut_GameManager : IGameManager
     private ParticleSystem _kickPs;
     private Vector3 _ballDefaultPos;
     private Quaternion _defaultRotation;
+    
+    
 
     public static event Action OnLaunchBall; 
 
     // 클릭실패(공발사 실패)시 한번만 실행되도록 합니다. 
     private bool _isBallInited;
-    
+    private bool _isOnGoalAnimPlaying;
+
     
     protected override void Init()
     {
@@ -56,6 +60,26 @@ public class ShootOut_GameManager : IGameManager
         _defaultRotation = _ball.rotation;
         _ballRb = _ball.GetComponent<Rigidbody>();
         _ballDefaultPos = _ball.position;
+    }
+
+    protected override void BindEvent()
+    {
+        base.BindEvent();
+        ShootOut_GoalPostController.OnGoal -= OnGoal;
+        ShootOut_GoalPostController.OnGoal += OnGoal;
+    }
+
+
+    private void OnDestroy()
+    {
+        ShootOut_GoalPostController.OnGoal -= OnGoal;
+    }
+    private void OnGoal()
+    {
+        if (_isOnGoalAnimPlaying) return;
+        _isOnGoalAnimPlaying = true;
+
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04");
     }
 
     private bool _isFirstPointSet;
@@ -124,6 +148,7 @@ public class ShootOut_GameManager : IGameManager
             _isSoccerBallClicked = false;
             _isBallLaunched = false;
             _isFirstPointSet = false;
+            _isOnGoalAnimPlaying = false;
 #if UNITY_EDITOR
             Debug.Log("Ball Re-Inited");
 #endif
@@ -220,7 +245,9 @@ public class ShootOut_GameManager : IGameManager
 #endif
         
         _ballRb.AddForce(forceDirection * power * kickPower,ForceMode.Impulse);
- 
+
+        var randomChar = (char)Random.Range('A', 'B' + 1);
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BB007/OnKick{randomChar}");
         _isBallLaunched = true;
         _isSoccerBallClicked = false;
         _clickedpoints = new Vector3[(int)HitPointName.Max]

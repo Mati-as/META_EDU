@@ -263,7 +263,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &90363404
 BoxCollider:
@@ -394,7 +394,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 52.124, y: 90, z: 0}
 --- !u!212 &295111462
 SpriteRenderer:
@@ -896,7 +896,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
 --- !u!212 &593436668
 SpriteRenderer:
@@ -1469,6 +1469,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1460738993}
+  - component: {fileID: 1460738995}
+  - component: {fileID: 1460738996}
   m_Layer: 0
   m_Name: Post
   m_TagString: Untagged
@@ -1488,15 +1490,40 @@ Transform:
   m_LocalScale: {x: 0.75634253, y: 0.83206, z: 0.83206}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1677801210}
+  - {fileID: 90363403}
   - {fileID: 295111461}
   - {fileID: 2093763771}
   - {fileID: 593436667}
   - {fileID: 1636843612}
-  - {fileID: 1677801210}
-  - {fileID: 90363403}
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1460738995
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460738992}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.38, y: 10, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1460738996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460738992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4285678b624e842af53051403a7d60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1548513599
 GameObject:
   m_ObjectHideFlags: 0
@@ -1789,7 +1816,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1636843613
 BoxCollider:
@@ -1834,7 +1861,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &1677801211
 BoxCollider:
@@ -2054,7 +2081,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1460738993}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -29.724, y: -269.58002, z: 179.761}
 --- !u!212 &2093763772
 SpriteRenderer:
@@ -14065,6 +14092,7 @@ GameObject:
   - component: {fileID: 6157917921820518344}
   - component: {fileID: 6107183603416600410}
   - component: {fileID: 6157917921820518345}
+  - component: {fileID: 6157917921820518346}
   m_Layer: 6
   m_Name: SoccerBall
   m_TagString: Untagged
@@ -14154,6 +14182,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6157917921820518346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6135591918093538140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 284697dfde2252940b9ef92de116f311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6292942684862091773
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28383,7 +28423,7 @@ RectTransform:
   - {fileID: 579631983}
   - {fileID: 368193649}
   m_Father: {fileID: 642259202}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

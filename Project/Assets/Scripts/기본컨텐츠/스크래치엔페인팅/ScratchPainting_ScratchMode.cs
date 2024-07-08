@@ -25,8 +25,10 @@ public class ScratchPainting_ScratchMode : IGameManager
 
      private bool _isPaintable; // 도장직기 중에는 플레아금지 
 
+     private IGameManager _gm;
      private void Awake()
      {
+         _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
          IGameManager.On_GmRay_Synced -= Paint;
          IGameManager.On_GmRay_Synced += Paint;
          ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
@@ -128,9 +130,9 @@ public class ScratchPainting_ScratchMode : IGameManager
         if (!_isPaintable) return;
 
         // Assume GameManager_Hits is an array of RaycastHit from the game manager
-        foreach (var hit in GameManager_Hits)
+        foreach (var hit in _gm.GameManager_Hits)
         {
-            if (hit.transform == transform)
+            if (hit.transform!=null && hit.transform == transform)
             {
 #if UNITY_EDITOR
                 Debug.Log($"Painting (clicked)");

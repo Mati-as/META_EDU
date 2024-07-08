@@ -150,7 +150,7 @@ public class ScratchPainting_GameManager : IGameManager
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
                 DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
+                  // Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
                   //  _tmp.text = "놀이를 다시 준비하고 있어요";
                 });
 

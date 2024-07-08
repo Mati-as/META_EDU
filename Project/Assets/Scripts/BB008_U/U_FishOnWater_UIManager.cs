@@ -343,7 +343,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     {
         if (!_isBtnClickable || _isAnimating) return;
         
-     //   _defaultAlpha = _screenDim.material.color.a; 
+    
         _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();
        
         if (_screenDim == null)
@@ -868,7 +868,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         OnRestartBtnClicked?.Invoke();
         
-        _screenDim.DOFade(0, 0.55f);
+        _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();
+        _screenDim?.DOFade(0, 0.55f);
         _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
             .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.5f)
             .SetEase(Ease.InOutSine);
