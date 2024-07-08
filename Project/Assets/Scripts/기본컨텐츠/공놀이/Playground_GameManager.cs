@@ -29,7 +29,7 @@ public class Playground_GameManager : IGameManager
         base.Init();
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;

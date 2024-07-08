@@ -52,7 +52,7 @@ public class PlaygroundVer2_GameManager : Playground_GameManager
         }
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
     }

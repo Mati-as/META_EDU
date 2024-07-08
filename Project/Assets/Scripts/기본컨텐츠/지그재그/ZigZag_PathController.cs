@@ -145,7 +145,7 @@ public class ZigZag_PathController : IGameManager
 
  
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (_isResetting) return;

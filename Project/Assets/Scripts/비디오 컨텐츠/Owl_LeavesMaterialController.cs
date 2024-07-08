@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class LeafInfo
 {
@@ -149,6 +150,13 @@ public class Owl_LeavesMaterialController : MonoBehaviour
                 foreach (var leaf in _leafs) leaf.isDarkendAndNonClickable = false;
             });
            
+            
+            var seq = DOTween.Sequence();
+            seq.AppendInterval(5f);
+            seq.AppendCallback(()=>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/AA010_Narration/Owl_ReClickLeaves", 0.5f);
+            });
         }
     }
 
@@ -159,7 +167,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
         rayForShader = IGameManager.GameManager_Ray;
         RaycastHit hit;
 
-        if (!_isGameInited)
+        if (!_isGameInited) 
         {
 #if UNITY_EDITOR
 Debug.Log($"material is glowing yet");
@@ -199,6 +207,8 @@ Debug.Log($"owl ui isn't finished yet.");
     /// <param name="objName"></param>
     private void DarkenLeaf(string objName)
     {
+        var randomChar = (char)Random.Range('A', 'C' + 1);
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnLeaveClick{randomChar}");
         foreach (var mat in matByNames[objName])
             if (mat != null)
                 mat.DOColor(_defaultDarkenColorMap[mat.GetInstanceID()], 2.3f);

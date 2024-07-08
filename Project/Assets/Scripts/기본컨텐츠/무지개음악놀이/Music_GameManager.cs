@@ -8,7 +8,7 @@ public class Music_GameManager : IGameManager
 {
 
     
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);

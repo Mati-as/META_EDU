@@ -44,12 +44,13 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     protected override void Init()
     {
         Managers.Sound.Play(SoundManager.Sound.Bgm,
-            "Audio/Gamemaster Audio - Fun Casual Sounds/Ω_Bonus_Music/music_candyland", 0.125f);
+            "Audio/Gamemaster Audio - Fun Casual Sounds/Ω_Bonus_Music/music_candyland", 0.105f);
 
         isJustRewind = true;
         base.Init();
         UI_Init();
         LoadPrefabs();
+
     }
 
 
@@ -68,7 +69,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     private readonly float _textPrintingSpeed = 0.03f;
     private int currentLineIndex;
 
-    public int nextUIApperableWaitTime; //10
+    private int nextUIApperableWaitTime = 4; 
 
     private void PlayNextMessageAnim(int currentIndex)
     {
@@ -85,12 +86,14 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
             _tmp.text = message;
         }
 
+        Managers.Sound.Play(SoundManager.Sound.Narration, $"Audio/AA010_Narration/Owl_SpeechBubble_0{currentIndex + 1}",
+            0.5f);
         _typingCoroutine = StartCoroutine(TypeIn(_tmp.text, 0.3f));
 
       
         
         //duration -> 10
-        DOVirtual.Float(0, 3f, nextUIApperableWaitTime, _ => { })
+        DOVirtual.Float(0, 5f, nextUIApperableWaitTime, _ => { })
             .OnComplete(() =>
             {
                 _isNextUIAppearable = true;
@@ -148,7 +151,7 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     { 
         base.OnRaySynced();
      
@@ -248,6 +251,13 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
                         if (!_isRewindEventTriggered)
                         {
                             _isRewindEventTriggered = true;
+                            var seq = DOTween.Sequence();
+                            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/비디오 컨텐츠/Owl/Leaves");
+                            seq.AppendInterval(4.2f);
+                            seq.AppendCallback(()=>
+                            {
+                                Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/AA010_Narration/Owl_ClickLeaves", 0.5f);
+                            });
                             RewindAndReplayTriggerEvent();
                         }
                     });
@@ -273,6 +283,17 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
     }
 
 
+    protected override void OnStartButtonClicked()
+    {
+        base.OnStartButtonClicked();
+        
+        var seq = DOTween.Sequence();
+        seq.AppendInterval(1.5f);
+        seq.AppendCallback(()=>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/AA010_Narration/Owl_ClickLeaves", 0.5f);
+        });
+    }
 
     protected override void OnReplay()
     {
@@ -287,6 +308,11 @@ public class Owl_VideoGameManager : InteractableVideoGameManager
             {
                 _psOnReplayAfterPaused.transform.gameObject.SetActive(true);
                 _psOnReplayAfterPaused.Play();
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnOwlAppearA",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnOwlAppearC",0.4f);
+               
+                DOVirtual.Float(0, 1, 3.35f, _ =>{})
+                    .OnComplete(() => {  Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnOwlAppearB",0.5f); });
 
 #if UNITY_EDITOR       
                 Debug.Log("파티클 재생");

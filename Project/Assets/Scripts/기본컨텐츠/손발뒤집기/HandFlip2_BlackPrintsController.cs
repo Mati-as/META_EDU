@@ -139,7 +139,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
     }
     
     
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         

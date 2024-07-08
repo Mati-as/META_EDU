@@ -24,7 +24,7 @@ public class Drum_GameManager : IGameManager
     //     _parrotSlider.value -= Time.deltaTime / 20; //감소속도
     // }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

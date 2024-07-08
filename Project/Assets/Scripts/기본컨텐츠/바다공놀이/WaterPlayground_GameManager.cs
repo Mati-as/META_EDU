@@ -27,7 +27,7 @@ public class WaterPlayground_GameManager : IGameManager
       base.Init();
       ManageProjectSettings(150,0.15f);
     }
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

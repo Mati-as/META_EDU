@@ -1,6 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class EasternArt_GameManager : IGameManager
 {
@@ -51,9 +54,34 @@ public class EasternArt_GameManager : IGameManager
     [SerializeField] private GameObject originalPicture;
     [SerializeField] private SpriteRenderer newBackground;
 
-
+    [FormerlySerializedAs("postProcessVolume")] public Volume vol;
+    private Vignette vignette;
     protected override void Init()
     {
+        
+        Camera.main.TryGetComponent<Volume>(out vol);
+            
+        if (vol == null)
+        {
+            Debug.LogError("PostProcessVolume not assigned.");
+            return;
+        }
+
+        if (vol.profile.TryGet<Vignette>(out vignette))
+        {
+            vignette = vol.profile.components.Find(x => x is Vignette) as Vignette;
+        }
+        else
+        {
+            Debug.LogError("Vignette not found in PostProcessVolume.");
+        }
+
+        vignette.intensity.value = 1;
+        DOVirtual.Float(1, 0, 2.5f, val =>
+        {
+            vignette.intensity.value = val;
+        });
+                
         base.Init();
 
 
@@ -65,6 +93,7 @@ public class EasternArt_GameManager : IGameManager
 
         UI_Scene_Button.onBtnShut -= OnBtnShut;
         UI_Scene_Button.onBtnShut += OnBtnShut;
+        
     }
 
 

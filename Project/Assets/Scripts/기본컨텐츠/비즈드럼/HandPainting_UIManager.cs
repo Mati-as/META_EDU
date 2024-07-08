@@ -91,6 +91,7 @@ public class HandPainting_UIManager : UI_PopUp
     private WaitForSeconds _waitInterval;
     private WaitForSeconds _waitForReady;
     private float _waitTIme= 4.5f;
+    private float _scaleAnimationDurationTime =0.2f;
     
 
     private IEnumerator PopUpStartUICoroutine()
@@ -98,36 +99,37 @@ public class HandPainting_UIManager : UI_PopUp
        
         if (_waitInterval == null)
         {
-            _waitInterval = new WaitForSeconds(1f);
+            _waitInterval = new WaitForSeconds(0.5f);
         }
         
         if (_waitForReady == null)
         {
-            _waitForReady = new WaitForSeconds(1f);
+            _waitForReady = new WaitForSeconds(0.5f);
         }
         
         yield return _waitForReady;
         _ready.gameObject.SetActive(true);
-        yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
+        yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",0.8f);
             }).WaitForCompletion();
         yield return _waitInterval;
-        yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
-        
-        
+        yield return DOVirtual.Float(1, 0, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
         yield return _waitInterval;
+        yield return _waitInterval;
+        
         _start.gameObject.SetActive(true);
-        yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
+        yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",0.8f);
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
                 onStartUI?.Invoke();
             }).WaitForCompletion();
+        
         yield return _waitInterval;
-        yield return DOVirtual.Float(1, 0, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).WaitForCompletion();
+        yield return DOVirtual.Float(1, 0, _scaleAnimationDurationTime, scale => { _rectStart.localScale = Vector3.one * scale; }).WaitForCompletion();
         
     }
     

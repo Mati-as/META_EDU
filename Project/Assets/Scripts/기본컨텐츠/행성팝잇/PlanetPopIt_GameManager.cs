@@ -145,7 +145,7 @@ public class PlanetPopIt_GameManager : IGameManager
         }
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

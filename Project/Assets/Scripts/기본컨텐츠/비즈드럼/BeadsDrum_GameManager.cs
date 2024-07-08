@@ -14,7 +14,7 @@ public class BeadsDrum_GameManager : IGameManager
     public static event Action OnLeftDrumClicked;
     public static event Action OnRightDrumClicked;
     
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         if (Physics.Raycast(GameManager_Ray, out GameManager_Hits[0]))
         {

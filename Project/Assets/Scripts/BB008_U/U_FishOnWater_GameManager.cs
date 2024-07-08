@@ -571,7 +571,7 @@ public class U_FishOnWater_GameManager : IGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         // 초기화 등, 기타 로직에서 클릭을 무시해야할 경우

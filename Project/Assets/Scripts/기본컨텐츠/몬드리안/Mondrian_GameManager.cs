@@ -188,7 +188,7 @@ public class Mondrian_GameManager : IGameManager
         return _colors[randomIndex];
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;

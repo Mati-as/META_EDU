@@ -59,7 +59,7 @@ public class ShootOut_GameManager : IGameManager
     }
 
     private bool _isFirstPointSet;
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (_isBallMovingToDefaultPos) return;

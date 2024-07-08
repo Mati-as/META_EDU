@@ -1,6 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class Painting_EasteranArtMultipleTexture : IGameManager
 {
@@ -15,17 +23,76 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     [SerializeField]
     private Texture2D[] burshTextures;// Define an InputAction for painting
 
- 
+
+    private static event Action ChangeScene; 
      [Header("Shader Setting")] 
      public float burshStrength = 1;
+     public Volume vol;
+     private Vignette vignette;
+     private bool _isSceneChanging; // 씬 이동중 로직 충돌방지
     protected override void Init()
     {
-      
+        Camera.main.TryGetComponent<Volume>(out vol);
+        
+        if (vol == null)
+        {
+            Debug.LogError("PostProcessVolume not assigned.");
+            return;
+        }
+
+        if (vol.profile.TryGet<Vignette>(out vignette))
+        {
+            vignette = vol.profile.components.Find(x => x is Vignette) as Vignette;
+        }
+        else
+        {
+            Debug.LogError("Vignette not found in PostProcessVolume.");
+        }
+
+        
         base.Init();
         
-     //  Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
-        
+     //  Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f)
+    }
 
+    protected override void BindEvent()
+    {
+        ChangeScene -= OnChangeScene;
+        ChangeScene += OnChangeScene;
+        base.BindEvent();
+    }
+
+    protected  void OnDestroy()
+    {
+        ChangeScene -= OnChangeScene;
+    }
+
+    private void OnChangeScene()
+    {
+        DOVirtual.Float(0, 1, 2.5f, val =>
+        {
+            _isSceneChanging = true;
+            vignette.intensity.value = val;
+        }).OnComplete(() =>
+        {
+            SceneManager.LoadScene("AB002");
+        });
+        
+    }
+
+
+    private float _elapsed;
+    private readonly float _timeLimitForSceneChange =60;
+    private void Update()
+    {
+        _elapsed += Time.deltaTime;
+        if (_elapsed > _timeLimitForSceneChange)
+        {
+            
+            ChangeScene?.Invoke();
+            _elapsed = 0; 
+        }
+        
     }
 
 
@@ -54,7 +121,8 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     public float currentRotation;
     void Paint()
     {
-        if (!isStartButtonClicked) return;
+        
+        if (!isStartButtonClicked || _isSceneChanging) return;
         currentRotation = Random.Range(0,360);
       
         var randomChar = (char)Random.Range('A', 'C' + 1);
@@ -107,7 +175,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;

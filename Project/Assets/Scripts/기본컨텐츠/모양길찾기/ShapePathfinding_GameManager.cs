@@ -98,7 +98,7 @@ public class ShapePathfinding_GameManager : IGameManager
     }
 
     private readonly float BTN_DOWN_DEPTH =0.035f;
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;

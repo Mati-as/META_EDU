@@ -136,7 +136,7 @@ public class Hopscotch_GameManager : IGameManager
     private bool isChecked;
 #endif
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

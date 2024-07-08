@@ -155,7 +155,7 @@ public class Twister_GameManager : IGameManager
     }
 
     private bool _isClickable; // 단계마다 스팟이 커질때, 완전히 커지고 나야만 클릭가능
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;

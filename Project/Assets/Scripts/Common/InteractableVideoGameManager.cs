@@ -139,7 +139,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     /// 제일 첫번째로 수행되며, OnRaySyncFromGameManager는 **OnRaySynced에 의존합니다.**
     /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.  
     /// </summary>
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         OnRaySyncFromGameManager();

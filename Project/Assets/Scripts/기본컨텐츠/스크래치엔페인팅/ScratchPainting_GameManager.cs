@@ -171,7 +171,7 @@ public class ScratchPainting_GameManager : IGameManager
     });
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         if (!_isRoundReady) return;
         if (!isStartButtonClicked) return;

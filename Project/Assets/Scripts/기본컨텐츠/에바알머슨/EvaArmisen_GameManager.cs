@@ -170,7 +170,7 @@ public class EvaArmisen_GameManager : IGameManager
         });
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         // if (!_isRoundReadyToStart) return;
         if (!isStartButtonClicked) return;

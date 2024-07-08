@@ -238,7 +238,7 @@ public class FootstepManager : IGameManager
     private RaycastHit[] hits;
 
     //public void OnMouseClicked(InputAction.CallbackContext context)
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

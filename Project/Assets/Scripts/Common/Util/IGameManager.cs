@@ -78,10 +78,8 @@ public abstract class IGameManager : MonoBehaviour
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER"))
         {
             PlayNarration();
-        
         }
-
-
+        
         var uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
@@ -116,12 +114,9 @@ public abstract class IGameManager : MonoBehaviour
     }
 
     /// <summary>
-    ///     onRaySync 구현 포인트
-    ///     1. EffectManager ray와 동기화 (필수)
-    ///     EffectManager 내부에서 처리할 로직처리
-    ///     2. 나머지 RaySync가 필요한 경우의 게임로직 처리..
+    ///   1. Raysynchronizer에서 첫번째 ray 동기화합니다. 
     /// </summary>
-    protected virtual void OnRaySynced()
+    public virtual void OnRaySynced()
     {
         if (!isStartButtonClicked) return;
         if (!isInitialized) return;

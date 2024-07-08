@@ -150,7 +150,7 @@ public class Sandwitch_GameManager : IGameManager
     private readonly int NO_VALID_OBJECT = -1;
     private RaycastHit[] _raycastHits;
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
         if (!isInitialized) return;

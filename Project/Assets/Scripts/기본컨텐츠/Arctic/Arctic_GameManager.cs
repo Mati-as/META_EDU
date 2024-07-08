@@ -11,7 +11,7 @@ using UnityEngine;
             base.Init();
         }
         
-        protected override void OnRaySynced()
+        public override void OnRaySynced()
         {
             base.OnRaySynced();
         }

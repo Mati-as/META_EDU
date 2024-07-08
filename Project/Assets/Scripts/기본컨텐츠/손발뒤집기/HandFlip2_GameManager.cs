@@ -350,7 +350,7 @@ public class HandFlip2_GameManager : IGameManager
 
     private Vector3 _defaultPosition; 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

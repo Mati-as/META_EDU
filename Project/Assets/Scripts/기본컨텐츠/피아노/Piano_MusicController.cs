@@ -162,7 +162,7 @@ public class Piano_MusicController : IGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         foreach (var hit in GameManager_Hits)

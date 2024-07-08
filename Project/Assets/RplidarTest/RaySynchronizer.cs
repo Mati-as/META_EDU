@@ -46,7 +46,6 @@ public class RaySynchronizer : MonoBehaviour
     public virtual void Init()
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
-
       
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
@@ -89,12 +88,6 @@ public class RaySynchronizer : MonoBehaviour
         _spaceAction.Disable();
     }
 
-    // public void Update()
-    // {
-    //     Move();
-    // }
-
-
     public void InvokeRayEvent()
     {
         ShootRay();
@@ -121,7 +114,7 @@ public class RaySynchronizer : MonoBehaviour
 
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
-
+        
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
         PED.position = screenPosition;

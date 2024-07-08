@@ -175,7 +175,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
         _tlOnOffColors[ON] = Color.white;
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!_isClickable) return;

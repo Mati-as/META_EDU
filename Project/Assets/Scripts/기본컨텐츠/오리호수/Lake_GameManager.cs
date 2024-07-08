@@ -16,7 +16,7 @@ public class Lake_GameManager : IGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         var hits = Physics.RaycastAll(GameManager_Ray);

@@ -195,7 +195,7 @@ public class FishOnWater_GameManager : IGameManager
     }
     
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 

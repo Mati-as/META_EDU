@@ -238,7 +238,7 @@ public class FavoriteOne_GameManager : IGameManager
         foreach (var fruit in _fruits) fruit.gameObject.SetActive(false);
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         foreach (var hit in GameManager_Hits)
