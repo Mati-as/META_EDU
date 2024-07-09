@@ -1,7 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using KoreanTyper;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = System.Random;
 
@@ -21,6 +25,7 @@ public class ShapePathfinding_GameManager : IGameManager
 
     //TransformID, Meshrenderer캐싱으로 클릭시 ID만으로 접근
     private Dictionary<int, MeshRenderer> _meshRenderMap;
+    private Dictionary<string, string> _koreanMap; //영어-한국어 쌍 , UI 표시용
 
     private Transform[][] _steps;
     private Vector3 _defaultScale;
@@ -55,6 +60,11 @@ public class ShapePathfinding_GameManager : IGameManager
 
     private int _columnCount;
     private int _rowCount;
+    
+    
+    //UI Tmp
+    private TextMeshProUGUI _tmpInstruction;
+    
 
     private enum Pathfinder_GameObject
     {
@@ -95,6 +105,9 @@ public class ShapePathfinding_GameManager : IGameManager
 
         SetSteps();
         SuffleAndSet();
+
+        _tmpInstruction = GameObject.Find("TMP_Instruction").GetComponent<TextMeshProUGUI>();
+        _tmpInstruction.text = string.Empty;
     }
 
     private readonly float BTN_DOWN_DEPTH = 0.036f;
@@ -196,7 +209,12 @@ public class ShapePathfinding_GameManager : IGameManager
     private void CacheEnumNames()
     {
         _gameObjectNames = new Dictionary<Pathfinder_GameObject, string>();
-
+        _koreanMap = new Dictionary<string, string>();
+        
+        _koreanMap.Add("Triangle","세모");
+        _koreanMap.Add("Square","네모");
+        _koreanMap.Add("Circle","동그라미");
+        _koreanMap.Add("Heart","하트");
 
         _gameObjectNames = Enum.GetValues(typeof(Pathfinder_GameObject))
             .Cast<Pathfinder_GameObject>()
@@ -343,31 +361,41 @@ public class ShapePathfinding_GameManager : IGameManager
         _isDiceBtnClickable = false;
         _isStepClickable = false;
 
-        _dice.DORotateQuaternion(_dice.rotation *
-                                 Quaternion.Euler(UnityEngine.Random.Range(300, 480),
-                                     UnityEngine.Random.Range(300, 480),
-                                     UnityEngine.Random.Range(300, 480)), 0.9f).SetEase(Ease.InOutSine);
-        _dice.DOPath(_diceRollPath, 1.1f).SetEase(Ease.InExpo)
+        var seq = DOTween.Sequence();
+
+
+        seq.Append(_dice.DORotateQuaternion(_dice.rotation *
+                                            Quaternion.Euler(UnityEngine.Random.Range(300, 480),
+                                                UnityEngine.Random.Range(300, 480),
+                                                UnityEngine.Random.Range(300, 480)), 0.9f).SetEase(Ease.InOutSine)
+            .OnStart(() => { _dice.DOPath(_diceRollPath, 1.1f).SetEase(Ease.InExpo);}));
+        
+        seq.AppendInterval(2.2f);
+        
+        seq.Append(_dice.DOMove(_diceRollPath[0], 0.2f)
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect,
+                    "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03", 0.5f);
+            })
             .OnComplete(() =>
             {
-                _dice.DOMove(_diceRollPath[0], 0.2f)
-                    .OnStart(() =>
-                    {
-                        Managers.Sound.Play(SoundManager.Sound.Effect,
-                            "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03",0.5f);
-                    })
-                    .OnComplete(() =>
-                    {
-                        DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
-                        {
-                            _isDiceBtnClickable = true;
-                            _isStepClickable = true;
-                            DetectDice();
-                        });
-                    }).SetDelay(2.0f);
-            })
-            .SetDelay(0.1f);
+                DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                {
+                    _isDiceBtnClickable = true;
+                    _isStepClickable = true;
+                    DetectDice();
+                });
+            }));
+        seq.AppendInterval(1f);
+        seq.AppendCallback(() =>
+        {
+            StartCoroutine(TypeIn(_koreanMap[_currentShape], 0.1f));
+            seq.Play();
+        });
     }
+
+
 
     private RaycastHit[] _surfaceDetectHits;
 
@@ -385,17 +413,17 @@ public class ShapePathfinding_GameManager : IGameManager
 #if UNITY_EDITOR
                     Debug.Log($"_currentShape = {_currentShape} ");
                     return;
-
 #endif
                 }
-
-
+                
 #if UNITY_EDITOR
                 Debug.Log("no surface with Collider ");
                 Debug.Log($"hit name:  {hit.transform.gameObject.name} ");
 #endif
             }
         }
+
+        
     }
 
     private void OnDrawGizmos()
@@ -410,4 +438,23 @@ public class ShapePathfinding_GameManager : IGameManager
             Gizmos.DrawSphere(_diceDetector, 0.1f);
         }
     }
+    
+        
+    public IEnumerator TypeIn(string str, float offset)
+    {
+        _tmpInstruction.text = ""; // 초기화
+        yield return new WaitForSeconds(0.08f);
+
+        var strTypingLength = str.GetTypingLength();
+        for (var i = 0; i <= strTypingLength; i++)
+        {
+            // 반복문
+            _tmpInstruction.text = str.Typing(i);
+            yield return new WaitForSeconds(0.08f);
+        }
+
+
+        yield return new WaitForNextFrameUnit();
+    }
+
 }
