@@ -68,7 +68,10 @@ public class PlanetPopIt_GameManager : IGameManager
     protected override void Init()
     {
         base.Init();
-
+        _effectContainer = new Stack<ParticleSystem>();
+        SetPool(_effectContainer, "게임별분류/기본컨텐츠/PlanetPopIt/CFX2_PickupStar");
+        
+        
         var sunCount = 2;
         _sunMeshRenderers = new MeshRenderer[sunCount];
 
@@ -152,10 +155,21 @@ public class PlanetPopIt_GameManager : IGameManager
         foreach (var hit in GameManager_Hits)
             if (hit.transform.name.Contains(nameof(Planet)))
             {
+                
+                
+                OnPlanetClicked(hit.transform);
+                
+                //sound--------------------
                 var randomChar = (char)Random.Range('A', 'F' + 1);
                 Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                     0.3f);
-                OnPlanetClicked(hit.transform);
+                
+                //particle------------------
+                var ps = GetFromPool(_effectContainer);
+                ps.gameObject.SetActive(true);
+                ps.gameObject.transform.position = hit.point;
+                ps.Play();
+             
                 return;
             }
     }
@@ -274,5 +288,62 @@ public class PlanetPopIt_GameManager : IGameManager
         _isAnimating[id] = true;
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
         _isAnimating[id] = false;
+    }
+    
+    
+    
+    
+    private WaitForSeconds _poolReturnWait;
+    private Stack<ParticleSystem> _effectContainer;
+    
+    
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps, Stack<ParticleSystem> particlePool)
+    {
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
+
+        yield return _poolReturnWait;
+
+#if UNITY_EDITOR
+
+#endif
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(false);
+        particlePool.Push(ps); // Return the particle system to the pool
+    }
+
+    private void SetPool(Stack<ParticleSystem> effectPool, string path, int poolCount = 20)
+    {
+        for (var poolSize = 0; poolSize < poolCount; poolSize++)
+        {
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("this gameObj to pool is null.");
+#endif
+                return;
+            }
+
+            var bead = Instantiate(prefab, transform);
+            var ps = bead.GetComponent<ParticleSystem>();
+
+            ps.Stop();
+            ps.Clear();
+            ps.gameObject.SetActive(false);
+
+            effectPool.Push(ps);
+        }
+    }
+
+
+    private ParticleSystem GetFromPool(Stack<ParticleSystem> pool)
+    {
+        if (pool.Count <= 0) return null;
+        var ps = pool.Pop();
+
+        StartCoroutine(ReturnToPoolAfterDelay(ps, _effectContainer));
+        return ps;
     }
 }

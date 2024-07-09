@@ -549,18 +549,6 @@ public class U_FishOnWater_GameManager : IGameManager
         {
             var animator = currentFish.GetComponent<Animator>();
             _animatorSeq[id].speed = 0.3f;
-            //
-            // Vector3[] path = new Vector3[4];
-            // float radius = 0.6f;
-            //
-            //
-            //
-            // path[0] = arrivalPos;
-            // path[1] = arrivalPos + new Vector3(0, 0, radius);
-            // path[2] = arrivalPos + new Vector3(-radius, 0, 0);
-            // path[3] = arrivalPos + new Vector3(0, 0, -radius);
-            //
-            // randomAnimSeq.Append(currentFish.DOPath(path, 1.5f, PathType.CatmullRom).SetLookAt(-0.01f).SetOptions(true).SetLoops(-1));
         }
         else
         {
@@ -572,7 +560,7 @@ public class U_FishOnWater_GameManager : IGameManager
             randomAnimSeq.AppendInterval(0.23f);
             randomAnimSeq.Append(currentFish.DOMove(_pathStartPoints[Random.Range(0, _pathStartPoints.Length)],
                 0.7f));
-            randomAnimSeq.OnComplete(() => { PlayFishPathAnimOneTime(); });
+            randomAnimSeq.OnComplete(PlayFishPathAnimOneTime);
         }
 
         _animSeq[id] = randomAnimSeq;

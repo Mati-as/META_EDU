@@ -17,7 +17,7 @@ public class ShapePathfinding_GameManager : IGameManager
      *7.클릭성공시 애니메이션 추가
      */
     private Dictionary<Pathfinder_GameObject, string> _gameObjectNames;
-    
+
 
     //TransformID, Meshrenderer캐싱으로 클릭시 ID만으로 접근
     private Dictionary<int, MeshRenderer> _meshRenderMap;
@@ -31,23 +31,23 @@ public class ShapePathfinding_GameManager : IGameManager
     private Material[] _colorMat;
 
     private Transform _dice;
-    
+
     private Transform _diceBtnLeft;
     private Transform _diceBtnRight;
-    
+
     private Vector3 _btnDefaultPosLeft;
     private Vector3 _btnDefaultPosRight;
-    
+
 
     private ParticleSystem _correctPs;
 
     private string _currentShape; //주사위 결과에 따라 맞춰야하는 Shape
 
-    private readonly float _rollHeight = 2.5f;
+    private readonly float _rollHeight = 3.5f;
     private Vector3[] _diceRollPath;
     private bool _isDiceBtnClickable = true;
-    private bool _isStepClickable = false;
-    
+    private bool _isStepClickable;
+
     private Vector3 _diceDetector; //해당위치에서 아래로 Ray발사 및 모양판별 
 
 
@@ -97,81 +97,57 @@ public class ShapePathfinding_GameManager : IGameManager
         SuffleAndSet();
     }
 
-    private readonly float BTN_DOWN_DEPTH =0.035f;
+    private readonly float BTN_DOWN_DEPTH = 0.036f;
+
     public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
 
-        foreach (var hit in GameManager_Hits)
-            if (hit.transform.gameObject.name.Contains(_gameObjectNames[Pathfinder_GameObject.Btn_Dice]))
-            {
-                if (_isDiceBtnClickable)
-                {
-                    if (hit.transform.gameObject.name.Contains("Left"))
-                    {
-                        _diceBtnLeft.DOMove( _btnDefaultPosLeft+ Vector3.down * BTN_DOWN_DEPTH, 0.22F)
-                            .SetEase(Ease.InSine)
-                            .OnComplete(() =>
-                        {
-                            _diceBtnLeft.DOMove(_btnDefaultPosLeft, 0.14F).SetEase(Ease.InOutBack).SetDelay(0.07F);
+        PressButtion();
+        PlayStepAnim();
+    }
 
-                        });
-                    }
-                    else
-                    {
-                        _diceBtnRight.DOMove(_btnDefaultPosRight + Vector3.down * BTN_DOWN_DEPTH, 0.22F)
-                            .OnComplete(() =>
-                        {
-                            _diceBtnRight.DOMove(_btnDefaultPosRight, 0.14F).SetEase(Ease.InOutBack).SetDelay(0.07F);
-
-                        });
-                    }
-                   
-                    RollDice();
-                }
-                return;
-            }
-
+    private void PlayStepAnim()
+    {
         foreach (var hit in GameManager_Hits)
             if (hit.transform.gameObject.name.Contains("Step"))
             {
-
                 var currentID = hit.transform.GetInstanceID();
                 if (_meshRenderMap.ContainsKey(currentID))
                 {
-                    
 #if UNITY_EDITOR
-                    Debug.Log($"this mat name: {_meshRenderMap[currentID].material.name},  currentShape(dicen)Name: {_currentShape}");
+                    Debug.Log(
+                        $"this mat name: {_meshRenderMap[currentID].material.name},  currentShape(dice)Name: {_currentShape}");
 #endif
-                    if (!_meshRenderMap.ContainsKey(currentID)) return;
+                    if (!_meshRenderMap.ContainsKey(currentID) || _meshRenderMap[currentID] == null) return;
 
                     if (_meshRenderMap[currentID].material.name.Contains(_currentShape))
                     {
 #if UNITY_EDITOR
-                        Debug.Log($"Correct Step --- step starting to move...");
+                        Debug.Log("Correct Step --- step starting to move...");
 #endif
 
                         if (_isStepClickable)
                         {
+                            var randomChar = (char)UnityEngine.Random.Range('A', 'F' + 1);
+                            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BB008_U/Click_{randomChar}");
+                            
                             
                             _correctPs.Stop();
                             _correctPs.transform.position = hit.transform.position;
                             _correctPs.Play();
-                            
-                            
+
+
                             _isStepClickable = false;
-                            hit.transform.DOScale(_defaultScale*1.5f, 0.2f).SetEase(Ease.InBounce)
+                            hit.transform.DOScale(_defaultScale * 1.5f, 0.2f).SetEase(Ease.InBounce)
                                 .OnComplete(() =>
                                 {
                                     hit.transform.DOScale(_defaultScale, 0.21f).SetEase(Ease.InOutSine)
-                                        .OnComplete(() => {    _isStepClickable = true; });
+                                        .OnComplete(() => { _isStepClickable = true; });
                                 });
                         }
-                     
-
                     }
-                       
                 }
 
                 else
@@ -183,6 +159,39 @@ public class ShapePathfinding_GameManager : IGameManager
             }
     }
 
+    private void PressButtion()
+    {
+        foreach (var hit in GameManager_Hits)
+            if (hit.transform.gameObject.name.Contains(_gameObjectNames[Pathfinder_GameObject.Btn_Dice]))
+            {
+                if (_isDiceBtnClickable)
+                {
+                    if (hit.transform.gameObject.name.Contains("Left"))
+                        _diceBtnLeft.DOMove(_btnDefaultPosLeft + Vector3.down * BTN_DOWN_DEPTH, 0.22F)
+                            .SetEase(Ease.InSine)
+                            .OnComplete(() =>
+                            {
+                                _diceBtnLeft.DOMove(_btnDefaultPosLeft, 0.14F).SetEase(Ease.InOutBack)
+                                    .SetDelay(0.07F);
+                            });
+                    else
+                        _diceBtnRight.DOMove(_btnDefaultPosRight + Vector3.down * BTN_DOWN_DEPTH, 0.22F)
+                            .OnComplete(() =>
+                            {
+                                _diceBtnRight.DOMove(_btnDefaultPosRight, 0.14F).SetEase(Ease.InOutBack)
+                                    .SetDelay(0.07F);
+                            });
+
+                    //버튼 클릭 효과음. 
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                        "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_beep_19");
+
+                    RollDice();
+                }
+
+                return;
+            }
+    }
 
     private void CacheEnumNames()
     {
@@ -199,7 +208,7 @@ public class ShapePathfinding_GameManager : IGameManager
     {
         var psPrefab = Resources.Load<ParticleSystem>("게임별분류/기본컨텐츠/ShapePathFinder/CFX_Correct");
         _correctPs = Instantiate(psPrefab);
-        
+
         _colorMat = new Material[(int)ColorMat.MaxCount];
         _shapeMat = new Material[(int)ShapeMat.MaxCount];
 
@@ -237,7 +246,7 @@ public class ShapePathfinding_GameManager : IGameManager
         _meshRenderMap = new Dictionary<int, MeshRenderer>();
 
         _dice = transform.Find(Pathfinder_GameObject.Dice.ToString());
-        
+
         _diceBtnLeft = transform.Find(Pathfinder_GameObject.Btn_Dice.ToString()).GetChild(0);
         _diceBtnRight = transform.Find(Pathfinder_GameObject.Btn_Dice.ToString()).GetChild(1);
 
@@ -341,15 +350,21 @@ public class ShapePathfinding_GameManager : IGameManager
         _dice.DOPath(_diceRollPath, 1.1f).SetEase(Ease.InExpo)
             .OnComplete(() =>
             {
-                _dice.DOMove(_diceRollPath[0], 0.2f).OnComplete(() =>
-                {
-                    DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                _dice.DOMove(_diceRollPath[0], 0.2f)
+                    .OnStart(() =>
                     {
-                        _isDiceBtnClickable = true;
-                        _isStepClickable = true;
-                        DetectDice();
-                    });
-                }).SetDelay(2.0f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect,
+                            "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03",0.5f);
+                    })
+                    .OnComplete(() =>
+                    {
+                        DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                        {
+                            _isDiceBtnClickable = true;
+                            _isStepClickable = true;
+                            DetectDice();
+                        });
+                    }).SetDelay(2.0f);
             })
             .SetDelay(0.1f);
     }
@@ -358,7 +373,6 @@ public class ShapePathfinding_GameManager : IGameManager
 
     private void DetectDice()
     {
-
         // Perform the raycast
         _surfaceDetectHits = Physics.RaycastAll(_diceDetector, Vector3.down, 0.7f);
         {
@@ -367,7 +381,7 @@ public class ShapePathfinding_GameManager : IGameManager
                 if (hit.transform.gameObject.name.Contains("Surface_"))
                 {
                     //머터리얼 이름과 비교하기위해 string 수정. 
-                    _currentShape =  hit.transform.gameObject.name.Substring("Surface_".Length);
+                    _currentShape = hit.transform.gameObject.name.Substring("Surface_".Length);
 #if UNITY_EDITOR
                     Debug.Log($"_currentShape = {_currentShape} ");
                     return;

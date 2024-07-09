@@ -1,9 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using KoreanTyper;
+using Unity.VisualScripting;
 
 public class Octopus_GameManager : IGameManager
 {
@@ -52,6 +56,9 @@ public class Octopus_GameManager : IGameManager
     private MeshRenderer _octopusMeshRenderer;
     private Texture _idleTexture;
     private Texture _excitedTexture;
+    
+    // UI파트, 볼륨커질경우 별도 클래스 구현예정 (07/09/24)
+    private TextMeshProUGUI _TMPOctopusMessage;
 
 
     public static event Action OnReinit;
@@ -74,6 +81,9 @@ public class Octopus_GameManager : IGameManager
     {
         base.Init();
 
+        _TMPOctopusMessage = GameObject.Find("TMP_Octopus_Message").GetComponent<TextMeshProUGUI>();
+        _TMPOctopusMessage.text = string.Empty;
+        
         //Basic Init
         _ballsQue = new Queue<Transform>();
         _ballsDequeued = new Queue<Transform>();
@@ -137,11 +147,33 @@ public class Octopus_GameManager : IGameManager
 
         EnableClickableCollider();
     }
+    
+    public IEnumerator TypeIn(string str, float offset)
+    {
+        _TMPOctopusMessage.text = ""; // 초기화
+        yield return new WaitForSeconds(_typingSpeed);
+
+        var strTypingLength = str.GetTypingLength();
+        for (var i = 0; i <= strTypingLength; i++)
+        {
+            // 반복문
+            _TMPOctopusMessage.text = str.Typing(i);
+            yield return new WaitForSeconds(_typingSpeed);
+        }
+
+
+        yield return new WaitForNextFrameUnit();
+    }
 
     private readonly int _baseMapID = Shader.PropertyToID("_BaseMap");
 
     private void OnCorrect()
     {
+
+        StartCoroutine(TypeIn("찾았다!", 0.3f));
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectA");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectB");
+        
         _octopusMeshRenderer.material.SetTexture(_baseMapID, _excitedTexture);
         _isDoingAnimation = true;
 
@@ -176,6 +208,21 @@ public class Octopus_GameManager : IGameManager
 
     }
 
+    private float _typingSpeed = 0.08f;
+    protected override void OnStartButtonClicked()
+    {
+        base.OnStartButtonClicked();
+      
+        var seq = DOTween.Sequence();
+        seq.AppendCallback(() =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+            StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
+        });
+        seq.SetDelay(1f);
+        seq.Play();
+
+    }
 
     public override void OnRaySynced()
     {
@@ -190,6 +237,26 @@ public class Octopus_GameManager : IGameManager
 
             if (hit.transform.gameObject.name.Contains("ball"))
             {
+                
+                var soundSeq = DOTween.Sequence();
+                soundSeq.AppendCallback(() =>
+                {
+                    // nameSpace 
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallClick");
+                });
+                soundSeq.AppendInterval(0.8f);
+                soundSeq.AppendCallback(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInPipe");
+                });
+                soundSeq.AppendInterval(1.22f);
+                soundSeq.AppendCallback(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInBody");
+                });
+                soundSeq.Play();
+
+             
                 DoEnterPath(hit.transform, _enterPath);
                 _ballColliderMap[clickedId].enabled = false;
                 return;
@@ -246,6 +313,19 @@ public class Octopus_GameManager : IGameManager
 #if UNITY_EDITOR
             Debug.Log($"정답: {_currentAnswer}");
 #endif
+            
+            
+           
+
+            var soundSeq = DOTween.Sequence();
+            soundSeq.AppendInterval(0.5f);
+            soundSeq.AppendCallback(() =>
+            {
+                StartCoroutine(TypeIn("공이 내 어느 다리에\n있을지 맞춰봐!", 0.08f));
+                Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/BB012/Narration_ChooseShoe");
+            });
+            soundSeq.Play();
+            
         });
     }
 
@@ -263,6 +343,9 @@ public class Octopus_GameManager : IGameManager
 
         foreach (var ball in _ballsQue)
         {
+
+            Managers.Sound.Play(SoundManager.Sound.Narration,
+                "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/cartoon_squirt_01");
             var id = ball.GetInstanceID();
             _rigidbodies[id].constraints = RigidbodyConstraints.FreezeAll;
             ball.localScale = Vector3.zero;
@@ -302,6 +385,8 @@ public class Octopus_GameManager : IGameManager
         var count = 0;
         foreach (var ball in _ballsQue)
         {
+            Managers.Sound.Play(SoundManager.Sound.Narration,
+                "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/boat_small_cartoon_propeller_stuttering");
             var id = ball.GetInstanceID();
             var currentOrder = _currentOrderMap[id];
             if (currentOrder != 0 && currentOrder != IS_VANISHED)
@@ -314,7 +399,19 @@ public class Octopus_GameManager : IGameManager
                 if (_currentOrderMap[id] == 0) _ballColliderMap[id].enabled = true;
 
                 ball.DORotate(new Vector3(Random.Range(-100,100), Random.Range(-100,100), Random.Range(-100,100)), 1.2f);
-                ball.DOPath(path, 1f).OnComplete(() => { ReInitPerClick(); });
+                ball.DOPath(path, 1f).OnComplete(() =>
+                {
+                    var seq = DOTween.Sequence();
+                    seq.AppendCallback(() =>
+                    {
+                        StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+                    });
+                    seq.SetDelay(1f);
+                    seq.Play();
+                    
+                    ReInitPerClick();
+                });
             }
         }
     }

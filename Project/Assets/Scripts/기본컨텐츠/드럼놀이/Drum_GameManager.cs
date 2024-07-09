@@ -44,8 +44,6 @@ public class Drum_GameManager : IGameManager
             {
                 var ps = GetFromPool(_effectContainer);
                 ps.gameObject.SetActive(true);
-
-
                 ps.gameObject.transform.position = hit.point;
                 ps.Play();
 
