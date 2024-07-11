@@ -212,6 +212,13 @@ public class EmotionTrafficLights_GameManager : IGameManager
         PlayBalloonAppearAnim();
     }
 
+    
+    
+    
+    
+    /// <summary>
+    /// 신호등에 있는 감정풍선을 모두 찾았을때.
+    /// </summary>
     private void OnOtherStageFinished()
     {
 #if UNITY_EDITOR
@@ -221,31 +228,46 @@ public class EmotionTrafficLights_GameManager : IGameManager
         _isInitializing = true;
         _collectedBalloon = 0;
         _currentBalloonPopCount = 0;
-        StartCoroutine(FlyAwayCo(delay:0.5f));
+        
+        StartCoroutine(FlyAwayCo(delay:2f));
        
     }
 
+
     private void OnFirstStageFinished()
     {
-            _trafficLight
-                .DOScale(_tlDefaultSize, 1.0f)
-                .SetEase(Ease.InOutBack)
-                .OnComplete(() => { PlayChangeTrafficLightAnim(); })
-                .SetDelay(1f);
 
-            DOVirtual.Float(0, 0, 6.5f, _ => { })
-                .OnComplete(() =>
-                {
-                    _collectedBalloon = 0;
-                    _currentBalloonPopCount = 0;
-                    RandomSetPosition();
-                    PlayBalloonAppearAnim(3f);
-                });
+        DoTrafficLightAppearAnim();
         
+        DOVirtual.Float(0, 0, 6.5f, _ => { })
+            .OnComplete(() =>
+            {
+                _collectedBalloon = 0;
+                _currentBalloonPopCount = 0;
+                RandomSetPosition();
+                PlayBalloonAppearAnim(3f);
+            });
+    }
+
+    private void DoTrafficLightAppearAnim()
+    {
+        _trafficLight
+            .DOScale(_tlDefaultSize, 1.0f)
+            .SetEase(Ease.InOutBack)
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(
+                    SoundManager.Sound
+                        .Effect,
+                    "Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/sci-fi_device_item_power_up_flash_01");
+            })
+            .OnComplete(() => { PlayChangeTrafficLightAnim(); })
+            .SetDelay(1f);
     }
 
     private IEnumerator FlyAwayCo(float delay)
     {
+        Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/chime_tinkle_wood_bell_positive_01");
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
         foreach (var balloon in _balloons)
         {
@@ -356,22 +378,28 @@ public class EmotionTrafficLights_GameManager : IGameManager
 
         DOVirtual.Float(0, 0, 1.5f, _ => { }).OnComplete(() =>
         {
-
             _isInitializing = false;
             _isClickable = true;
         });
     }
     
-
-
+    
     private void PlayChangeTrafficLightAnim()
     {
         _trafficLight.DORotateQuaternion(_tlDefalutRotation * Quaternion.Euler(-120, 0, 0), 2.0f)
             .SetEase(Ease.InOutBounce)
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(
+                    SoundManager.Sound
+                        .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_01");
+            })
             .OnComplete(() =>
             {
                 ChangeTrafficLight();
-               
+                Managers.Sound.Play(
+                    SoundManager.Sound
+                        .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_02");
                 _trafficLight.DORotateQuaternion(_tlDefalutRotation, 1.5f).SetEase(Ease.OutBounce).SetDelay(1f);
             })
             .SetDelay(1f);
@@ -432,6 +460,11 @@ public class EmotionTrafficLights_GameManager : IGameManager
 
     private void OnCorrectBallon(Transform ball, int hitBalloonID)
     {
+        var randomNum = UnityEngine.Random.Range(3, 4+1);
+        Managers.Sound.Play(
+            SoundManager.Sound
+                .Effect,
+            $"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_0{randomNum}");
         _collectedBalloon++;
         StartCoroutine(OnCorrectBallonClickedCo(ball, hitBalloonID));
     }
