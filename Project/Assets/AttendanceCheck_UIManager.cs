@@ -20,7 +20,6 @@ public class AttendanceCheck_UIManager : UI_Base
     private InputField _inputField;
 
     
-    
     public int activeNameCount { get; private set; }
     public static event Action OnNameInputFinished;
     private enum UI_Type

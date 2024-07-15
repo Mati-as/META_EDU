@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class RplidarTest_Ray : MonoBehaviour
 {
     public string port;
     //public GameObject Capsule;
 
-    private LidarData[] data;
+    private LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
 
     //=====0714
@@ -57,7 +59,7 @@ public class RplidarTest_Ray : MonoBehaviour
     [SerializeField]
     public GameObject temp_pos;
 
-    public float Sensor_rotation = 0;
+    public readonly float SENSOR_ROTATION = 0;
 
     //1121
 
@@ -73,6 +75,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private bool UI_Active = false;
     private bool BALL_Active = true;
     private bool SF_Active = true;
+    private readonly int LIDAR_DATA_SIZE = 720;
     
     //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
     private Slider _sensitivitySlider;
@@ -80,7 +83,7 @@ public class RplidarTest_Ray : MonoBehaviour
     
     private void Awake()
     {
-        data = new LidarData[720];
+        _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         
         //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
         _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
@@ -101,7 +104,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
         if (m_onscan)
         {
-            m_thread = new Thread(GenMesh);
+            m_thread = new Thread(GenerateMesh);
             m_thread.Start();
         }
 
@@ -109,7 +112,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         UI_Camera = Manager_Sensor.instance.Get_UIcamera();
-
+        
         //guide라인이랑 동기화 기능
         min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x - (Guideline.GetComponent<RectTransform>().rect.width) / 2;
         min_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y - (Guideline.GetComponent<RectTransform>().rect.height) / 2;
@@ -118,17 +121,19 @@ public class RplidarTest_Ray : MonoBehaviour
 
         TESTUI.SetActive(false);
 
+
+        _projectorLookUpTable = new Dictionary<int, Vector2>();
         
         //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
         _sensitivitySlider.value = IGameManager.DEFAULT_SENSITIVITY / 2;
     }
 
 
-    void GenMesh()
+    void GenerateMesh()
     {
         while (true)
         {
-            int datacount = RplidarBinding.GetData(ref data);
+            int datacount = RplidarBinding.GetData(ref _lidarDatas);
 
             if (datacount == 0)
             {
@@ -148,23 +153,56 @@ public class RplidarTest_Ray : MonoBehaviour
         _sensitivityText.text = $"sensitivity : {FP_Prefab.Limit_Time:F2}";
 
     }
+
+    
+    
+    int GenerateKey(int angle, int distance)
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 100 + angle.GetHashCode();
+            hash = hash * 100 + distance.GetHashCode();
+            return hash;
+        }
+    }
+    
+    private Dictionary<int, Vector2> _projectorLookUpTable;
+    
     // Update is called once per frame
     void FixedUpdate()
     {
 
         if (m_datachanged)
         {
-            for (int i = 0; i < 720; i++)
+            for (int i = 0; i < LIDAR_DATA_SIZE; i++)
             {
+                var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
+                
                 //센서 데이터 data[i].theta, distant
                 //1. 화면과 센서를 일치화 시키기 위해서 theta를 마이너스 곱해줌, 추가로 회전 시켜주기 위해 Sensor_rotation 추가했고 위에서 아래 방향으로 내려다 보는것 기준으 90도 입력하면 댐
                 //2. 0.74f는 실제 길이와 유니티내 맵핑이 일치하기 위한 보정값(빔프로젝터의 실제 화면과 오차가 있음), 1.07f는 발 위에 정확히 찍히기 위한 보정값
                 // Ex) 실제에서 682 mm -> 유니티 position 상 500, 보정값 0.733 곱해서 맞춰줌 실제 데이터를 position으로 변환함
                 //3. 763.565f은 유니티 상의 캔버스 기준이 정가운데이기 때문에 그에 맞추기 위해 y값을 그 만큼 위로 올림
+                
+                //계산되어있을때? ==> Mathf.Rad2Deg(-_lidarDatas[i].theta)
+                
+                if (_projectorLookUpTable.ContainsKey(key))
+                {
+                    Debug.LogError($"룩업테이블 참조중....key {key}");
+                    x = _projectorLookUpTable[key].x; 
+                    y = _projectorLookUpTable[key].y;
+                }
+                else if(!_projectorLookUpTable.ContainsKey(key))
+                {
+                    Debug.LogError($"룩업테이블계산 및 저장....key: {key}");
+                    x = 54.24f + 0.733f * Mathf.Cos((-_lidarDatas[i].theta + SENSOR_ROTATION) * Mathf.Deg2Rad) * (_lidarDatas[i].distant * 1.07f);
+                    y = 763.565f + 0.733f * Mathf.Sin((-_lidarDatas[i].theta + SENSOR_ROTATION) * Mathf.Deg2Rad) * (_lidarDatas[i].distant * 1.07f);
 
-                x = 54.24f+0.733f * Mathf.Cos((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
-                y = 763.565f + 0.733f * Mathf.Sin((-data[i].theta + Sensor_rotation) * Mathf.Deg2Rad) * (data[i].distant * 1.07f);
-
+                    var coordinate = new Vector2(x, y);
+                    _projectorLookUpTable.TryAdd(key, coordinate);
+                }
+ 
                 if (i % 4 == 0)
                 {
                     if (min_x < x && x < max_x)
@@ -176,6 +214,7 @@ public class RplidarTest_Ray : MonoBehaviour
                                 //필터 On
                                 if (BALL_Active)
                                 {
+                                    //게임플레이 로직에 좌표를 전달하는 역할
                                     Instant_FP(x, y);
                                 }
                                 else
@@ -188,6 +227,7 @@ public class RplidarTest_Ray : MonoBehaviour
                                 //필터 off
                                 if (BALL_Active)
                                 {
+                                    ////게임플레이 로직에 좌표를 전달하는 역할
                                     Instant_Ball(x, y);
                                 }
                                 else
