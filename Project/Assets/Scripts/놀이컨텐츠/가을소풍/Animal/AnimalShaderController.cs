@@ -266,8 +266,10 @@ public class AnimalShaderController : MonoBehaviour
 
 // Load the material from the Resources folder as before
         var tempMat = Resources.Load<Material>("게임별분류/가을소풍/" + _animalData.englishName);
-        _bodyMat = tempMat;
-        _glowMat = tempMat;
+
+        var thisMat = tempMat;
+        _bodyMat = thisMat;
+        _glowMat = thisMat;
      
     
 // Get the SkinnedMeshRenderer

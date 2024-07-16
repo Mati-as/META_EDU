@@ -58,7 +58,7 @@ public class AttendanceCheck_UIManager : UI_Base
     /// </summary>
     private void OnInput()
     {
-        if (_inputField.text == string.Empty || _inputField.text == "" || _inputField.text.Length < 2)
+        if (_inputField.text == string.Empty || _inputField.text == "" || _inputField.text.Length < 2 || _inputField.text.Length > 5)
         {
             
             _placeholder.text = "올바른 이름을 입력해주세요";
@@ -126,6 +126,7 @@ public class AttendanceCheck_UIManager : UI_Base
             
             text_namesOnList[i] = _nameOnListObjs[i].GetComponentInChildren<Text>();
             _nameOnListObjs[i].SetActive(false);
+            text_namesOnList[i].text = string.Empty;
             
             _textMap.Add(_nameOnListObjs[i].GetInstanceID(),text_namesOnList[i]);
             //Debug.Log($"name : {_nameOnListObjs[i].GetInstanceID()}, order : {i}");

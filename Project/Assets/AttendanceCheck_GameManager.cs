@@ -20,19 +20,21 @@ public class AttendanceCheck_GameManager : IGameManager
   {
     base.Init();
 
-    var trainParent = transform.GetChild(0);
-    var childCount = trainParent.childCount;
+
+    var trainsParent = transform.GetChild(0).GetChild(1);
+    var childCount = trainsParent.childCount;
     _nameOnTrains = new TextMeshPro[childCount];
   
-    for (int i = 1; i < childCount; i++) //인덱스 0은 TrainHead...Continue필요
+    for (int i = 0; i < childCount; i++) //인덱스 0은 TrainHead...Continue필요
     {
-      var child = trainParent.GetChild(i);
+      var child = trainsParent.GetChild(i);
       
       _nameOnTrains[i] = child.GetChild(0).GetComponent<TextMeshPro>();
     }
 
     _trainAnimator = GameObject.Find("Scene2_NameTrain").GetComponent<Animator>();
-  
+
+    for (var i = 0; i < _nameOnTrains.Length; i++) _nameOnTrains[i].text = string.Empty;
   }
 
   protected override void BindEvent()
@@ -53,11 +55,14 @@ public class AttendanceCheck_GameManager : IGameManager
    
     _uiManager = GameObject.Find("Scene1_NameBoard").GetComponent<AttendanceCheck_UIManager>();
     if(_uiManager==null) Debug.LogError("_uiManager is null");
-  
-    var trainCount = transform.GetChild(0).childCount;
+
+
+    int nameCountOnList = 0;
+    var trainsParent = transform.GetChild(0).GetChild(1);
+    var trainCount = trainsParent.childCount;
     Debug.Log($"list name count : {_uiManager.text_namesOnList.Length}");
     // 0번 인덱스는 TrainHead기 때문에 Continue
-    for (int i = 1; i <  _uiManager.text_namesOnList.Length; i++) //_uiManager.activeNameCount
+    for (int i = 0; i <  _uiManager.text_namesOnList.Length; i++) //_uiManager.activeNameCount
     {
       if(_nameOnTrains[i%trainCount] == null)
       {
@@ -65,17 +70,26 @@ public class AttendanceCheck_GameManager : IGameManager
         continue;
       }
 
-      if(_uiManager.text_namesOnList[i%trainCount] == null)
+      if(_uiManager.text_namesOnList[i] == null)
       {
         Debug.Log($"_uiManager.namesOnList[{i}] is null");
-        continue;
+        break;
       }
+      nameCountOnList = i;
+      _nameOnTrains[i%trainCount].text += _uiManager.text_namesOnList[(i)].text +"\n";
       
-      _nameOnTrains[i%trainCount].text = _uiManager.text_namesOnList[(i-1)%trainCount].text;
+      Debug.Log($"TrainCOunt = {trainCount} : current Count[{i}]");
     }
+    
+    for (int i = 0; i <  _nameOnTrains.Length; i++) //_uiManager.activeNameCount
+    {
+      _nameOnTrains[i].fontSize = nameCountOnList > _nameOnTrains.Length ? 4 : 5;
+    }
+    
 
+   
 
-    DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() =>
+    DOVirtual.Float(0, 0, 10f, _ => { }).OnComplete(() =>
     {
       _trainAnimator.SetBool(TRAIN_MOVE, true);
     });
