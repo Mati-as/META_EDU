@@ -15,6 +15,7 @@ public struct LidarData
     public uint quality;
 };
 
+
 public class RplidarBinding
 {
 
@@ -23,8 +24,10 @@ public class RplidarBinding
         var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
 #if UNITY_EDITOR_64
         currentPath += Path.PathSeparator + Application.dataPath + "/Plugins/x86_64/";
+        Debug.Log("Rplida :64");
 #elif UNITY_EDITOR_32
         currentPath += Path.PathSeparator + Application.dataPath+ "/Plugins/x86/";
+         Debug.Log("Rplida :x86");
 #endif
         Environment.SetEnvironmentVariable("PATH", currentPath);
     }

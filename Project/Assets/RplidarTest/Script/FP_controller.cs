@@ -19,7 +19,7 @@ public class FP_controller : MonoBehaviour
     {
         for(int i =0;i< FP_pos_controller.Count; i++)
         {
-            Debug.Log("존재하는 FP 카운트" + FP_pos_controller.Count);
+           // Debug.Log("존재하는 FP 카운트" + FP_pos_controller.Count);
             FP_x = FP_pos_controller[i].anchoredPosition.x;
             FP_y = FP_pos_controller[i].anchoredPosition.y;
 

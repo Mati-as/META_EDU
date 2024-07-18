@@ -7,8 +7,13 @@ using UnityEngine.UI;
 
 public class RplidarTest_Ray : MonoBehaviour
 {
-    public string port;
-    //public GameObject Capsule;
+ 
+#if UNITY_EDITOR
+    private static string port ="COM3";
+#else
+     private static string port ="COM3";      
+#endif
+
 
     private LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
@@ -91,8 +96,8 @@ public class RplidarTest_Ray : MonoBehaviour
     private readonly float OFFSET_X_MAX = 1000;
     
     
-    private float _offsetY = 763.565f;
-    private readonly float OFFSET_Y_MAX =1000;
+    private float _offsetY = 250;
+    private readonly float OFFSET_Y_MAX =1500;
     
     
     private readonly float SCREEN_RATIO_MIN =0.5f;
@@ -117,6 +122,7 @@ public class RplidarTest_Ray : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
+     
         Init();
 
     }
@@ -201,6 +207,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
     void Start()
     {
+
         int result = RplidarBinding.OnConnect(port);
         Debug.Log("Connect on " + port + " result:" + result);
 
@@ -292,7 +299,7 @@ public class RplidarTest_Ray : MonoBehaviour
     
         if (m_datachanged)
         {
-            for (int i = 0; i < LIDAR_DATA_SIZE; i++)
+            for (int i = 0; i < 10; i++)
             {
              
                 
@@ -306,26 +313,31 @@ public class RplidarTest_Ray : MonoBehaviour
                 
                 //계산되어있을때? ==> Mathf.Rad2Deg(-_lidarDatas[i].theta)
                 var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
-                
+
+                //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
                 
                 var processedTheta = -_lidarDatas[i].theta * Mathf.Deg2Rad; // 프로젝터값 등을 고려한 값
                 var processedDistance = _lidarDatas[i].distant * 1.07f;
                 
+                x = offsetX + screenRatio * Mathf.Cos(processedTheta) * (processedDistance);
+                y = offsetY + screenRatio * Mathf.Sin(processedTheta) * (processedDistance);
+                Debug.Log($"좌표 계산결과 {x},{y}");
+                Debug.Log($"해당좌표 거리: {_lidarDatas[i].distant} , 각도: {_lidarDatas[i].theta}");
+                
                 if (_projectorLookUpTable.ContainsKey(key))
                 {
-                    Debug.LogWarning($"LUT REFFERRING....key {key}");
+                    //Debug.LogWarning($"LUT REFFERRING....key {key}");
                     x = _projectorLookUpTable[key].x; 
                     y = _projectorLookUpTable[key].y;
                 }
                 else if(!_projectorLookUpTable.ContainsKey(key))
                 {
-                    Debug.LogWarning($"LUT CALCULATING & SAVING....key: {key}");
+                    //Debug.LogWarning($"LUT CALCULATING & SAVING....key: {key}");
              
-                    x = offsetX + screenRatio * Mathf.Cos(processedTheta) * (processedDistance);
-                    y = offsetY + screenRatio * Mathf.Sin(processedTheta) * (processedDistance);
+                  
                     
                     //x = 프로젝터 높이 * 계산수식(크기~) + offsetX
-                    Debug.Log($"좌표 계산결과 {x},{y}");
+                    
                     
                     var coordinate = new Vector2(x, y);
                     _projectorLookUpTable.TryAdd(key, coordinate);
@@ -333,7 +345,6 @@ public class RplidarTest_Ray : MonoBehaviour
 
                 if (_isSensorEditMode)
                 {
-                    
                     InstantiateMiddlePointPrefab(x, y);
                     return;
                 }
@@ -351,6 +362,7 @@ public class RplidarTest_Ray : MonoBehaviour
                                 {
                                     //게임플레이 로직에 좌표를 전달하는 역할
                                     Instant_FP(x, y);
+                                    
                                 }
                                 else
                                 {

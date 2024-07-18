@@ -30,8 +30,8 @@ public class FP_Prefab : RaySynchronizer
 
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
-        Image = this.transform.GetChild(0).gameObject;
-
+        //Image = this.transform.GetChild(0).gameObject;
+        Image = gameObject;
         //Debug.Log(FP.anchoredPosition.x + "," + FP.anchoredPosition.y);
         if (FPC.Check_FPposition(FP))
         {
