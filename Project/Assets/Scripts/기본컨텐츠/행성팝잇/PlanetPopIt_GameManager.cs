@@ -153,6 +153,12 @@ public class PlanetPopIt_GameManager : IGameManager
         base.OnRaySynced();
 
         foreach (var hit in GameManager_Hits)
+        {
+            var ps = GetFromPool(_effectContainer);
+            ps.gameObject.SetActive(true);
+            ps.gameObject.transform.position = hit.point;
+            ps.Play();
+            
             if (hit.transform.name.Contains(nameof(Planet)))
             {
                 
@@ -165,13 +171,12 @@ public class PlanetPopIt_GameManager : IGameManager
                     0.3f);
                 
                 //particle------------------
-                var ps = GetFromPool(_effectContainer);
-                ps.gameObject.SetActive(true);
-                ps.gameObject.transform.position = hit.point;
-                ps.Play();
+                
              
                 return;
             }
+        }
+    
     }
 
 

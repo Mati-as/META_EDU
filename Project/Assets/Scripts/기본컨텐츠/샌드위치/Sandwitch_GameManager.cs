@@ -482,7 +482,7 @@ public class Sandwitch_GameManager : IGameManager
 #if UNITY_EDITOR
                             Debug.Log("popup sound");
 #endif
-                            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/pop", 0.3f);
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A", 0.3f);
                         })
                         .SetEase(Ease.InOutBounce)
                         .SetDelay(delay + Random.Range(0, 0.5f))
@@ -561,6 +561,11 @@ public class Sandwitch_GameManager : IGameManager
         Debug.Log("Making Sandwich is finished");
 #endif
 
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/기본컨텐츠/Sandwich/Complete", 1f);
+
+       
+        
         Managers.Sound.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0" + Random.Range(1, 5), 0.5f);
 

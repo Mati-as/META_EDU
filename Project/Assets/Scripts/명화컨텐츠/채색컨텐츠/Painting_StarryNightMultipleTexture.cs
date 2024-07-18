@@ -109,7 +109,7 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     public float currentRotation;
     
     private float _elapsed;
-    private readonly float _timeLimitForSceneChange = 10;
+    private readonly float _timeLimitForSceneChange = 50;
     
     private void Update()
     {

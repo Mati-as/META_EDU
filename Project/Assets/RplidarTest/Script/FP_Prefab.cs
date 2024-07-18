@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 
 public class FP_Prefab : RaySynchronizer
 {
@@ -12,7 +13,7 @@ public class FP_Prefab : RaySynchronizer
 
     public FP_controller FPC;
     private float Timer = 0f;
-    public static float Limit_Time = 1.3f;
+    public static float Limit_Time { get; set; }
 
     private RectTransform FP;
     private GameObject Image;
