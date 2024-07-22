@@ -69,15 +69,15 @@ public class starryNight_MainCamController : MonoBehaviour
     {
         _volume.enabled = true;
         
-        DOVirtual.Float(0, defaultExposure, 2, value =>
+        DOVirtual.Float(0, defaultExposure, 1.5f, value =>
         {
             SetPostExposure(value);
-        }).SetDelay(startDelay);
+        }).SetDelay(0);
         
-        DOVirtual.Float(1, 0, 2, value =>
+        DOVirtual.Float(1, 0, 1.5f, value =>
         {
             SetVignetteIntensity(value);
-        }).SetDelay(startDelay)
+        }).SetDelay(0)
             .OnComplete(() =>
             {
                 paintMovingStart?.Invoke();

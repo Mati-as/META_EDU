@@ -3,18 +3,23 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
 public class RplidarTest_Ray : MonoBehaviour
 {
- 
-#if UNITY_EDITOR
-    private static string port ="COM3";
-#else
-     private static string port ="COM3";      
-#endif
 
+   
+// #if UNITY_EDITOR
+//     public bool USE_SENSOR;
+//     public static bool useSensor;
+//     private static string port = useSensor ? "COM3" : string.Empty;
+// #else
+//   
+// #endif
 
+    private static string port ="COM3";      
+    
     private LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
 
@@ -44,6 +49,8 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
+    private float HEIGHT = 180;
+    private float WIDTH;
 
     public float min_x;
     public float min_y;
@@ -96,16 +103,16 @@ public class RplidarTest_Ray : MonoBehaviour
     private readonly float OFFSET_X_MAX = 1000;
     
     
-    private float _offsetY = 250;
-    private readonly float OFFSET_Y_MAX =1500;
+    private float SENSOR_DISTANCE_FROM_PROJECTION = -1180;
+    private readonly float SENSEOR_OFFSET_MAX_VALUE =1000;
     
     
     private readonly float SCREEN_RATIO_MIN =0.5f;
-    private readonly float SCREEN_RATIO_MAX =2;
-    private float _screenRatio = 1;
+    private readonly float SCREEN_RATIO_MAX =10;
+    private float _screenRatio = 0.6f;
     
     public float offsetX { get =>_offsetX; set => _offsetX =value; }
-    public float offsetY { get => _offsetY; set =>_offsetY = value; }
+    public float sensorDistanceFromProjection { get => SENSOR_DISTANCE_FROM_PROJECTION; set =>SENSOR_DISTANCE_FROM_PROJECTION = value; }
     public float screenRatio { get => _screenRatio;set => _screenRatio = value;}
     
     private Slider _offsetXSlider;
@@ -116,14 +123,34 @@ public class RplidarTest_Ray : MonoBehaviour
     private TextMeshProUGUI _TMP_offsetY;
     private TextMeshProUGUI _TMP_ScreenRatio;
     
+    ////////////////// 0719- 센서 테스트용 멤버 새로 추가한 부분///////////////////////////////
+    
+    private float correction_value;// 화면과 유니티에서의 단위를 맞추기 위한 보정값.
+    //private float offset = 1.07f; // 발에 정확히 찍히기 위한 오프셋
+    private float height = 0.6f;// 빔프로젝터의 지면에서의 높이
+    private float distance = 0.23f; // 기기와 화면에서의 직선거리
+    private float X_length;//화면의 가로 길이
+    private float Y_length;//화면의 세로 길이
+    private const float THROW_RATIO = 0.21f; // 빔프로젝터의 거리와 화면 크기 비(빔프로젝터 카탈로그 상 수치)
+    private float y_offset; // (0,0)이 화면 중앙이므로 화면 세로 길이 / 2 + 화면에서 센서까지의 거리 추가
+    private float screen_ratio;// 화면비
+    
+    /// /////////////////
+
     
     
     private void Awake()
     {
         if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
-        _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
-     
+// #if  UNITY_EDITOR
+//         useSensor = USE_SENSOR;
+//         if(useSensor) 
+// #endif
+            _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
+        
         Init();
+        
+        WIDTH = HEIGHT * Resolution_X / Resolution_Y;
 
     }
 
@@ -148,11 +175,11 @@ public class RplidarTest_Ray : MonoBehaviour
         InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
 
         _TMP_offsetX.text =  "OFFSET X: " + offsetX.ToString("F2");
-        _TMP_offsetY.text = "OFFSET Y: " + offsetY.ToString("F2");
+        _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
         _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
        
         _offsetXSlider.value = offsetX;
-        _offsetYSlider.value = offsetY;
+        _offsetYSlider.value = sensorDistanceFromProjection;
         _screenRatioSlider.value = screenRatio;
         
         
@@ -163,12 +190,12 @@ public class RplidarTest_Ray : MonoBehaviour
           
         },minVal:-1000);
     
-        ConfigureSlider(_offsetYSlider, OFFSET_Y_MAX, value =>
+        ConfigureSlider(_offsetYSlider, SENSEOR_OFFSET_MAX_VALUE, value =>
         {
-            offsetY = value;
-            _TMP_offsetY.text = "OFFSET Y: " + offsetY.ToString("F2");
+            sensorDistanceFromProjection = value;
+            _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
       
-        },minVal:-1000);
+        },minVal:-2000);
     
         ConfigureSlider(_screenRatioSlider, SCREEN_RATIO_MAX, value =>
         {
@@ -186,7 +213,6 @@ public class RplidarTest_Ray : MonoBehaviour
         _TMP_sensorEditMode.text = _isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
         
         _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
-
         
     }
 
@@ -248,6 +274,17 @@ public class RplidarTest_Ray : MonoBehaviour
         
         //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
         _sensitivitySlider.value = IGameManager.DEFAULT_SENSITIVITY / 2;
+        
+        
+        
+        
+        
+        ///////////////////////////////////////////////////////////////////////// (1)
+        screen_ratio = Resolution_X / Resolution_Y;
+        y_offset = ((X_length / screen_ratio) / 2) + distance;
+        X_length = height / THROW_RATIO;
+        Y_length = X_length / (1920 / 1080);
+        correction_value = -(Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
     }
 
 
@@ -299,7 +336,7 @@ public class RplidarTest_Ray : MonoBehaviour
     
         if (m_datachanged)
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 720; i++)
             {
              
                 
@@ -316,37 +353,67 @@ public class RplidarTest_Ray : MonoBehaviour
 
                 //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
                 
+                
+                ///////////////////////////////////////////////////////////////////////// (2)
                 var processedTheta = -_lidarDatas[i].theta * Mathf.Deg2Rad; // 프로젝터값 등을 고려한 값
                 var processedDistance = _lidarDatas[i].distant * 1.07f;
+               // correction_value = - (Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
                 
-                x = offsetX + screenRatio * Mathf.Cos(processedTheta) * (processedDistance);
-                y = offsetY + screenRatio * Mathf.Sin(processedTheta) * (processedDistance);
+               //6배
+
+
+               x = -screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
+               y = -screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90-_lidarDatas[i].theta) * Mathf.Deg2Rad) +
+                                  SENSOR_DISTANCE_FROM_PROJECTION);
+               
+               // 라이더 센서 메뉴얼상 각도 시스템에 맞추기 위해 -90도 회전하여 계산값을 도출하였습니다.  
+               // x = -screenRatio * (_lidarDatas[i].distant * Mathf.Sin((_lidarDatas[i].theta)* Mathf.Deg2Rad));
+               // y = screenRatio * (_lidarDatas[i].distant * Mathf.Cos((_lidarDatas[i].theta) * Mathf.Deg2Rad) +
+               //                    SENSOR_DISTANCE_FROM_PROJECTION);
+                
+                // cal option 1
+                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(-_lidarDatas[i].theta * Mathf.Deg2Rad));
+                // y = correction_value * (_lidarDatas[i].distant * Mathf.Sin(-_lidarDatas[i].theta * Mathf.Deg2Rad) -(Y_length / 2 + distance));
+                
+                // cal option 2
+                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(Mathf.PI - (_lidarDatas[i].theta * Mathf.Deg2Rad)));
+                // y = correction_value *
+                //     (_lidarDatas[i].distant * Mathf.Sin(Mathf.PI - (_lidarDatas[i].theta * Mathf.Deg2Rad)) -
+                //      (Y_length / 2 + distance));
+                
+                // cal option 3
+                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(Mathf.PI + (_lidarDatas[i].theta * Mathf.Deg2Rad)));
+                // y = correction_value *
+                //     (_lidarDatas[i].distant * Mathf.Sin(Mathf.PI + (_lidarDatas[i].theta * Mathf.Deg2Rad)) -
+                //      (Y_length / 2 + distance));
+                    
+                    
+                    
                 Debug.Log($"좌표 계산결과 {x},{y}");
                 Debug.Log($"해당좌표 거리: {_lidarDatas[i].distant} , 각도: {_lidarDatas[i].theta}");
                 
-                if (_projectorLookUpTable.ContainsKey(key))
-                {
-                    //Debug.LogWarning($"LUT REFFERRING....key {key}");
-                    x = _projectorLookUpTable[key].x; 
-                    y = _projectorLookUpTable[key].y;
-                }
-                else if(!_projectorLookUpTable.ContainsKey(key))
-                {
-                    //Debug.LogWarning($"LUT CALCULATING & SAVING....key: {key}");
-             
-                  
-                    
-                    //x = 프로젝터 높이 * 계산수식(크기~) + offsetX
-                    
-                    
-                    var coordinate = new Vector2(x, y);
-                    _projectorLookUpTable.TryAdd(key, coordinate);
-                }
+                // if (_projectorLookUpTable.ContainsKey(key))
+                // {
+                //     //Debug.LogWarning($"LUT REFFERRING....key {key}");
+                //     x = _projectorLookUpTable[key].x; 
+                //     y = _projectorLookUpTable[key].y;
+                // }
+                // else if(!_projectorLookUpTable.ContainsKey(key))
+                // {
+                //     //Debug.LogWarning($"LUT CALCULATING & SAVING....key: {key}");
+                //
+                //   
+                //     
+                //     //x = 프로젝터 높이 * 계산수식(크기~) + offsetX
+                //     
+                //     
+                //     var coordinate = new Vector2(x, y);
+                //     _projectorLookUpTable.TryAdd(key, coordinate);
+                // }
 
                 if (_isSensorEditMode)
                 {
                     InstantiateMiddlePointPrefab(x, y);
-                    return;
                 }
                 
                 if (i % 4 == 0)

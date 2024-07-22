@@ -91,9 +91,11 @@ public class EasternArt_GameManager : IGameManager
 
         camera.position = _pathVector[0];
 
-        UI_Scene_Button.onBtnShut -= OnBtnShut;
-        UI_Scene_Button.onBtnShut += OnBtnShut;
+        OnBtnShut();
         
+        // UI_Scene_Button.onBtnShut -= OnBtnShut;
+        // UI_Scene_Button.onBtnShut += OnBtnShut;
+
     }
 
 
