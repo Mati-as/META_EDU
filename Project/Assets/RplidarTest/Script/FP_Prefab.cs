@@ -10,6 +10,7 @@ public class FP_Prefab : RaySynchronizer
 {
     private EffectManager _effectManager;
     private readonly string GAME_MANAGER = "GameManager";
+    private Image _image;
 
     public FP_controller FPC;
     private float Timer = 0f;
@@ -23,12 +24,15 @@ public class FP_Prefab : RaySynchronizer
         base.Init();
      //   GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
      _rectTransform = GetComponent<RectTransform>();
-
+     _image = GetComponent<Image>();
     }
 
     void OnEnable()
     {
 
+        //모드설정에따라 이미지 활성화 비활성화
+        _image.enabled = RplidarTest_Ray.isSensorEditMode;
+        
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
         //Image = this.transform.GetChild(0).gameObject;

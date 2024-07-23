@@ -96,7 +96,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private TextMeshProUGUI _TMP_sensorEditMode;
     private Image _sensorEditModCheckImage;
 
-    private bool _isSensorEditMode = true;
+    public static bool isSensorEditMode { get; private set; }
 
     private int _filterAmountRate = 2;
     
@@ -207,8 +207,8 @@ public class RplidarTest_Ray : MonoBehaviour
         _TMP_sensorEditMode = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<TextMeshProUGUI>();
         _sensorEditModCheckImage = GameObject.Find("EditModeCheckImage").GetComponent<Image>();
         
-        _sensorEditModCheckImage.enabled = _isSensorEditMode;
-        _TMP_sensorEditMode.text = _isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
+        _sensorEditModCheckImage.enabled = isSensorEditMode;
+        _TMP_sensorEditMode.text = isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
         
         _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
         
@@ -296,11 +296,14 @@ public class RplidarTest_Ray : MonoBehaviour
         slider.onValueChanged.AddListener(onValueChanged);
       
     }
+    
+   
     private void OnEditSensorModeBtnClicked()
     {
-        _isSensorEditMode = !_isSensorEditMode;
-        _sensorEditModCheckImage.enabled = _isSensorEditMode;
-        _TMP_sensorEditMode.text = _isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
+        
+        isSensorEditMode = !isSensorEditMode;
+        _sensorEditModCheckImage.enabled = isSensorEditMode;
+        _TMP_sensorEditMode.text = isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
     }
 
     void Start()
