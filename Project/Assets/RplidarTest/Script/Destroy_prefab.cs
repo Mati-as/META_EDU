@@ -76,7 +76,7 @@ public class Destroy_prefab : RaySynchronizer
         else
         {
             timer = 0f;
-            Destroy_obj();
+            //Destroy_obj();
         }
     }
 

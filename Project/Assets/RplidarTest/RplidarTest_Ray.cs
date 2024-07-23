@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
@@ -49,8 +50,9 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
-    private float HEIGHT = 180;
-    private float WIDTH;
+    private float _height = 182;
+    
+    private readonly float HEIGHT_MAX = 200;
 
     public float min_x;
     public float min_y;
@@ -100,7 +102,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private bool _isSensorEditMode = true;
 
     private float _offsetX = 0;
-    private readonly float OFFSET_X_MAX = 1000;
+
     
     
     private float SENSOR_DISTANCE_FROM_PROJECTION = -1180;
@@ -119,7 +121,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private Slider _offsetYSlider;
     private Slider _screenRatioSlider;
     
-    private TextMeshProUGUI _TMP_offsetX;
+    private TextMeshProUGUI _TMP_HEIGHT;
     private TextMeshProUGUI _TMP_offsetY;
     private TextMeshProUGUI _TMP_ScreenRatio;
     
@@ -150,7 +152,7 @@ public class RplidarTest_Ray : MonoBehaviour
         
         Init();
         
-        WIDTH = HEIGHT * Resolution_X / Resolution_Y;
+        _height = _height * Resolution_X / Resolution_Y;
 
     }
 
@@ -167,28 +169,29 @@ public class RplidarTest_Ray : MonoBehaviour
         text = slider.transform.GetComponentInChildren<TextMeshProUGUI>();
     }
 
+    private Stack<RectTransform> _sensorDetectedPositionPool;
     private void Init()
     {
+        
         InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
-        InitializeSlider("OffsetXSlider", out _offsetXSlider, out _TMP_offsetX);
+        InitializeSlider("OffsetXSlider", out _offsetXSlider, out _TMP_HEIGHT);
         InitializeSlider("OffsetYSlider", out _offsetYSlider, out _TMP_offsetY);
         InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
-
-        _TMP_offsetX.text =  "OFFSET X: " + offsetX.ToString("F2");
-        _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
-        _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
-       
+        
         _offsetXSlider.value = offsetX;
         _offsetYSlider.value = sensorDistanceFromProjection;
         _screenRatioSlider.value = screenRatio;
         
-        
-        ConfigureSlider(_offsetXSlider, OFFSET_X_MAX, value =>
+        ConfigureSlider(_offsetXSlider, HEIGHT_MAX, value =>
         {
-            offsetX = value;
-            _TMP_offsetX.text = "OFFSET X: " + offsetX.ToString("F2");
+            _height = value;
+            _TMP_HEIGHT.text = "HEIGHT : " + _height.ToString("F2");
           
-        },minVal:-1000);
+        },minVal:150);
+        
+        _TMP_HEIGHT.text =  "HEIGHT X: " + _height.ToString("F2");
+        _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
+        _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
     
         ConfigureSlider(_offsetYSlider, SENSEOR_OFFSET_MAX_VALUE, value =>
         {
@@ -214,6 +217,79 @@ public class RplidarTest_Ray : MonoBehaviour
         
         _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
         
+    }
+
+    private WaitForSeconds _poolReturnWait;
+    protected IEnumerator ReturnToPoolAfterDelay(RectTransform obj, Stack<RectTransform> pool) 
+    {
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(FP_Prefab.Limit_Time);
+
+        yield return _poolReturnWait;
+        obj.gameObject.SetActive(false);
+#if UNITY_EDITOR
+
+#endif
+        
+        pool.Push(obj); // Return the particle system to the pool
+    }
+    
+    private void SetPool<T>(Stack<T> pool, string path, int poolCount = 500)  where T : UnityEngine.Object
+    {
+        for (var poolSize = 0; poolSize < poolCount; poolSize++)
+        {
+            var prefab = Resources.Load<GameObject>(path);
+
+            if (prefab == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("this gameObj to pool is null.");
+#endif
+                return;
+            }
+
+            var obj = Instantiate(prefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+
+            var component = obj.GetComponent<T>();
+            if (component == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("the loaded prefab does not have the required component.");
+#endif
+                return;
+            }
+
+            obj.SetActive(false);
+            pool.Push(component);
+        }
+    }
+    
+
+    private RectTransform GetFromPool(Stack<RectTransform> pool)
+    {
+        if (pool.Count <= 0) return null;
+
+        var obj = pool.Pop();
+        return obj;
+    }
+
+    private void ShowSensorPos(float rectX, float rectY)
+    {
+        var detectedPosRect = GetFromPool(_sensorDetectedPositionPool);
+        
+        if (detectedPosRect == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError("No RectTransform available in the pool.");
+#endif
+            return;
+        }
+#if UNITY_EDITOR
+//        Debug.Log("Get RectRansfrom Pool.");
+#endif
+
+        detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
+        detectedPosRect.gameObject.SetActive(true);
+        StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
     }
 
     private void ConfigureSlider(Slider slider, float maxValue, UnityEngine.Events.UnityAction<float> onValueChanged,
@@ -285,6 +361,10 @@ public class RplidarTest_Ray : MonoBehaviour
         X_length = height / THROW_RATIO;
         Y_length = X_length / (1920 / 1080);
         correction_value = -(Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
+        
+        ///////////////////////// Pool
+        _sensorDetectedPositionPool = new Stack<RectTransform>();
+        SetPool(_sensorDetectedPositionPool, "Rplidar/FP");
     }
 
 
@@ -389,8 +469,8 @@ public class RplidarTest_Ray : MonoBehaviour
                     
                     
                     
-                Debug.Log($"좌표 계산결과 {x},{y}");
-                Debug.Log($"해당좌표 거리: {_lidarDatas[i].distant} , 각도: {_lidarDatas[i].theta}");
+                // Debug.Log($"좌표 계산결과 {x},{y}");
+                // Debug.Log($"해당좌표 거리: {_lidarDatas[i].distant} , 각도: {_lidarDatas[i].theta}");
                 
                 // if (_projectorLookUpTable.ContainsKey(key))
                 // {
@@ -411,44 +491,19 @@ public class RplidarTest_Ray : MonoBehaviour
                 //     _projectorLookUpTable.TryAdd(key, coordinate);
                 // }
 
-                if (_isSensorEditMode)
-                {
-                    InstantiateMiddlePointPrefab(x, y);
-                }
+                // if (_isSensorEditMode)
+                // {
+                //     InstantiateMiddlePointPrefab(x, y);
+                // }
                 
-                if (i % 4 == 0)
+                if (i % 30 == 0)
                 {
                     if (min_x < x && x < max_x)
                     {
                         if (min_y < y && y < max_y)
                         {
-                            if (SF_Active)
-                            {
-                                //필터 On
-                                if (BALL_Active)
-                                {
-                                    //게임플레이 로직에 좌표를 전달하는 역할
-                                    Instant_FP(x, y);
-                                    
-                                }
-                                else
-                                {
-                                    //데모용 마우스?
-                                }
-                            }
-                            else
-                            {
-                                //필터 off
-                                if (BALL_Active)
-                                {
-                                    ////게임플레이 로직에 좌표를 전달하는 역할
-                                    Instant_Ball(x, y);
-                                }
-                                else
-                                {
-                                    //데모용 마우스?
-                                }
-                            }
+                            ShowSensorPos(x, y);
+                            //Instant_FP(x, y);
                         }
                     }
 
@@ -458,6 +513,7 @@ public class RplidarTest_Ray : MonoBehaviour
         }
 
     }
+
 
     public void Instant_Ball(float temp_x, float temp_y)
     {
@@ -477,6 +533,8 @@ public class RplidarTest_Ray : MonoBehaviour
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
     }
+
+
 
 
     public void InstantiateMiddlePointPrefab(float temp_x, float temp_y)

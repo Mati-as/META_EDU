@@ -55,6 +55,6 @@ public class FP_controller : MonoBehaviour
 
     public void Delete_FPposition()
     {
-        FP_pos_controller.RemoveAt(0);
+//        FP_pos_controller.RemoveAt(0);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -29,7 +30,7 @@ public class RaySynchronizer : MonoBehaviour
     public PointerEventData PED { get; private set; }
     public List<RaycastResult> raycastResults { get; protected set; }
     public Vector3 screenPosition;
-    public Button button;
+    public Button btn;
 
     public static event Action OnGetInputFromUser;
 
@@ -125,8 +126,8 @@ public class RaySynchronizer : MonoBehaviour
         if (raycastResults.Count > 0)
             for (var i = 0; i < raycastResults.Count; i++)
             {
-                raycastResults[i].gameObject.TryGetComponent(out button);
-                button?.onClick?.Invoke();
+                raycastResults[i].gameObject.TryGetComponent(out btn);
+                btn?.onClick?.Invoke();
             }
 
 

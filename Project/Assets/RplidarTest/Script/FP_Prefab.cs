@@ -21,11 +21,12 @@ public class FP_Prefab : RaySynchronizer
     public override void Init()
     {
         base.Init();
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
-      
+     //   GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
+     _rectTransform = GetComponent<RectTransform>();
+
     }
 
-    void Start()
+    void OnEnable()
     {
 
         FP = this.GetComponent<RectTransform>();
@@ -36,19 +37,22 @@ public class FP_Prefab : RaySynchronizer
         if (FPC.Check_FPposition(FP))
         {
             Image.SetActive(true);
-            FPC.Add_FPposition(FP);
+            //FPC.Add_FPposition(FP);
             //��ġ �߻� (3)
             base.Start();
             base.InvokeRayEvent();
         }
-        else
-        {
-            Destroy_obj();
-        }
+       //  else
+       //  {
+       //     Destroy_obj();
+       //  }
     }
+
+    private Button _btn;
+    private RectTransform _rectTransform;
     public override void ShootRay()
     {
-        screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
+        screenPosition = _uiCamera.WorldToScreenPoint(_rectTransform.position);
 
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
@@ -56,38 +60,37 @@ public class FP_Prefab : RaySynchronizer
 #if UNITY_EDITOR
 #endif
 
-
         PED.position = screenPosition;
         var results = new List<RaycastResult>();
         GR.Raycast(PED, results);
+        
+        foreach (RaycastResult result in results)
+        {
+            result.gameObject.TryGetComponent(out _btn);
+            _btn?.onClick?.Invoke();
+            Debug.Log("Hit " + result.gameObject.name);
+            if(_btn?.onClick == null)Debug.Log($"btn.callback is null: {result.gameObject.name}");
+        }
 
-        if (results.Count > 0)
-            for (var i = 0; i < results.Count; i++)
-            {
-#if UNITY_EDITOR
-                //Debug.Log($"UI ���� ������Ʈ �̸�: {results[i].gameObject.name}");
-#endif
-                results[i].gameObject.TryGetComponent(out Button button);
-                button?.onClick?.Invoke();
-            }
+        
     }
 
-    void Update()
-    {
-        if (Timer < Limit_Time)
-        {
-            Timer += Time.deltaTime;
-        }
-        else
-        {
-            Timer = 0f;
-          
-           
-            FPC.Delete_FPposition();
-            Destroy_obj();
-        }
-       
-    }
+    // void Update()
+    // {
+    //     if (Timer < Limit_Time)
+    //     {
+    //         Timer += Time.deltaTime;
+    //     }
+    //     else
+    //     {
+    //         Timer = 0f;
+    //       
+    //        
+    //    //    FPC.Delete_FPposition();
+    //         //Destroy_obj();
+    //     }
+    //    
+    // }
 
     void Destroy_obj()
     {
