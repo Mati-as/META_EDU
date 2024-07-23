@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 
 public class RplidarTest_Ray : MonoBehaviour
@@ -34,7 +33,6 @@ public class RplidarTest_Ray : MonoBehaviour
     private bool m_datachanged = false;
     //=====
     private Vector3 Temp_position;
-
     //=====
 
 
@@ -47,12 +45,11 @@ public class RplidarTest_Ray : MonoBehaviour
     //
 
     //1015
-
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
     private float _height = 182;
     
-    private readonly float HEIGHT_MAX = 200;
+    private readonly int FILTER_AMOUNT_RATE_MAX = 10;
 
     public float min_x;
     public float min_y;
@@ -101,9 +98,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
     private bool _isSensorEditMode = true;
 
-    private float _offsetX = 0;
-
-    
+    private int _filterAmountRate = 2;
     
     private float SENSOR_DISTANCE_FROM_PROJECTION = -1180;
     private readonly float SENSEOR_OFFSET_MAX_VALUE =1000;
@@ -113,7 +108,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private readonly float SCREEN_RATIO_MAX =10;
     private float _screenRatio = 0.6f;
     
-    public float offsetX { get =>_offsetX; set => _offsetX =value; }
+    public int filterAmountRate { get =>_filterAmountRate; set => _filterAmountRate =value; }
     public float sensorDistanceFromProjection { get => SENSOR_DISTANCE_FROM_PROJECTION; set =>SENSOR_DISTANCE_FROM_PROJECTION = value; }
     public float screenRatio { get => _screenRatio;set => _screenRatio = value;}
     
@@ -121,7 +116,7 @@ public class RplidarTest_Ray : MonoBehaviour
     private Slider _offsetYSlider;
     private Slider _screenRatioSlider;
     
-    private TextMeshProUGUI _TMP_HEIGHT;
+    private TextMeshProUGUI _TMP_FilterAmountRate;
     private TextMeshProUGUI _TMP_offsetY;
     private TextMeshProUGUI _TMP_ScreenRatio;
     
@@ -174,22 +169,22 @@ public class RplidarTest_Ray : MonoBehaviour
     {
         
         InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
-        InitializeSlider("OffsetXSlider", out _offsetXSlider, out _TMP_HEIGHT);
+        InitializeSlider("OffsetXSlider", out _offsetXSlider, out _TMP_FilterAmountRate);
         InitializeSlider("OffsetYSlider", out _offsetYSlider, out _TMP_offsetY);
         InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
         
-        _offsetXSlider.value = offsetX;
+        _offsetXSlider.value = filterAmountRate;
         _offsetYSlider.value = sensorDistanceFromProjection;
         _screenRatioSlider.value = screenRatio;
         
-        ConfigureSlider(_offsetXSlider, HEIGHT_MAX, value =>
+        ConfigureSlider(_offsetXSlider, FILTER_AMOUNT_RATE_MAX, value =>
         {
             _height = value;
-            _TMP_HEIGHT.text = "HEIGHT : " + _height.ToString("F2");
+            _TMP_FilterAmountRate.text = "HEIGHT : " + _height.ToString("F2");
           
         },minVal:150);
         
-        _TMP_HEIGHT.text =  "HEIGHT X: " + _height.ToString("F2");
+        _TMP_FilterAmountRate.text =  $"{nameof(filterAmountRate)}: " + _height.ToString("F2");
         _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
         _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
     
@@ -272,7 +267,7 @@ public class RplidarTest_Ray : MonoBehaviour
         return obj;
     }
 
-    private void ShowSensorPos(float rectX, float rectY)
+    private void ShowFilteredSensorPos(float rectX, float rectY)
     {
         var detectedPosRect = GetFromPool(_sensorDetectedPositionPool);
         
@@ -291,6 +286,7 @@ public class RplidarTest_Ray : MonoBehaviour
         detectedPosRect.gameObject.SetActive(true);
         StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
     }
+    
 
     private void ConfigureSlider(Slider slider, float maxValue, UnityEngine.Events.UnityAction<float> onValueChanged,
         float minVal = 0)
@@ -435,8 +431,8 @@ public class RplidarTest_Ray : MonoBehaviour
                 
                 
                 ///////////////////////////////////////////////////////////////////////// (2)
-                var processedTheta = -_lidarDatas[i].theta * Mathf.Deg2Rad; // 프로젝터값 등을 고려한 값
-                var processedDistance = _lidarDatas[i].distant * 1.07f;
+               // var processedTheta = -_lidarDatas[i].theta * Mathf.Deg2Rad; // 프로젝터값 등을 고려한 값
+                //var processedDistance = _lidarDatas[i].distant * 1.07f;
                // correction_value = - (Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
                 
                //6배
@@ -497,15 +493,26 @@ public class RplidarTest_Ray : MonoBehaviour
                 //     InstantiateMiddlePointPrefab(x, y);
                 // }
                 
-                if (i % 30 == 0)
+                if (i % _filteringAmount == 0)
                 {
                     if (min_x < x && x < max_x)
                     {
                         if (min_y < y && y < max_y)
                         {
-                            ShowSensorPos(x, y);
-                            //Instant_FP(x, y);
+                            if (SF_Active)
+                            {
+                               // _filteringAmount = 8;
+                               _filteringAmount = 2;
+                                ShowFilteredSensorPos(x, y);
+                            }
+                            else
+                            {
+                                _filteringAmount = 2;
+                                ShowFilteredSensorPos(x, y);
+                            }
+                         
                         }
+                        
                     }
 
                 }
@@ -515,6 +522,7 @@ public class RplidarTest_Ray : MonoBehaviour
 
     }
 
+    private int _filteringAmount = 4;
 
     public void Instant_Ball(float temp_x, float temp_y)
     {
@@ -534,13 +542,10 @@ public class RplidarTest_Ray : MonoBehaviour
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
     }
-
-
-
+    
 
     public void InstantiateMiddlePointPrefab(float temp_x, float temp_y)
     {
-        
         GameObject Prefab_pos = Instantiate(middlePrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);

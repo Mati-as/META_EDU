@@ -15,6 +15,7 @@ public class Destroy_prefab : RaySynchronizer
 
     private float timer=0f;
 
+    
     public static event Action onPrefabInput; 
     public override void Init()
     {
@@ -69,7 +70,7 @@ public class Destroy_prefab : RaySynchronizer
     // Update is called once per frame
     void Update()
     {
-        if (timer < 0.5f)
+        if (timer < FP_Prefab.Limit_Time)
         {
             timer += Time.deltaTime;
         }
