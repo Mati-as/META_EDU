@@ -127,8 +127,7 @@ public class RaySynchronizer : MonoBehaviour
         {
             result.gameObject.TryGetComponent(out btn);
             btn?.onClick?.Invoke();
-            Debug.Log("Hit " + result.gameObject.name);
-            if(btn?.onClick == null)Debug.Log($"btn.callback is null: {result.gameObject.name}");
+            
             result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
             eventHandler?.OnClickHandler?.Invoke();
         }

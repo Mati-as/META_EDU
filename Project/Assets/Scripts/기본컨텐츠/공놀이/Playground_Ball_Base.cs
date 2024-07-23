@@ -25,7 +25,8 @@ public class Playground_Ball_Base : MonoBehaviour
     private AudioSource[] holeSoundSource;
     private AudioSource[] netSoundSource;
     private AudioSource[] otherEffectSource;
-    private int _audioSize = 5;
+    
+    
 
     [Header("Reference")] 
 

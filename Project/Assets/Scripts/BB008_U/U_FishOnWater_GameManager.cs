@@ -269,6 +269,9 @@ public class U_FishOnWater_GameManager : IGameManager
         OnFishCaught -= PlayFishPathAnimOneTime;
         OnFishCaught += PlayFishPathAnimOneTime;
 
+        OnFishCaught -= DecreaseFishCount;
+        OnFishCaught += DecreaseFishCount;
+
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         U_FishOnWater_UIManager.OnStartUIAppear += OnRoundStart;
         U_FishOnWater_UIManager.OnReadyUIAppear += OnReadyUIAppear;
@@ -286,6 +289,7 @@ public class U_FishOnWater_GameManager : IGameManager
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
         OnFishCaught -= PlayFishPathAnimOneTime;
+        OnFishCaught -= DecreaseFishCount;
     }
 
 
@@ -296,14 +300,9 @@ public class U_FishOnWater_GameManager : IGameManager
         
 #if UNITY_EDITOR
         // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
-
-
-
-        _xmlPath = "Assets/Resources/Common/Data/BB008_UserRankingData.xml";
-        Check_XmlFile(_xmlPath);
+        Check_XmlFile("BB008_UserRankingData");
+        _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
         Read(_xmlPath);
-
-
 #else
         Check_XmlFile("BB008_UserRankingData");
         _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
@@ -472,12 +471,17 @@ public class U_FishOnWater_GameManager : IGameManager
         PlayPathAnim(1);
     }
 
+    private void DecreaseFishCount()
+    {
+        fishOnScreen--;
+    }
+
 
     private void PlayPathAnim(int fishCount = 2)
     {
         if (isOnReInit) return;
        
-        
+       
         for (var i = 0; i < fishCount; i++)
         {   
             var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_POOL_COUNT];
@@ -545,7 +549,7 @@ public class U_FishOnWater_GameManager : IGameManager
         
         var randomAnimSeq = DOTween.Sequence();
 
-        if (randomValue <= 0.18f)
+        if (randomValue <= 0.22f)
         {
             var animator = currentFish.GetComponent<Animator>();
             _animatorSeq[id].speed = 0.3f;

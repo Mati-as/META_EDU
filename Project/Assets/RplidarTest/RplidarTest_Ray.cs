@@ -440,6 +440,7 @@ public class RplidarTest_Ray : MonoBehaviour
                // correction_value = - (Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
                 
                //6배
+                if(_lidarDatas[i].theta >90 && _lidarDatas[i].theta <270)continue;
 
 
                x = -screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
