@@ -122,14 +122,16 @@ public class RaySynchronizer : MonoBehaviour
 
         raycastResults = new List<RaycastResult>();
         GR.Raycast(PED, raycastResults);
-
-        if (raycastResults.Count > 0)
-            for (var i = 0; i < raycastResults.Count; i++)
-            {
-                raycastResults[i].gameObject.TryGetComponent(out btn);
-                btn?.onClick?.Invoke();
-            }
-
+        
+        foreach (RaycastResult result in raycastResults)
+        {
+            result.gameObject.TryGetComponent(out btn);
+            btn?.onClick?.Invoke();
+            Debug.Log("Hit " + result.gameObject.name);
+            if(btn?.onClick == null)Debug.Log($"btn.callback is null: {result.gameObject.name}");
+            result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+            eventHandler?.OnClickHandler?.Invoke();
+        }
 
         OnGetInputFromUser?.Invoke();
 

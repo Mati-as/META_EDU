@@ -69,7 +69,9 @@ public class FP_Prefab : RaySynchronizer
             result.gameObject.TryGetComponent(out _btn);
             _btn?.onClick?.Invoke();
             Debug.Log("Hit " + result.gameObject.name);
-            if(_btn?.onClick == null)Debug.Log($"btn.callback is null: {result.gameObject.name}");
+            result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+            eventHandler?.OnClickHandler?.Invoke();
+            if(eventHandler?.OnClickHandler != null)Debug.Log($"it has callback in it : {result.gameObject.name}");
         }
 
         

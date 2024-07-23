@@ -240,11 +240,11 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         //_uiBtns[(int)UI_Button.Btn_InitialStart].gameObject.BindEvent(() => OnStartBtnOnUserInfoClicked());
         
-        _uiBtns[(int)UI_Button.Btn_StartOnUserInfo].onClick.AddListener(OnStartBtnOnUserInfoClicked);
-        _uiBtns[(int)UI_Button.Btn_ShowUserInfo].onClick.AddListener(ShowUserInfo);
-        _uiBtns[(int)UI_Button.Btn_Restart].onClick.AddListener(OnRestartBtnPerCLicked);
-        _uiBtns[(int)UI_Button.Btn_SinglePlay].onClick.AddListener(OnSinglePlayBtnClicked);
-        _uiBtns[(int)UI_Button.Btn_MultiPlay].onClick.AddListener(OnMultiPlayBtnClicked);
+        _uiBtns[(int)UI_Button.Btn_StartOnUserInfo].gameObject.BindEvent(OnStartBtnOnUserInfoClicked,Define.UIEvent.Click);
+        _uiBtns[(int)UI_Button.Btn_ShowUserInfo].gameObject.BindEvent(ShowUserInfo,Define.UIEvent.Click);
+        _uiBtns[(int)UI_Button.Btn_Restart].gameObject.BindEvent(OnRestartBtnPerCLicked,Define.UIEvent.Click);
+        _uiBtns[(int)UI_Button.Btn_SinglePlay].gameObject.BindEvent(OnSinglePlayBtnClicked,Define.UIEvent.Click);
+        _uiBtns[(int)UI_Button.Btn_MultiPlay].gameObject.BindEvent(OnMultiPlayBtnClicked,Define.UIEvent.Click);
 
         
         _uiGameObjects[(int)UI_Type.ScreenDim].SetActive(true);
