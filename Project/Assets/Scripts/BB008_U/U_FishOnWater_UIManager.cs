@@ -483,7 +483,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
                 }
             }
         }
-        else
+        else if (_gm.currentMode == (int)U_FishOnWater_GameManager.PlayMode.SinglePlay)
         {
             
             // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
@@ -495,7 +495,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
                 .ThenByDescending(x =>
                 {
                     var splitScore = x.score.Split('/');
-                    return float.Parse(splitScore[1]).ToString("F1"); // B 값을 기준으로 정렬
+                    return float.Parse(splitScore[1]); // B 값을 기준으로 정렬
                 })
                 .ToList();
 
