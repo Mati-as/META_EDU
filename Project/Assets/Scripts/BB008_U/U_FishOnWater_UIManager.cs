@@ -80,7 +80,6 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private RectTransform[] _usersOnRankingRects;
 
-
     private Button[] _uiBtns;
     private RectTransform[] _btnRects;
     
