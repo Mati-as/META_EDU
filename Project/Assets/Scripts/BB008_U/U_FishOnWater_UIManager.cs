@@ -201,6 +201,9 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         U_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
         U_FishOnWater_GameManager.OnRoundFinished += ShowStopUI;
+
+        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
         
         
         return true;
@@ -269,6 +272,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
        
         _uiGameObjects[(int)UI_Type.ModeSelection].SetActive(true);
         _uiGameObjects[(int)UI_Type.ModeSelection].transform.localScale = _defaultSizeArray[(int)UI_Type.ModeSelection];
+        _uiGameObjects[(int)UI_Type.ModeSelection].transform.localScale = Vector3.zero;
 
         _uiGameObjects[(int)UI_Type.Slider_Restart].SetActive(true);
         _restartSliderImage = _uiGameObjects[(int)UI_Type.Slider_Restart].GetComponent<Image>();
@@ -276,8 +280,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         _TMP_currentUserRankingText = _uiGameObjects[(int)UI_Type.Text_CurrentUserRankingText].GetComponent<TextMeshProUGUI>();
         
-        ShowModeSelectionMode();
+      
         
+    }
+
+    private void OnStartBtnClicked()
+    {
+        ShowModeSelectionMode();
     }
 
     private void ShowUserInfo()
@@ -395,6 +404,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
         U_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
+        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
     }
 
     private void Update()
