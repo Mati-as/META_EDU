@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class RplidarTest_Ray : MonoBehaviour
+public class RplidaManager : MonoBehaviour
 {
 
    
@@ -18,7 +18,8 @@ public class RplidarTest_Ray : MonoBehaviour
 //   
 // #endif
 
-    private static string port ="COM3";      
+    private static string port ="COM3";
+    public static bool isMoterStarted { get; private set; }
     
     private LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
@@ -47,9 +48,11 @@ public class RplidarTest_Ray : MonoBehaviour
     //1015
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
-    private float _height = 182;
+    private float _height = 138; //cm 
+    private float _width; //비율통한계싼
     
-    private readonly int FILTER_AMOUNT_RATE_MAX = 10;
+    private readonly int HEIGHT_MAX = 200; //cm
+    private readonly int HEIGHT_MIN = 100; //cm
 
     public float min_x;
     public float min_y;
@@ -98,39 +101,40 @@ public class RplidarTest_Ray : MonoBehaviour
 
     public static bool isSensorEditMode { get; private set; }
 
-    private int _filterAmountRate = 2;
-    
-    private float SENSOR_DISTANCE_FROM_PROJECTION = -1180;
+    private float SENSOR_DISTANCE_FROM_PROJECTION = 280; //mm
+    private float ZERO_POINT_FROM_SENSOR;
     private readonly float SENSEOR_OFFSET_MAX_VALUE =1000;
     
     
     private readonly float SCREEN_RATIO_MIN =0.5f;
     private readonly float SCREEN_RATIO_MAX =10;
-    private float _screenRatio = 0.6f;
+
     
-    public int filterAmountRate { get =>_filterAmountRate; set => _filterAmountRate =value; }
+    public int heightCm { get; set; } = 2;
     public float sensorDistanceFromProjection { get => SENSOR_DISTANCE_FROM_PROJECTION; set =>SENSOR_DISTANCE_FROM_PROJECTION = value; }
-    public float screenRatio { get => _screenRatio;set => _screenRatio = value;}
+    // private float screen_ratio;// 화면비 // 유니티 height 1080 : 실제 프로젝션 height (mm)를 비교하여 비례를 조정 
+    private float _screenRatio = 0.782f;
+  
     
-    private Slider _offsetXSlider;
-    private Slider _offsetYSlider;
+    private Slider _heightSlider;
+    private Slider sensorDistance;
     private Slider _screenRatioSlider;
     
-    private TextMeshProUGUI _TMP_FilterAmountRate;
-    private TextMeshProUGUI _TMP_offsetY;
+    private TextMeshProUGUI _TMP_hiehgt;
+    private TextMeshProUGUI _TMP_seonsorDistance;
     private TextMeshProUGUI _TMP_ScreenRatio;
     
     ////////////////// 0719- 센서 테스트용 멤버 새로 추가한 부분///////////////////////////////
     
     private float correction_value;// 화면과 유니티에서의 단위를 맞추기 위한 보정값.
     //private float offset = 1.07f; // 발에 정확히 찍히기 위한 오프셋
-    private float height = 0.6f;// 빔프로젝터의 지면에서의 높이
-    private float distance = 0.23f; // 기기와 화면에서의 직선거리
-    private float X_length;//화면의 가로 길이
-    private float Y_length;//화면의 세로 길이
-    private const float THROW_RATIO = 0.21f; // 빔프로젝터의 거리와 화면 크기 비(빔프로젝터 카탈로그 상 수치)
-    private float y_offset; // (0,0)이 화면 중앙이므로 화면 세로 길이 / 2 + 화면에서 센서까지의 거리 추가
-    private float screen_ratio;// 화면비
+    //private float height = 138f;// 빔프로젝터의 지면에서의 높이
+    //private float distance = 0.23f; // 기기와 화면에서의 직선거리
+    // private float X_length;//화면의 가로 길이
+    // private float Y_length;//화면의 세로 길이
+    // private const float THROW_RATIO = 0.21f; // 빔프로젝터의 거리와 화면 크기 비(빔프로젝터 카탈로그 상 수치)
+    // private float y_offset; // (0,0)이 화면 중앙이므로 화면 세로 길이 / 2 + 화면에서 센서까지의 거리 추가
+   
     
     /// /////////////////
 
@@ -143,11 +147,13 @@ public class RplidarTest_Ray : MonoBehaviour
 //         useSensor = USE_SENSOR;
 //         if(useSensor) 
 // #endif
-            _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
+
+
+        _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         
         Init();
         
-        _height = _height * Resolution_X / Resolution_Y;
+       // _width = _height * (Resolution_X / Resolution_Y);
 
     }
 
@@ -167,39 +173,45 @@ public class RplidarTest_Ray : MonoBehaviour
     private Stack<RectTransform> _sensorDetectedPositionPool;
     private void Init()
     {
+        _screenRatio = Resolution_Y / (_height * 10);
         
         InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
-        InitializeSlider("OffsetXSlider", out _offsetXSlider, out _TMP_FilterAmountRate);
-        InitializeSlider("OffsetYSlider", out _offsetYSlider, out _TMP_offsetY);
+        InitializeSlider("HeightSlider", out _heightSlider, out _TMP_hiehgt);
+        InitializeSlider("OffsetYSlider", out sensorDistance, out _TMP_seonsorDistance);
         InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
         
-        _offsetXSlider.value = filterAmountRate;
-        _offsetYSlider.value = sensorDistanceFromProjection;
-        _screenRatioSlider.value = screenRatio;
+        ZERO_POINT_FROM_SENSOR = (SENSOR_DISTANCE_FROM_PROJECTION +(_height * 10  / 2));//height의 절반을 mm로 단위로 계산
+     
+        _heightSlider.value = heightCm;
+        sensorDistance.value = sensorDistanceFromProjection;
+        _screenRatioSlider.value = _screenRatio;
         
-        ConfigureSlider(_offsetXSlider, FILTER_AMOUNT_RATE_MAX, value =>
+        ConfigureSlider(_heightSlider, HEIGHT_MAX, value =>
         {
             _height = value;
-            _TMP_FilterAmountRate.text = "HEIGHT : " + _height.ToString("F2");
+            //_screenRatio = (Resolution_Y / _height * 10);
+            ZERO_POINT_FROM_SENSOR = SENSOR_DISTANCE_FROM_PROJECTION + (_height * 10  / 2);//height의 절반을 mm로 단위로 계산
+            _TMP_hiehgt.text = "HEIGHT : " + _height.ToString("F1");
           
-        },minVal:150);
+        },minVal:HEIGHT_MIN);
         
-        _TMP_FilterAmountRate.text =  $"{nameof(filterAmountRate)}: " + _height.ToString("F2");
-        _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
-        _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
+        _TMP_hiehgt.text =  $"{nameof(heightCm)}: " + _height.ToString("F1");
+        _TMP_seonsorDistance.text = "Sensor Distance: " + sensorDistanceFromProjection.ToString("F1");
+        _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F1");
     
-        ConfigureSlider(_offsetYSlider, SENSEOR_OFFSET_MAX_VALUE, value =>
+        ConfigureSlider(sensorDistance, SENSEOR_OFFSET_MAX_VALUE, value =>
         {
             sensorDistanceFromProjection = value;
-            _TMP_offsetY.text = "OFFSET Y: " + sensorDistanceFromProjection.ToString("F2");
+            _TMP_seonsorDistance.text = "DISTANCE_FROM_SENSOR: " + sensorDistanceFromProjection.ToString("F1");
+            ZERO_POINT_FROM_SENSOR = (sensorDistanceFromProjection + (_height * 10  / 2));//height의 절반을 mm로 단위로 계산
       
         },minVal:-2000);
     
         ConfigureSlider(_screenRatioSlider, SCREEN_RATIO_MAX, value =>
         {
-            screenRatio = value;
+            _screenRatio = value;
             _screenRatioSlider.minValue = SCREEN_RATIO_MIN;
-            _TMP_ScreenRatio.text = "SCREEN RATIO: " + screenRatio.ToString("F2");
+            _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F2");
          
         });
   
@@ -312,8 +324,8 @@ public class RplidarTest_Ray : MonoBehaviour
         int result = RplidarBinding.OnConnect(port);
         Debug.Log("Connect on " + port + " result:" + result);
 
-        bool r = RplidarBinding.StartMotor();
-        Debug.Log("StartMotor:" + r);
+        isMoterStarted = RplidarBinding.StartMotor();
+        Debug.Log("StartMotor:" + isMoterStarted);
 
         m_onscan = RplidarBinding.StartScan();
         Debug.Log("StartScan:" + m_onscan);
@@ -355,11 +367,11 @@ public class RplidarTest_Ray : MonoBehaviour
         
         
         ///////////////////////////////////////////////////////////////////////// (1)
-        screen_ratio = Resolution_X / Resolution_Y;
-        y_offset = ((X_length / screen_ratio) / 2) + distance;
-        X_length = height / THROW_RATIO;
-        Y_length = X_length / (1920 / 1080);
-        correction_value = -(Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
+       
+       // y_offset = ((X_length / screen_ratio) / 2) + distance;
+        //X_length = _height / THROW_RATIO;
+       // Y_length = X_length / (1920 / 1080);
+       // correction_value = -(Resolution_X / (_screenRatio)) * (_height / THROW_RATIO / Resolution_Y);
         
         ///////////////////////// Pool
         _sensorDetectedPositionPool = new Stack<RectTransform>();
@@ -399,11 +411,12 @@ public class RplidarTest_Ray : MonoBehaviour
 
 
     private float _timer;
-    
-    // Update is called once per frame
-    void FixedUpdate()
+
+    private void GenerateDectectedPos()
     {
 
+        if (!isMoterStarted) return;
+        
         if (_timer < _sensitivitySlider.value)
         {
             _timer += Time.deltaTime;
@@ -417,85 +430,19 @@ public class RplidarTest_Ray : MonoBehaviour
         {
             for (int i = 0; i < 720; i++)
             {
-             
-                
-                //센서 데이터 data[i].theta, distant
-                //1. 화면과 센서를 일치화 시키기 위해서 theta를 마이너스 곱해줌, 추가로 회전 시켜주기 위해 Sensor_rotation 추가했고
-                //위에서 아래 방향으로 내려다 보는것 기준으 90도 입력하면 댐
-                //2. 0.74f는 실제 길이와 유니티내 맵핑이 일치하기 위한 보정값(빔프로젝터의 실제 화면과 오차가 있음), 1.07f는 발 위
-                //에 정확히 찍히기 위한 보정값
-                // Ex) 실제에서 682 mm -> 유니티 position 상 500, 보정값 0.733 곱해서 맞춰줌 실제 데이터를 position으로 변환함
-                //3. 763.565f은 유니티 상의 캔버스 기준이 정가운데이기 때문에 그에 맞추기 위해 y값을 그 만큼 위로 올림
-                
-                //계산되어있을때? ==> Mathf.Rad2Deg(-_lidarDatas[i].theta)
+
                 var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
 
                 //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
                 
-                
-                ///////////////////////////////////////////////////////////////////////// (2)
-               // var processedTheta = -_lidarDatas[i].theta * Mathf.Deg2Rad; // 프로젝터값 등을 고려한 값
-                //var processedDistance = _lidarDatas[i].distant * 1.07f;
-               // correction_value = - (Resolution_X / (_screenRatio)) * (height / THROW_RATIO / Resolution_Y);
-                
-               //6배
+                //6배
                 if(_lidarDatas[i].theta >90 && _lidarDatas[i].theta <270)continue;
 
 
-               x = -screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
-               y = -screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90-_lidarDatas[i].theta) * Mathf.Deg2Rad) +
-                                  SENSOR_DISTANCE_FROM_PROJECTION);
+                x = -_screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
+                y = -_screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90-_lidarDatas[i].theta) * Mathf.Deg2Rad) - ZERO_POINT_FROM_SENSOR);
                
-               // 라이더 센서 메뉴얼상 각도 시스템에 맞추기 위해 -90도 회전하여 계산값을 도출하였습니다.  
-               // x = -screenRatio * (_lidarDatas[i].distant * Mathf.Sin((_lidarDatas[i].theta)* Mathf.Deg2Rad));
-               // y = screenRatio * (_lidarDatas[i].distant * Mathf.Cos((_lidarDatas[i].theta) * Mathf.Deg2Rad) +
-               //                    SENSOR_DISTANCE_FROM_PROJECTION);
-                
-                // cal option 1
-                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(-_lidarDatas[i].theta * Mathf.Deg2Rad));
-                // y = correction_value * (_lidarDatas[i].distant * Mathf.Sin(-_lidarDatas[i].theta * Mathf.Deg2Rad) -(Y_length / 2 + distance));
-                
-                // cal option 2
-                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(Mathf.PI - (_lidarDatas[i].theta * Mathf.Deg2Rad)));
-                // y = correction_value *
-                //     (_lidarDatas[i].distant * Mathf.Sin(Mathf.PI - (_lidarDatas[i].theta * Mathf.Deg2Rad)) -
-                //      (Y_length / 2 + distance));
-                
-                // cal option 3
-                // x = correction_value * (_lidarDatas[i].distant * Mathf.Cos(Mathf.PI + (_lidarDatas[i].theta * Mathf.Deg2Rad)));
-                // y = correction_value *
-                //     (_lidarDatas[i].distant * Mathf.Sin(Mathf.PI + (_lidarDatas[i].theta * Mathf.Deg2Rad)) -
-                //      (Y_length / 2 + distance));
-                    
-                    
-                    
-                // Debug.Log($"좌표 계산결과 {x},{y}");
-                // Debug.Log($"해당좌표 거리: {_lidarDatas[i].distant} , 각도: {_lidarDatas[i].theta}");
-                
-                // if (_projectorLookUpTable.ContainsKey(key))
-                // {
-                //     //Debug.LogWarning($"LUT REFFERRING....key {key}");
-                //     x = _projectorLookUpTable[key].x; 
-                //     y = _projectorLookUpTable[key].y;
-                // }
-                // else if(!_projectorLookUpTable.ContainsKey(key))
-                // {
-                //     //Debug.LogWarning($"LUT CALCULATING & SAVING....key: {key}");
-                //
-                //   
-                //     
-                //     //x = 프로젝터 높이 * 계산수식(크기~) + offsetX
-                //     
-                //     
-                //     var coordinate = new Vector2(x, y);
-                //     _projectorLookUpTable.TryAdd(key, coordinate);
-                // }
-
-                // if (_isSensorEditMode)
-                // {
-                //     InstantiateMiddlePointPrefab(x, y);
-                // }
-                
+          
                 if (i % _filteringAmount == 0)
                 {
                     if (min_x < x && x < max_x)
@@ -504,13 +451,13 @@ public class RplidarTest_Ray : MonoBehaviour
                         {
                             if (SF_Active)
                             {
-                               // _filteringAmount = 8;
-                               _filteringAmount = 2;
+                                // _filteringAmount = 8;
+                                _filteringAmount = 4;
                                 ShowFilteredSensorPos(x, y);
                             }
                             else
                             {
-                                _filteringAmount = 2;
+                                _filteringAmount = 3;
                                 ShowFilteredSensorPos(x, y);
                             }
                          
@@ -524,8 +471,15 @@ public class RplidarTest_Ray : MonoBehaviour
         }
 
     }
+    
+    // Update is called once per frame
+    void FixedUpdate()
+    {
 
-    private int _filteringAmount = 4;
+        GenerateDectectedPos();
+    }
+
+    private int _filteringAmount = 2;
 
     public void Instant_Ball(float temp_x, float temp_y)
     {
