@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
 {
-    public RplidarTest_Ray rplidar;
+    public SensorManager rplidar;
 
     public bool UI_ONOFF = false;
     public bool BALL_ONOFF = false;
@@ -17,7 +17,7 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
         txt = this.transform.GetChild(0).gameObject.GetComponent<Text>();
         
         // 2.28 임시로 코드 추가 (민석)
-        rplidar = GameObject.FindWithTag("RaySynchronizer").GetComponent<RplidarTest_Ray>();
+        rplidar = GameObject.FindWithTag("RaySynchronizer").GetComponent<SensorManager>();
 
         
        

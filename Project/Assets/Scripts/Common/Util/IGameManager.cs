@@ -11,21 +11,33 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public abstract class IGameManager : MonoBehaviour
 {
-    private static readonly ResourceManager s_resourceManager = new();
-    public static Managers s_Managers;
-    public static Managers Managers => s_Managers;
+    
+    private bool _isStartBtnClicked;
+    private bool _isSceneChanging;
 
-    public static ResourceManager Resource
+    public bool isSceneChanaging
     {
         get
         {
-            InitManagers();
-            return s_resourceManager;
+            return _isSceneChanging;
+        }
+        set
+        {
+            _isSceneChanging = value;
         }
     }
 
-
-    public bool isStartButtonClicked { get; private set; } // startButton 클릭 이전,이후 동작 구분용입니다. 
+    public bool isStartButtonClicked
+    {
+        get
+        {
+            return _isStartBtnClicked;
+        }
+        set
+        {
+            _isStartBtnClicked = value;
+        }
+    } // startButton 클릭 이전,이후 동작 구분용입니다. 
     protected bool isInitialized { get; set; }
     protected int TARGET_FRAME { get; } = 60; //
 
@@ -48,29 +60,14 @@ public abstract class IGameManager : MonoBehaviour
     {
         Init();
     }
-
-    private static void InitManagers()
-    {
-        var go = GameObject.Find("@Managers");
-        if (go == null)
-            go = new GameObject { name = "@Managers" };
-
-        s_Managers = Utils.GetOrAddComponent<Managers>(go);
-        DontDestroyOnLoad(go);
-
-        s_resourceManager.Init();
-        // s_sceneManager.Init();
-        // s_adsManager.Init();
-        // s_iapManager.Init();
-        // s_dataManager.Init();
-        // s_soundManager.Init();
-    }
+    
 
 
     protected virtual void Init()
     {
         if (isInitialized) return;
-        isStartButtonClicked = false;
+     
+        
         ManageProjectSettings(SHADOW_MAX_DISTANCE, DEFAULT_SENSITIVITY);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
@@ -118,8 +115,22 @@ public abstract class IGameManager : MonoBehaviour
     /// </summary>
     public virtual void OnRaySynced()
     {
-        if (!isStartButtonClicked) return;
-        if (!isInitialized) return;
+        
+    }
+
+    /// <summary>
+    /// 1. 게임종료, 스타트버튼 미클릭등 다양한 로직에서, 더이상 Ray발사(클릭)을 허용하지 않아야합니다.
+    /// 2. 이는 씬이동간 에러방지, 게임내에서 로직충돌등을 방지하기 위해 사용합니다.
+    /// 3. 이를 일괄적으로 검사 및 클릭가능여부를 반환합니다. 
+    /// </summary>
+    protected  bool PreCheck()
+    {
+        if (!isStartButtonClicked) return false ;
+        if (!isInitialized) return false;
+        if (_isSceneChanging) return false;
+        
+        return true;
+        
     }
 
     protected virtual void BindEvent()

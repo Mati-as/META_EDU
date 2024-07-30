@@ -116,10 +116,11 @@ public class WaterPlayground_BallController : MonoBehaviour
 
 
     private bool _isParticlePlaying;
+    private float _velOffset = 0.01f; // 일정이상 속도로 충돌했을때만 소리 및 파티클이 재생되도록 하기 위한 오프셋값입니다. 
     private void OnCollisionEnter(Collision other)
     {
         
-        var velproportionalVolume = 0.008f *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
+        var velproportionalVolume = _velOffset *(Mathf.Abs(_rb.velocity.x) + Mathf.Abs(_rb.velocity.y) + Mathf.Abs(_rb.velocity.z))/3;
  
         if (other.transform.gameObject.name == "Obstacle")
         {
@@ -127,7 +128,7 @@ public class WaterPlayground_BallController : MonoBehaviour
             {
                         
 #if UNITY_EDITOR
-                Debug.Log($"Obstacle particle played");
+//                Debug.Log($"Obstacle particle played");
 #endif
                 PlayParticle(contact.point +Vector3.up *2.0f);
                 return;

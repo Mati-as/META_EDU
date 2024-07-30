@@ -32,7 +32,11 @@ public class U_FishOnWater_UIManager : UI_PopUp
         Text_Tutorial,
         Text_CurrentUserRankingText, // 유저등수/ 전체등수
         //Text_CurrentUserInfoText,
-        Slider_Restart
+        Slider_Restart,
+        Setting_FishManagerOnly,
+        MainVolume,
+        BGMVolume,
+        EffectVolume,
     }
     
 
@@ -42,7 +46,9 @@ public class U_FishOnWater_UIManager : UI_PopUp
         Btn_Restart,
         Btn_ShowUserInfo,
         Btn_SinglePlay,
-        Btn_MultiPlay
+        Btn_MultiPlay,
+        Btn_Close,
+        SettingButton
         // Btn_ShowTutorial, // Tutorial -> UserInfo
     }
 
@@ -77,6 +83,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private TextMeshProUGUI[] _TMP_usersOnRankScores;
     private TextMeshProUGUI[] _TMP_usersOnRankNames;
     private TextMeshProUGUI[] _TMP_currentUser;
+  
 
     private RectTransform[] _usersOnRankingRects;
 
@@ -100,7 +107,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private float _intervalBtwStartAndReady = 2f;
     private bool _isAnimating; // 더블클릭 방지 논리연산자 입니다. 
     private bool _isRestartBtnClickable; // 게임종료 후 바로 다시시작 버튼이 눌리지 않도록 방지합니다.
-    private int RESTART_CLIICKABLE_DELAY = 3;
+    private int RESTART_CLIICKABLE_DELAY = 4;
     public static event Action OnStartUIAppear; // 시작 UI가 표출될 때 의 이벤트입니다. 
     public static event Action OnReadyUIAppear; // 준비~! UI 표출 시
     public static event Action OnRestartBtnClicked; // 그만 이후 초기화가 끝난경우
@@ -129,7 +136,6 @@ public class U_FishOnWater_UIManager : UI_PopUp
     }
     
     
-    
     private TextMeshProUGUI _TMP_fishSpeed;
     private TextMeshProUGUI _TMP_introUserName;
     private TextMeshProUGUI _TMP_tutorialUI;
@@ -143,21 +149,114 @@ public class U_FishOnWater_UIManager : UI_PopUp
     private float _waitTIme = 4.5f;
 
     private readonly float ANIM_DURATION_START_AND_READY_STOP = 0.4f;
+    
+    
+    // 사운드 세팅, 런쳐와 별도로 구성한 점 주의합니다. ///////////////////////////////////////
+    private Slider[] _sliders= new Slider[(int)SoundManager.Sound.Max];
 
+    private Button _soundCloseBtn; 
+  
+
+   
+    private void SetSoundUI()
+    {
+        _uiGameObjects[(int)UI_Type.MainVolume].SetActive(true);
+        _uiGameObjects[(int)UI_Type.EffectVolume].SetActive(true);
+        _uiGameObjects[(int)UI_Type.BGMVolume].SetActive(true);
+        
+        _sliders= new Slider[(int)SoundManager.Sound.Max];
+		_sliders[(int)SoundManager.Sound.Main] = GetObject((int)UI_Type.MainVolume).GetComponent<Slider>();
+		_sliders[(int)SoundManager.Sound.Main].value = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+#if UNITY_EDITOR
+		Debug.Log($" 메인 볼륨 {Managers.Sound.volumes[(int)SoundManager.Sound.Main]}");
+#endif
+
+		_sliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI_Type.BGMVolume).GetComponent<Slider>();
+        _sliders[(int)SoundManager.Sound.Effect] = GetObject((int)UI_Type.EffectVolume).GetComponent<Slider>();
+        
+		for (var i = 0; i < (int)SoundManager.Sound.Max-1; i++) // 나레이션 제외 
+		{
+			_sliders[i].maxValue = Managers.Sound.VOLUME_MAX[i];
+			_sliders[i].value = Managers.Sound.volumes[i];
+		}
+
+
+		// default Volume값은 SoundManager에서 관리하며, 초기화 이후, UI Slider가 이를 참조하여 표출하도록 합니다.
+		// default Value는 시연 테스트에 결과에 따라 수정가능합니다. 
+		_sliders[(int)SoundManager.Sound.Main].onValueChanged.AddListener(_ =>
+		{
+
+            
+			Managers.Sound.volumes[(int)SoundManager.Sound.Main] = _sliders[(int)SoundManager.Sound.Main].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Main].volume = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+		
+		
+			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
+            
+			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
+            
+			// Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _sliders[(int)SoundManager.Sound.Narration].value;
+			// Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
+			// 	Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Narration],
+			// 		Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Narration].value);
+			
+			
+		});
+		_sliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
+		{
+			
+			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
+		});
+
+		_sliders[(int)SoundManager.Sound.Effect].onValueChanged.AddListener(_ =>
+		{
+			Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/TestSound/Test_Effect");
+			
+			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
+			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
+		});
+
+    }
     public override bool Init()
     {
         _gm = GameObject.FindWithTag("GameManager").GetComponent<U_FishOnWater_GameManager>();
         
         BindObject(typeof(UI_Type));
         BindButton(typeof(UI_Button));
-        
+      
         var sliderParent = GameObject.Find("Slider_FishSpeed");
         _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
         _fishSpeedSlider = sliderParent.GetComponent<Slider>();
         _fishSpeedSlider.onValueChanged.AddListener(_ =>
         {
             _gm.fishSpeed = _fishSpeedSlider.value;
-            _TMP_fishSpeed.text = "물고기 속도: " + _gm.fishSpeed.ToString("F2");
+
+
+            if (_gm.fishSpeed < 0.7f)
+            {
+                _TMP_fishSpeed.text = "느림";
+            }
+            else if (_gm.fishSpeed > 1.4f)
+            {
+                _TMP_fishSpeed.text = "빠름";
+            }
+            else
+            {
+                _TMP_fishSpeed.text = "보통";
+            }
+
+           
         });
 
       
@@ -168,13 +267,14 @@ public class U_FishOnWater_UIManager : UI_PopUp
         {
             _timerSlider.maxValue = 60;
             _timerSlider.value =  _gm.timeLimit;
-            _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
+            _timerSliderTMP.text = _gm.timeLimit.ToString() + "초";
         }
         
         _timerSlider.onValueChanged.AddListener(_ =>
         {
             _gm.timeLimit =(int)_timerSlider.value;
-            _timerSliderTMP.text = "게임 플레이시간: "+ _gm.timeLimit.ToString();
+            _timerSliderTMP.text =  ((int)(_gm.timeLimit / 5)* 5).ToString() + "초";
+            _timerTMP.text = _gm.timeLimit.ToString();
         });
 
         var fishCountParent = GameObject.Find("Slider_FishCount");
@@ -182,18 +282,16 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _fishCountSliderTMP = fishCountParent.GetComponentInChildren<TextMeshProUGUI>();
         _fishCountSlider.maxValue = 60;
         _fishCountSlider.value = _gm.fishCountGoal;
-        _fishCountSliderTMP.text = "잡을 물고기 수 :" + _gm.fishCountGoal.ToString();
+        _fishCountSliderTMP.text =  _gm.fishCountGoal.ToString()+ "마리";
         _fishCountSlider.onValueChanged.AddListener(_ =>
-        {  
-            
+        {
             _gm.fishCountGoal = ((int)(_fishCountSlider.value / 5))* 5;
-            _fishCountSliderTMP.text = "잡을 물고기 수 :" + _gm.fishCountGoal.ToString();
+            _fishCountSliderTMP.text =  _gm.fishCountGoal.ToString() + "마리";
         });
 
         InitializeUIElements();
         InitializeRankingElements();
-
-       
+        SetSoundUI();
         
         U_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
         U_FishOnWater_GameManager.OnReady += OnReadyAndStart;
@@ -247,7 +345,9 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _uiBtns[(int)UI_Button.Btn_Restart].gameObject.BindEvent(OnRestartBtnPerCLicked,Define.UIEvent.Click);
         _uiBtns[(int)UI_Button.Btn_SinglePlay].gameObject.BindEvent(OnSinglePlayBtnClicked,Define.UIEvent.Click);
         _uiBtns[(int)UI_Button.Btn_MultiPlay].gameObject.BindEvent(OnMultiPlayBtnClicked,Define.UIEvent.Click);
-
+        _uiBtns[(int)UI_Button.Btn_Close].gameObject.BindEvent(OnSoundSettingCloseBtnClicked,Define.UIEvent.Click);
+        _uiBtns[(int)UI_Button.SettingButton].gameObject.BindEvent(OnSoundSettingBtnClicked,Define.UIEvent.Click);
+        
         
         _uiGameObjects[(int)UI_Type.ScreenDim].SetActive(true);
         _uiGameObjects[(int)UI_Type.CurrentUser].transform.Find("CurrentUserIcon");
@@ -281,6 +381,15 @@ public class U_FishOnWater_UIManager : UI_PopUp
         
       
         
+    }
+
+    private void OnSoundSettingCloseBtnClicked()
+    {
+        _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(false);
+    }
+    private void OnSoundSettingBtnClicked()
+    {
+        _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(true);
     }
 
     private void OnStartBtnClicked()
@@ -820,7 +929,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _isRestartBtnBeingClicked = true;
     }
 
-    private float _guageIncreaseSensitiviy = 0.025f;
+    private float _guageIncreaseSensitiviy = 0.021f;
     private bool _isRestartBtnBeingClicked;
 
     IEnumerator OnRestartBtnClickedCo()
@@ -832,7 +941,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         restartSliderFillAmount = _restartSliderImage.fillAmount;
         yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ =>
         {
-            _restartSliderImage.fillAmount += 0.01f;
+            _restartSliderImage.fillAmount += 0.028f;
         }).WaitForCompletion();
         _isRestartBtnBeingClicked = false;
       

@@ -31,7 +31,7 @@ public class FP_Prefab : RaySynchronizer
     {
 
         //모드설정에따라 이미지 활성화 비활성화
-        _image.enabled = RplidarTest_Ray.isSensorEditMode;
+        _image.enabled = SensorManager.isSensorEditMode;
         
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
@@ -46,10 +46,7 @@ public class FP_Prefab : RaySynchronizer
             base.Start();
             base.InvokeRayEvent();
         }
-       //  else
-       //  {
-       //     Destroy_obj();
-       //  }
+
     }
 
     private Button _btn;

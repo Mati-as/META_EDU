@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BOKI.LowPolyNature.Scripts;
 using DG.Tweening;
-using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,9 +16,7 @@ public class HandFootFlip_GameManager : IGameManager
 
     private RaycastHit hit;
 
-
-
-    private Color _currentUnifiedColor =Color.red;
+    private Color _currentUnifiedColor = Color.red;
     private Color _previousUniColor = Color.black;
     private Print[] _prints;
     private int PRINTS_COUNT;
@@ -38,7 +33,7 @@ public class HandFootFlip_GameManager : IGameManager
     // 파도타기방식(형태) RayCasting 및 색상변환로직 구현용 RayCaster.              
     private GameObject _animalRayCasterParent;
     private Transform[] _animalRayCasters;
-    private Transform _animals; 
+    private Transform _animals;
 
     private Vector3[] _pathPos;
 
@@ -46,6 +41,7 @@ public class HandFootFlip_GameManager : IGameManager
 
     //instance ID를 통한 접근 및 제어
     private Dictionary<int, Print> _printMap;
+
     //쌍이되는 컬러를  String으로 할당하여, 색상이름(string)에 따라 제어.
     private Dictionary<string, Color> _colorPair;
     private Dictionary<int, MeshRenderer> _meshRendererMap;
@@ -59,9 +55,7 @@ public class HandFootFlip_GameManager : IGameManager
     private float _animalMoveCurrentTime;
 
     private ParticleSystem _explosionParticle;
-
     private Collider _animalCollider;
-
 
 
     public override void OnRaySynced()
@@ -70,13 +64,10 @@ public class HandFootFlip_GameManager : IGameManager
 
         if (!isStartButtonClicked) return;
         if (_isAnimalMoving) return;
-        
+
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
     }
-
-
-  
 
 
     protected override void Init()
@@ -85,7 +76,7 @@ public class HandFootFlip_GameManager : IGameManager
 
         onRaycasterMoveFinish -= OnRayCasterMoveFin;
         onRaycasterMoveFinish += OnRayCasterMoveFin;
-     
+
 
         _pathPos = new Vector3[(int)RayCasterMovePosition.Max];
 
@@ -98,9 +89,6 @@ public class HandFootFlip_GameManager : IGameManager
         _meshRendererMap = new Dictionary<int, MeshRenderer>();
         _childMeshRendererMap = new Dictionary<int, MeshRenderer>();
         _rotateVector = new Vector3(180, 0, 0);
-
-
-       
     }
 
     private void OnDestroy()
@@ -112,26 +100,17 @@ public class HandFootFlip_GameManager : IGameManager
     {
         if (!isStartButtonClicked) return;
 
-        if (!_isAnimalMoving)
-        {
-            _animalMoveCurrentTime += Time.deltaTime;
-        }
-        
-        
+        if (!_isAnimalMoving) _animalMoveCurrentTime += Time.deltaTime;
+
+
         if (_animalMoveCurrentTime > raycasterMoveInterval)
         {
             _isAnimalMoving = true;
             Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert",
                 0.3f);
 
-            DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() =>
-            {
- 
-                RayCasterMovePlay();
-             
-            });
+            DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() => { RayCasterMovePlay(); });
             _animalMoveCurrentTime = 0;
-           
         }
     }
 
@@ -182,15 +161,8 @@ public class HandFootFlip_GameManager : IGameManager
 
             //MeshRenderer 캐싱, Instace ID로 MeshRenderer제어
             _meshRendererMap.TryAdd(currentInstanceID, currentTransform.GetComponent<MeshRenderer>());
-            _childMeshRendererMap.TryAdd(currentInstanceID, currentTransform.GetChild(0).GetComponentInChildren<MeshRenderer>());
-
-            // _colorSequences.TryAdd(currentInstanceID, DOTween.Sequence());
-
-            // _animalRayCasterParent = GameObject.Find("Animal_RayCaster");
-            // _animalRayCasters = new Transform[_animalRayCasterParent.GetComponentsInChildren<Transform>().Length];
-            // _animalRayCasters = _animalRayCasterParent.GetComponentsInChildren<Transform>();
-            // _wait = new WaitForSeconds(0.08f);
-          //  _animalCollider = _animalRayCasterParent.GetComponent<Collider>();
+            _childMeshRendererMap.TryAdd(currentInstanceID,
+                currentTransform.GetChild(0).GetComponentInChildren<MeshRenderer>());
 
             _animals = GameObject.Find("HandFlippable_Animal").GetComponent<Transform>();
         }
@@ -198,81 +170,70 @@ public class HandFootFlip_GameManager : IGameManager
 
     private void FlipAndChangeColor(Ray ray)
     {
-         if(Physics.Raycast(ray ,out hit))
-         {
-             var currentInstanceID = hit.transform.gameObject.GetInstanceID();
-             
-            if (_printMap.ContainsKey(currentInstanceID) )
-            {
-                if (_printMap[currentInstanceID].seq.IsActive()||_printMap[currentInstanceID].isNowFlipping)
+        if (Physics.Raycast(ray, out hit))
+        {
+            var currentInstanceID = hit.transform.gameObject.GetInstanceID();
+
+            if (_printMap.ContainsKey(currentInstanceID))
+                if (_printMap[currentInstanceID].seq.IsActive() || _printMap[currentInstanceID].isNowFlipping)
                 {
                     Debug.Log("The seq is currently Active! Click later..");
                     return;
                 }
-            }
-             
-            _printMap[currentInstanceID].seq = DOTween.Sequence();
-         
-                _printMap[currentInstanceID].seq
-                    .Append(
-                        hit.transform
-                            .DOLocalRotate(_rotateVector + _printMap[currentInstanceID].printObj.transform.rotation.eulerAngles, 0.38f)
-                            .SetEase(Ease.InOutQuint)
-                            .OnStart(() =>
-                            {
-                                
-                                
-                                char randomChar = (char)Random.Range('A', 'F'+ 1);
-                                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_"+randomChar,
-                                    0.3f);
-                                
-                                _printMap[currentInstanceID].isNowFlipping = true; 
-                                
-                                if (!_printMap[currentInstanceID].isFlipped)
-                                {
-                                    Debug.Log("Changing to Pair");
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
-                                        .SetDelay(0.235f);
-                                }
-                                else
-                                {
-                                    
-                                    
-                                    Debug.Log("Changing to Default");
-                                    
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
-                                        .SetDelay(0.235f);
-                                }
 
-                              
-                            })
-                            .OnComplete(() =>
+            _printMap[currentInstanceID].seq = DOTween.Sequence();
+
+            _printMap[currentInstanceID].seq
+                .Append(
+                    hit.transform
+                        .DOLocalRotate(
+                            _rotateVector + _printMap[currentInstanceID].printObj.transform.rotation.eulerAngles, 0.38f)
+                        .SetEase(Ease.InOutQuint)
+                        .OnStart(() =>
+                        {
+                            var randomChar = (char)Random.Range('A', 'F' + 1);
+                            Managers.Sound.Play(SoundManager.Sound.Effect,
+                                "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
+                                0.3f);
+
+                            _printMap[currentInstanceID].isNowFlipping = true;
+
+                            if (!_printMap[currentInstanceID].isFlipped)
                             {
-                                if (_isAnimalMoving)
-                                {
-                                    //객체가 두번 뒤집어 지지않도록 딜레이를 주어 bool값을 변화시킵니다. 
-                                    DOVirtual.Float(0, 1, 1.25f, _ => { }).OnComplete(() =>
-                                    {
-                                        _printMap[currentInstanceID].isNowFlipping = false;
-                                    });
-                                }
-                                else
+                                Debug.Log("Changing to Pair");
+                                _meshRendererMap[currentInstanceID].material
+                                    .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
+                                    .SetDelay(0.235f);
+
+                                _childMeshRendererMap[currentInstanceID].material
+                                    .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
+                                    .SetDelay(0.235f);
+                            }
+                            else
+                            {
+                                Debug.Log("Changing to Default");
+
+                                _meshRendererMap[currentInstanceID].material
+                                    .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
+                                    .SetDelay(0.235f);
+
+                                _childMeshRendererMap[currentInstanceID].material
+                                    .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
+                                    .SetDelay(0.235f);
+                            }
+                        })
+                        .OnComplete(() =>
+                        {
+                            if (_isAnimalMoving)
+                                //객체가 두번 뒤집어 지지않도록 딜레이를 주어 bool값을 변화시킵니다. 
+                                DOVirtual.Float(0, 1, 1.25f, _ => { }).OnComplete(() =>
                                 {
                                     _printMap[currentInstanceID].isNowFlipping = false;
-                                }
-                                
-                            }));
-    
+                                });
+                            else
+                                _printMap[currentInstanceID].isNowFlipping = false;
+                        }));
+
             DOVirtual
                 .Float(0, 1, 0.08f, _ => { })
                 .OnComplete(() =>
@@ -280,144 +241,111 @@ public class HandFootFlip_GameManager : IGameManager
                     _printMap[currentInstanceID].isFlipped = !_printMap[currentInstanceID].isFlipped;
                 });
 
-        _printMap[currentInstanceID].seq.Play();
-
-         }
-
-
-     
-        
+            _printMap[currentInstanceID].seq.Play();
+        }
     }
-    
-    
-     public void FlipAndChangeColor(Transform collidedTransform)
-     {
 
-       
+
+    public void FlipAndChangeColor(Transform collidedTransform)
+    {
 #if UNITY_EDITOR
         Debug.Log("filpping by Collider!");
 #endif
-        
-             var currentInstanceID = collidedTransform.gameObject.GetInstanceID();
-             
-            if (_printMap.ContainsKey(currentInstanceID) )
-            {
-                if (_printMap[currentInstanceID].seq.IsActive()||_printMap[currentInstanceID].isNowFlipping)
-                {
-                    
-#if UNITY_EDITOR
-                    Debug.Log("The seq is currently Active! Click later..");
-#endif
-                    return;
-                }
-            }
-             
-            _printMap[currentInstanceID].seq = DOTween.Sequence();
-         
-                _printMap[currentInstanceID].seq
-                    .Append(
-                        collidedTransform
-                            .DOLocalRotate(_rotateVector + _printMap[currentInstanceID].printObj.transform.rotation.eulerAngles, 0.38f)
-                            .SetEase(Ease.InOutQuint)
-                            .OnStart(() =>
-                            {
-                                
-                                
-                                char randomChar = (char)Random.Range('A', 'F'+ 1);
-                                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_"+randomChar,
-                                    0.3f);
-                                
-                                _printMap[currentInstanceID].isNowFlipping = true; 
-                                
-                                if (!_printMap[currentInstanceID].isFlipped)
-                                {
-                                    Debug.Log("Changing to Pair");
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
-                                        .SetDelay(0.235f);
-                                }
-                                else
-                                {
-                                    
-                                    
-                                    Debug.Log("Changing to Default");
-                                    
-                                    _meshRendererMap[currentInstanceID].material
-                                        .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
-                                        .SetDelay(0.235f);
-            
-                                    _childMeshRendererMap[currentInstanceID].material
-                                        .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
-                                        .SetDelay(0.235f);
-                                }
 
-                              
-                            })
-                            .OnComplete(() =>
+        var currentInstanceID = collidedTransform.gameObject.GetInstanceID();
+
+        if (_printMap.ContainsKey(currentInstanceID))
+            if (_printMap[currentInstanceID].seq.IsActive() || _printMap[currentInstanceID].isNowFlipping)
+            {
+#if UNITY_EDITOR
+                Debug.Log("The seq is currently Active! Click later..");
+#endif
+                return;
+            }
+
+        _printMap[currentInstanceID].seq = DOTween.Sequence();
+
+        _printMap[currentInstanceID].seq
+            .Append(
+                collidedTransform
+                    .DOLocalRotate(_rotateVector + _printMap[currentInstanceID].printObj.transform.rotation.eulerAngles,
+                        0.38f)
+                    .SetEase(Ease.InOutQuint)
+                    .OnStart(() =>
+                    {
+                        var randomChar = (char)Random.Range('A', 'F' + 1);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
+                            0.3f);
+
+                        _printMap[currentInstanceID].isNowFlipping = true;
+
+                        if (!_printMap[currentInstanceID].isFlipped)
+                        {
+                            Debug.Log("Changing to Pair");
+                            _meshRendererMap[currentInstanceID].material
+                                .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
+                                .SetDelay(0.235f);
+
+                            _childMeshRendererMap[currentInstanceID].material
+                                .DOColor(_colorPair[_printMap[currentInstanceID].defaultColorName], 0.2f)
+                                .SetDelay(0.235f);
+                        }
+                        else
+                        {
+                            Debug.Log("Changing to Default");
+
+                            _meshRendererMap[currentInstanceID].material
+                                .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
+                                .SetDelay(0.235f);
+
+                            _childMeshRendererMap[currentInstanceID].material
+                                .DOColor(_printMap[currentInstanceID].defaultColor, 0.2f)
+                                .SetDelay(0.235f);
+                        }
+                    })
+                    .OnComplete(() =>
+                    {
+                        if (_isAnimalMoving)
+                            //객체가 두번 뒤집어 지지않도록 딜레이를 주어 bool값을 변화시킵니다. 
+                            DOVirtual.Float(0, 1, 1.25f, _ => { }).OnComplete(() =>
                             {
-                                if (_isAnimalMoving)
-                                {
-                                    //객체가 두번 뒤집어 지지않도록 딜레이를 주어 bool값을 변화시킵니다. 
-                                    DOVirtual.Float(0, 1, 1.25f, _ => { }).OnComplete(() =>
-                                    {
-                                        _printMap[currentInstanceID].isNowFlipping = false;
-                                    });
-                                }
-                                else
-                                {
-                                    _printMap[currentInstanceID].isNowFlipping = false;
-                                }
-                                
-                            }));
-    
-            DOVirtual
-                .Float(0, 1, 0.08f, _ => { })
-                .OnComplete(() =>
-                {
-                    _printMap[currentInstanceID].isFlipped = !_printMap[currentInstanceID].isFlipped;
-                });
+                                _printMap[currentInstanceID].isNowFlipping = false;
+                            });
+                        else
+                            _printMap[currentInstanceID].isNowFlipping = false;
+                    }));
+
+        DOVirtual
+            .Float(0, 1, 0.08f, _ => { })
+            .OnComplete(() => { _printMap[currentInstanceID].isFlipped = !_printMap[currentInstanceID].isFlipped; });
 
         _printMap[currentInstanceID].seq.Play();
 
-        
 
 #if UNITY_EDITOR
 #endif
-
-     
-        
     }
 
     private static event Action onRaycasterMoveFinish;
 
     private void UnifyColor()
     {
-       
         ShuffleColors();
         _currentUnifiedColor = colorOptions[0];
-        
+
         //처음 while문 조건 통과를 위한 구성.
-     
+
         //이전 컬러와 중복 피하도록 구성
         while (_currentUnifiedColor == _previousUniColor)
         {
             ShuffleColors();
-            _currentUnifiedColor= colorOptions[0];
+            _currentUnifiedColor = colorOptions[0];
         }
 
-   
-        
-        
+
         foreach (var key in _colorPair.Keys.ToList()) _colorPair[key] = _currentUnifiedColor;
-        
-        foreach (var print in _prints)
-        {
-            print.isFlipped = false;
-        }
+
+        foreach (var print in _prints) print.isFlipped = false;
 
         _previousUniColor = _currentUnifiedColor;
     }
@@ -425,80 +353,64 @@ public class HandFootFlip_GameManager : IGameManager
 
     private void OnRayCasterMoveFin()
     {
-        
         _colorPair.Clear();
-        
-        
-       
+
+
         for (var i = 0; i < PRINTS_COUNT; i++)
-        {  
+        {
             _colorPair.TryAdd(_prints[i].defaultColorName, colorOptions[i % COLOR_COUNT]);
             Debug.Log($"suffle Paircolor again...: Color info: {colorOptions[i % COLOR_COUNT]}");
         }
-     
-         
     }
 
     private bool _isAnimalMoving;
-    private float _animalMoveDuration = 6.0f;
+    private readonly float _animalMoveDuration = 6.0f;
+
     private void RayCasterMovePlay()
     {
         UnifyColor();
 
-  
-       
-     
-        
+
         /*
-         isNowFlipping이 true 인 경우, 유저클릭과 동물움직임 동시 실행 시, Flip함수가 동작하지 않습니다. 
+         isNowFlipping이 true 인 경우, 유저클릭과 동물움직임 동시 실행 시, Flip함수가 동작하지 않습니다.
         따라서 아래와 같이, _printMap의 bool값을 수정해줍니다. (isNowFlipping 조건 참고)
         */
-        foreach (var print in _printMap.Values.ToList())
-        {
-            print.isNowFlipping = false;
-        }
-        
+        foreach (var print in _printMap.Values.ToList()) print.isNowFlipping = false;
+
         _animals.transform.position = _pathPos[(int)RayCasterMovePosition.Start];
         _animals.transform
-          .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
-          .OnStart(() =>
-          {
-              Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
+            .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
+            .OnStart(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
 
-              DOVirtual.Float(0, 1, 0.35f, _ => { })
-                  .OnStart(() =>
-                  {
-                      Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A", 0.5f);
-                      Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B", 0.5f);
-                  })
-                  .OnComplete(() =>
-                  {
-                      Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
-                      Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
-                  });
-              
-
-              DOVirtual.Float(0, 1, 2.3f, _ => { })
-                  .OnComplete(() =>
-                  {
-                      _isAnimalMoving = false;
-                  });
+                DOVirtual.Float(0, 1, 0.35f, _ => { })
+                    .OnStart(() =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A", 0.5f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B", 0.5f);
+                    })
+                    .OnComplete(() =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
+                    });
 
 
-              //동물이 모두 이동하기전 관련 초기화 로직 수행
-              DOVirtual.Float(0, 1, _animalMoveDuration - 0.15f, _ => { })
-                  .OnComplete(() =>
-                  {
-                      onRaycasterMoveFinish?.Invoke();
-                      _isAnimalMoving = false;
-                      Managers.Sound.FadeOut(SoundManager.Sound.Effect);
-                  });
-
-          })
-          .OnUpdate(() => { _animalMoveCurrentTime = 0; });
+                DOVirtual.Float(0, 1, 2.3f, _ => { })
+                    .OnComplete(() => { _isAnimalMoving = false; });
 
 
-
+                //동물이 모두 이동하기전 관련 초기화 로직 수행
+                DOVirtual.Float(0, 1, _animalMoveDuration - 0.15f, _ => { })
+                    .OnComplete(() =>
+                    {
+                        onRaycasterMoveFinish?.Invoke();
+                        _isAnimalMoving = false;
+                        Managers.Sound.FadeOut(SoundManager.Sound.Effect);
+                    });
+            })
+            .OnUpdate(() => { _animalMoveCurrentTime = 0; });
     }
 
 
@@ -536,7 +448,7 @@ public class HandFootFlip_GameManager : IGameManager
     //             }
     //    }
 
-    
+
     private void ShuffleColors()
     {
         for (var i = 0; i < colorOptions.Length; i++)

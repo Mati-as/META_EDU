@@ -6,10 +6,9 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class RplidaManager : MonoBehaviour
+public class SensorManager : MonoBehaviour
 {
-
-   
+    
 // #if UNITY_EDITOR
 //     public bool USE_SENSOR;
 //     public static bool useSensor;

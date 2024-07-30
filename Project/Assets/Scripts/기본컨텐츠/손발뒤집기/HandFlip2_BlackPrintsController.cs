@@ -158,7 +158,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
             if (!_isClickable)
             {
 #if UNITY_EDITOR
-Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
+ //Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
 #endif
                 return;
             }

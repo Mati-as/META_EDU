@@ -411,7 +411,7 @@ public class HandFlip2_GameManager : IGameManager
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
                 (printData.seq.IsActive() || printData.isCurrentlyFlipping))
             {
-                Debug.Log("The seq is currently Active! Click later..");
+               // Debug.Log("The seq is currently Active! Click later..");
                 return;
             }
 
@@ -431,7 +431,7 @@ public class HandFlip2_GameManager : IGameManager
 
                     // Toggle 
                     var targetColor = printData.currentColor == ColorA ? ColorB : ColorA;
-                    Debug.Log($"Changing to {(targetColor == ColorA ? "ColorA" : "ColorB")}");
+                   // Debug.Log($"Changing to {(targetColor == ColorA ? "ColorA" : "ColorB")}");
                     printData.currentColor = targetColor;
 
                     // Apply the color
@@ -467,7 +467,7 @@ public class HandFlip2_GameManager : IGameManager
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
                 (printData.seq.IsActive() || printData.isCurrentlyFlipping))
             {
-                Debug.Log("The seq is currently Active! Click later..");
+               // Debug.Log("The seq is currently Active! Click later..");
                 return;
             }
 

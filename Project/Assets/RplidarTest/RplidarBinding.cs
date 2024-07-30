@@ -18,10 +18,15 @@ public struct LidarData
 
 public class RplidarBinding
 {
+
+    private readonly string DLL_FILENAME = "RplidarCpp.dll";
+    private readonly string DLL_PATH = "RplidarCpp.dll";
+    
+    
 #if UNITY_EDITOR_64
     private const string _dllFileName = "RplidarCppEditorOnly.dll";
 #else 
-  private const string _dllFileName = "RplidarCpp.dll";
+  private const string _dllFileName = "RplidarCppEditorOnly.dll";
 #endif
     static RplidarBinding()
     {
@@ -31,7 +36,7 @@ public class RplidarBinding
         Debug.Log("Rplida :64");
     
 #else 
-          currentPath += Path.PathSeparator + Application.dataPath+ "/Plugins/x86_64/";
+          currentPath += Path.PathSeparator + Application.dataPath+ "/Plugins_EditorOnly/x86_64/";
         Debug.Log("Rplida :Editor");
 #endif
         Environment.SetEnvironmentVariable("PATH", currentPath);

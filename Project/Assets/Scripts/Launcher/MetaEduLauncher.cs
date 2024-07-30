@@ -14,6 +14,7 @@ using UnityEngine.UI;
 
 public class MetaEduLauncher : UI_PopUp
 {
+	
 	public enum Animation
 	{
 		On,
@@ -54,6 +55,7 @@ public class MetaEduLauncher : UI_PopUp
 		ContentCButton,
 		SettingButton,
 		ResultButton,
+		SettingCloseButton
 		//LoginButton,
 		//SurveyButton
 	}
@@ -72,12 +74,12 @@ public class MetaEduLauncher : UI_PopUp
     
 	public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
 
-	public Camera _uiCamera;
+	
 	
 	private void Awake()
 	{
 		_raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
-		_uiCamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+		
 		
 ;		LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
 		LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
@@ -107,6 +109,7 @@ public class MetaEduLauncher : UI_PopUp
 		_isLoadFinished = true;
 	}
 
+	private UIType currentUITab = UIType.Home;
 	public void InitLauncher()
 	{
 
@@ -123,6 +126,12 @@ public class MetaEduLauncher : UI_PopUp
 		GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC));
 		GetButton((int)UIButtons.SettingButton).gameObject.BindEvent(() => ShowTab(UIType.Setting));
 		GetButton((int)UIButtons.ResultButton).gameObject.BindEvent(() => ShowTab(UIType.Result));
+		
+		GetButton((int)UIButtons.SettingCloseButton).gameObject.BindEvent(() =>
+		{
+            GetObject((int)UIType.Setting).gameObject.SetActive(false);
+            ShowTab(currentUITab);
+		});
 		// GetButton((int)UIButtons.LoginButton).gameObject.BindEvent(() => ShowTab(UIType.Login));
 		// GetButton((int)UIButtons.SurveyButton).gameObject.BindEvent(() => ShowTab(UIType.Survey));
 
@@ -243,6 +252,10 @@ public class MetaEduLauncher : UI_PopUp
 		
 		if ((UIType)_UItab == tab) return;
 
+		if (tab != UIType.Setting)
+		{
+			currentUITab = tab;
+		}
 		_UItab = (int)tab;
 
 
@@ -259,7 +272,7 @@ public class MetaEduLauncher : UI_PopUp
 		//GetObject((int)UIType.Survey).gameObject.SetActive(false);
 
 #if UNITY_EDITOR
-		Debug.Log($"Current UI : {tab}");
+		Debug.Log($"Current UI : {currentUITab}");
 #endif
 		
 		switch (tab)

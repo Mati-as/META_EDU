@@ -12378,10 +12378,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1012723619}
+  - component: {fileID: 1012723623}
   - component: {fileID: 1012723622}
   - component: {fileID: 1012723621}
   - component: {fileID: 1012723620}
-  - component: {fileID: 1012723623}
   m_Layer: 0
   m_Name: Manager
   m_TagString: UIManager
@@ -12502,7 +12502,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5cbceeffab28994fbaaeda4fe9b87be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiCamera: {fileID: 0}
 --- !u!1 &1025054241
 GameObject:
   m_ObjectHideFlags: 0
@@ -29864,13 +29863,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52366b7122f6ef442af602a07e536ea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: COM4
   BALLPrefab: {fileID: 4389488267611479880, guid: 748675ba476c1a54ba66bc66d3264ca5,
     type: 3}
   MOUSEPrefab: {fileID: 886082513674400756, guid: e3ff834810723174db4afebed00c13a7,
     type: 3}
   FPPrefab: {fileID: 7592390607083335145, guid: 1475a1ce88c4f9740ad0b11d2bc6b98a,
     type: 3}
+  middlePrefab: {fileID: 0}
   m_onscan: 0
   Test_check: 0
   Guideline: {fileID: 1003423990983941171}
@@ -32760,12 +32759,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52366b7122f6ef442af602a07e536ea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: COM4
   BALLPrefab: {fileID: 4389488267611479880, guid: 748675ba476c1a54ba66bc66d3264ca5,
     type: 3}
   MOUSEPrefab: {fileID: 886082513674400756, guid: e3ff834810723174db4afebed00c13a7,
     type: 3}
   FPPrefab: {fileID: 0}
+  middlePrefab: {fileID: 0}
   m_onscan: 0
   Test_check: 0
   Guideline: {fileID: 0}
@@ -33004,7 +33003,7 @@ MonoBehaviour:
     m_Flags: 0
   GR: {fileID: 0}
   screenPosition: {x: 0, y: 0, z: 0}
-  button: {fileID: 0}
+  btn: {fileID: 0}
 --- !u!224 &7786098704015914343
 RectTransform:
   m_ObjectHideFlags: 0

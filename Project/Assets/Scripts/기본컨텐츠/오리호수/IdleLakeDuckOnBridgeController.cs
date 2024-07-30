@@ -12,8 +12,8 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
         Squeak,
         Dive,
     }
-    public readonly int IDLE_ANIM = Animator.StringToHash("idle");
-    public readonly int EAT_ANIM = Animator.StringToHash("Eat");
+    public readonly int IDLE_ANIM = Animator.StringToHash("Idle");
+   // public readonly int EAT_ANIM = Animator.StringToHash("Eat");
     public readonly int FAST_RUN_ANIM = Animator.StringToHash("FastRun");
     public readonly int SWIM_ANIM = Animator.StringToHash("Swim");
 
@@ -72,6 +72,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
         entry.eventID = EventTriggerType.PointerClick;
         entry.callback.AddListener(data => { OnClicked(); });
         trigger.triggers.Add(entry);
+        _animator.SetBool(IDLE_ANIM, true);
     }
 
     public ParticleSystem waterEffect;
@@ -92,6 +93,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
             Lake_SoundManager.PlaySound(_audioSourceSqueak,audioClips[(int)Sound.Squeak]);
             
             _animator.SetBool(FAST_RUN_ANIM, true);
+            _animator.SetBool(IDLE_ANIM, false);
             _isClickedAnimStarted = true;
             
             
@@ -123,7 +125,7 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
                         .OnComplete(() =>
                         {
                             _animator.SetBool(SWIM_ANIM, true);
-                            
+                       
                             _animator.speed = increasedAnimationSpeed;
                             DOTween
                                 .Sequence()
@@ -131,11 +133,15 @@ public class IdleLakeDuckOnBridgeController : MonoBehaviour,Lake_IAnimalBehavior
                                 //.SetDelay(0f)
                                 .SetLookAt(0.01f)
                                 .SetEase(Ease.InOutQuad))
-                                .InsertCallback(7f, // ㄲInsertCall 사용을 위해 애니메이션 시퀀스로 구성.
+                                .AppendInterval(1.5f)
+                                .InsertCallback(2f,()=>{     _animator.SetBool(SWIM_ANIM, false);
+                                })
+                                .InsertCallback(2, // InsertCall 사용을 위해 애니메이션 시퀀스로 구성.
                                     () => _animator.speed = _defaultAnimSpeed) // 애니메이션 중간에 속도를 기본값으로 설정
                                 .OnComplete(() =>
                                 {
-                                    _animator.SetBool(SWIM_ANIM, false);
+                                    
+                                    _animator.SetBool(IDLE_ANIM, true);
                                     _isClickedAnimStarted = false;
                                 });
                         });

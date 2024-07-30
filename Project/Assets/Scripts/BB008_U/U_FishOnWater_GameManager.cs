@@ -289,6 +289,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
     protected override void Init()
     {
+        isStartButtonClicked = false;
         DOTween.Init().SetCapacity(500, 500);
         ManageProjectSettings(90, 0.15f);
 
@@ -420,7 +421,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
         var vfxPrefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/CFX_WaterSplash");
 
-        var PARTICLE_COUNT = 15;
+        var PARTICLE_COUNT = 50;
         for (var i = 0; i < PARTICLE_COUNT; i++)
         {
             var psObj = Instantiate(vfxPrefab, GameObject.Find("CFX").transform);
@@ -464,7 +465,7 @@ public class U_FishOnWater_GameManager : IGameManager
     private void FixedUpdate()
     {
         
-        Debug.Log($"fish on screen Count {fishOnScreen}");
+//        Debug.Log($"fish on screen Count {fishOnScreen}");
     }
           
 #endif
@@ -487,29 +488,30 @@ public class U_FishOnWater_GameManager : IGameManager
         }
         
         fishOnScreen += fishCount;
+        var fishPathDuration = 2 - fishSpeed * 0.90f;
+        fishPathDuration = Mathf.Clamp(fishPathDuration, minDuration, maxDuration);
+        
         for (var i = 0; i < fishCount; i++)
         {
             var currentFish = _fishesTransforms[_currentFishIndex++ % FISH_POOL_COUNT];
 
             var id = currentFish.GetInstanceID();
-
+            if (_isOnBucket[id]) return;
+            
             var currentPath = SetPath();
             var moveAnimSeq = DOTween.Sequence();
-
-
+            
             _colliderMap[id].enabled = false;
             _animatorSeq[id].speed = 1f;
             _psMap[id].Play();
-            if (_isOnBucket[id])
-                //_fishesQueue.Enqueue(currentFish);
-                return;
+           
 
             currentFish.position = currentPath[(int)Path.Start];
             // 애니메이션 Duration을 최소0.2초, 최대 2초로 가져가기 위해 아래와 같은식을 이용합니다.
-            var fishPathDuration = 2 - fishSpeed * 0.95f;
+         
 
             //추후 계산수식에 따른 에러 방지를 위한 방어적 클랭핑입니다. 
-            fishPathDuration = Mathf.Clamp(fishPathDuration, minDuration, maxDuration);
+          
             var randomDuration = Random.Range(fishPathDuration, fishPathDuration + 0.5f);
             _psMap[id].Play();
             moveAnimSeq
@@ -582,10 +584,13 @@ public class U_FishOnWater_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheck())
+        {
+            return;
+        }
+        
         // 초기화 등, 기타 로직에서 클릭을 무시해야할 경우
         if (isOnReInit) return;
-
         foreach (var hit in GameManager_Hits)
             if (hit.transform.gameObject.name.Contains("Fish"))
             {
