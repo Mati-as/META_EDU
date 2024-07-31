@@ -13,10 +13,14 @@ public class U_FishOnWater_GameManager : IGameManager
 {
     public bool easyVersion;
 
-    private TextAsset xmlAsset;
-    private XmlNode soundNode;
-    public XmlDocument xmlDoc; // GameManager에서만 문서 수정, UIMAnager에서는 읽기만 수행
-    private string _xmlPath;
+    
+    public XmlDocument xmlDoc_Temp; //temp는 xml리셋시 초기화 및 permanant로 정보이동 GameManager에서만 문서 수정, UIMAnager에서는 읽기만 수행
+    public XmlDocument xmlDoc_Permanant;
+    public XmlDocument xmlDoc_Setting;
+
+    private string _xmlPathTemp;      //MonoBehavior에서 호출불가//= System.IO.Path.Combine(Application.persistentDataPath, "tempData.xml");
+    private string _xmlPathPermanant; // = System.IO.Path.Combine(Application.persistentDataPath, "PermanantData.xml");
+    private string _xmlPathSetting; // = System.IO.Path.Combine(Application.persistentDataPath, "PermanantData.xml")
     private string _xmlSavePath;
 
     private int _currentMode;
@@ -236,15 +240,15 @@ public class U_FishOnWater_GameManager : IGameManager
 
         if (currentMode == (int)PlayMode.MultiPlay)
         {
-            Utils.AddUser(ref xmlDoc, _currentMode.ToString(), currentUserName, fishCaughtCount.ToString(),
+            Utils.AddUser(ref xmlDoc_Temp, _currentMode.ToString(), currentUserName, fishCaughtCount.ToString(),
                 currentImageChar.ToString());
-            WriteXML(xmlDoc, _xmlPath);
+            WriteXML(xmlDoc_Temp, _xmlPathTemp);
         }
         else if (currentMode == (int)PlayMode.SinglePlay)
         {
-            Utils.AddUser(ref xmlDoc, _currentMode.ToString(), currentUserName, currentUserScore,
+            Utils.AddUser(ref xmlDoc_Temp, _currentMode.ToString(), currentUserName, currentUserScore,
                 currentImageChar.ToString());
-            WriteXML(xmlDoc, _xmlPath);
+            WriteXML(xmlDoc_Temp, _xmlPathTemp);
         }
 
 
@@ -272,6 +276,16 @@ public class U_FishOnWater_GameManager : IGameManager
 
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnRestartBtnClicked += OnRestartBtnClicked;
+
+        U_FishOnWater_UIManager.OnResetXML -= OnXmlReset;
+        U_FishOnWater_UIManager.OnResetXML += OnXmlReset;
+
+        U_FishOnWater_UIManager.OnResetSettingBtnClicked -= OnResetSetting;
+        U_FishOnWater_UIManager.OnResetSettingBtnClicked += OnResetSetting;
+
+        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
+        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked += OnSaveCurrentSettings;
+
     }
 
     private void OnReadyUIAppear()
@@ -280,33 +294,46 @@ public class U_FishOnWater_GameManager : IGameManager
 
     protected void OnDestroy()
     {
+        U_FishOnWater_UIManager.OnResetXML -= OnXmlReset;
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
+        U_FishOnWater_UIManager.OnResetSettingBtnClicked -= OnResetSetting;
         OnFishCaught -= PlayPathOnCaught;
         OnFishCaught -= DecreaseFishCount;
+        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
+
     }
 
 
     protected override void Init()
     {
+        
+        
+       _xmlPathTemp= System.IO.Path.Combine(Application.persistentDataPath, "tempData.xml");
+       _xmlPathPermanant = System.IO.Path.Combine(Application.persistentDataPath, "PermanantData.xml"); 
+       _xmlPathSetting =  System.IO.Path.Combine(Application.persistentDataPath, "SettingData.xml"); 
         isStartButtonClicked = false;
         DOTween.Init().SetCapacity(500, 500);
         ManageProjectSettings(90, 0.15f);
 
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
         // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
-        Check_XmlFile("BB008_UserRankingData");
-        _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
-        Read(_xmlPath);
-#else
-        Check_XmlFile("BB008_UserRankingData");
-        _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
-        Read(_xmlPath);
-
-
-#endif
-
-        //Utils.LoadXML(ref xmlAsset, ref xmlDoc, _xmlSavePath, ref _xmlSavePath);
+        Check_XmlFile("TempData");
+        Read(ref xmlDoc_Temp,_xmlPathTemp);
+        
+        Check_XmlFile("PermanantData");
+        Read(ref xmlDoc_Permanant,_xmlPathPermanant);
+        
+        Check_XmlFile("SettingData");
+        Read(ref xmlDoc_Setting,_xmlPathSetting);
+// #else
+//         Check_XmlFile("BB008_UserRankingData");
+//         _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
+//         Read(_xmlPath);
+//
+//
+// #endif
+        
         _onFishCatchPsPool = new Stack<ParticleSystem>();
         var prefab = Resources.Load("게임별분류/BB008_U/CFX_OnFishCatch");
 
@@ -788,11 +815,11 @@ public class U_FishOnWater_GameManager : IGameManager
         _animatorSeq[id].speed = 0.5f;
     }
 
-    public void Read(string path)
+    public void Read(ref XmlDocument doc, string path)
     {
         var Document = new XmlDocument();
         Document.Load(path);
-        xmlDoc = Document;
+        doc = Document;
     }
 
     public void Check_XmlFile(string fileName)
@@ -808,7 +835,7 @@ public class U_FishOnWater_GameManager : IGameManager
         {
             //TextAsset XmlFilepath = Resources.Load<TextAsset>("LOGININFO");
             var XmlFilepath = Resources.Load<TextAsset>(fileName);
-            xmlDoc = new XmlDocument();
+            xmlDoc_Temp = new XmlDocument();
 //            xmlDoc.LoadXml(XmlFilepath.ToString());
             //           xmlDoc.Save(filePath);
             Debug.Log(fileName + ".xml FILE NOT EXIST");
@@ -821,4 +848,133 @@ public class U_FishOnWater_GameManager : IGameManager
         Debug.Log($"{path}");
         //Debug.Log("SAVED DATA WRITE");
     }
+
+
+    private void OnXmlReset()
+    {
+        // Load the permanent document from file
+        if (File.Exists(_xmlPathPermanant))
+        {
+            xmlDoc_Permanant.Load(_xmlPathPermanant);
+        }
+        else
+        {
+            // Create a new root element if the permanent file does not exist
+            var root = xmlDoc_Permanant.CreateElement("Root");
+            xmlDoc_Permanant.AppendChild(root);
+        }
+
+        // Load the temporary document from file
+        if (File.Exists(_xmlPathTemp))
+        {
+            xmlDoc_Temp.Load(_xmlPathTemp);
+        }
+        else
+        {
+            Debug.LogError($"Temp file {_xmlPathTemp} does not exist.");
+            return;
+        }
+
+        // Get the root element of both documents
+        var permanantRoot = xmlDoc_Permanant.DocumentElement;
+        var tempRoot = xmlDoc_Temp.DocumentElement;
+
+        foreach (XmlNode tempNode in tempRoot.ChildNodes)
+        {
+            // Check if the node already exists in the permanent document
+            var nodeExists = false;
+            foreach (XmlNode permNode in permanantRoot.ChildNodes)
+                if (NodesAreEqual(tempNode, permNode))
+                {
+                    nodeExists = true;
+                    break;
+                }
+
+            // If the node does not exist, import and append it
+            if (!nodeExists)
+            {
+                var importedNode = xmlDoc_Permanant.ImportNode(tempNode, true);
+                permanantRoot.AppendChild(importedNode);
+#if UNITY_EDITOR
+                Debug.Log($"append succeeded: {tempNode.Attributes} {tempNode.ChildNodes}");
+#endif
+            }
+#if UNITY_EDITOR
+            else
+            {
+                Debug.Log($"node already exists: {tempNode.Attributes} {tempNode.ChildNodes}");
+            }
+#endif
+        }
+
+
+        WriteXML(xmlDoc_Permanant, _xmlPathPermanant);
+
+
+        tempRoot.RemoveAll();
+        // Save the cleared temporary document
+        WriteXML(xmlDoc_Temp, _xmlPathTemp);
+    }
+
+    private bool NodesAreEqual(XmlNode node1, XmlNode node2)
+    {
+        // Compare the nodes based on their name and attributes (can be customized)
+        if (node1.Name != node2.Name)
+            return false;
+
+        if (node1.Attributes.Count != node2.Attributes.Count)
+            return false;
+
+        for (int i = 0; i < node1.Attributes.Count; i++)
+        {
+            if (node1.Attributes[i].Name != node2.Attributes[i].Name ||
+                node1.Attributes[i].Value != node2.Attributes[i].Value)
+                return false;
+        }
+
+        // Additional checks can be added as needed (e.g., comparing child nodes)
+        return true;
+    }
+
+
+
+    private void OnResetSetting()
+    {
+        var tempRootSetting = xmlDoc_Setting.DocumentElement;
+        tempRootSetting.RemoveAllAttributes();
+        
+        XmlElement setting =  xmlDoc_Setting.CreateElement("UI_Fish_SettingData");
+        setting.SetAttribute("mainvolume", "0.5");
+        setting.SetAttribute("bgmvol", "0.5");
+        setting.SetAttribute("effectvol", "0.5");
+        
+        setting.SetAttribute("timelimit", "30");
+        setting.SetAttribute("fishspeed", "1");
+        setting.SetAttribute("fishgoalcount", "30");
+
+        tempRootSetting.AppendChild(setting);
+        
+        WriteXML( xmlDoc_Setting, _xmlPathSetting);
+    }
+    
+    private void OnSaveCurrentSettings(float mainVolume, float bgmVol, float effectVol, int timeLimit, float fishSpeed, int fishGoalCount)
+    {
+        
+        var tempRootSetting = xmlDoc_Setting.DocumentElement;
+        tempRootSetting.RemoveAllAttributes();
+    
+        XmlElement setting =  xmlDoc_Setting.CreateElement("UI_Fish_SettingData");
+        setting.SetAttribute("mainvolume", mainVolume.ToString("F2"));
+        setting.SetAttribute("bgmvol", bgmVol.ToString("F2"));
+        setting.SetAttribute("effectvol", effectVol.ToString("F2"));
+        setting.SetAttribute("timelimit", timeLimit.ToString("F2"));
+        setting.SetAttribute("fishspeed", fishSpeed.ToString("F2"));
+        setting.SetAttribute("fishgoalcount", fishGoalCount.ToString("F2"));
+
+        tempRootSetting.AppendChild(setting);
+    
+        WriteXML(xmlDoc_Setting, _xmlPathSetting);
+    }
+
+    
 }

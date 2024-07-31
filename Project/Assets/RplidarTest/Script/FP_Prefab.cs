@@ -18,6 +18,7 @@ public class FP_Prefab : RaySynchronizer
 
     private RectTransform FP;
     private GameObject Image;
+    private static bool _isImageOn;
 
     public override void Init()
     {
@@ -27,11 +28,20 @@ public class FP_Prefab : RaySynchronizer
      _image = GetComponent<Image>();
     }
 
+    public static void CheckIsImageOn()
+    {
+        if (Managers.Instance != null)
+        {
+            _isImageOn = Managers.sensorManager.isSensorEditMode;
+        }
+    }
+
+
     void OnEnable()
     {
-
+      
         //모드설정에따라 이미지 활성화 비활성화
-        _image.enabled = Managers.sensorManager.isSensorEditMode;
+        _image.enabled = _isImageOn;
         
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();

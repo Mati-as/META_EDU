@@ -21,7 +21,7 @@ public class SensorManager : MonoBehaviour
     private static string port ="COM3";
     public static bool isMoterStarted { get; private set; }
     
-    private static LidarData[] _s_lidarDatas;
+    private static LidarData[] _lidarDatas;
 
 
     //=====0714
@@ -102,7 +102,7 @@ public class SensorManager : MonoBehaviour
     public  bool isSensorEditMode { get; private set; }
 
     private float SENSOR_DISTANCE_FROM_PROJECTION = 280; //mm
-    private float ZERO_POINT_FROM_SENSOR;
+    private float UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET;
     private readonly float SENSEOR_OFFSET_MAX_VALUE =1000;
     
     
@@ -145,7 +145,7 @@ public class SensorManager : MonoBehaviour
     {
         
         if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
-        if (_s_lidarDatas != null) _s_lidarDatas = new LidarData[LIDAR_DATA_SIZE];
+        if (_lidarDatas != null) _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         
         // _width = _height * (Resolution_X / Resolution_Y);
         _screenRatio = Resolution_Y / (_height * 10);
@@ -155,7 +155,7 @@ public class SensorManager : MonoBehaviour
         InitializeSlider("OffsetYSlider", out sensorDistance, out _TMP_seonsorDistance);
         InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
 
-        ZERO_POINT_FROM_SENSOR = SENSOR_DISTANCE_FROM_PROJECTION + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET = SENSOR_DISTANCE_FROM_PROJECTION + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
 
         _heightSlider.value = heightCm;
         sensorDistance.value = sensorDistanceFromProjection;
@@ -165,27 +165,33 @@ public class SensorManager : MonoBehaviour
         {
             _height = value;
             //_screenRatio = (Resolution_Y / _height * 10);
-            ZERO_POINT_FROM_SENSOR = SENSOR_DISTANCE_FROM_PROJECTION + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+            UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET = SENSOR_DISTANCE_FROM_PROJECTION + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
             _TMP_hiehgt.text = "HEIGHT : " + _height.ToString("F1");
         }, HEIGHT_MIN);
+        _heightSlider.value = _height;
+        
 
         _TMP_hiehgt.text = $"{nameof(heightCm)}: " + _height.ToString("F1");
         _TMP_seonsorDistance.text = "Sensor Distance: " + sensorDistanceFromProjection.ToString("F1");
         _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F1");
 
+        
         ConfigureSlider(sensorDistance, SENSEOR_OFFSET_MAX_VALUE, value =>
         {
             sensorDistanceFromProjection = value;
             _TMP_seonsorDistance.text = "DISTANCE_FROM_SENSOR: " + sensorDistanceFromProjection.ToString("F1");
-            ZERO_POINT_FROM_SENSOR = sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+            UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET = sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
         }, -2000);
+        sensorDistance.value = sensorDistanceFromProjection;
 
+        
         ConfigureSlider(_screenRatioSlider, SCREEN_RATIO_MAX, value =>
         {
             _screenRatio = value;
             _screenRatioSlider.minValue = SCREEN_RATIO_MIN;
             _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F2");
         });
+        _screenRatioSlider.value = _screenRatio;
 
         _sensorEditModeButton = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<Button>();
         _TMP_sensorEditMode = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<TextMeshProUGUI>();
@@ -196,9 +202,8 @@ public class SensorManager : MonoBehaviour
 
         _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
         
-        RplidarBinding.EndScan();
-        RplidarBinding.EndMotor();
-        
+        // RplidarBinding.EndScan();
+        // RplidarBinding.EndMotor();
         
         int result = RplidarBinding.OnConnect(port);
         Debug.Log("Connect on " + port + " result:" + result);
@@ -354,7 +359,7 @@ public class SensorManager : MonoBehaviour
     {
         while (true)
         {
-            int datacount = RplidarBinding.GetData(ref _s_lidarDatas);
+            int datacount = RplidarBinding.GetData(ref _lidarDatas);
 
             if (datacount == 0)
             {
@@ -405,11 +410,11 @@ public class SensorManager : MonoBehaviour
                 //var key = GenerateKey((int)_s_lidarDatas[i].theta * 10, (int)_s_lidarDatas[i].distant);
                 //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
                 
-                if(_s_lidarDatas[i].theta >90 && _s_lidarDatas[i].theta <270)continue;
+                if(_lidarDatas[i].theta >90 && _lidarDatas[i].theta <270)continue;
 
 
-                x = -_screenRatio * (_s_lidarDatas[i].distant * Mathf.Cos((90-_s_lidarDatas[i].theta)* Mathf.Deg2Rad));
-                y = -_screenRatio * (_s_lidarDatas[i].distant * Mathf.Sin((90-_s_lidarDatas[i].theta) * Mathf.Deg2Rad) - ZERO_POINT_FROM_SENSOR);
+                x = -_screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
+                y = -_screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90-_lidarDatas[i].theta) * Mathf.Deg2Rad) - UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET);
                
           
                 if (i % _filteringRate == 0)

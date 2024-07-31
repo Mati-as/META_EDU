@@ -29,6 +29,13 @@ public class SoundManager : MonoBehaviour
     private readonly float VOLUME_MAX_NARRATION = 1f;
     
     
+      
+    public static readonly float VOLUME_INITVALUE_MAIN      = 0.5f;
+    public static readonly float VOLUME_INITVALUE_BGM       = 0.3f;
+    public static readonly float VOLUME_INITVALUE_EFFECT    = 0.5f;
+    public static readonly float VOLUME_INITVALUE_NARRATION = 0.5f;
+    
+    
     
 
     public float[] volumes
@@ -76,9 +83,9 @@ public class SoundManager : MonoBehaviour
                 volumes = new float[(int)Sound.Max];
                 for (int i = 0; i < (int)Sound.Max; i++)
                 {
-                    volumes[(int)Sound.Main] = 0.5f;
-                    volumes[(int)Sound.Bgm] = 0.3f;
-                    volumes[(int)Sound.Effect] = 0.5f;
+                    volumes[(int)Sound.Main] =      0.5f;
+                    volumes[(int)Sound.Bgm] =       0.3f;
+                    volumes[(int)Sound.Effect] =    0.5f;
                     volumes[(int)Sound.Narration] = 0.5f;
                 }
                 

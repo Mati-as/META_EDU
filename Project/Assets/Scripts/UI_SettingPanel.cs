@@ -24,7 +24,7 @@ public class UI_SettingPanel : MonoBehaviour
       _defaultPos = _panel.anchoredPosition;
   }
 
-  private void OnClick()
+  public void OnClick()
   {
       if (!_isPanelOn)
       {

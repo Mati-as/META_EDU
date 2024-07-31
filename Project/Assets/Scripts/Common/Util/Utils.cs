@@ -86,6 +86,11 @@ public class Utils :MonoBehaviour
             newUser.SetAttribute(nameof(username), username);
             newUser.SetAttribute((nameof(score)), score);
             newUser.SetAttribute("iconnumber", iconNumber);
+                
+            DateTime today = DateTime.Now;
+            Debug.Log("Today's date is: " + today.ToString("yyyy-MM-dd"));
+            
+            newUser.SetAttribute("date", today.ToString());
 
             root.AppendChild(newUser);
         }
