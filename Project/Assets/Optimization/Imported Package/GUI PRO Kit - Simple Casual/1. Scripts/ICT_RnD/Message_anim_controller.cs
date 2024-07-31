@@ -29,7 +29,7 @@ public class Message_anim_controller : MonoBehaviour
         Init_Animation();
         Animation_On();
 #if UNITY_EDITOR
-        Debug.Log("UI Animation On");
+        //Debug.Log("UI Animation On");
 #endif
 
         UI_Scene_Button.onBtnShut -= DeactivateUI;

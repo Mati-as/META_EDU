@@ -28,13 +28,7 @@ public class FP_Prefab : RaySynchronizer
      _image = GetComponent<Image>();
     }
 
-    public static void CheckIsImageOn()
-    {
-        if (Managers.Instance != null)
-        {
-            _isImageOn = Managers.sensorManager.isSensorEditMode;
-        }
-    }
+
 
 
     void OnEnable()

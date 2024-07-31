@@ -16,17 +16,17 @@ public class Managers : MonoBehaviour
         } 
     }
 
-    private UIManager s_uiManager = new UIManager();
-    private ResourceManager s_resourceManager = new ResourceManager();
-    private SoundManager s_soundManager = new SoundManager();
-    private SensorManager s_sensorManager = new SensorManager();
+    private static UIManager s_uiManager = new UIManager();
+    private static ResourceManager s_resourceManager = new ResourceManager();
+    private static SoundManager s_soundManager = new SoundManager();
+    private static SensorManager s_sensorManager = new SensorManager();
 
     public static SoundManager soundManager 
     {  
         get 
         { 
             Init(); 
-            return Instance.s_soundManager; 
+            return s_soundManager; 
         } 
     }
 
@@ -35,7 +35,7 @@ public class Managers : MonoBehaviour
         get 
         { 
             Init(); 
-            return Instance.s_uiManager; 
+            return s_uiManager; 
         } 
     }
 
@@ -44,7 +44,7 @@ public class Managers : MonoBehaviour
         get 
         { 
             Init(); 
-            return Instance.s_resourceManager; 
+            return s_resourceManager; 
         } 
     }
 
@@ -53,7 +53,7 @@ public class Managers : MonoBehaviour
         get 
         { 
             Init(); 
-            return Instance.s_sensorManager; 
+            return s_sensorManager; 
         }
     }
 
@@ -73,8 +73,10 @@ public class Managers : MonoBehaviour
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             DontDestroyOnLoad(go);
 
-            s_instance.s_soundManager.Init();
-            s_instance.s_sensorManager.Init();
+            s_soundManager.Init();
+          
         }
     }
+    
+    
 }
