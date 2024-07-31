@@ -941,7 +941,7 @@ public class U_FishOnWater_GameManager : IGameManager
     private void OnResetSetting()
     {
         var tempRootSetting = xmlDoc_Setting.DocumentElement;
-        tempRootSetting.RemoveAllAttributes();
+        tempRootSetting.RemoveAll();
         
         XmlElement setting =  xmlDoc_Setting.CreateElement("UI_Fish_SettingData");
         setting.SetAttribute("mainvolume", "0.5");

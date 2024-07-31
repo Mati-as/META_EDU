@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class SensorManager : MonoBehaviour
     private static string port ="COM3";
     public static bool isMoterStarted { get; private set; }
     
-    private LidarData[] _lidarDatas;
+    private static LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
 
     //=====0714
@@ -506,6 +507,16 @@ public class SensorManager : MonoBehaviour
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
     }
     void OnDestroy()
+    {
+        UnBindLidar();
+    }
+
+    private void OnApplicationQuit()
+    {
+        UnBindLidar();
+    }
+
+    private void UnBindLidar()
     {
         RplidarBinding.EndScan();
         RplidarBinding.EndMotor();

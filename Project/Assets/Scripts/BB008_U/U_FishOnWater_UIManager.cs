@@ -286,7 +286,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         _timeLimitSlider.onValueChanged.AddListener(_ =>
         {
-            _gm.timeLimit = (int)_timeLimitSlider.value;
+            _gm.timeLimit = (int)(_gm.timeLimit / 5) * 5;
             _timeLimitSliderTMP.text = (int)(_gm.timeLimit / 5) * 5 + "초";
             _timerTMP.text = _gm.timeLimit.ToString();
         });
@@ -925,8 +925,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _isRestartBtnBeingClicked = true;
 
         if (_timeSinceLastTouch > 0.25f)
-            Managers.soundManager.Play(SoundManager.Sound.Effect,
-                "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_error_03");
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
         _timeSinceLastTouch = 0;
 
@@ -1159,6 +1158,9 @@ public class U_FishOnWater_UIManager : UI_PopUp
    
     private void OnResetSetting()
     {
+        var tempRootSetting = _gm.xmlDoc_Setting.DocumentElement;
+        tempRootSetting.RemoveAll();
+        
         _sliders[(int)SoundManager.Sound.Main].value = SoundManager.VOLUME_INITVALUE_MAIN;
         _sliders[(int)SoundManager.Sound.Bgm].value = SoundManager.VOLUME_INITVALUE_BGM;
         _sliders[(int)SoundManager.Sound.Effect].value = SoundManager.VOLUME_INITVALUE_EFFECT;
@@ -1166,7 +1168,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _timeLimitSlider.value = 30;
         _fishSpeedSlider.value = 1;
         _fishGoalCountSlider.value = 30;
-        _confirmMessage.text = "현재 설정을 초기화 했어요";
+        _confirmMessage.text = "현재 설정을 초기화 및 저장 했어요";
         OnResetSettingBtnClicked?.Invoke();
     }
     
