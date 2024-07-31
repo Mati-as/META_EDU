@@ -61,10 +61,10 @@ public class Sandwich_UIManager : UI_PopUp
             .SetEase(Ease.OutBounce)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect,
+                Managers.soundManager.Play(SoundManager.Sound.Effect,
                     "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03");
                 
-                Managers.Sound.Play(SoundManager.Sound.Effect,
+                Managers.soundManager.Play(SoundManager.Sound.Effect,
                     "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03");
             })
             .OnComplete(() =>
@@ -85,7 +85,7 @@ public class Sandwich_UIManager : UI_PopUp
             .SetEase(Ease.OutBounce)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/audio_5_완성_");
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/audio_5_완성_");
                 // Managers.Sound.Play(SoundManager.Sound.Effect,
                 //     "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03");
             })

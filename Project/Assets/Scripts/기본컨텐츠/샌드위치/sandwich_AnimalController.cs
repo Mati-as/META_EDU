@@ -72,7 +72,7 @@ Debug.Log("ALL ANIM FINISHED... ROUND IS BEING READY AGAIN");
             });
             DOVirtual.Float(0, 0, 2, _ => { }).OnComplete(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect,
+                Managers.soundManager.Play(SoundManager.Sound.Effect,
                     $"Audio/기본컨텐츠/Sandwich/{_animals[_selectedAnimal].gameObject.name}");
 
             });

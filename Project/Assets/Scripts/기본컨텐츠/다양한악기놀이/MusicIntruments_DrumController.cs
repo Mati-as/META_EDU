@@ -10,7 +10,7 @@ public class MusicIntruments_DrumController : MonoBehaviour,IMusicInstrumentsIOn
         PlayBeadsDrumAnimation(transform,Random.Range(-10f,15f),_defaultQuat);
    
         var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect,
+        Managers.soundManager.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/MusicInstruments/Drum" ,
             0.3f,pitch:Random.Range(0.9f,1.1f));
     }

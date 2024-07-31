@@ -69,7 +69,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
             if (!_isSoundPlaying)
             {
                 _isSoundPlaying = true;
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Run",0.3f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Run",0.3f);
             }
        
             
@@ -103,7 +103,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
 #if UNITY_EDITOR
                 Debug.Log("spinSound");
 #endif
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Spin",0.2f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Spin",0.2f);
             }
             
             

@@ -136,7 +136,7 @@ public class EvaArmisen_GameManager : IGameManager
 
             DOVirtual.Float(0, 0, 4f, _ => { }).OnComplete(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
                 
                 _pictureAnimator.SetBool(IDLE_ANIM,true);
                 _ps[0].Play();
@@ -151,7 +151,7 @@ public class EvaArmisen_GameManager : IGameManager
            
                 DOVirtual.Float(0, 0, 5, _ => { }).OnComplete(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
                     _tmp.text = ON_READY_MESSAGE;
                     DOVirtual.Float(0, 0, 3f, _ => { }).OnComplete(() =>
                     {
@@ -213,7 +213,7 @@ public class EvaArmisen_GameManager : IGameManager
                 
                 GetFromPool(hit.point,S_toolManager.currentStampIndex);
                 var randomChar = (char)Random.Range('A', 'F' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                     0.3f);
      
                 return;

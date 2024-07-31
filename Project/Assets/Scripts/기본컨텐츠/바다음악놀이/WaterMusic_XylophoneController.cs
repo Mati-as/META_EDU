@@ -181,7 +181,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
                 .SetDelay(1f+ _interval * i)
                 .OnStart(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                    Managers.soundManager.Play(SoundManager.Sound.Effect,
                         "Audio/기본컨텐츠/WaterMusic/" + _soundProducingXylophones[i1].transform.gameObject.name, 0.35f);
                 });
             
@@ -209,7 +209,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
    
             
             MeshRenderer meshRenderer = null;
@@ -303,7 +303,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         
 
 
-        Managers.Sound.Play(SoundManager.Sound.Effect,
+        Managers.soundManager.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/WaterMusic/" + RayHitForXylophone.transform.gameObject.name, 0.3f);
         trans.DORotateQuaternion(_defaultRotationMap[currentID] * Quaternion.Euler(40, 0, 0), 1f);
 
@@ -311,7 +311,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         trans.DOMove(trans.position + Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/Deeper",
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/Deeper",
                     0.5f);
             })
             .OnComplete(() =>

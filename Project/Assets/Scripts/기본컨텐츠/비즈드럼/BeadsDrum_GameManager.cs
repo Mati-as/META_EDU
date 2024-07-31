@@ -34,14 +34,14 @@ public class BeadsDrum_GameManager : IGameManager
                 if (hit.transform.gameObject.name.Contains("DrumLeft"))
                 {
                     var randomChar = (char)Random.Range('A', 'B' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
                     OnLeftDrumClicked?.Invoke();
                     return;
                 }
                 if (hit.transform.gameObject.name.Contains("DrumRight"))
                 {
                     var randomChar = (char)Random.Range('A', 'B' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
                     OnRightDrumClicked?.Invoke();
                     return;
                 }
@@ -49,7 +49,7 @@ public class BeadsDrum_GameManager : IGameManager
                 if (hit.transform.gameObject.name.Contains("Frame"))
                 {
                     var randomChar = (char)Random.Range('A', 'C' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Plastic" + randomChar);
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Plastic" + randomChar);
                     return;
                 }
                 
@@ -60,7 +60,7 @@ public class BeadsDrum_GameManager : IGameManager
             if (GameManager_Hits[0].transform.gameObject.name.Contains("Background"))
             {
                 var randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Bubble"+randomChar,0.25f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Bubble"+randomChar,0.25f);
                   
             }
         }

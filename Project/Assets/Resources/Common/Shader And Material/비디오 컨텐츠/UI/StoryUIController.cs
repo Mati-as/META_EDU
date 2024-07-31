@@ -72,7 +72,7 @@ public class StoryUIController : MonoBehaviour
     //  이벤트 상태별 로직------------------------------------------
     public void OnHowToPlayUIFinished()
     {
-        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/가을소풍/UI/AnimalTrip_Story_A");
+        Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/가을소풍/UI/AnimalTrip_Story_A");
         _coroutineA = StartCoroutine(ActivateFirstStoryUICoroutine());
         _coroutineB = StartCoroutine(MovePlayerIcon());
     }

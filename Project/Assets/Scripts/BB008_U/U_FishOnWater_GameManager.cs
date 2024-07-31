@@ -190,7 +190,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
         if (!_isCountNarrationPlaying)
         {
-            Managers.Sound.Play
+            Managers.soundManager.Play
                 (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}", 0.8f);
             _isCountNarrationPlaying = true;
             _elapsedToCount = 0;
@@ -335,7 +335,7 @@ public class U_FishOnWater_GameManager : IGameManager
             var sprite = Resources.Load<Sprite>("게임별분류/BB008_U/Character" + characterString);
             if (sprite != null)
             {
-                Debug.Log($"{"게임별분류/BB008_U/Character" + characterString} : image loaded");
+//                Debug.Log($"{"게임별분류/BB008_U/Character" + characterString} : image loaded");
                 // var newGameObject = new GameObject("Character" + characterString);
                 // var image = newGameObject.AddComponent<Image>();
                 // image.sprite = sprite;
@@ -523,7 +523,7 @@ public class U_FishOnWater_GameManager : IGameManager
             moveAnimSeq.OnStart(() =>
             {
                 _psMap[id].Play();
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             });
             moveAnimSeq.InsertCallback(randomDuration * 0.68f, () => { _colliderMap[id].enabled = true; });
             moveAnimSeq.OnComplete(() =>
@@ -621,7 +621,7 @@ public class U_FishOnWater_GameManager : IGameManager
                 ps.Play();
 
 
-                Managers.Sound.Play(SoundManager.Sound.Effect,
+                Managers.soundManager.Play(SoundManager.Sound.Effect,
                     "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1), 0.5f);
                 DOVirtual.Float(0, 1, ps.main.startLifetime.constant + 0.5f, _ => { }).OnComplete(() =>
                 {
@@ -725,9 +725,9 @@ public class U_FishOnWater_GameManager : IGameManager
         OnFishCaught?.Invoke();
 
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
             0.8f);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
             0.4f);
 
         var id = fish.GetInstanceID();

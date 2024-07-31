@@ -166,9 +166,9 @@ public class U_FishOnWater_UIManager : UI_PopUp
         
         _sliders= new Slider[(int)SoundManager.Sound.Max];
 		_sliders[(int)SoundManager.Sound.Main] = GetObject((int)UI_Type.MainVolume).GetComponent<Slider>();
-		_sliders[(int)SoundManager.Sound.Main].value = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+		_sliders[(int)SoundManager.Sound.Main].value = Managers.soundManager.volumes[(int)SoundManager.Sound.Main];
 #if UNITY_EDITOR
-		Debug.Log($" 메인 볼륨 {Managers.Sound.volumes[(int)SoundManager.Sound.Main]}");
+		Debug.Log($" 메인 볼륨 {Managers.soundManager.volumes[(int)SoundManager.Sound.Main]}");
 #endif
 
 		_sliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI_Type.BGMVolume).GetComponent<Slider>();
@@ -176,8 +176,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
         
 		for (var i = 0; i < (int)SoundManager.Sound.Max-1; i++) // 나레이션 제외 
 		{
-			_sliders[i].maxValue = Managers.Sound.VOLUME_MAX[i];
-			_sliders[i].value = Managers.Sound.volumes[i];
+			_sliders[i].maxValue = Managers.soundManager.VOLUME_MAX[i];
+			_sliders[i].value = Managers.soundManager.volumes[i];
 		}
 
 
@@ -187,19 +187,19 @@ public class U_FishOnWater_UIManager : UI_PopUp
 		{
 
             
-			Managers.Sound.volumes[(int)SoundManager.Sound.Main] = _sliders[(int)SoundManager.Sound.Main].value;
-			Managers.Sound.audioSources[(int)SoundManager.Sound.Main].volume = Managers.Sound.volumes[(int)SoundManager.Sound.Main];
+			Managers.soundManager.volumes[(int)SoundManager.Sound.Main] = _sliders[(int)SoundManager.Sound.Main].value;
+			Managers.soundManager.audioSources[(int)SoundManager.Sound.Main].volume = Managers.soundManager.volumes[(int)SoundManager.Sound.Main];
 		
 		
-			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
-			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
-				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
+			Managers.soundManager.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.soundManager.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.soundManager.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					Managers.soundManager.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
             
-			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
-			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
-				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
+			Managers.soundManager.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
+			Managers.soundManager.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.soundManager.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					Managers.soundManager.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
             
 			// Managers.Sound.volumes[(int)SoundManager.Sound.Narration] = _sliders[(int)SoundManager.Sound.Narration].value;
 			// Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].volume =
@@ -211,20 +211,20 @@ public class U_FishOnWater_UIManager : UI_PopUp
 		_sliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
 		{
 			
-			Managers.Sound.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
-			Managers.Sound.audioSources[(int)SoundManager.Sound.Bgm].volume =
-				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
+			Managers.soundManager.volumes[(int)SoundManager.Sound.Bgm] = _sliders[(int)SoundManager.Sound.Bgm].value;
+			Managers.soundManager.audioSources[(int)SoundManager.Sound.Bgm].volume =
+				Mathf.Lerp(0, Managers.soundManager.VOLUME_MAX[(int)SoundManager.Sound.Bgm],
+					Managers.soundManager.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Bgm].value);
 		});
 
 		_sliders[(int)SoundManager.Sound.Effect].onValueChanged.AddListener(_ =>
 		{
-			Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/TestSound/Test_Effect");
+			Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/TestSound/Test_Effect");
 			
-			Managers.Sound.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
-			Managers.Sound.audioSources[(int)SoundManager.Sound.Effect].volume =
-				Mathf.Lerp(0, Managers.Sound.VOLUME_MAX[(int)SoundManager.Sound.Effect],
-					Managers.Sound.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
+			Managers.soundManager.volumes[(int)SoundManager.Sound.Effect] = _sliders[(int)SoundManager.Sound.Effect].value;
+			Managers.soundManager.audioSources[(int)SoundManager.Sound.Effect].volume =
+				Mathf.Lerp(0, Managers.soundManager.VOLUME_MAX[(int)SoundManager.Sound.Effect],
+					Managers.soundManager.volumes[(int)SoundManager.Sound.Main] * _sliders[(int)SoundManager.Sound.Effect].value);
 		});
 
     }
@@ -406,7 +406,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         DOVirtual.Float(0, 0, 3f, _ => { _isBtnClickable = false; })
             .OnComplete(() => { _isBtnClickable = true; });
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         StartCoroutine(ShowUserInfoCo());
         
     }
@@ -774,7 +774,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
                 _timerTMP.enabled = true;
                 _fishCountTMP.text = _gm.FishCaughtCount + " 마리";
                 _timerTMP.text = _gm.remainTime.ToString("F1") + "초";
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready", 0.8f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready", 0.8f);
             }).WaitForCompletion();
       
         yield return _waitInterval;
@@ -793,8 +793,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
             scale => { _uiRectTransforms[(int)UI_Type.Start].localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start", 0.85f);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle", 0.7f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start", 0.85f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle", 0.7f);
                 OnStartUIAppear?.Invoke();
 #if UNITY_EDITOR
                 Debug.Log("UI Invoke");
@@ -820,8 +820,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
             scale => { _uiRectTransforms[(int)UI_Type.Stop].localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop", 0.8f);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle", 0.4f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop", 0.8f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle", 0.4f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, 1,
@@ -973,7 +973,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 #endif
         _isAnimating = true;
         _isRestartBtnClickable = false;
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         StartCoroutine(OnRestartAndShowSelectionMode());
 
     }
@@ -983,7 +983,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         if (!_isBtnClickable || _isAnimating) return;
         _isAnimating = true;
         
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         OnRestartBtnClicked?.Invoke();
         
         _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();

@@ -199,7 +199,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
     
-        Managers.Sound.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
       
     }
 }

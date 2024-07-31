@@ -106,7 +106,7 @@ public class HandFootFlip_GameManager : IGameManager
         if (_animalMoveCurrentTime > raycasterMoveInterval)
         {
             _isAnimalMoving = true;
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert",
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert",
                 0.3f);
 
             DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() => { RayCasterMovePlay(); });
@@ -192,7 +192,7 @@ public class HandFootFlip_GameManager : IGameManager
                         .OnStart(() =>
                         {
                             var randomChar = (char)Random.Range('A', 'F' + 1);
-                            Managers.Sound.Play(SoundManager.Sound.Effect,
+                            Managers.soundManager.Play(SoundManager.Sound.Effect,
                                 "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
                                 0.3f);
 
@@ -274,7 +274,7 @@ public class HandFootFlip_GameManager : IGameManager
                     .OnStart(() =>
                     {
                         var randomChar = (char)Random.Range('A', 'F' + 1);
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
                             0.3f);
 
                         _printMap[currentInstanceID].isNowFlipping = true;
@@ -382,18 +382,18 @@ public class HandFootFlip_GameManager : IGameManager
             .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
 
                 DOVirtual.Float(0, 1, 0.35f, _ => { })
                     .OnStart(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A", 0.5f);
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B", 0.5f);
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A", 0.5f);
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B", 0.5f);
                     })
                     .OnComplete(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
                     });
 
 
@@ -407,7 +407,7 @@ public class HandFootFlip_GameManager : IGameManager
                     {
                         onRaycasterMoveFinish?.Invoke();
                         _isAnimalMoving = false;
-                        Managers.Sound.FadeOut(SoundManager.Sound.Effect);
+                        Managers.soundManager.FadeOut(SoundManager.Sound.Effect);
                     });
             })
             .OnUpdate(() => { _animalMoveCurrentTime = 0; });

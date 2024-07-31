@@ -24,7 +24,7 @@ public class Painting_PaintableTextureController : IGameManager
         
         base.Init();
         
-        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
+        Managers.soundManager.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
         SetInputSystem();
         
         renderTexture = new RenderTexture(textureToPaint.width, textureToPaint.height, 0, RenderTextureFormat.ARGB32);

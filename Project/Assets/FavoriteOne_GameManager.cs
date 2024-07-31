@@ -246,7 +246,7 @@ public class FavoriteOne_GameManager : IGameManager
                 && _isClickable)
             {
                 var randomChar = Random.Range('B', 'C' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar);
                 _currentlyClickedBallInstanceID = hit.transform.GetInstanceID();
                 _isClickable = false;
                 OnSelect(hit.transform);
@@ -293,7 +293,7 @@ public class FavoriteOne_GameManager : IGameManager
         yield return colorBall.DOShakePosition(0.75f, 0.3f, 20).WaitForCompletion();
         yield return colorBall.DOScale(Vector3.zero, 0.1f).WaitForCompletion();
 
-        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_" + colorBall.gameObject.name);
+        Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_" + colorBall.gameObject.name);
         for (var i = 0; i < _splats.Length; i++)
         {
             if (i < 3)
@@ -304,7 +304,7 @@ public class FavoriteOne_GameManager : IGameManager
                     _meshRenderMap[_splats[i].GetInstanceID()].material.color =value;
                 _splats[i].DOScale(_splatDefaultSize, 0.085f).OnStart(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
                     }).SetEase(Ease.OutCubic)
                     .SetDelay(Random.Range(0f, 1.5f));
                
@@ -333,7 +333,7 @@ public class FavoriteOne_GameManager : IGameManager
             _splats[i].DOScale(_splatDefaultSize, 0.085f).SetEase(Ease.OutCubic)
                 .SetDelay(Random.Range(0.02f, 2f)).OnStart(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
                 });
        
         }
@@ -361,11 +361,11 @@ public class FavoriteOne_GameManager : IGameManager
 #if UNITY_EDITOR
         Debug.Log($"OBJ NAME : {Obj_BtnCombined.name}");
 #endif
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/" + Obj_BtnCombined.name);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/" + Obj_BtnCombined.name);
         
         DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/Narration_" + Obj_BtnCombined.name);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/Narration_" + Obj_BtnCombined.name);
         });
       
     
@@ -376,7 +376,7 @@ public class FavoriteOne_GameManager : IGameManager
 
         if ((Stage)_currentStage == Stage.Fruit)
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_sparkle_pop_04",0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_sparkle_pop_04",0.3f);
             
             var rb = _rbMap[currentStageButtonID];
             rb.constraints = RigidbodyConstraints.None;
@@ -439,7 +439,7 @@ public class FavoriteOne_GameManager : IGameManager
                 animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
                     .OnStart(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
                     })
                     .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(dealyTime);
             }
@@ -448,7 +448,7 @@ public class FavoriteOne_GameManager : IGameManager
              animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
                  .OnStart(() =>
                  {
-                     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
                  })
                  .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
             }
@@ -469,7 +469,7 @@ public class FavoriteOne_GameManager : IGameManager
                 {
                 
                     fruit.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
-                        .OnStart(()=>{ Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                        .OnStart(()=>{ Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
                         })
                         .OnComplete(() => fruit.gameObject.SetActive(false)).SetDelay(dealyTime);
                 }
@@ -486,7 +486,7 @@ public class FavoriteOne_GameManager : IGameManager
                 fruit.DOScale(Vector3.zero, 0.125f).SetEase(Ease.InOutBounce).SetDelay(Random.Range(0.1f,1.3f)).OnStart(
                     () =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A",0.8f);
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A",0.8f);
                     });
             }
 
@@ -504,7 +504,7 @@ public class FavoriteOne_GameManager : IGameManager
             TypeIn(_narrations[(int)Narration.Narration_Fruit]);
             DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
             {
-                Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Fruit");
+                Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Fruit");
             });
         }
         if (_currentStage == (int)Stage.Fruit) 
@@ -512,7 +512,7 @@ public class FavoriteOne_GameManager : IGameManager
             TypeIn(_narrations[(int)Narration.Narration_Color]);
             DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
             {
-                Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Color");
+                Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Color");
             });
         }
 
@@ -615,7 +615,7 @@ public class FavoriteOne_GameManager : IGameManager
             }
             
             TypeIn(_narrations[(int)Narration.Narration_Animal]);
-            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Animal");
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Animal");
         });
 
     }
@@ -696,7 +696,7 @@ public class FavoriteOne_GameManager : IGameManager
         TypeIn(_narrations[(int)Narration.Narration_Animal]);
         DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
         {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Animal");
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_Animal");
         });
         PlayTMPScaleAnimation();
     }

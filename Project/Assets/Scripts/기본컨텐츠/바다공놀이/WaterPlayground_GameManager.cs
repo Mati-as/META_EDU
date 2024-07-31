@@ -47,7 +47,7 @@ public class WaterPlayground_GameManager : IGameManager
                 Vector3 forceDirection =  rb.transform.position - hit.point + Vector3.up*upOffset;
                 
                 var randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                Managers.soundManager.Play(SoundManager.Sound.Effect, 
                     "Audio/기본컨텐츠/WaterPlayground/Click" + randomChar,0.35f);
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
             }

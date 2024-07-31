@@ -356,9 +356,9 @@ public class Hopscotch_GameManager : IGameManager
         _successParticle.gameObject.SetActive(true);
         _successParticle.Play();
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMoveB", 0.10f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMoveB", 0.10f);
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect,
+        Managers.soundManager.Play(SoundManager.Sound.Effect,
             "Audio/Hopscotch/Click_" + $"{randomChar}", 0.6f);
 
         DOVirtual
@@ -436,7 +436,7 @@ public class Hopscotch_GameManager : IGameManager
                                 //DoScaleUp(_numberTextRects[1]);
                                 if (i1 >= _stepCount - 1)
                                 {
-                                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish", 0.10f);
+                                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish", 0.10f);
                                     PlayInducingParticle(0);
                                 }
                                 _isClickable = true;
@@ -450,7 +450,7 @@ public class Hopscotch_GameManager : IGameManager
 
     private void OnStageClear()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
         
         _currentStep = 0;
         _numCvGrup.DOFade(0, 0.4f);

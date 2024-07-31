@@ -177,7 +177,7 @@ public abstract class IGameManager : MonoBehaviour
                 .OnComplete(() =>
                 {
 
-                   var isPlaying=  Managers.Sound.Play(SoundManager.Sound.Narration,
+                   var isPlaying=  Managers.soundManager.Play(SoundManager.Sound.Narration,
                         "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.5f);
                     
 #if UNITY_EDITOR
@@ -186,7 +186,7 @@ public abstract class IGameManager : MonoBehaviour
 #endif
                 });
 
-            Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
+            Managers.soundManager.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
                 BGM_VOLUME);
         }
     }
@@ -210,7 +210,8 @@ public abstract class IGameManager : MonoBehaviour
 #endif
     }
 
-    private static void PrintGameInfo()
+    private void OnApplicationQuit()
     {
+        
     }
 }

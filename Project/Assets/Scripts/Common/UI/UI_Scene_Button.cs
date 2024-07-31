@@ -125,7 +125,7 @@ public class UI_Scene_Button : MonoBehaviour
 
     private void OnButtonShut()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
 
         _isClickable = false;

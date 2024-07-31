@@ -31,7 +31,7 @@ public class FP_Prefab : RaySynchronizer
     {
 
         //모드설정에따라 이미지 활성화 비활성화
-        _image.enabled = SensorManager.isSensorEditMode;
+        _image.enabled = Managers.sensorManager.isSensorEditMode;
         
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();

@@ -171,8 +171,8 @@ public class Octopus_GameManager : IGameManager
     {
 
         StartCoroutine(TypeIn("찾았다!", 0.3f));
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectA");
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectB");
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectA");
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectB");
         
         _octopusMeshRenderer.material.SetTexture(_baseMapID, _excitedTexture);
         _isDoingAnimation = true;
@@ -216,7 +216,7 @@ public class Octopus_GameManager : IGameManager
         var seq = DOTween.Sequence();
         seq.AppendCallback(() =>
         {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
             StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
         });
         seq.SetDelay(1f);
@@ -242,17 +242,17 @@ public class Octopus_GameManager : IGameManager
                 soundSeq.AppendCallback(() =>
                 {
                     // nameSpace 
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallClick");
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallClick");
                 });
                 soundSeq.AppendInterval(0.8f);
                 soundSeq.AppendCallback(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInPipe");
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInPipe");
                 });
                 soundSeq.AppendInterval(1.22f);
                 soundSeq.AppendCallback(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInBody");
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInBody");
                 });
                 soundSeq.Play();
 
@@ -322,7 +322,7 @@ public class Octopus_GameManager : IGameManager
             soundSeq.AppendCallback(() =>
             {
                 StartCoroutine(TypeIn("공이 내 어느 다리에\n있을지 맞춰봐!", 0.08f));
-                Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/BB012/Narration_ChooseShoe");
+                Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB012/Narration_ChooseShoe");
             });
             soundSeq.Play();
             
@@ -344,7 +344,7 @@ public class Octopus_GameManager : IGameManager
         foreach (var ball in _ballsQue)
         {
 
-            Managers.Sound.Play(SoundManager.Sound.Narration,
+            Managers.soundManager.Play(SoundManager.Sound.Narration,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/cartoon_squirt_01");
             var id = ball.GetInstanceID();
             _rigidbodies[id].constraints = RigidbodyConstraints.FreezeAll;
@@ -385,7 +385,7 @@ public class Octopus_GameManager : IGameManager
         var count = 0;
         foreach (var ball in _ballsQue)
         {
-            Managers.Sound.Play(SoundManager.Sound.Narration,
+            Managers.soundManager.Play(SoundManager.Sound.Narration,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/boat_small_cartoon_propeller_stuttering");
             var id = ball.GetInstanceID();
             var currentOrder = _currentOrderMap[id];
@@ -405,7 +405,7 @@ public class Octopus_GameManager : IGameManager
                     seq.AppendCallback(() =>
                     {
                         StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
-                        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+                        Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
                     });
                     seq.SetDelay(1f);
                     seq.Play();

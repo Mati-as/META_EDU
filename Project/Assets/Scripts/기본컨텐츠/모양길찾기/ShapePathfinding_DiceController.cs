@@ -22,7 +22,7 @@ public class ShapePathfinding_DiceController : MonoBehaviour
             if (!_isSoundPlaying)
             {
                 _isSoundPlaying = true;
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB010/Dice");
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB010/Dice");
 
                 var seq = DOTween.Sequence();
                 seq.SetDelay(3.6f);

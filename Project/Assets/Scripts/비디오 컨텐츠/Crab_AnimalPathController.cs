@@ -146,7 +146,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     private void OnCrabAppear()
     {
         
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
             ,Random.Range(0.1f,0.2f));
         
         foreach (var crab in _activeCrabPool)
@@ -427,7 +427,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             .OnStart(() =>
             {
                 DeactivateAnim(_crabDoingPath.animator);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
                     ,Random.Range(0.05f,0.11f));
 #if UNITY_EDITOR
                 Debug.Log($"{_crabDoingPath.awayPath[0]}, {_crabDoingPath.awayPath[1]} 꽃게 집에보내기");

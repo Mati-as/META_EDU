@@ -188,7 +188,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
 
             if (hit.transform.gameObject.name.Contains("Balloon"))
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
                 // fistStage 제외 나머지  플레이상황인경우
                 if (_isFirstStageFinished)
                 {
@@ -256,7 +256,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
             .SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                Managers.Sound.Play(
+                Managers.soundManager.Play(
                     SoundManager.Sound
                         .Effect,
                     "Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/sci-fi_device_item_power_up_flash_01");
@@ -267,7 +267,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
 
     private IEnumerator FlyAwayCo(float delay)
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/chime_tinkle_wood_bell_positive_01");
+        Managers.soundManager.Play(SoundManager.Sound.Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/chime_tinkle_wood_bell_positive_01");
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
         foreach (var balloon in _balloons)
         {
@@ -346,7 +346,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
             }
 
 
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
             yield return balloon.DOScale(_balloonDefalutScale, Random.Range(0.02f, 0.15f))
                 .SetDelay(Random.Range(delay, delay + 0.3f)).WaitForCompletion();
         }
@@ -390,14 +390,14 @@ public class EmotionTrafficLights_GameManager : IGameManager
             .SetEase(Ease.InOutBounce)
             .OnStart(() =>
             {
-                Managers.Sound.Play(
+                Managers.soundManager.Play(
                     SoundManager.Sound
                         .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_01");
             })
             .OnComplete(() =>
             {
                 ChangeTrafficLight();
-                Managers.Sound.Play(
+                Managers.soundManager.Play(
                     SoundManager.Sound
                         .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_02");
                 _trafficLight.DORotateQuaternion(_tlDefalutRotation, 1.5f).SetEase(Ease.OutBounce).SetDelay(1f);
@@ -461,7 +461,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
     private void OnCorrectBallon(Transform ball, int hitBalloonID)
     {
         var randomNum = UnityEngine.Random.Range(3, 4+1);
-        Managers.Sound.Play(
+        Managers.soundManager.Play(
             SoundManager.Sound
                 .Effect,
             $"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_0{randomNum}");
@@ -500,7 +500,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
         var popCount = _currentBalloonPopCount;
         if (_collectedBalloon >= _countToCollect && _isFirstStageFinished)
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect,
+            Managers.soundManager.Play(SoundManager.Sound.Effect,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04", 0.3f);
         }
         yield return DOVirtual.Float(0, 0, 2.5f, _ => { }).WaitForCompletion();

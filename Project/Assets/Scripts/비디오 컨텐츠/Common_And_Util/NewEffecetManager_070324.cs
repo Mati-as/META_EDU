@@ -199,7 +199,7 @@ if (!_isRaySet)
     {
         if (audioPath != null)
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, audioPath, volume);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, audioPath, volume);
             return;
         }
     }

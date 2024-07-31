@@ -144,7 +144,7 @@ public class ShapePathfinding_GameManager : IGameManager
                         if (_isStepClickable)
                         {
                             var randomChar = (char)UnityEngine.Random.Range('A', 'F' + 1);
-                            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BB008_U/Click_{randomChar}");
+                            Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/BB008_U/Click_{randomChar}");
                             
                             
                             _correctPs.Stop();
@@ -196,7 +196,7 @@ public class ShapePathfinding_GameManager : IGameManager
                             });
 
                     //버튼 클릭 효과음. 
-                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                    Managers.soundManager.Play(SoundManager.Sound.Effect,
                         "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_beep_19");
 
                     RollDice();
@@ -375,7 +375,7 @@ public class ShapePathfinding_GameManager : IGameManager
         seq.Append(_dice.DOMove(_diceRollPath[0], 0.2f)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect,
+                Managers.soundManager.Play(SoundManager.Sound.Effect,
                     "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/beep_zap_fun_03", 0.5f);
             })
             .OnComplete(() =>
