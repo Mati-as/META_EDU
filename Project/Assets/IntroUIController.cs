@@ -25,7 +25,8 @@ public class IntroUIController : UI_PopUp
         var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/" + sceneName);
         if (asset == null)
         {
-            Debug.LogError("Failed to load TMP_FontAsset for scene: " + sceneName);
+            Debug.LogWarning("Failed to load TMP_FontAsset for scene: " + sceneName);
+            TurnOff();
             return false; // early return if font asset is not found
         }
         GetObject((int)UI.IntroText_Bottom).GetComponent<TextMeshProUGUI>().font = asset;
@@ -35,21 +36,24 @@ public class IntroUIController : UI_PopUp
             Utils.ReadXML(ref _doc, "Assets/Resources/TMP_UI_IntroText/IntroTexts.xml");
             if (_doc == null)
             {
-                Debug.LogError("Failed to load XML document.");
+                Debug.LogWarning("Failed to load XML document.");
+                TurnOff();
                 return false;
             }
         
             XmlNode root = _doc.DocumentElement;
             if (root == null)
             {
-                Debug.LogError("Root element is missing in the XML document.");
+                Debug.LogWarning("Root element is missing in the XML document.");
+                TurnOff();
                 return false;
             }
         
             var nodes = root.SelectNodes("StringData");
             if (nodes == null)
             {
-                Debug.LogError("StringData nodes are missing in the XML document.");
+                Debug.LogWarning("StringData nodes are missing in the XML document.");
+                TurnOff();
                 return false;
             }
             
@@ -75,6 +79,11 @@ public class IntroUIController : UI_PopUp
 
 
         return true;
+    }
+
+    private void TurnOff()
+    {
+        gameObject.SetActive(false);
     }
     
     

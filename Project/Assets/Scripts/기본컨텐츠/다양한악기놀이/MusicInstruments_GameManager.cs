@@ -30,7 +30,8 @@ public class MusicInstruments_GameManager : IGameManager
     public override void OnRaySynced()
     {
         base.OnRaySynced();
-
+        if (!PreCheck()) return;
+        
         foreach (var hit in GameManager_Hits)
         {
             IMusicInstrumentsIOnClick _iOnClicked;

@@ -32,7 +32,7 @@ public class ThumbnailImageController : MonoBehaviour
             return input.Substring(prefix.Length);
         }
 #if UNITY_EDITOR
-        Debug.LogError($"This image is not set to Thumbnail image.{ExtractThumbnailSuffix(gameObject.name)}");
+        Debug.LogWarning($"This image is not set to Thumbnail image.{gameObject.name}");
 #endif
         return input;
     }

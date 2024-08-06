@@ -463,8 +463,7 @@ public class MetaEduLauncher : UI_PopUp
 
 private void LoadScene(string sceneName)
     {  
-	   
-
+        
 	    string originalName = sceneName;
 	    string modifiedName = originalName.Substring("SceneName_".Length);
 	    

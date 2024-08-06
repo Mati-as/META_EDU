@@ -29,13 +29,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
         ScreenDim,
         Text_Tutorial,
         Text_CurrentUserRankingText, // 유저등수/ 전체등수
+        Slider_Restart,
 
         //Text_CurrentUserInfoText,
-        Slider_Restart,
-        Setting_FishManagerOnly,
-        MainVolume,
-        BGMVolume,
-        EffectVolume
+        // Setting_FishManagerOnly,
+        // MainVolume,
+        // BGMVolume,
+        // EffectVolume
     }
 
 
@@ -46,12 +46,13 @@ public class U_FishOnWater_UIManager : UI_PopUp
         Btn_ShowUserInfo,
         Btn_SinglePlay,
         Btn_MultiPlay,
-        Btn_Close,
-        SettingButton,
-        Btn_SettingDisplay,
-        Btn_XmlReset,
-        Btn_SaveCurrentSetting,
-        Btn_ResetSetting
+      //  Btn_Close
+        
+        // SettingButton,
+        // Btn_SettingDisplay,
+        // Btn_XmlReset,
+        // Btn_SaveCurrentSetting,
+        // Btn_ResetSetting
         // Btn_ShowTutorial, // Tutorial -> UserInfo
     }
 
@@ -75,7 +76,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private CanvasGroup _canvasGroup;
 
-    private Text _confirmMessage; 
+
     private GameObject[] _uiGameObjects;
     private RectTransform[] _uiRectTransforms;
 
@@ -168,19 +169,19 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
     private void SetSoundUI()
     {
-        _uiGameObjects[(int)UI_Type.MainVolume].SetActive(true);
-        _uiGameObjects[(int)UI_Type.EffectVolume].SetActive(true);
-        _uiGameObjects[(int)UI_Type.BGMVolume].SetActive(true);
+        // _uiGameObjects[(int)UI_Type.MainVolume].SetActive(true);
+        // _uiGameObjects[(int)UI_Type.EffectVolume].SetActive(true);
+        // _uiGameObjects[(int)UI_Type.BGMVolume].SetActive(true);
 
-        _sliders = new Slider[(int)SoundManager.Sound.Max];
-        _sliders[(int)SoundManager.Sound.Main] = GetObject((int)UI_Type.MainVolume).GetComponent<Slider>();
-       
-#if UNITY_EDITOR
-//        Debug.Log($" 메인 볼륨 {Managers.soundManager.volumes[(int)SoundManager.Sound.Main]}");
-#endif
-
-        _sliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI_Type.BGMVolume).GetComponent<Slider>();
-        _sliders[(int)SoundManager.Sound.Effect] = GetObject((int)UI_Type.EffectVolume).GetComponent<Slider>();
+//         _sliders = new Slider[(int)SoundManager.Sound.Max];
+//         _sliders[(int)SoundManager.Sound.Main] = GetObject((int)UI_Type.MainVolume).GetComponent<Slider>();
+//        
+// #if UNITY_EDITOR
+// //        Debug.Log($" 메인 볼륨 {Managers.soundManager.volumes[(int)SoundManager.Sound.Main]}");
+// #endif
+//
+//         _sliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI_Type.BGMVolume).GetComponent<Slider>();
+//         _sliders[(int)SoundManager.Sound.Effect] = GetObject((int)UI_Type.EffectVolume).GetComponent<Slider>();
 
         for (var i = 0; i < (int)SoundManager.Sound.Max - 1; i++) // 나레이션 제외 
         {
@@ -253,61 +254,62 @@ public class U_FishOnWater_UIManager : UI_PopUp
         
         _gm = GameObject.FindWithTag("GameManager").GetComponent<U_FishOnWater_GameManager>();
 
-        _confirmMessage = GameObject.Find("ConfirmMessage").GetComponentInChildren<Text>();
+      //  _confirmMessage = GameObject.Find("ConfirmMessage").GetComponentInChildren<Text>();
         BindObject(typeof(UI_Type));
         BindButton(typeof(UI_Button));
         
-        var sliderParent = GameObject.Find("Slider_FishSpeed");
-        _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
-        _fishSpeedSlider = sliderParent.GetComponent<Slider>();
-        _fishSpeedSlider.onValueChanged.AddListener(_ =>
-        {
-            _gm.fishSpeed = _fishSpeedSlider.value;
+        // var sliderParent = GameObject.Find("Slider_FishSpeed");
+        // _TMP_fishSpeed = sliderParent.GetComponentInChildren<TextMeshProUGUI>();
+        // _fishSpeedSlider = sliderParent.GetComponent<Slider>();
+        // _fishSpeedSlider.onValueChanged.AddListener(_ =>
+        // {
+        //     _gm.fishSpeed = _fishSpeedSlider.value;
+        //
+        //
+        //     if (_gm.fishSpeed < 0.7f)
+        //         _TMP_fishSpeed.text = "느림";
+        //     else if (_gm.fishSpeed > 1.4f)
+        //         _TMP_fishSpeed.text = "빠름";
+        //     else
+        //         _TMP_fishSpeed.text = "보통";
+        // });
 
+        //
+        // var timerSldierParent = GameObject.Find("Slider_Timer");
+        // _timeLimitSliderTMP = timerSldierParent.GetComponentInChildren<TextMeshProUGUI>();
+        // _timeLimitSlider = timerSldierParent.GetComponent<Slider>();
+        // {
+        //     _timeLimitSlider.minValue = 10;
+        //     _timeLimitSlider.maxValue = 100;
+        //     _timeLimitSlider.value = _gm.timeLimit;
+        //     _timeLimitSliderTMP.text = _gm.timeLimit + "초";
+        // }
+        //
+        // _timeLimitSlider.onValueChanged.AddListener(_ =>
+        // {
+        //     _gm.timeLimit = (int)(_timeLimitSlider.value / 5) * 5;
+        //     _timeLimitSliderTMP.text = (int)(_gm.timeLimit / 5) * 5 + "초";
+        //     _timerTMP.text = _gm.timeLimit.ToString();
+        // });
+        //
+        // var fishCountParent = GameObject.Find("Slider_FishCount");
+        // _fishGoalCountSlider = fishCountParent.GetComponent<Slider>();
+        // _fishCountSliderTMP = fishCountParent.GetComponentInChildren<TextMeshProUGUI>();
+        // _fishGoalCountSlider.maxValue = 60;
+        // _fishGoalCountSlider.minValue = 10;
+        // _fishGoalCountSlider.value = _gm.fishCountGoal;
+        // _fishCountSliderTMP.text = _gm.fishCountGoal + "마리";
+        // _fishGoalCountSlider.onValueChanged.AddListener(_ =>
+        // {
+        //     _gm.fishCountGoal = (int)(_fishGoalCountSlider.value / 5) * 5;
+        //     _fishCountSliderTMP.text = _gm.fishCountGoal + "마리";
+        // });
 
-            if (_gm.fishSpeed < 0.7f)
-                _TMP_fishSpeed.text = "느림";
-            else if (_gm.fishSpeed > 1.4f)
-                _TMP_fishSpeed.text = "빠름";
-            else
-                _TMP_fishSpeed.text = "보통";
-        });
-
-
-        var timerSldierParent = GameObject.Find("Slider_Timer");
-        _timeLimitSliderTMP = timerSldierParent.GetComponentInChildren<TextMeshProUGUI>();
-        _timeLimitSlider = timerSldierParent.GetComponent<Slider>();
-        {
-            _timeLimitSlider.minValue = 10;
-            _timeLimitSlider.maxValue = 100;
-            _timeLimitSlider.value = _gm.timeLimit;
-            _timeLimitSliderTMP.text = _gm.timeLimit + "초";
-        }
-
-        _timeLimitSlider.onValueChanged.AddListener(_ =>
-        {
-            _gm.timeLimit = (int)(_timeLimitSlider.value / 5) * 5;
-            _timeLimitSliderTMP.text = (int)(_gm.timeLimit / 5) * 5 + "초";
-            _timerTMP.text = _gm.timeLimit.ToString();
-        });
-
-        var fishCountParent = GameObject.Find("Slider_FishCount");
-        _fishGoalCountSlider = fishCountParent.GetComponent<Slider>();
-        _fishCountSliderTMP = fishCountParent.GetComponentInChildren<TextMeshProUGUI>();
-        _fishGoalCountSlider.maxValue = 60;
-        _fishGoalCountSlider.minValue = 10;
-        _fishGoalCountSlider.value = _gm.fishCountGoal;
-        _fishCountSliderTMP.text = _gm.fishCountGoal + "마리";
-        _fishGoalCountSlider.onValueChanged.AddListener(_ =>
-        {
-            _gm.fishCountGoal = (int)(_fishGoalCountSlider.value / 5) * 5;
-            _fishCountSliderTMP.text = _gm.fishCountGoal + "마리";
-        });
-
+        //SetSoundUI();
+        
         InitializeUIElements();
         InitializeRankingElements();
-        SetSoundUI();
-        InitializeGameSettingByXML();
+        //InitializeGameSettingByXML();
         
 
         return true;
@@ -352,11 +354,12 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _uiBtns[(int)UI_Button.Btn_Restart].gameObject.BindEvent(OnRestartBtnPerCLicked);
         _uiBtns[(int)UI_Button.Btn_SinglePlay].gameObject.BindEvent(OnSinglePlayBtnClicked);
         _uiBtns[(int)UI_Button.Btn_MultiPlay].gameObject.BindEvent(OnMultiPlayBtnClicked);
-        _uiBtns[(int)UI_Button.Btn_Close].gameObject.BindEvent(OnSoundSettingCloseBtnClicked);
-        _uiBtns[(int)UI_Button.SettingButton].gameObject.BindEvent(OnSoundSettingBtnClicked);
-        _uiBtns[(int)UI_Button.Btn_XmlReset].gameObject.BindEvent(OnXmlResetBtnClicked);
-        _uiBtns[(int)UI_Button.Btn_ResetSetting].gameObject.BindEvent(OnResetSetting);
-        _uiBtns[(int)UI_Button.Btn_SaveCurrentSetting].gameObject.BindEvent(SaveCurrentSetting);
+        
+        //_uiBtns[(int)UI_Button.Btn_Close].gameObject.BindEvent(OnSoundSettingCloseBtnClicked);
+        // _uiBtns[(int)UI_Button.SettingButton].gameObject.BindEvent(OnSoundSettingBtnClicked);
+        // _uiBtns[(int)UI_Button.Btn_XmlReset].gameObject.BindEvent(OnXmlResetBtnClicked);
+        // _uiBtns[(int)UI_Button.Btn_ResetSetting].gameObject.BindEvent(OnResetSetting);
+        // _uiBtns[(int)UI_Button.Btn_SaveCurrentSetting].gameObject.BindEvent(SaveCurrentSetting);
 
 
         
@@ -383,7 +386,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _uiGameObjects[(int)UI_Type.ModeSelection].SetActive(true);
         _uiGameObjects[(int)UI_Type.ModeSelection].transform.localScale = _defaultSizeArray[(int)UI_Type.ModeSelection];
         _uiGameObjects[(int)UI_Type.ModeSelection].transform.localScale = Vector3.zero;
-
+        //
         _uiGameObjects[(int)UI_Type.Slider_Restart].SetActive(true);
         _restartSliderImage = _uiGameObjects[(int)UI_Type.Slider_Restart].GetComponent<Image>();
         _restartSliderImage.fillAmount = 0;
@@ -392,16 +395,16 @@ public class U_FishOnWater_UIManager : UI_PopUp
             _uiGameObjects[(int)UI_Type.Text_CurrentUserRankingText].GetComponent<TextMeshProUGUI>();
     }
 
-    private void OnSoundSettingCloseBtnClicked()
-    {
-        _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(false);
-    }
-
-    private void OnSoundSettingBtnClicked()
-    {
-        _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(true);
-        _uiBtns[(int)UI_Button.Btn_SettingDisplay].GetComponent<Fish_T_UI_Setting_Panel>().OnClick();
-    }
+    // private void OnSoundSettingCloseBtnClicked()
+    // {
+    //     _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(false);
+    // }
+    //
+    // private void OnSoundSettingBtnClicked()
+    // {
+    //     _uiGameObjects[(int)UI_Type.Setting_FishManagerOnly].SetActive(true);
+    //     //_uiBtns[(int)UI_Button.Btn_SettingDisplay].GetComponent<Fish_T_UI_Setting_Panel>().OnClick();
+    // }
 
     private void OnStartBtnClicked()
     {
@@ -1050,7 +1053,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
        
             if (!_isConfirmed)
             {
-                _confirmMessage.text = "랭킹 정보를 모두 지울까요?";
+      
 
                 // set a delay to prevent double-clicks and allow confirmation
                 DOVirtual.DelayedCall(0.5f, () =>
@@ -1078,7 +1081,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             Debug.Log("Reset XML.");
 #endif
             OnResetXML?.Invoke();
-            _confirmMessage.text = "모든 랭킹 정보를 지웠어요";
+           
         
         
 
@@ -1087,55 +1090,55 @@ public class U_FishOnWater_UIManager : UI_PopUp
     /// <summary>
     ///  사운드는 현재 저장되지않음
     /// </summary>
-    private void InitializeGameSettingByXML()
-    {
-        XmlNode root = _gm.xmlDoc_Setting.DocumentElement;
-        var nodes = root.SelectNodes("UI_Fish_SettingData");
-       
-        foreach (XmlNode node in nodes)
-        {
-            var mainvolume = node.Attributes["mainvolume"].Value;
-            var bgmvol = node.Attributes["bgmvol"].Value;
-            var effectvol = node.Attributes["effectvol"].Value;
-            
-            var timelimit = node.Attributes["timelimit"].Value;
-            var fishspeed = node.Attributes["fishspeed"].Value;
-            var fishgoalcount = node.Attributes["fishgoalcount"].Value;
-
-            if (float.TryParse(mainvolume, out var mainVolResult))
-            {
-                _sliders[(int)SoundManager.Sound.Main].value = mainVolResult;
-            }
-            
-            if (float.TryParse(bgmvol, out var bgmvolToFloat))
-            {
-                _sliders[(int)SoundManager.Sound.Bgm].value = bgmvolToFloat;
-            }
-            if (float.TryParse(effectvol, out var effectvolvolToFloat))
-            {
-                _sliders[(int)SoundManager.Sound.Effect].value = effectvolvolToFloat;
-            }
-            
-            
-            if (float.TryParse(timelimit, out var playtimeToFloat))
-            {
-                _timeLimitSlider.value = playtimeToFloat;
-            }
-            if (float.TryParse(fishspeed, out var fishspeedToFloat))
-            {
-               _fishSpeedSlider.value = fishspeedToFloat;
-            }
-            if (float.TryParse(fishgoalcount, out var fishgoalcountToFloat))
-            {
-                _fishGoalCountSlider.value = (int)fishgoalcountToFloat;
-            }
-            
-#if UNITY_EDITOR
-//            Debug.Log($"setting by XML Completed main {mainVolResult}, effect {bgmvolToFloat}, timelimt {playtimeToFloat}");
-#endif
-            
-        }
-    }
+//     private void InitializeGameSettingByXML()
+//     {
+//         XmlNode root = _gm.xmlDoc_Setting.DocumentElement;
+//         var nodes = root.SelectNodes("UI_Fish_SettingData");
+//        
+//         foreach (XmlNode node in nodes)
+//         {
+//             var mainvolume = node.Attributes["mainvolume"].Value;
+//             var bgmvol = node.Attributes["bgmvol"].Value;
+//             var effectvol = node.Attributes["effectvol"].Value;
+//             
+//             var timelimit = node.Attributes["timelimit"].Value;
+//             var fishspeed = node.Attributes["fishspeed"].Value;
+//             var fishgoalcount = node.Attributes["fishgoalcount"].Value;
+//
+//             if (float.TryParse(mainvolume, out var mainVolResult))
+//             {
+//                 _sliders[(int)SoundManager.Sound.Main].value = mainVolResult;
+//             }
+//             
+//             if (float.TryParse(bgmvol, out var bgmvolToFloat))
+//             {
+//                 _sliders[(int)SoundManager.Sound.Bgm].value = bgmvolToFloat;
+//             }
+//             if (float.TryParse(effectvol, out var effectvolvolToFloat))
+//             {
+//                 _sliders[(int)SoundManager.Sound.Effect].value = effectvolvolToFloat;
+//             }
+//             
+//             
+//             if (float.TryParse(timelimit, out var playtimeToFloat))
+//             {
+//                 _timeLimitSlider.value = playtimeToFloat;
+//             }
+//             if (float.TryParse(fishspeed, out var fishspeedToFloat))
+//             {
+//                _fishSpeedSlider.value = fishspeedToFloat;
+//             }
+//             if (float.TryParse(fishgoalcount, out var fishgoalcountToFloat))
+//             {
+//                 _fishGoalCountSlider.value = (int)fishgoalcountToFloat;
+//             }
+//             
+// #if UNITY_EDITOR
+// //            Debug.Log($"setting by XML Completed main {mainVolResult}, effect {bgmvolToFloat}, timelimt {playtimeToFloat}");
+// #endif
+//             
+//         }
+//     }
 
     
     public static event Action<float, float, float, int, float, int> OnSaveCurrentSettingClicked;
@@ -1151,7 +1154,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             ,_fishSpeedSlider.value
             ,(int)_fishGoalCountSlider.value);
 
-        _confirmMessage.text = "현재 설정을 저장했어요";
+       
 
     }
 
@@ -1168,7 +1171,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _timeLimitSlider.value = 30;
         _fishSpeedSlider.value = 1;
         _fishGoalCountSlider.value = 30;
-        _confirmMessage.text = "현재 설정을 초기화 및 저장 했어요";
+        
         OnResetSettingBtnClicked?.Invoke();
     }
     

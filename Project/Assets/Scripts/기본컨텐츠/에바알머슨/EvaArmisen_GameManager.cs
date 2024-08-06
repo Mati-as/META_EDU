@@ -199,7 +199,7 @@ public class EvaArmisen_GameManager : IGameManager
                 for (var i = 0; i < _raySync.raycastResults.Count; i++)
                 {
 #if UNITY_EDITOR
-                    Debug.Log("버튼클릭! 플레이 함수 실행X ");
+//                    Debug.Log("버튼클릭! 플레이 함수 실행X ");
 #endif
 
                     _raySync.raycastResults[i].gameObject.TryGetComponent(out button);
