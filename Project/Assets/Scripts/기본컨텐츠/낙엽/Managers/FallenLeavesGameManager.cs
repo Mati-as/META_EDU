@@ -14,7 +14,7 @@ public class FallenLeavesGameManager : MonoBehaviour
 
     private void Start()
     {
-        TARGET_FRAME = 30;
+        TARGET_FRAME = 60;
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = TARGET_FRAME;
 

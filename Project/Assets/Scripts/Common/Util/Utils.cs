@@ -45,6 +45,12 @@ public class Utils :MonoBehaviour
             // Get the path to save the file later
            // savePath = System.IO.Path.Combine(Application.dataPath, savePath);
         }
+        public static void ReadXML(ref XmlDocument doc, string path)
+        {
+            var Document = new XmlDocument();
+            Document.Load(path);
+            doc = Document;
+        }
         
         public static void LoadXML(ref TextAsset xmlAsset, ref XmlDocument xmlDoc, string path)
         {

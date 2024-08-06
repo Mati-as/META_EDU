@@ -176,7 +176,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         _sliders[(int)SoundManager.Sound.Main] = GetObject((int)UI_Type.MainVolume).GetComponent<Slider>();
        
 #if UNITY_EDITOR
-        Debug.Log($" 메인 볼륨 {Managers.soundManager.volumes[(int)SoundManager.Sound.Main]}");
+//        Debug.Log($" 메인 볼륨 {Managers.soundManager.volumes[(int)SoundManager.Sound.Main]}");
 #endif
 
         _sliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI_Type.BGMVolume).GetComponent<Slider>();
@@ -286,7 +286,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
 
         _timeLimitSlider.onValueChanged.AddListener(_ =>
         {
-            _gm.timeLimit = (int)(_gm.timeLimit / 5) * 5;
+            _gm.timeLimit = (int)(_timeLimitSlider.value / 5) * 5;
             _timeLimitSliderTMP.text = (int)(_gm.timeLimit / 5) * 5 + "초";
             _timerTMP.text = _gm.timeLimit.ToString();
         });
@@ -1131,7 +1131,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
             }
             
 #if UNITY_EDITOR
-            Debug.Log($"setting by XML Completed main {mainVolResult}, effect {bgmvolToFloat}, timelimt {playtimeToFloat}");
+//            Debug.Log($"setting by XML Completed main {mainVolResult}, effect {bgmvolToFloat}, timelimt {playtimeToFloat}");
 #endif
             
         }

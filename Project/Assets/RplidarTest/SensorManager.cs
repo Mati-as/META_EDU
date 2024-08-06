@@ -10,14 +10,14 @@ using UnityEngine.UI;
 public class SensorManager : MonoBehaviour
 {
 
-   
-// #if UNITY_EDITOR
-//     public bool USE_SENSOR;
-//     public static bool useSensor;
-//     private static string port = useSensor ? "COM3" : string.Empty;
-// #else
-//   
-// #endif
+    private enum SensorParams
+    {
+        Sensitivity,
+        Height,
+        Offset,
+        Screen
+    }
+
 
     private static string port ="COM3";
     public static bool isMoterStarted { get; private set; }
@@ -25,7 +25,11 @@ public class SensorManager : MonoBehaviour
     private static LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;
 
-    //=====0714
+    public static event Action<bool> OnSenSorInit;
+    
+    
+    
+    //=====071423
     public GameObject BALLPrefab; 
     public GameObject MOUSEPrefab;
     public GameObject FPPrefab; 
@@ -49,7 +53,7 @@ public class SensorManager : MonoBehaviour
     //1015
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
-    private float _height = 138; //cm 
+    private float _height = 175; //cm 
     private float _width; //비율통한계싼
     
     private readonly int HEIGHT_MAX = 200; //cm
@@ -150,11 +154,50 @@ public class SensorManager : MonoBehaviour
 // #endif
         Init();
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
-   
-       // _width = _height * (Resolution_X / Resolution_Y);
+        
+        LidarSensorRefresher.OnRefreshEvent -= RefreshSensor;
+        LidarSensorRefresher.OnRefreshEvent += RefreshSensor;
+        // _width = _height * (Resolution_X / Resolution_Y);
 
     }
 
+    private void RefreshSensor()
+    {
+        StartCoroutine(RefreshSensorCo());
+    }
+
+    private WaitForSeconds _refreshWait = new WaitForSeconds(0.5f);
+    private IEnumerator RefreshSensorCo()
+    {
+        Debug.Log("Sensor Refresh");
+        RplidarBinding.EndScan();
+        RplidarBinding.EndMotor();
+        RplidarBinding.OnDisconnect();
+        RplidarBinding.ReleaseDrive();
+        
+        m_thread?.Abort();
+        m_onscan = false;
+
+        yield return _refreshWait;
+        
+        int result = RplidarBinding.OnConnect(port);
+        Debug.Log("Connect on " + port + " result:" + result);
+        
+        isMoterStarted = RplidarBinding.StartMotor();
+        Debug.Log("StartMotor:" + isMoterStarted);
+        
+        m_onscan = RplidarBinding.StartScan();
+        Debug.Log("StartScan:" + m_onscan);
+      
+        var isSensorOn = isMoterStarted || m_onscan;
+        OnSenSorInit?.Invoke(isSensorOn);   
+        
+        if (m_onscan)
+        {
+            m_thread = new Thread(GenerateMesh);
+            m_thread.Start();
+        }
+    }
     
     
     /// <summary>
@@ -319,7 +362,7 @@ public class SensorManager : MonoBehaviour
 
     void Start()
     {
-       
+     
         int result = RplidarBinding.OnConnect(port);
         Debug.Log("Connect on " + port + " result:" + result);
 
@@ -335,6 +378,9 @@ public class SensorManager : MonoBehaviour
             m_thread.Start();
         }
 
+        var isSensorOn = isMoterStarted || m_onscan;        
+        OnSenSorInit?.Invoke(isSensorOn);
+        
         Img_Rect_transform = this.GetComponent<RectTransform>();
 
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
@@ -441,7 +487,7 @@ public class SensorManager : MonoBehaviour
                 x = -_screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90-_lidarDatas[i].theta)* Mathf.Deg2Rad));
                 y = -_screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90-_lidarDatas[i].theta) * Mathf.Deg2Rad) - UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET);
                
-          
+           
                 if (i % _filteringAmount == 0)
                 {
                     if (min_x < x && x < max_x)
@@ -459,9 +505,10 @@ public class SensorManager : MonoBehaviour
                                 _filteringAmount = 3;
                                 ShowFilteredSensorPos(x, y);
                             }
-                         
+
                         }
-                        
+                     
+
                     }
 
                 }
@@ -508,7 +555,9 @@ public class SensorManager : MonoBehaviour
     }
     void OnDestroy()
     {
+        LidarSensorRefresher.OnRefreshEvent -= RefreshSensor;
         UnBindLidar();
+
     }
 
     private void OnApplicationQuit()

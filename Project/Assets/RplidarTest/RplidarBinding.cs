@@ -18,56 +18,49 @@ public struct LidarData
 
 public class RplidarBinding
 {
+    // 구형버전, 빨강센서
+    // private const string DLL_FILENAME = "RplidarCppLegacy.dll";
+    // private const string DLL_PATH = "/Plugins_Legacy/x86_64";
 
-    private readonly string DLL_FILENAME = "RplidarCpp.dll";
-    private readonly string DLL_PATH = "RplidarCpp.dll";
-    
-    
-#if UNITY_EDITOR_64
-    private const string _dllFileName = "RplidarCppEditorOnly.dll";
-#else 
-  private const string _dllFileName = "RplidarCppEditorOnly.dll";
-#endif
+    // // 신형버전, 보라색센서 (모델명: A2M12)
+    private const string DLL_FILENAME = "RplidarCppA2M12.dll";
+    private const string DLL_PATH = "/Plugins_A2M12/x86_64/";
+
+
     static RplidarBinding()
     {
         var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
-#if UNITY_EDITOR_64
-        currentPath += Path.PathSeparator + Application.dataPath + "/Plugins_EditorOnly/x86_64/";
-        Debug.Log("Rplida :64");
-    
-#else 
-          currentPath += Path.PathSeparator + Application.dataPath+ "/Plugins_EditorOnly/x86_64/";
-        Debug.Log("Rplida :Editor");
-#endif
+        currentPath += Path.PathSeparator + Application.dataPath + DLL_PATH;
+        Debug.Log($"Filename: {DLL_FILENAME}, current Path Of Lida: {currentPath}");
         Environment.SetEnvironmentVariable("PATH", currentPath);
     }
 
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern int OnConnect(string port);
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern bool OnDisconnect();
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern bool StartMotor();
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern bool EndMotor();
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern bool StartScan();
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern bool EndScan();
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)] 
     public static extern bool ReleaseDrive();
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     public static extern int GetLDataSize();
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     private static extern void GetLDataSampleArray(IntPtr ptr);
 
-    [DllImport(_dllFileName)]
+    [DllImport(DLL_FILENAME)]
     private static extern int GrabData(IntPtr ptr);
 
     public static LidarData[] GetSampleData()

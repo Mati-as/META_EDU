@@ -133,7 +133,7 @@ public class ParticleEventController : IGameManager, IOnClicked
                 SoundManager.FadeInAndOutSound(_audioSources[i], 1.0f, 0.05f
                     , duration, 0.05f, true);
                 
-                SoundManager.FadeInAndOutSound(_audioSources[i + 1], 0.05f, 0.05f
+                SoundManager.FadeInAndOutSound(_audioSources[i], 0.05f, 0.05f
                     , 0.9f, 0.05f, true);
 
                 break;

@@ -313,7 +313,7 @@ public class Mondrian_GameManager : IGameManager
                 if (_scaleSequence.ContainsKey(currentInstance))
                 {
 #if UNITY_EDITOR
-                    Debug.Log("sequence is already active..try later");
+           //         Debug.Log("sequence is already active..try later");
 #endif
                     if (_scaleSequence[currentInstance].IsActive()) return;
                 }

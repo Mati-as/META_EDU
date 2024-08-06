@@ -258,12 +258,7 @@ public class EvaArmisen_GameManager : IGameManager
         var print = stampPools[stampIndex].Dequeue();
         print.transform.position = spawnPosition;
         print.gameObject.SetActive(true);
-
-        // DOVirtual.Float(0, 0, RETRUN_WAIT_TIME, _ => { }).OnComplete(() =>
-        // {
-        //     print.gameObject.SetActive(false);
-        //     printPool.Enqueue(print); // Return the particle system to the pool
-        // });
+        
     }
 
     protected void GrowPool( int stampIndex)
