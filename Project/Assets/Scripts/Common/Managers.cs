@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
@@ -16,10 +13,21 @@ public class Managers : MonoBehaviour
         } 
     }
 
+    private static MetaEduLauncher s_launcher = new MetaEduLauncher();
     private static UIManager s_uiManager = new UIManager();
     private static ResourceManager s_resourceManager = new ResourceManager();
     private static SoundManager s_soundManager = new SoundManager();
     private static SensorManager s_sensorManager = new SensorManager();
+
+    
+    public static MetaEduLauncher launcher 
+    {  
+        get 
+        { 
+            Init(); 
+            return s_launcher; 
+        } 
+    }
 
     public static SoundManager soundManager 
     {  
@@ -57,7 +65,10 @@ public class Managers : MonoBehaviour
         }
     }
 
-    private void Start()
+
+
+
+    private void Awake()
     {
         Init();
     }
@@ -69,12 +80,18 @@ public class Managers : MonoBehaviour
             GameObject go = GameObject.Find("@Managers");
             if (go == null)
                 go = new GameObject { name = "@Managers" };
-
+            
+            GameObject launcher = GameObject.Find("METAEDU_Launcher");
+      
+            
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             DontDestroyOnLoad(go);
-
+            
+            s_launcher.Init(); 
+            s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
+           
             s_soundManager.Init();
-          
+            Debug.Log("Managers Set--------");
         }
     }
     

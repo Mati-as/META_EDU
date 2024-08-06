@@ -21,7 +21,7 @@ public class LoadInitialScene : MonoBehaviour
 
     void Start()
     {
-        //StartCoroutine(LoadScene());
+       // StartCoroutine(LoadScene());
         StartCoroutine(RotateIcon());
 
         loadingCompleted = false;
@@ -85,10 +85,11 @@ public class LoadInitialScene : MonoBehaviour
             }
             else
             {
-                StopAllCoroutines();
                 onInitialLoadComplete?.Invoke();
-                Debug.Log("loadComplete");
+                Debug.Log("Initial Scene loadComplete------------------------");
                 gameObject.SetActive(false);
+                StopAllCoroutines();
+              
             }
             
         }

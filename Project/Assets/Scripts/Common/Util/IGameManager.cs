@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 public abstract class IGameManager : MonoBehaviour
 {
     
+    
+     
     private bool _isStartBtnClicked;
     private bool _isSceneChanging;
 
@@ -55,6 +57,7 @@ public abstract class IGameManager : MonoBehaviour
         GameManager_Hits { get; set; } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
 
     public static event Action On_GmRay_Synced;
+    public static event Action<string,DateTime> OnSceneLoad;
 
     protected virtual void Awake()
     {
@@ -67,6 +70,7 @@ public abstract class IGameManager : MonoBehaviour
     {
         if (isInitialized) return;
      
+        OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name,System.DateTime.Now);
         
         ManageProjectSettings(SHADOW_MAX_DISTANCE, DEFAULT_SENSITIVITY);
         BindEvent();

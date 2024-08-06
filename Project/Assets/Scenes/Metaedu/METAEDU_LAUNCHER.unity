@@ -12378,12 +12378,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1012723619}
-  - component: {fileID: 1012723623}
   - component: {fileID: 1012723622}
   - component: {fileID: 1012723621}
   - component: {fileID: 1012723620}
   m_Layer: 0
-  m_Name: Manager
+  m_Name: METAEDU_Launcher
   m_TagString: UIManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12490,18 +12489,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &1012723623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1012723615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5cbceeffab28994fbaaeda4fe9b87be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1025054241
 GameObject:
   m_ObjectHideFlags: 0
@@ -21597,6 +21584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1626617312}
+  - component: {fileID: 1626617313}
   m_Layer: 0
   m_Name: '@LauncherRoot'
   m_TagString: Untagged
@@ -21625,6 +21613,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1626617313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626617309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4126e47d2ab948441b8c1c1940093cb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1628147287
 GameObject:
   m_ObjectHideFlags: 0

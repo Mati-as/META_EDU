@@ -155,11 +155,17 @@ public class SensorManager : MonoBehaviour
         Init();
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         
-        LidarSensorRefresher.OnRefreshEvent -= RefreshSensor;
-        LidarSensorRefresher.OnRefreshEvent += RefreshSensor;
+        TopMenuUI.OnRefreshEvent -= RefreshSensor;
+        TopMenuUI.OnRefreshEvent += RefreshSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
-
     }
+    
+    void OnDestroy()
+    {
+        TopMenuUI.OnRefreshEvent -= RefreshSensor;
+        UnBindLidar();
+    }
+
 
     private void RefreshSensor()
     {
@@ -552,12 +558,6 @@ public class SensorManager : MonoBehaviour
         GameObject Prefab_pos = Instantiate(middlePrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
         Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
         Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-    }
-    void OnDestroy()
-    {
-        LidarSensorRefresher.OnRefreshEvent -= RefreshSensor;
-        UnBindLidar();
-
     }
 
     private void OnApplicationQuit()
