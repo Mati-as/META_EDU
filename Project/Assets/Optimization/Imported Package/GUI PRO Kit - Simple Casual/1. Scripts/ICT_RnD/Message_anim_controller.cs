@@ -47,8 +47,8 @@ public class Message_anim_controller : MonoBehaviour
     }
     public void Animation_Off()
     {
-        Message_anim.Play(Animation_clip[1]);
-        StartCoroutine(Active_false());
+        var isAnimPlayed = Message_anim.Play(Animation_clip[1]);
+        if(isAnimPlayed) StartCoroutine(Active_false());
 #if UNITY_EDITOR
        
 #endif

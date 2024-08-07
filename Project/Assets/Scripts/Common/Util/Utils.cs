@@ -66,6 +66,10 @@ public class Utils :MonoBehaviour
                 xmlDoc = new XmlDocument();
             }
         }
+
+     
+        
+        
         public static void AddUser(ref XmlDocument xmlDoc,String mode,string username,string score,string iconNumber)
         {
             XmlNode root = xmlDoc.DocumentElement;
@@ -105,6 +109,7 @@ public class Utils :MonoBehaviour
         public static void SaveXML(ref XmlDocument xmlDoc,string xmlFilePath)
         {
             xmlDoc.Save(xmlFilePath);
+            
             Debug.Log("XML file saved to: " + xmlFilePath);
         }
         //------------------------------------------------------------------------------------------

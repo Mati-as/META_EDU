@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,7 +7,6 @@ using UnityEngine.UI;
 
 public class TopMenuUI : UI_PopUp
 {
-
     private enum UI_Type
     {
         Btn_Setting,
@@ -16,45 +14,60 @@ public class TopMenuUI : UI_PopUp
         Btn_SensorRefresh,
         Btn_Quit
     }
-    
+
     //sensor-related part.-----------------------------------
     public static event Action OnRefreshEvent;
     public static event Action<string, DateTime> OnSceneQuit;
     public static event Action<string, DateTime> OnAppQuit;
-    private bool _isSensorRefreshable =true;
+    private bool _isSensorRefreshable = true;
+    private bool _isXMLSavable = true;
 
     private const int REFRESH_INTERIM_MIN = 10;
-    private WaitForSeconds _wait = new (REFRESH_INTERIM_MIN);
+    private readonly WaitForSeconds _wait = new(REFRESH_INTERIM_MIN);
     private Button[] _btns;
     // scene-related part -----------------------------------
- 
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         BindButton(typeof(UI_Type));
         GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnSceneQuitAndToHomeScreen);
-        GetButton((int)UI_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
         GetButton((int)UI_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
-    }
-    private void RefreshSensor()
-    {
-        if (_isSensorRefreshable)
-        {
-            StartCoroutine(ResetSensorRefreshable());
-            OnRefreshEvent?.Invoke();
-        }
+        GetButton((int)UI_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
     }
 
-    IEnumerator ResetSensorRefreshable()
+    private void RefreshSensor()
+    {
+        if (!_isSensorRefreshable) return;
+
+        StartCoroutine(ResetSensorRefreshable());
+        OnRefreshEvent?.Invoke();
+    }
+
+    private IEnumerator ResetSensorRefreshable()
     {
         _isSensorRefreshable = false;
         yield return _wait;
         _isSensorRefreshable = true;
     }
+
+    private IEnumerator XMLSaveCo()
+    {
+        OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
+        yield return _wait;
+        _isXMLSavable = true;
+    }
+
     private void OnSceneQuitAndToHomeScreen()
     {
-        OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name,DateTime.Now);
+#if UNITY_EDITOR
+        Debug.Log("Scene Quit ");
+# endif
+        if (!_isXMLSavable) return;
+        _isXMLSavable = false;
+        StartCoroutine(XMLSaveCo());
     }
+
     private void OnQuit()
     {
         StartCoroutine(QuitApplicationCo());
@@ -62,8 +75,13 @@ public class TopMenuUI : UI_PopUp
 
     private IEnumerator QuitApplicationCo()
     {
-        OnAppQuit?.Invoke(SceneManager.GetActiveScene().name,DateTime.Now);
+#if UNITY_EDITOR
+        Debug.Log("App Quit ");
+# endif
+
+        OnAppQuit?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         yield return new WaitForSeconds(1f);
         Application.Quit();
+        _isXMLSavable = true;
     }
 }
