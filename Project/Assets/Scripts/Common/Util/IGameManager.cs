@@ -40,7 +40,7 @@ public abstract class IGameManager : MonoBehaviour
             _isStartBtnClicked = value;
         }
     } // startButton 클릭 이전,이후 동작 구분용입니다. 
-    protected bool isInitialized { get; set; }
+    protected bool isInitialized { get; private set; }
     protected int TARGET_FRAME { get; } = 60; //
 
     protected float BGM_VOLUME { get; set; } = 0.105f;
@@ -62,15 +62,19 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
+      
     }
     
 
 
     protected virtual void Init()
     {
-        if (isInitialized) return;
+        if (isInitialized)
+        {
+            Debug.LogWarning("Scene is already initialized.");
+            return;
+        }
      
-        OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name,System.DateTime.Now);
         
         ManageProjectSettings(SHADOW_MAX_DISTANCE, DEFAULT_SENSITIVITY);
         BindEvent();
@@ -84,6 +88,8 @@ public abstract class IGameManager : MonoBehaviour
         var uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
+        Debug.Log("scene is initialzied");
+        OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name,System.DateTime.Now);
         isInitialized = true;
     }
 

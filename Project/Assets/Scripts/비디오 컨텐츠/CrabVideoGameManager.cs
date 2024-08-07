@@ -79,8 +79,7 @@ public class CrabVideoGameManager : InteractableVideoGameManager
             // 점프메세지 출력 이후 bool값 수정되도록 로직변경 필요할듯 12/26
         });
         
-      
-        isInitialized = true;
+        
     }
     
     public void SubscribeEvent()

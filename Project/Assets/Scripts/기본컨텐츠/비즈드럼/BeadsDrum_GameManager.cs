@@ -16,6 +16,7 @@ public class BeadsDrum_GameManager : IGameManager
     
     public override void OnRaySynced()
     {
+        if (!PreCheck()) return;
         if (Physics.Raycast(GameManager_Ray, out GameManager_Hits[0]))
         {
             Collider[] hitColliders = Physics.OverlapSphere(GameManager_Hits[0].point, clickRadius);

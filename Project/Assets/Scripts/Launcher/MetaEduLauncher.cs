@@ -369,7 +369,7 @@ public class MetaEduLauncher : UI_PopUp
     public void OnRaySynced()
     {
 #if UNITY_EDITOR
-        Debug.Log($"Raysync From Launcher -----------------------");
+        //Debug.Log($"Raysync From Launcher -----------------------");
 #endif
         if (!_isLoadFinished) return;
 

@@ -13,22 +13,30 @@ public class Managers : MonoBehaviour
         } 
     }
 
-    private static MetaEduLauncher s_launcher = new MetaEduLauncher();
+    //private static MetaEduLauncher s_launcher = new MetaEduLauncher();
     private static UIManager s_uiManager = new UIManager();
     private static ResourceManager s_resourceManager = new ResourceManager();
     private static SoundManager s_soundManager = new SoundManager();
     private static SensorManager s_sensorManager = new SensorManager();
-
+    private static PlayerHistoryManager s_historyManager = new PlayerHistoryManager();
     
-    public static MetaEduLauncher launcher 
+    // public static MetaEduLauncher launcher 
+    // {  
+    //     get 
+    //     { 
+    //         Init(); 
+    //         return s_launcher; 
+    //     } 
+    // }
+
+    public static PlayerHistoryManager historyManager 
     {  
         get 
         { 
             Init(); 
-            return s_launcher; 
+            return s_historyManager; 
         } 
     }
-
     public static SoundManager soundManager 
     {  
         get 
@@ -81,16 +89,18 @@ public class Managers : MonoBehaviour
             if (go == null)
                 go = new GameObject { name = "@Managers" };
             
-            GameObject launcher = GameObject.Find("METAEDU_Launcher");
+            GameObject launcher = GameObject.Find("@LauncherRoot");
       
             
             s_instance = Utils.GetOrAddComponent<Managers>(go);
-            DontDestroyOnLoad(go);
+        
             
-            s_launcher.Init(); 
-            s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
-           
+            // s_launcher.Init(); 
+            // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
+            
             s_soundManager.Init();
+            s_historyManager.Init();
+            DontDestroyOnLoad(go);
             Debug.Log("Managers Set--------");
         }
     }

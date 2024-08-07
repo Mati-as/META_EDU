@@ -19,7 +19,8 @@ public class TopMenuUI : UI_PopUp
     
     //sensor-related part.-----------------------------------
     public static event Action OnRefreshEvent;
-    public static event Action<string, DateTime> OnSceneQuit; 
+    public static event Action<string, DateTime> OnSceneQuit;
+    public static event Action<string, DateTime> OnAppQuit;
     private bool _isSensorRefreshable =true;
 
     private const int REFRESH_INTERIM_MIN = 10;
@@ -31,7 +32,7 @@ public class TopMenuUI : UI_PopUp
     void Start()
     {
         BindButton(typeof(UI_Type));
-        GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnQuit);
+        GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnSceneQuitAndToHomeScreen);
         GetButton((int)UI_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
         GetButton((int)UI_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
     }
@@ -50,7 +51,10 @@ public class TopMenuUI : UI_PopUp
         yield return _wait;
         _isSensorRefreshable = true;
     }
-    
+    private void OnSceneQuitAndToHomeScreen()
+    {
+        OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name,DateTime.Now);
+    }
     private void OnQuit()
     {
         StartCoroutine(QuitApplicationCo());
@@ -58,7 +62,7 @@ public class TopMenuUI : UI_PopUp
 
     private IEnumerator QuitApplicationCo()
     {
-        OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name,DateTime.Now);
+        OnAppQuit?.Invoke(SceneManager.GetActiveScene().name,DateTime.Now);
         yield return new WaitForSeconds(1f);
         Application.Quit();
     }

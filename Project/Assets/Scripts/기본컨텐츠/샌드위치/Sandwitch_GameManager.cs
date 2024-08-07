@@ -120,8 +120,7 @@ public class Sandwitch_GameManager : IGameManager
         SetSandwich();
         InitIngredients();
 
-
-        isInitialized = true;
+        
     }
 
 
