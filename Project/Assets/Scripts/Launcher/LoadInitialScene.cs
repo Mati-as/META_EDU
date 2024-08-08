@@ -86,7 +86,7 @@ public class LoadInitialScene : MonoBehaviour
             else
             {
                 onInitialLoadComplete?.Invoke();
-                Debug.Log("Initial Scene loadComplete------------------------");
+            //    Debug.Log("Initial Scene loadComplete------------------------");
                 gameObject.SetActive(false);
                 StopAllCoroutines();
               

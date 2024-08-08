@@ -107,8 +107,10 @@ private bool _isRaySet;
 #endif
 
     private Hopscotch_GameManager _gm;
+    private bool _isStartBtnClicked;
     protected virtual void OnGmRaySyncedByOnGm()
     {
+        if (!_isStartBtnClicked) return;
         if (_gm!=null && !_gm.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
@@ -116,6 +118,8 @@ private bool _isRaySet;
         {
             if (_gm.isStageClearUIOn) return;
         }
+
+
      
         
         hits = Physics.RaycastAll(ray_EffectManager);
@@ -124,6 +128,15 @@ private bool _isRaySet;
             currentHitPoint = hit.point;
 
             PlayParticle(particlePool, hit.point);
+            
+            if (!_isClickable)
+            {
+#if UNITY_EDITOR
+                //      Debug.Log("it's not clickable temporary ----------------------");
+#endif
+                return;
+            }
+            SetClickable();
             OnClickInEffectManager?.Invoke();
             break;
         }
@@ -136,6 +149,29 @@ if (!_isRaySet)
 }
 
 #endif
+    }
+    
+    private float _clickInterval = 1f;
+    private WaitForSeconds _clickWait;
+    private bool _isClickable =true;
+    private void SetClickable()
+    {
+        StartCoroutine(SetClickableCo());
+    }
+
+    private IEnumerator SetClickableCo()
+    {
+        _isClickable = false;
+        
+        if (_clickWait == null)
+        {
+            _clickWait = new WaitForSeconds(_clickInterval);
+        }
+
+        yield return _clickWait;
+
+        _isClickable = true;
+
     }
 
     protected virtual void Init()
@@ -175,6 +211,7 @@ if (!_isRaySet)
 
     protected virtual void OnDestroy()
     {
+        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
         IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
     }
 
@@ -211,8 +248,15 @@ if (!_isRaySet)
                 }
     }
 
+    private void OnStartBtnClicked()
+    {
+        _isStartBtnClicked = true;
+    }
+
     protected virtual void BindEvent()
     {
+        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
         IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
         IGameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
     }

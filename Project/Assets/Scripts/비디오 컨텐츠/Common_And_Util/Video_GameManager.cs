@@ -22,6 +22,7 @@ public class Video_GameManager : IGameManager
     protected override void Init()
     {
         base.Init();
+
         
         BindEvent();
         //DoShake시 트위닝 오류로 원래위치에서 벗어나는 것을 방지하기 위한 defaultPosition 설정.

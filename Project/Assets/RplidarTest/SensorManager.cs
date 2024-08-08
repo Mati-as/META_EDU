@@ -370,13 +370,12 @@ public class SensorManager : MonoBehaviour
     {
      
         int result = RplidarBinding.OnConnect(port);
-        Debug.Log("Connect on " + port + " result:" + result);
 
         isMoterStarted = RplidarBinding.StartMotor();
-        Debug.Log("StartMotor:" + isMoterStarted);
+      
 
         m_onscan = RplidarBinding.StartScan();
-        Debug.Log("StartScan:" + m_onscan);
+        Debug.Log("Connect on " + port + " result:" + result+ "\nStartMotor:" + isMoterStarted +"StartScan:" + m_onscan);
 
         if (m_onscan)
         {

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Xml;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -11,6 +13,7 @@ using UnityEngine.PlayerLoop;
 public class PlayerHistoryManager : MonoBehaviour
 {
     
+    
     public DateTime latestSceneStartTime; // 가장최근에 Scene(게임)을 실행한 시간 - 게임종료시간 = 플레이시간 
     public DateTime lastestSceneQuitTime;
     private static TimeSpan _playTime;
@@ -18,12 +21,19 @@ public class PlayerHistoryManager : MonoBehaviour
     public static string currentSceneName;
 
     private XmlDocument _doc;
+    private bool _isInit;
 
-
-    public void Init()
+   
+    private string _playerInfoXmlPath ;
+    public bool Init()
     {
-        Utils.ReadXML(ref _doc,"Assets/Resources/Common/Data/UserHistory.xml");
-        Debug.Log("History Checker Active");
+        if (_isInit) return true;
+        
+        _playerInfoXmlPath = System.IO.Path.Combine(Application.persistentDataPath, "playInfoHistory.xml");
+
+        Check_XmlFile("playInfoHistory",_playerInfoXmlPath);
+        Utils.ReadXML(ref _doc,_playerInfoXmlPath);
+      
         
         //Register Dictionary 
         GameInfo.Init();
@@ -36,6 +46,8 @@ public class PlayerHistoryManager : MonoBehaviour
         
         TopMenuUI.OnAppQuit -= OnSceneOrAppQuit;
         TopMenuUI.OnAppQuit += OnSceneOrAppQuit;
+        _isInit = true; 
+        return true;
     }
 
     private void OnDestroy()
@@ -43,10 +55,43 @@ public class PlayerHistoryManager : MonoBehaviour
         IGameManager.OnSceneLoad -= OnSceneLoad;
         TopMenuUI.OnSceneQuit -= OnSceneOrAppQuit;
     }
-    
+    public void Check_XmlFile(string fileName,string path)
+    {
+        //string filePath = Path.Combine(Application.persistentDataPath, "LOGININFO.xml");
+       
+
+        if (File.Exists(path))
+        {
+            Debug.Log(fileName + "XML FILE EXIST");
+        }
+        else
+        {
+            var newXml = new XmlDocument();
+            
+         
+            XmlDeclaration xmlDeclaration = newXml.CreateXmlDeclaration("1.0", "UTF-8", null);
+            XmlElement root = newXml.DocumentElement;
+            newXml.InsertBefore(xmlDeclaration, root);
+
+           
+            XmlElement rootElement = newXml.CreateElement("PlayData");
+            newXml.AppendChild(rootElement);
+            
+
+        
+            newXml.Save(path);
+            Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+        }
+        Debug.Log("History Checker Active");
+    }
     
     private void OnSceneLoad(string sceneName, DateTime dateTime)
     {
+        if (sceneName.Contains("LAUNCHER"))
+        {
+            Debug.Log($"Launcher: history checking X -------------");
+            return;
+        }
         latestSceneStartTime = dateTime;
         currentSceneName = sceneName;
         Debug.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
@@ -64,16 +109,27 @@ public class PlayerHistoryManager : MonoBehaviour
     }
     public void AddPlayInfoNode(ref XmlDocument xmlDoc)
     {
+
+        if (_playTime.Minutes <= 0 && _playTime.Seconds < 10) 
+        {
+            Debug.Log("playtime is too short, play info hasn't been saved.");
+            return;
+        }
         
         XmlNode root = xmlDoc.DocumentElement;
         XmlElement newUser = xmlDoc.CreateElement("PlayData");
 
         DateTime today = DateTime.Now;
         Debug.Log("Today's date is: " + today.ToString("yyyy-MM-dd"));
-        
-        newUser.SetAttribute("date",  today.ToString("g"));
-        newUser.SetAttribute("sceneid", currentSceneName +": " +GameInfo.ScenedIdToKoreantitle[currentSceneName]);
-        newUser.SetAttribute("playtime", string.Format("{0:D2}분 {1:D2}초", _playTime.Minutes, _playTime.Seconds));
+
+        newUser.SetAttribute("deviceid",  System.Environment.UserName);
+        newUser.SetAttribute("date",  today.ToString("yyyy-M-d dddd"));
+        newUser.SetAttribute("year",  today.Year.ToString("D"));
+        newUser.SetAttribute("month",  today.Month.ToString("D"));
+        newUser.SetAttribute("day",  today.Day.ToString("D"));
+        newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
+        newUser.SetAttribute("sceneid", currentSceneName);
+        newUser.SetAttribute("playtimesec", _playTime.Seconds.ToString("D"));
         root?.AppendChild(newUser);
         
         Utils.SaveXML(ref _doc, "Assets/Resources/Common/Data/UserHistory.xml");

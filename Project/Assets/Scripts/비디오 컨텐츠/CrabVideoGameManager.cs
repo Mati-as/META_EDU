@@ -103,12 +103,41 @@ public class CrabVideoGameManager : InteractableVideoGameManager
         onReplay -= OnReplay;
     }
 
+    private float _clickInterval = 0.35f;
+    private WaitForSeconds _clickWait;
+    private bool _isClickable =true;
+    private void SetClickable()
+    {
+        StartCoroutine(SetClickableCo());
+    }
+
+    private IEnumerator SetClickableCo()
+    {
+        _isClickable = false;
+        
+        if (_clickWait == null)
+        {
+            _clickWait = new WaitForSeconds(_clickInterval);
+        }
+
+        yield return _clickWait;
+
+        _isClickable = true;
+
+    }
 
     private void CrabOnRaySynced()
     {
         base.OnRaySynced();
         if (!_initiailized) return;
-        
+        if (!_isClickable)
+        {
+#if UNITY_EDITOR
+            Debug.Log("it's not clickable temporary ----------------------");
+#endif
+            return;
+        } 
+        SetClickable();
         _currentClickCount++;
 
         if (_currentClickCount > crabAppearClickCount && !_isOnCrabAppearEventInvoked)
