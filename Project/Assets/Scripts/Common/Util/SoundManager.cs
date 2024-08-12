@@ -60,6 +60,7 @@ public class SoundManager : MonoBehaviour
     {
         volumes = new float[(int)Sound.Max];
         
+        
         if (_soundRoot == null)
         {
             _soundRoot = GameObject.Find("@SoundRoot");
@@ -83,10 +84,10 @@ public class SoundManager : MonoBehaviour
                 volumes = new float[(int)Sound.Max];
                 for (int i = 0; i < (int)Sound.Max; i++)
                 {
-                    volumes[(int)Sound.Main] =      0.5f;
-                    volumes[(int)Sound.Bgm] =       0.3f;
-                    volumes[(int)Sound.Effect] =    0.5f;
-                    volumes[(int)Sound.Narration] = 0.5f;
+                    volumes[(int)Sound.Main] =      A_SettingManager.MAIN_VOLIUME;
+                    volumes[(int)Sound.Bgm] =       A_SettingManager.EFFECT_VOLUME;
+                    volumes[(int)Sound.Effect] =    A_SettingManager.BGM_VOLUME;
+                    volumes[(int)Sound.Narration] = A_SettingManager.NARRATION_VOLUME;
                 }
                 
                 for (int i = 0; i < (int)Sound.Max; i++)
