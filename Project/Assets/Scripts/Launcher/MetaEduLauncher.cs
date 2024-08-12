@@ -28,6 +28,7 @@ public class MetaEduLauncher : UI_PopUp
         ContentC, // 음악놀이
         ContentD, // 영상놀이
         Setting,
+        TopMenu_OnLauncher,
         MainVolume,
         BGMVolume,
         EffectVolume,
@@ -42,14 +43,13 @@ public class MetaEduLauncher : UI_PopUp
 
     private enum UIButtons
     {
-        HomeButton,
-        SelectModeButton,
+        Btn_Home,
+        Btn_SelectMode,
         ContentAButton,
         ContentBButton,
         ContentCButton,
-        SettingButton,
-        ResultButton,
-
+        Btn_Setting,
+        Btn_Result,
         SettingCloseButton
         //LoginButton,
         //SurveyButton
@@ -95,13 +95,13 @@ public class MetaEduLauncher : UI_PopUp
 
         BindButton(typeof(UIButtons));
 
-        GetButton((int)UIButtons.HomeButton).gameObject.BindEvent(() => ShowTab(UIType.Home));
-        GetButton((int)UIButtons.SelectModeButton).gameObject.BindEvent(() => ShowTab(UIType.SelectMode));
+        GetButton((int)UIButtons.Btn_Home).gameObject.BindEvent(() => ShowTab(UIType.Home));
+        GetButton((int)UIButtons.Btn_SelectMode).gameObject.BindEvent(() => ShowTab(UIType.SelectMode));
         GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA));
         GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB));
         GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC));
-        GetButton((int)UIButtons.SettingButton).gameObject.BindEvent(() => ShowTab(UIType.Setting));
-        GetButton((int)UIButtons.ResultButton).gameObject.BindEvent(() => ShowTab(UIType.Result));
+        GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
+        GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
 
         GetButton((int)UIButtons.SettingCloseButton).gameObject.BindEvent(() =>
         {
@@ -376,7 +376,7 @@ public class MetaEduLauncher : UI_PopUp
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
 
-        _launcherPED.position = screenPosition;
+        if(_launcherPED!=null) _launcherPED.position = screenPosition;
 
         _results = new List<RaycastResult>();
         _launcherGR.Raycast(_launcherPED, _results);

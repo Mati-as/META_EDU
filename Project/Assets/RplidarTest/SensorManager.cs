@@ -21,6 +21,7 @@ public class SensorManager : MonoBehaviour
 
     private static string port ="COM3";
     public static bool isMoterStarted { get; private set; }
+    public static bool sensorImageView;//Test용 빌드에서 사용
     
     private static LidarData[] _lidarDatas;
     private RectTransform Img_Rect_transform;

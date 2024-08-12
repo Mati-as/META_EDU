@@ -35,7 +35,8 @@ public class FP_Prefab : RaySynchronizer
     {
       
         //모드설정에따라 이미지 활성화 비활성화
-        _image.enabled = _isImageOn;
+
+        _image.enabled = SensorManager.isSensorEditMode;
         
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
@@ -81,24 +82,7 @@ public class FP_Prefab : RaySynchronizer
 
         
     }
-
-    // void Update()
-    // {
-    //     if (Timer < Limit_Time)
-    //     {
-    //         Timer += Time.deltaTime;
-    //     }
-    //     else
-    //     {
-    //         Timer = 0f;
-    //       
-    //        
-    //    //    FPC.Delete_FPposition();
-    //         //Destroy_obj();
-    //     }
-    //    
-    // }
-
+    
     void Destroy_obj()
     {
         Destroy(this.gameObject);

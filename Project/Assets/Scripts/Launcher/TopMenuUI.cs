@@ -13,7 +13,8 @@ public class TopMenuUI : UI_PopUp
         Btn_Setting,
         Btn_Home,
         Btn_SensorRefresh,
-        Btn_Quit
+        Btn_Quit,
+        Setting
     }
 
     //sensor-related part.-----------------------------------
@@ -36,10 +37,9 @@ public class TopMenuUI : UI_PopUp
         
         GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnSceneQuitAndToHomeScreen);
         GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnHomeBtnClicked);
-        
         GetButton((int)UI_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
-        
         GetButton((int)UI_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
+        GetButton((int)UI_Type.Btn_Setting).gameObject.BindEvent(OnSettingBtnClicked);
     }
 
     private void RefreshSensor()
@@ -92,14 +92,17 @@ public class TopMenuUI : UI_PopUp
     }
     
     private IGameManager _gm;
-    
-  
-
 
     
 
 
-
+    public void OnSettingBtnClicked()
+    {
+        bool isSettingUIActive = GetButton((int)UI_Type.Setting).gameObject.activeSelf;
+        GetButton((int)UI_Type.Setting).gameObject.SetActive(!isSettingUIActive);
+    }
+    
+    
     public void OnHomeBtnClicked()
     {
         MetaEduLauncher.isBackButton =

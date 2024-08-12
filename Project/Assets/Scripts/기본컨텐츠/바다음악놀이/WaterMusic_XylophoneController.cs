@@ -101,6 +101,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
     private void Init()
     {
+        _clickableMap = new Dictionary<int, bool>();
 #if UNITY_EDITOR
         Debug.Log($"soundable객체 수: {TOTAL_SOUNDABLE_COUNT}, targetPos.Length : {targetPos.Length}  _soundProducingXylophones: {_soundProducingXylophones.Length}");
 #endif
@@ -197,6 +198,20 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private RaycastHit RayHitForXylophone;
     private Ray _ray;
     private bool _isMoveTweening;
+    private Dictionary<int, bool> _clickableMap; //클릭횟수
+    private WaitForSeconds _resetWait = new WaitForSeconds(0.75f); 
+
+    private void ResetClickabeWithDelay(int instanceID)
+    {
+        StartCoroutine(ResetClicableWithDelayCo(instanceID));
+    }
+
+    IEnumerator ResetClicableWithDelayCo(int instanceID)
+    {
+        _clickableMap[instanceID] = false;
+        yield return _resetWait;
+        _clickableMap[instanceID] = true;
+    }
 
     private void OnClicked()
     {
@@ -209,6 +224,12 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
+            var id = RayHitForXylophone.transform.GetInstanceID();
+            _clickableMap.TryAdd(id, true);
+            if (!_clickableMap[id]) return;
+
+            ResetClickabeWithDelay(id);
+            
             Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
    
             
