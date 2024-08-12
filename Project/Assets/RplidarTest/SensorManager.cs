@@ -53,7 +53,7 @@ public class SensorManager : MonoBehaviour
     //1015
     private float Resolution_Y = 1080;
     private float Resolution_X = 1920;
-    private float _height = 175; //cm 
+    private float _height = 177; //cm 
     private float _width; //비율통한계싼
     
     private readonly int HEIGHT_MAX = 200; //cm

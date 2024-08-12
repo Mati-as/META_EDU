@@ -124,6 +124,9 @@ public class ParticleEventController : IGameManager, IOnClicked
     public override void OnRaySynced()
     {
         base.OnRaySynced();
+        if (TopMenuUI.isGameStopped) return; 
+        
+
 #if UNITY_EDITOR
      
 #endif

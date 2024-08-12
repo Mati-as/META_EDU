@@ -314,23 +314,14 @@ public class U_FishOnWater_GameManager : IGameManager
         DOTween.Init().SetCapacity(500, 500);
         ManageProjectSettings(90, 0.15f);
 
-//#if UNITY_EDITOR
-        // .System 파일입출력과 유니티 파일 입출력시 주소체계 혼동주의바랍니다.
-        Check_XmlFile("TempData");
+        CheckAndGenerateXmlFile("TempData",_xmlPathTemp);
         Read(ref xmlDoc_Temp, _xmlPathTemp);
 
-        Check_XmlFile("PermanantData");
+        CheckAndGenerateXmlFile("PermanantData",_xmlPathPermanant);
         Read(ref xmlDoc_Permanant, _xmlPathPermanant);
 
-        Check_XmlFile("SettingData");
+        CheckAndGenerateXmlFile("SettingData",_xmlPathSetting);
         Read(ref xmlDoc_Setting, _xmlPathSetting);
-// #else
-//         Check_XmlFile("BB008_UserRankingData");
-//         _xmlPath = System.IO.Path.Combine(Application.persistentDataPath, "BB008_UserRankingData.xml");
-//         Read(_xmlPath);
-//
-//
-// #endif
 
         _onFishCatchPsPool = new Stack<ParticleSystem>();
         var prefab = Resources.Load("게임별분류/BB008_U/CFX_OnFishCatch");
@@ -831,6 +822,34 @@ public class U_FishOnWater_GameManager : IGameManager
             //           xmlDoc.Save(filePath);
             Debug.Log(fileName + ".xml FILE NOT EXIST");
         }
+    }
+    
+    public void CheckAndGenerateXmlFile(string fileName,string path)
+    {
+        //string filePath = Path.Combine(Application.persistentDataPath, "LOGININFO.xml");
+       
+
+        if (File.Exists(path))
+        {
+            Debug.Log(fileName + "XML FILE EXIST");
+        }
+        else
+        {
+            var newXml = new XmlDocument();
+            
+         
+            XmlDeclaration xmlDeclaration = newXml.CreateXmlDeclaration("1.0", "UTF-8", null);
+            XmlElement root = newXml.DocumentElement;
+            newXml.InsertBefore(xmlDeclaration, root);
+
+           
+            XmlElement rootElement = newXml.CreateElement("PlayData");
+            newXml.AppendChild(rootElement);
+            
+            newXml.Save(path);
+            Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+        }
+        Debug.Log("History Checker Active");
     }
 
     public void WriteXML(XmlDocument document, string path)

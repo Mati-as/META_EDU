@@ -91,11 +91,19 @@ public class EasternArt_GameManager : IGameManager
 
         camera.position = _pathVector[0];
 
-        OnBtnShut();
+        var sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "AB002FromBA001") //BA001 (명화그리기) 컨텐츠와 연계되어 실행된 경우
+        {
+            OnBtnShut();
+        }
+        else
+        {
+             UI_Scene_Button.onBtnShut -= OnBtnShut;
+             UI_Scene_Button.onBtnShut += OnBtnShut;
+        }
+       
         
-        // UI_Scene_Button.onBtnShut -= OnBtnShut;
-        // UI_Scene_Button.onBtnShut += OnBtnShut;
-
+      
     }
 
 

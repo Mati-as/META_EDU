@@ -75,7 +75,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
             vignette.intensity.value = val;
         }).OnComplete(() =>
         {
-            SceneManager.LoadScene("AB002");
+            SceneManager.LoadScene("AB002FromBA001");
         });
         
     }
@@ -118,10 +118,35 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
     }
 
+    
+    private float _clickInterval = 0.12f;
+    private WaitForSeconds _clickWait;
+    private bool _isClickable =true;
+    private void SetClickable()
+    {
+        StartCoroutine(SetClickableCo());
+    }
+
+    private IEnumerator SetClickableCo()
+    {
+        _isClickable = false;
+        
+        if (_clickWait == null)
+        {
+            _clickWait = new WaitForSeconds(_clickInterval);
+        }
+
+        yield return _clickWait;
+
+        _isClickable = true;
+
+    }
+    
+    
     public float currentRotation;
     void Paint()
     {
-        
+        if (!_isClickable) return; 
         if (!isStartButtonClicked || _isSceneChanging) return;
         currentRotation = Random.Range(0,360);
       

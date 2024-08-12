@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using UnityEngine;
 using System.Xml;
 using KoreanTyper;
@@ -66,6 +67,35 @@ public class Utils :MonoBehaviour
                 xmlDoc = new XmlDocument();
             }
         }
+        
+        public static void CheckAndGenerateXmlFile(string fileName,string path, string elementName ="data")
+        {
+            //string filePath = Path.Combine(Application.persistentDataPath, "LOGININFO.xml");
+       
+
+            if (File.Exists(path))
+            {
+                Debug.Log(fileName + "XML FILE EXIST");
+            }
+            else
+            {
+                var newXml = new XmlDocument();
+            
+         
+                XmlDeclaration xmlDeclaration = newXml.CreateXmlDeclaration("1.0", "UTF-8", null);
+                XmlElement root = newXml.DocumentElement;
+                newXml.InsertBefore(xmlDeclaration, root);
+
+           
+                XmlElement rootElement = newXml.CreateElement(elementName);
+                newXml.AppendChild(rootElement);
+            
+                newXml.Save(path);
+                Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+            }
+            Debug.Log("History Checker Active");
+        }
+
 
      
         

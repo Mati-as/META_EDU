@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using 기본컨텐츠.다양한악기놀이;
@@ -18,8 +19,40 @@ public class MusicInstruments_GameManager : IGameManager
         _effectContainer = new Stack<ParticleSystem>();
     
         SetPool(_effectContainer,"게임별분류/기본컨텐츠/MusicInstruments/MusicInstruments_CFX_Click");
-        
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
+     
+        var images = _parrotSlider.GetComponentsInChildren<Image>();
+        foreach (var image in images)
+        {
+            image.DOFade(0, 0.1f);
+        }
+        
+        var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
+        foreach (var tmp in tmps)
+        {
+            tmp.DOFade(0, 0.1f);
+        }
+
+
+    }
+    
+    
+
+    protected override void OnStartButtonClicked()
+    {
+        base.OnStartButtonClicked();
+        var images = _parrotSlider.GetComponentsInChildren<Image>();
+        foreach (var image in images)
+        {
+            image.enabled = true;
+            image.DOFade(1, 1.2f);
+        }
+        var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
+        foreach (var tmp in tmps)
+        {
+            tmp.DOFade(1, 1f);
+        }
+
     }
 
     private void Update()

@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using KoreanTyper;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = System.Random;
 
 public class ShapePathfinding_GameManager : IGameManager
@@ -63,7 +63,7 @@ public class ShapePathfinding_GameManager : IGameManager
     
     
     //UI Tmp
-    private TextMeshProUGUI _tmpInstruction;
+    private TextMeshProUGUI TMP_Instruction;
     
 
     private enum Pathfinder_GameObject
@@ -106,8 +106,8 @@ public class ShapePathfinding_GameManager : IGameManager
         SetSteps();
         SuffleAndSet();
 
-        _tmpInstruction = GameObject.Find("TMP_Instruction").GetComponent<TextMeshProUGUI>();
-        _tmpInstruction.text = string.Empty;
+        TMP_Instruction = GameObject.Find("TMP_Instruction").GetComponent<TextMeshProUGUI>();
+        TMP_Instruction.text = string.Empty;
     }
 
     private readonly float BTN_DOWN_DEPTH = 0.036f;
@@ -121,12 +121,16 @@ public class ShapePathfinding_GameManager : IGameManager
         PlayStepAnim();
     }
 
+
+    private int _currentClickedId;
+
     private void PlayStepAnim()
     {
         foreach (var hit in GameManager_Hits)
             if (hit.transform.gameObject.name.Contains("Step"))
             {
                 var currentID = hit.transform.GetInstanceID();
+                _currentClickedId = currentID; // 중복실행방지 위해 방어적코드. 
                 if (_meshRenderMap.ContainsKey(currentID))
                 {
 #if UNITY_EDITOR
@@ -140,6 +144,9 @@ public class ShapePathfinding_GameManager : IGameManager
 #if UNITY_EDITOR
                         Debug.Log("Correct Step --- step starting to move...");
 #endif
+
+                     
+               
 
                         if (_isStepClickable)
                         {
@@ -382,17 +389,56 @@ public class ShapePathfinding_GameManager : IGameManager
             {
                 DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
                 {
-                    _isDiceBtnClickable = true;
                     _isStepClickable = true;
                     DetectDice();
                 });
+                DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() =>
+                {
+                    _isDiceBtnClickable = true;
+                });
+                
+                
             }));
-        seq.AppendInterval(1f);
+        seq.AppendInterval(1.5f);
         seq.AppendCallback(() =>
         {
-            StartCoroutine(TypeIn(_koreanMap[_currentShape], 0.1f));
+            foreach (var key in _meshRenderMap.Keys.ToArray())
+            {
+                if (_meshRenderMap[key].material.name.Contains(_currentShape))
+                {
+                    var stepScaleSeq= DOTween.Sequence();
+                    stepScaleSeq.Append(_meshRenderMap[key].transform.DOScale(_defaultScale * 0.7f, 0.15f));
+                    stepScaleSeq.AppendInterval(0.11f);
+                    stepScaleSeq.Append(_meshRenderMap[key].transform.DOScale(_defaultScale, 0.15f));
+                    stepScaleSeq.SetLoops(12, LoopType.Restart);
+        
+                }   
+            }
+            
+            TextAnimPlay();
             seq.Play();
         });
+    }
+   
+
+    private void TextAnimPlay()
+    {
+        TMP_Instruction.transform.localScale = Vector3.zero;
+        TMP_Instruction.text = _koreanMap[_currentShape];
+
+        var tmpScaleSeq = DOTween.Sequence();
+        tmpScaleSeq.AppendCallback(() =>
+        {
+            TMP_Instruction.transform.DOScale(Vector3.one, 0.3f);
+        });
+
+        tmpScaleSeq.AppendInterval(3f);
+        tmpScaleSeq.AppendCallback(() =>
+        {
+            TMP_Instruction.transform.DOScale(Vector3.zero, 0.3f);
+        });
+        tmpScaleSeq.Play();
+
     }
 
 
@@ -440,21 +486,6 @@ public class ShapePathfinding_GameManager : IGameManager
     }
     
         
-    public IEnumerator TypeIn(string str, float offset)
-    {
-        _tmpInstruction.text = ""; // 초기화
-        yield return new WaitForSeconds(0.08f);
 
-        var strTypingLength = str.GetTypingLength();
-        for (var i = 0; i <= strTypingLength; i++)
-        {
-            // 반복문
-            _tmpInstruction.text = str.Typing(i);
-            yield return new WaitForSeconds(0.08f);
-        }
-
-
-        yield return new WaitForNextFrameUnit();
-    }
 
 }

@@ -31,7 +31,7 @@ public class PlayerHistoryManager : MonoBehaviour
         
         _playerInfoXmlPath = System.IO.Path.Combine(Application.persistentDataPath, "playInfoHistory.xml");
 
-        Check_XmlFile("playInfoHistory",_playerInfoXmlPath);
+        CheckAndGenerateXmlFile("playInfoHistory",_playerInfoXmlPath);
         Utils.ReadXML(ref _doc,_playerInfoXmlPath);
       
         
@@ -55,7 +55,7 @@ public class PlayerHistoryManager : MonoBehaviour
         IGameManager.OnSceneLoad -= OnSceneLoad;
         TopMenuUI.OnSceneQuit -= OnSceneOrAppQuit;
     }
-    public void Check_XmlFile(string fileName,string path)
+    public void CheckAndGenerateXmlFile(string fileName,string path)
     {
         //string filePath = Path.Combine(Application.persistentDataPath, "LOGININFO.xml");
        
@@ -77,8 +77,6 @@ public class PlayerHistoryManager : MonoBehaviour
             XmlElement rootElement = newXml.CreateElement("PlayData");
             newXml.AppendChild(rootElement);
             
-
-        
             newXml.Save(path);
             Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
         }
@@ -132,7 +130,7 @@ public class PlayerHistoryManager : MonoBehaviour
         newUser.SetAttribute("playtimesec", _playTime.Seconds.ToString("D"));
         root?.AppendChild(newUser);
         
-        Utils.SaveXML(ref _doc, "Assets/Resources/Common/Data/UserHistory.xml");
+        Utils.SaveXML(ref _doc, _playerInfoXmlPath);
     }
 
     private static void SavePlayInfo()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,6 +17,7 @@ public class TopMenuUI : UI_PopUp
     }
 
     //sensor-related part.-----------------------------------
+    public static bool isGameStopped { get; private set; }
     public static event Action OnRefreshEvent;
     public static event Action<string, DateTime> OnSceneQuit;
     public static event Action<string, DateTime> OnAppQuit;
@@ -31,8 +33,12 @@ public class TopMenuUI : UI_PopUp
     private void Start()
     {
         BindButton(typeof(UI_Type));
+        
         GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnSceneQuitAndToHomeScreen);
+        GetButton((int)UI_Type.Btn_Home).gameObject.BindEvent(OnHomeBtnClicked);
+        
         GetButton((int)UI_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
+        
         GetButton((int)UI_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
     }
 
@@ -83,5 +89,48 @@ public class TopMenuUI : UI_PopUp
         yield return new WaitForSeconds(1f);
         Application.Quit();
         _isXMLSavable = true;
+    }
+    
+    private IGameManager _gm;
+    
+  
+
+
+    
+
+
+
+    public void OnHomeBtnClicked()
+    {
+        MetaEduLauncher.isBackButton =
+            gameObject.name.Contains("Back") ? true : false;
+
+        StartCoroutine(ChangeScene());
+
+    }
+
+    private WaitForSeconds _waitForSceneChange =new WaitForSeconds(1.0f); 
+    private IEnumerator ChangeScene()
+    { 
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
+        _gm.isSceneChanaging = true;
+        isGameStopped = true;
+        
+        yield return _waitForSceneChange;
+        TerminateProcess();
+        SceneManager.LoadScene("METAEDU_LAUNCHER");
+        
+        yield return _waitForSceneChange;
+        _gm.isSceneChanaging = false;
+        isGameStopped = false;
+    }
+
+    /// <summary>
+    /// 씬이동 초기화 수행 전, 다양한 초기화를 진행합니다.
+    /// </summary>
+    private void TerminateProcess()
+    {
+        
+        DOTween.KillAll();
     }
 }
