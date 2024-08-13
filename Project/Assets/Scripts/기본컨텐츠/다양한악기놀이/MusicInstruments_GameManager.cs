@@ -64,6 +64,7 @@ public class MusicInstruments_GameManager : IGameManager
     {
         base.OnRaySynced();
         if (!PreCheck()) return;
+        SetClickableWithDelay();
         
         foreach (var hit in GameManager_Hits)
         {

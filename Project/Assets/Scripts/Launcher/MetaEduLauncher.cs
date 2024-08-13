@@ -30,11 +30,10 @@ public class MetaEduLauncher : UI_PopUp
         ContentC, // 음악놀이
         ContentD, // 영상놀이
         Setting,
-        TopMenu_OnLauncher,
+        //TopMenu_OnLauncher,
         MainVolume,
         BGMVolume,
         EffectVolume,
-
         NarrationVolume
         //Login,
         //Survey
@@ -51,8 +50,10 @@ public class MetaEduLauncher : UI_PopUp
         ContentBButton,
         ContentCButton,
         Btn_Setting,
-        Btn_Result,
+        Btn_Back,
+        Btn_Quit,
         SettingCloseButton
+        //Btn_Result, //사용시 주석해제
         //LoginButton,
         //SurveyButton
     }
@@ -64,7 +65,7 @@ public class MetaEduLauncher : UI_PopUp
     private GameObject[] _UIs;
     private Animation messageAnim;
     private List<string> _animClips = new();
-    private readonly float _clickableInterval = 0.28f;
+    private readonly float _clickableInterval = 0.48f;
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
 
@@ -76,11 +77,27 @@ public class MetaEduLauncher : UI_PopUp
         Managers.soundManager.Play(SoundManager.Sound.Bgm, "Audio/Bgm/Launcher", 0.05f);
     }
 
+
+    private void OnBackBtnClicked()
+    {
+        Debug.Log("뒤로가기 버튼 클릭");
+        
+            
+        if (currentUITab == UIType.SelectMode)
+        {
+            ShowTab(UIType.Home);
+        }
+        else if (currentUITab == UIType.ContentA || currentUITab == UIType.ContentB ||currentUITab == UIType.ContentC
+                 ||currentUITab == UIType.ContentD)
+        {
+            ShowTab(UIType.SelectMode);
+        }
+    }
+
     private void Awake()
     {
         _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
-
-
+        
         
         LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
@@ -103,8 +120,15 @@ public class MetaEduLauncher : UI_PopUp
         GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB));
         GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC));
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
-        GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
+        // GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
+        GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
 
+
+        GetButton((int)UIButtons.Btn_Back).gameObject.BindEvent(OnBackBtnClicked);
+       
+        
+        
+        
         GetButton((int)UIButtons.SettingCloseButton).gameObject.BindEvent(() =>
         {
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
@@ -145,7 +169,6 @@ public class MetaEduLauncher : UI_PopUp
             Managers.soundManager.audioSources[(int)SoundManager.Sound.Main].volume =
                 Managers.soundManager.volumes[(int)SoundManager.Sound.Main];
 
-
             Managers.soundManager.volumes[(int)SoundManager.Sound.Bgm] =
                 _volumeSliders[(int)SoundManager.Sound.Bgm].value;
             Managers.soundManager.audioSources[(int)SoundManager.Sound.Bgm].volume =
@@ -166,6 +189,10 @@ public class MetaEduLauncher : UI_PopUp
                 Mathf.Lerp(0, Managers.soundManager.VOLUME_MAX[(int)SoundManager.Sound.Narration],
                     Managers.soundManager.volumes[(int)SoundManager.Sound.Main] *
                     _volumeSliders[(int)SoundManager.Sound.Narration].value);
+
+        //    A_SettingManager.SaveCurrentSetting(SensorManager.height,);
+
+
         });
         _volumeSliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
         {
@@ -274,6 +301,15 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.ContentD).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
+        if (currentUITab == UIType.Home)
+        {
+            GetButton((int)UIButtons.Btn_Back).gameObject.SetActive(false);
+        }
+        else
+        {
+        GetButton((int)UIButtons.Btn_Back).gameObject.SetActive(true);
+            
+        }
         //GetObject((int)UIType.Login).gameObject.SetActive(false);
         //GetObject((int)UIType.Survey).gameObject.SetActive(false);
 

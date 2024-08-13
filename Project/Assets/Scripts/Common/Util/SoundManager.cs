@@ -84,10 +84,10 @@ public class SoundManager : MonoBehaviour
                 volumes = new float[(int)Sound.Max];
                 for (int i = 0; i < (int)Sound.Max; i++)
                 {
-                    volumes[(int)Sound.Main] =      A_SettingManager.MAIN_VOLIUME;
-                    volumes[(int)Sound.Bgm] =       A_SettingManager.EFFECT_VOLUME;
-                    volumes[(int)Sound.Effect] =    A_SettingManager.BGM_VOLUME;
-                    volumes[(int)Sound.Narration] = A_SettingManager.NARRATION_VOLUME;
+                    volumes[(int)Sound.Main] =      Managers.settingManager.MAIN_VOLIUME;
+                    volumes[(int)Sound.Bgm] =       Managers.settingManager.EFFECT_VOLUME;
+                    volumes[(int)Sound.Effect] =    Managers.settingManager.BGM_VOLUME;
+                    volumes[(int)Sound.Narration] = Managers.settingManager.NARRATION_VOLUME;
                 }
                 
                 for (int i = 0; i < (int)Sound.Max; i++)

@@ -23,7 +23,7 @@ public class WaterPlayground_GameManager : IGameManager
     protected override void Init()
     {
       SetPool(ref particlePool);
-      BGM_VOLUME = 0.85f;
+      BGM_VOLUME = 0.2f;
       base.Init();
       ManageProjectSettings(150,0.15f);
     }

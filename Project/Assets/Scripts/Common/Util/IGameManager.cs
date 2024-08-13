@@ -1,19 +1,40 @@
 using System;
+using System.Collections;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-///     IGameManager는 UI,Resource,GameLogic Manager를 모두 포함합니다.
-///     이는 Singleton Managers 방식입니다.
+///    각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
 public abstract class IGameManager : MonoBehaviour
 {
     
-    
+    protected  readonly float CLICKABLE_DELAY = 0.12f;
+    protected WaitForSeconds _waitForClickable;
+    public bool isClickable { get; private set; }
+
+    /// <summary>
+    /// 08/13/2024
+    /// 1.Click빈도수를 유니티상에서 제어할때 사용합니다.
+    /// 2.물체가 많은경우 정확도 이슈로 센서자체를 필터링 하는것은 권장되지 않다고 판단하고 있습니다.
+    /// </summary>
+    protected void SetClickableWithDelay() => StartCoroutine(SetClickableWithDelayCo());
+
+    IEnumerator SetClickableWithDelayCo()
+    {
+        if(_waitForClickable ==null) _waitForClickable = new WaitForSeconds(CLICKABLE_DELAY);
+        
+        isClickable = false;
+        yield return _waitForClickable;
+        isClickable = true;
+    }
      
+    
+    
     private bool _isStartBtnClicked;
     private bool _isSceneChanging;
 
@@ -71,7 +92,11 @@ public abstract class IGameManager : MonoBehaviour
     {
         if (isInitialized)
         {
+#if UNITY_EDITOR
             Debug.LogWarning("Scene is already initialized.");
+#endif
+
+          
             return;
         }
      
@@ -88,6 +113,10 @@ public abstract class IGameManager : MonoBehaviour
         var uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
+        
+#if UNITY_EDITOR
+        Debug.Log("scene is initialzied");
+#endif
         Debug.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name,System.DateTime.Now);
         isInitialized = true;
@@ -116,7 +145,10 @@ public abstract class IGameManager : MonoBehaviour
         }
         else
         {
+#if UNITY_EDITOR
             Debug.LogError("Current Render Pipeline is not Universal Render Pipeline.");
+#endif
+            
         }
     }
 
