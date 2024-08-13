@@ -298,6 +298,8 @@ public class SensorManager : MonoBehaviour
 
     private void SetPool<T>(Stack<T> pool, string path, int poolCount = 500) where T : Object
     {
+        if (SceneManager.GetActiveScene().name == "METAEDU_LAUNCHER") return;
+        
         for (var poolSize = 0; poolSize < poolCount; poolSize++)
         {
             var prefab = Resources.Load<GameObject>(path);
