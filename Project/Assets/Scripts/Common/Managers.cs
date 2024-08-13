@@ -21,9 +21,10 @@ public class Managers : MonoBehaviour
     private static SensorManager s_sensorManager = new SensorManager();
     private static PlayerHistoryManager s_historyManager = new PlayerHistoryManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
-
     private static A_SettingManager s_SettingManager = new A_SettingManager();
-    
+
+    public static bool isGameStopped { get; set; }
+
     // public static MetaEduLauncher launcher 
     // {  
     //     get 

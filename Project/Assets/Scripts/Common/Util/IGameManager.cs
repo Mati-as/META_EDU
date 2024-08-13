@@ -36,20 +36,7 @@ public abstract class IGameManager : MonoBehaviour
     
     
     private bool _isStartBtnClicked;
-    private bool _isSceneChanging;
-
-    public bool isSceneChanaging
-    {
-        get
-        {
-            return _isSceneChanging;
-        }
-        set
-        {
-            _isSceneChanging = value;
-        }
-    }
-
+    
     public bool isStartButtonClicked
     {
         get
@@ -167,10 +154,31 @@ public abstract class IGameManager : MonoBehaviour
     /// </summary>
     protected  bool PreCheck()
     {
-        if (!isStartButtonClicked) return false ;
-        if (!isInitialized) return false;
-        if (_isSceneChanging) return false;
-        
+        if (!isStartButtonClicked)
+        {
+#if UNITY_EDITOR
+            Debug.Log("StartBtn Should be Clicked");
+#endif
+            return false ;
+        }
+
+        if (!isInitialized)
+        {
+#if UNITY_EDITOR
+            Debug.Log("Scene hasn't been initialized yet, Can't be clicked");
+#endif
+            return false;
+        }
+
+
+
+        if (Managers.isGameStopped)
+        {
+#if UNITY_EDITOR
+            Debug.Log("gameStopped, Can't be clicked");
+#endif
+            return false;
+        }
         return true;
         
     }
@@ -192,7 +200,7 @@ public abstract class IGameManager : MonoBehaviour
         UI_Scene_Button.onBtnShut += OnStartButtonClicked;
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;

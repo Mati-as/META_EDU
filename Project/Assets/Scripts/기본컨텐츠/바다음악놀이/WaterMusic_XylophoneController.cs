@@ -359,6 +359,11 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         UI_Scene_Button.onBtnShut += DoIntroMove;
     }
 
+    private void OnDestroy()
+    {  
+        UI_Scene_Button.onBtnShut -= DoIntroMove;
+        WaterMusic_GameManager.On_GmRay_Synced -= OnClicked;
+    }
 
     public float brightenIntensity;
     private Color brightenedColor;

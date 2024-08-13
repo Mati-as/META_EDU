@@ -36,12 +36,13 @@ public class InGameMenuButtonController : MonoBehaviour
     private WaitForSeconds _wait =new WaitForSeconds(1.0f); 
     private IEnumerator ChangeScene()
     {
-        _gm.isSceneChanaging = true;
+        Managers.isGameStopped = true;
         yield return _wait;
         TerminateProcess();
         SceneManager.LoadScene("METAEDU_LAUNCHER");
-        yield return _wait;
-        _gm.isSceneChanaging = false;
+
+       
+      
     }
 
     /// <summary>

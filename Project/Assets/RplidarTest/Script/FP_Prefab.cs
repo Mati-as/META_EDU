@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -52,6 +53,11 @@ public class FP_Prefab : RaySynchronizer
             base.InvokeRayEvent();
         }
 
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(this.gameObject);
     }
 
     private Button _btn;

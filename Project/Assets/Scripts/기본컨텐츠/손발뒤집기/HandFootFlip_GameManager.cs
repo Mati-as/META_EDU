@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class HandFootFlip_GameManager : IGameManager
@@ -64,8 +65,9 @@ public class HandFootFlip_GameManager : IGameManager
 
         if (!isStartButtonClicked) return;
         if (_isAnimalMoving) return;
-
-        FlipAndChangeColor(GameManager_Ray);
+        if (SceneManager.GetActiveScene().name != "BB003") return;
+        
+        FlipAndChangeColor(HandFootFlip_GameManager.GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
     }
 
@@ -94,6 +96,7 @@ public class HandFootFlip_GameManager : IGameManager
     private void OnDestroy()
     {
         onRaycasterMoveFinish -= OnRayCasterMoveFin;
+        Destroy(gameObject);
     }
 
     private void Update()

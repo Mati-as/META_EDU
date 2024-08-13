@@ -100,6 +100,26 @@ public class EffectManager : MonoBehaviour
     public static event Action OnClickInEffectManager;
     public Vector3 currentHitPoint { get; private set; }
 
+    protected  readonly float CLICKABLE_DELAY = 0.08f;
+    protected WaitForSeconds _waitForClickable;
+    public bool isClickable { get; private set; } = true;
+
+    /// <summary>
+    /// 08/13/2024
+    /// 1.Click빈도수를 유니티상에서 제어할때 사용합니다.
+    /// 2.물체가 많은경우 정확도 이슈로 센서자체를 필터링 하는것은 권장되지 않다고 판단하고 있습니다.
+    /// </summary>
+    protected void SetClickableWithDelay() => StartCoroutine(SetClickableWithDelayCo());
+
+    IEnumerator SetClickableWithDelayCo()
+    {
+        if(_waitForClickable ==null) _waitForClickable = new WaitForSeconds(CLICKABLE_DELAY);
+        
+        isClickable = false;
+        yield return _waitForClickable;
+        isClickable = true;
+    }
+
 
     //for debug.
 #if UNITY_EDITOR
@@ -111,6 +131,8 @@ private bool _isRaySet;
     protected virtual void OnGmRaySyncedByOnGm()
     {
         if (!_isStartBtnClicked) return;
+        if (!isClickable) return;
+        SetClickableWithDelay();
         if (_gm!=null && !_gm.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
         
@@ -118,8 +140,6 @@ private bool _isRaySet;
         {
             if (_gm.isStageClearUIOn) return;
         }
-
-
      
         
         hits = Physics.RaycastAll(ray_EffectManager);

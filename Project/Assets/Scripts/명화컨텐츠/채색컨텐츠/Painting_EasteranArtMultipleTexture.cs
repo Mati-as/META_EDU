@@ -69,9 +69,9 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
 
     private void OnChangeScene()
     {
-        DOVirtual.Float(0, 1, 2.5f, val =>
+        DOVirtual.Float(0, 1, 3f, val =>
         {
-            _isSceneChanging = true;
+            _isSceneChanging = false;
             vignette.intensity.value = val;
         }).OnComplete(() =>
         {
@@ -205,8 +205,11 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     }
     IEnumerator ResetClickableWithDelayCo()
     {
+        if(!PreCheck()) yield break;
         _isPaintable = false;
+        if(!PreCheck()) yield break;
         yield return _waitForPaint;
+        if(!PreCheck()) yield break;
         _isPaintable = true;
     }
 
@@ -219,6 +222,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
+        if(!PreCheck()) return;
         if (!_isPaintable)
         {
 #if UNITY_EDITOR
@@ -226,6 +230,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
 #endif
             return;
         }
+        
         ResetDelayWithDelay();
         
         Paint();

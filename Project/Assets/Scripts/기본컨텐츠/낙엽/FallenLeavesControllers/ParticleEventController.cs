@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class ParticleEventController : IGameManager, IOnClicked
@@ -81,7 +82,6 @@ public class ParticleEventController : IGameManager, IOnClicked
         base.Init();
         
         _audioSources = GetComponents<AudioSource>();
-
         _audioSources[(int)FallenLeave_SoundID.RollingLeaves].clip = rollingLeaves;
         _audioSources[(int)FallenLeave_SoundID.Blowing].clip = windBlowingSound;
 
@@ -110,22 +110,22 @@ public class ParticleEventController : IGameManager, IOnClicked
     }
 
 
-
-
-
+    
     private IOnClicked _iOnClicked;
 
+
+
     public new void OnClicked()
-    {
-        
-    }
-    
-    RaycastHit _hit;
+         {
+             
+         }
+
     public override void OnRaySynced()
     {
         base.OnRaySynced();
-        if (TopMenuUI.isGameStopped) return; 
-        
+        if (!PreCheck()){ return;}
+
+        if (SceneManager.GetActiveScene().name != "BC001") return;
 
 #if UNITY_EDITOR
      
@@ -142,13 +142,10 @@ public class ParticleEventController : IGameManager, IOnClicked
                 break;
             }
 
-     
-      
 
-        if (Physics.Raycast(GameManager_Ray, out _hit, Mathf.Infinity))
+        foreach (var _hit in GameManager_Hits)
         {
             
-
             _hit.transform.gameObject.TryGetComponent(out _iOnClicked);
             _iOnClicked?.OnClicked();
 
@@ -157,6 +154,8 @@ public class ParticleEventController : IGameManager, IOnClicked
             ClickEventApplyRadialForce(_hit.point, particleSystemB);
             ClickEventApplyRadialForce(_hit.point, particleSystemC);
         }
+
+ 
     }
 
     public float duration;
@@ -197,7 +196,7 @@ public class ParticleEventController : IGameManager, IOnClicked
 
         if (isWindBlowing)
         {
-            Debug.Log($"바람 멈추기위한 isWindowBlowing Logic 진입..{angularStopWaitTime}");
+           
 
 
             DOVirtual
@@ -228,9 +227,15 @@ public class ParticleEventController : IGameManager, IOnClicked
         //else if (isWindBlowing) _angularStopElapse += Time.deltaTime;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Unsubscribe();
+#if UNITY_EDITOR
+        Debug.Log($"Destroy GameManager :  {gameObject.name}");
+#endif
+        Destroy(gameObject);
+        
     }
 
 

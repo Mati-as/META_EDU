@@ -60,6 +60,11 @@ public class RaySynchronizer : MonoBehaviour
         
     }
 
+    private void OnDestroy()
+    {
+        _spaceAction.performed -= OnKeyPressed;
+    }
+
     public void Start()
     {
         SetUIEssentials();

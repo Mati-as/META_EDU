@@ -253,6 +253,14 @@ public class MetaEduLauncher : UI_PopUp
         {
             ShowTab(UIType.SelectMode);
         }
+
+        DOVirtual.Float(0, 0, 2.5f, _ => { })
+            .OnComplete(() =>
+        {
+            Managers.isGameStopped = false;
+        });
+        
+
     }
 
     private void OnDestroy()
@@ -268,7 +276,13 @@ public class MetaEduLauncher : UI_PopUp
     {
         Init();
         SetUIEssentials();
-        _isLoadFinished = true;
+        
+        // 널방지를 위한 딜레이 입니다.
+        DOVirtual.Float(0, 0, 1f, _ => { }).OnComplete(() =>
+        {
+         _isLoadFinished = true;
+        });
+     
     }
 
     private UIType currentUITab = UIType.Home;
@@ -417,7 +431,7 @@ public class MetaEduLauncher : UI_PopUp
         if(_launcherPED!=null) _launcherPED.position = screenPosition;
 
         _results = new List<RaycastResult>();
-        _launcherGR.Raycast(_launcherPED, _results);
+        if(_launcherGR!=null)_launcherGR.Raycast(_launcherPED, _results);
 
         if (_results.Count <= 0) return;
         ShowTabOrLoadScene(_results);
