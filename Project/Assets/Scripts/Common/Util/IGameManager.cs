@@ -228,7 +228,7 @@ public abstract class IGameManager : MonoBehaviour
                 {
 
                    var isPlaying=  Managers.soundManager.Play(SoundManager.Sound.Narration,
-                        "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.5f);
+                        "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.8f);
                     
 #if UNITY_EDITOR
                     Debug.Log(

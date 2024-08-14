@@ -192,9 +192,9 @@ public class SoundManager : MonoBehaviour
             path = string.Format("Audio/{0}", path);
 
         if(audioSource==null) Debug.LogError("audiosource null exception");
-    
-        
-        audioSource.volume = volume;
+
+
+      
         
         if (type == Sound.Bgm)
         {
@@ -205,7 +205,7 @@ public class SoundManager : MonoBehaviour
             if (audioSource.isPlaying)
                 audioSource.Stop();
 
-            
+            audioSource.volume = volume * volumes[(int)Sound.Bgm];
             audioSource.clip = audioClip;
             audioSource.pitch = pitch;
             audioSource.Play();
@@ -218,7 +218,7 @@ public class SoundManager : MonoBehaviour
             if (audioClip == null)
                 return false;
 
-         
+            audioSource.volume = volume * volumes[(int)Sound.Effect];
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(audioClip);
             return true;
@@ -226,6 +226,7 @@ public class SoundManager : MonoBehaviour
 
         if (type == Sound.Narration)
         {
+            audioSource.volume = volume * volumes[(int)Sound.Narration];
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
             {

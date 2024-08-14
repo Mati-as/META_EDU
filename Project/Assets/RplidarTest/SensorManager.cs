@@ -513,7 +513,7 @@ public class SensorManager : MonoBehaviour
                             }
                         }
 #if UNITY_EDITOR
-                Debug.Log($"sensor: {sensored_X},{sensored_Y} , {_screenRatio}");
+               // Debug.Log($"sensor: {sensored_X},{sensored_Y} , {_screenRatio}");
 #endif
             }
 

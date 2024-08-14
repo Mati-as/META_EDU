@@ -103,8 +103,8 @@ public class ParticleEventController : IGameManager, IOnClicked
      
 #endif
 
-      //  var randomChar = (char)Random.Range('A', 'C' + 1);
-      //  Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
+      var randomChar = (char)Random.Range('A', 'C' + 1);
+      Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
                
             
 

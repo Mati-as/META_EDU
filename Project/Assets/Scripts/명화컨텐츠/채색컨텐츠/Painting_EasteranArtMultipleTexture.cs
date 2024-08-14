@@ -74,6 +74,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         {
             _isSceneChanging = false;
             vignette.intensity.value = val;
+            vignette.color.value=vignette.color.value = Color.black;
         }).OnComplete(() =>
         {
             SceneManager.LoadScene("AB002FromBA001");
@@ -217,7 +218,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     //08/12/2024  타겟PC에서 센서 동작 이슈로 일정 딜레이를 넣고있습니다.
     // 약 0.12초보다 빠르게 페인팅을 하는경우, 원인미상 이슈로 텍스쳐에러가 발생합니다. 추후 RnD로 버그해결 필요합니다.
     private bool _isPaintable =true;
-    private WaitForSeconds _waitForPaint = new WaitForSeconds(0.125f);
+    private WaitForSeconds _waitForPaint = new WaitForSeconds(0.11f);
 
     public override void OnRaySynced()
     {
