@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -54,8 +55,13 @@ public class A_SettingManager : MonoBehaviour
             Debug.Assert(count!=1);
             
             var projectorScreenHeight = node.Attributes["projectorscreenheight"].Value;
-            SensorManager.height = float.Parse(projectorScreenHeight);
-            Debug.Log($"load projecotr hegiht preset suceess. height: {SensorManager.height} (cm)");
+            Debug.Log($"Value From Xml Height: {projectorScreenHeight}(cm)");
+
+            float xmlHeight = 0;
+            xmlHeight = float.Parse(projectorScreenHeight);
+            SensorManager.height = xmlHeight;
+            SCREEN_PROJECTOER_HEIGHT_FROM_XML = xmlHeight;
+            Debug.Log($"load projecotr Xmlhegiht ({xmlHeight}) preset suceess. height: {SCREEN_PROJECTOER_HEIGHT_FROM_XML} (cm)");
            
             var mainVol = node.Attributes["mainvolume"].Value;
             MAIN_VOLIUME = float.Parse(mainVol);

@@ -62,8 +62,9 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         base.BindEvent();
     }
 
-    protected  void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         ChangeScene -= OnChangeScene;
     }
 
@@ -82,11 +83,11 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
 
 
     private float _elapsed;
-    private readonly float _timeLimitForSceneChange =60;
+    public float timeLimitForSceneChange;
     private void Update()
     {
         _elapsed += Time.deltaTime;
-        if (_elapsed > _timeLimitForSceneChange)
+        if (_elapsed > timeLimitForSceneChange)
         {
             
             ChangeScene?.Invoke();
@@ -223,6 +224,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
         if(!PreCheck()) return;
+        if (SceneManager.GetActiveScene().name != "BA001") return;
         if (!_isPaintable)
         {
 #if UNITY_EDITOR

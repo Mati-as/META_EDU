@@ -58,6 +58,8 @@ public class TopMenuUI : UI_PopUp
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
         });
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
+
+        SetSlider();
     }
 
     private void RefreshSensor()

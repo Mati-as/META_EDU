@@ -109,8 +109,7 @@ public class HandFootFlip_GameManager : IGameManager
         if (_animalMoveCurrentTime > raycasterMoveInterval)
         {
             _isAnimalMoving = true;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert",
-                0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert");
 
             DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() => { RayCasterMovePlay(); });
             _animalMoveCurrentTime = 0;
@@ -196,8 +195,7 @@ public class HandFootFlip_GameManager : IGameManager
                         {
                             var randomChar = (char)Random.Range('A', 'F' + 1);
                             Managers.soundManager.Play(SoundManager.Sound.Effect,
-                                "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
-                                0.3f);
+                                "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
 
                             _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -277,8 +275,7 @@ public class HandFootFlip_GameManager : IGameManager
                     .OnStart(() =>
                     {
                         var randomChar = (char)Random.Range('A', 'F' + 1);
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar,
-                            0.3f);
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
 
                         _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -390,8 +387,8 @@ public class HandFootFlip_GameManager : IGameManager
                 DOVirtual.Float(0, 1, 0.35f, _ => { })
                     .OnStart(() =>
                     {
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A", 0.5f);
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B", 0.5f);
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A");
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B");
                     })
                     .OnComplete(() =>
                     {

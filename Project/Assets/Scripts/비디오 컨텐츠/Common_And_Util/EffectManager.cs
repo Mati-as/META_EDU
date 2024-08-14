@@ -13,6 +13,14 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class EffectManager : MonoBehaviour
 {
+
+    private enum Sound
+    {
+        Basic,
+        Burst
+    }
+
+    private string SCENE_NAME;
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
     private int _currentCountForBurst;
 
@@ -60,7 +68,9 @@ public class EffectManager : MonoBehaviour
     private int currentAudioSourceIndex;
 
     //아래 오디오 클립을 모두 저장하는데 사용합니다, 여러 클립을 할당받고 랜덤하게 재생하기 위해 사용중입니다 1-17-24
-    private List<AudioClip> _audioClips;
+    
+    
+    private AudioClip[] _clips;
     private int CLIP_COUNTS = 10; //max로 10으로 설정
     public AudioClip _effectClipA;
     [Range(0f, 1f)] public float volumeA;
@@ -196,21 +206,24 @@ if (!_isRaySet)
 
     protected virtual void Init()
     {
+
+        SCENE_NAME = SceneManager.GetActiveScene().name;
+        
         if (SceneManager.GetActiveScene().name == "BB002")
         {
             _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
         }
+
+        _clips = new AudioClip[1];
         
         SetPool(ref particlePool);
-        SetAudio();
         BindEvent();
         if (SceneManager.GetActiveScene().name == "BB002")
         {
             _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
         }
        
-
-        if (isMultipleRandomClip) SetRandomClip();
+        
     }
 
 
@@ -284,121 +297,47 @@ if (!_isRaySet)
     /// <summary>
     ///     오디오 초기화 및 재생을 위한 메소드 목록 -----------------
     /// </summary>
-    protected virtual void SetAudio()
-    {
-      
-        
-        
-        if (AUDIO_PATH_EFFECT_A != null && _effectClipA == null)
-            _effectClipA = Resources.Load<AudioClip>(AUDIO_PATH_EFFECT_A);
-
-        _audioSourcesA = SetAudioSettings(_audioSourcesA, _effectClipA, audioSize, volumeA);
-        if (_effectClipB != null) _audioSourcesB = SetAudioSettings(_audioSourcesB, _effectClipB, audioSize, volumeB);
-        if (_effectClipC != null) _audioSourcesC = SetAudioSettings(_audioSourcesC, _effectClipC, audioSize, volumeC);
-        if (_effectClipD != null) _audioSourcesD = SetAudioSettings(_audioSourcesD, _effectClipD, audioSize, volumeD);
-        if (_subAudioClip != null && useSubEmitter)
-            _subAudioSources = SetAudioSettings(_subAudioSources, _subAudioClip, audioSize, volumeSub);
-        if (_burstClip != null)
-            _burstAudioSources = SetAudioSettings(_burstAudioSources, _burstClip, _burstAudioSize, volumeBurst);
-    }
 
 
-    private AudioSource[] SetAudioSettings(AudioSource[] audioSources, AudioClip audioClip, int size, float volume = 1f,
-        float interval = 0.25f)
-    {
-        //오디오 갯수아닌 오디오 종류의 갯수.
-        totalActiveAudioSouceSortCount++;
-
-        audioSources = new AudioSource[size];
-        for (var i = 0; i < audioSources.Length; i++)
-        {
-            audioSources[i] = gameObject.AddComponent<AudioSource>();
-            audioSources[i].clip = audioClip;
-            audioSources[i].volume = volume;
-            audioSources[i].spatialBlend = 0f;
-            audioSources[i].outputAudioMixerGroup = null;
-            audioSources[i].playOnAwake = false;
-            audioSources[i].pitch = Random.Range(1 - interval, 1 + interval);
-        }
-
-        return audioSources;
-    }
 
 
-    protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
-        float volume = 0.8f,string audioPath =null)
-    {
-        if (audioPath != null)
-        {
-            Managers.soundManager.Play(SoundManager.Sound.Effect,audioPath, volume);
-            return;
-        }
-        
-        
-        
-        if (!isBurst)
-        {
-            var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
 
-            if (availableAudioSource != null)
-            {
-                if (isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
-
-        #if UNITY_EDITOR
-                // Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
-                //           $" _currentRandomClipIndex :{_currentRandomClipIndex}");
-        #endif
-                FadeInSound(availableAudioSource, volume);
-            }
-
-#if UNITY_EDITOR
-#endif
-        }
-    }
+//     protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
+//         float volume = 0.6f,string audioPath =null)
+//     {
+//         if (audioPath != null)
+//         {
+//             Managers.soundManager.Play(SoundManager.Sound.Effect,audioPath, volume);
+//             return;
+//         }
+//         
+//         
+//         
+//         if (!isBurst)
+//         {
+//             var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
+//
+//             if (availableAudioSource != null)
+//             {
+//                 if (isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
+//
+//         #if UNITY_EDITOR
+//                 // Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
+//                 //           $" _currentRandomClipIndex :{_currentRandomClipIndex}");
+//         #endif
+//                 FadeInSound(availableAudioSource, volume);
+//             }
+//
+// #if UNITY_EDITOR
+// #endif
+//         }
+//     }
 
     private int _totalCilpCountWhenUseMultipleClips;
 
-    protected void SetRandomClip()
-    {
-        _audioClips = new List<AudioClip>();
+    
 
-        if (_effectClipA != null)
-        {
-            _audioClips.Add(_effectClipA);
-            _totalCilpCountWhenUseMultipleClips++;
-        }
-
-        if (_effectClipB != null)
-        {
-            _audioClips.Add(_effectClipB);
-            _totalCilpCountWhenUseMultipleClips++;
-        }
-
-        if (_effectClipC != null)
-        {
-            _audioClips.Add(_effectClipC);
-            _totalCilpCountWhenUseMultipleClips++;
-        }
-
-        if (_effectClipD != null)
-        {
-            _audioClips.Add(_effectClipD);
-            _totalCilpCountWhenUseMultipleClips++;
-        }
-
-        if (_effectClipD != null)
-        {
-            _audioClips.Add(_effectClipE);
-            _totalCilpCountWhenUseMultipleClips++;
-        }
-    }
-
-    protected AudioClip RandomizeClip()
-    {
-        _currentRandomClipIndex = Random.Range(0, _totalCilpCountWhenUseMultipleClips);
-        var randomClip = _audioClips[_currentRandomClipIndex];
-        return randomClip;
-    }
+   
 
     private int _currentRandomClipIndex;
 
@@ -445,53 +384,19 @@ if (!_isRaySet)
 #endif
         }
 
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/VideoClickEffectSound/" + SCENE_NAME);
+        
         if (psQueue.Count >= emitAmount)
         {
             if (_currentCountForBurst > burstCount && isBurstMode)
             {
                 TurnOnParticle(psQueue, position);
-                FindAndPlayAudio(_burstAudioSources, volume: volumeBurst);
-                _currentCountForBurst = 0;
             }
             else
             {
                 TurnOnParticle(psQueue, position);
-                if (isPlayAltogether)
-                {
-                    FindAndPlayAudio(_audioSourcesA, volume: volumeA);
-                    if (_effectClipB != null) FindAndPlayAudio(_audioSourcesB, volume: volumeB);
-                    if (_effectClipC != null) FindAndPlayAudio(_audioSourcesC, volume: volumeB);
-                    if (_effectClipD != null) FindAndPlayAudio(_audioSourcesC, volume: volumeB);
-                }
+    
 
-                if (!isPlayAltogether)
-                {
-                    FindAndPlayAudio(_audioSourcesA, volume: volumeA);
-
-                    AudioSource[] currentAudioSourceArray = null;
-                    var currentVolume = 0f;
-#if UNITY_EDITOR
-
-#endif
-
-                    switch (currentAudioSourceIndex)
-                    {
-                        case 0:
-                            if (_audioSourcesB != null) FindAndPlayAudio(_audioSourcesB, volume: volumeB);
-
-                            break;
-                        case 1:
-                            if (_audioSourcesC != null) FindAndPlayAudio(_audioSourcesC, volume: volumeC);
-                            break;
-                        case 2:
-                            if (_audioSourcesD != null) FindAndPlayAudio(_audioSourcesD, volume: volumeD);
-                            break;
-                    }
-
-                    currentAudioSourceIndex = ++currentAudioSourceIndex % totalActiveAudioSouceSortCount;
-                }
-
-                _currentCountForBurst++;
             }
         }
     }
@@ -529,8 +434,6 @@ if (!_isRaySet)
 
 
         yield return wait_;
-
-        if (useSubEmitter) FindAndPlayAudio(_subAudioSources, volume: volumeSub);
 
         if (subWait_ != null) yield return subWait_;
 

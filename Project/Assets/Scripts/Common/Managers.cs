@@ -23,6 +23,7 @@ public class Managers : MonoBehaviour
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
     private static A_SettingManager s_SettingManager = new A_SettingManager();
 
+    public static float PROJECTOR_SCREEN_HEIGHT; 
     public static bool isGameStopped { get; set; }
 
     // public static MetaEduLauncher launcher 
@@ -117,11 +118,9 @@ public class Managers : MonoBehaviour
                 go = new GameObject { name = "@Managers" };
             
             GameObject launcher = GameObject.Find("@LauncherRoot");
-      
-            
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             s_SettingManager.Init();
-            
+            PROJECTOR_SCREEN_HEIGHT = settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
             

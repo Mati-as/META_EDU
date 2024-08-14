@@ -197,7 +197,7 @@ public class U_FishOnWater_GameManager : IGameManager
         if (!_isCountNarrationPlaying)
         {
             Managers.soundManager.Play
-                (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}", 0.8f);
+                (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}");
             _isCountNarrationPlaying = true;
             _elapsedToCount = 0;
         }
@@ -630,7 +630,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
 
                 Managers.soundManager.Play(SoundManager.Sound.Effect,
-                    "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1), 0.5f);
+                    "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1));
                 DOVirtual.Float(0, 1, ps.main.startLifetime.constant + 0.5f, _ => { }).OnComplete(() =>
                 {
                     _psPool.Push(ps);

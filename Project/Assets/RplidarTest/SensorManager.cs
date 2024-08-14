@@ -140,10 +140,10 @@ public class SensorManager : MonoBehaviour
 
 
     private Slider _heightSlider;
-    private Slider sensorDistance;
+    private Slider sensorDistanceSlider;
     private Slider _screenRatioSlider;
 
-    private TextMeshProUGUI _TMP_hiehgt;
+    private TextMeshProUGUI _TMP_height;
     private TextMeshProUGUI _TMP_seonsorDistance;
     private TextMeshProUGUI _TMP_ScreenRatio;
 
@@ -168,7 +168,7 @@ public class SensorManager : MonoBehaviour
     private void OnDestroy()
     {
         TopMenuUI.OnRefreshEvent -= RefreshSensor;
-        Destroy(gameObject);
+        Destroy(this.gameObject);
         UnBindLidar();
     }
 
@@ -219,71 +219,28 @@ public class SensorManager : MonoBehaviour
     /// <param name="sliderName"></param>
     /// <param name="slider"></param>
     /// <param name="text"></param>
-    private void InitializeSlider(string sliderName, out Slider slider, out TextMeshProUGUI text)
+    private void InitializeSlider(string sliderName, out Slider slider)
     {
         slider = GameObject.Find(sliderName).GetComponent<Slider>();
-        text = slider.transform.GetComponentInChildren<TextMeshProUGUI>();
+       
     }
 
     private Stack<RectTransform> _sensorDetectedPositionPool;
 
     public void Init()
     {
-        _screenRatio = Resolution_Y / (_height * 10);
+        //_screenRatio = Resolution_Y / (_height * 10);
 #if UNITY_EDITOR
         Debug.Log($"Screen Ration is {_screenRatio}");
 #endif
-        InitializeSlider("HeightSlider", out _heightSlider, out _TMP_hiehgt);
-        InitializeSlider("OffsetYSlider", out sensorDistance, out _TMP_seonsorDistance);
-        InitializeSlider("ScreenRatioSlider", out _screenRatioSlider, out _TMP_ScreenRatio);
-
         
-        ConfigureSlider(_heightSlider, HEIGHT_MAX, value =>
-        {
-             _height = value;
-            _screenRatio = (Resolution_Y / _height * 10);
-            UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-            _TMP_hiehgt.text = "HEIGHT : " + height.ToString("F1");
-        }, HEIGHT_MIN);
-        
-        _TMP_hiehgt.text = $"{nameof(heightCm)}: " + _height.ToString("F1");
-        _TMP_seonsorDistance.text = "Sensor Distance: " + sensorDistanceFromProjection.ToString("F1");
-        _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F1");
-
-        //InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
-    
-
-        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-            sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-        
-        _heightSlider.value = heightCm;
-        sensorDistance.value = sensorDistanceFromProjection;
-        _screenRatioSlider.value = _screenRatio;
+        // InitializeSlider("HeightSlider", out _heightSlider);
+        // InitializeSlider("OffsetYSlider", out sensorDistance);
+        // InitializeSlider("ScreenRatioSlider", out _screenRatioSlider);
+      
+  
         
         
-        ConfigureSlider(sensorDistance, SENSEOR_OFFSET_MAX_VALUE, value =>
-        {
-            sensorDistanceFromProjection = value;
-            _TMP_seonsorDistance.text = "DISTANCE_FROM_SENSOR: " + sensorDistanceFromProjection.ToString("F1");
-            UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-                sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-        }, -2000);
-        
-        ConfigureSlider(_screenRatioSlider, SCREEN_RATIO_MAX, value =>
-        {
-            _screenRatio = value;
-            _screenRatioSlider.minValue = SCREEN_RATIO_MIN;
-            _TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F2");
-        });
-
-        _sensorEditModeButton = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<Button>();
-        _TMP_sensorEditMode = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<TextMeshProUGUI>();
-        _sensorEditModCheckImage = GameObject.Find("EditModeCheckImage").GetComponent<Image>();
-
-        _sensorEditModCheckImage.enabled = isSensorEditMode;
-        _TMP_sensorEditMode.text = isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
-
-        _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
     }
 
     private WaitForSeconds _poolReturnWait;
@@ -356,7 +313,9 @@ public class SensorManager : MonoBehaviour
 #if UNITY_EDITOR
 //        Debug.Log("Get RectRansfrom Pool.");
 #endif
-
+#if UNITY_EDITOR
+        Debug.Log($"sensor: {rectX},{rectY}");
+#endif
         detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
         detectedPosRect.gameObject.SetActive(true);
         StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
@@ -425,16 +384,37 @@ public class SensorManager : MonoBehaviour
         //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
         //  _sensitivitySlider.value = IGameManager.DEFAULT_SENSITIVITY / 2;
 
+        //_TMP_seonsorDistance.text = "Sensor Distance: " + sensorDistanceFromProjection.ToString("F1");
+        //_TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F1");
 
-    
-      
+        //InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
+        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
+            sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
         
-        height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+       // _heightSlider.value = heightCm;
+       // sensorDistanceSlider.value = sensorDistanceFromProjection;
+        //_screenRatioSlider.value = _screenRatio;
+
         
-          
+        //_sensorEditModeButton = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<Button>();
+        //_TMP_sensorEditMode = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<TextMeshProUGUI>();
+       // _sensorEditModCheckImage = GameObject.Find("EditModeCheckImage").GetComponent<Image>();
+
+       // _sensorEditModCheckImage.enabled = isSensorEditMode;
+       // _TMP_sensorEditMode.text = isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
+
+      //  _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
 
         ///////////////////////////////////////////////////////////////////////// (1)
 
+        height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+      //  _heightSlider.value = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+     //   _TMP_height.text = "HEIGHT : " + Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML.ToString("F1");
+        _screenRatio = (Resolution_Y / (height * 10));
+        Debug.Log($"Height Set FROM XML:{Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
+        Debug.Log($"Ratio:{_screenRatio}");
+        
+        
         // y_offset = ((X_length / screen_ratio) / 2) + distance;
         //X_length = _height / THROW_RATIO;
         // Y_length = X_length / (1920 / 1080);
@@ -443,6 +423,24 @@ public class SensorManager : MonoBehaviour
         ///////////////////////// Pool
         _sensorDetectedPositionPool = new Stack<RectTransform>();
         SetPool(_sensorDetectedPositionPool, "Rplidar/FP");
+        
+        // /////////////////////////(3)
+        // ConfigureSlider(_heightSlider, HEIGHT_MAX, value =>
+        // {
+        //     _height = value;
+        //     UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+        //    // _TMP_height.text = "HEIGHT : " + height.ToString("F1");
+        // }, HEIGHT_MIN);
+        //
+        //
+        //
+        // ConfigureSlider(sensorDistanceSlider, SENSEOR_OFFSET_MAX_VALUE, value =>
+        // {
+        //     sensorDistanceFromProjection = value;
+        //     //_TMP_seonsorDistance.text = "DISTANCE_FROM_SENSOR: " + sensorDistanceFromProjection.ToString("F1");
+        //     UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
+        //         sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+        // }, -2000);
     }
 
 
@@ -453,23 +451,23 @@ public class SensorManager : MonoBehaviour
             var datacount = RplidarBinding.GetData(ref _lidarDatas);
 
             if (datacount == 0)
-                Thread.Sleep(2);
+                Thread.Sleep(5);
             else
                 m_datachanged = true;
         }
     }
 
 
-    private int GenerateKey(int angle, int distance)
-    {
-        unchecked
-        {
-            var hash = 17;
-            hash = hash * 100 + angle.GetHashCode();
-            hash = hash * 100 + distance.GetHashCode();
-            return hash;
-        }
-    }
+    // private int GenerateKey(int angle, int distance)
+    // {
+    //     unchecked
+    //     {
+    //         var hash = 17;
+    //         hash = hash * 100 + angle.GetHashCode();
+    //         hash = hash * 100 + distance.GetHashCode();
+    //         return hash;
+    //     }
+    // }
 
 
     private float _timer;
@@ -477,13 +475,7 @@ public class SensorManager : MonoBehaviour
     private void GenerateDectectedPos()
     {
         if (!isMoterStarted) return;
-
-        //  if (_timer < _sensitivitySlider.value)
-        //   {
-        //   _timer += Time.deltaTime;
-        ////     return;
-        //   }
-
+        
         _timer = 0f;
 
 
@@ -491,7 +483,7 @@ public class SensorManager : MonoBehaviour
         {
             for (var i = 0; i < 720; i++)
             {
-                var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
+             //   var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
 
                 //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
 
@@ -520,6 +512,9 @@ public class SensorManager : MonoBehaviour
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                         }
+#if UNITY_EDITOR
+                Debug.Log($"sensor: {sensored_X},{sensored_Y} , {_screenRatio}");
+#endif
             }
 
             m_datachanged = false;

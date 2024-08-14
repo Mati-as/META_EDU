@@ -398,6 +398,8 @@ public class MetaEduLauncher : UI_PopUp
             // 	GetObject((int)UIType.Survey).GetComponent<ScrollRect>().ResetHorizontal();
             // 	break;
         }
+
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click",volume:1f);
     }
 
 

@@ -119,6 +119,69 @@ public class SoundManager : MonoBehaviour
         audioSource.pitch = pitch;
     }
 
+    public bool Play(Sound type, string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return false;
+
+        var audioSource = audioSources[(int)type];
+        if (path.Contains("Audio/") == false)
+            path = string.Format("Audio/{0}", path);
+
+        if(audioSource==null) Debug.LogError("audiosource null exception");
+    
+        if (type == Sound.Bgm)
+        {
+            var audioClip = Resources.Load<AudioClip>(path);
+            if (audioClip == null)
+                return false;
+
+            if (audioSource.isPlaying)
+                audioSource.Stop();
+
+            audioSource.volume = volumes[(int)Sound.Bgm];
+            audioSource.clip = audioClip;
+           
+            audioSource.Play();
+            return true;
+        }
+
+        if (type == Sound.Effect)
+        {
+            var audioClip = GetAudioClip(path);
+            if (audioClip == null)
+                return false;
+
+            audioSource.volume = volumes[(int)Sound.Effect];
+            
+            audioSource.PlayOneShot(audioClip);
+            return true;
+        }
+
+        if (type == Sound.Narration)
+        {
+            var audioClip = GetAudioClip(path);
+            if (audioClip == null)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"narration clip is null{path}");
+#endif
+                return false;
+                
+            }
+            
+
+            audioSource.volume = volumes[(int)Sound.Narration];
+            audioSource.clip = audioClip;
+          
+            audioSource.PlayOneShot(audioClip);
+            return true;
+        }
+
+        return false;
+    }
+    
+    
     public bool Play(Sound type, string path, float volume = 1.0f, float pitch = 1.0f)
     {
         if (string.IsNullOrEmpty(path))
@@ -129,8 +192,10 @@ public class SoundManager : MonoBehaviour
             path = string.Format("Audio/{0}", path);
 
         if(audioSource==null) Debug.LogError("audiosource null exception");
+    
+        
         audioSource.volume = volume;
-
+        
         if (type == Sound.Bgm)
         {
             var audioClip = Resources.Load<AudioClip>(path);
@@ -140,6 +205,7 @@ public class SoundManager : MonoBehaviour
             if (audioSource.isPlaying)
                 audioSource.Stop();
 
+            
             audioSource.clip = audioClip;
             audioSource.pitch = pitch;
             audioSource.Play();
@@ -152,6 +218,7 @@ public class SoundManager : MonoBehaviour
             if (audioClip == null)
                 return false;
 
+         
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(audioClip);
             return true;
@@ -170,6 +237,7 @@ public class SoundManager : MonoBehaviour
             }
             
 
+        
             audioSource.clip = audioClip;
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(audioClip);
