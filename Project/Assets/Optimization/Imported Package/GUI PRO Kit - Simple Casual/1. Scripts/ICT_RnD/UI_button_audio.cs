@@ -10,7 +10,7 @@ public class UI_button_audio : MonoBehaviour, IPointerClickHandler, IPointerExit
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            Manager_audio.instance.Get_click();
+            //Manager_audio.instance.Get_click();
             //Cursor.SetCursor(Manager_image.instance.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
         }
     }

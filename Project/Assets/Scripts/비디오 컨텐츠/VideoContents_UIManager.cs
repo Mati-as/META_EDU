@@ -40,7 +40,7 @@ public class VideoContents_UIManager : UI_Base
         
         BindText(typeof(UI_Type));
         
-        Utils.LoadXML(ref _xmlAsset,ref _xmlDoc, _path);
+        Utils.LoadXML(ref _xmlAsset,ref _xmlDoc, _path,ref _path);
         var headNode = _xmlDoc.SelectSingleNode($"//StringData[@ID='{SceneManager.GetActiveScene().name + "_Head"}']");
         var headMessage = headNode.Attributes["string"].Value;
         GetText((int)UI_Type.Head).text = headMessage;

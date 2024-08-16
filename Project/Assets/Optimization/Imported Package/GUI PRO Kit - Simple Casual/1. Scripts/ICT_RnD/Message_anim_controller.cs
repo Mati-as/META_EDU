@@ -9,10 +9,11 @@ public class Message_anim_controller : MonoBehaviour
 {
     private List<string> Animation_clip = new List<string>();
     private Animation Message_anim;
-    public Text Message_text;
-    public Text Message_text_sub;
-
-    // underground UI에서 구독
+    
+    [HideInInspector]public Text Message_text;
+    
+    [HideInInspector] public Text Message_text_sub;
+    
     public static event Action onIntroUIOff; 
     //0 : On, 1 : Off
     /*
@@ -24,13 +25,11 @@ public class Message_anim_controller : MonoBehaviour
      */
     void Start()
     {
-       
-        
         Message_anim = this.GetComponent<Animation>();
         Init_Animation();
         Animation_On();
 #if UNITY_EDITOR
-        Debug.Log("UI Animation On");
+        //Debug.Log("UI Animation On");
 #endif
 
         UI_Scene_Button.onBtnShut -= DeactivateUI;
@@ -45,14 +44,13 @@ public class Message_anim_controller : MonoBehaviour
     public void Animation_On()
     {
         Message_anim.Play(Animation_clip[0]);
-      //  StartCoroutine(DeactivateAfterDelay());
     }
     public void Animation_Off()
     {
-        Message_anim.Play(Animation_clip[1]);
-        StartCoroutine(Active_false());
+        var isAnimPlayed = Message_anim.Play(Animation_clip[1]);
+        if(isAnimPlayed) StartCoroutine(Active_false());
 #if UNITY_EDITOR
-        Debug.Log("UI Animation Off");
+       
 #endif
     }
 
@@ -82,31 +80,13 @@ public class Message_anim_controller : MonoBehaviour
     IEnumerator Active_false()
     {
         yield return new WaitForSeconds(1f);
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
     
-
-//     IEnumerator DeactivateAfterDelay()
-//     {
-// #if UNITY_EDITOR
-//         Debug.Log("UI Animation Off");
-// #endif
-//        // yield return new WaitForSeconds(_autoShutDelay);
-//         onIntroUIOff?.Invoke();
-//         
-//     }
-
-
     private void DeactivateUI()
     {
         Animation_Off();
         
     }
-    //IEnumerator Active_false_time(float timer_1, float timer_2)
-    //{
-    //    yield return new WaitForSeconds(timer_1);
-    //    Message_anim.Play(Animation_clip[1]);
-    //    yield return new WaitForSeconds(timer_2);
-    //    this.gameObject.SetActive(false);
-    //}
+
 }

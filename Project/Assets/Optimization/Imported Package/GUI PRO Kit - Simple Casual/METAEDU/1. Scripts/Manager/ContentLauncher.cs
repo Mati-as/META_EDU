@@ -140,12 +140,12 @@ public class ContentLauncher : MonoBehaviour
         Prev_page.SetActive(false);
         Next_page.SetActive(true);
 
-        //¾ÀÀÌ ÀüÈ¯µÉ °æ¿ì Nextpage´Â ½ÇÇàÇÏÁö ¾ÊÀ½
+        //ì”¬ì´ ì „í™˜ë  ê²½ìš° NextpageëŠ” ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
     }
 
     public void Button_Save_Tool()
     {
-        //ÀúÀÛµµ±¸ ÀúÀå¿©ºÎ
+        //ì €ì‘ë„êµ¬ ì €ì¥ì—¬ë¶€
         Is_Toolsaved = true;
 
         Next_page = Home;
@@ -178,7 +178,7 @@ public class ContentLauncher : MonoBehaviour
 
     public void Button_Home()
     {
-        //ÄÜÅÙÃ÷ ½ÇÇà ÁßÀÏ °æ¿ì ÇØ´ç ÄÜÅÙÃ÷ ºñÈ°¼ºÈ­ ±â´É ±¸Çö ÇÊ¿ä
+        //ì½˜í…ì¸  ì‹¤í–‰ ì¤‘ì¼ ê²½ìš° í•´ë‹¹ ì½˜í…ì¸  ë¹„í™œì„±í™” ê¸°ëŠ¥ êµ¬í˜„ í•„ìš”
         Next_page = Home;
         UI_change();
     }
@@ -210,15 +210,15 @@ public class ContentLauncher : MonoBehaviour
         {
             //Run_Contents();
             Message_OK.SetActive(true);
-            MAC.Change_text("ÁØºñ Áß ÀÔ´Ï´Ù");
-            MAC.Change_text_sub(" È®ÀÎ ¹öÆ°À» ´­·¯ÁÖ¼¼¿ä");
+            MAC.Change_text("ì¤€ë¹„ ì¤‘ ì…ë‹ˆë‹¤");
+            MAC.Change_text_sub(" í™•ì¸ ë²„íŠ¼ì„ ëˆŒëŸ¬ì£¼ì„¸ìš”");
         }
         else if (char_mode == 'C')
         {
             //Run_Contents();
             Message_OK.SetActive(true);
-            MAC.Change_text("ÁØºñ Áß ÀÔ´Ï´Ù");
-            MAC.Change_text_sub(" È®ÀÎ ¹öÆ°À» ´­·¯ÁÖ¼¼¿ä");
+            MAC.Change_text("ì¤€ë¹„ ì¤‘ ì…ë‹ˆë‹¤");
+            MAC.Change_text_sub(" í™•ì¸ ë²„íŠ¼ì„ ëˆŒëŸ¬ì£¼ì„¸ìš”");
         }
     }
     public void Button_BackToMainscene(int page)
@@ -249,11 +249,11 @@ public class ContentLauncher : MonoBehaviour
 
     public void Run_Contents()
     {
-        //»óÅÂ ¹İÈ¯
+        //ìƒíƒœ ë°˜í™˜
         Is_Toolsaved = false;
 
         //Next_page = Monitoring_C4;
-        //MAC.Change_text("(Å×½ºÆ®)Ä£±¸µé ¿Á¼ö¼ö¿¡ ´ëÇØ ¾Ë¾Æº¼±î¿ä?");
+        //MAC.Change_text("(í…ŒìŠ¤íŠ¸)ì¹œêµ¬ë“¤ ì˜¥ìˆ˜ìˆ˜ì— ëŒ€í•´ ì•Œì•„ë³¼ê¹Œìš”?");
         //MAC.Animation_On_Off();
 
         Next_page = Contents;
@@ -267,14 +267,14 @@ public class ContentLauncher : MonoBehaviour
         {
             //Debug.Log("CONTENT 2");
             Message_OK.SetActive(true);
-            MAC.Change_text("ÁØºñ Áß ÀÔ´Ï´Ù");
-            MAC.Change_text_sub(" È®ÀÎ ¹öÆ°À» ´­·¯ÁÖ¼¼¿ä");
+            MAC.Change_text("ì¤€ë¹„ ì¤‘ ì…ë‹ˆë‹¤");
+            MAC.Change_text_sub(" í™•ì¸ ë²„íŠ¼ì„ ëˆŒëŸ¬ì£¼ì„¸ìš”");
         }
         else if (content_func == 3)
         {
             Message_OK.SetActive(true);
-            MAC.Change_text("ÁØºñ Áß ÀÔ´Ï´Ù");
-            MAC.Change_text_sub(" È®ÀÎ ¹öÆ°À» ´­·¯ÁÖ¼¼¿ä");
+            MAC.Change_text("ì¤€ë¹„ ì¤‘ ì…ë‹ˆë‹¤");
+            MAC.Change_text_sub(" í™•ì¸ ë²„íŠ¼ì„ ëˆŒëŸ¬ì£¼ì„¸ìš”");
         }
         else
         {
@@ -284,7 +284,7 @@ public class ContentLauncher : MonoBehaviour
     }
 
 
-    //ÀúÀÛ µµ±¸, ÇĞ»ı ÀúÀå µ¥ÀÌÅÍ È®ÀÎ
+    //ì €ì‘ ë„êµ¬, í•™ìƒ ì €ì¥ ë°ì´í„° í™•ì¸
     public void Button_Message_Contents()
     {
         if (Is_Toolsaved)
@@ -316,7 +316,7 @@ public class ContentLauncher : MonoBehaviour
         else
         {
             Message_OK.SetActive(true);
-            //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+            //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
         }
     }
 
@@ -327,28 +327,28 @@ public class ContentLauncher : MonoBehaviour
         if (Is_Studentdatasaved)
         {
             Message_OK.SetActive(true);
-            //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+            //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
         }
         else
         {
             Message_OK.SetActive(true);
-            //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+            //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
         }
     }
     public void Button_Message_Login_StudentNotSelect()
     {
         Message_OK.SetActive(true);
-        //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+        //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
     }
     public void Button_Message_Login_StudentDataSaved()
     {
         Message_OK.SetActive(true);
-        //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+        //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
     }
     public void Button_Message_Login_FieldEmpty()
     {
         Message_OK.SetActive(true);
-        //ÅØ½ºÆ® º¯°æ ÇÔ¼ö Ãß°¡
+        //í…ìŠ¤íŠ¸ ë³€ê²½ í•¨ìˆ˜ ì¶”ê°€
     }
 
 
@@ -369,11 +369,11 @@ public class ContentLauncher : MonoBehaviour
     }
     void Dummy_setting_content()
     {
-        //ÄÜÅÙÃ÷ ½ÇÇà
+        //ì½˜í…ì¸  ì‹¤í–‰
     }
     void Dummy_setting_content_Func()
     {
-        //ÄÜÅÙÃ÷ ³»ºÎ ±â´É ½ÇÇà
+        //ì½˜í…ì¸  ë‚´ë¶€ ê¸°ëŠ¥ ì‹¤í–‰
     }
 
     void Init_page()
@@ -392,7 +392,7 @@ public class ContentLauncher : MonoBehaviour
         Message_OK = Message_UI.transform.GetChild(1).gameObject;
         Message_Intro = Message_UI.transform.GetChild(2).gameObject;
 
-        //Message_Intro setting, Inspector¿¡¼­ scale 0,0,0À¸·Î º¯°æ
+        //Message_Intro setting, Inspectorì—ì„œ scale 0,0,0ìœ¼ë¡œ ë³€ê²½
         //Message_Intro.SetActive(true);
         MAC = Message_OK.GetComponent<Message_anim_controller>();
 

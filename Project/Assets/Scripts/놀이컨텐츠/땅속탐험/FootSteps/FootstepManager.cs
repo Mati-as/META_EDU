@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 #if UNITY_EDITOR
 using MyCustomizedEditor;
 #endif
@@ -191,6 +188,8 @@ public class FootstepManager : IGameManager
     protected override void Init()
     {
         base.Init();
+        DOTween.Init();
+        DOTween.SetTweensCapacity(2000,100);
         
         _audioSource = GetComponent<AudioSource>();
         
@@ -228,24 +227,21 @@ public class FootstepManager : IGameManager
 
     private void OnDestroy()
     {
-        RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 
 
-    public static string currentlyClickedObjectName;
+    public string currentlyClickedObjectName { get; private set; }
 
     
 
     private RaycastHit[] hits;
 
     //public void OnMouseClicked(InputAction.CallbackContext context)
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
-#if UNITY_EDITOR
-        Debug.Log($"{gameObject.name} : OnRaySynced invoked");
-#endif
+
         hits = Physics.RaycastAll(GameManager_Ray);
         
         foreach (var hit in hits)
@@ -253,11 +249,12 @@ public class FootstepManager : IGameManager
 
             var obj = hit.transform.gameObject;
             var clickedObject = obj;
-            var fC = obj.GetComponent<FootstepController>();
+            FootstepController fc;
+            obj.TryGetComponent(out fc);
 #if UNITY_EDITOR
             Debug.Log($"raycasted object name :{obj}");
 #endif
-            currentlyClickedObjectName = fC.animalNameToCall;
+            if(fc!=null)currentlyClickedObjectName = fc.animalNameToCall;
             InspectObject(clickedObject);
         }
     }
@@ -273,17 +270,23 @@ public class FootstepManager : IGameManager
         Debug.Log("Clicked on: " + obj.name);
 #endif
         var footstepController = obj.GetComponent<FootstepController>();
+        
         if (footstepController != null)
         {
             currentFootstepGroupOrder = footstepController.footstepGroupOrder - 1;
-            
-            if(footstepController.animalNameToCall!=null && currentlyClickedObjectName!=string.Empty || currentlyClickedObjectName == "")
-                
+
+            if (footstepController.animalNameToCall != null && currentlyClickedObjectName != string.Empty ||
+                currentlyClickedObjectName == "")
+            {
                 undergroundUIManager.popUpUIRectTmp.text = currentlyClickedObjectName;
+                OnFootstepClicked?.Invoke();
+                DoNext();
+                footstepController.OnButtonClicked();
+            }   
+               
             
             
-            OnFootstepClicked?.Invoke();
-            DoNext();
+          
         }
     }
 
@@ -457,21 +460,6 @@ public class FootstepManager : IGameManager
         return waitForSecondsCache[seconds];
     }
 
-    
-    //pageFinishToggle()에서 처리하도록 로직 변경, 함수 미사용 중 11/22/23
-    // private IEnumerator TurnOnNextGroupFirstFootstep()
-    // {
-    //     if (currentFootstepGroupOrder % 3 == 0)
-    //         //그룹이 넘어갈때 시간 간격
-    //         yield return GetWaitForSeconds(12.5f);
-    //     else
-    //         // 동일 그룹 내 발자국 끼리의 시간간격
-    //         yield return GetWaitForSeconds(8.5f);
-    //     
-    //     // _audioSource.clip = footstepAppearingSound;
-    //     // _audioSource.Play();
-    //    
-    // }
     
 
     public AudioClip footstepAppearingSound;

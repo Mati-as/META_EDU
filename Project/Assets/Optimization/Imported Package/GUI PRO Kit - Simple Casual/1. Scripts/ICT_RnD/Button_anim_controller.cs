@@ -11,6 +11,7 @@ public class Button_anim_controller : MonoBehaviour, IPointerEnterHandler, IPoin
     public void OnPointerEnter(PointerEventData eventData)
     {
         Button_anim.Play(Animation_clip[0]);
+        
     }
 
     public void OnPointerExit(PointerEventData eventData)

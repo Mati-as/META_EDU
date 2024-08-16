@@ -35,7 +35,7 @@ public class StarryNight_StarlightController : IGameManager
         }
     }
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         return;
     }

@@ -8,21 +8,21 @@ public class Button_audio_controller : MonoBehaviour, IPointerEnterHandler, IPoi
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        Manager_audio.instance.Get_click();
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            Cursor.SetCursor(Managers.cursorImageManager.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
+        }
     }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        
+       
+        Cursor.SetCursor(Managers.cursorImageManager.Get_hand_image(), Vector2.zero, CursorMode.ForceSoftware);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        
+        Cursor.SetCursor(Managers.cursorImageManager.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 }

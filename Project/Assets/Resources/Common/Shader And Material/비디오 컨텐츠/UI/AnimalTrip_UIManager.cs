@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,81 +11,75 @@ using UnityEngine.Serialization;
 public class AnimalTrip_UIManager : MonoBehaviour
 {
     private readonly Dictionary<float, WaitForSeconds> waitForSecondsCache = new();
+
     private WaitForSeconds GetWaitForSeconds(float seconds)
     {
         if (!waitForSecondsCache.ContainsKey(seconds)) waitForSecondsCache[seconds] = new WaitForSeconds(seconds);
         return waitForSecondsCache[seconds];
     }
-    
-    
-    
-    [Header("Reference")]  [Space(10f)]
-    [SerializeField]
+
+    [Header("Reference")] [Space(10f)] [SerializeField]
     private StoryUIController storyUIController;
-  //  [SerializeField]
-  //  private TextBoxUIController textBoxUIController;
-  //  [SerializeField]
-  //  private UIAudioController uiAudioController;
-    
-    [Header("Overall Settings")]  [Space(10f)]
+
+    [Header("Overall Settings")] [Space(10f)]
     public float startTimeOffsetSeconds; // 게임시작후 몇 초 후 UI재생할 건지
+
     public float textPrintingSpeed;
     public Dictionary<string, string> animalNameToKorean = new();
     public string roundInstruction;
-  
-    [SerializeField]
-    private TMP_Text instructionTMP;
+
+    [SerializeField] private TMP_Text instructionTMP;
     [Header("On Correct")] [Space(10f)] public float onCorrectOffsetSeconds;
     public string onCorrectMessage;
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
     [FormerlySerializedAs("gameManager")]
     [FormerlySerializedAs("_gameManager")]
-    [Header("Reference")] [Space(10f)] 
+    [Header("Reference")]
+    [Space(10f)]
     [SerializeField]
     private AnimalTrip_GameManager animalTripGameManager;
-    
-    
 
-    
+
     // UI status---------------------------
-     /*
-     게임 플레이와 직접적으로 연관 없는 플레이 시작 시 인트로 UI에 관련한 Status입니다.
-     Lerp, UI종료와 UI의 안의 RectTransform 객체의 움직임은 UI Status를 기준으로합니다.
-     */
-     
-     
+    /*
+    게임 플레이와 직접적으로 연관 없는 플레이 시작 시 인트로 UI에 관련한 Status입니다.
+    Lerp, UI종료와 UI의 안의 RectTransform 객체의 움직임은 UI Status를 기준으로합니다.
+    */
+
+
     public static event Action HowToPlayUIFinishedEvent;
     public static event Action StoryUIQuitEvent;
     public static event Action GameFinishedUIEvent;
     public static bool isHowToPlayUIFinished;
-    
+
     /// <summary>
-    /// 버튼이벤트에서 컨트롤 할 예정.
+    ///     버튼이벤트에서 컨트롤 할 예정.
     /// </summary>
     /// <param name="value"></param>
     public static void SetFalseAndTriggerStartButtonEvent()
     {
         isHowToPlayUIFinished = true;
     }
-    
-    
+
+
     /// <summary>
-    /// UI 버튼
+    ///     UI 버튼
     /// </summary>
     public static void InvokeFinishIntroUI()
     {
         HowToPlayUIFinishedEvent?.Invoke();
     }
+
     public static void InvokeStoryUIQuitEvent()
     {
         StoryUIQuitEvent?.Invoke();
     }
+
     public static void InvokeGameFinishedUIEvent()
     {
         GameFinishedUIEvent?.Invoke();
     }
-    
 
 
     /*
@@ -98,7 +91,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
     private Coroutine _coroutineC;
     private Coroutine _coroutineD;
     private Coroutine[] _coroutines;
-    
+
     private void Awake()
     {
         SetCoroutine();
@@ -108,10 +101,8 @@ public class AnimalTrip_UIManager : MonoBehaviour
 
     private void Start()
     {
-        foreach(AnimalData animalData in animalTripGameManager.allAnimals)
-        {
-            animalNameToKorean.Add(animalData.englishName,animalData.koreanName);
-        }
+        foreach (var animalData in animalTripGameManager.allAnimals)
+            animalNameToKorean.Add(animalData.englishName, animalData.koreanName);
     }
 
     private void OnDestroy()
@@ -125,7 +116,6 @@ public class AnimalTrip_UIManager : MonoBehaviour
     private UnityEvent _changeUI;
 
 
-    
     //---------------------------------------------------
     private void SetCoroutine()
     {
@@ -134,33 +124,26 @@ public class AnimalTrip_UIManager : MonoBehaviour
         _coroutines[1] = _coroutineB;
         _coroutines[2] = _coroutineC;
         _coroutines[3] = _coroutineD;
-
     }
-    
+
     private void StopCoroutineWithNullCheck(Coroutine[] coroutines)
     {
         Debug.Log("코루틴 종료");
-        foreach (Coroutine cR in coroutines)
-        {
-            if (cR  != null)
-            {
+        foreach (var cR in coroutines)
+            if (cR != null)
                 StopCoroutine(cR);
-            }
-        }
     }
 
     public void PlayOnCorrectMessage()
     {
-       
         _isCorrectMessagePlaying = false;
         Debug.Log("정답이에요 문구 업데이트");
         if (_isCorrectMessagePlaying == false)
         {
-            
             _isCorrectMessagePlaying = true; //중복재생 방지
             onCorrectMessage = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}";
-                               //$"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
-            
+            //$"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
+
             _coroutines[0] = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
         }
     }
@@ -168,9 +151,10 @@ public class AnimalTrip_UIManager : MonoBehaviour
     public void PlayQuizMessage()
     {
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
-     
 
-        if (AnimalTrip_GameManager.isGameStarted && _isQuizPlaying == false && !AnimalTrip_GameManager.isCorrected && !_isCorrectMessagePlaying)
+
+        if (AnimalTrip_GameManager.isGameStarted && _isQuizPlaying == false && !AnimalTrip_GameManager.isCorrected &&
+            !_isCorrectMessagePlaying)
         {
             StopCoroutineWithNullCheck(_coroutines);
 #if DEFINE_TEST
@@ -178,7 +162,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}" 
+            roundInstruction = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}"
                                + $"{EulOrReul(animalNameToKorean[AnimalTrip_GameManager.answer])}" + " 찾아보세요";
             _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
@@ -230,7 +214,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
     }
 
     private Coroutine _typeInCoroutine;
-    
+
     // 주어진 문자가 한글 범위 내에 있고, 받침이 있다면 true를 반환합니다.
     // 주어진 문자열의 마지막 문자가 한글 범위 내에 있고, 받침이 있다면 true를 반환합니다.
     public string EulOrReul(string str)
@@ -243,27 +227,26 @@ public class AnimalTrip_UIManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(str)) return false;
 
-        char c = str[str.Length - 1];
+        var c = str[str.Length - 1];
         if (c < '가' || c > '힣') return false;
 
-        int charCode = (int)c - 0xAC00;
-        int jong = charCode % 28;
+        var charCode = c - 0xAC00;
+        var jong = charCode % 28;
 
         return jong != 0;
     }
-    
+
     private void OnGameStart()
     {
         //StoryUI 비활성화 상태이기에 UI Manager가 활성화 및 해당함수 호출
-        _coroutineC =  StartCoroutine(ActivateStoryBUIController());
+        _coroutineC = StartCoroutine(ActivateStoryBUIController());
     }
 
-    
-    
 
     public static event Action GameFinishUIActivateEvent;
     public static event Action SecondStoryUIActivateEvent;
-    IEnumerator ActivateStoryBUIController()
+
+    private IEnumerator ActivateStoryBUIController()
     {
         yield return GetWaitForSeconds(storyUIController.waitTimeForSecondActivation);
         storyUIController.gameObject.SetActive(true);
@@ -275,10 +258,8 @@ public class AnimalTrip_UIManager : MonoBehaviour
     private void OnRoundReady()
     {
         InitializeMessage();
-        
-       
     }
-   
+
     private void OnRoundStarted()
     {
         PlayQuizMessage();
@@ -289,19 +270,18 @@ public class AnimalTrip_UIManager : MonoBehaviour
         Debug.Log("OnCorrerctMessage");
         PlayOnCorrectMessage();
     }
-    
+
     private void OnRoundFinished()
     {
-        
     }
-    
+
     private void OnGameFinished()
     {
         // StartCoroutine(InvokeFinishUI()); //AudioUI가 StoryUI컨트롤
         PlayFinishMessage();
     }
 
-    
+
     // private IEnumerator InvokeFinishUI()
     // {
     //     yield return GetWaitForSeconds(storyUIController.waitTimeForFirstActivation);
@@ -310,13 +290,13 @@ public class AnimalTrip_UIManager : MonoBehaviour
     //     GameFinishUIActivateEvent?.Invoke();
     //
     // }
-    
-    
+
+
     private void SubscribeGameManagerEvents()
     {
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
         AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
-        
+
         AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
         AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
 
@@ -328,10 +308,11 @@ public class AnimalTrip_UIManager : MonoBehaviour
 
         AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
         AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
-        
+
         AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
         AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
     }
+
     private void UnsubscribeGamaManagerEvents()
     {
         AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
@@ -341,6 +322,4 @@ public class AnimalTrip_UIManager : MonoBehaviour
         AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
         AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
     }
-
-
 }

@@ -5,11 +5,11 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
 {
-    public RplidarTest_Ray rplidar;
+    public SensorManager rplidar;
 
     public bool UI_ONOFF = false;
     public bool BALL_ONOFF = false;
-    public bool SF_ONOFF = false;
+    public bool SF_ONOFF = false; // 기본값 false로 변경 0516/24
 
     private Text txt;
     public void Start()
@@ -17,7 +17,10 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
         txt = this.transform.GetChild(0).gameObject.GetComponent<Text>();
         
         // 2.28 임시로 코드 추가 (민석)
-        rplidar = GameObject.Find("Lidar_object (Scripts)").GetComponent<RplidarTest_Ray>();
+        rplidar = GameObject.FindWithTag("RaySynchronizer").GetComponent<SensorManager>();
+
+        
+       
     }
     public void OnPointerClick(PointerEventData eventData)
     {

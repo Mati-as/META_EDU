@@ -27,51 +27,54 @@ public class StarryNight_IntroCamController : MonoBehaviour
         onLightOut -= OnLightOut;
         onLightOut += OnLightOut;
 
-        UI_Scene_Button.onBtnShut -= StartAnimation;
-        UI_Scene_Button.onBtnShut += StartAnimation;
-        
+        // UI_Scene_Button.onBtnShut -= StartAnimation;
+        // UI_Scene_Button.onBtnShut += StartAnimation;
+     
+        DOVirtual.Float(0, 0, 0.1f, _ => { }).OnComplete(() =>
+        {
+            StartAnimation();
+        });
         transform.DOLookAt(lookAtTarget.position, 0.01f);
     }
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnShut -= StartAnimation;
+     //   UI_Scene_Button.onBtnShut -= StartAnimation;
         onLightOut -= OnLightOut;
     }
 
     private void StartAnimation()
     {
         _path = new Vector3[pathTransforms.Length];
-
         for (var i = 0; i < pathTransforms.Length; i++) _path[i] = pathTransforms[i].position;
 
 
         transform.DOLookAt(lookAtTarget.position, 0.01f);
-
         transform.DOPath(_path, 6, PathType.CatmullRom, resolution: 5)
             .SetEase(Ease.OutQuint)
             .SetLookAt(lookAtTarget, true)
             .OnComplete(() =>
             {
                 var _defaultExposure = colorAdjustments.postExposure.value;
-
-                DOVirtual.Float(_defaultExposure, -2, 2.5f, value => { SetPostExposure(value); }).OnComplete(() => { });
-
-                DOVirtual.Float(0, 1, 2.3f, value =>
+                DOVirtual.Float(_defaultExposure, -2, 1f, value =>
                 {
-                    var newPath = new Vector3[2];
-                    newPath[0] = transform.position;
-                    newPath[1] = transform.position - Vector3.forward * 20;
+                    SetPostExposure(value);
+                }).OnComplete(() => { });
 
-                    transform.DOPath(newPath, 1.0f);
+                DOVirtual.Float(0, 1, 1f, value => { SetVignetteIntensity(value); })
+                    .OnStart(() =>
+                    {
+                        var newPath = new Vector3[2];
+                        newPath[0] = transform.position;
+                        newPath[1] = transform.position - Vector3.forward * 20;
 
-                    SetVignetteIntensity(value);
-                }).OnComplete(() =>
-                {
-                    onLightOut?.Invoke();
-                    onGameIsReady?.Invoke();
-                });
-            }).SetDelay(1.1f);
+                        transform.DOPath(newPath, 1.0f);
+                    }).OnComplete(() =>
+                    {
+                        onLightOut?.Invoke();
+                        onGameIsReady?.Invoke();
+                    });
+            }).SetDelay(0.5f);
     }
 
     private void Start()

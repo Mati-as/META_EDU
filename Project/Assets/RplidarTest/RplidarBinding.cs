@@ -15,46 +15,52 @@ public struct LidarData
     public uint quality;
 };
 
+
 public class RplidarBinding
 {
+    // 구형버전, 빨강센서
+    // private const string DLL_FILENAME = "RplidarCppLegacy.dll";
+    // private const string DLL_PATH = "/Plugins_Legacy/x86_64";
+    //
+     // 신형버전, 보라색센서 (모델명: A2M12)
+     private const string DLL_FILENAME = "RplidarCppA2M12.dll";
+     private const string DLL_PATH = "/Plugins_A2M12/x86_64/";
+
 
     static RplidarBinding()
     {
         var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
-#if UNITY_EDITOR_64
-        currentPath += Path.PathSeparator + Application.dataPath + "/Plugins/x86_64/";
-#elif UNITY_EDITOR_32
-        currentPath += Path.PathSeparator + Application.dataPath+ "/Plugins/x86/";
-#endif
+        currentPath += Path.PathSeparator + Application.dataPath + DLL_PATH;
+        Debug.Log($"Filename: {DLL_FILENAME}, current Path Of Lida: {currentPath}");
         Environment.SetEnvironmentVariable("PATH", currentPath);
     }
 
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern int OnConnect(string port);
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern bool OnDisconnect();
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern bool StartMotor();
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern bool EndMotor();
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern bool StartScan();
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern bool EndScan();
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)] 
     public static extern bool ReleaseDrive();
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     public static extern int GetLDataSize();
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     private static extern void GetLDataSampleArray(IntPtr ptr);
 
-    [DllImport("RplidarCpp.dll")]
+    [DllImport(DLL_FILENAME)]
     private static extern int GrabData(IntPtr ptr);
 
     public static LidarData[] GetSampleData()

@@ -95,7 +95,7 @@ public class HandFlip2_GameManager : IGameManager
             
             if (!_isCountNarrationPlaying)
             {
-                Managers.Sound.Play
+                Managers.soundManager.Play
                     (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count"+$"{(int)_remainTime}",0.8f);
                 _isCountNarrationPlaying = true;
                 _elapsedToCount = 0;
@@ -120,7 +120,7 @@ public class HandFlip2_GameManager : IGameManager
 
     private void OnRoundFinished()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
         
         
         //그만! 이후 이긴팀 판정까지 걸리는 시간.
@@ -185,7 +185,7 @@ public class HandFlip2_GameManager : IGameManager
         yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
         UpdateResultTMP(String.Empty,String.Empty,String.Empty);
         _tmp.text = "놀이를 다시 준비하고 있어요";
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
        
         _tmp.text = "";
@@ -350,7 +350,7 @@ public class HandFlip2_GameManager : IGameManager
 
     private Vector3 _defaultPosition; 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
 
@@ -387,7 +387,7 @@ public class HandFlip2_GameManager : IGameManager
                 .DOScale(print.defaultSize, 0.4f)
                 .OnStart(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
                         0.25f);
 
                 })
@@ -411,7 +411,7 @@ public class HandFlip2_GameManager : IGameManager
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
                 (printData.seq.IsActive() || printData.isCurrentlyFlipping))
             {
-                Debug.Log("The seq is currently Active! Click later..");
+               // Debug.Log("The seq is currently Active! Click later..");
                 return;
             }
 
@@ -426,12 +426,12 @@ public class HandFlip2_GameManager : IGameManager
                     printData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
                     // Toggle 
                     var targetColor = printData.currentColor == ColorA ? ColorB : ColorA;
-                    Debug.Log($"Changing to {(targetColor == ColorA ? "ColorA" : "ColorB")}");
+                   // Debug.Log($"Changing to {(targetColor == ColorA ? "ColorA" : "ColorB")}");
                     printData.currentColor = targetColor;
 
                     // Apply the color
@@ -467,7 +467,7 @@ public class HandFlip2_GameManager : IGameManager
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
                 (printData.seq.IsActive() || printData.isCurrentlyFlipping))
             {
-                Debug.Log("The seq is currently Active! Click later..");
+               // Debug.Log("The seq is currently Active! Click later..");
                 return;
             }
 
@@ -482,7 +482,7 @@ public class HandFlip2_GameManager : IGameManager
                     printData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
                     // Toggle 
@@ -503,7 +503,7 @@ public class HandFlip2_GameManager : IGameManager
             printData.seq.Play();
         }
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
     }
 }
 

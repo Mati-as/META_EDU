@@ -8,11 +8,12 @@ using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
+    [FormerlySerializedAs("crabEffectManager")]
     [FormerlySerializedAs("crabVideoGameManager")]
     [FormerlySerializedAs("crab_effectController")]
     [Header("Reference")]
     [SerializeField]
-    private CrabEffectManager crabEffectManager;
+    private VidoContentGameManager crabVidoContentGameManager;
 
     [FormerlySerializedAs("_videoContentPlayer")] [SerializeField]
     private CrabVideoGameManager videoGameManager;
@@ -119,8 +120,8 @@ public class Crab_AnimalPathController : MonoBehaviour
         // inPath = new Vector3[2];
         _distancesFromStartPoint = new float[4];
 
-        EffectManager.OnClickInEffectManager -= CrabOnClicked;
-        EffectManager.OnClickInEffectManager += CrabOnClicked;
+        VidoContentGameManager.OnClickInEffectManager -= CrabOnClicked;
+        VidoContentGameManager.OnClickInEffectManager += CrabOnClicked;
 
         CrabVideoGameManager.onCrabAppear -= OnCrabAppear;
         CrabVideoGameManager.onCrabAppear += OnCrabAppear;
@@ -146,7 +147,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     private void OnCrabAppear()
     {
         
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
             ,Random.Range(0.1f,0.2f));
         
         foreach (var crab in _activeCrabPool)
@@ -200,7 +201,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void OnDestroy()
     {
-        EffectManager.OnClickInEffectManager -= CrabOnClicked;
+        VidoContentGameManager.OnClickInEffectManager -= CrabOnClicked;
     }
 
 
@@ -227,7 +228,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         for (var i = (int)StartDirection.Upper_Left; i < appearablePoints.Length; ++i)
             _distancesFromStartPoint[i] =
-                Vector2.Distance(crabEffectManager.currentHitPoint, appearablePoints[i].position);
+                Vector2.Distance(crabVidoContentGameManager.currentHitPoint, appearablePoints[i].position);
 
         _closestStartPointIndex = (int)StartDirection.Upper_Left;
 
@@ -346,7 +347,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crabEffectManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
+            .DOMove(crabVidoContentGameManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
@@ -427,7 +428,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             .OnStart(() =>
             {
                 DeactivateAnim(_crabDoingPath.animator);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
+                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
                     ,Random.Range(0.05f,0.11f));
 #if UNITY_EDITOR
                 Debug.Log($"{_crabDoingPath.awayPath[0]}, {_crabDoingPath.awayPath[1]} 꽃게 집에보내기");
@@ -510,7 +511,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 
     private void SetInAndLoopPath(Crab crab)
     {
-        main = crabEffectManager.currentHitPoint;
+        main = crabVidoContentGameManager.currentHitPoint;
 
         _isNoPath = false;
         _isLinearPath = false;

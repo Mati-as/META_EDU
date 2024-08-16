@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -24,9 +28,31 @@ public class Painting_StarryNightMultipleTexture : IGameManager
      [Header("Shader Setting")] 
      public float burshStrength = 1;
 
+     private static event Action ChangeScene; 
+     public Volume vol;
+     private Vignette vignette;
+     private bool _isSceneChanging;
     protected override void Init()
     {
         BGM_VOLUME = bgmVol;
+         
+        
+        Camera.main.TryGetComponent<Volume>(out vol);
+        if (vol == null)
+        {
+            Debug.LogError("PostProcessVolume not assigned.");
+            return;
+        }
+
+        if (vol.profile.TryGet<Vignette>(out vignette))
+        {
+            vignette = vol.profile.components.Find(x => x is Vignette) as Vignette;
+        }
+        else
+        {
+            Debug.LogError("Vignette not found in PostProcessVolume.");
+        }
+        
         base.Init();
         
      //   Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
@@ -40,7 +66,30 @@ public class Painting_StarryNightMultipleTexture : IGameManager
         InitTexture();
     }
     
-    
+    protected override void BindEvent()
+    {
+        ChangeScene -= OnChangeScene;
+        ChangeScene += OnChangeScene;
+        base.BindEvent();
+    }
+
+    protected  void OnDestroy()
+    {
+        ChangeScene -= OnChangeScene;
+    }
+
+    private void OnChangeScene()
+    {
+        DOVirtual.Float(0, 1, 2.5f, val =>
+        {
+            vignette.intensity.value = val;
+            _isSceneChanging = true;
+        }).OnComplete(() =>
+        {
+            SceneManager.LoadScene("AB001");
+        });
+        
+    }
     /// <summary>
     /// Awake단게로 옮기지말 것,renderTexture Access Deny되는 버그 발생가능성 있음
     /// </summary>
@@ -58,9 +107,26 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     }
 
     public float currentRotation;
+    
+    private float _elapsed;
+    private readonly float _timeLimitForSceneChange = 50;
+    
+    private void Update()
+    {
+        _elapsed += Time.deltaTime;
+        if (_elapsed > _timeLimitForSceneChange)
+        {
+            ChangeScene?.Invoke();
+            _elapsed = 0; 
+        }
+        
+    }
     void Paint()
     {
         if (!isStartButtonClicked) return;
+        if (_isSceneChanging) return; 
+        
+        
         currentRotation = Random.Range(0,360);
       
         RaycastHit hit;
@@ -105,11 +171,10 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     }
 
 
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
-        
         Paint();
     }
 }

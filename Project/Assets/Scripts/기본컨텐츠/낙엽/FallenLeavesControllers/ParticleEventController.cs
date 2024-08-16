@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class ParticleEventController : IGameManager, IOnClicked
@@ -55,23 +56,12 @@ public class ParticleEventController : IGameManager, IOnClicked
     [Header("Sound Setting")] [Space(10f)] [SerializeField]
     private AudioClip clickRustlingSound;
 
-    [SerializeField] private AudioClip clickPopSound;
-    [SerializeField] private AudioClip windBlowingSound;
-    [SerializeField] private AudioClip rollingLeaves;
-
 
     private AudioSource[] _audioSources;
     private Camera _camera;
     private InputAction _mouseClickAction;
 
 
-    private enum FallenLeave_SoundID
-    {
-        RollingLeaves,
-        Blowing,
-        MouseClick,
-        ClickPop
-    }
 
     private int _count = 0;
     
@@ -80,24 +70,6 @@ public class ParticleEventController : IGameManager, IOnClicked
     {
         base.Init();
         
-        _audioSources = GetComponents<AudioSource>();
-
-        _audioSources[(int)FallenLeave_SoundID.RollingLeaves].clip = rollingLeaves;
-        _audioSources[(int)FallenLeave_SoundID.Blowing].clip = windBlowingSound;
-
-
-        for (var i = (int)FallenLeave_SoundID.MouseClick; i < _audioSources.Length; i++)
-            if (i % 2 == 0)
-            {
-#if UNITY_EDITOR
-                Debug.Log("클립할당");
-#endif
-                _audioSources[i].clip = clickPopSound;
-            }
-            else
-            {
-                _audioSources[i].clip = clickRustlingSound;
-            }
 
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         Subscribe();
@@ -110,42 +82,36 @@ public class ParticleEventController : IGameManager, IOnClicked
     }
 
 
-
-
-
+    
     private IOnClicked _iOnClicked;
 
+
+
     public new void OnClicked()
-    {
-        
-    }
-    
-    RaycastHit _hit;
-    protected override void OnRaySynced()
+         {
+             
+         }
+
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
+        if (!PreCheck()){ return;}
+
+        if (SceneManager.GetActiveScene().name != "BC001") return;
+
 #if UNITY_EDITOR
      
 #endif
-        for (var i = 2; i < _audioSources.Length; i += 2)
-            if (!_audioSources[i].isPlaying)
-            {
-                SoundManager.FadeInAndOutSound(_audioSources[i], 1.0f, 0.05f
-                    , duration, 0.05f, true);
-                
-                SoundManager.FadeInAndOutSound(_audioSources[i + 1], 0.05f, 0.05f
-                    , 0.9f, 0.05f, true);
 
-                break;
-            }
-
-     
-      
-
-        if (Physics.Raycast(GameManager_Ray, out _hit, Mathf.Infinity))
-        {
+      var randomChar = (char)Random.Range('A', 'C' + 1);
+      Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
+               
             
 
+
+        foreach (var _hit in GameManager_Hits)
+        {
+            
             _hit.transform.gameObject.TryGetComponent(out _iOnClicked);
             _iOnClicked?.OnClicked();
 
@@ -154,6 +120,8 @@ public class ParticleEventController : IGameManager, IOnClicked
             ClickEventApplyRadialForce(_hit.point, particleSystemB);
             ClickEventApplyRadialForce(_hit.point, particleSystemC);
         }
+
+ 
     }
 
     public float duration;
@@ -169,10 +137,9 @@ public class ParticleEventController : IGameManager, IOnClicked
 #if UNITY_EDITOR
             Debug.Log("바람소리 재생");
 #endif
-            SoundManager.FadeInAndOutSound(_audioSources[(int)FallenLeave_SoundID.RollingLeaves], 1f, 0.01f
-                , 5f);
-            SoundManager.FadeInAndOutSound(_audioSources[(int)FallenLeave_SoundID.Blowing], 0.18f, 0.01f
-                , 5f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/RollingLeaves");
+         
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Wind Blowing Sound");
             randomDirection = new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
 
 
@@ -194,7 +161,7 @@ public class ParticleEventController : IGameManager, IOnClicked
 
         if (isWindBlowing)
         {
-            Debug.Log($"바람 멈추기위한 isWindowBlowing Logic 진입..{angularStopWaitTime}");
+           
 
 
             DOVirtual
@@ -225,9 +192,15 @@ public class ParticleEventController : IGameManager, IOnClicked
         //else if (isWindBlowing) _angularStopElapse += Time.deltaTime;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Unsubscribe();
+#if UNITY_EDITOR
+        Debug.Log($"Destroy GameManager :  {gameObject.name}");
+#endif
+        Destroy(gameObject);
+        
     }
 
 

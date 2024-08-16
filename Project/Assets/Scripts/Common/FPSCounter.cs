@@ -11,7 +11,7 @@ public class FPSCounter : MonoBehaviour
 #if DEVELOPER_TEST
         _fpsText = GetComponent<TextMeshProUGUI>();
 #else
-        gameObject.Setactive(false);
+        gameObject.SetActive(false);
 #endif        
         
     }

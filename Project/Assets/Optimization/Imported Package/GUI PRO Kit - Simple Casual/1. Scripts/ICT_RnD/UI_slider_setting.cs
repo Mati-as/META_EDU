@@ -6,15 +6,13 @@ using UnityEngine.UI;
 
 public class UI_slider_setting : MonoBehaviour
 {
-    // Start is called before the first frame update
-    //¼³Á¤ ¸Þ´º¿¡¼­ ÀüÃ¼ ¼Ò¸® Á¶ÀýÇÏ±â À§ÇÑ ÇÔ¼ö
-    //ÇØ´ç ÇÏ´Â ¿ÀºêÁ§Æ® ±â´É ÀÎ½ºÆåÅÍ Ã¢¿¡¼­ Ã¼Å©ÇÏ°í ÇØ´çÇÏ´Â ÇÔ¼ö È£Ãâ
-    //°¢ ½½¶óÀÌ´õ°¡ °ªÀÌ ¹Ù²ð°æ¿ì º¼·ý Á¶Àý ÇÔ¼ö È£Ãâ
+ 
 
     private Slider volume_slider;
     public bool All_sound = false;
     public bool Effect = false;
     public bool BGM = false;
+    public bool Narration = false;
 
     private float tmp_volume;
     private float volume;
@@ -31,35 +29,45 @@ public class UI_slider_setting : MonoBehaviour
             }
             else if (Effect == true)
             {
-                volume_slider.value = Manager_audio.instance.Get_Effect_volume();
+                // volume_slider.value = Manager_audio.instance.Get_Effect_volume();
             }
             else if (BGM == true)
             {
-                volume_slider.value = Manager_audio.instance.Get_BGM_volume();
+                // volume_slider.value = Manager_audio.instance.Get_BGM_volume();
             }
+            else if (Narration == true)
+            {
+                // volume_slider.value = Manager_audio.instance.Get_Narration_volume();
+                // }
+            }
+            //ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½?
         }
-        //ÃÊ±â °ªÀ» °¡Á®¿À´Â°Ô ÇÊ¿äÇÒ µí?
-    }
-   
-    // Update is called once per frame
-    void Update()
-    {
-        volume = volume_slider.value;
-        if (tmp_volume != volume)
+
+        // Update is called once per frame
+        void Update()
         {
-            if (All_sound == true)
+            volume = volume_slider.value;
+            if (tmp_volume != volume)
             {
-                Manager_audio.instance.Set_all_sound_volume(volume_slider.value);
+                if (All_sound == true)
+                {
+                    // Manager_audio.instance.Set_all_sound_volume(volume_slider.value);
+                }
+                else if (Effect == true)
+                {
+                    // Manager_audio.instance.Set_effect_sound_volume(volume_slider.value);
+                }
+                else if (BGM == true)
+                {
+                    // Manager_audio.instance.Set_BGM_volume(volume_slider.value);
+                }
+                else if (Narration == true)
+                {
+                    // Manager_audio.instance.Set_Narration_volume(volume_slider.value);
+                }
             }
-            else if (Effect == true)
-            {
-                Manager_audio.instance.Set_effect_sound_volume(volume_slider.value);
-            }
-            else if (BGM == true)
-            {
-                Manager_audio.instance.Set_BGM_volume(volume_slider.value);
-            }
+
+            tmp_volume = volume;
         }
-        tmp_volume = volume;
     }
 }

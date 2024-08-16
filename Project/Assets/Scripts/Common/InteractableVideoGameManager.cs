@@ -13,7 +13,7 @@ using UnityEngine.Serialization;
 ///     5.게임에 좀 더 특화해야할 경우 Interactive_VideoContentPlayer를 상속받아 사용합니다.
 ///     6.단순 클릭 후, 일정시간 정지 및 재생, 리플레이 로직만 포함된 경우 해당 Interactive_VideoContentPlayer만 사용해도 문제되지 않습니다.
 /// </summary>
-public abstract class InteractableVideoGameManager : Video_GameManager
+public abstract class InteractableVideoGameManager : VidoContentGameManager
 {
 
    [Header("*****Debug Only*****")] public bool DEBUG_manuallyTrigger;
@@ -30,6 +30,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     [SerializeField] protected ParticleSystem _particleOnRewind;
 
 
+    private float videoGameDefaultSensitivity = 0.15f;
     public static bool _isShaked;
 
     protected bool _isRewindEventTriggered;
@@ -50,11 +51,12 @@ public abstract class InteractableVideoGameManager : Video_GameManager
 
     protected virtual void Start()
     {
+        DEFAULT_SENSITIVITY = 0.2f;
+        ManageProjectSettings(SHADOW_MAX_DISTANCE,DEFAULT_SENSITIVITY);
+        
         Init();
 
         _isReplayAfterPausing = true;
-     
-        
         onReplay -= OnReplay;
         onReplay += OnReplay;
         
@@ -137,7 +139,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
     /// 제일 첫번째로 수행되며, OnRaySyncFromGameManager는 **OnRaySynced에 의존합니다.**
     /// OnRaySynced가 동작하지 않는 경우, Ray를 활용한 게임내 로직 또한 동작하지 않아야합니다.  
     /// </summary>
-    protected override void OnRaySynced()
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         OnRaySyncFromGameManager();
@@ -197,7 +199,7 @@ public abstract class InteractableVideoGameManager : Video_GameManager
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
     
-        Managers.Sound.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
       
     }
 }

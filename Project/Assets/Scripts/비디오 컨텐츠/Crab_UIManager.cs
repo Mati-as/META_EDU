@@ -25,7 +25,6 @@ public class Crab_UIManager : UI_PopUp
         Crab_Dialogue3,
         Crab_Dialogue4,
         Crab_Dialogue5,
-        Max
     }
   
 
@@ -65,8 +64,8 @@ public class Crab_UIManager : UI_PopUp
 
       
         _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
-        _dialogues = new RectTransform[(int)CrabDialogue.Max];
-        defaultScales = new Vector3[(int)CrabDialogue.Max];
+        _dialogues = new RectTransform[Enum.GetNames(typeof(CrabDialogue)).Length];
+        defaultScales = new Vector3[Enum.GetNames(typeof(CrabDialogue)).Length];
         BindObject(typeof(CrabDialogue));
 
         
@@ -153,7 +152,7 @@ public class Crab_UIManager : UI_PopUp
                 _dialogues[_currentUiIndex].gameObject.SetActive(true);
                 _dialogues[_currentUiIndex].DOScale(defaultScales[(int)CrabDialogue.Crab_Dialogue1], 1.2f).SetEase(Ease.OutBounce);
 
-                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                Managers.soundManager.Play(SoundManager.Sound.Effect, 
                     "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
                     0,0.5f);
 
@@ -184,13 +183,13 @@ public class Crab_UIManager : UI_PopUp
         if (!_isNextUIPlayable) return;
         _isNextUIPlayable = false;
         
-        if (_currentUiIndex < (int)CrabDialogue.Max)
+        if (_currentUiIndex < Enum.GetNames(typeof(CrabDialogue)).Length)
         {
             
             _dialogues[_currentUiIndex - 1].DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBounce).OnComplete(() =>
             {
                 
-                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                Managers.soundManager.Play(SoundManager.Sound.Effect, 
                     "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
                     (_currentUiIndex-2).ToString(),0.5f);
 #if UNITY_EDITOR

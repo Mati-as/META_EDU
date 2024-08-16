@@ -41,11 +41,12 @@ using UnityEngine.UI;
 
         public static void ResetVertical(this ScrollRect scrollRect)
         {
+            if(scrollRect !=null)
             scrollRect.verticalNormalizedPosition = 1;
         }
 
         public static void ResetHorizontal(this ScrollRect scrollRect)
         {
-            scrollRect.horizontalNormalizedPosition = 1;
+            if(scrollRect !=null) scrollRect.horizontalNormalizedPosition = 1;
         }
     }

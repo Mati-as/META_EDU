@@ -1,6 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class Painting_EasteranArtMultipleTexture : IGameManager
 {
@@ -15,17 +23,78 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     [SerializeField]
     private Texture2D[] burshTextures;// Define an InputAction for painting
 
- 
+
+    private static event Action ChangeScene; 
      [Header("Shader Setting")] 
      public float burshStrength = 1;
+     public Volume vol;
+     private Vignette vignette;
+     private bool _isSceneChanging; // 씬 이동중 로직 충돌방지
     protected override void Init()
     {
-      
+        Camera.main.TryGetComponent<Volume>(out vol);
+        
+        if (vol == null)
+        {
+            Debug.LogError("PostProcessVolume not assigned.");
+            return;
+        }
+
+        if (vol.profile.TryGet<Vignette>(out vignette))
+        {
+            vignette = vol.profile.components.Find(x => x is Vignette) as Vignette;
+        }
+        else
+        {
+            Debug.LogError("Vignette not found in PostProcessVolume.");
+        }
+
+        
         base.Init();
         
-     //  Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f);
-        
+     //  Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f)
+    }
 
+    protected override void BindEvent()
+    {
+        ChangeScene -= OnChangeScene;
+        ChangeScene += OnChangeScene;
+        base.BindEvent();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        ChangeScene -= OnChangeScene;
+    }
+
+    private void OnChangeScene()
+    {
+        DOVirtual.Float(0, 1, 3f, val =>
+        {
+            _isSceneChanging = false;
+            vignette.intensity.value = val;
+            vignette.color.value=vignette.color.value = Color.black;
+        }).OnComplete(() =>
+        {
+            SceneManager.LoadScene("AB002FromBA001");
+        });
+        
+    }
+
+
+    private float _elapsed;
+    public float timeLimitForSceneChange;
+    private void Update()
+    {
+        _elapsed += Time.deltaTime;
+        if (_elapsed > timeLimitForSceneChange)
+        {
+            
+            ChangeScene?.Invoke();
+            _elapsed = 0; 
+        }
+        
     }
 
 
@@ -51,18 +120,44 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         GetComponent<MeshRenderer>().material.mainTexture = renderTexture;
     }
 
+    
+    private float _clickInterval = 0.12f;
+    private WaitForSeconds _clickWait;
+    private bool _isClickable =true;
+    private void SetClickable()
+    {
+        StartCoroutine(SetClickableCo());
+    }
+
+    private IEnumerator SetClickableCo()
+    {
+        _isClickable = false;
+        
+        if (_clickWait == null)
+        {
+            _clickWait = new WaitForSeconds(_clickInterval);
+        }
+
+        yield return _clickWait;
+
+        _isClickable = true;
+
+    }
+    
+    
     public float currentRotation;
     void Paint()
     {
-        if (!isStartButtonClicked) return;
+
+        if (!isStartButtonClicked || _isSceneChanging) return;
         currentRotation = Random.Range(0,360);
       
         var randomChar = (char)Random.Range('A', 'C' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, 
+        Managers.soundManager.Play(SoundManager.Sound.Effect, 
             "Audio/명화컨텐츠/BA001/Click" + randomChar,Random.Range(0.003f,0.009f));
         
         var randomCharWater = (char)Random.Range('A', 'B' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, 
+        Managers.soundManager.Play(SoundManager.Sound.Effect, 
             "Audio/명화컨텐츠/BA001/Water" + randomCharWater,Random.Range(0.07f,0.10f));
         
         RaycastHit hit;
@@ -106,11 +201,40 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
         }
     }
 
+    private void ResetDelayWithDelay()
+    {
+        StartCoroutine(ResetClickableWithDelayCo());
+    }
+    IEnumerator ResetClickableWithDelayCo()
+    {
+        if(!PreCheck()) yield break;
+        _isPaintable = false;
+        if(!PreCheck()) yield break;
+        yield return _waitForPaint;
+        if(!PreCheck()) yield break;
+        _isPaintable = true;
+    }
 
-    protected override void OnRaySynced()
+    //08/12/2024  타겟PC에서 센서 동작 이슈로 일정 딜레이를 넣고있습니다.
+    // 약 0.12초보다 빠르게 페인팅을 하는경우, 원인미상 이슈로 텍스쳐에러가 발생합니다. 추후 RnD로 버그해결 필요합니다.
+    private bool _isPaintable =true;
+    private WaitForSeconds _waitForPaint = new WaitForSeconds(0.11f);
+
+    public override void OnRaySynced()
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
+        if(!PreCheck()) return;
+        if (SceneManager.GetActiveScene().name != "BA001") return;
+        if (!_isPaintable)
+        {
+#if UNITY_EDITOR
+            Debug.Log("It's not clickable");
+#endif
+            return;
+        }
+        
+        ResetDelayWithDelay();
         
         Paint();
     }

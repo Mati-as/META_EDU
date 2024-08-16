@@ -1,6 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class EasternArt_GameManager : IGameManager
 {
@@ -14,7 +17,7 @@ public class EasternArt_GameManager : IGameManager
     [Header("gameObjs")] public Transform camera;
     public SpriteRenderer originalSpriteRenderer;
 
-
+    private string _sceneName;
     [Space(15f)] [Header("LookAt")] public Transform lookAtA;
     public Transform lookAtB;
 
@@ -39,7 +42,6 @@ public class EasternArt_GameManager : IGameManager
     public float animationInterval = 10f;
     public float growlingDuration = 2.0f;
 
-    private AudioSource _tigerGrowlingAudioSource;
 
     private AudioClip _tigerGrowlA;
     private AudioClip _tigerGrowlB;
@@ -51,36 +53,71 @@ public class EasternArt_GameManager : IGameManager
     [SerializeField] private GameObject originalPicture;
     [SerializeField] private SpriteRenderer newBackground;
 
-
+    [FormerlySerializedAs("postProcessVolume")] public Volume vol;
+    private Vignette vignette;
     protected override void Init()
     {
+        
+        Camera.main.TryGetComponent<Volume>(out vol);
+            
+        if (vol == null)
+        {
+            Debug.LogError("PostProcessVolume not assigned.");
+            return;
+        }
+
+        if (vol.profile.TryGet<Vignette>(out vignette))
+        {
+            vignette = vol.profile.components.Find(x => x is Vignette) as Vignette;
+        }
+        else
+        {
+            Debug.LogError("Vignette not found in PostProcessVolume.");
+        }
+
+        vignette.intensity.value = 1;
+        vignette.color.value = Color.black;
+        DOVirtual.Float(1, 0, 3.5f, val =>
+        {
+            vignette.intensity.value = val;
+        }).SetDelay(1.5f);
+                
         base.Init();
 
 
         LoadAsset();
-        SetAudio();
+   
         SetPath();
 
         camera.position = _pathVector[0];
 
-        UI_Scene_Button.onBtnShut -= OnBtnShut;
-        UI_Scene_Button.onBtnShut += OnBtnShut;
+        
+        
+      
     }
 
+    private void Start()
+    {
+        _sceneName = SceneManager.GetActiveScene().name;
+         
+        if (_sceneName == "AB002FromBA001") //BA001 (명화그리기) 컨텐츠와 연계되어 실행된 경우
+        {
+            OnBtnShut();
+        }
+        else
+        {
+            UI_Scene_Button.onBtnShut -= OnBtnShut;
+            UI_Scene_Button.onBtnShut += OnBtnShut;
+        }
+
+    }
 
     private void LoadAsset()
     {
-        _tigerGrowlA = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlA));
-        _tigerGrowlB = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlB));
-        _tigerGrowlC = Resources.Load<AudioClip>("게임별분류/명화컨텐츠/동양화/" + nameof(_tigerGrowlC));
+       
     }
 
-    private void SetAudio()
-    {
-        _tigerGrowlingAudioSource = gameObject.AddComponent<AudioSource>();
-        _tigerGrowlingAudioSource.volume = 0.2f;
-        _tigerGrowlingAudioSource.playOnAwake = false;
-    }
+
 
     private void SetPath()
     {
@@ -110,14 +147,23 @@ public class EasternArt_GameManager : IGameManager
     private void OnBtnShut()
     {
 #if UNITY_EDITOR
-        Debug.Log($"{SceneManager.GetActiveScene().name}'s started");
+//        Debug.Log($"{SceneManager.GetActiveScene().name}'s started");
 #endif
         StartEasternArtAnim();
     }
 
+    private float _pathDuration;
     private void StartEasternArtAnim()
     {
-        camera.DOPath(_pathVector, 3.5f, PathType.CatmullRom)
+        if (_sceneName == "AB002FromBA001") //BA001 (명화그리기) 컨텐츠와 연계되어 실행된 경우
+        {
+            _pathDuration = 0.01f;
+        }
+        else
+        {
+            _pathDuration = 3.5f;
+        }
+        camera.DOPath(_pathVector, _pathDuration, PathType.CatmullRom)
             .SetLookAt(lookAtA, true)
             .OnComplete(() =>
             {
@@ -202,7 +248,7 @@ public class EasternArt_GameManager : IGameManager
 #if UNITY_EDITOR
                 Debug.Log($"Left_GROWLING Duration: {growlingDuration}");
 #endif
-                _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                CheckAndPlayAudio();
                 mainTigerAnimator.SetBool(LEFT_GROWLING, true);
                 mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
                 DOVirtual.Float(0, 1, growlingDuration, _ => { CheckAndPlayAudio(); });
@@ -236,7 +282,7 @@ public class EasternArt_GameManager : IGameManager
 #if UNITY_EDITOR
                 Debug.Log($"RIGHT_GROWLING Duration: {growlingDuration}");
 #endif
-                _tigerGrowlingAudioSource.clip = _tigerGrowlClips[Random.Range(0, _tigerGrowlClips.Length)];
+                CheckAndPlayAudio();
                 mainTigerAnimator.SetBool(RIGHT_GROWLING, true);
                 mainTigerAnimator.speed = _defaultAnimatorSpeed * 2.7f;
                 DOVirtual.Float(0, 1, growlingDuration, _ => { CheckAndPlayAudio(); });
@@ -270,9 +316,14 @@ public class EasternArt_GameManager : IGameManager
             if (stateInfo.normalizedTime % 1 < 0.1f && stateInfo.normalizedTime % 1 > 0.05f)
                 if (!_isGrowling)
                 {
+                    
+                    Debug.Log("호랑이 울음소리 재생 --------------------------");
                     _isGrowling = true;
                     _growlingCount++;
-                    _tigerGrowlingAudioSource.Play();
+                    var RandomChar = (char)Random.Range('A', 'C' + 1);
+                    
+                    Managers.soundManager.Play(SoundManager.Sound.Effect,
+                        "Audio/명화컨텐츠/TigerGrow" + RandomChar,0.35f);
                     //호랑이 울음횟수 제한을 위한 _roraCount
                     DOVirtual.Float(0, 0, 3.35f, _ => { })
                         .OnComplete(() =>

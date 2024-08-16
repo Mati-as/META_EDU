@@ -21,6 +21,7 @@ public class FootstepController : MonoBehaviour
     private FootstepManager footstepManager;
     public float buttonChangeDuration;
     [Space(20f)]
+    [SerializeField]
     private GroundFootStepData _groundFootStepData;
     
     
@@ -50,17 +51,17 @@ public class FootstepController : MonoBehaviour
     private void Awake()
     {
         _defaultSize = transform.localScale;
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         
-        FootstepManager.OnFootstepClicked -= OnButtonClicked;
-        FootstepManager.OnFootstepClicked += OnButtonClicked;
+        
         _collider = GetComponent<CapsuleCollider>();
     }
   
+    
 
     private void Start()
     {
-        _groundFootStepData = footstepManager.GetGroundFootStepData();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _footstepManager=  GameObject.FindWithTag("GameManager").GetComponent<FootstepManager>();
         _spriteRenderer.DOFade(0, 0.05f);
         UpScale();
     }
@@ -70,25 +71,20 @@ public class FootstepController : MonoBehaviour
 
     private void UpScale()
     {
-       
-        if (!_isClicked)
+        if (_groundFootStepData != null)
         {
             _spriteRenderer.DOFade(1, 2.0f);
             transform.localScale = _defaultSize;
             transform.DOScale(_defaultSize * _groundFootStepData.scaleUpSize, _groundFootStepData.sizeChangeDuration)
                 .SetEase(Ease.OutBounce)
                 .OnComplete(() => DownScale());
-            
-            
-            // LeanTween.scale(gameObject,
-            //         _defaultSize * _groundFootStepData.scaleUpSize,
-            //         _groundFootStepData.sizeChangeDuration)
-            //     .setEase(LeanTweenType.easeOutBounce)
-            //     .setOnComplete(() =>
-            //     {
-            //         DownScale();
-            //     });
         }
+        else
+        {
+            Debug.LogError("_groundFootStepData is null. Make sure it is properly initialized.");
+        }
+       
+      
   
     }
     
@@ -117,14 +113,20 @@ public class FootstepController : MonoBehaviour
 
     private void OnDestroy()
     {
-        FootstepManager.OnFootstepClicked -= OnButtonClicked;
+       
     }
 
     private bool _isUIPlayed;
     private bool _isClicked =false;
+  
     public static event Action onLastFootstepClicked; 
-    private void OnButtonClicked()
+
+    private FootstepManager _footstepManager;
+    public void OnButtonClicked()
     {
+       
+        
+        Debug.Log("buttonClicked");
             //중복클릭 방지용 콜라이더 비활성화.
             _collider.enabled = false;
             
@@ -133,13 +135,13 @@ public class FootstepController : MonoBehaviour
        
             if (animalByLastFootstep != null && animalNameToCall != string.Empty)
             {
-                if (FootstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
+                if (_footstepManager.currentlyClickedObjectName == animalByLastFootstep.name)
                 {
                     
                    //animal 객체의 OnEnable로직을 활용하기위해 false,true 동시사용.
                    animalByLastFootstep.SetActive(false);
                    animalByLastFootstep.SetActive(true);
-                   
+                    
                    //UI에서 활용
                    onLastFootstepClicked?.Invoke();
 
@@ -169,6 +171,7 @@ public class FootstepController : MonoBehaviour
       
         _fadeInTweener = _spriteRenderer.DOFade(1, 0.85f);
         _collider.enabled = true;
+        
     }
 
 
@@ -186,15 +189,5 @@ public class FootstepController : MonoBehaviour
     }
     
     
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        var targetSize = _originalSizeDelta * maximizedSize;
-        //_buttonRectTransform.DOSizeDelta(targetSize, buttonChangeDuration);
-    }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-     
-      //  _buttonRectTransform.DOSizeDelta(_originalSizeDelta,buttonChangeDuration);
-    }
 }
