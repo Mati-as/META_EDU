@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 
 public class FP_Prefab : RaySynchronizer
 {
-    private EffectManager _effectManager;
+    private VidoContentGameManager _vidoContentGameManager;
     private readonly string GAME_MANAGER = "GameManager";
     private Image _image;
 

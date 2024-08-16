@@ -223,7 +223,7 @@ public abstract class IGameManager : MonoBehaviour
         if (!IsLauncherScene())
         {
             // delay for narration
-            DOVirtual.Float(0, 1, 2f, _ => { })
+            DOVirtual.Float(0, 1, 1.5f, _ => { })
                 .OnComplete(() =>
                 {
 

@@ -1,24 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.Video;
 using Random = UnityEngine.Random;
 
 /// <summary>
 ///     *** GameManager 혹은 VideoGameManager에서 반드시 Ray를 참조하여 사용합니다.
 /// </summary>
-public class EffectManager : IGameManager
+public class VidoContentGameManager : IGameManager
 {
 
-    private enum Sound
-    {
-        Basic,
-        Burst
-    }
 
     private string SCENE_NAME;
     [Header("Particle Play Setting")] public ParticleSystem[] _particles;
@@ -115,6 +112,22 @@ public class EffectManager : IGameManager
     }
 
 
+    
+    protected VideoPlayer videoPlayer;
+    protected bool _initiailized;
+
+    private readonly string prefix = "Video_";
+
+   
+    protected Vector3 _defaultPosition { get; private set; }
+
+    [Header("Video Settings")] [SerializeField] private float playbackSpeed = 1;
+
+
+
+
+    
+    
     //for debug.
 #if UNITY_EDITOR
 private bool _isRaySet;
@@ -122,48 +135,31 @@ private bool _isRaySet;
 
     private Hopscotch_GameManager _gm;
     private bool _isStartBtnClicked;
-    protected virtual void OnGmRaySyncedByOnGm()
+    public override void OnRaySynced()
     {
-        if (!_isStartBtnClicked) return;
-        if (!isClickable) return;
-     
-        
+        if (!PreCheck()) return;
         SetClickableWithDelay();
             
         
-        
-        if (_gm!=null && !_gm.isStartButtonClicked) return;
-        ray_EffectManager = IGameManager.GameManager_Ray;
 
-        
-        
-        hits = Physics.RaycastAll(ray_EffectManager);
-        foreach (var hit in hits)
+        foreach (var hit in GameManager_Hits)
         {
             currentHitPoint = hit.point;
 
             PlayParticle(particlePool, hit.point);
-            
-            if (!_isClickable)
-            {
-#if UNITY_EDITOR
-                //      Debug.Log("it's not clickable temporary ----------------------");
-#endif
-                return;
-            }
-            SetClickable();
-            OnClickInEffectManager?.Invoke();
             break;
-        }
+    }
 
-#if UNITY_EDITOR
-if (!_isRaySet)
-{
-    Debug.Log("Ray Synchronized by IGameManager; effectManager is Ready.");
-    _isRaySet = true;
-}
-
-#endif
+   
+//
+// #if UNITY_EDITOR
+// if (!_isRaySet)
+// {
+//     Debug.Log("Ray Synchronized by IGameManager; effectManager is Ready.");
+//     _isRaySet = true;
+// }
+//
+// #endif
     }
     
     private float _clickInterval = 1f;
@@ -189,32 +185,58 @@ if (!_isRaySet)
 
     }
 
-    protected virtual void Init()
+    protected override void Init()
     {
 
-        SCENE_NAME = SceneManager.GetActiveScene().name;
+        base.Init();
+
         
-        if (SceneManager.GetActiveScene().name == "BB002")
+        BindEvent();
+        //DoShake시 트위닝 오류로 원래위치에서 벗어나는 것을 방지하기 위한 defaultPosition 설정.
+        //DoShake의 OnComplete에서 동작하도록 구성하였습니다. 02/02/24
+        _defaultPosition = new Vector3();
+        _defaultPosition = transform.position;
+        
+        //비디오 재생관련 세팅.
+        videoPlayer = GetComponent<VideoPlayer>();
+        
+        videoPlayer.playbackSpeed = playbackSpeed; 
+        
+        string mp4Path =
+            Path.Combine(Application.streamingAssetsPath,
+                $"{SceneManager.GetActiveScene().name}.mp4");
+    
+        if (File.Exists(mp4Path))
         {
-            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
+            videoPlayer.url = mp4Path;
+        }
+        else
+        {
+            // MP4 파일이 없으면 MOV 파일 재생
+            string movPath = 
+                Path.Combine(Application.streamingAssetsPath,
+                    $"{SceneManager.GetActiveScene().name}.mov");
+            videoPlayer.url = movPath;
         }
         
+        videoPlayer.Play();
+        
+        _initiailized = true;
+        SCENE_NAME = SceneManager.GetActiveScene().name;
         
         SetPool(ref particlePool);
         BindEvent();
-        if (SceneManager.GetActiveScene().name == "BB002")
-        {
-            _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
-        }
-       
+    
         
     }
-    
-    private void Awake()
+
+    protected virtual void BindEvent()
     {
-        Init();
+        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
     }
 
+    
     private void OnEnable()
     {
         _mouseClickAction.Enable();
@@ -228,10 +250,14 @@ if (!_isRaySet)
     protected virtual void OnDestroy()
     {
         UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
-        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
+     //   IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
     }
 
-    /// <summary>
+    
+
+    #region  Particle System Setting ------------------------------------
+
+      /// <summary>
     ///     초기 풀 설정 -----------------
     /// </summary>
     protected virtual void SetPool(ref Queue<ParticleSystem> psQueue)
@@ -267,14 +293,6 @@ if (!_isRaySet)
     private void OnStartBtnClicked()
     {
         _isStartBtnClicked = true;
-    }
-
-    protected virtual void BindEvent()
-    {
-        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
-        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
-        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
-        IGameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
     }
 
 
@@ -364,4 +382,7 @@ if (!_isRaySet)
         ps.gameObject.SetActive(false);
         particlePool.Enqueue(ps); // Return the particle system to the pool
     }
+
+    #endregion
+  
 }
