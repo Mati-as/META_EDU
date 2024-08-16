@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KoreanFlagEffectManager : EffectManager
+public class KoreanFlagVidoContentGameManager : VidoContentGameManager
 {
     protected override void OnGmRaySyncedByOnGm()
     {

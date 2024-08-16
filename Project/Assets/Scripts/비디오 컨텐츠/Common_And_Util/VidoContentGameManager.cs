@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 /// <summary>
 ///     *** GameManager 혹은 VideoGameManager에서 반드시 Ray를 참조하여 사용합니다.
 /// </summary>
-public class EffectManager : MonoBehaviour
+public class EffectManager : IGameManager
 {
 
     private enum Sound
@@ -70,23 +70,7 @@ public class EffectManager : MonoBehaviour
     //아래 오디오 클립을 모두 저장하는데 사용합니다, 여러 클립을 할당받고 랜덤하게 재생하기 위해 사용중입니다 1-17-24
     
     
-    private AudioClip[] _clips;
-    private int CLIP_COUNTS = 10; //max로 10으로 설정
-    public AudioClip _effectClipA;
-    [Range(0f, 1f)] public float volumeA;
-    public AudioClip _effectClipB;
-    [Range(0f, 1f)] public float volumeB;
-
-    public AudioClip _effectClipC;
-    [Range(0f, 1f)] public float volumeC;
-    public AudioClip _effectClipD;
-    [Range(0f, 1f)] public float volumeD;
-    public AudioClip _effectClipE;
-
-    public AudioClip _subAudioClip;
-    [Range(0f, 1f)] public float volumeSub;
-    public AudioClip _burstClip;
-    [Range(0f, 1f)] public float volumeBurst;
+   
 
 
     // AudioeffectClip은 Source 없음.. Randomize 기능 구현 전용입니다
@@ -142,15 +126,16 @@ private bool _isRaySet;
     {
         if (!_isStartBtnClicked) return;
         if (!isClickable) return;
+     
+        
         SetClickableWithDelay();
+            
+        
+        
         if (_gm!=null && !_gm.isStartButtonClicked) return;
         ray_EffectManager = IGameManager.GameManager_Ray;
+
         
-        if (SceneManager.GetActiveScene().name == "BB002")
-        {
-            if (_gm.isStageClearUIOn) return;
-        }
-     
         
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
@@ -213,8 +198,7 @@ if (!_isRaySet)
         {
             _gm = GameObject.Find("Hopscotch_GameManager").GetComponent<Hopscotch_GameManager>();
         }
-
-        _clips = new AudioClip[1];
+        
         
         SetPool(ref particlePool);
         BindEvent();
@@ -225,8 +209,7 @@ if (!_isRaySet)
        
         
     }
-
-
+    
     private void Awake()
     {
         Init();
@@ -294,81 +277,16 @@ if (!_isRaySet)
         IGameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
     }
 
-    /// <summary>
-    ///     오디오 초기화 및 재생을 위한 메소드 목록 -----------------
-    /// </summary>
 
-
-
-
-
-//     protected void FindAndPlayAudio(AudioSource[] audioSources, bool isBurst = false, bool recursive = false,
-//         float volume = 0.6f,string audioPath =null)
-//     {
-//         if (audioPath != null)
-//         {
-//             Managers.soundManager.Play(SoundManager.Sound.Effect,audioPath, volume);
-//             return;
-//         }
-//         
-//         
-//         
-//         if (!isBurst)
-//         {
-//             var availableAudioSource = Array.Find(audioSources, audioSource => !audioSource.isPlaying);
-//
-//             if (availableAudioSource != null)
-//             {
-//                 if (isMultipleRandomClip) availableAudioSource.clip = RandomizeClip();
-//
-//         #if UNITY_EDITOR
-//                 // Debug.Log($"availableAudioSource.Clip:   {availableAudioSource.clip}," +
-//                 //           $" _currentRandomClipIndex :{_currentRandomClipIndex}");
-//         #endif
-//                 FadeInSound(availableAudioSource, volume);
-//             }
-//
-// #if UNITY_EDITOR
-// #endif
-//         }
-//     }
-
-    private int _totalCilpCountWhenUseMultipleClips;
 
     
-
-   
-
-    private int _currentRandomClipIndex;
-
-    protected void FadeOutSound(AudioSource audioSource, float target = 0.1f, float fadeInDuration = 2.3f,
-        float duration = 1f)
-    {
-        audioSource.DOFade(target, duration).SetDelay(fadeInDuration).OnComplete(() =>
-        {
-#if UNITY_EDITOR
-#endif
-            audioSource.Stop();
-        });
-    }
-
-    protected void FadeInSound(AudioSource audioSource, float targetVolume = 1f, float duration = 0.3f)
-    {
-#if UNITY_EDITOR
-
-#endif
-        audioSource.PlayOneShot(audioSource.clip);
-        audioSource.DOFade(targetVolume, duration).OnComplete(() => { FadeOutSound(audioSource); });
-    }
-
     protected void GrowPool(ParticleSystem original)
     {
         var newInstance = Instantiate(original, transform);
         newInstance.gameObject.SetActive(false);
         particlePool.Enqueue(newInstance);
     }
-
-
+    
     protected virtual void PlayParticle(Queue<ParticleSystem> psQueue, Vector3 position, bool isBurstMode = false,
         int burstCount = 10, int burstAmount = 5)
     {
@@ -384,7 +302,8 @@ if (!_isRaySet)
 #endif
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/VideoClickEffectSound/" + SCENE_NAME);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/VideoClickEffectSound/" + SCENE_NAME,0.1f
+            ,pitch:Random.Range(1f,1.05f));
         
         if (psQueue.Count >= emitAmount)
         {

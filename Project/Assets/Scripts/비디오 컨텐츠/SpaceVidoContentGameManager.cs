@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpaceEffectManager : EffectManager
+public class SpaceVidoContentGameManager : VidoContentGameManager
 {
 
     public int waitCount;

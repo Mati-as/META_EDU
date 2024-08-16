@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class TurtleEffectManager : EffectManager
+public class TurtleVidoContentGameManager : VidoContentGameManager
 {
     protected override void OnGmRaySyncedByOnGm()
     {

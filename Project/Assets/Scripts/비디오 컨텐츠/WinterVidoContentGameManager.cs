@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 
 
-public class WinterEffectManager : EffectManager
+public class WinterVidoContentGameManager : VidoContentGameManager
 {
 
    

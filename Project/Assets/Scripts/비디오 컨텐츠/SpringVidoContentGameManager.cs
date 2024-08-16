@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SpringEffectManager : EffectManager
+public class SpringVidoContentGameManager : VidoContentGameManager
 {
     
     protected override void OnGmRaySyncedByOnGm()
