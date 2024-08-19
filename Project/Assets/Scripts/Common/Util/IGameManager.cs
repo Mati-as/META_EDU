@@ -217,6 +217,9 @@ public abstract class IGameManager : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
+        Managers.soundManager.Clear();
+        
+        
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;

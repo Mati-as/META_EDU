@@ -60,7 +60,6 @@ public class SoundManager : MonoBehaviour
     {
         volumes = new float[(int)Sound.Max];
         
-        
         if (_soundRoot == null)
         {
             _soundRoot = GameObject.Find("@SoundRoot");
