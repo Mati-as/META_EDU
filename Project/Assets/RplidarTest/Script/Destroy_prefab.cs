@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class Destroy_prefab : RaySynchronizer
 {
-    private VidoContentGameManager _vidoContentGameManager;
+    private VideoContent_GameManager _videoContentGameManager;
     //private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
@@ -20,7 +20,7 @@ public class Destroy_prefab : RaySynchronizer
     public override void Init()
     {
         base.Init();
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _vidoContentGameManager);
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _videoContentGameManager);
     }
 
     void Start()

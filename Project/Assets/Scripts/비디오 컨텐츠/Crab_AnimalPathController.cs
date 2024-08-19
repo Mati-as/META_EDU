@@ -8,12 +8,13 @@ using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
+    [FormerlySerializedAs("crabVidoContentGameManager")]
     [FormerlySerializedAs("crabEffectManager")]
     [FormerlySerializedAs("crabVideoGameManager")]
     [FormerlySerializedAs("crab_effectController")]
     [Header("Reference")]
     [SerializeField]
-    private VidoContentGameManager crabVidoContentGameManager;
+    private VideoContent_GameManager crabVideoContentGameManager;
 
     [FormerlySerializedAs("_videoContentPlayer")] [SerializeField]
     private CrabVideoGameManager videoGameManager;
@@ -120,36 +121,22 @@ public class Crab_AnimalPathController : MonoBehaviour
         // inPath = new Vector3[2];
         _distancesFromStartPoint = new float[4];
 
-        VidoContentGameManager.OnClickInEffectManager -= CrabOnClicked;
-        VidoContentGameManager.OnClickInEffectManager += CrabOnClicked;
+        VideoContent_GameManager.OnClickInEffectManager -= CrabOnClicked;
+        VideoContent_GameManager.OnClickInEffectManager += CrabOnClicked;
 
         CrabVideoGameManager.onCrabAppear -= OnCrabAppear;
         CrabVideoGameManager.onCrabAppear += OnCrabAppear;
 
-        SetPool(_inactiveCrabPool, "CrabA");
-        SetPool(_inactiveCrabPool, "CrabB");
-        SetPool(_inactiveCrabPool, "CrabC");
-        SetPool(_inactiveCrabPool, "CrabD");
-        SetPool(_inactiveCrabPool, "CrabE");
-        SetPool(_inactiveCrabPool, "CrabF");
-        SetPool(_inactiveCrabPool, "CrabG");
-        SetPool(_inactiveCrabPool, "CrabH");
-        SetPool(_inactiveCrabPool, "CrabI");
-        SetPool(_inactiveCrabPool, "CrabJ");
-        SetPool(_inactiveCrabPool, "CrabK");
-        SetPool(_inactiveCrabPool, "CrabL");
-        
-
+        for (int i = 'A'; i < 'L' + 1; i++) SetPool(_inactiveCrabPool, "Crab" + i);
 
         isInit = true;
     }
 
     private void OnCrabAppear()
     {
-        
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAppear"
-            ,Random.Range(0.1f,0.2f));
-        
+            , Random.Range(0.1f, 0.2f));
+
         foreach (var crab in _activeCrabPool)
         {
             //시퀀스 중단으로 인해, AwayPath.Start를 한번더 할당해줘야 합니다. 
@@ -201,7 +188,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void OnDestroy()
     {
-        VidoContentGameManager.OnClickInEffectManager -= CrabOnClicked;
+        VideoContent_GameManager.OnClickInEffectManager -= CrabOnClicked;
     }
 
 
@@ -228,7 +215,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         for (var i = (int)StartDirection.Upper_Left; i < appearablePoints.Length; ++i)
             _distancesFromStartPoint[i] =
-                Vector2.Distance(crabVidoContentGameManager.currentHitPoint, appearablePoints[i].position);
+                Vector2.Distance(crabVideoContentGameManager.currentHitPoint, appearablePoints[i].position);
 
         _closestStartPointIndex = (int)StartDirection.Upper_Left;
 
@@ -329,11 +316,11 @@ public class Crab_AnimalPathController : MonoBehaviour
     private void PlayPath(Crab _crabDoingPath)
     {
         if (!videoGameManager.isCrabAppearable) return;
-        
+
 #if UNITY_EDITOR
 //Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager.isCrabAppearable} ");
 #endif
-        
+
         UpdateDistanceFromStartPointToClickedPoint(_crabDoingPath);
         DeactivateAnim(_crabDoingPath.gameObj.GetComponent<Animator>());
 
@@ -347,12 +334,13 @@ public class Crab_AnimalPathController : MonoBehaviour
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crabVidoContentGameManager.currentHitPoint + Vector3.up * Random.Range(0, 3), _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
+            .DOMove(crabVideoContentGameManager.currentHitPoint + Vector3.up * Random.Range(0, 3),
+                _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
             {
-                Debug.Assert( _crabDoingPath.linearPath[0]!=null);
-                
+                Debug.Assert(_crabDoingPath.linearPath[0] != null);
+
                 _crabDoingPath.linearPath[0] = _crabDoingPath.gameObj.transform.position;
 
                 _crabDoingPath.awayPath[(int)AwayPath.Arrival] =
@@ -429,7 +417,7 @@ public class Crab_AnimalPathController : MonoBehaviour
             {
                 DeactivateAnim(_crabDoingPath.animator);
                 Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/비디오 컨텐츠/Crab/CrabAway"
-                    ,Random.Range(0.05f,0.11f));
+                    , Random.Range(0.05f, 0.11f));
 #if UNITY_EDITOR
                 Debug.Log($"{_crabDoingPath.awayPath[0]}, {_crabDoingPath.awayPath[1]} 꽃게 집에보내기");
 #endif
@@ -461,7 +449,7 @@ public class Crab_AnimalPathController : MonoBehaviour
         else
         {
 #if UNITY_EDITOR
-Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
+            Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 #endif
         }
     }
@@ -511,7 +499,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 
     private void SetInAndLoopPath(Crab crab)
     {
-        main = crabVidoContentGameManager.currentHitPoint;
+        main = crabVideoContentGameManager.currentHitPoint;
 
         _isNoPath = false;
         _isLinearPath = false;
@@ -544,7 +532,7 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
             end_Linear = main + transform.forward * linearPathDistance * Random.Range(1, randomDistance);
 
             linearPath[0] = end_Linear;
-            
+
             _isLinearPath = true;
         }
         else
@@ -565,9 +553,9 @@ Debug.Log("Kill 실패: Sequence가 여전히 활성화되어 있습니다.");
 
         if (prefab != null)
         {
-            var crab = new Crab()
+            var crab = new Crab
             {
-                linearPath =new Vector3[2]
+                linearPath = new Vector3[2]
             };
             crab.gameObj = Instantiate(prefab, transform);
 

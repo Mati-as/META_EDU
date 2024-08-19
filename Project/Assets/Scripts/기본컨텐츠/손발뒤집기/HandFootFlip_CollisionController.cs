@@ -17,4 +17,9 @@ public class HandFootFlip_CollisionController : MonoBehaviour
     {
         _gm.FlipAndChangeColor(other.transform);
     }
+
+    private void OnDestroy()
+    {
+        Destroy(this.gameObject);
+    }
 }

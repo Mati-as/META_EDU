@@ -93,10 +93,11 @@ public class HandFootFlip_GameManager : IGameManager
         _rotateVector = new Vector3(180, 0, 0);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         onRaycasterMoveFinish -= OnRayCasterMoveFin;
-        Destroy(gameObject);
+       
     }
 
     private void Update()

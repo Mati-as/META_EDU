@@ -205,6 +205,8 @@ public abstract class IGameManager : MonoBehaviour
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
+        DOTween.KillAll();
+        Destroy(gameObject);
     }
 
 
