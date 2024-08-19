@@ -115,6 +115,7 @@ public class VideoContent_GameManager : IGameManager
     {
         psQueue = new Queue<ParticleSystem>();
         _particles = new ParticleSystem[transform.childCount];
+        Debug.Assert(_particles != null );
         var index = 0;
         foreach (Transform child in transform)
         {
