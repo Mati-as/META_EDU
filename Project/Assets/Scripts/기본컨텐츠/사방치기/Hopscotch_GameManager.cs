@@ -138,8 +138,9 @@ public class Hopscotch_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-
+        if (!PreCheckOnRaySync()) return;
+        
+        
         if (isStageClearUIOn) return;
 #if UNITY_EDITOR
         if (!isChecked)

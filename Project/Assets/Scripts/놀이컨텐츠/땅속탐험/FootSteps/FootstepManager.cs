@@ -240,7 +240,7 @@ public class FootstepManager : IGameManager
     //public void OnMouseClicked(InputAction.CallbackContext context)
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
 
         hits = Physics.RaycastAll(GameManager_Ray);
         

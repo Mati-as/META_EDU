@@ -601,7 +601,7 @@ public class AnimalTrip_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-            base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
             
          
 #if UNITY_EDITOR

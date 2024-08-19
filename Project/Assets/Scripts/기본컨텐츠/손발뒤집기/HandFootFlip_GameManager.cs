@@ -61,10 +61,10 @@ public class HandFootFlip_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
+        
         if (_isAnimalMoving) return;
+        if (!PreCheckOnRaySync()) return;
         if (SceneManager.GetActiveScene().name != "BB003") return;
         
         FlipAndChangeColor(HandFootFlip_GameManager.GameManager_Ray);

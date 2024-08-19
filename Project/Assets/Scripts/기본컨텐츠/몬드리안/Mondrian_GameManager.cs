@@ -190,8 +190,8 @@ public class Mondrian_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
+        
         RandomlyChangeColor(GameManager_Ray);
         PlayExplosionAnimation();
     }

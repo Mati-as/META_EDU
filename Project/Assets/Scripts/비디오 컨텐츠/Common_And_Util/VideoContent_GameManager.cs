@@ -47,7 +47,7 @@ public class VideoContent_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        if (!PreCheck()) return;
+        if (!PreCheckOnRaySync()) return;
         SetClickableWithDelay();
 
         foreach (var hit in GameManager_Hits)

@@ -240,7 +240,7 @@ public class FavoriteOne_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
         foreach (var hit in GameManager_Hits)
             if ((hit.transform.gameObject.name.Contains("Btn") || hit.transform.gameObject.name.Contains("Color"))
                 && _isClickable)

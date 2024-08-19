@@ -207,11 +207,11 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     }
     IEnumerator ResetClickableWithDelayCo()
     {
-        if(!PreCheck()) yield break;
+        if(!PreCheckOnRaySync()) yield break;
         _isPaintable = false;
-        if(!PreCheck()) yield break;
+        if(!PreCheckOnRaySync()) yield break;
         yield return _waitForPaint;
-        if(!PreCheck()) yield break;
+        if(!PreCheckOnRaySync()) yield break;
         _isPaintable = true;
     }
 
@@ -224,7 +224,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
-        if(!PreCheck()) return;
+        if(!PreCheckOnRaySync()) return;
         if (SceneManager.GetActiveScene().name != "BA001") return;
         if (!_isPaintable)
         {

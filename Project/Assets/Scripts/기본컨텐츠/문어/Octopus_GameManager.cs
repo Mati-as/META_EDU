@@ -226,8 +226,8 @@ public class Octopus_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
+       
         if (_isDoingAnimation) return;
 
         foreach (var hit in GameManager_Hits)

@@ -172,9 +172,7 @@ public class EvaArmisen_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        // if (!_isRoundReadyToStart) return;
-        if (!isStartButtonClicked) return;
-
+        if (!PreCheckOnRaySync()) return;
         
         // 1.1 지우개 모드인 경우 -----------------------
         if (S_toolManager._isEraserMode)

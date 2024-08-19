@@ -18,7 +18,8 @@ public class Lake_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
+        
         var hits = Physics.RaycastAll(GameManager_Ray);
 
         foreach (var hit in hits)

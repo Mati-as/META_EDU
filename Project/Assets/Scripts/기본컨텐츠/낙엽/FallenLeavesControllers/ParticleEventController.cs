@@ -94,8 +94,8 @@ public class ParticleEventController : IGameManager, IOnClicked
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!PreCheck()){ return;}
+       
+        if (!PreCheckOnRaySync()) return;
 
         if (SceneManager.GetActiveScene().name != "BC001") return;
 

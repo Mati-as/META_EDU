@@ -186,8 +186,8 @@ public class HandFootPainting_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
+        if (!PreCheckOnRaySync()) return;
         if (!_isRoundReady) return;
-        if (!isStartButtonClicked) return;
 
 
         Physics.RaycastAll(GameManager_Ray);

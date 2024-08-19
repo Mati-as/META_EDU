@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public abstract class IGameManager : MonoBehaviour
 {
-    
+    private readonly string METAEDU_LAUNCHER = "METAEDU_LAUNCHER";
     protected  readonly float CLICKABLE_DELAY = 0.12f;
     protected WaitForSeconds _waitForClickable;
     public bool isClickable { get; private set; }
@@ -70,11 +70,10 @@ public abstract class IGameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
-      
+        Debug.Assert(PrecheckOnInit());
     }
     
-
-
+    
     protected virtual void Init()
     {
         if (isInitialized)
@@ -147,12 +146,29 @@ public abstract class IGameManager : MonoBehaviour
         
     }
 
+
+    /// <summary>
+    /// GameManager 중복실행 체크 관련 디버그용
+    /// 1. GameManager는 한 씬에 두개이상 있을 수 없음
+    /// 2. 두개이상 있는경우 씬전환 로직에 문제가 있는것일 수 있다고 판단가능
+    /// </summary>
+    /// <returns></returns>
+    private bool PrecheckOnInit()
+    {
+        if (SceneManager.GetActiveScene().name == nameof(METAEDU_LAUNCHER))
+        {
+            var gmObjects = GameObject.FindGameObjectsWithTag("GameManager");
+            if (gmObjects.Length > 1) return false;
+        }
+        return true;
+    }
+
     /// <summary>
     /// 1. 게임종료, 스타트버튼 미클릭등 다양한 로직에서, 더이상 Ray발사(클릭)을 허용하지 않아야합니다.
     /// 2. 이는 씬이동간 에러방지, 게임내에서 로직충돌등을 방지하기 위해 사용합니다.
     /// 3. 이를 일괄적으로 검사 및 클릭가능여부를 반환합니다. 
     /// </summary>
-    protected  bool PreCheck()
+    protected virtual bool PreCheckOnRaySync()
     {
         if (!isStartButtonClicked)
         {
@@ -170,8 +186,7 @@ public abstract class IGameManager : MonoBehaviour
             return false;
         }
 
-
-
+        
         if (Managers.isGameStopped)
         {
 #if UNITY_EDITOR

@@ -164,7 +164,8 @@ public class Piano_MusicController : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
+        
         foreach (var hit in GameManager_Hits)
         {
             var clickedName = hit.transform.gameObject.name;

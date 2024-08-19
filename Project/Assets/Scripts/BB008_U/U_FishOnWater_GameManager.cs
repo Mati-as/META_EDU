@@ -595,7 +595,7 @@ public class U_FishOnWater_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        if (!PreCheck()) return;
+        if (!PreCheckOnRaySync()) return;
 
         // 초기화 등, 기타 로직에서 클릭을 무시해야할 경우
         if (isOnReInit) return;

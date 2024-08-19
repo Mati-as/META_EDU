@@ -352,7 +352,7 @@ public class HandFlip2_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
 
         /* 클릭되면 안되는 경우 상세설명
          1. UI의 시작버튼 애니메이션이 끝나지 않은 경우
@@ -361,7 +361,6 @@ public class HandFlip2_GameManager : IGameManager
          
          */
         if (!_UIManager.isStart) return;
-        if (!isStartButtonClicked) return;
         if (_isRoundFinished) return;
 
 

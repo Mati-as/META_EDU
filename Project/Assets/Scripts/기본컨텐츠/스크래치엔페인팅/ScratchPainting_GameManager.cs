@@ -174,8 +174,7 @@ public class ScratchPainting_GameManager : IGameManager
     public override void OnRaySynced()
     {
         if (!_isRoundReady) return;
-        if (!isStartButtonClicked) return;
-
+        if (!PreCheckOnRaySync()) return;
 
         Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in GameManager_Hits)

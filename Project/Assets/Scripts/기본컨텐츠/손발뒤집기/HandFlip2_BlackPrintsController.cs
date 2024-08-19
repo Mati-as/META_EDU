@@ -141,7 +141,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
     
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
         
         OnSync(GameManager_Ray);
     }

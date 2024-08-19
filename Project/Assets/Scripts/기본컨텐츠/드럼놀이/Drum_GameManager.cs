@@ -26,7 +26,7 @@ public class Drum_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
 
         foreach (var hit in GameManager_Hits)
         {

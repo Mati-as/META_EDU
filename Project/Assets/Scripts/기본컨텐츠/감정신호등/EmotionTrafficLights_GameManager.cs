@@ -177,7 +177,7 @@ public class EmotionTrafficLights_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
         if (!_isClickable) return;
 
         

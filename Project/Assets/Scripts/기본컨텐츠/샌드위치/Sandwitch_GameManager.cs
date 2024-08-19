@@ -151,9 +151,11 @@ public class Sandwitch_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
+        if (!PreCheckOnRaySync()) return;
+        
+        
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
-        if (!isInitialized) return;
-        if (!isStartButtonClicked) return;
+        
         if (_isRoundFinished) return;
         if (!isGameStart) return;
         

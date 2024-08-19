@@ -40,8 +40,8 @@ public class Playground_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
+       
 
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)

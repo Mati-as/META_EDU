@@ -114,8 +114,7 @@ public class ShapePathfinding_GameManager : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
 
         PressButtion();
         PlayStepAnim();
