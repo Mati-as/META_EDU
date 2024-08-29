@@ -25,10 +25,10 @@ public class MetaEduLauncher : UI_PopUp
         Home,
         Result,
         SelectMode,
-        ContentA, // 신체놀이
-        ContentB, // 미술놀이
-        ContentC, // 음악놀이
-        ContentD, // 영상놀이
+        ContentA_PE, // 신체놀이
+        ContentB_Art, // 미술놀이
+        ContentC_Music, // 음악놀이
+        ContentD_Video, // 영상놀이
         Setting,
         //TopMenu_OnLauncher,
         MainVolume,
@@ -87,8 +87,8 @@ public class MetaEduLauncher : UI_PopUp
         {
             ShowTab(UIType.Home);
         }
-        else if (currentUITab == UIType.ContentA || currentUITab == UIType.ContentB ||currentUITab == UIType.ContentC
-                 ||currentUITab == UIType.ContentD)
+        else if (currentUITab == UIType.ContentA_PE || currentUITab == UIType.ContentB_Art ||currentUITab == UIType.ContentC_Music
+                 ||currentUITab == UIType.ContentD_Video)
         {
             ShowTab(UIType.SelectMode);
         }
@@ -116,9 +116,9 @@ public class MetaEduLauncher : UI_PopUp
 
         GetButton((int)UIButtons.Btn_Home).gameObject.BindEvent(() => ShowTab(UIType.Home));
         GetButton((int)UIButtons.Btn_SelectMode).gameObject.BindEvent(() => ShowTab(UIType.SelectMode));
-        GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA));
-        GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB));
-        GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC));
+        GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA_PE));
+        GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB_Art));
+        GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC_Music));
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
         // GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
         GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
@@ -233,10 +233,10 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.Home).gameObject.SetActive(false);
         GetObject((int)UIType.Result).gameObject.SetActive(false);
         GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentA).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentB).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentC).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentD).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentA_PE).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentB_Art).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
@@ -309,10 +309,10 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.Home).gameObject.SetActive(false);
         GetObject((int)UIType.Result).gameObject.SetActive(false);
         GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentA).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentB).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentC).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentD).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentA_PE).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentB_Art).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
         if (currentUITab == UIType.Home)
@@ -350,28 +350,28 @@ public class MetaEduLauncher : UI_PopUp
 
                 break;
 
-            case UIType.ContentA:
+            case UIType.ContentA_PE:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentA).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentA).GetComponent<ScrollRect>().ResetHorizontal();
+                GetObject((int)UIType.ContentA_PE).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentA_PE).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentB:
+            case UIType.ContentB_Art:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentB).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentB).GetComponent<ScrollRect>().ResetHorizontal();
+                GetObject((int)UIType.ContentB_Art).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentB_Art).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentC:
+            case UIType.ContentC_Music:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentC).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentC).GetComponent<ScrollRect>().ResetHorizontal();
+                GetObject((int)UIType.ContentC_Music).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentC_Music).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentD:
+            case UIType.ContentD_Video:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentD).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentD).GetComponent<ScrollRect>().ResetHorizontal();
+                GetObject((int)UIType.ContentD_Video).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentD_Video).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
             case UIType.Setting:
