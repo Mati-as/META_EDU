@@ -119,15 +119,16 @@ public class PlayerHistoryManager : MonoBehaviour
 
         DateTime today = DateTime.Now;
         Debug.Log("Today's date is: " + today.ToString("yyyy-MM-dd"));
+        string formattedPlaytime = string.Format("{0:D2}분 {1:D2}초", _playTime.Minutes, _playTime.Seconds);
 
         newUser.SetAttribute("deviceid",  System.Environment.UserName);
-        newUser.SetAttribute("date",  today.ToString("yyyy-M-d dddd"));
+        newUser.SetAttribute("date",  today.ToString("f"));
         newUser.SetAttribute("year",  today.Year.ToString("D"));
         newUser.SetAttribute("month",  today.Month.ToString("D"));
         newUser.SetAttribute("day",  today.Day.ToString("D"));
         newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
         newUser.SetAttribute("sceneid", currentSceneName);
-        newUser.SetAttribute("playtimesec", _playTime.Seconds.ToString("D"));
+        newUser.SetAttribute("playtimesec",formattedPlaytime.ToString());
         root?.AppendChild(newUser);
         
         Utils.SaveXML(ref _doc, _playerInfoXmlPath);

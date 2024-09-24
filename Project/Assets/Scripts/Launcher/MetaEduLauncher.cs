@@ -31,6 +31,7 @@ public class MetaEduLauncher : UI_PopUp
         ContentD_Video, // 영상놀이
         Setting,
         //TopMenu_OnLauncher,
+        UI_Confirm,
         MainVolume,
         BGMVolume,
         EffectVolume,
@@ -49,10 +50,14 @@ public class MetaEduLauncher : UI_PopUp
         ContentAButton,
         ContentBButton,
         ContentCButton,
+        ContentDButton,
         Btn_Setting,
         Btn_Back,
         Btn_Quit,
-        SettingCloseButton
+        SettingCloseButton,
+        Btn_BackToGameSelect,
+        Btn_ConfirmToStart
+        
         //Btn_Result, //사용시 주석해제
         //LoginButton,
         //SurveyButton
@@ -87,10 +92,16 @@ public class MetaEduLauncher : UI_PopUp
         {
             ShowTab(UIType.Home);
         }
-        else if (currentUITab == UIType.ContentA_PE || currentUITab == UIType.ContentB_Art ||currentUITab == UIType.ContentC_Music
-                 ||currentUITab == UIType.ContentD_Video)
+        else if (currentUITab == UIType.ContentA_PE ||
+                 currentUITab == UIType.ContentB_Art ||
+                 currentUITab == UIType.ContentC_Music||
+                 currentUITab == UIType.ContentD_Video)
         {
             ShowTab(UIType.SelectMode);
+        }
+        else if(currentUITab == UIType.UI_Confirm)
+        {
+            Logger.Log($"not valid click : {currentUITab}");
         }
     }
 
@@ -119,11 +130,14 @@ public class MetaEduLauncher : UI_PopUp
         GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA_PE));
         GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB_Art));
         GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC_Music));
+        GetButton((int)UIButtons.ContentDButton).gameObject.BindEvent(() => ShowTab(UIType.ContentD_Video));
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
         // GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
         GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
 
 
+        GetButton((int)UIButtons.Btn_ConfirmToStart).gameObject.BindEvent(()=>LoadScene(_gameNameWaitingForConfirmation));
+        GetButton((int)UIButtons.Btn_BackToGameSelect).gameObject.BindEvent(OnBackBtnOnConfirmMessageClicked);
         GetButton((int)UIButtons.Btn_Back).gameObject.BindEvent(OnBackBtnClicked);
        
         
@@ -238,7 +252,7 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
         GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
-        GetObject((int)UIType.Setting).gameObject.SetActive(false);
+        GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
 
 
 #if UNITY_EDITOR
@@ -402,6 +416,11 @@ public class MetaEduLauncher : UI_PopUp
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click",volume:1f);
     }
 
+    private void OnBackBtnOnConfirmMessageClicked()
+    {
+        GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
+    }
+
 
     private GraphicRaycaster _launcherGR;
     private PointerEventData _launcherPED;
@@ -488,10 +507,11 @@ public class MetaEduLauncher : UI_PopUp
     }
 
 
+    private string _gameNameWaitingForConfirmation;
     public void ShowTabOrLoadScene(List<RaycastResult> results)
     {
         if (!_isClikcable) return;
-        DOVirtual.Float(0, 0, 0.1f, _ => { })
+        DOVirtual.Float(0, 0, 0.2f, _ => { })
             .OnComplete(() =>
             {
                 UIType clickedUI = 0;
@@ -507,13 +527,18 @@ public class MetaEduLauncher : UI_PopUp
                     if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI)) ShowTab(clickedUI);
 
                     // ** 씬 로드** ---------------------------------------------------------
-                    if (result.gameObject.name.Contains("SceneName_")) LoadScene(result.gameObject.name);
+                    if (result.gameObject.name.Contains("SceneName_"))
+                    {
+                        GetObject((int)UIType.UI_Confirm).SetActive(true);
+                        _gameNameWaitingForConfirmation = result.gameObject.name;
+                        
+                    }
                 }
             });
     }
 
 
-    private void LoadScene(string sceneName)
+    public void LoadScene(string sceneName)
     {
         var originalName = sceneName;
         var modifiedName = originalName.Substring("SceneName_".Length);
