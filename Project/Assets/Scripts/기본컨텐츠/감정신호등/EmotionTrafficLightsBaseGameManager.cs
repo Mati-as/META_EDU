@@ -80,8 +80,9 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
         OtherStageFinished += OnOtherStageFinished;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         FirstStageFinished -= OnFirstStageFinished;
         OtherStageFinished -= OnOtherStageFinished;
     }

@@ -60,8 +60,9 @@ public class ScratchPaintingBaseGameManager : Base_GameManager
         ScratchPainting_UIManager.onStartUI += OnStartUI;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         OnStampingFinished -= OnRoundFinished;
         onRoundRestart -= OnRoundRestart;
         ScratchPainting_UIManager.onStartUI -= OnStartUI;

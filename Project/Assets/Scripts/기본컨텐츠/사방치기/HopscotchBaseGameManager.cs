@@ -96,8 +96,9 @@ public class HopscotchBaseGameManager : Base_GameManager
         UI_Scene_Button.onBtnShut += DoIntroMove;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         UI_Scene_Button.onBtnShut -= DoIntroMove;
         onStageClear -= OnStageClear;
     }

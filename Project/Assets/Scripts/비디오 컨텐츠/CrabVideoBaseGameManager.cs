@@ -95,8 +95,9 @@ public class CrabVideoBaseGameManager : InteractableVideoBaseGameManager
         Crab_UIManager.onCrabDialogueFinished += PlayAgain;
     }
     
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
       
         onCrabAppear -= OnCrabAppear;
         // onCrabSpeechBubbleFinished -= OnOwlSpeechBubbleFinished;

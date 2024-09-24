@@ -129,8 +129,9 @@ public class OwlVideoBaseGameManager : InteractableVideoBaseGameManager
         onOwlSpeechBubbleFinished -= OnOwlSpeechBubbleFinished;
         onOwlSpeechBubbleFinished += OnOwlSpeechBubbleFinished;
     }
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Owl_LeavesMaterialController.OnAllLeavesDarkend -= OnAllLeaveDarkend;
         onReplay -= UIOnReplay;
         onOwlSpeechBubbleFinished -= OnOwlSpeechBubbleFinished;

@@ -156,8 +156,9 @@ public class Piano_MusicController : Base_GameManager
         Camera.main.transform.DOLookAt(cameraLookAt, 0.01f);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         OnSongFinished -= PlayNextSong;
     }
 

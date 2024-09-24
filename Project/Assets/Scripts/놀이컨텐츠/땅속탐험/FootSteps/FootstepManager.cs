@@ -225,8 +225,9 @@ public class FootstepManager : Base_GameManager
     }
 
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 

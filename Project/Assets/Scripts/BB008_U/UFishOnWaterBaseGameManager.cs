@@ -293,8 +293,9 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     {
     }
 
-    protected void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         U_FishOnWater_UIManager.OnResetXML -= OnXmlReset;
         U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
         U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;

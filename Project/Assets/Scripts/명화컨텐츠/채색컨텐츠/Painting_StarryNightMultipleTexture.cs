@@ -73,8 +73,9 @@ public class Painting_StarryNightMultipleTexture : Base_GameManager
         base.BindEvent();
     }
 
-    protected  void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         ChangeScene -= OnChangeScene;
     }
 

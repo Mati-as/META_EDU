@@ -128,6 +128,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        
         UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
     }
 

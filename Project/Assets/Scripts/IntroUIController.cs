@@ -63,14 +63,14 @@ public class IntroUIController : UI_PopUp
         GetObject((int)Intro_UI.ScreenDim).GetComponent<Image>().DOFade(0, 0.5f);
     }
 
-    
+    #region Lodaing UI Text Information Part
     /// <summary>
     /// 1. UI 문구에 표시할 내용을 XML에서 찾아 문구에 표시합니다.
     /// 2. TextMeshPro 에셋을 찾아 해당 컴포넌트 폰트 에셋에 할당합니다. 
     /// </summary>
     private bool LoadUITextInfo()
     {
-        #region Lodaing UI Text Information Part
+       
      
         var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/" + _currentSceneName);
         if (asset == null)

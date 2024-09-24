@@ -37,8 +37,9 @@ public class ScratchPainting_ScratchMode : Base_GameManager
          
      }
 
-     private void OnDestroy()
+     protected override void OnDestroy()
      {
+         base.OnDestroy();
          ScratchPaintingBaseGameManager.OnStampingFinished -= OnStampingFinished;
      }
      Color _glowDefaultColor;

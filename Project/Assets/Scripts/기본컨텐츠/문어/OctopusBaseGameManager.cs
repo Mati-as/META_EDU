@@ -71,8 +71,9 @@ public class OctopusBaseGameManager : Base_GameManager
         OnReinit += OnReInit;
     }
 
-    protected void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         OnReinit -= OnReInit;
     }
 

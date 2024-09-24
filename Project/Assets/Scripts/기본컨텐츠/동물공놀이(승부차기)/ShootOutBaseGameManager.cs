@@ -70,8 +70,9 @@ public class ShootOutBaseGameManager : Base_GameManager
     }
 
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         ShootOut_GoalPostController.OnGoal -= OnGoal;
     }
     private void OnGoal()

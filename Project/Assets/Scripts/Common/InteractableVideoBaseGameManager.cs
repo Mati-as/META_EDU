@@ -63,8 +63,9 @@ public abstract class InteractableVideoBaseGameManager : VideoContentBaseGameMan
         onRewind -= OnRewind;
         onRewind += OnRewind;
     }
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         onReplay -= OnReplay;
         onRewind -= OnRewind;
     }

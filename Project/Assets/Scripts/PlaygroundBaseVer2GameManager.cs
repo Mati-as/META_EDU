@@ -64,8 +64,9 @@ public class PlaygroundBaseVer2GameManager : PlaygroundBaseGameManager
         PlaygroundVer2_UIManager.OnReInitUIFinished += Restart;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         PlaygroundVer2_UIManager.OnReInitUIFinished -= Restart;
     }
 
