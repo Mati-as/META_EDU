@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class ZigZag_PathController : IGameManager
+public class ZigZag_PathController : Base_GameManager
 {
     private enum ZigZagPath
     {

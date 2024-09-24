@@ -44,10 +44,10 @@ public class Sandwich_UIManager : UI_PopUp
         _complete.SetActive(false);
 
         sandwich_AnimalController.onFinishEating -= OnFinishEationg;
-        Sandwitch_GameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
+        SandwitchBaseGameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
 
         sandwich_AnimalController.onFinishEating += OnFinishEationg;
-        Sandwitch_GameManager.onSandwichMakingFinish += OnSandwichMakingFinish;
+        SandwitchBaseGameManager.onSandwichMakingFinish += OnSandwichMakingFinish;
         
 
         return true;

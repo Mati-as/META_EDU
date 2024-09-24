@@ -13,15 +13,15 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class VideoContentBaseGameManager : Base_GameManager
 {
-    private string SCENE_NAME;
+    protected string SCENE_NAME;
     private ParticleSystem[] _particles;
 
 
     public bool usePsMainTime;
 
-    private Queue<ParticleSystem> _particlePool;
-    private int _poolSize =50;
-    private WaitForSeconds _waitForPs;
+    protected Queue<ParticleSystem> _particlePool;
+    protected int _poolSize =50;
+    protected WaitForSeconds _waitForPs;
     public float returnWaitForSeconds;
     
     public int emitAmount;
@@ -34,10 +34,10 @@ public class VideoContentBaseGameManager : Base_GameManager
     private readonly string prefix = "Video_";
 
 
-    public Vector3 currentHitPoint { get; private set; }
+    public Vector3 currentHitPoint { get;  set; }
   
     
-    protected Vector3 _defaultPosition { get; private set; }
+    protected Vector3 _defaultPosition { get;  set; }
 
     [SerializeField]
     private float playbackSpeed = 1;
@@ -72,7 +72,7 @@ public class VideoContentBaseGameManager : Base_GameManager
         _defaultPosition = transform.position;
     }
 
-    private void SetVideo()
+    protected virtual void SetVideo()
     {
         //비디오 재생관련 세팅.
         videoPlayer = GetComponent<VideoPlayer>();

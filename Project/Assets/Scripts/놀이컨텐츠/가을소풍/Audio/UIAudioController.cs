@@ -18,7 +18,7 @@ public class UIAudioController : MonoBehaviour
     [Header("References")] [Space(10f)]
     [SerializeField] private StoryUIController storyUIController;
     [SerializeField] private AudioAndUIData audioAndUIData;
-    [FormerlySerializedAs("gameManager")] [SerializeField] private AnimalTrip_GameManager animalTripGameManager;
+    [FormerlySerializedAs("animalTripGameManager")] [FormerlySerializedAs("gameManager")] [SerializeField] private AnimalTripBaseGameManager animalTripBaseGameManager;
 
     [Space(15f)] [Header("Audio Clips")] [Space(10f)]
     public AudioClip[] uiAudioClip = new AudioClip[6];
@@ -77,7 +77,7 @@ public class UIAudioController : MonoBehaviour
 
     private void Start()
     {
-        foreach (var animalData in animalTripGameManager.allAnimals)
+        foreach (var animalData in animalTripBaseGameManager.allAnimals)
         {
             UIAudioA.Add(animalData.englishName, animalData.UIAnimAudioA);
             UIAudioB.Add(animalData.englishName, animalData.UIAnimAudioB);
@@ -129,7 +129,7 @@ public class UIAudioController : MonoBehaviour
 
     private void OnRoundStarted()
     {
-        if (!AnimalTrip_GameManager.isGameFinished)
+        if (!AnimalTripBaseGameManager.isGameFinished)
         {
             Debug.Log("찾아보세요 클립재생");
             uiAudioAReadyCoroutine = StartCoroutine(PlayUI_A_Audio());
@@ -140,7 +140,7 @@ public class UIAudioController : MonoBehaviour
     {
       
         
-        if (!AnimalTrip_GameManager.isGameFinished)
+        if (!AnimalTripBaseGameManager.isGameFinished)
         {
     
             SetAndPlayAudio(correctSoundAudioSource, correctedSoundClip);
@@ -169,23 +169,23 @@ public class UIAudioController : MonoBehaviour
         // AnimalTrip_UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
         // AnimalTrip_UIManager.GameFinishUIActivateEvent += PlayOnGameFinishedEvent;
 
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
 
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent += OnRoundReady;
 
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent += OnCorrect;
 
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent += OnRoundStarted;
 
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
-        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
@@ -193,12 +193,12 @@ public class UIAudioController : MonoBehaviour
         AnimalTrip_UIManager.SecondStoryUIActivateEvent -= PlayStoryBAudio;
         AnimalTrip_UIManager.GameFinishUIActivateEvent -= PlayOnGameFinishedEvent;
 
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
     private Coroutine _playFirstHtpCoroutine;
@@ -244,7 +244,7 @@ public class UIAudioController : MonoBehaviour
         DOVirtual.Float(0, 1, 8f, _ => { }).OnComplete(() =>
         {
 
-            AnimalTrip_GameManager.isGameStopped = false;
+            AnimalTripBaseGameManager.isGameStopped = false;
             StopCoroutine(_storyBCoroutine);
         });
     }
@@ -281,8 +281,8 @@ public class UIAudioController : MonoBehaviour
                 narrationAudioSource.volume = 0.2f;
                 yield return GetWaitForSeconds(onCorrectWaitTime);
                 
-                if (UIAudioB[AnimalTrip_GameManager.answer] != null)
-                    SetAndPlayAudio(narrationAudioSource, UIAudioB[AnimalTrip_GameManager.answer]);
+                if (UIAudioB[AnimalTripBaseGameManager.answer] != null)
+                    SetAndPlayAudio(narrationAudioSource, UIAudioB[AnimalTripBaseGameManager.answer]);
 
                 _isCorrectClipPlayed = true;
             }
@@ -295,14 +295,14 @@ public class UIAudioController : MonoBehaviour
             
             
             if (elapsedForAnimalSound < intervalBtwAnimalSoundAndNarration
-                || AnimalSoundAudio[AnimalTrip_GameManager.answer] == null
+                || AnimalSoundAudio[AnimalTripBaseGameManager.answer] == null
                 || _isAnimalSoundPlaying)
             {
                 yield return null;
             }
             else
             {
-                SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[AnimalTrip_GameManager.answer]);
+                SetAndPlayAudio(animalSoundAudioSource, AnimalSoundAudio[AnimalTripBaseGameManager.answer]);
                 _isAnimalSoundPlaying = true;
             }
 
@@ -319,7 +319,7 @@ public class UIAudioController : MonoBehaviour
             }
           
             
-            if (AnimalTrip_GameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
+            if (AnimalTripBaseGameManager.isGameFinished) StopCoroutine(uiAudioBCorrectCoroutine);
             yield return null;
         }
     }
@@ -347,7 +347,7 @@ public class UIAudioController : MonoBehaviour
             {
                 Debug.Log("StoryB 재생중...");
                 yield return GetWaitForSeconds(onRoundStartWaitTime);
-                if (UIAudioA[AnimalTrip_GameManager.answer] != null) narrationAudioSource.clip = UIAudioA[AnimalTrip_GameManager.answer];
+                if (UIAudioA[AnimalTripBaseGameManager.answer] != null) narrationAudioSource.clip = UIAudioA[AnimalTripBaseGameManager.answer];
                 narrationAudioSource.Play();
                 _isReadyClipPlayed = true;
             }

@@ -16,14 +16,14 @@ public class Mondrian_FlowerController : MonoBehaviour
 
         for (var i = 0; i < childrenCount; i++) vegetations[i] = transform.GetChild(i).gameObject;
 
-        Mondrian_GameManager.onSmallCubeExplosion -= PlayAnim;
-        Mondrian_GameManager.onSmallCubeExplosion += PlayAnim;
+        MondrianBaseGameManager.onSmallCubeExplosion -= PlayAnim;
+        MondrianBaseGameManager.onSmallCubeExplosion += PlayAnim;
     }
 
 
     private void OnDestroy()
     {
-        Mondrian_GameManager.onSmallCubeExplosion -= PlayAnim;
+        MondrianBaseGameManager.onSmallCubeExplosion -= PlayAnim;
     }
 
 

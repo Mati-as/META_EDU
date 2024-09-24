@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class AttendanceCheck_UIManager : UI_Base
 {
-    private AttendanceCheck_GameManager _gm;
+    private AttendanceCheckBaseGameManager _gm;
     private GameObject[] _uiObjs;
 
     private GameObject[] _nameOnListObjs;
@@ -35,7 +35,7 @@ public class AttendanceCheck_UIManager : UI_Base
 
     public override bool Init()
     {
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<AttendanceCheck_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<AttendanceCheckBaseGameManager>();
 
         _placeholder = GameObject.Find("Placeholder").GetComponent<Text>();
         BindObject((typeof(UI_Type)));

@@ -30,7 +30,7 @@ public class HandFlip2_UIManager : UI_PopUp
         Red_Win
     }
 
-    private HandFlip2_GameManager _gm; 
+    private HandFlip2BaseGameManager _gm; 
     private CanvasGroup _canvasGroup;
 
     private GameObject _ready;
@@ -50,7 +50,7 @@ public class HandFlip2_UIManager : UI_PopUp
     public override bool Init()
     {
 
-        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
+        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2BaseGameManager>();
         
         BindObject(typeof(HandFlip_UI_Type));
 
@@ -82,16 +82,16 @@ public class HandFlip2_UIManager : UI_PopUp
         UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
         
-        HandFlip2_GameManager.onRoundFinishedForUI -= OnRoundFinish;
-        HandFlip2_GameManager.onRoundFinishedForUI += OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinishedForUI += OnRoundFinish;
         
         
            
-        HandFlip2_GameManager.onRoundFinished -= PopStopUI;
-        HandFlip2_GameManager.onRoundFinished += PopStopUI;
+        HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
+        HandFlip2BaseGameManager.onRoundFinished += PopStopUI;
         
-        HandFlip2_GameManager.restart -= OnStart;
-        HandFlip2_GameManager.restart += OnStart;
+        HandFlip2BaseGameManager.restart -= OnStart;
+        HandFlip2BaseGameManager.restart += OnStart;
         return true;
         
     }

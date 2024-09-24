@@ -19,7 +19,7 @@ public class UI_SettingPanel : MonoBehaviour
       _button = GetComponent<Button>();
       _button.onClick.AddListener(OnClick);
 
-      _panel = transform.parent.Find("TopMenuUI").GetComponent<RectTransform>();
+      _panel = GameObject.FindWithTag("InGame_SideMenu").GetComponent<RectTransform>();
       
       _defaultPos = _panel.anchoredPosition;
   }

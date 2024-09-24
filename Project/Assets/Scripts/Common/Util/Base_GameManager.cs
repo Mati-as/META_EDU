@@ -176,7 +176,7 @@ public abstract class Base_GameManager : MonoBehaviour
     ///     2. 이는 씬이동간 에러방지, 게임내에서 로직충돌등을 방지하기 위해 사용합니다.
     ///     3. 이를 일괄적으로 검사 및 클릭가능여부를 반환합니다.
     /// </summary>
-    protected virtual bool PreCheckOnRaySync()
+    public virtual bool PreCheckOnRaySync()
     {
         if (!isStartButtonClicked)
         {
@@ -240,7 +240,7 @@ public abstract class Base_GameManager : MonoBehaviour
         UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
         DOTween.KillAll();
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 
 

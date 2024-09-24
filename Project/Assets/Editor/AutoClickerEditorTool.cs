@@ -18,11 +18,11 @@ public class AutoClickerEditorTool : EditorWindow
     }
 
     private RaySynchronizer _raySynchronizer;
-    private IGameManager _gameManager;
+    private Base_GameManager _baseGameManager;
     private void OnEnable()
     {
         _raySynchronizer = FindObjectOfType<RaySynchronizer>();
-        _gameManager = FindObjectOfType<IGameManager>();
+        _baseGameManager = FindObjectOfType<Base_GameManager>();
     }
 
     private void OnGUI()
@@ -48,10 +48,10 @@ public class AutoClickerEditorTool : EditorWindow
     {
         if (isClicking)
         {
-            if (_raySynchronizer ==null || _gameManager == null)
+            if (_raySynchronizer ==null || _baseGameManager == null)
             {
                 _raySynchronizer = FindObjectOfType<RaySynchronizer>();
-                _gameManager = FindObjectOfType<IGameManager>();
+                _baseGameManager = FindObjectOfType<Base_GameManager>();
             }
 
             if (_elpased > clickInterval)

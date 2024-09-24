@@ -21,7 +21,7 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    private static readonly string port = "COM3";
+    private static readonly string port = "COM4";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
 
@@ -160,14 +160,14 @@ public class SensorManager : MonoBehaviour
         
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
 
-        TopMenuUI.OnRefreshEvent -= RefreshSensor;
-        TopMenuUI.OnRefreshEvent += RefreshSensor;
+        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
+        InGame_SideMenu.OnRefreshEvent += RefreshSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
     }
 
     private void OnDestroy()
     {
-        TopMenuUI.OnRefreshEvent -= RefreshSensor;
+        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
         Destroy(this.gameObject);
         UnBindLidar();
     }

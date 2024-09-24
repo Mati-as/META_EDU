@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LauncherRaySynachronizer : IGameManager
+public class LauncherRaySynachronizer : Base_GameManager
 {
   
 }

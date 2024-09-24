@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class StarryNight_StarlightController : IGameManager
+public class StarryNight_StarlightController : Base_GameManager
 {
     public Light[] spotLights;
 

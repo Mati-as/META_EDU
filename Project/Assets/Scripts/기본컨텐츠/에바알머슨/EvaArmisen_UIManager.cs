@@ -66,11 +66,11 @@ public class EvaArmisen_UIManager : UI_PopUp
         UI_Scene_Button.onBtnShut -= OnStart;
         UI_Scene_Button.onBtnShut += OnStart;
         
-        EvaArmisen_GameManager.onRoundRestart -= OnStart;
-        EvaArmisen_GameManager.onRoundRestart += OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart += OnStart;
 
-        EvaArmisen_GameManager.OnStampingFinished -= PopUpStopUI;
-        EvaArmisen_GameManager.OnStampingFinished += PopUpStopUI;
+        EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
+        EvaArmisenBaseGameManager.OnStampingFinished += PopUpStopUI;
     
         return true;
         
@@ -78,8 +78,8 @@ public class EvaArmisen_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        EvaArmisen_GameManager.onRoundRestart -= OnStart;
-        EvaArmisen_GameManager.OnStampingFinished -= PopUpStopUI;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
+        EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
     }
 
     public void OnStart()

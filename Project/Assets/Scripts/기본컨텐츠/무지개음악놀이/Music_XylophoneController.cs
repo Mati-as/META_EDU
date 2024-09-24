@@ -6,11 +6,12 @@ using DG.Tweening;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Music_XylophoneController : MonoBehaviour
 {
-    [Header("Reference")] [SerializeField] private Music_GameManager _gameManager;
+    [FormerlySerializedAs("_gameManager")] [Header("Reference")] [SerializeField] private MusicBaseGameManager baseGameManager;
     public Transform[] soundProducingXylophones;
     public Transform[] allXylophones;
     public Vector3[] targetPos;
@@ -82,7 +83,7 @@ public class Music_XylophoneController : MonoBehaviour
         {
             _colorChangeMap.Add(soundProducingXylophones[i],colorsToChange[i]);
 #if UNITY_EDITOR
-            Debug.Log($"color map caching.. {soundProducingXylophones[i].gameObject.name},{colorsToChange[i]}");
+            // Debug.Log($"color map caching.. {soundProducingXylophones[i].gameObject.name},{colorsToChange[i]}");
 #endif
         }
 
@@ -257,7 +258,7 @@ public class Music_XylophoneController : MonoBehaviour
 
         if (isBubbleAboveXyl)
         {
-            Debug.Log("bubble is on the xyl");
+            // Debug.Log("bubble is on the xyl");
             return;
         }
         if (_isPianoAutomaticallyPlaying) return;
@@ -266,9 +267,9 @@ public class Music_XylophoneController : MonoBehaviour
         var layerMask = LayerMask.GetMask("Default");
 
       //  if (Music_GameManager.GameManager_Hits.Length <= 0) return;
-        if (Physics.Raycast(Music_GameManager.GameManager_Ray, out RayForXylophone, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(MusicBaseGameManager.GameManager_Ray, out RayForXylophone, Mathf.Infinity, layerMask))
 
-            if (_gameManager == null)
+            if (baseGameManager == null)
             {
                 Debug.Log("_gameManager is null");
                 return;
@@ -321,13 +322,13 @@ public class Music_XylophoneController : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        Music_GameManager.On_GmRay_Synced -= OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced -= OnClicked;
     }
 
     protected virtual void BindEvent()
     {
-        Music_GameManager.On_GmRay_Synced -= OnClicked;
-        Music_GameManager.On_GmRay_Synced += OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced -= OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced += OnClicked;
     }
 
 
@@ -351,9 +352,7 @@ public class Music_XylophoneController : MonoBehaviour
             thisMaterial.DOColor(_defaultColorMap[meshRenderer], BASE_MAP, duration);
         });
      
-#if UNITY_EDITOR
-        Debug.Log($"color map caching.. ,{brightendColor}");
-#endif
+
 
         meshRenderer.material = thisMaterial;
     }

@@ -38,22 +38,22 @@ public class PlayerHistoryManager : MonoBehaviour
         //Register Dictionary 
         GameInfo.Init();
         
-        IGameManager.OnSceneLoad -= OnSceneLoad;
-        IGameManager.OnSceneLoad += OnSceneLoad;
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+        Base_GameManager.OnSceneLoad += OnSceneLoad;
 
-        TopMenuUI.OnSceneQuit -= OnSceneOrAppQuit;
-        TopMenuUI.OnSceneQuit += OnSceneOrAppQuit;
+        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
+        InGame_SideMenu.OnSceneQuit += OnSceneOrAppQuit;
         
-        TopMenuUI.OnAppQuit -= OnSceneOrAppQuit;
-        TopMenuUI.OnAppQuit += OnSceneOrAppQuit;
+        InGame_SideMenu.OnAppQuit -= OnSceneOrAppQuit;
+        InGame_SideMenu.OnAppQuit += OnSceneOrAppQuit;
         _isInit = true; 
         return true;
     }
 
     private void OnDestroy()
     {
-        IGameManager.OnSceneLoad -= OnSceneLoad;
-        TopMenuUI.OnSceneQuit -= OnSceneOrAppQuit;
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
     }
     public void CheckAndGenerateXmlFile(string fileName,string path)
     {

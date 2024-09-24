@@ -24,7 +24,7 @@ public class Crab_UIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        CrabVideoGameManager.onReplay -= OnReplay;
+        CrabVideoBaseGameManager.onReplay -= OnReplay;
 
         VideoContents_UIManager.OnFadeOutFinish -= OnFadeOutComplete;
     }
@@ -44,8 +44,8 @@ public class Crab_UIController : MonoBehaviour
         VideoContents_UIManager.OnFadeOutFinish -= OnFadeOutComplete;
         VideoContents_UIManager.OnFadeOutFinish += OnFadeOutComplete;
         
-        CrabVideoGameManager.onReplay -= OnReplay;
-        CrabVideoGameManager.onReplay += OnReplay;
+        CrabVideoBaseGameManager.onReplay -= OnReplay;
+        CrabVideoBaseGameManager.onReplay += OnReplay;
 
         _upRect.anchoredPosition = defaultRect.anchoredPosition;
         _greatRect.anchoredPosition =defaultRect.anchoredPosition;

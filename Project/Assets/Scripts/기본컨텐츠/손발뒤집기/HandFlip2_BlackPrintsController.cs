@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using Random = UnityEngine.Random;
 using Sequence = DG.Tweening.Sequence;
 
-public class HandFlip2_BlackPrintsController : IGameManager
+public class HandFlip2_BlackPrintsController : Base_GameManager
 {
   
     enum PrintType
@@ -33,7 +33,7 @@ public class HandFlip2_BlackPrintsController : IGameManager
     private bool _isClickable;
     
     public static event Action onAllBlackPrintClicked;
-    private HandFlip2_GameManager _gm;
+    private HandFlip2BaseGameManager _gm;
 
 
     private void RoundInit()
@@ -48,21 +48,21 @@ public class HandFlip2_BlackPrintsController : IGameManager
     protected override void Init()
     {
         base.Init();
-        HandFlip2_GameManager.onStart -= OnStart;
-        HandFlip2_GameManager.onStart += OnStart;
+        HandFlip2BaseGameManager.onStart -= OnStart;
+        HandFlip2BaseGameManager.onStart += OnStart;
 
-        HandFlip2_GameManager.onRoundFinished -= DisappearOnRestart;
-        HandFlip2_GameManager.onRoundFinished += DisappearOnRestart;
+        HandFlip2BaseGameManager.onRoundFinished -= DisappearOnRestart;
+        HandFlip2BaseGameManager.onRoundFinished += DisappearOnRestart;
             
         
-        HandFlip2_GameManager.roundInit -= RoundInit;
-        HandFlip2_GameManager.roundInit += RoundInit;
+        HandFlip2BaseGameManager.roundInit -= RoundInit;
+        HandFlip2BaseGameManager.roundInit += RoundInit;
         
         _meshRenderers = new MeshRenderer[(int)PrintType.Max];
         _blackPrints = new Transform[transform.childCount];
         _blinkSeqs = new Sequence[(int)PrintType.Max];
 
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFlip2_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFlip2BaseGameManager>();
         
 ;        for (int i = 0; i < transform.childCount; i++)
         {

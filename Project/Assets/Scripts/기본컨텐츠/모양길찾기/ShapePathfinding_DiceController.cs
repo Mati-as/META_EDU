@@ -8,16 +8,16 @@ using UnityEngine;
 public class ShapePathfinding_DiceController : MonoBehaviour
 {
     private bool _isSoundPlaying;
-    private IGameManager _gameManager;
+    private Base_GameManager _baseGameManager;
 
     private void Awake()
     {
-        _gameManager = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
+        _baseGameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.gameObject.name == "Floor" && _gameManager.isStartButtonClicked)
+        if (other.transform.gameObject.name == "Floor" && _baseGameManager.isStartButtonClicked)
         {
             if (!_isSoundPlaying)
             {

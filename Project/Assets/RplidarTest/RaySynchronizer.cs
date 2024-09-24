@@ -15,7 +15,7 @@ public class RaySynchronizer : MonoBehaviour
 {
     public static Ray initialRay { get; set; }
 
-    private IGameManager gameManager;
+    private Base_GameManager _baseGameManager;
     private GameObject uiCamera;
 
 
@@ -49,9 +49,9 @@ public class RaySynchronizer : MonoBehaviour
         //각 씬의 Overlay-UICamera Tag 할당 필요
       
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out gameManager);
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _baseGameManager);
 
-        Debug.Assert(gameManager != null);
+        Debug.Assert(_baseGameManager != null);
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
         // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _spaceAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");

@@ -92,11 +92,6 @@ public class EvaArmisenBaseGameManager : Base_GameManager
         // EvaArmisen_UIManager.onStartUI += OnStartUI;
     }
     
-    private void OnDestroy()
-    {
-        OnStampingFinished -= OnRoundFinished;
-        EvaArmisen_ToolManager.OnResetClicked -= Reset;
-    }
 
     private float _elapsedToCount;
     private bool _isCountNarrationPlaying;
@@ -274,4 +269,12 @@ public class EvaArmisenBaseGameManager : Base_GameManager
         }
 
     }
+    
+    protected override void OnDestroy()
+    {
+         base.OnDestroy();
+         OnStampingFinished -= OnRoundFinished;
+         EvaArmisen_ToolManager.OnResetClicked -= Reset;
+    }
+
 }

@@ -5,14 +5,14 @@ using UnityEngine;
 public class PlaygroundVer2_Ball : Playground_Ball_Base
 {
 
-    private PlaygroundVer2_GameManager _gm;
+    private PlaygroundBaseVer2GameManager _gm;
 
     
 
     protected override void Init()
     {
         base.Init();
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<PlaygroundVer2_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<PlaygroundBaseVer2GameManager>();
     }
 
     public override void OnTriggerEnter(Collider other)

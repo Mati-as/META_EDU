@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Music_BubbleController : MonoBehaviour
 {
-    [Header("Reference")] [SerializeField] private Music_GameManager _gameManager;
+    [FormerlySerializedAs("_gameManager")] [Header("Reference")] [SerializeField] private MusicBaseGameManager baseGameManager;
 
     private Music_XylophoneController _xylController;
     public float randomTime;
@@ -134,21 +135,24 @@ public class Music_BubbleController : MonoBehaviour
     {
         var layerMask = LayerMask.GetMask("Screen");
 
-
-        if (Physics.Raycast( Music_GameManager.GameManager_Ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
+        if (!GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>().PreCheckOnRaySync()) return;
+        
+        
+        
+        if (Physics.Raycast( MusicBaseGameManager.GameManager_Ray, out rayCastHitForBubble, Mathf.Infinity, layerMask))
             RemoveClosestParticle(rayCastHitForBubble.point + hitOffset);
     }
 
     protected virtual void OnDestroy()
     {
-        Music_GameManager.On_GmRay_Synced -= OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced -= OnClicked;
         onPatternEnd -= ClearOffAllBubbles;
     }
 
     protected virtual void BindEvent()
     {
-        Music_GameManager.On_GmRay_Synced -= OnClicked;
-        Music_GameManager.On_GmRay_Synced += OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced -= OnClicked;
+        MusicBaseGameManager.On_GmRay_Synced += OnClicked;
 
         onPatternEnd -= ClearOffAllBubbles;
         onPatternEnd += ClearOffAllBubbles;

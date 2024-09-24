@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using MyCustomizedEditor;
 #endif
 
-public class FootstepManager : IGameManager
+public class FootstepManager : Base_GameManager
 {
  
     private enum FootstepSounds

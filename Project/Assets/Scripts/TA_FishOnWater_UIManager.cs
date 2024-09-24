@@ -121,7 +121,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
     public static event Action OnResetSettingBtnClicked;
     public static event Action OnModeSelectionUIAppear;
 
-    private TA_FishOnWater_GameManager _gm;
+    private TaFishOnWaterBaseGameManager _gm;
     private bool _isOnFirstRound = true; //초기 버튼 관련 로직
     public Slider _fishSpeedSlider { get; private set; }
     public Slider _timeLimitSlider { get; private set; }
@@ -241,18 +241,18 @@ public class TA_FishOnWater_UIManager : UI_PopUp
 
     public override bool Init()
     {
-        TA_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
-        TA_FishOnWater_GameManager.OnReady += OnReadyAndStart;
+        TaFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
+        TaFishOnWaterBaseGameManager.OnReady += OnReadyAndStart;
 
-        TA_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
-        TA_FishOnWater_GameManager.OnRoundFinished += ShowStopUI;
+        TaFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
+        TaFishOnWaterBaseGameManager.OnRoundFinished += ShowStopUI;
 
         UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
         UI_Scene_Button.onBtnShut += OnStartBtnClicked;
         
         
         
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<TA_FishOnWater_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<TaFishOnWaterBaseGameManager>();
 
         _confirmMessage = GameObject.Find("ConfirmMessage").GetComponentInChildren<Text>();
         BindObject(typeof(UI_Type));
@@ -515,8 +515,8 @@ public class TA_FishOnWater_UIManager : UI_PopUp
     private void OnDestroy()
     {
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
-        TA_FishOnWater_GameManager.OnReady -= OnReadyAndStart;
-        TA_FishOnWater_GameManager.OnRoundFinished -= ShowStopUI;
+        TaFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
+        TaFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
         UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
     }
 
@@ -563,7 +563,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         }
 
 
-        if (_gm.currentMode == (int)TA_FishOnWater_GameManager.PlayMode.MultiPlay)
+        if (_gm.currentMode == (int)TaFishOnWaterBaseGameManager.PlayMode.MultiPlay)
         {
             // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
             userScores = userScores.OrderByDescending(x => int.Parse(x.score)).ToList();
@@ -597,7 +597,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
                 }
             }
         }
-        else if (_gm.currentMode == (int)TA_FishOnWater_GameManager.PlayMode.SinglePlay)
+        else if (_gm.currentMode == (int)TaFishOnWaterBaseGameManager.PlayMode.SinglePlay)
         {
             // 첫 번째 숫자(A)를 기준으로 내림차순 정렬, A 값이 같으면 두 번째 숫자(B)를 기준으로 정렬
             userScores = userScores.OrderByDescending(x =>
@@ -643,7 +643,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
 
 
         var currentUserRank = -1;
-        if (_gm.currentMode == (int)TA_FishOnWater_GameManager.PlayMode.MultiPlay)
+        if (_gm.currentMode == (int)TaFishOnWaterBaseGameManager.PlayMode.MultiPlay)
         {
             for (var i = 0; i < userScores.Count; i++)
                 if (userScores[i].username == _gm.currentUserName &&
@@ -713,7 +713,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
             scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
 
-        _gm.currentMode = (int)TA_FishOnWater_GameManager.PlayMode.SinglePlay;
+        _gm.currentMode = (int)TaFishOnWaterBaseGameManager.PlayMode.SinglePlay;
         ShowTutorial();
     }
 
@@ -724,7 +724,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
 
-        _gm.currentMode = (int)TA_FishOnWater_GameManager.PlayMode.MultiPlay;
+        _gm.currentMode = (int)TaFishOnWaterBaseGameManager.PlayMode.MultiPlay;
 
         DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
             scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
@@ -837,7 +837,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         var splitScore = _gm.currentUserScore.Split('/');
 
 
-        if (_gm.currentMode == (int)TA_FishOnWater_GameManager.PlayMode.SinglePlay)
+        if (_gm.currentMode == (int)TaFishOnWaterBaseGameManager.PlayMode.SinglePlay)
         {
             _TMP_currentUser[(int)RankUserInfo.ScoreFishCaughtCount].text = $"{splitScore[0]}마리 / ";
             _TMP_currentUser[(int)RankUserInfo.ScoreRemainTime].gameObject.SetActive(true);
@@ -991,9 +991,9 @@ public class TA_FishOnWater_UIManager : UI_PopUp
     private void ShowTutorial()
     {
 #if UNITY_EDITOR
-        Debug.Log($"CurrentMode: {(TA_FishOnWater_GameManager.PlayMode)_gm.currentMode}");
+        Debug.Log($"CurrentMode: {(TaFishOnWaterBaseGameManager.PlayMode)_gm.currentMode}");
 #endif
-        _currentModeInKorean = _gm.currentMode == (int)TA_FishOnWater_GameManager.PlayMode.SinglePlay
+        _currentModeInKorean = _gm.currentMode == (int)TaFishOnWaterBaseGameManager.PlayMode.SinglePlay
             ? _gm.SINGLE_PLAY_IN_KOREAN
             : _gm.MULTI_PLAY_IN_KOREAN;
         _TMP_tutorialUI.text = $"{_currentModeInKorean} - 놀이방법";

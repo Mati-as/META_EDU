@@ -23,14 +23,14 @@ public class Mondrian_BigFlowerController : MonoBehaviour
             _targetSizeMap.TryAdd(_vegetations[i].transform.GetInstanceID(), _vegetations[i].transform.localScale);
         }
         
-        Mondrian_GameManager.onBigCubeExplosion -=PlayAnim;
-        Mondrian_GameManager.onBigCubeExplosion +=PlayAnim;
+        MondrianBaseGameManager.onBigCubeExplosion -=PlayAnim;
+        MondrianBaseGameManager.onBigCubeExplosion +=PlayAnim;
     }
 
 
     private void OnDestroy()
     {
-        Mondrian_GameManager.onBigCubeExplosion -=PlayAnim;
+        MondrianBaseGameManager.onBigCubeExplosion -=PlayAnim;
     }
 
     [SerializeField] private float targetScale;

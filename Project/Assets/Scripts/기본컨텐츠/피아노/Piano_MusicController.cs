@@ -6,7 +6,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Piano_MusicController : IGameManager
+public class Piano_MusicController : Base_GameManager
 {
     private enum SongList
     {

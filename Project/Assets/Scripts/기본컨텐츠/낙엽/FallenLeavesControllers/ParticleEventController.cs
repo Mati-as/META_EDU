@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class ParticleEventController : IGameManager, IOnClicked
+public class ParticleEventController : Base_GameManager, IOnClicked
 {
     private ParticleSystem.Particle[] particles;
 

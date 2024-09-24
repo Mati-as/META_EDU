@@ -60,8 +60,8 @@ public class ShootOut_AnimalController : MonoBehaviour
 
         FindAndSetPath();
 
-        ShootOut_GameManager.OnLaunchBall -= OnLaunchBall;
-        ShootOut_GameManager.OnLaunchBall += OnLaunchBall;
+        ShootOutBaseGameManager.OnLaunchBall -= OnLaunchBall;
+        ShootOutBaseGameManager.OnLaunchBall += OnLaunchBall;
     }
 
     private void Start()
@@ -71,7 +71,7 @@ public class ShootOut_AnimalController : MonoBehaviour
 
     private void OnDestroy()
     {
-        ShootOut_GameManager.OnLaunchBall -= OnLaunchBall;
+        ShootOutBaseGameManager.OnLaunchBall -= OnLaunchBall;
         DOTween.Clear();
     }
 

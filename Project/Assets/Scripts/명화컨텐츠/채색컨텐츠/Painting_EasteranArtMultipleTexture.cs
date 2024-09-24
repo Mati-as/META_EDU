@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class Painting_EasteranArtMultipleTexture : IGameManager
+public class Painting_EasteranArtMultipleTexture : Base_GameManager
 {
      [SerializeField]
     private Shader paintShader;

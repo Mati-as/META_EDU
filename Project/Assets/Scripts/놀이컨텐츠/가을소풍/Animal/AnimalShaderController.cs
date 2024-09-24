@@ -74,7 +74,7 @@ public class AnimalShaderController : MonoBehaviour
     
     void Update()
     {
-        if (AnimalTrip_GameManager.isRoundStarted)
+        if (AnimalTripBaseGameManager.isRoundStarted)
         {
             _elapsedForInPlayGlowOn += Time.deltaTime;
             
@@ -116,7 +116,7 @@ public class AnimalShaderController : MonoBehaviour
         }
         
 
-        if (AnimalTrip_GameManager.isGameFinished)
+        if (AnimalTripBaseGameManager.isGameFinished)
         {
             TurnOffOutlineMesh();
         }
@@ -350,7 +350,7 @@ public class AnimalShaderController : MonoBehaviour
         {
             _colorLerp += Time.deltaTime * _shaderAndCommon.outlineTurningOffSpeed;
 
-            if (AnimalTrip_GameManager.isCorrected && _animalData.englishName == AnimalTrip_GameManager.answer)
+            if (AnimalTripBaseGameManager.isCorrected && _animalData.englishName == AnimalTripBaseGameManager.answer)
             {
                 TurnOffOutLineWithLerp(Color.black);
                 if (_colorLerp > 0.6f)
@@ -361,14 +361,14 @@ public class AnimalShaderController : MonoBehaviour
             }
             
             // 정답아닌 나머지 동물 컬러 결정.
-            if (AnimalTrip_GameManager.isCorrected &&  _animalData.englishName != AnimalTrip_GameManager.answer)
+            if (AnimalTripBaseGameManager.isCorrected &&  _animalData.englishName != AnimalTripBaseGameManager.answer)
             {
               
                 TurnOffOutLineWithLerp(_shaderAndCommon.RANODOM_COLOR_A);
                  ChangeFresnelOfAnimalOutlineColor();
             }
 
-            if (AnimalTrip_GameManager.isRoundFinished)
+            if (AnimalTripBaseGameManager.isRoundFinished)
             {
                 StopCoroutineWithNullCheck(_coroutines);
             }
@@ -387,33 +387,33 @@ public class AnimalShaderController : MonoBehaviour
     
     private void SubscribeGameManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
         
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent += OnRoundReady;
 
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent += OnCorrect;
 
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent += OnRoundStarted;
         
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
-        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent += OnGameFinished;
     }
     
     private void UnsubscribeGamaManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
     private void TurnOffOutlineMesh()

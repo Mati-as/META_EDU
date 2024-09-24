@@ -33,12 +33,13 @@ public class AnimalTrip_UIManager : MonoBehaviour
     public string onCorrectMessage;
     public string onFinishMessage = "동물친구들을 모두 찾았어요!";
 
+    [FormerlySerializedAs("animalTripGameManager")]
     [FormerlySerializedAs("gameManager")]
     [FormerlySerializedAs("_gameManager")]
     [Header("Reference")]
     [Space(10f)]
     [SerializeField]
-    private AnimalTrip_GameManager animalTripGameManager;
+    private AnimalTripBaseGameManager animalTripBaseGameManager;
 
 
     // UI status---------------------------
@@ -101,7 +102,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
 
     private void Start()
     {
-        foreach (var animalData in animalTripGameManager.allAnimals)
+        foreach (var animalData in animalTripBaseGameManager.allAnimals)
             animalNameToKorean.Add(animalData.englishName, animalData.koreanName);
     }
 
@@ -141,7 +142,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
         if (_isCorrectMessagePlaying == false)
         {
             _isCorrectMessagePlaying = true; //중복재생 방지
-            onCorrectMessage = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}";
+            onCorrectMessage = $"{animalNameToKorean[AnimalTripBaseGameManager.answer]}";
             //$"{EulOrReul(animalNameToKorean[GameManager.answer])}" + " 찾았어요!";
 
             _coroutines[0] = StartCoroutine(TypeIn(onCorrectMessage, onCorrectOffsetSeconds));
@@ -153,17 +154,17 @@ public class AnimalTrip_UIManager : MonoBehaviour
         _isCorrectMessagePlaying = false; // PlayOnCorrectMessage 재생을 위한 초기화.
 
 
-        if (AnimalTrip_GameManager.isGameStarted && _isQuizPlaying == false && !AnimalTrip_GameManager.isCorrected &&
+        if (AnimalTripBaseGameManager.isGameStarted && _isQuizPlaying == false && !AnimalTripBaseGameManager.isCorrected &&
             !_isCorrectMessagePlaying)
         {
             StopCoroutineWithNullCheck(_coroutines);
 #if DEFINE_TEST
-            Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[AnimalTrip_GameManager.answer]}");
+            Debug.Log($"퀴즈 업데이트, 정답 : {animalNameToKorean[AnimalTripBaseGameManager.answer]}");
 #endif
 
             _isQuizPlaying = true;
-            roundInstruction = $"{animalNameToKorean[AnimalTrip_GameManager.answer]}"
-                               + $"{EulOrReul(animalNameToKorean[AnimalTrip_GameManager.answer])}" + " 찾아보세요";
+            roundInstruction = $"{animalNameToKorean[AnimalTripBaseGameManager.answer]}"
+                               + $"{EulOrReul(animalNameToKorean[AnimalTripBaseGameManager.answer])}" + " 찾아보세요";
             _coroutines[0] = StartCoroutine(TypeIn(roundInstruction, startTimeOffsetSeconds));
         }
     }
@@ -173,7 +174,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
         Debug.Log("제시문 하단 종료 이벤트 발생!");
 
         _isQuizPlaying = false;
-        if (_isQuizPlaying == false && AnimalTrip_GameManager.isGameFinished)
+        if (_isQuizPlaying == false && AnimalTripBaseGameManager.isGameFinished)
         {
             Debug.Log(" 지시문 종료");
             StopCoroutineWithNullCheck(_coroutines);
@@ -251,7 +252,7 @@ public class AnimalTrip_UIManager : MonoBehaviour
         yield return GetWaitForSeconds(storyUIController.waitTimeForSecondActivation);
         storyUIController.gameObject.SetActive(true);
         SecondStoryUIActivateEvent?.Invoke();
-        AnimalTrip_GameManager.isGameStopped = true;
+        AnimalTripBaseGameManager.isGameStopped = true;
         StopCoroutine(_coroutineC);
     }
 
@@ -294,32 +295,32 @@ public class AnimalTrip_UIManager : MonoBehaviour
 
     private void SubscribeGameManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
 
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent += OnRoundReady;
 
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onCorrectedEvent += OnCorrect;
 
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundFinishedEvent += OnRoundFinished;
 
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onRoundStartedEvent += OnRoundStarted;
 
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
-        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent += OnGameFinished;
     }
 
     private void UnsubscribeGamaManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-        AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-        AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+        AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
     }
 }

@@ -174,7 +174,7 @@ public class LightDimmer : MonoBehaviour
         
         while (true)
         {
-            if (AnimalTrip_GameManager.isCorrected)
+            if (AnimalTripBaseGameManager.isCorrected)
             {
                 if (!isLightEnabled)
                 {
@@ -213,7 +213,7 @@ public class LightDimmer : MonoBehaviour
         elapsedForLight = 0f;
         while (true)
         {
-            if (AnimalTrip_GameManager.isRoundFinished)
+            if (AnimalTripBaseGameManager.isRoundFinished)
             {
                 light.enabled = true;
                 elapsedForLight += Time.deltaTime;
@@ -276,29 +276,29 @@ public class LightDimmer : MonoBehaviour
     
     private void SubscribeGameManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
       
 
-        AnimalTrip_GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
-        AnimalTrip_GameManager.onCorrectedEvent += TurnOnSpotLightEvent;
+        AnimalTripBaseGameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        AnimalTripBaseGameManager.onCorrectedEvent += TurnOnSpotLightEvent;
 
-        AnimalTrip_GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
-        AnimalTrip_GameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        AnimalTripBaseGameManager.onRoundFinishedEvent += TurnOffSpotLightEvent;
 
     
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
-        AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent += OnGameFinished;
     }
     
     private void UnsubscribeGamaManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
         // GameManager.onRoundReadyEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
-        AnimalTrip_GameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
+        AnimalTripBaseGameManager.onCorrectedEvent -= TurnOnSpotLightEvent;
+        AnimalTripBaseGameManager.onRoundFinishedEvent -= TurnOffSpotLightEvent;
         // GameManager.onRoundStartedEvent -= OnRoundStarted;
-        AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+        AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
     }
 
     public void TurnOffSpotLightEvent()

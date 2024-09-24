@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class Painting_StarryNightMultipleTexture : IGameManager
+public class Painting_StarryNightMultipleTexture : Base_GameManager
 {
     [SerializeField]
     private Shader paintShader;

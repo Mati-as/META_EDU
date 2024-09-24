@@ -6,12 +6,14 @@ using DG.Tweening;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 public class WaterMusic_XylophoneController : MonoBehaviour
 {
 
+    [FormerlySerializedAs("_gameManager")]
     [Header("Reference")] 
-    [SerializeField] private WaterMusic_GameManager _gameManager;
+    [SerializeField] private WaterMusicBaseGameManager baseGameManager;
 
     private Transform _soundProducingXylophoneParent;
     private Transform[] _soundProducingXylophones;
@@ -78,7 +80,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
   
         
         _xylophoneMeshRenderers = new MeshRenderer[SOUND_PRODUCING_CHILD_COUNT];
-        _gameManager = GameObject.FindWithTag("GameManager").GetComponent<WaterMusic_GameManager>();
+        baseGameManager = GameObject.FindWithTag("GameManager").GetComponent<WaterMusicBaseGameManager>();
 
     }
 
@@ -222,7 +224,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
         
 
-        if (Physics.Raycast(WaterMusic_GameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(WaterMusicBaseGameManager.GameManager_Ray, out RayHitForXylophone, Mathf.Infinity, layerMask))
         {
             var id = RayHitForXylophone.transform.GetInstanceID();
             _clickableMap.TryAdd(id, true);
@@ -352,8 +354,8 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
     protected virtual void BindEvent()
     {
-        WaterMusic_GameManager.On_GmRay_Synced -= OnClicked;
-        WaterMusic_GameManager.On_GmRay_Synced += OnClicked;
+        WaterMusicBaseGameManager.On_GmRay_Synced -= OnClicked;
+        WaterMusicBaseGameManager.On_GmRay_Synced += OnClicked;
 
         UI_Scene_Button.onBtnShut -= DoIntroMove;
         UI_Scene_Button.onBtnShut += DoIntroMove;
@@ -362,7 +364,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private void OnDestroy()
     {  
         UI_Scene_Button.onBtnShut -= DoIntroMove;
-        WaterMusic_GameManager.On_GmRay_Synced -= OnClicked;
+        WaterMusicBaseGameManager.On_GmRay_Synced -= OnClicked;
     }
 
     public float brightenIntensity;

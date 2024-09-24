@@ -8,16 +8,17 @@ using Random = UnityEngine.Random;
 
 public class Crab_AnimalPathController : MonoBehaviour
 {
+    [FormerlySerializedAs("crabVideoContentGameManager")]
     [FormerlySerializedAs("crabVidoContentGameManager")]
     [FormerlySerializedAs("crabEffectManager")]
     [FormerlySerializedAs("crabVideoGameManager")]
     [FormerlySerializedAs("crab_effectController")]
     [Header("Reference")]
     [SerializeField]
-    private VideoContent_GameManager crabVideoContentGameManager;
+    private VideoContentBaseGameManager crabVideoContentBaseGameManager;
 
-    [FormerlySerializedAs("_videoContentPlayer")] [SerializeField]
-    private CrabVideoGameManager videoGameManager;
+    [FormerlySerializedAs("videoGameManager")] [FormerlySerializedAs("_videoContentPlayer")] [SerializeField]
+    private CrabVideoBaseGameManager videoBaseGameManager;
 
     //animation control part.
     public static readonly int ROLL_ANIM = Animator.StringToHash("Roll");
@@ -121,11 +122,11 @@ public class Crab_AnimalPathController : MonoBehaviour
         // inPath = new Vector3[2];
         _distancesFromStartPoint = new float[4];
 
-        VideoContent_GameManager.OnClickInEffectManager -= CrabOnClicked;
-        VideoContent_GameManager.OnClickInEffectManager += CrabOnClicked;
+        VideoContentBaseGameManager.OnClickInEffectManager -= CrabOnClicked;
+        VideoContentBaseGameManager.OnClickInEffectManager += CrabOnClicked;
 
-        CrabVideoGameManager.onCrabAppear -= OnCrabAppear;
-        CrabVideoGameManager.onCrabAppear += OnCrabAppear;
+        CrabVideoBaseGameManager.onCrabAppear -= OnCrabAppear;
+        CrabVideoBaseGameManager.onCrabAppear += OnCrabAppear;
 
         for (int i = 'A'; i < 'L' + 1; i++) SetPool(_inactiveCrabPool, "Crab" + i);
 
@@ -188,7 +189,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void OnDestroy()
     {
-        VideoContent_GameManager.OnClickInEffectManager -= CrabOnClicked;
+        VideoContentBaseGameManager.OnClickInEffectManager -= CrabOnClicked;
     }
 
 
@@ -196,7 +197,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         if (!isInit) return;
 
-        if (videoGameManager.isCrabAppearable) DoPathToClickPoint();
+        if (videoBaseGameManager.isCrabAppearable) DoPathToClickPoint();
 
 
 #if UNITY_EDITOR
@@ -215,7 +216,7 @@ public class Crab_AnimalPathController : MonoBehaviour
     {
         for (var i = (int)StartDirection.Upper_Left; i < appearablePoints.Length; ++i)
             _distancesFromStartPoint[i] =
-                Vector2.Distance(crabVideoContentGameManager.currentHitPoint, appearablePoints[i].position);
+                Vector2.Distance(crabVideoContentBaseGameManager.currentHitPoint, appearablePoints[i].position);
 
         _closestStartPointIndex = (int)StartDirection.Upper_Left;
 
@@ -315,7 +316,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void PlayPath(Crab _crabDoingPath)
     {
-        if (!videoGameManager.isCrabAppearable) return;
+        if (!videoBaseGameManager.isCrabAppearable) return;
 
 #if UNITY_EDITOR
 //Debug.Log($"꽃게 생성 가능 여부 :  {videoGameManager.isCrabAppearable} ");
@@ -334,7 +335,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
         // 첫 번째 트윈: 화면 밖에서 안으로 이동
         _crabDoingPath.currentSequence.Append(_crabDoingPath.gameObj.transform
-            .DOMove(crabVideoContentGameManager.currentHitPoint + Vector3.up * Random.Range(0, 3),
+            .DOMove(crabVideoContentBaseGameManager.currentHitPoint + Vector3.up * Random.Range(0, 3),
                 _crabDoingPath.gameObj.transform.localScale.x > 20 ? 5.2f : 1.8f) //큰 게 속도: 작은 게 속도
             .OnStart(() => { _crabDoingPath.gameObj.transform.DOLookAt(lookAtTarget.position, 0.01f); })
             .OnComplete(() =>
@@ -499,7 +500,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private void SetInAndLoopPath(Crab crab)
     {
-        main = crabVideoContentGameManager.currentHitPoint;
+        main = crabVideoContentBaseGameManager.currentHitPoint;
 
         _isNoPath = false;
         _isLinearPath = false;

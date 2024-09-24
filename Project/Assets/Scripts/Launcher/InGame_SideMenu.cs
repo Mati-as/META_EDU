@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
-public class TopMenuUI : UI_PopUp
+public class InGame_SideMenu : UI_PopUp
 {
     private enum Btn_Type
     {
@@ -139,11 +139,14 @@ public class TopMenuUI : UI_PopUp
     {
 
         Managers.isGameStopped = true;
-
+       
         yield return _waitForSceneChange;
 
         TerminateProcess();
             
+        
+        if(GameObject.FindWithTag("GameManager") == null) Logger.Log("Successfully Destroyed");
+        
         SceneManager.LoadScene("METAEDU_LAUNCHER");
    
 
