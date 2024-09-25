@@ -103,10 +103,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) PlayNarration();
 
-        var uiLayer = LayerMask.NameToLayer("UI");
-        LayerMask maskWithoutUI = ~(1 << uiLayer);
-        layerMask = maskWithoutUI;
-
+        SetLayerMask();
 #if UNITY_EDITOR
         Debug.Log("scene is initialzied");
 #endif
@@ -116,6 +113,12 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
 
+    protected virtual void SetLayerMask()
+    {
+        var uiLayer = LayerMask.NameToLayer("UI");
+        LayerMask maskWithoutUI = ~(1 << uiLayer);
+        layerMask = maskWithoutUI;
+    }
     protected void OnOriginallyRaySynced()
     {
         GameManager_Ray = RaySynchronizer.initialRay;

@@ -21,7 +21,7 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    private static readonly string port = "COM4";
+    private static readonly string port = "COM3";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
 
@@ -230,17 +230,6 @@ public class SensorManager : MonoBehaviour
 
     public void Init()
     {
-        //_screenRatio = Resolution_Y / (_height * 10);
-#if UNITY_EDITOR
-        Debug.Log($"Screen Ration is {_screenRatio}");
-#endif
-        
-        // InitializeSlider("HeightSlider", out _heightSlider);
-        // InitializeSlider("OffsetYSlider", out sensorDistance);
-        // InitializeSlider("ScreenRatioSlider", out _screenRatioSlider);
-      
-  
-        
         
     }
 
@@ -526,6 +515,7 @@ public class SensorManager : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
+        if(!Managers.isGameStopped)
         GenerateDectectedPos();
     }
 

@@ -48,6 +48,7 @@ public class RaySynchronizer : MonoBehaviour
     {
         //각 씬의 Overlay-UICamera Tag 할당 필요
       
+       
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _baseGameManager);
 
