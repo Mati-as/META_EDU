@@ -11,10 +11,10 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private enum ToolList
     {
         Eraser,
-        Stamp,
+        SelectStamp,
         Reset,
         Download,
-        Count
+        Stamps
     }
 
     private enum UI
@@ -30,6 +30,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private Button[] _stampBtns;
     private Sprite _currentSprite;
     public int currentStampIndex { get; private set; }
+    public bool isInitialStampSet { get; private set; }
     private CanvasGroup _cvsGroup;
     public int FLOWER_STAMP_COUNT;
     private SpriteState _originalState;
@@ -42,8 +43,8 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private bool[] _isUIAnimWorking;
 
     public static event Action OnResetClicked;
-   
 
+    
     public void Init()
     {
         
@@ -51,13 +52,13 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
         UI_Scene_Button.onBtnShut += OnStartBtnClicked;
 
-        _isUIOn = new bool[(int)ToolList.Count];
-        _toolTexts = new TextMeshProUGUI[(int)ToolList.Count];
-        _isUIAnimWorking = new bool[(int)ToolList.Count];
+        _isUIOn = new bool[(int)ToolList.Stamps];
+        _toolTexts = new TextMeshProUGUI[(int)ToolList.Stamps];
+        _isUIAnimWorking = new bool[(int)ToolList.Stamps];
 
         var toolsParent = transform.GetChild((int)UI.Tools);
-        _toolBtns = new Button[(int)ToolList.Count];
-        for (var i = 0; i < (int)ToolList.Count; i++)
+        _toolBtns = new Button[(int)ToolList.Stamps];
+        for (var i = 0; i < (int)ToolList.Stamps; i++)
         {
 #if UNITY_EDITOR
             Debug.Log($"tool Assigned: {(ToolList)i}");
@@ -81,14 +82,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         hidePos = flowerStampDefaultPos + Vector3.down * HIDE_POS_AMOUNT;
         rectFlowerStamp.anchoredPosition = hidePos;
         flowerStamps.GetComponent<Button>();
-        _toolBtns[(int)ToolList.Stamp].onClick.AddListener(() =>
-        {
-            if (_isUIAnimWorking[(int)ToolList.Stamp]) return;
-            _isUIAnimWorking[(int)ToolList.Stamp] = true;
-            _toolTexts[(int)ToolList.Stamp].text = _isUIOn[(int)ToolList.Stamp] ? "도장 고르기\nOFF" : "도장 고르기\nON";
-            var target = _isUIOn[(int)ToolList.Stamp] ? hidePos : flowerStampDefaultPos;
-            OnUIClicked(rectFlowerStamp, target, ToolList.Stamp);
-        });
+        _toolBtns[(int)ToolList.SelectStamp].onClick.AddListener(SetStampSelectionUI);
 
         _toolBtns[(int)ToolList.Reset].onClick.AddListener(() => { OnResetClicked?.Invoke(); });
 
@@ -113,6 +107,10 @@ public class EvaArmisen_ToolManager : MonoBehaviour
             {
                 if (currentStampIndexMap.ContainsKey(_stampBtns[index].GetInstanceID()))
                 {
+
+                    SetStampSelectionUI();
+                    isInitialStampSet = true;
+                    
                     OnClick(currentStampIndexMap[_stampBtns[index].GetInstanceID()]);
                     _isEraserMode = false;
 
@@ -123,7 +121,18 @@ public class EvaArmisen_ToolManager : MonoBehaviour
             currentStampIndexMap.Add(_stampBtns[i].GetInstanceID(), i);
         }
 
+
+        SetStampSelectionUI();
         _originalState = _stampBtns[0].spriteState;
+    }
+
+    private void SetStampSelectionUI()
+    {
+        if (_isUIAnimWorking[(int)ToolList.SelectStamp]) return;
+        _isUIAnimWorking[(int)ToolList.SelectStamp] = true;
+        _toolTexts[(int)ToolList.SelectStamp].text = _isUIOn[(int)ToolList.SelectStamp] ? "도장 고르기\nOFF" : "도장 고르기\nON";
+        var target = _isUIOn[(int)ToolList.SelectStamp] ? hidePos : flowerStampDefaultPos;
+        OnUIClicked(rectFlowerStamp, target, ToolList.SelectStamp);
     }
 
     private void OnDestroy()

@@ -12,7 +12,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 {
    // public string gameVersion; //Fish or Tree 
    // private SpriteRenderer _bgSprite;
-   private static EvaArmisen_ToolManager S_toolManager;
+   private static EvaArmisen_ToolManager s_toolManager;
     public static bool isInit { get; private set; }
 
     public Queue<GameObject>[] stampPools { get; set; }
@@ -22,6 +22,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 
     private ParticleSystem[] _ps;
 
+    protected float waitForClickableFloat = 0.2f;
     private readonly float _poolSize = 10;
     private float _elapsed;
     private readonly float _timeLimit = 987654321f;
@@ -44,27 +45,26 @@ public class EvaArmisenBaseGameManager : Base_GameManager
     {
         base.Init();
         
+     
+        DOTween.Init().SetCapacity(5000, 300);
+        
         _raySync = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
         
         
-        if (S_toolManager == null)
+        if (s_toolManager == null)
         {
-            S_toolManager = GameObject.Find("EvaArmisen_ToolManager").AddComponent<EvaArmisen_ToolManager>();
+            s_toolManager = GameObject.Find("EvaArmisen_ToolManager").AddComponent<EvaArmisen_ToolManager>();
         }
-        S_toolManager.Init();
+        s_toolManager.Init();
         
 
-        DEFAULT_SENSITIVITY = 0.3f;
-        DOTween.Init().SetCapacity(5000, 300);
+      
 
 
-        stampPools = new Queue<GameObject>[S_toolManager.FLOWER_STAMP_COUNT];
+        stampPools = new Queue<GameObject>[s_toolManager.FLOWER_STAMP_COUNT];
         allStamps = new Queue<Transform>();
         _poolIDMap = new Dictionary<int, Queue<GameObject>>();
         SetPool();
-        // _bgSprite = GameObject.Find(gameVersion + "Mask").GetComponent<SpriteRenderer>();
-//        _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
-        //     _tmp.text = string.Empty;
 
         _pictureAnimator = GameObject.Find("EvaArmisenAnimation").GetComponent<Animator>();
 
@@ -117,11 +117,8 @@ public class EvaArmisenBaseGameManager : Base_GameManager
         });
     }
 
-    // private void OnStartUI()
-    // {
-    //     _isRoundReadyToStart = true;
-    // }
-    //
+  
+ 
     private readonly string ON_READY_MESSAGE = "놀이를 다시 준비하고 있어요";
     private void OnRoundFinished()
     {
@@ -167,10 +164,11 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 
     public override void OnRaySynced()
     {
+        
         if (!PreCheckOnRaySync()) return;
         
         // 1.1 지우개 모드인 경우 -----------------------
-        if (S_toolManager._isEraserMode)
+        if (s_toolManager._isEraserMode)
         {
             foreach (var hit in GameManager_Hits)
             {
@@ -191,26 +189,24 @@ public class EvaArmisenBaseGameManager : Base_GameManager
             {
                 for (var i = 0; i < _raySync.raycastResults.Count; i++)
                 {
-#if UNITY_EDITOR
-//                    Debug.Log("버튼클릭! 플레이 함수 실행X ");
-#endif
-
                     _raySync.raycastResults[i].gameObject.TryGetComponent(out button);
                     if (button != null) return;
+                    button.onClick.Invoke();
                 }
             }
-                
-            
-            else
+
+            if (s_toolManager.isInitialStampSet)
             {
-                
-                GetFromPool(hit.point,S_toolManager.currentStampIndex);
+                SetClickableWithDelay();
+                GetFromPool(hit.point,s_toolManager.currentStampIndex);
                 var randomChar = (char)Random.Range('A', 'F' + 1);
                 Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                     0.3f);
-     
+
                 return;
+
             }
+            
             
 
 
@@ -219,7 +215,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 
     private void SetPool()
     {
-        for (int i = 0; i < S_toolManager.FLOWER_STAMP_COUNT; i++)
+        for (int i = 0; i < s_toolManager.FLOWER_STAMP_COUNT; i++)
         {
             var currentStampToCopy = transform.GetChild(i).gameObject;
             stampPools[i] = new Queue<GameObject>();

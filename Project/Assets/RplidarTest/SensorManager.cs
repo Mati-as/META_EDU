@@ -296,16 +296,12 @@ public class SensorManager : MonoBehaviour
 
         if (detectedPosRect == null)
         {
-#if UNITY_EDITOR
-            Debug.LogError("No RectTransform available in the pool.");
-#endif
+
             return;
         }
+
 #if UNITY_EDITOR
-//        Debug.Log("Get RectRansfrom Pool.");
-#endif
-#if UNITY_EDITOR
-        Debug.Log($"sensor: {rectX},{rectY}");
+//        Debug.Log($"sensor: {rectX},{rectY}");
 #endif
         detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
         detectedPosRect.gameObject.SetActive(true);

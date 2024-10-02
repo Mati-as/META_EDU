@@ -36,8 +36,9 @@ public abstract class Base_GameManager : MonoBehaviour
     protected float BGM_VOLUME { get; set; } = 0.105f;
 
     private static float _defaultSensitivity = 0.05f;
+    protected static float waitForClickableFloat;
 
-    public static float DEFAULT_SENSITIVITY
+    public static float DefaultSensitivity
     {
         get => _defaultSensitivity;
 
@@ -49,14 +50,18 @@ public abstract class Base_GameManager : MonoBehaviour
         }
     }
 
-    protected void SetClickableWithDelay()
+    protected void SetClickableWithDelay(float waitTime =0)
     {
-        StartCoroutine(SetClickableWithDelayCo());
+     
+        waitTime = waitForClickableFloat;
+
+        if (!isClickable) return;
+        StartCoroutine(SetClickableWithDelayCo(waitTime));
     }
 
-    private IEnumerator SetClickableWithDelayCo()
+    private IEnumerator SetClickableWithDelayCo(float waitTime)
     {
-        if (_waitForClickable == null) _waitForClickable = new WaitForSeconds(_defaultSensitivity);
+        if (_waitForClickable == null) _waitForClickable = new WaitForSeconds(waitTime);
 
         isClickable = false;
         yield return _waitForClickable;
@@ -97,7 +102,7 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
 
-        ManageProjectSettings(SHADOW_MAX_DISTANCE, DEFAULT_SENSITIVITY);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, DefaultSensitivity);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
@@ -129,7 +134,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensitivity)
     {
-        DEFAULT_SENSITIVITY = defaultSensitivity;
+        DefaultSensitivity = defaultSensitivity;
 
 
         // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
@@ -185,14 +190,6 @@ public abstract class Base_GameManager : MonoBehaviour
         {
 #if UNITY_EDITOR
             Debug.Log("StartBtn Should be Clicked");
-#endif
-            return false;
-        }
-
-        if (!isInitialized)
-        {
-#if UNITY_EDITOR
-            Debug.Log("Scene hasn't been initialized yet, Can't be clicked");
 #endif
             return false;
         }
