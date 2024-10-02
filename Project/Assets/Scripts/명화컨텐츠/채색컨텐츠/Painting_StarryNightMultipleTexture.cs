@@ -110,12 +110,12 @@ public class Painting_StarryNightMultipleTexture : Base_GameManager
     public float currentRotation;
     
     private float _elapsed;
-    private readonly float _timeLimitForSceneChange = 50;
+    [FormerlySerializedAs("_timeLimitForSceneChange")] public float timeLimitForSceneChange;
     
     private void Update()
     {
         _elapsed += Time.deltaTime;
-        if (_elapsed > _timeLimitForSceneChange)
+        if (_elapsed > timeLimitForSceneChange)
         {
             ChangeScene?.Invoke();
             _elapsed = 0; 

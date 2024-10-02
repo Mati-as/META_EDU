@@ -97,8 +97,10 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 80798acd871382c4599064820a88a102,
+    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 744239c7296257e4c8a329843b42033d,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -133,6 +135,10 @@ PrefabInstance:
     - target: {fileID: 164190, guid: 14691c451e07ff94cb94be3f44e72ab7, type: 3}
       propertyPath: m_Name
       value: picture
+      objectReference: {fileID: 0}
+    - target: {fileID: 164190, guid: 14691c451e07ff94cb94be3f44e72ab7, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 478108, guid: 14691c451e07ff94cb94be3f44e72ab7, type: 3}
       propertyPath: m_RootOrder
@@ -11547,7 +11553,7 @@ RectTransform:
   - {fileID: 8037110316923839598}
   - {fileID: 5561201711971712603}
   m_Father: {fileID: 1286132986}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

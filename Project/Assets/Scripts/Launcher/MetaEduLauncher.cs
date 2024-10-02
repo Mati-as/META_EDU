@@ -140,6 +140,7 @@ public class MetaEduLauncher : UI_PopUp
 
         GetButton((int)UIButtons.SettingCloseButton).gameObject.BindEvent(() =>
         {
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
             ShowTab(currentUITab);
         });
@@ -397,6 +398,7 @@ public class MetaEduLauncher : UI_PopUp
     private void OnBackBtnOnConfirmMessageClicked()
     {
         if (!_isClikcable) return;
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
         CheckAndSetClickable();
         GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
     }
@@ -526,7 +528,11 @@ public class MetaEduLauncher : UI_PopUp
                       
                         if (!_isClikcable) return;
                         CheckAndSetClickable();
+                        
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
                         GetObject((int)UIType.UI_Confirm).SetActive(true);
+                        
+                        //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
                         _gameNameWaitingForConfirmation = result.gameObject.name;
                     }
                 }
