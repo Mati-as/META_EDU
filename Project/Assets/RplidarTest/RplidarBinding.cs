@@ -33,7 +33,7 @@ public class RplidarBinding
     {
         var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
         currentPath += Path.PathSeparator + Application.dataPath + DLL_PATH;
-        Debug.Log($"Filename: {DLL_FILENAME}, current Path Of Lida: {currentPath}, ");
+        Debug.Log($"Port{SensorManager.PORT} //\n Filename: {DLL_FILENAME},//\n current Path Of Lida: {currentPath}, ");
         Environment.SetEnvironmentVariable("PATH", currentPath);
     }
 

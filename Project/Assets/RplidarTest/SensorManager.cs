@@ -21,7 +21,7 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    private static readonly string port = "COM3";
+    public static readonly string PORT = "COM3";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
 
@@ -194,8 +194,8 @@ public class SensorManager : MonoBehaviour
 
         yield return _refreshWait;
 
-        var result = RplidarBinding.OnConnect(port);
-        Debug.Log("Connect on " + port + " result:" + result);
+        var result = RplidarBinding.OnConnect(PORT);
+        Debug.Log("Connect on " + PORT + " result:" + result);
 
         isMoterStarted = RplidarBinding.StartMotor();
         Debug.Log("StartMotor:" + isMoterStarted);
@@ -331,11 +331,11 @@ public class SensorManager : MonoBehaviour
 
     private void Start()
     {
-        var result = RplidarBinding.OnConnect(port);
+        var result = RplidarBinding.OnConnect(PORT);
         isMoterStarted = RplidarBinding.StartMotor();
 
         m_onscan = RplidarBinding.StartScan();
-        Debug.Log("Connect on " + port + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
+        Debug.Log("Connect on " + PORT + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
                   m_onscan);
 
         if (m_onscan)
