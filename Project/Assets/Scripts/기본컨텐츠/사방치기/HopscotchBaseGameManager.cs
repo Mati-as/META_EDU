@@ -69,8 +69,6 @@ public class HopscotchBaseGameManager : Base_GameManager
             Debug.LogError("GameObject named 'InPlayTexts' not found in the scene.");
 
         foreach (var rect in _numberTextRects) _uiDefaultSizeMap.Add(rect, rect.localScale);
-
-   
     }
 
 
@@ -110,13 +108,12 @@ public class HopscotchBaseGameManager : Base_GameManager
         _uiDefaultSizeMap = new Dictionary<RectTransform, Vector3>();
         _rigidbodies = new Dictionary<Transform, Rigidbody>();
 
-        
-      
+
         if (Camera.main != null) _camDefaultPosition = Camera.main.transform.position;
 
 
         base.Init();
-        
+
         BindEvent();
         InitializeStageClearUI();
         LoadParticles();
@@ -126,7 +123,6 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void InitializeStageClearUI()
     {
-        
         _stageClearUI = GameObject.Find("StageClearUI").GetComponent<RectTransform>();
         _stageClearUIDefaultScale = _stageClearUI.localScale;
         _stageClearUI.localScale = Vector3.zero;
@@ -140,8 +136,8 @@ public class HopscotchBaseGameManager : Base_GameManager
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
-        
-        
+
+
         if (isStageClearUIOn) return;
 #if UNITY_EDITOR
         if (!isChecked)
@@ -154,7 +150,7 @@ public class HopscotchBaseGameManager : Base_GameManager
         // 발판 밟은 직후에는 다음 발판을 누를 수 없게합니다.
         if (_isSuccesssParticlePlaying) return;
 
-        // 게임시작전, 게임초기화 시 클릭 X
+        // 게임시작전, 게임초기화, 이전스텝클릭(일정시간) 시 클릭 X
         if (!_isClickable) return;
 
         if (CheckOnStep()) OnCorrectStep(_currentStep);
@@ -235,8 +231,7 @@ public class HopscotchBaseGameManager : Base_GameManager
     {
         //if (_scaleBackSequence.IsActive()) _scaleBackSequence.Kill();
 
-     
-      
+
 #if UNITY_EDITOR
 #endif
 
@@ -271,13 +266,13 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _currentScaleSequence
             .Append(number
-            .DOScale(numberDoScaleSize, 0.45f)
-            .OnKill(() => { OnScaleSequenceKilled(number); })
-            .SetEase(Ease.Linear))
+                .DOScale(numberDoScaleSize, 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(number); })
+                .SetEase(Ease.Linear))
             .Append(number
-            .DOScale(_uiDefaultSizeMap[number], 0.45f)
-            .OnKill(() => { OnScaleSequenceKilled(number); })
-            .SetEase(Ease.Linear))
+                .DOScale(_uiDefaultSizeMap[number], 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(number); })
+                .SetEase(Ease.Linear))
             .AppendInterval(0.5f)
             .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
 
@@ -290,13 +285,13 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _stepCurrentScaleSequence
             .Append(step
-            .DOScale(_defaultSizeMap[step] * _stepSizeChangeRate, 0.45f)
-            .OnKill(() => { OnScaleSequenceKilled(step); })
-            .SetEase(Ease.Linear))
+                .DOScale(_defaultSizeMap[step] * _stepSizeChangeRate, 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(step); })
+                .SetEase(Ease.Linear))
             .Append(step
-            .DOScale(_defaultSizeMap[step], 0.45f)
-            .OnKill(() => { OnScaleSequenceKilled(step); })
-            .SetEase(Ease.Linear))
+                .DOScale(_defaultSizeMap[step], 0.45f)
+                .OnKill(() => { OnScaleSequenceKilled(step); })
+                .SetEase(Ease.Linear))
             .AppendInterval(0.5f)
             .SetLoops(-1, LoopType.Yoyo); // 무한 반복 설정
 
@@ -325,22 +320,64 @@ public class HopscotchBaseGameManager : Base_GameManager
     }
 
 
-
     private void OnCorrectStep(int currentPosIndex)
     {
         ShakeCam();
         PlaySuccessParticle(currentPosIndex);
         
+        PlayNarration(currentPosIndex +1); //
     }
-    private void ShakeCam()=> Camera.main.DOShakePosition(1.2f, 0.5f, 7).OnComplete(()=>
+
+    private void PlayNarration(int currentIndex)
+    {
+        
+        if (currentIndex == 10)
+        {
+            var randomChar = (char)Random.Range('A', 'B' + 1);
+            Managers.soundManager.Play(SoundManager.Sound.Narration,
+                "Hopscotch/Narration/10_NextFriend" + randomChar, 0.7f);
+            return;
+        }
+        
+        if( currentIndex ==5)
+        {
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Hopscotch/Narration/GoodJobNext6");
+            return;
+        }
+
+       
+
+        var chance = Random.Range(0, 100);
+
+        if (chance < 20)
+        {
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Next_"+(currentIndex+1).ToString());
+        }
+        else if(chance > 20 && chance < 40 )
+        {
+        
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/GoodJobAndNext".ToString());
+        }
+        else if(chance > 40 && chance < 60 )
+        {
+
+            if (currentIndex == 1) return;
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Number"+currentIndex.ToString());
+        }
+    }
+
+    private void ShakeCam()
+    {
+        Camera.main.DOShakePosition(1.2f, 0.5f, 7).OnComplete(() =>
         {
             Camera.main.transform.DOMove(_camDefaultPosition, 0.5f);
         });
+    }
 
     private void PlaySuccessParticle(int currentPosition)
     {
         if (_isSuccesssParticlePlaying) return;
-        
+        _isClickable = false;
 
         //중복 실행 방지
         _isSuccesssParticlePlaying = true;
@@ -376,7 +413,7 @@ public class HopscotchBaseGameManager : Base_GameManager
                     {
                         _isSuccesssParticlePlaying = false;
                         _currentStep++;
-
+                        _isClickable = true;
 
                         if (_currentStep >= _stepCount)
                         {
@@ -402,32 +439,46 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void DoIntroMove()
     {
+        DOVirtual.Float(0, 0, 5.9f, _ =>{})
+        .OnComplete(() =>
+        {
+            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Intro",
+                1f);
+            
+            DOVirtual.Float(0, 0, 3.5f, _ =>{})
+                .OnComplete(() =>
+                {
+                    _isClickable = true;
+                });
+            
+        });
+
+        
         for (var i = 0; i < _stepCount; ++i)
         {
             var i1 = i;
             _steps[i].transform
                 .DOMove(targetPos[i], 1f + stackInterval * i)
-                .OnStart(() =>
-                {
-                    
-                })
+                .OnStart(() => { })
                 .OnComplete(() =>
                 {
-                    
-                   
                     if (i1 >= _stepCount - 1)
-                        DOVirtual
+                        DOVirtual 
                             .Float(0, 0, 2, val => val++)
                             .OnComplete(() =>
                             {
-                               
                                 _numCvGrup.DOFade(1, 1)
                                     .OnComplete(
-                                    () => {  isStageClearUIOn = false;}
-                                        );
-#if UNITY_EDITOR
-
-#endif
+                                        () =>
+                                        {
+                                            if (isStageClearUIOn)
+                                            {
+                                                isStageClearUIOn = false;
+                                                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish",
+                                                    0.05f);
+                                            }
+                                        }
+                                    );
 
                                 if (i1 >= _stepCount - 1)
                                 {
@@ -438,10 +489,12 @@ public class HopscotchBaseGameManager : Base_GameManager
                                 //DoScaleUp(_numberTextRects[1]);
                                 if (i1 >= _stepCount - 1)
                                 {
-                                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish", 0.10f);
+                                  
+                                  
                                     PlayInducingParticle(0);
                                 }
-                                _isClickable = true;
+
+                              
                             });
                 })
                 .SetDelay(2f);
@@ -457,29 +510,25 @@ public class HopscotchBaseGameManager : Base_GameManager
         _currentStep = 0;
         _numCvGrup.DOFade(0, 0.4f);
         isStageClearUIOn = true;
-       
+
         _stageClearUI.transform.gameObject.SetActive(true);
         _stageClearUI.localScale = Vector3.zero;
         _stageClearUI
             .DOScale(_stageClearUIDefaultScale, 2f)
             .OnComplete(() =>
                 {
+                
                     DOVirtual.Float(0, 0, 3.5f, val => val++)
                         .OnComplete(() =>
                         {
                             _stageClearUI
                                 .DOScale(Vector3.zero, 1.2f)
-                                .OnComplete(() =>
-                                {
-                                    
-                                    _stageClearUI.transform.gameObject.SetActive(false);
-                                });
+                                .OnComplete(() => { _stageClearUI.transform.gameObject.SetActive(false); });
                         });
                 }
-            ).SetDelay(2f);// 성공 시 - 성공 애니메이션 표출까지 걸리는 시간에 대한 Delay값  
+            ).SetDelay(2f); // 성공 시 - 성공 애니메이션 표출까지 걸리는 시간에 대한 Delay값  
 
-        
-  
+
         DOVirtual.Float(0, 0, waitTimeToRestartGame, val => val++)
             .OnComplete(() => { PlayInducingParticle(_currentStep); });
 
@@ -510,11 +559,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
 
         DOVirtual.Float(0, 1, _stageResetDelay, _ => { })
-            .OnComplete(() =>
-            {
-                
-                DoIntroMove();
-            });
+            .OnComplete(() => { DoIntroMove(); });
 
 
 #if UNITY_EDITOR
