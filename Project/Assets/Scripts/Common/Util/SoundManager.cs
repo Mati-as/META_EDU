@@ -185,14 +185,18 @@ public class SoundManager : MonoBehaviour
         if (path.Contains("Audio/") == false)
             path = string.Format("Audio/{0}", path);
 
-        if (audioSource == null) Debug.LogError("audiosource null exception");
+        if (audioSource == null) Logger.LogError("audiosource null exception");
 
 
         if (type == Sound.Bgm)
         {
             var audioClip = Resources.Load<AudioClip>(path);
             if (audioClip == null)
+            {
+                Logger.LogWarning("audioclip null ");
                 return false;
+            }
+
 
             if (audioSource.isPlaying)
                 audioSource.Stop();
@@ -208,7 +212,11 @@ public class SoundManager : MonoBehaviour
         {
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
+            {
+                Logger.LogWarning("audioclip null ");
                 return false;
+            }
+
 
             audioSource.volume = volume * volumes[(int)Sound.Effect];
             audioSource.pitch = pitch;
@@ -222,9 +230,7 @@ public class SoundManager : MonoBehaviour
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
             {
-#if UNITY_EDITOR
-                Debug.Log($"narration clip is null{path}");
-#endif
+                Logger.LogWarning("audioclip null ");
                 return false;
             }
 

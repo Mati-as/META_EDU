@@ -73,7 +73,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
             if (_iOnClicked != null)
             {
-                DOVirtual.Float(0, 0.011f, 0.2f, val =>
+                DOVirtual.Float(0, 0.009f, 0.2f, val =>
                 {
                     _parrotSlider.value += val;
                 }).SetEase(Ease.InSine);
@@ -110,9 +110,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
         yield return _poolReturnWait;
 
-#if UNITY_EDITOR
 
-#endif
         ps.Stop();
         ps.Clear();
         ps.gameObject.SetActive(false);
