@@ -39,6 +39,31 @@ public class SensorManager : MonoBehaviour
     public bool m_onscan;
     private Thread m_thread;
 
+
+    private static float _sensorSensitivity;
+    public static float sensorSensitivity
+    {
+        get
+        {
+            return _sensorSensitivity;
+        }
+        set
+        {
+            if (value < 0.05f )
+            {
+                _sensorSensitivity = 0.05f;
+                Logger.LogWarning("sensitivity is too small. set as 0.05f");
+            }
+            else
+            {
+                _sensorSensitivity = value;
+                Logger.Log($"current sensitivity {value}");
+            }
+            
+        }
+    }
+
+
     private bool m_datachanged;
 
     //=====
@@ -55,7 +80,7 @@ public class SensorManager : MonoBehaviour
     //
 
     //1015
-    private static float _height = 182;
+    private static float _height = 172;
 
     public static float height
     {
@@ -105,12 +130,12 @@ public class SensorManager : MonoBehaviour
     private float pre_y;
 
     private bool UI_Active;
-    private bool BALL_Active = true;
+    public static bool BallActive { get; set; }
     private bool SF_Active = true;
     private readonly int LIDAR_DATA_SIZE = 720;
 
-    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
-//pvate Slider _sensitivitySlider;
+    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 10/4/24
+    private Slider _sensitivitySlider;
     private TextMeshProUGUI _sensitivityText;
 
 
@@ -156,11 +181,9 @@ public class SensorManager : MonoBehaviour
     {
         //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
         //if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
-
-        Init();
         
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
-
+        _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
         InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
         InGame_SideMenu.OnRefreshEvent += RefreshSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
@@ -228,22 +251,16 @@ public class SensorManager : MonoBehaviour
 
     private Stack<RectTransform> _sensorDetectedPositionPool;
 
-    public void Init()
-    {
-        
-    }
+
 
     private WaitForSeconds _poolReturnWait;
 
     protected IEnumerator ReturnToPoolAfterDelay(RectTransform obj, Stack<RectTransform> pool)
     {
-        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(FP_Prefab.Limit_Time);
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(sensorSensitivity);
 
         yield return _poolReturnWait;
         obj.gameObject.SetActive(false);
-#if UNITY_EDITOR
-
-#endif
 
         pool.Push(obj); // Return the particle system to the pool
     }
@@ -304,7 +321,7 @@ public class SensorManager : MonoBehaviour
 //        Debug.Log($"sensor: {rectX},{rectY}");
 #endif
         detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
-        detectedPosRect.gameObject.SetActive(true);
+        detectedPosRect?.gameObject.SetActive(true);
         StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
     }
 
@@ -360,10 +377,13 @@ public class SensorManager : MonoBehaviour
 
         TESTUI.SetActive(false);
 
-        // _sensitivitySlider.onValueChanged.AddListener(_ =>
-        //    {
-        //  FP_Prefab.Limit_Time = _sensitivitySlider.value * 2f;
-        //  });
+          _sensitivitySlider.onValueChanged.AddListener(_ =>
+          {
+                _sensorSensitivity = _sensitivitySlider.value;
+                _poolReturnWait = new WaitForSeconds(sensorSensitivity);
+                
+                Logger.Log($"prefab limit time is {_sensitivitySlider.value }");
+          });
 
 
         _projectorLookUpTable = new Dictionary<int, Vector2>();
@@ -409,7 +429,7 @@ public class SensorManager : MonoBehaviour
 
         ///////////////////////// Pool
         _sensorDetectedPositionPool = new Stack<RectTransform>();
-        SetPool(_sensorDetectedPositionPool, "Rplidar/FP");
+        SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
         
         // /////////////////////////(3)
         // ConfigureSlider(_heightSlider, HEIGHT_MAX, value =>
@@ -462,7 +482,7 @@ public class SensorManager : MonoBehaviour
     private void GenerateDectectedPos()
     {
         if (!isMoterStarted) return;
-        
+        if (Managers.isGameStopped) return;
         _timer = 0f;
 
 
@@ -470,9 +490,6 @@ public class SensorManager : MonoBehaviour
         {
             for (var i = 0; i < 720; i++)
             {
-             //   var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
-
-                //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
 
                 //6배
                 if (_lidarDatas[i].theta > 90 && _lidarDatas[i].theta < 270) continue;
@@ -511,8 +528,13 @@ public class SensorManager : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        if(!Managers.isGameStopped)
-        GenerateDectectedPos();
+        if (!Managers.isGameStopped)
+            _timer += Time.deltaTime;
+        if (_timer > sensorSensitivity)
+        {
+         GenerateDectectedPos();
+         _timer = 0;
+        }
     }
 
     private int _filteringAmount = 2;
@@ -581,9 +603,10 @@ public class SensorManager : MonoBehaviour
 
     public bool Ball_Active_ONOFF()
     {
-        BALL_Active = !BALL_Active;
+        BallActive = !BallActive;
 
-        return BALL_Active;
+        Logger.Log("Ball Image Active");
+        return BallActive;
     }
 
     public bool SF_Active_ONOFF()

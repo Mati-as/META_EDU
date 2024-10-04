@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class FP_Prefab : RaySynchronizer
 {
@@ -15,29 +17,37 @@ public class FP_Prefab : RaySynchronizer
 
     public FP_controller FPC;
     private float Timer = 0f;
-    public static float Limit_Time { get; set; }
+    //public static float Limit_Time { get; set; }
 
     private RectTransform FP;
     private GameObject Image;
     private static bool _isImageOn;
+    
+    public static event Action onPrefabInput; 
+    private MetaEduLauncher _launcher;
 
     public override void Init()
     {
         base.Init();
-     //   GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
-     _rectTransform = GetComponent<RectTransform>();
-     _image = GetComponent<Image>();
+         //   GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
+         _rectTransform = GetComponent<RectTransform>();
+         _image = GetComponent<Image>();
     }
 
 
 
 
-    void OnEnable()
+    protected override void OnEnable()
     {
-      
+        base.OnEnable();
+        
+        if(_image==null) _image = GetComponent<Image>();
+        if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
+        
         //모드설정에따라 이미지 활성화 비활성화
-
-        _image.enabled = SensorManager.isSensorEditMode;
+        Debug.Assert(_image != null);
+        
+        _image.enabled = SensorManager.BallActive;
         
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
@@ -47,8 +57,6 @@ public class FP_Prefab : RaySynchronizer
         if (FPC.Check_FPposition(FP))
         {
             Image.SetActive(true);
-            //FPC.Add_FPposition(FP);
-            //��ġ �߻� (3)
             base.Start();
             base.InvokeRayEvent();
         }
@@ -87,10 +95,26 @@ public class FP_Prefab : RaySynchronizer
         }
 
         
+        if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
+        {
+            GameObject.Find("@LauncherRoot").TryGetComponent(out _launcher);
+
+            if (_launcher != null)
+            {
+#if UNITY_EDITOR
+                Debug.Log($"prefabInput invoke-------------------");
+#endif
+                _launcher.currentPrefabPosition = this.transform.position;
+                onPrefabInput?.Invoke();
+            }
+            else
+            {
+                Logger.Log("laucnher is null");
+            }
+        }
+
+        
     }
     
-    void Destroy_obj()
-    {
-        Destroy(this.gameObject);
-    }
+
 }

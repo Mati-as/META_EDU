@@ -152,13 +152,18 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         base.OnRaySynced();
         if (!PreCheckOnRaySync()) return;
-
+        
+        
         foreach (var hit in GameManager_Hits)
         {
             var ps = GetFromPool(_effectContainer);
-            ps.gameObject.SetActive(true);
-            ps.gameObject.transform.position = hit.point;
-            ps.Play();
+            if (ps != null)
+            {
+                ps.gameObject.SetActive(true);
+                ps.gameObject.transform.position = hit.point;
+                ps.Play();
+            }
+          
             
             if (hit.transform.name.Contains(nameof(Planet)))
             {

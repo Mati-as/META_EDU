@@ -73,13 +73,16 @@ public class MetaEduLauncher : UI_PopUp
     private readonly float _clickableInterval = 2f;
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
-
+    public Camera _uiCamera;
 
     public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
 
     private void Start()
     {
         Managers.soundManager.Play(SoundManager.Sound.Bgm, "Audio/Bgm/Launcher", 0.05f);
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+        _uiCamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+
     }
 
 
@@ -107,13 +110,15 @@ public class MetaEduLauncher : UI_PopUp
         LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
 
+
+
+        FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
+        FP_Prefab.onPrefabInput += OnRaySyncByPrefab;
+
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         RaySynchronizer.OnGetInputFromUser += OnRaySynced;
-
-        Destroy_prefab.onPrefabInput -= OnRaySyncByPrefab;
-        Destroy_prefab.onPrefabInput += OnRaySyncByPrefab;
-
-
+        
+        
         BindObject(typeof(UIType));
 
         BindButton(typeof(UIButtons));
@@ -270,7 +275,7 @@ public class MetaEduLauncher : UI_PopUp
     {
         LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-        Destroy_prefab.onPrefabInput -= OnRaySyncByPrefab;
+        FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
 
         Managers.soundManager.Stop(SoundManager.Sound.Bgm);
     }
@@ -295,7 +300,11 @@ public class MetaEduLauncher : UI_PopUp
 
     public void ShowTab(UIType tab)
     {
-        if (!_isClikcable) return;
+        if (!_isClikcable)
+        {
+            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭 --------------런쳐 ");
+            return;
+        }
         CheckAndSetClickable();
 
         if ((UIType)_UItab == tab) return;
@@ -336,6 +345,7 @@ public class MetaEduLauncher : UI_PopUp
                 break;
 
             case UIType.SelectMode:
+              
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
                 GetObject((int)UIType.SelectMode).gameObject.SetActive(true);
                 GetObject((int)UIType.SelectMode).GetComponent<ScrollRect>().ResetHorizontal();
@@ -345,24 +355,39 @@ public class MetaEduLauncher : UI_PopUp
 
             case UIType.ContentA_PE:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+                
+              
+                
                 GetObject((int)UIType.ContentA_PE).gameObject.SetActive(true);
                 GetObject((int)UIType.ContentA_PE).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
             case UIType.ContentB_Art:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+                
+              
+                
                 GetObject((int)UIType.ContentB_Art).gameObject.SetActive(true);
                 GetObject((int)UIType.ContentB_Art).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
             case UIType.ContentC_Music:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+                
+               
+                
                 GetObject((int)UIType.ContentC_Music).gameObject.SetActive(true);
                 GetObject((int)UIType.ContentC_Music).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
             case UIType.ContentD_Video:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+                
+               
+                
                 GetObject((int)UIType.ContentD_Video).gameObject.SetActive(true);
                 GetObject((int)UIType.ContentD_Video).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
@@ -397,7 +422,11 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnBackBtnOnConfirmMessageClicked()
     {
-        if (!_isClikcable) return;
+        if (!_isClikcable)
+        {
+            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭  ");
+            return;
+        }
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
         CheckAndSetClickable();
         GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
@@ -405,13 +434,28 @@ public class MetaEduLauncher : UI_PopUp
 
     private void CheckAndSetClickable()
     {
+        if (_isClikcable)
+        {
+            StartCoroutine(CheckAndSetClickableCo());
+        }
+    }
+
+    private WaitForSeconds _waitForSensorClick;
+
+    private IEnumerator CheckAndSetClickableCo()
+    {
+        if (!_isClikcable) //!EventSystem.current.IsPointerOverGameObject()
+            yield break;
         _isClikcable = false;
-        DOVirtual.Float(0, 0, _clickableInterval, _ => { })
-            .OnComplete(() =>
-            {
-                _isClikcable = true;
-            });
-      
+
+
+        if (_waitForSensorClick == null) _waitForSensorClick = new WaitForSeconds(_clickableInterval);
+
+        yield return _waitForSensorClick;
+
+
+        _isClikcable = true;
+        Logger.Log("클릭가능---------------------------------------------");
     }
 
     private GraphicRaycaster _launcherGR;
@@ -425,11 +469,13 @@ public class MetaEduLauncher : UI_PopUp
     }
 
     private RaySynchronizer _raySynchronizer;
+ 
     private List<RaycastResult> _results;
     private Ray _ray;
     private Vector3 screenPosition;
 
 
+    public Base_GameManager _gm;
     //Raysychronizer.cs와 동일한 로직사용. 
     public void OnRaySynced()
     {
@@ -452,8 +498,9 @@ public class MetaEduLauncher : UI_PopUp
         }
     }
 
+
     private List<RaycastResult> _resultsByPrefab;
-    public Vector3 currentPrefabPosition { private get; set; }
+    public Vector3 currentPrefabPosition { get; set; }
     private Vector3 _screenPositionByPrefab;
 
 
@@ -461,35 +508,35 @@ public class MetaEduLauncher : UI_PopUp
     ///     하드웨어(빔 프로젝터) 상에서 프리팹으로 클릭하는 로직을 위한 OnRaySync 커스텀 이벤트 함수입니다.
     ///     씬변경 후 일반 게임로직에서는 동작하지 않습닌다
     /// </summary>
+     private Button _btn;
     private void OnRaySyncByPrefab()
     {
-        //_screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
-        // _ray = _uiCamera.ScreenPointToRay(_screenPositionByPrefab);
+        if (!_isLoadFinished) return;
+        
+        
+        _screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
+         _ray = Camera.main.ScreenPointToRay(_screenPositionByPrefab);
 
-        _launcherPED.position = currentPrefabPosition;
-        _resultsByPrefab = new List<RaycastResult>();
-        _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
-
-#if UNITY_EDITOR
-        Debug.Log($"프리팹 시 PED Position 변환 전: {currentPrefabPosition}");
-#endif
-
-#if UNITY_EDITOR
-        Debug.Log($"프리팹 시 PED Position 변환 후 : {_launcherPED.position}");
-#endif
-
-        if (_resultsByPrefab != null)
-        {
-            ShowTabOrLoadScene(_resultsByPrefab);
-        }
-
-
-        else
-        {
-#if UNITY_EDITOR
-            Debug.LogError("result is null");
-#endif
-        }
+         _launcherPED.position = currentPrefabPosition;
+         Logger.Log($"current Position{_launcherPED.position}");
+         _resultsByPrefab = new List<RaycastResult>();
+         _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
+        
+         if (_resultsByPrefab != null)
+         {
+             ShowTabOrLoadScene(_resultsByPrefab);
+             
+             foreach (RaycastResult result in _resultsByPrefab)
+             {
+                 result.gameObject.TryGetComponent(out _btn);
+                 _btn?.onClick?.Invoke();
+            
+                 result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+                 eventHandler?.OnClickHandler?.Invoke();
+       
+             }
+         }
+        
     }
 
     private void OnDrawGizmos()
@@ -503,39 +550,44 @@ public class MetaEduLauncher : UI_PopUp
 
     private string _gameNameWaitingForConfirmation;
 
-    public void ShowTabOrLoadScene(List<RaycastResult> results)
+    public void ShowTabOrLoadScene( List<RaycastResult> results)
     {
-        if (!_isClikcable) return;
-
-        DOVirtual.Float(0, 0, 0.2f, _ => { })
+        DOVirtual.Float(0, 0, 0.25f, _ => { })
             .OnComplete(() =>
             {
                 UIType clickedUI = 0;
-#if UNITY_EDITOR
-                //			Debug.Log("LAUNCHER RAY");
-#endif
+
                 foreach (var result in results)
                 {
-#if UNITY_EDITOR
-//					Debug.Log($" result Name:{result.gameObject.name}");
-#endif
                     // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
-                    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI)) ShowTab(clickedUI);
-
-                    // ** 씬 로드** ---------------------------------------------------------
-                    if (result.gameObject.name.Contains("SceneName_"))
+                    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI))
                     {
-                      
-                        if (!_isClikcable) return;
+                        ShowTab(clickedUI);
+                        return;
+                    }
+                    if (result.gameObject.name.Contains("SceneName"))
+                    {
+                        // ** 씬 로드** ---------------------------------------------------------
+                        Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
+                        if (!_isClikcable)
+                        {
+                            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭 --------------런쳐 ");
+                            return;
+                        }
+
                         CheckAndSetClickable();
-                        
+
                         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
                         GetObject((int)UIType.UI_Confirm).SetActive(true);
-                        
+
+
                         //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
                         _gameNameWaitingForConfirmation = result.gameObject.name;
+                        return;
                     }
+                   
                 }
+                
             });
     }
 

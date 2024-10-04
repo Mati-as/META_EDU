@@ -87,7 +87,7 @@ public class Painting_StarryNightMultipleTexture : Base_GameManager
             _isSceneChanging = true;
         }).OnComplete(() =>
         {
-            SceneManager.LoadScene("AB001");
+            SceneManager.LoadScene("AB001FromBA001");
         });
         
     }

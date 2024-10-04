@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -35,25 +36,40 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected float BGM_VOLUME { get; set; } = 0.105f;
 
-    private static float _defaultSensitivity = 0.05f;
-    protected static float waitForClickableFloat;
+    protected static float waitForClickableFloatObj = 0.11f;
+        
+        
+        
+    private float _seonsorSensitivity = 0.05f;
 
-    public static float DefaultSensitivity
+    public float defaultSensitivity
     {
-        get => _defaultSensitivity;
+        get => _seonsorSensitivity;
 
         protected set
         {
             if (value < 0.05f)
-                _defaultSensitivity = 0.05f;
-            else _defaultSensitivity = value;
+            {
+                _seonsorSensitivity = 0.05f;
+                SensorManager.sensorSensitivity = _seonsorSensitivity;
+            }
+
+            else
+            {
+                _seonsorSensitivity = value;
+                SensorManager.sensorSensitivity = _seonsorSensitivity;
+            }
         }
     }
 
     protected void SetClickableWithDelay(float waitTime =0)
     {
-     
-        waitTime = waitForClickableFloat;
+
+        if (waitTime <= 0.001f)
+        {
+            waitTime = waitForClickableFloatObj; 
+        }
+       
 
         if (!isClickable) return;
         StartCoroutine(SetClickableWithDelayCo(waitTime));
@@ -102,7 +118,7 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
 
-        ManageProjectSettings(SHADOW_MAX_DISTANCE, DefaultSensitivity);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, defaultSensitivity);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
@@ -132,11 +148,10 @@ public abstract class Base_GameManager : MonoBehaviour
         On_GmRay_Synced?.Invoke();
     }
 
-    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensitivity)
+    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensorSensitivity)
     {
-        DefaultSensitivity = defaultSensitivity;
-
-
+        SensorManager.sensorSensitivity = defaultSensorSensitivity;
+        
         // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
         var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
 
@@ -211,6 +226,7 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
+        SetClickableWithDelay();
         return true;
     }
 

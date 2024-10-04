@@ -166,6 +166,7 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
+                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Red_Win");
                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/RedWin",0.8f);
                 })
                 .WaitForCompletion();
@@ -180,6 +181,7 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
+                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Blue_Win");
                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/BlueWin",0.8f);
                 }).WaitForCompletion();
           

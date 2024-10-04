@@ -22,7 +22,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 
     private ParticleSystem[] _ps;
 
-    protected float waitForClickableFloat = 0.2f;
+    
     private readonly float _poolSize = 10;
     private float _elapsed;
     private readonly float _timeLimit = 987654321f;
@@ -44,9 +44,9 @@ public class EvaArmisenBaseGameManager : Base_GameManager
     protected override void Init()
     {
         base.Init();
-        
-     
-        DOTween.Init().SetCapacity(5000, 300);
+
+        waitForClickableFloatObj = 0.25f;
+        DOTween.Init().SetCapacity(12500, 300);
         
         _raySync = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
         
@@ -182,18 +182,26 @@ public class EvaArmisenBaseGameManager : Base_GameManager
         
         foreach (var hit in GameManager_Hits)
         {
-            
             // 1.1 버튼클릭인 경우 -----------------------
             Button button = null;
             if (_raySync.raycastResults.Count > 0)
-            {
                 for (var i = 0; i < _raySync.raycastResults.Count; i++)
                 {
                     _raySync.raycastResults[i].gameObject.TryGetComponent(out button);
-                    if (button != null) return;
-                    button.onClick.Invoke();
+                
+                    if (button != null && (button.gameObject.name.Contains("Btn_Erasor") ||
+                                           button.gameObject.name.Contains("Btn_Restart")))
+                    {
+                        Logger.Log("지우개나 다시시작은 마우스로 클릭이 불가능해요");
+                        
+                    }
+                    else
+                    {
+                        button?.onClick?.Invoke();
+                    }
+
+                  
                 }
-            }
 
             if (s_toolManager.isInitialStampSet)
             {
@@ -221,7 +229,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
             stampPools[i] = new Queue<GameObject>();
   
             // Optionally, if you need more instances than available, clone them
-            while (stampPools[i].Count < _poolSize * 10)
+            while (stampPools[i].Count < _poolSize * 15)
             {
                 var print = Instantiate(currentStampToCopy, transform);
                 print.transform.DORotateQuaternion(print.transform.rotation * Quaternion.Euler(0, Random.Range(-180, 180f), 0f), 0.01f);

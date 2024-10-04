@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EvaArmisen_ToolManager : MonoBehaviour
@@ -23,6 +24,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         FlowerStamps
     }
 
+    private bool _clickable;
     public bool _isEraserMode { get; private set; }
     private Button[] _toolBtns;
     private TextMeshProUGUI[] _toolTexts;
@@ -82,13 +84,34 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         hidePos = flowerStampDefaultPos + Vector3.down * HIDE_POS_AMOUNT;
         rectFlowerStamp.anchoredPosition = hidePos;
         flowerStamps.GetComponent<Button>();
-        _toolBtns[(int)ToolList.SelectStamp].onClick.AddListener(SetStampSelectionUI);
+        _toolBtns[(int)ToolList.SelectStamp].onClick.AddListener(()=>
+        {
+            if (!_clickable) return;
+            SetStampSelectionUI();
+        });
 
-        _toolBtns[(int)ToolList.Reset].onClick.AddListener(() => { OnResetClicked?.Invoke(); });
+        _toolBtns[(int)ToolList.Reset].onClick.AddListener(() =>
+        {
+            if (!_clickable) return;
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Logger.Log("리셋 버튼은 마우스로만 동작합니다. 센서로 인식하려는 경우 코드수정이 필요합니다.");
+                return; //
+            }
+            
+            OnResetClicked?.Invoke();
+        });
 
         _toolBtns[(int)ToolList.Eraser].onClick.AddListener(() =>
         {
             if (_isUIAnimWorking[(int)ToolList.Eraser]) return;
+            if (!_clickable) return;
+            
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Logger.Log("지우개 버튼은 마우스로만 동작합니다. 센서로 인식하려는 경우 코드수정이 필요합니다.");
+                return; //
+            }
             
             _isUIAnimWorking[(int)ToolList.Eraser] = true;
             _isEraserMode = !_isEraserMode;
@@ -123,6 +146,8 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 
 
         SetStampSelectionUI();
+        
+        _toolTexts[(int)ToolList.Eraser].text = _isEraserMode ? "지우개\nON" : "지우개\nOFF";
         _originalState = _stampBtns[0].spriteState;
     }
 
@@ -167,15 +192,21 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log($"원래위치로! : {target}!");
 #endif
+        _clickable = false;
         yield return rect.DOAnchorPos(target, 0.7f).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
+        yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
+        _clickable = true;
     }
     
     private IEnumerator OnClickCo(ToolList toolName)
     {
+        _clickable = false;
         yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
+        yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
+        _clickable = true;
     }
 }
