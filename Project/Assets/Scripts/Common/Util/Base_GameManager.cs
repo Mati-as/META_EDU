@@ -40,7 +40,7 @@ public abstract class Base_GameManager : MonoBehaviour
         
         
         
-    private float _seonsorSensitivity = 0.05f;
+    private float _seonsorSensitivity = 0.11f;
 
     public float defaultSensitivity
     {

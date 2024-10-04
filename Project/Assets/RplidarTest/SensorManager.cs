@@ -380,7 +380,7 @@ public class SensorManager : MonoBehaviour
           _sensitivitySlider.onValueChanged.AddListener(_ =>
           {
                 _sensorSensitivity = _sensitivitySlider.value;
-                _poolReturnWait = new WaitForSeconds(sensorSensitivity);
+               // _poolReturnWait = new WaitForSeconds(sensorSensitivity);
                 
                 Logger.Log($"prefab limit time is {_sensitivitySlider.value }");
           });
@@ -528,13 +528,9 @@ public class SensorManager : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        if (!Managers.isGameStopped)
-            _timer += Time.deltaTime;
-        if (_timer > sensorSensitivity)
-        {
+
          GenerateDectectedPos();
-         _timer = 0;
-        }
+       
     }
 
     private int _filteringAmount = 2;

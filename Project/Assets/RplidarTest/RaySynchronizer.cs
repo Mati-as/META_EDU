@@ -53,14 +53,14 @@ public class RaySynchronizer : MonoBehaviour
         //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
         // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
         _mouseAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseAction.performed += OnKeyPressed;
+       // _mouseAction.performed += OnKeyPressed;
         
         
     }
 
     private void OnDestroy()
     {
-        _mouseAction.performed -= OnKeyPressed;
+     //   _mouseAction.performed -= OnKeyPressed;
     }
 
     public void Start()

@@ -25,7 +25,8 @@ public class IdleLakeAnimalController : MonoBehaviour,Lake_IAnimalBehavior
     {
         _camera = Camera.main;
         _mouseClickAction = new InputAction("MouseClick", binding: "<Mouse>/leftButton", interactions: "press");
-        _mouseClickAction.performed += OnMouseClick;
+        _mouseClickAction.
+            performed += OnMouseClick;
 
 
         _animator = GetComponent<Animator>();

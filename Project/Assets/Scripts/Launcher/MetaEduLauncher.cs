@@ -136,7 +136,6 @@ public class MetaEduLauncher : UI_PopUp
 
         GetButton((int)UIButtons.Btn_ConfirmToStart).gameObject.BindEvent(() =>
         {
-            
             LoadScene(_gameNameWaitingForConfirmation);
         });
         GetButton((int)UIButtons.Btn_BackToGameSelect).gameObject.BindEvent(OnBackBtnOnConfirmMessageClicked);
@@ -149,6 +148,35 @@ public class MetaEduLauncher : UI_PopUp
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
             ShowTab(currentUITab);
         });
+
+        var sceneObjects = FindObjectsOfType<GameObject>();
+
+        foreach (var obj in sceneObjects)
+        {
+            // 이름에 "SceneName_"이 포함된 오브젝트 필터링
+            if (obj.name.Contains("SceneName_"))
+            {
+                // 버튼 컴포넌트를 찾음
+                var button = obj.GetComponent<Button>();
+
+                // 버튼이 존재하면 이벤트를 할당
+                if (button != null)
+                    // 버튼에 이벤트 바인딩
+                    button.gameObject.BindEvent(() =>
+                    {
+                        if (!_isClikcable) return;
+                        CheckAndSetClickable();
+                        
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+                        //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
+                        _gameNameWaitingForConfirmation = button.gameObject.name;
+                        GetObject((int)UIType.UI_Confirm).SetActive(true);
+                    }); // 원하는 동작 할당
+
+                Logger.Log($"게임 컨텐츠 객체 버튼 할당 :{obj.name}");
+            }
+        }
+   
         // GetButton((int)UIButtons.LoginButton).gameObject.BindEvent(() => ShowTab(UIType.Login));
         // GetButton((int)UIButtons.SurveyButton).gameObject.BindEvent(() => ShowTab(UIType.Survey));
 
@@ -386,8 +414,6 @@ public class MetaEduLauncher : UI_PopUp
                 
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
                 
-               
-                
                 GetObject((int)UIType.ContentD_Video).gameObject.SetActive(true);
                 GetObject((int)UIType.ContentD_Video).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
@@ -511,31 +537,36 @@ public class MetaEduLauncher : UI_PopUp
      private Button _btn;
     private void OnRaySyncByPrefab()
     {
-        if (!_isLoadFinished) return;
-        
-        
-        _screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
-         _ray = Camera.main.ScreenPointToRay(_screenPositionByPrefab);
-
-         _launcherPED.position = currentPrefabPosition;
-         Logger.Log($"current Position{_launcherPED.position}");
-         _resultsByPrefab = new List<RaycastResult>();
-         _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
-        
-         if (_resultsByPrefab != null)
-         {
-             ShowTabOrLoadScene(_resultsByPrefab);
-             
-             foreach (RaycastResult result in _resultsByPrefab)
-             {
-                 result.gameObject.TryGetComponent(out _btn);
-                 _btn?.onClick?.Invoke();
-            
-                 result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
-                 eventHandler?.OnClickHandler?.Invoke();
-       
-             }
-         }
+        // if (!_isLoadFinished) return;
+        //
+        //
+        // _screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
+        // // _ray = Camera.main.ScreenPointToRay(_screenPositionByPrefab);
+        //
+        //  _launcherPED.position = currentPrefabPosition;
+        //  Logger.Log($"current Position{_launcherPED.position}");
+        //  _resultsByPrefab = new List<RaycastResult>();
+        //  _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
+        //
+        //  if (_resultsByPrefab != null)
+        //  {
+        //      ShowTabOrLoadScene(_resultsByPrefab);
+        //   
+        //      foreach (RaycastResult result in _resultsByPrefab)
+        //      {
+        //          Logger.Log($"프리팹 레이캐스팅 동작 : {result.gameObject.name}------------------------");
+        //          result.gameObject.TryGetComponent(out _btn);
+        //          _btn?.onClick?.Invoke();
+        //     
+        //          result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+        //          eventHandler?.OnClickHandler?.Invoke();
+        //          
+        //      }
+        //  }
+        //  else
+        //  {
+        //      Logger.Log("프리팹 레이캐스팅 null xxxxxxxxxxxxxxxxxxxxxxx");
+        //  }
         
     }
 
@@ -543,7 +574,7 @@ public class MetaEduLauncher : UI_PopUp
     {
         Gizmos.color = Color.red;
 
-        var radius = 10f;
+        var radius = 50f;
         Gizmos.DrawSphere(currentPrefabPosition, radius);
     }
 
@@ -575,14 +606,8 @@ public class MetaEduLauncher : UI_PopUp
                             return;
                         }
 
-                        CheckAndSetClickable();
-
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
-                        GetObject((int)UIType.UI_Confirm).SetActive(true);
-
-
-                        //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
-                        _gameNameWaitingForConfirmation = result.gameObject.name;
+                       
+                    
                         return;
                     }
                    

@@ -65,6 +65,7 @@ public class FP_Prefab : RaySynchronizer
 
     private void OnDestroy()
     {
+        
         Destroy(this.gameObject);
     }
 
@@ -72,8 +73,9 @@ public class FP_Prefab : RaySynchronizer
     private RectTransform _rectTransform;
     public override void ShootRay()
     {
+        if (Managers.isGameStopped || _rectTransform==null) return;
+        
         screenPosition = _uiCamera.WorldToScreenPoint(_rectTransform.position);
-
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
 
@@ -102,9 +104,9 @@ public class FP_Prefab : RaySynchronizer
             if (_launcher != null)
             {
 #if UNITY_EDITOR
-                Debug.Log($"prefabInput invoke-------------------");
+//                Debug.Log($"prefabInput invoke-------------------");
 #endif
-                _launcher.currentPrefabPosition = this.transform.position;
+                _launcher.currentPrefabPosition = this._rectTransform.position;
                 onPrefabInput?.Invoke();
             }
             else
