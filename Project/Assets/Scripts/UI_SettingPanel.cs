@@ -9,7 +9,7 @@ public class UI_SettingPanel : MonoBehaviour
 {
   private Button _button;
   private Vector3 _defaultPos;
-  private float _moveAmount= 145f;
+  private float _moveAmount= 220f;
   private RectTransform _panel;
   private bool _isPanelOn;
       
@@ -28,7 +28,7 @@ public class UI_SettingPanel : MonoBehaviour
   {
       if (!_isPanelOn)
       {
-          _panel.DOAnchorPos(_defaultPos + Vector3.left * _moveAmount, 0.33f).SetEase(Ease.InOutSine)
+          _panel.DOAnchorPos(_defaultPos + Vector3.left * _moveAmount, 0.66f).SetEase(Ease.InOutSine)
               .OnComplete(() =>
               {
                   _isPanelOn = true;

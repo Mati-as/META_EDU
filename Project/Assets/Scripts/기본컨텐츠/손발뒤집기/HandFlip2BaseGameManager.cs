@@ -176,6 +176,15 @@ public class HandFlip2BaseGameManager : Base_GameManager
 
         StartCoroutine(Initialize());
     }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        UI_Scene_Button.onBtnShut -= OnButtonClicked;
+        HandFlip2_UIManager.onStartUIFinished -= OnStart;
+        HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
+        onRoundFinished -= OnRoundFinished;
+    }
     
     private WaitForSeconds _wait;
     private float _waitTIme= 4.5f;
@@ -352,7 +361,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
 
     public override void OnRaySynced()
     {
-        if (!PreCheckOnRaySync()) return;
+      //  if (!PreCheckOnRaySync()) return;
 
         /* 클릭되면 안되는 경우 상세설명
          1. UI의 시작버튼 애니메이션이 끝나지 않은 경우
@@ -369,13 +378,14 @@ public class HandFlip2BaseGameManager : Base_GameManager
         //  ChangeColor(GameManager_Ray);
     }
     
-    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.22f, 0.055f, 5).OnComplete(() =>
+    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.3f, 0.035f, 2).OnComplete(() =>
     {
         Camera.main.transform.DOMove(_defaultPosition, 0.3f);
     });
 
     private void OnButtonClicked()
     {
+        
         PrintsAppear();
     }
 

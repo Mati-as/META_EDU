@@ -45,7 +45,8 @@ public class EvaArmisenBaseGameManager : Base_GameManager
     {
         base.Init();
 
-        waitForClickableFloatObj = 0.25f;
+        waitForClickableFloatObj = 0.13f;
+
         DOTween.Init().SetCapacity(12500, 300);
         
         _raySync = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
@@ -184,7 +185,12 @@ public class EvaArmisenBaseGameManager : Base_GameManager
         {
             // 1.1 버튼클릭인 경우 -----------------------
             Button button = null;
-            if (_raySync.raycastResults.Count > 0)
+
+            if (_raySync == null)
+            {
+                _raySync = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
+            }
+            if (_raySync?.raycastResults?.Count > 0)
                 for (var i = 0; i < _raySync.raycastResults.Count; i++)
                 {
                     _raySync.raycastResults[i].gameObject.TryGetComponent(out button);

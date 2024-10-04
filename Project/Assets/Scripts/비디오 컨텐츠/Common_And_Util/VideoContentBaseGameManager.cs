@@ -63,7 +63,7 @@ public class VideoContentBaseGameManager : Base_GameManager
     {
         base.Init();
 
-        defaultSensitivity = 0.1f;
+        gmSensorSensitivity = 0.07f;
         SetVideo();
         //DoShake시 트위닝 오류로 비디오 객체의 재생위치가
         //원래 위치에서 벗어나는 것을 방지하기 위한 defaultPosition 설정.

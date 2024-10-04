@@ -96,6 +96,14 @@ public class HandFlip2_UIManager : UI_PopUp
         
     }
 
+    private void OnDestroy()
+    {
+        UI_Scene_Button.onBtnShut -= OnStart;
+        HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
+        HandFlip2BaseGameManager.restart -= OnStart;
+    
+    }
     public void OnStart()
     {
 #if UNITY_EDITOR

@@ -16,12 +16,12 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected WaitForSeconds _waitForClickable;
 
-    protected bool _isClickable = true;
+    protected bool _isClikableBySensorReady = true;
 
-    public bool isClickable
+    public bool isClikableBySensorReady
     {
-        get => _isClickable;
-        protected set => _isClickable = value;
+        get => _isClikableBySensorReady;
+        protected set => _isClikableBySensorReady = value;
     }
 
     /// <summary>
@@ -36,21 +36,41 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected float BGM_VOLUME { get; set; } = 0.105f;
 
-    protected static float waitForClickableFloatObj = 0.11f;
-        
-        
-        
-    private float _seonsorSensitivity = 0.11f;
+    protected float _waitForClickableFloat = 0.08f;
 
-    public float defaultSensitivity
+    protected float waitForClickableFloatObj
+    {
+        get => _waitForClickableFloat;
+
+        set
+        {
+            if (value < 0.035f)
+            {
+                waitForClickableFloatObj = 0.035f;
+            }
+
+            else
+            {
+                if (Math.Abs(value - waitForClickableFloatObj) < 0.005f) return;
+                
+                _waitForClickableFloat = value;
+                _waitForClickable = new WaitForSeconds(_waitForClickableFloat);
+            }
+        }
+    }
+    
+    
+    private float _seonsorSensitivity = 0.035f;
+
+    public float gmSensorSensitivity
     {
         get => _seonsorSensitivity;
 
         protected set
         {
-            if (value < 0.05f)
+            if (value < 0.035f)
             {
-                _seonsorSensitivity = 0.05f;
+                _seonsorSensitivity = 0.035f;
                 SensorManager.sensorSensitivity = _seonsorSensitivity;
             }
 
@@ -71,17 +91,17 @@ public abstract class Base_GameManager : MonoBehaviour
         }
        
 
-        if (!isClickable) return;
+        if (!isClikableBySensorReady) return;
         StartCoroutine(SetClickableWithDelayCo(waitTime));
     }
 
     private IEnumerator SetClickableWithDelayCo(float waitTime)
     {
         if (_waitForClickable == null) _waitForClickable = new WaitForSeconds(waitTime);
-
-        isClickable = false;
+        
+        isClikableBySensorReady = false;
         yield return _waitForClickable;
-        isClickable = true;
+        isClikableBySensorReady = true;
     }
 
     //런타임에서 고정
@@ -118,7 +138,7 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
 
-        ManageProjectSettings(SHADOW_MAX_DISTANCE, defaultSensitivity);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, gmSensorSensitivity);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
@@ -148,9 +168,19 @@ public abstract class Base_GameManager : MonoBehaviour
         On_GmRay_Synced?.Invoke();
     }
 
-    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensorSensitivity)
+    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensorSensitivity,float objSensitivity=0)
     {
         SensorManager.sensorSensitivity = defaultSensorSensitivity;
+
+        if (waitForClickableFloatObj < 0.05f)
+        {
+
+        }
+        else
+        {
+            waitForClickableFloatObj = objSensitivity;
+        }
+       
         
         // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
         var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
@@ -208,8 +238,7 @@ public abstract class Base_GameManager : MonoBehaviour
 #endif
             return false;
         }
-
-
+        
         if (Managers.isGameStopped)
         {
 #if UNITY_EDITOR
@@ -218,7 +247,7 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
-        if (!isClickable)
+        if (!isClikableBySensorReady)
         {
 #if UNITY_EDITOR
             Debug.Log("clicking or sensoring too fast for this game.. return");
@@ -226,7 +255,8 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
-        SetClickableWithDelay();
+        Logger.Log($"게임 내 센서 민감도 : {waitForClickableFloatObj}초");
+        SetClickableWithDelay(waitForClickableFloatObj);
         return true;
     }
 

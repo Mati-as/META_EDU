@@ -51,8 +51,8 @@ public abstract class InteractableVideoBaseGameManager : VideoContentBaseGameMan
 
     protected virtual void Start()
     {
-        defaultSensitivity = 0.2f;
-        ManageProjectSettings(SHADOW_MAX_DISTANCE,defaultSensitivity);
+        gmSensorSensitivity = 0.2f;
+        ManageProjectSettings(SHADOW_MAX_DISTANCE,gmSensorSensitivity);
         
         Init();
 

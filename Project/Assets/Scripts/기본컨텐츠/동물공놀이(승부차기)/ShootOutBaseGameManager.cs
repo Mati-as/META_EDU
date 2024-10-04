@@ -52,7 +52,7 @@ public class ShootOutBaseGameManager : Base_GameManager
         _clickedpoints = new Vector3[(int)HitPointName.Max]
             {Vector3.zero,Vector3.zero,Vector3.zero};
         
-        defaultSensitivity = 0.011f;
+        gmSensorSensitivity = 0.011f;
         
         _ball = GameObject.Find("SoccerBall").transform;
         var ParticleIndex =0;

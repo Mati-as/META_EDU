@@ -28,8 +28,9 @@ public class FP_Prefab : RaySynchronizer
 
     public override void Init()
     {
-        base.Init();
-         //   GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _effectManager);
+         
+        GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
+        
          _rectTransform = GetComponent<RectTransform>();
          _image = GetComponent<Image>();
     }

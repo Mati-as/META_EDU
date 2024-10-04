@@ -84,13 +84,13 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         hidePos = flowerStampDefaultPos + Vector3.down * HIDE_POS_AMOUNT;
         rectFlowerStamp.anchoredPosition = hidePos;
         flowerStamps.GetComponent<Button>();
-        _toolBtns[(int)ToolList.SelectStamp].onClick.AddListener(()=>
+        _toolBtns[(int)ToolList.SelectStamp].gameObject.BindEvent(()=>
         {
             if (!_clickable) return;
             SetStampSelectionUI();
         });
 
-        _toolBtns[(int)ToolList.Reset].onClick.AddListener(() =>
+        _toolBtns[(int)ToolList.Reset].gameObject.BindEvent(() =>
         {
             if (!_clickable) return;
             if (!EventSystem.current.IsPointerOverGameObject())
@@ -126,7 +126,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 
             var index = i; // 변수 라이프 사이클로 인해 캐싱 필요합니다. 
 
-            _stampBtns[i].onClick.AddListener(() =>
+            _stampBtns[i].gameObject.BindEvent(() =>
             {
                 if (currentStampIndexMap.ContainsKey(_stampBtns[index].GetInstanceID()))
                 {
@@ -196,7 +196,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         yield return rect.DOAnchorPos(target, 0.7f).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
-        yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
+        yield return DOVirtual.Float(0, 0, 2.0f, _ => { }).WaitForCompletion();
         _clickable = true;
     }
     
@@ -206,7 +206,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
-        yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
+        yield return DOVirtual.Float(0, 0, 2.0f, _ => { }).WaitForCompletion();
         _clickable = true;
     }
 }

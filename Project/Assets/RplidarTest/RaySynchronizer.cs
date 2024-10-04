@@ -15,7 +15,7 @@ public class RaySynchronizer : MonoBehaviour
 {
     public static Ray initialRay { get; set; }
 
-    private Base_GameManager _baseGameManager;
+  
     private GameObject uiCamera;
 
 
@@ -42,25 +42,29 @@ public class RaySynchronizer : MonoBehaviour
 
 
     public virtual void Init()
-    {
+    { 
         //각 씬의 Overlay-UICamera Tag 할당 필요
       
        
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _baseGameManager);
-
-        Debug.Assert(_baseGameManager != null);
-        //newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
-        // _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
+      
+        
+        // newInputSystem 에서 SpaceBar를 InputAction으로 사용하는 바인딩 로직
+        //  _spaceAction = new InputAction("Space", binding: "<Keyboard>/space", interactions: "press");
+        
         _mouseAction = new InputAction("Space", binding: "<Mouse>/leftButton", interactions: "press");
-       // _mouseAction.performed += OnKeyPressed;
+        _mouseAction.performed += OnKeyPressed;
+        _mouseAction?.Enable();
         
         
     }
 
     private void OnDestroy()
     {
-     //   _mouseAction.performed -= OnKeyPressed;
+       
+            _mouseAction.performed -= OnKeyPressed;
+            _mouseAction?.Disable(); // 액션 비활성화
+    
     }
 
     public void Start()
@@ -82,8 +86,8 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     protected virtual void OnEnable()
     {
-     Debug.Assert(_mouseAction != null);
-     
+    
+        Debug.Assert(_mouseAction != null);
         _mouseAction.Enable();
     }
 
@@ -104,7 +108,7 @@ public class RaySynchronizer : MonoBehaviour
 
     public void OnKeyPressed(InputAction.CallbackContext context)
     {
-        //UI클릭을 위한 RayCast를 발생 및 Ray저장 
+        //UI클릭을 위한 RayCast를 발생 및 Ray저장
         ShootRay();
     }
 
@@ -114,10 +118,12 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
+        
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
         // check if the pointer is over any ui elements
      
+        Logger.Log("클릭 From Raysynchronizer");
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         

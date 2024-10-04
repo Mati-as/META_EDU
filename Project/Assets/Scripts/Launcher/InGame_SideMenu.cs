@@ -57,6 +57,9 @@ public class InGame_SideMenu : UI_PopUp
         {
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
         });
+        
+        
+        
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
         SetSlider();
