@@ -7,7 +7,9 @@ public class LauncherRaySynachronizer : Base_GameManager
   protected override void Init()
   {
     base.Init();
-    ManageProjectSettings(100,0.38f);
+    waitForClickableFloat = 0.35f;
+    
+    ManageProjectSettings(100,1f);
   }
   
   /// <summary>
