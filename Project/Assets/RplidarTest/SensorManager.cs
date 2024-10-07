@@ -40,6 +40,8 @@ public class SensorManager : MonoBehaviour
     private Thread m_thread;
 
 
+    public static readonly float SENSOR_DEFAULT_SENSITIVITY = 0.095f;
+
     private static readonly float SENSOR_SENTSITIVITY_TOLERANCE = 0.005f;
     private static float _sensorSensitivity;
     public static float sensorSensitivity
@@ -50,9 +52,9 @@ public class SensorManager : MonoBehaviour
         }
         set
         {
-            if (value < 0.05f )
+            if (value < SENSOR_DEFAULT_SENSITIVITY )
             {
-                _sensorSensitivity = 0.05f;
+                _sensorSensitivity = SENSOR_DEFAULT_SENSITIVITY;
                 Logger.LogWarning("sensitivity is too small. set as 0.05f");
             }
             else
@@ -489,7 +491,12 @@ public class SensorManager : MonoBehaviour
     private void FixedUpdate()
     {
 
-         GenerateDectectedPos();
+        _timer += Time.deltaTime;
+        if (_timer > sensorSensitivity)
+        {
+            _timer = 0;
+          GenerateDectectedPos();
+        }
        
     }
 

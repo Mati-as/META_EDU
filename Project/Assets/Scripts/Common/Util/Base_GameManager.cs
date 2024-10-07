@@ -58,26 +58,26 @@ public abstract class Base_GameManager : MonoBehaviour
             }
         }
     }
-    
-    
-    private float _seonsorSensitivity = 0.035f;
 
+
+
+    private float _seonsorSensitivity=SensorManager.SENSOR_DEFAULT_SENSITIVITY;
     public float gmSensorSensitivity
     {
         get => _seonsorSensitivity;
 
         protected set
         {
-            if (value < 0.035f)
+            if (value < SensorManager.SENSOR_DEFAULT_SENSITIVITY)
             {
                 _seonsorSensitivity = 0.035f;
-                SensorManager.sensorSensitivity = _seonsorSensitivity;
+                SensorManager.sensorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
             }
 
             else
             {
                 _seonsorSensitivity = value;
-                SensorManager.sensorSensitivity = _seonsorSensitivity;
+                SensorManager.sensorSensitivity =  SensorManager.SENSOR_DEFAULT_SENSITIVITY;
             }
         }
     }
@@ -247,13 +247,13 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
-        if (!isClikableBySensorReady)
-        {
-#if UNITY_EDITOR
-            Debug.Log("clicking or sensoring too fast for this game.. return");
-#endif
-            return false;
-        }
+//         if (!isClikableBySensorReady)
+//         {
+// #if UNITY_EDITOR
+//             Debug.Log("clicking or sensoring too fast for this game.. return");
+// #endif
+//             return false;
+//         }
 
         Logger.Log($"게임 내 센서 민감도 : {waitForClickableFloatObj}초");
         SetClickableWithDelay(waitForClickableFloatObj);

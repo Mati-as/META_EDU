@@ -16,6 +16,9 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     protected override void Init()
     {
         base.Init();
+        gmSensorSensitivity = 0.5f;
+        
+        
         _effectContainer = new Stack<ParticleSystem>();
     
         SetPool(_effectContainer,"게임별분류/기본컨텐츠/MusicInstruments/MusicInstruments_CFX_Click");
@@ -89,6 +92,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
             if (hit.transform.gameObject.name == "Screen")
             {
                 var ps = GetFromPool(_effectContainer);
+                if (ps == null) return;
                 ps.gameObject.SetActive(true);
             
             
@@ -147,7 +151,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
     private ParticleSystem GetFromPool(Stack<ParticleSystem> pool)
     {
-        if (pool.Count < 0) return null;
+        if (pool.Count <= 0) return null;
 
         var ps = pool.Pop();
         return ps;

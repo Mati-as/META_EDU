@@ -126,7 +126,7 @@ public class SoundManager : MonoBehaviour
             var audioClip = Resources.Load<AudioClip>(path);
             if (audioClip == null)
             {
-                Logger.LogError($"audio clip is null : path: {path}");
+                Logger.LogWarning($"audio clip is null : path: {path}");
                 return false;
             }
 
@@ -145,7 +145,7 @@ public class SoundManager : MonoBehaviour
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
             {
-                Logger.LogError($"audio clip is null : path: {path}");
+                Logger.LogWarning($"audio clip is null : path: {path}");
                 return false;
             }
 
@@ -160,7 +160,7 @@ public class SoundManager : MonoBehaviour
             var audioClip = GetAudioClip(path);
             if (audioClip == null)
             {
-                Logger.LogError($"audio clip is null : path: {path}");
+                Logger.LogWarning($"audio clip is null : path: {path}");
                 return false;
             }
 

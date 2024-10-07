@@ -32,6 +32,7 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
      private bool _isSceneChanging; // 씬 이동중 로직 충돌방지
     protected override void Init()
     {
+        gmSensorSensitivity = 0.35f;
         Camera.main.TryGetComponent<Volume>(out vol);
         
         if (vol == null)
@@ -207,11 +208,11 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
     }
     IEnumerator ResetClickableWithDelayCo()
     {
-        if(!PreCheckOnRaySync()) yield break;
+      //  if(!PreCheckOnRaySync()) yield break;
         _isPaintable = false;
-        if(!PreCheckOnRaySync()) yield break;
-        yield return _waitForPaint;
-        if(!PreCheckOnRaySync()) yield break;
+        //if(!PreCheckOnRaySync()) yield break;
+        yield return null;//_waitForPaint;
+       // if(!PreCheckOnRaySync()) yield break;
         _isPaintable = true;
     }
 
@@ -226,13 +227,13 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
         if (!isStartButtonClicked) return;
         if(!PreCheckOnRaySync()) return;
         if (SceneManager.GetActiveScene().name != "BA001") return;
-        if (!_isPaintable)
-        {
-#if UNITY_EDITOR
-            Debug.Log("It's not clickable");
-#endif
-            return;
-        }
+//         if (!_isPaintable)
+//         {
+// #if UNITY_EDITOR
+//             Debug.Log("It's not clickable");
+// #endif
+//             return;
+//         }
         
         ResetDelayWithDelay();
         

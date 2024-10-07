@@ -256,6 +256,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
 
     protected override void Init()
     {
+        
         UI_Scene_Button.onBtnShut -= OnButtonClicked;
         UI_Scene_Button.onBtnShut += OnButtonClicked;
 
@@ -361,7 +362,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
 
     public override void OnRaySynced()
     {
-      //  if (!PreCheckOnRaySync()) return;
+      if (!PreCheckOnRaySync()) return;
 
         /* 클릭되면 안되는 경우 상세설명
          1. UI의 시작버튼 애니메이션이 끝나지 않은 경우

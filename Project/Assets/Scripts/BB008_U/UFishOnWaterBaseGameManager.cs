@@ -313,7 +313,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
         _xmlPathSetting = System.IO.Path.Combine(Application.persistentDataPath, "SettingData.xml");
         isStartButtonClicked = false;
         DOTween.Init().SetCapacity(500, 500);
-        ManageProjectSettings(90, 0.15f);
+        ManageProjectSettings(90, 0.15f,0.18f);
 
         CheckAndGenerateXmlFile("TempData",_xmlPathTemp);
         Read(ref xmlDoc_Temp, _xmlPathTemp);
