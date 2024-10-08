@@ -84,6 +84,15 @@ public class HandFlip2_BlackPrintsController : Base_GameManager
            
     }
 
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        HandFlip2BaseGameManager.onStart -= OnStart;
+        HandFlip2BaseGameManager.onRoundFinished -= DisappearOnRestart;
+        HandFlip2BaseGameManager.roundInit -= RoundInit;
+  
+    }
+
     private float  _blackPrintAppearableTime  = 1f;
     public void OnStart()
     {

@@ -296,12 +296,15 @@ public class HandFlip2BaseGameManager : Base_GameManager
         CurrentColorPair = new Color[2];
         SetColor(0);
 
-//반드시 게임 오브젝트의 갯수는 짝수..
-#if UNITY_EDITOR
-        Debug.Assert(PRINTS_COUNT % 2 == 0);
-#endif
+
         PRINTS_COUNT = printsParent.transform.childCount;
 
+        //반드시 게임 오브젝트의 갯수는 홀수..
+#if UNITY_EDITOR
+        Debug.Assert(PRINTS_COUNT % 2 == 1);
+#endif
+        
+        
         _prints = new Print[PRINTS_COUNT];
 
 
