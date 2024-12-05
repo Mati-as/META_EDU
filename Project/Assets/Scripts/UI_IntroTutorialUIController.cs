@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class IntroUIController : UI_PopUp
+public class UI_IntroTutorialUIController : UI_PopUp
 {
     private XmlDocument _doc;
     private TextAsset _xmlAsset;
@@ -66,12 +66,12 @@ public class IntroUIController : UI_PopUp
     #region Lodaing UI Text Information Part
     /// <summary>
     /// 1. UI 문구에 표시할 내용을 XML에서 찾아 문구에 표시합니다.
-    /// 2. TextMeshPro 에셋을 찾아 해당 컴포넌트 폰트 에셋에 할당합니다. 
+    /// 2. TextMeshPro 에셋을 찾아 해당 컴포넌트 폰트 에셋에 할당합니다.
+    /// 3. XML Document에 해당 텍스트작성, 인트로용 이미지가 필요합니다.
+    /// 4. 인트로용 애니메이션은 씬에서 별도로 구현합니다. 
     /// </summary>
     private bool LoadUITextInfo()
     {
-       
-     
         var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/" + _currentSceneName);
         if (asset == null)
         {

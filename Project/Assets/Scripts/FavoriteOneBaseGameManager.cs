@@ -137,10 +137,12 @@ public class FavoriteOneBaseGameManager : Base_GameManager
 
         InitializeTransforms(Obj.ColorBalls, ref _colorBalls);
         _defaultColorBallSize = _colorBalls[0].localScale;
+        
         InitializeTransforms(Obj.Animals, ref _animals);
         _animalDefaultPositions = new Vector3[_animals.Length];
         _animalDefaultQuaternion = new Quaternion[_animals.Length];
         _animalDefaultScales = new Vector3[_animals.Length];
+        
         for (int i = 0; i < _animals.Length; i++)
         {
             _animalDefaultPositions[i] = _animals[i].position;
