@@ -273,8 +273,8 @@ public abstract class Base_GameManager : MonoBehaviour
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;
 
-        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
-        UI_Scene_Button.onBtnShut += OnStartButtonClicked;
+        UI_Scene_StartBtn.onBtnShut -= OnStartButtonClicked;
+        UI_Scene_StartBtn.onBtnShut += OnStartButtonClicked;
     }
 
     protected virtual void OnDestroy()
@@ -283,7 +283,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
 
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
-        UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
+        UI_Scene_StartBtn.onBtnShut -= OnStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
         DOTween.KillAll();
         Destroy(this.gameObject);

@@ -90,14 +90,14 @@ public class HopscotchBaseGameManager : Base_GameManager
         onStageClear -= OnStageClear;
         onStageClear += OnStageClear;
 
-        UI_Scene_Button.onBtnShut -= DoIntroMove;
-        UI_Scene_Button.onBtnShut += DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut += DoIntroMove;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_Button.onBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
         onStageClear -= OnStageClear;
     }
 

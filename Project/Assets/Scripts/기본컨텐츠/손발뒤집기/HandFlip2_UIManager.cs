@@ -79,8 +79,8 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
-        UI_Scene_Button.onBtnShut -= OnStart;
-        UI_Scene_Button.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut += OnStart;
         
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinishedForUI += OnRoundFinish;
@@ -98,7 +98,7 @@ public class HandFlip2_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
         HandFlip2BaseGameManager.restart -= OnStart;

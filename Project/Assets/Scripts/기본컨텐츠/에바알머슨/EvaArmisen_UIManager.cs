@@ -63,8 +63,8 @@ public class EvaArmisen_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_Button.onBtnShut -= OnStart;
-        UI_Scene_Button.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut += OnStart;
         
         EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
         EvaArmisenBaseGameManager.onRoundRestart += OnStart;

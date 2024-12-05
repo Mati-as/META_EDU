@@ -226,7 +226,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         {
             _splats[i] = splats.GetChild(i);
 
-            if (i < 3) _meshRenderMap.TryAdd(_splats[i].GetInstanceID(), _splats[i].GetComponent<MeshRenderer>());
+            if (i < 6) _meshRenderMap.TryAdd(_splats[i].GetInstanceID(), _splats[i].GetComponent<MeshRenderer>());
 
             
             _splatDefaultSize = _splats[i].localScale;
@@ -298,7 +298,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/나를알고표현해요/Narration_" + colorBall.gameObject.name);
         for (var i = 0; i < _splats.Length; i++)
         {
-            if (i < 3)
+            if (i < 6)
             {
                 var randomChar = Random.Range('B', 'C' + 1);
                 _splats[i].gameObject.SetActive(true);
@@ -328,7 +328,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
             otherColorBall.DOScale(Vector3.zero, 0.1f);
             
         }
-        for (var i = 3; i < _splats.Length; i++)
+        for (var i = 6; i < _splats.Length; i++)
         {
             var randomChar = Random.Range('B', 'C' + 1);
             _splats[i].gameObject.SetActive(true);
@@ -374,6 +374,9 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         button.DOMove(button.position - button.up * 0.075f, 0.8f);
         _btnToObjectMap[currentStageButtonID]
             .DOMove(_positions[(int)Position.OnPlatform].position, 1.5f).WaitForCompletion();
+       
+        _btnToObjectMap[currentStageButtonID]
+            .DOScale(_btnToObjectMap[currentStageButtonID].localScale * 1.5f, 1.5f).WaitForCompletion();
 
 
         if ((Stage)_currentStage == Stage.Fruit)
@@ -429,34 +432,31 @@ public class FavoriteOneBaseGameManager : Base_GameManager
                 _animators[key].speed = value;
             }
         });
-        
-        
+
+
         // 선택된 동물,과일 제외 사라지는 애니메이션 재생 --------------------------------------------
-        if (_currentStage == (int)Stage.Animal)foreach (var animal in _animals)
-        {
-            var dealyTime =3f;
-            if (_btnToObjectMap[currentStageButtonID].GetInstanceID() == animal.GetInstanceID())
+        if (_currentStage == (int)Stage.Animal)
+            foreach (var animal in _animals)
             {
-               // _animators[animal.GetInstanceID()].SetBool(ON_AWAY, true);
-                animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
-                    .OnStart(() =>
-                    {
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
-                    })
-                    .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(dealyTime);
+                var dealyTime = 3f;
+                if (_btnToObjectMap[currentStageButtonID].GetInstanceID() == animal.GetInstanceID())
+                    // _animators[animal.GetInstanceID()].SetBool(ON_AWAY, true);
+                    animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                        .OnStart(() =>
+                        {
+                            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                        })
+                        .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(dealyTime);
+                else
+                    animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
+                        .OnStart(() =>
+                        {
+                            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
+                        })
+                        .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f, 1.0f));
+
+                //_animators[animal.GetInstanceID()].SetBool(ON_AWAY,true);
             }
-            else
-            {
-             animal.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
-                 .OnStart(() =>
-                 {
-                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A");
-                 })
-                 .OnComplete(() => animal.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
-            }
-            
-            //_animators[animal.GetInstanceID()].SetBool(ON_AWAY,true);
-        }
             
         
         
@@ -735,4 +735,6 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         _isClickable = true;
         yield return new WaitForNextFrameUnit();
     }
+    
+
 }

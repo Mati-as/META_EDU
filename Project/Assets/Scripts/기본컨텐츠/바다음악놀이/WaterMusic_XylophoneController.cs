@@ -357,13 +357,13 @@ public class WaterMusic_XylophoneController : MonoBehaviour
         WaterMusicBaseGameManager.On_GmRay_Synced -= OnClicked;
         WaterMusicBaseGameManager.On_GmRay_Synced += OnClicked;
 
-        UI_Scene_Button.onBtnShut -= DoIntroMove;
-        UI_Scene_Button.onBtnShut += DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut += DoIntroMove;
     }
 
     private void OnDestroy()
     {  
-        UI_Scene_Button.onBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
         WaterMusicBaseGameManager.On_GmRay_Synced -= OnClicked;
     }
 

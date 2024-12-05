@@ -4,12 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_Scene_Button : MonoBehaviour
+public class UI_Scene_StartBtn : MonoBehaviour
 {
     private Message_anim_controller _animController;
     private Button _btn;
     private Image _btnImage;
-    private TMP_Text tmp;
+    private TMP_Text _tmp_Start;
+    private TMP_Text _tmp_Time;
+    
     
     private int _remainTime;
     private bool _isClickable;
@@ -32,8 +34,8 @@ public class UI_Scene_Button : MonoBehaviour
         _btn = GetComponent<Button>();
         _btnImage = GetComponent<Image>();
         _btn.onClick.AddListener(OnClicked);
-        tmp = GetComponentInChildren<TMP_Text>();
-
+        _tmp_Start = GetComponentInChildren<TMP_Text>();
+        _tmp_Time = transform.GetChild(1).GetComponent<TMP_Text>();
 
         Message_anim_controller.onIntroUIOff -= OnAnimOff;
         Message_anim_controller.onIntroUIOff += OnAnimOff;
@@ -41,14 +43,22 @@ public class UI_Scene_Button : MonoBehaviour
         onBtnShut += OnButtonShut;
 
         _btnImage.DOFade(0, 0.01f);
-        tmp.DOFade(0, 0.01f);
-
+        _tmp_Start.DOFade(0, 0.01f);
+        _tmp_Time.DOFade(0, 0.01f);
 
         _btnImage
             .DOFade(1, 0.5f)
             .SetDelay(3f);
 
-        tmp.DOFade(1, 0.5f)
+        _tmp_Start.DOFade(1, 0.5f)
+            .OnStart(() => { _isClickable = true; })
+            .SetDelay(3f);
+        
+        _tmp_Start.DOFade(1, 0.5f)
+            .OnStart(() => { _isClickable = true; })
+            .SetDelay(3f);
+        
+        _tmp_Time.DOFade(1, 0.5f)
             .OnStart(() => { _isClickable = true; })
             .SetDelay(3f);
     }
@@ -75,8 +85,8 @@ public class UI_Scene_Button : MonoBehaviour
     {
         _elapsedTime += Time.deltaTime * _offset;
         _remainTime = (int)(_autoShutTime - _elapsedTime);
-        tmp.text = $"시작하기 ({_remainTime})";
-
+       // _tmp_Start.text = $"시작하기\n({_remainTime}초)";
+        _tmp_Time.text = $"{_remainTime}초";
         if (_remainTime <= 0 && !_isInvoked)
         {
             _isInvoked = true;
@@ -132,7 +142,7 @@ public class UI_Scene_Button : MonoBehaviour
 
 
         _btnImage.DOFade(0, 0.5f);
-        tmp.DOFade(0, 0.5f);
+        _tmp_Start.DOFade(0, 0.5f);
     }
 
     private void FadeOutBtn()

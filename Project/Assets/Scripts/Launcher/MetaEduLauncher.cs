@@ -70,7 +70,8 @@ public class MetaEduLauncher : UI_PopUp
     private GameObject[] _UIs;
     private Animation messageAnim;
     private List<string> _animClips = new();
-    private readonly float _clickableInterval = 2f;
+    private readonly float _clickableIntervalForSensor = 2f;
+    private readonly float _clickableIntervalForMouse = 0.75f;
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
     public Camera _uiCamera;
@@ -467,17 +468,29 @@ public class MetaEduLauncher : UI_PopUp
     }
 
     private WaitForSeconds _waitForSensorClick;
+    private WaitForSeconds _waitForMouseClick;
 
     private IEnumerator CheckAndSetClickableCo()
     {
-        if (!_isClikcable) //!EventSystem.current.IsPointerOverGameObject()
+        if (!_isClikcable ) //!EventSystem.current.IsPointerOverGameObject()
             yield break;
         _isClikcable = false;
 
 
-        if (_waitForSensorClick == null) _waitForSensorClick = new WaitForSeconds(_clickableInterval);
+        if (_waitForSensorClick == null) _waitForSensorClick = new WaitForSeconds(_clickableIntervalForSensor);
+        if (_waitForMouseClick == null) _waitForMouseClick = new WaitForSeconds(_clickableIntervalForMouse);
 
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            yield return _waitForMouseClick;
+
+        }
+        else
+        {
         yield return _waitForSensorClick;
+            
+        }
 
 
         _isClikcable = true;

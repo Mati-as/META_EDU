@@ -145,6 +145,15 @@ public class SandwitchBaseGameManager : Base_GameManager
         sandwich_AnimalController.onAllFinishAnimOver += AllFinishAnimOver;
     }
 
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        onRoundReady -= OnRoundReady;
+        onSandwichMakingFinish -= OnSandwichMakingFinish;
+        sandwich_AnimalController.onAllFinishAnimOver -= AllFinishAnimOver;
+
+    }
+
     private bool _isRoundFinished;
     private readonly int NO_VALID_OBJECT = -1;
     private RaycastHit[] _raycastHits;

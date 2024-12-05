@@ -247,8 +247,8 @@ public class U_FishOnWater_UIManager : UI_PopUp
         UFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
         UFishOnWaterBaseGameManager.OnRoundFinished += ShowStopUI;
 
-        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
-        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_StartBtn.onBtnShut += OnStartBtnClicked;
         
         
         
@@ -519,7 +519,7 @@ public class U_FishOnWater_UIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         UFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         UFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
-        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
     }
 
     private void Update()

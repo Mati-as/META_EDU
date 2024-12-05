@@ -96,7 +96,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
 
     // 물고기 관련 세팅 ---------------------------------------------
 
-    private float _fishSpeed = 1;
+    private float _fishSpeed = 0.5f;
     private readonly float minDuration = 0.2f;
     private readonly float maxDuration = 2.0f;
 
@@ -138,7 +138,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     private Stack<ParticleSystem> _onFishCatchPsPool;
 
 
-    private readonly int MAX_FISH_COUNT_ON_SCREEN = 2; // 최대활성화 가능 물고기 수
+    private readonly int MAX_FISH_COUNT_ON_SCREEN = 6; // 최대활성화 가능 물고기 수
     private int _fishOnScreen; // 현재 클릭가능하도록 활성화되어있는 물고기 수.
 
     public int fishOnScreen
@@ -458,7 +458,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
             }
 
 
-        PlayFishPathAnim(2);
+        PlayFishPathAnim(6);
     }
 
 
@@ -470,8 +470,9 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
 
         if (fishOnScreen <= 0)
             PlayFishPathAnim(2);
-        else if (fishOnScreen == 1)
+        else if (fishOnScreen <= 5)
             PlayFishPathAnim(1);
+        
     }
 
 #if UNITY_EDITOR
@@ -487,7 +488,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     }
 
 
-    private void PlayFishPathAnim(int fishCount = 2)
+    private void PlayFishPathAnim(int fishCount = 6)
     {
         if (isOnReInit) return;
 
@@ -537,7 +538,8 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
                 _psMap[id].Play();
                 Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             });
-            moveAnimSeq.InsertCallback(randomDuration * 0.68f, () => { _colliderMap[id].enabled = true; });
+            moveAnimSeq.AppendCallback(()=>{ _colliderMap[id].enabled = true; });
+            moveAnimSeq.AppendInterval(Random.Range(1,2f));
             moveAnimSeq.OnComplete(() =>
             {
                 _psMap[id].Stop();
