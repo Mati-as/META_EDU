@@ -25,7 +25,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     private string _xmlPathSetting; // = System.IO.Path.Combine(Application.persistentDataPath, "PermanantData.xml")
     private string _xmlSavePath;
 
-    private int _currentMode;
+    private int _currentMode = (int)PlayMode.MultiPlay;
     public readonly string SINGLE_PLAY_IN_KOREAN = "1인 플레이";
     public readonly string MULTI_PLAY_IN_KOREAN = "2인 플레이";
 
@@ -158,7 +158,7 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     public int FishCaughtCount
     {
         get => fishCaughtCount;
-        private set
+         set
         {
             fishCaughtCount = value;
             if (isOnReInit) return;
@@ -272,21 +272,24 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
         OnFishCaught -= DecreaseFishCount;
         OnFishCaught += DecreaseFishCount;
 
-        U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
-        U_FishOnWater_UIManager.OnStartUIAppear += OnRoundStart;
-        U_FishOnWater_UIManager.OnReadyUIAppear += OnReadyUIAppear;
+        U_FishOnWater_UIManager_202412.OnStartUIAppear -= OnRoundStart;
+        U_FishOnWater_UIManager_202412.OnStartUIAppear += OnRoundStart;
+        
+        
+        U_FishOnWater_UIManager_202412.OnStartUIAppear -= OnReadyUIAppear;
+        U_FishOnWater_UIManager_202412.OnReadyUIAppear += OnReadyUIAppear;
 
-        U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
-        U_FishOnWater_UIManager.OnRestartBtnClicked += OnRestartBtnClicked;
+        U_FishOnWater_UIManager_202412.OnRestartBtnClicked -= OnRestartBtnClicked;
+        U_FishOnWater_UIManager_202412.OnRestartBtnClicked += OnRestartBtnClicked;
 
-        U_FishOnWater_UIManager.OnResetXML -= OnXmlReset;
-        U_FishOnWater_UIManager.OnResetXML += OnXmlReset;
+        U_FishOnWater_UIManager_202412.OnResetXML -= OnXmlReset;
+        U_FishOnWater_UIManager_202412.OnResetXML += OnXmlReset;
 
-        U_FishOnWater_UIManager.OnResetSettingBtnClicked -= OnResetSetting;
-        U_FishOnWater_UIManager.OnResetSettingBtnClicked += OnResetSetting;
+        U_FishOnWater_UIManager_202412.OnResetSettingBtnClicked -= OnResetSetting;
+        U_FishOnWater_UIManager_202412.OnResetSettingBtnClicked += OnResetSetting;
 
-        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
-        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked += OnSaveCurrentSettings;
+        U_FishOnWater_UIManager_202412.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
+        U_FishOnWater_UIManager_202412.OnSaveCurrentSettingClicked += OnSaveCurrentSettings;
     }
 
     private void OnReadyUIAppear()
@@ -296,13 +299,13 @@ public class UFishOnWaterBaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        U_FishOnWater_UIManager.OnResetXML -= OnXmlReset;
-        U_FishOnWater_UIManager.OnRestartBtnClicked -= OnRestartBtnClicked;
-        U_FishOnWater_UIManager.OnStartUIAppear -= OnRoundStart;
-        U_FishOnWater_UIManager.OnResetSettingBtnClicked -= OnResetSetting;
+        U_FishOnWater_UIManager_202412.OnResetXML -= OnXmlReset;
+        U_FishOnWater_UIManager_202412.OnRestartBtnClicked -= OnRestartBtnClicked;
+        U_FishOnWater_UIManager_202412.OnStartUIAppear -= OnRoundStart;
+        U_FishOnWater_UIManager_202412.OnResetSettingBtnClicked -= OnResetSetting;
         OnFishCaught -= PlayPathOnCaught;
         OnFishCaught -= DecreaseFishCount;
-        U_FishOnWater_UIManager.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
+        U_FishOnWater_UIManager_202412.OnSaveCurrentSettingClicked -= OnSaveCurrentSettings;
     }
 
 

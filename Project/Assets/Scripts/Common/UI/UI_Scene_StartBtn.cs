@@ -137,11 +137,11 @@ public class UI_Scene_StartBtn : MonoBehaviour
     {
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
-
+        _isBtnEventInvoked = true;
         _isClickable = false;
 
-
         _btnImage.DOFade(0, 0.5f);
+        _tmp_Time.DOFade(0, 0.5f);
         _tmp_Start.DOFade(0, 0.5f);
     }
 

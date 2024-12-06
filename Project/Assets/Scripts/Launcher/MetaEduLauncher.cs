@@ -131,7 +131,6 @@ public class MetaEduLauncher : UI_PopUp
         GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC_Music));
         GetButton((int)UIButtons.ContentDButton).gameObject.BindEvent(() => ShowTab(UIType.ContentD_Video));
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
-        // GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
         GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
 
 
@@ -550,37 +549,7 @@ public class MetaEduLauncher : UI_PopUp
      private Button _btn;
     private void OnRaySyncByPrefab()
     {
-        // if (!_isLoadFinished) return;
-        //
-        //
-        // _screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
-        // // _ray = Camera.main.ScreenPointToRay(_screenPositionByPrefab);
-        //
-        //  _launcherPED.position = currentPrefabPosition;
-        //  Logger.Log($"current Position{_launcherPED.position}");
-        //  _resultsByPrefab = new List<RaycastResult>();
-        //  _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
-        //
-        //  if (_resultsByPrefab != null)
-        //  {
-        //      ShowTabOrLoadScene(_resultsByPrefab);
-        //   
-        //      foreach (RaycastResult result in _resultsByPrefab)
-        //      {
-        //          Logger.Log($"프리팹 레이캐스팅 동작 : {result.gameObject.name}------------------------");
-        //          result.gameObject.TryGetComponent(out _btn);
-        //          _btn?.onClick?.Invoke();
-        //     
-        //          result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
-        //          eventHandler?.OnClickHandler?.Invoke();
-        //          
-        //      }
-        //  }
-        //  else
-        //  {
-        //      Logger.Log("프리팹 레이캐스팅 null xxxxxxxxxxxxxxxxxxxxxxx");
-        //  }
-        
+        //테스트 후 삭제 필요
     }
 
     private void OnDrawGizmos()
