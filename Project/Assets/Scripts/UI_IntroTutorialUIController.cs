@@ -72,7 +72,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
     /// </summary>
     private bool LoadUITextInfo()
     {
-        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/" + _currentSceneName);
+        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/IntroTextAsset");
         if (asset == null)
         {
             Debug.LogWarning("Failed to load TMP_FontAsset for scene: " + _currentSceneName);

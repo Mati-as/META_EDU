@@ -53,6 +53,11 @@ public class Sandwich_UIManager : UI_PopUp
         return true;
     }
 
+    private void OnDestroy()
+    {
+        sandwich_AnimalController.onFinishEating -= OnFinishEationg;
+        SandwitchBaseGameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
+    }
     private void OnFinishEationg()
     {
         _animalReaction.SetActive(true);
