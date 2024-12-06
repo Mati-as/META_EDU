@@ -376,7 +376,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
             .DOMove(_positions[(int)Position.OnPlatform].position, 1.5f).WaitForCompletion();
        
         _btnToObjectMap[currentStageButtonID]
-            .DOScale(_btnToObjectMap[currentStageButtonID].localScale * 1.5f, 1.5f).WaitForCompletion();
+            .DOScale(_btnToObjectMap[currentStageButtonID].localScale * 1.5f, 1.5f).SetEase(Ease.InOutBounce).WaitForCompletion();
 
 
         if ((Stage)_currentStage == Stage.Fruit)
@@ -478,7 +478,8 @@ public class FavoriteOneBaseGameManager : Base_GameManager
                 else
                 {
                     fruit.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InOutBounce)
-                        .OnComplete(() => fruit.gameObject.SetActive(false)).SetDelay(Random.Range(0.1f,1.0f));
+                        .OnComplete(() => fruit.gameObject.SetActive(false))
+                        .SetDelay(Random.Range(0.1f,1.0f));
                 }
             }
              
@@ -488,6 +489,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
                 fruit.DOScale(Vector3.zero, 0.125f).SetEase(Ease.InOutBounce).SetDelay(Random.Range(0.1f,1.3f)).OnStart(
                     () =>
                     {
+                        fruit.gameObject.SetActive(false);
                         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A",0.8f);
                     });
             }
