@@ -243,6 +243,33 @@ public class SoundManager : MonoBehaviour
 
         return false;
     }
+    //(임시) 0111 임시로 오버라이드 해서 오디오 클립을 직접 전달하는 경우에 활용
+    public bool Play(Sound type, AudioClip audio, float volume = 1.0f, float pitch = 1.0f)
+    {
+       
+        var audioSource = audioSources[(int)type];
+
+        if (audioSource == null) Logger.LogError("audiosource null exception");
+
+        if (type == Sound.Narration)
+        {
+            audioSource.volume = volume * volumes[(int)Sound.Narration];
+            var audioClip = audio;
+            if (audioClip == null)
+            {
+                Logger.LogWarning("audioclip null ");
+                return false;
+            }
+
+
+            audioSource.clip = audioClip;
+            audioSource.pitch = pitch;
+            audioSource.PlayOneShot(audioClip);
+            return true;
+        }
+
+        return false;
+    }
 
     public void Stop(Sound type)
     {
