@@ -41,6 +41,8 @@ public class Manager_obj_3 : MonoBehaviour
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
+    public Manager_Seq_3 manager_seq;
+
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Fruit_prefabs;
     public Sprite[] Fruit_textsprite;
@@ -74,6 +76,7 @@ public class Manager_obj_3 : MonoBehaviour
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_3>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
+        manager_seq = this.gameObject.GetComponent<Manager_Seq_3>();
 
         init_Audio();
         init_Text();
@@ -164,5 +167,10 @@ public class Manager_obj_3 : MonoBehaviour
 
         Fruit_prefabs = Resources.LoadAll<GameObject>("Concept3/Concept3_Prefab");
 
+    }
+
+    public Manager_Seq_3 Get_managerseq()
+    {
+        return manager_seq;
     }
 }

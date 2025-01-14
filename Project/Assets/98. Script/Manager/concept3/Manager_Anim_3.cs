@@ -11,6 +11,7 @@ public class Manager_Anim_3 : MonoBehaviour
     public int Content_Seq = 0;
 
     private Manager_Text Manager_Text;
+    private Manager_Seq_3 Manager_Seq;
 
     //Camera
     private GameObject Main_Camera;
@@ -65,6 +66,7 @@ public class Manager_Anim_3 : MonoBehaviour
         Box_position = Manager_obj_3.instance.Box_position;
         Main_Box = Manager_obj_3.instance.Main_Box;
 
+        Manager_Seq = Manager_obj_3.instance.Get_managerseq();
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
 
         Init_Seq_camera();
@@ -268,7 +270,7 @@ public class Manager_Anim_3 : MonoBehaviour
     {
         if (round_number == 5)
         {
-            Manager_Seq_3.instance.Reset_Game_read();
+            Manager_Seq.Reset_Game_read();
             //여기에서 모든 과일 원위치 시키는 함수?
 
             StopCoroutine(Temp_Message(time));

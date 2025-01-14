@@ -5544,6 +5544,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ffb470716f83874797cc55fc7c1bdfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  toggle: 0
   fruitPrefabs: []
   mainColor: 0
   selectedFruitCount: 0
@@ -5575,7 +5579,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b9117365acd1294b82a085596fd639f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Panel: {fileID: 1520869377}
   Content_Seq: 0
   Number_Prev_message: -1
   UI_Text_array: []
@@ -5705,8 +5708,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Main_Camera: {fileID: 2083078092}
   Camera_position: {fileID: 300338179}
-  UI_Text: {fileID: 0}
-  UI_Message: {fileID: 0}
+  UI_Text: {fileID: 1806472909}
+  UI_Message: {fileID: 406778369}
+  Panel: {fileID: 1520869377}
   Fruit_position: {fileID: 442998283}
   Main_Box: {fileID: 895546033}
   Box_position: {fileID: 919529477}

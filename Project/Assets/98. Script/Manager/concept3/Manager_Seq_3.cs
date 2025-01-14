@@ -21,7 +21,8 @@ public class Manager_Seq_3 : Base_GameManager
 
     // 기존 내용 ------------------------------------------------------------------------
 
-    public static Manager_Seq_3 instance = null;
+    //우리것도 중복 실행 방지 해야하는데
+    //그리고 우리것도 효과 이펙트랑 효과음 재생해야하는데
 
     private Manager_Anim_3 Manager_Anim;
     private Manager_Text Manager_Text;
@@ -77,20 +78,6 @@ public class Manager_Seq_3 : Base_GameManager
     public float Sequence_timer = 0f;
     //시간, 게임 유무?
 
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -125,14 +112,10 @@ public class Manager_Seq_3 : Base_GameManager
                 toggle = false;
 
                 Act();
-                Debug.Log("timer done");
-
+                //Debug.Log("timer done");
             }
         }
     }
-
-
-    //최초로 콘텐츠 실행할 때 인트로 한 다음부터 이게 돌아가게끔 전부 수정 필요
 
     void Act()
     {
@@ -154,32 +137,28 @@ public class Manager_Seq_3 : Base_GameManager
         }
         else if (Content_Seq == 1)
         {
-            //여기에서 터치 활성화
+            //터치 활성화
             Eventsystem.SetActive(true);
         }
         else if (Content_Seq == 3)
         {
             Init_Game_fruit((int)FruitColor.Orange);
             Eventsystem.SetActive(true);
-            //StartCoroutine(ResetAfterTime(7f)); // 7초 후에 재설정
         }
         else if (Content_Seq == 5)
         {
             Init_Game_fruit((int)FruitColor.Yellow);
             Eventsystem.SetActive(true);
-            //StartCoroutine(ResetAfterTime(7f)); // 7초 후에 재설정
         }
         else if (Content_Seq == 7)
         {
             Init_Game_fruit((int)FruitColor.Green);
             Eventsystem.SetActive(true);
-            //StartCoroutine(ResetAfterTime(7f)); // 7초 후에 재설정
         }
         else if (Content_Seq == 9)
         {
             Init_Game_fruit((int)FruitColor.Purple);
             Eventsystem.SetActive(true);
-            //StartCoroutine(ResetAfterTime(7f)); // 7초 후에 재설정
         }
         else if (Content_Seq == 2 || Content_Seq == 4 || Content_Seq == 6 || Content_Seq == 8 || Content_Seq == 10)
         {
@@ -205,8 +184,6 @@ public class Manager_Seq_3 : Base_GameManager
         else if (Content_Seq == 17)
         {
             Manager_Anim.Jump_box_bp0(4);
-            //마지막으로 카메라 시점 다시 위로 올리고
-            //마지막 상자 원위치
         }
         else
         {
@@ -224,24 +201,22 @@ public class Manager_Seq_3 : Base_GameManager
     void Timer_set()
     {
         Sequence_timer = 5f;
-        //여기 이 부분을 나중에는 지정을 해주던가 아니면 그 특정 부분만 다른 데이터로 넣어주던가 해야함
+
     }
 
     void Init_Game_fruit(int colorIndex)
     {
-        //박스도 추적해서 따라가야함
         mainColor = (FruitColor)colorIndex;
 
         Manager_Anim.Jump_box_bp1(round);
-        //위 과정이 끝나야 아래가 진행
 
-        //메인 색깔에서 2개
+        //메인 색깔 2개
         Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 0);
         Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 1);
 
         for (int i = 0; i < 5; i++)
         {
-            //전체 랜덤으로 5개
+            //전체 랜덤 5개
             Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), i + 2);
         }
     }
@@ -263,7 +238,7 @@ public class Manager_Seq_3 : Base_GameManager
     public void Reset_Game_read()
     {
         //전부 바구니로 이동
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < maxRounds; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
             Manager_Anim.Devide_Seq_fruit(fruit, i);
@@ -275,30 +250,26 @@ public class Manager_Seq_3 : Base_GameManager
         round += 1;
     }
 
-    //과일 고르면 제대로 안 없어지거나, 클론이 많거나
-    //이쪽을 클릭으로 대체할 필요 있음
+    //클릭 대체 부분
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
-        
+
         if (num_fruit / 4 == (int)mainColor)
         {
             //현재 테이블에 있는 과일 중에 해당 과일 삭제
             Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
             plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
-            //여기에서 해당 과일 오브젝트 인덱스 올림
-            Manager_Text.Changed_UI_message_c3(num_table, num_fruit);
-            //해당 하는 과일, 채소 텍스트, 나레이션도 나와야함
 
-            //그냥 전체 랜덤으로 하나 다시 추가
+            Manager_Text.Changed_UI_message_c3(num_table, num_fruit);
+
             Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
 
             selectedFruitCount++;
 
             // 5개 선택 시 처리
-            if (selectedFruitCount == 5)
+            if (selectedFruitCount == maxRounds)
             {
                 Debug.Log("선택된 과일 5개 완료!");
-                //여기에서 다음으로 바로 넘어갔으면 좋겠는데?
                 selectedFruitCount = 0; // 초기화
 
                 Content_Seq += 1;
@@ -308,24 +279,28 @@ public class Manager_Seq_3 : Base_GameManager
         //메인 색깔에서 고르지 않은 경우
         else
         {
-            //현재 테이블에 있는 과일 중에 해당 과일 삭제
-            Manager_Anim.Inactive_Seq_fruit(plate_Fruit,0f);
+            Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);
 
-            //메인 색깔에서 랜덤
             Generate_fruit((int)mainColor * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), num_table);
 
         }
+        //이게 한번이면 상관 없는데 여러개 이면 문제가 생길 수 있을 것 같음
+        //콘텐츠별 효과음 리스트를 따로 작성해놓는걸로 하고 그걸로 각각의 변수를 세분화 해서 가져가는걸로 하는게 좋을 것 같음
+        //그럼 결국 여기는 string형태가 아니라 변수형태로 딱딱 호출 할 수 있으니
+        //결국 클릭하는 효과음은 거의 매 콘텐츠마다 동일 할 것으로 예상되니 우선은 전체 효과음을 로드하고 그 중에 해당 콘텐츠의
+
+        //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
     }
     //다시 모으는게 제대로 동작하지 않음
     public void Inactive_All_fruit()
     {
-        for (int i =5;i< Main_Box_array[round].transform.childCount; i++)
+        for (int i = 5; i < Main_Box_array[round].transform.childCount; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
-            Manager_Anim.Inactive_Seq_fruit(fruit,2f);
+            Manager_Anim.Inactive_Seq_fruit(fruit, 2f);
         }
     }
-    
+
     void Generate_fruit(int num_fruit, int num_table)
     {
         //과일을 비활성화 인채로 받아오고 팝업 애니메이션에서 활성화함
@@ -342,8 +317,6 @@ public class Manager_Seq_3 : Base_GameManager
         Manager_Anim.Popup_fruit(fruit);
     }
 
-
-
     IEnumerator ResetAfterTime(float time)
     {
         yield return new WaitForSeconds(time);
@@ -351,24 +324,15 @@ public class Manager_Seq_3 : Base_GameManager
         StartCoroutine(ResetAfterTime(time)); // 계속 반복
     }
 
-
+    //아래부터 기존 스크립트 내용
     protected override void Init()
     {
-        //여기에서 필요한 카메라, 오브젝트, 이런 것들을 사전에 저장을 해주면 좋을 것 같음
-        //그리고 난 무조건 find하지 않고 인스펙터창에서 저장하는게 어떨까 싶ㅇ므
-
-        _finishMakingPs = GameObject.Find("CFX_FinishMaking").GetComponent<ParticleSystem>();
-
         base.Init();
     }
-
-
-    //기존 스크립트 내용 붙인거
 
     protected override void BindEvent()
     {
         base.BindEvent();
-
     }
 
     protected override void OnDestroy()
@@ -380,6 +344,8 @@ public class Manager_Seq_3 : Base_GameManager
     private bool _isRoundFinished;
     private readonly int NO_VALID_OBJECT = -1;
     private RaycastHit[] _raycastHits;
+    private GameObject Selected_fruit;
+    //private Clicked_fruit Selected_fruitCF;
 
     public override void OnRaySynced()
     {
@@ -388,27 +354,21 @@ public class Manager_Seq_3 : Base_GameManager
 
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
-        //(임시) 여기에서 일부 내가 활용하지 않는 것 같으니 일단은 비활성화 함
-        //if (_isRoundFinished) return;
-        //if (!isGameStart) return;
-        //if (!_isClickable)
-        //{
-        //    return;
-        //}
-
         foreach (var hit in _raycastHits)
         {
-            //클릭하면 호출 되는 함수는 여기로 대체 필요
-            //여긴 어떻게 관리하면 되나?
-            //var selectedIndex = FindIndexByName(hit.transform.gameObject.name);
+            Debug.Log(hit.transform.gameObject.tag);
+            Debug.Log(hit.transform.gameObject.name);
 
-            Debug.LogError(hit.transform.name);
-
+            if (hit.transform.gameObject.CompareTag("MainObject"))
+            {
+                Debug.Log("선택된 과일 5개 완료!");
+                //여기가 나오는지 확인 필요함
+                Selected_fruit = hit.transform.gameObject;
+                Selected_fruit.GetComponent<Clicked_fruit>().Click();
+            }
+            //소리 나는것 확인하였음
             var randomChar = (char)Random.Range('A', 'F' + 1);
-
-            //여기가 클릭 효과음 재생하는 부분인 것 같고
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,
-                0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,0.3f);
 
             return;
         }
@@ -416,24 +376,17 @@ public class Manager_Seq_3 : Base_GameManager
 
     protected override void OnStartButtonClicked()
     {
-        //업데이트 안에 있는거 실행 시작
+        //Update 실행용
+        toggle = true;
         base.OnStartButtonClicked();
     }
+    //뭔가 클릭이 두번씩 발생하는 이유가 뭐지?
 
     public void ButtonClicked()
     {
 
         toggle = true;
     }
-
-
-    // methods ------------------------------------------------------------------------
-
-    //private void SetClickableAfterDelay(float delay)
-    //{
-    //    DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() => { _isClickable = true; });
-    //}
-
 
     private void StackCamera()
     {
