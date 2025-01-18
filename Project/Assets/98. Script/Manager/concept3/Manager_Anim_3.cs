@@ -12,6 +12,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
     private Manager_Text Manager_Text;
     private Manager_Seq_3 Manager_Seq;
+    private bool Eng_mode;
 
     //Camera
     private GameObject Main_Camera;
@@ -72,6 +73,8 @@ public class Manager_Anim_3 : MonoBehaviour
         Init_Seq_camera();
         Init_Seq_fruit();
         Init_Seq_box();
+
+        Eng_mode = Manager_Seq.Eng_MODE;
     }
     //공통으로 활용할 부분
     void Init_Seq_camera()
@@ -291,7 +294,9 @@ public class Manager_Anim_3 : MonoBehaviour
             seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
             seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
 
-            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number); // 새 랜덤 색상으로 초기화
+
+            //영어 모드인지 아닌지 체크가 필요
+            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // 새 랜덤 색상으로 초기화
             round_number += 1;
 
             StartCoroutine(Temp_Message(time)); // 계속 반복

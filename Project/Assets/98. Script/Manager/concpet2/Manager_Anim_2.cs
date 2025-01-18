@@ -5,20 +5,17 @@ using DG.Tweening;
 
 public class Manager_Anim_2 : MonoBehaviour
 {
-    //Common
-    public int Content_Seq = 0;
 
-    //Camera
-    public GameObject Main_Camera;
-    public GameObject Camera_position;
+    //Camera, 여기는 아마 공통
+    private GameObject Main_Camera;
+    private GameObject Camera_position;
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
 
 
     //Animal
-    public GameObject Main_Animal;
+    private GameObject Animal_position;
     private GameObject[] Main_Animal_array;
-    public GameObject Animal_position;
 
     //동물, Hide, Reveal 배열로 관리
     //0~6번
@@ -27,11 +24,20 @@ public class Manager_Anim_2 : MonoBehaviour
     private Sequence[] Reset_a_seq;
 
     [Header("[ COMPONENT CHECK ]")]
+    //입력 값 확인용
+    public int Content_Seq = 0;
+
     public GameObject[] Camera_pos_array;
     public GameObject[] Animal_pos_array;
 
     void Start()
     {
+        //obj 동기화
+        Camera_position = Manager_obj_2.instance.Camera_position;
+        Main_Camera = Manager_obj_2.instance.Main_Camera;
+        Animal_position = Manager_obj_2.instance.Animal_position;
+        Main_Animal_array = Manager_obj_2.instance.Main_Animal_array;
+
         Init_Seq_camera();
         Init_Seq_animal();
     }
@@ -60,7 +66,6 @@ public class Manager_Anim_2 : MonoBehaviour
 
     void Init_Seq_animal()
     {
-        Main_Animal_array = new GameObject[Main_Animal.transform.childCount];
         Animal_pos_array = new GameObject[Animal_position.transform.childCount];
         Hide_a_seq = new Sequence[Animal_position.transform.childCount];
         Reveal_a_seq = new Sequence[Animal_position.transform.childCount];
@@ -71,7 +76,6 @@ public class Manager_Anim_2 : MonoBehaviour
         for (int i = 0; i < Animal_position.transform.childCount; i++)
         {
             Animal_pos_array[i] = Animal_position.transform.GetChild(i).gameObject;
-            Main_Animal_array[i] = Main_Animal.transform.GetChild(i).gameObject;
 
             Hide_a_seq[i] = DOTween.Sequence();
             Reveal_a_seq[i] = DOTween.Sequence();

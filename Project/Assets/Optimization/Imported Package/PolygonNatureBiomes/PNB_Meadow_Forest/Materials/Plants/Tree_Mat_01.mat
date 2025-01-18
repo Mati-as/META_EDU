@@ -11,6 +11,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: 6697e1f185bc8b840a2f02567abf15b5, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _ALPHATEST_ON
   - _FLATCOLOURSWITCH_ON
   - _FROSTINGSWITCH_ON
   - _LEAFFLATCOLOURSWITCH_ON
@@ -171,8 +172,21 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 0.5
     - _AlphaCutoff: 0.5
     - _Big_Wave: 10
     - _Big_WindAmount: 1.22
@@ -185,6 +199,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EmissiveAmount: 0
+    - _EnvironmentReflections: 1
     - _FlatColourSwitch: 1
     - _Float0: 0.5
     - _Float1: 0.05
@@ -221,6 +236,11 @@ Material:
     - _PanningSpeed: 0.007
     - _PanningSpeed1: 0.127
     - _Parallax: 0.02
+    - _PulseSpeed: 0.04
+    - _PulseTiling: 0.03
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Small_Wave: 2.1
     - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
@@ -267,12 +287,12 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissive2Colour: {r: 0, g: 0, b: 0, a: 0}
     - _EmissiveColour: {r: 0, g: 0, b: 0, a: 0}
-    - _FrostingColour: {r: 0.6792453, g: 0.38816285, b: 0.24029905, a: 0}
+    - _FrostingColour: {r: 0.5060455, g: 0.638, b: 0.045297988, a: 0}
     - _GustHighlight: {r: 0.1132075, g: 0.1132075, b: 0.1132075, a: 0}
     - _GustSmoothing: {r: 0.5, g: 0.5, b: 0.5, a: 0}
-    - _LeafBaseColour: {r: 0.7169812, g: 0.35101062, b: 0, a: 0}
-    - _LeafNoiseColour: {r: 0.9622642, g: 0.94490075, b: 0.022694906, a: 0}
-    - _LeafNoiseLargeColour: {r: 1, g: 0.6004561, b: 0, a: 0}
+    - _LeafBaseColour: {r: 0.35894927, g: 0.5764706, b: 0.07843136, a: 0}
+    - _LeafNoiseColour: {r: 0.1677404, g: 0.254717, b: 0, a: 0}
+    - _LeafNoiseLargeColour: {r: 0.4282872, g: 0.4901961, b: 0.007843124, a: 0}
     - _LeafTint: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
     - _SnowColour: {r: 0.7718434, g: 1, b: 0.1839623, a: 0}
     - _Tint: {r: 0, g: 0, b: 0, a: 0}

@@ -49,6 +49,8 @@ public class Manager_Seq_2 : MonoBehaviour
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_2>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
+
+        Eventsystem = Manager_obj_2.instance.Eventsystem;
         Eventsystem.SetActive(false);
     }
 
@@ -69,11 +71,6 @@ public class Manager_Seq_2 : MonoBehaviour
             }
         }
     }
-
-
-    //최초로 콘텐츠 실행할 때 인트로 한 다음부터 이게 돌아가도 되고
-    //아니면 인트로 포함하고 실행하는 걸로 하되,
-
 
     void Act()
     {
@@ -169,6 +166,7 @@ public class Manager_Seq_2 : MonoBehaviour
 
     public void animal_button(int Num_button)
     {
+        //클릭했을 때 해당 동물 소리 재생할 수 있도록 함
         if (Content_Seq == 2)
         {
             Manager_Text.Active_UI_message(Num_button);

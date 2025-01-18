@@ -102,7 +102,7 @@ public class Manager_Text : MonoBehaviour
     }
 
     //(임시) 3컨셉을 위한 도구
-    public void Changed_UI_message_c3(int Number, int Target_num)
+    public void Changed_UI_message_c3(int Number, int Target_num, bool Eng_mode)
     {
         //해당하는 UI 이미지 스프라이트 변경하고, 오디오 소스의 나레이션 변경하고
         Inactive_UI_Text();
@@ -111,8 +111,16 @@ public class Manager_Text : MonoBehaviour
         {
             UI_Message_array[Number_Prev_message].SetActive(false);
         }
-        UI_Message_array[Number].GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite[Target_num];
-        UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
+
+        if (Eng_mode)
+        {
+            UI_Message_array[Number].GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite_eng[Target_num];
+            UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration_eng[Target_num];
+        }else
+        {
+            UI_Message_array[Number].GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite[Target_num];
+            UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
+        }
         UI_Message_array[Number].SetActive(true);
         UI_Message_array[Number].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
         UI_Message_array[Number].transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic).SetDelay(2f);

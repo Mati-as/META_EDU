@@ -24,6 +24,8 @@ public class Manager_Seq_3 : Base_GameManager
     //우리것도 중복 실행 방지 해야하는데
     //그리고 우리것도 효과 이펙트랑 효과음 재생해야하는데
 
+    public bool Eng_MODE = false;
+
     private Manager_Anim_3 Manager_Anim;
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
@@ -201,7 +203,6 @@ public class Manager_Seq_3 : Base_GameManager
     void Timer_set()
     {
         Sequence_timer = 5f;
-
     }
 
     void Init_Game_fruit(int colorIndex)
@@ -260,7 +261,7 @@ public class Manager_Seq_3 : Base_GameManager
             Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
             plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
 
-            Manager_Text.Changed_UI_message_c3(num_table, num_fruit);
+            Manager_Text.Changed_UI_message_c3(num_table, num_fruit, Eng_MODE);
 
             Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
 
@@ -361,7 +362,7 @@ public class Manager_Seq_3 : Base_GameManager
 
             if (hit.transform.gameObject.CompareTag("MainObject"))
             {
-                Debug.Log("선택된 과일 5개 완료!");
+                Debug.Log("Fruit Clicked!");
                 //여기가 나오는지 확인 필요함
                 Selected_fruit = hit.transform.gameObject;
                 Selected_fruit.GetComponent<Clicked_fruit>().Click();

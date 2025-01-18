@@ -51,7 +51,9 @@ public class Manager_obj_3 : MonoBehaviour
     //CHECK 창에서 전부 잘 들어갔는지 확인 위함
     public AudioClip[] Seq_narration;
     public AudioClip[] Msg_narration;
+    public AudioClip[] Msg_narration_eng;
     public Sprite[] Msg_textsprite;
+    public Sprite[] Msg_textsprite_eng;
 
     //기능 테스트 시작
     //바구니 및 과일 정상적으로 전부 나오는지 테스트
@@ -86,7 +88,8 @@ public class Manager_obj_3 : MonoBehaviour
     //순서대로 폴더에 번호를 맞춰서 넣어주면 좋음
     void init_Text()
     {
-        Fruit_textsprite = Resources.LoadAll<Sprite>("Concept3/Concept3_sprite_message");
+        Fruit_textsprite = Resources.LoadAll<Sprite>("EA003/sprite_message");
+        Msg_textsprite_eng = Resources.LoadAll<Sprite>("EA003/sprite_message_eng");
 
         if (Fruit_textsprite.Length > 0)
         {
@@ -109,8 +112,10 @@ public class Manager_obj_3 : MonoBehaviour
         AudioClip[] Temp_Seq_narration;
         AudioClip[] Temp_Msg_narration;
 
-        Temp_Msg_narration = Resources.LoadAll<AudioClip>("Concept3/Concept3_audio_message");
+        Temp_Msg_narration = Resources.LoadAll<AudioClip>("EA003/audio_message");
         Msg_narration = new AudioClip [Temp_Msg_narration.Length];
+
+        Msg_narration_eng = Resources.LoadAll<AudioClip>("EA003/audio_message_eng");
 
         //1. 설계가 잘 되었다 -> 그러면 그냥 처음부터 잘 넣고 굳이 안에서 다시 해주는 것 없이 그냥 쭉 가는걸로 하고
         //2. 설계가 중간에 바뀌었다 -> 그러면 그냥 하나씩 내가 넣어주는 걸로
@@ -136,7 +141,7 @@ public class Manager_obj_3 : MonoBehaviour
         Msg_narration[19] = Temp_Msg_narration[11];
 
         //이미 구현된 콘텐츠 안에서 전부 순서를 다시 맞춰주지않기 위함
-        Temp_Seq_narration = Resources.LoadAll<AudioClip>("Concept3/Concept3_audio_seq");
+        Temp_Seq_narration = Resources.LoadAll<AudioClip>("EA003/audio_seq");
         Seq_narration = new AudioClip[18];
 
         //해당 하는 순서대로 입력
@@ -165,7 +170,7 @@ public class Manager_obj_3 : MonoBehaviour
     void init_Prefab()
     {
 
-        Fruit_prefabs = Resources.LoadAll<GameObject>("Concept3/Concept3_Prefab");
+        Fruit_prefabs = Resources.LoadAll<GameObject>("EA003/prefab");
 
     }
 
