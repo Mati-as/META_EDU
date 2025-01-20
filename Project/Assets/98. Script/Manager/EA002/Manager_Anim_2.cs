@@ -23,6 +23,9 @@ public class Manager_Anim_2 : MonoBehaviour
     private Sequence[] Reveal_a_seq;
     private Sequence[] Reset_a_seq;
 
+    //동물 애니메이터
+    private Animator Animalanim;
+
     [Header("[ COMPONENT CHECK ]")]
     //입력 값 확인용
     public int Content_Seq = 0;
@@ -32,6 +35,7 @@ public class Manager_Anim_2 : MonoBehaviour
 
     void Start()
     {
+
         //obj 동기화
         Camera_position = Manager_obj_2.instance.Camera_position;
         Main_Camera = Manager_obj_2.instance.Main_Camera;
@@ -83,11 +87,14 @@ public class Manager_Anim_2 : MonoBehaviour
             Transform p2 = Animal_pos_array[i].transform.GetChild(2).transform;
             Transform p3 = Animal_pos_array[i].transform.GetChild(3).transform;
 
+            //들어가면 좋은데 그렇게 안되니 그냥 뿅하고 나타나는걸로?
+            //Hide_a_seq[i].OnStart(()=>StartRunning(Main_Animal_array[i])); , 이거 전부 동작하지 않음
+            //해당 하는 자리에 이펙트가 펑하고 생기면서 동물이 빠르게 자리로 이동하도록 수정
+            Hide_a_seq[i].Append(Main_Animal_array[i].transform.DOMove(p1.position, 0f));
+            Hide_a_seq[i].Join(Main_Animal_array[i].transform.DORotate(p1.rotation.eulerAngles, 0f));
 
-            //애니메이션을 조금 더 자연스럽게 만들 필요는 있음
-            Hide_a_seq[i].Append(Main_Animal_array[i].transform.DOMove(p1.position, 1f).SetEase(Ease.InOutQuad));
-            Hide_a_seq[i].Join(Main_Animal_array[i].transform.DORotate(p1.rotation.eulerAngles, 1f));
 
+            //시작할 때 뛰는 애니메이션 재생하고, 도착하면 attack으로 상태를 바꿈
 
             Reveal_a_seq[i].Append(Main_Animal_array[i].transform.DOMove(p2.position, 1f).SetEase(Ease.InOutQuad));
             Reveal_a_seq[i].Join(Main_Animal_array[i].transform.DORotate(p2.rotation.eulerAngles, 1f));
@@ -123,12 +130,20 @@ public class Manager_Anim_2 : MonoBehaviour
     public void Hide_Seq_animal(int Num)
     {
         Hide_a_seq[Num].Play();
+        //해당하는 자리의 이펙트 활성화
         //(임시) 해당 동물 클릭 스크립트 비활성화
         Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
+
+        //돼지가 한번 크게 움직이는 애니메이션 이후
+        //뒤 돌고, 이동하면서 뛰어가는 애니메이션
     }
     public void Reveal_Seq_animal(int Num)
     {
         Reveal_a_seq[Num].Play();
+
+        DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
+        DOVirtual.Float(0, 0, 6f, _ => { }).OnComplete(() => StartRunning(Main_Animal_array[Num]));
+
     }
 
     public void Reset_Seq_animal(int Num)
@@ -178,5 +193,67 @@ public class Manager_Anim_2 : MonoBehaviour
         Animal_position = Manager_obj_2.instance.Animal_position;
 
         Init_Seq_animal();
+
+    }
+
+    //동물 애니메이션 제어를 하기 위해서
+    //동물 오브젝트를 받아오고
+    //해당 애니메이터 받아오고
+    //해당 하는 애니 재생함
+
+    //지금은 번호별로 해당하는 애니메이션을 재생하고 있으므로
+    //그 애니메이션 안에다가 아래의 제어 부분도 추가를 해줌
+
+    //동물 애니메이터 컨트롤러 부분
+    public void StartRunning(GameObject Animal)
+    {
+        Animator animator = Animal.GetComponent<Animator>();
+
+        //초기화 부분
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isAttacking", false);
+
+        animator.SetBool("isRunning", true);
+        Debug.Log("Running animation started.");
+    }
+
+    // 공격 애니메이션 실행 (달리기 중에도 바로 전환)
+    public void StartAttacking(GameObject Animal)
+    {
+        Animator animator = Animal.GetComponent<Animator>();
+
+        //초기화 부분
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isAttacking", false);
+
+        animator.SetBool("isAttacking", true);
+        Debug.Log("Attacking animation started.");
+    }
+
+    // 걷기 애니메이션 시작
+    public void StartWalking(GameObject Animal)
+    {
+        Animator animator = Animal.GetComponent<Animator>();
+        //초기화 부분
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isAttacking", false);
+
+        animator.SetBool("isWalking", true);
+        Debug.Log("Walking animation started.");
+    }
+
+    // Idle 상태로 전환
+    public void ReturnToIdle(GameObject Animal)
+    {
+        Animator animator = Animal.GetComponent<Animator>();
+        //초기화 부분
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isAttacking", false);
+
+        Debug.Log("Returning to Idle.");
     }
 }

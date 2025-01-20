@@ -251,6 +251,40 @@ public class SoundManager : MonoBehaviour
 
         if (audioSource == null) Logger.LogError("audiosource null exception");
 
+        if (type == Sound.Main)
+        {
+            audioSource.volume = volume * volumes[(int)Sound.Narration];
+            var audioClip = audio;
+            if (audioClip == null)
+            {
+                Logger.LogWarning("audioclip null ");
+                return false;
+            }
+
+
+            audioSource.clip = audioClip;
+            audioSource.pitch = pitch;
+            audioSource.Play();
+            return true;
+        }
+
+        if (type == Sound.Effect)
+        {
+            audioSource.volume = volume * volumes[(int)Sound.Narration];
+            var audioClip = audio;
+            if (audioClip == null)
+            {
+                Logger.LogWarning("audioclip null ");
+                return false;
+            }
+
+
+            audioSource.volume = volume * volumes[(int)Sound.Effect];
+            audioSource.pitch = pitch;
+            audioSource.PlayOneShot(audioClip);
+            return true;
+        }
+
         if (type == Sound.Narration)
         {
             audioSource.volume = volume * volumes[(int)Sound.Narration];

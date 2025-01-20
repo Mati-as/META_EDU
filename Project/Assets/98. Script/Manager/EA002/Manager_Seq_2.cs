@@ -86,6 +86,8 @@ public class Manager_Seq_2 : MonoBehaviour
         }
         else if (Content_Seq == 3)
         {
+            //이전 사운드 종료 용
+            Managers.soundManager.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
 
             Content_Seq += 1;
@@ -98,6 +100,8 @@ public class Manager_Seq_2 : MonoBehaviour
         }
         else if (Content_Seq == 5)
         {
+
+            Managers.soundManager.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
             Init_Game_read();
 
@@ -167,19 +171,21 @@ public class Manager_Seq_2 : MonoBehaviour
 
     public void animal_button(int Num_button)
     {
-        //이건 그냥 클릭 효과음
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
 
-        //클릭했을 때 해당 동물 소리 재생할 수 있도록 함
-        //해당 동물 효과음 재생, 나레이션 재생 필요
         if (Content_Seq == 2)
         {
             Manager_Text.Active_UI_message(Num_button);
             Manager_Anim.Hide_Seq_animal(Num_button);
+            Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
 
-            //해당 동물 효과음 재생, 나레이션 재생 필요
-            Managers.soundManager.Play(SoundManager.Sound.Effect, Manager_obj_2.instance.Msg_narration[Num_button], 0.3f);
+            //해당 동물 효과음 재생, play로 그때그때 대체될 수 있도록 구현함
+            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+
+            //메시지 나레이션, 정상 작동 확인
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+            Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
 
             On_game += 1;
         }
@@ -187,11 +193,14 @@ public class Manager_Seq_2 : MonoBehaviour
         {
             Manager_Text.Active_UI_message(Num_button+7);
             Manager_Anim.Reveal_Seq_animal(Num_button);
+            Manager_obj_2.instance.Effect_array[Num_button+7].SetActive(true);
 
-            //해당 동물 효과음, 나레이션 재생 필요
-            Managers.soundManager.Play(SoundManager.Sound.Effect, Manager_obj_2.instance.Msg_narration[Num_button], 0.3f);
+            //해당 동물 효과음 재생, play로 그때그때 대체될 수 있도록 구현함
+            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
 
-            //각 동물의 애니메이션이 전부 종료 될 때 까지 지연시간을 두고 다음 것을 클릭할 수 있도록 함
+            //메시지 나레이션, 정상 작동 확인
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+
             Manager_Text.Active_UI_Panel();
             On_game += 1;
         }

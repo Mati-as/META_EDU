@@ -24,6 +24,7 @@ public class Manager_obj_2 : MonoBehaviour
     //Animal
     public GameObject Main_Animal;
     public GameObject Animal_position;
+    public GameObject Game_effect;
 
 
     //씬마다 변경되어야하는 부분
@@ -38,8 +39,8 @@ public class Manager_obj_2 : MonoBehaviour
     //텍스트 이미지, 나레이션은 위치가 정해져있으므로 따로 정의하지 않음
     //효과음만 따로 저장
     public Sprite[] Animal_text;
-    public AudioClip[] Animal_narration;
     public Sprite[] Animal_textsprite;
+    public AudioClip[] Animal_effect;
 
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Main_Animal_array;
@@ -48,6 +49,7 @@ public class Manager_obj_2 : MonoBehaviour
     public AudioClip[] Msg_narration_eng;
     public Sprite[] Msg_textsprite;
     public Sprite[] Msg_textsprite_eng;
+    public GameObject[] Effect_array;
 
     void Awake()
     {
@@ -74,6 +76,7 @@ public class Manager_obj_2 : MonoBehaviour
         init_Audio();
         init_Text();
         Init_Animalarray();
+        Init_Effectarray();
     }
 
     void init_Text()
@@ -93,6 +96,7 @@ public class Manager_obj_2 : MonoBehaviour
         //이미 순서가 맞춰져서 굳이 추가 수정하지 않음
         Msg_narration = Resources.LoadAll<AudioClip>("EA002/audio_message");
         Seq_narration = Resources.LoadAll<AudioClip>("EA002/audio_seq");
+        Animal_effect = Resources.LoadAll<AudioClip>("EA002/audio_effect");
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
@@ -106,6 +110,18 @@ public class Manager_obj_2 : MonoBehaviour
         for (int i = 0; i < Animal_position.transform.childCount; i++)
         {
             Main_Animal_array[i] = Main_Animal.transform.GetChild(i).gameObject;
+        }
+
+        //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
+        Manager_Anim.Init_Animalarray();
+    }
+    void Init_Effectarray()
+    {
+        Effect_array = new GameObject[Game_effect.transform.childCount];
+
+        for (int i = 0; i < Game_effect.transform.childCount; i++)
+        {
+            Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
         }
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
