@@ -16,13 +16,13 @@ public class Manager_Seq_3 : Base_GameManager
 
     public static bool isGameStart { get; private set; }
 
-    //Áßº¹Å¬¸¯¹æÁö
+    //ï¿½ßºï¿½Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private bool _isClickable = true;
 
-    // ±âÁ¸ ³»¿ë ------------------------------------------------------------------------
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ------------------------------------------------------------------------
 
-    //¿ì¸®°Íµµ Áßº¹ ½ÇÇà ¹æÁö ÇØ¾ßÇÏ´Âµ¥
-    //±×¸®°í ¿ì¸®°Íµµ È¿°ú ÀÌÆåÆ®¶û È¿°úÀ½ Àç»ýÇØ¾ßÇÏ´Âµ¥
+    //ï¿½ì¸®ï¿½Íµï¿½ ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ï´Âµï¿½
+    //ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ì¸®ï¿½Íµï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½Ï´Âµï¿½
 
     public bool Eng_MODE = false;
 
@@ -35,7 +35,7 @@ public class Manager_Seq_3 : Base_GameManager
     public bool toggle = false;
 
 
-    //°úÀÏ °ÔÀÓ
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public enum FruitColor
     {
         Red, Purple, Green, Orange, Yellow
@@ -50,24 +50,24 @@ public class Manager_Seq_3 : Base_GameManager
         Banana, Lemon, Corn, Pineapple
     }
 
-    //°úÀÏÀÇ °æ¿ì ÇÁ¸®ÆÕÀ¸·Î ¹«Á¶°Ç »ý¼ºÀÌ µÇ´Â °É·ÎÇÏ°í
-    //»ý¼ºµÈ ÇÁ¸®ÆÕÀ» ¹«Á¶°Ç ½ºÅ©¸³Æ®¿¡ ¿¬°áÇØ³õÀ½
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½É·ï¿½ï¿½Ï°ï¿½
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø³ï¿½ï¿½ï¿½
 
 
-    //¼±ÅÃµÈ °úÀÏ ¸®½ºÆ®
+    //ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
     // Ex) Orange, Carrot -> 1,0
-    public GameObject[] fruitPrefabs; // °úÀÏ ÇÁ¸®ÆÕ
+    public GameObject[] fruitPrefabs; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     private GameObject Main_Box;
 
 
     private GameObject[] Main_Box_array;
 
-    public FruitColor mainColor; // ¸ÞÀÎ »ö±ò
+    public FruitColor mainColor; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public int selectedFruitCount = 0;
 
-    private int round = 0; // ÇöÀç °ÔÀÓ È¸Â÷
-    private int maxRounds = 5; // °ÔÀÓÀÇ ÃÖ´ë È¸Â÷
+    private int round = 0; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½
+    private int maxRounds = 5; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ È¸ï¿½ï¿½
 
     private const int MaxFruits = 16;
     private const int MaxFruitsinColor = 4;
@@ -76,9 +76,9 @@ public class Manager_Seq_3 : Base_GameManager
     [Header("[ COMPONENT CHECK ]")]
 
     public int Content_Seq = 0;
-    //ÃÖÃÊ ¿¹¿Ü Ã³¸® ´ë½Å¿¡ 0À¸·Î ¼³Á¤
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½Å¿ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public float Sequence_timer = 0f;
-    //½Ã°£, °ÔÀÓ À¯¹«?
+    //ï¿½Ã°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?
 
     // Start is called before the first frame update
     void Start()
@@ -96,9 +96,9 @@ public class Manager_Seq_3 : Base_GameManager
 
         for (int i = 0; i < Main_Box.transform.childCount; i++)
         {
-            //ÇöÀç ÀÖ´Â °úÀÏ ÀüºÎ »èÁ¦
-            //¸ðµç ¹Ù±¸´Ï ÇÒ´ç ¹Þ¾Ò°í
-            //¼ø¼­´ë·Î R - P -G -O -Y
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½ ï¿½Þ¾Ò°ï¿½
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ R - P -G -O -Y
             Main_Box_array[i] = Main_Box.transform.GetChild(i).gameObject;
         }
     }
@@ -125,9 +125,9 @@ public class Manager_Seq_3 : Base_GameManager
         Manager_Narr.Change_Audio_narr(Content_Seq);
         Manager_Anim.Change_Animation(Content_Seq);
 
-        //1,3,5,7,9 °úÀÏ ´ã±â °ÔÀÓ
-        //2,4,6,8,10 °ÔÀÓ Á¾·á ÈÄ ÅØ½ºÆ®
-        //12 ~ 16 °úÀÏ ÀÐ¾îÁÖ´Â °ÔÀÓ
+        //1,3,5,7,9 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //2,4,6,8,10 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+        //12 ~ 16 ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (Content_Seq == 0)
         {
             Init_Game_fruit((int)FruitColor.Red);
@@ -139,7 +139,7 @@ public class Manager_Seq_3 : Base_GameManager
         }
         else if (Content_Seq == 1)
         {
-            //ÅÍÄ¡ È°¼ºÈ­
+            //ï¿½ï¿½Ä¡ È°ï¿½ï¿½È­
             Eventsystem.SetActive(true);
         }
         else if (Content_Seq == 3)
@@ -196,7 +196,7 @@ public class Manager_Seq_3 : Base_GameManager
     }
     void Init_Game_read()
     {
-        //°úÀÏ ÀÐ¾îÁÖ±â
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½Ö±ï¿½
         round = 0;
         Eventsystem.SetActive(false);
     }
@@ -211,13 +211,13 @@ public class Manager_Seq_3 : Base_GameManager
 
         Manager_Anim.Jump_box_bp1(round);
 
-        //¸ÞÀÎ »ö±ò 2°³
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½
         Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 0);
         Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 1);
 
         for (int i = 0; i < 5; i++)
         {
-            //ÀüÃ¼ ·£´ý 5°³
+            //ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ 5ï¿½ï¿½
             Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), i + 2);
         }
     }
@@ -238,7 +238,7 @@ public class Manager_Seq_3 : Base_GameManager
 
     public void Reset_Game_read()
     {
-        //ÀüºÎ ¹Ù±¸´Ï·Î ÀÌµ¿
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ï¿½Ï·ï¿½ ï¿½Ìµï¿½
         for (int i = 0; i < maxRounds; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
@@ -251,13 +251,13 @@ public class Manager_Seq_3 : Base_GameManager
         round += 1;
     }
 
-    //Å¬¸¯ ´ëÃ¼ ºÎºÐ
+    //Å¬ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Îºï¿½
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
 
         if (num_fruit / 4 == (int)mainColor)
         {
-            //ÇöÀç Å×ÀÌºí¿¡ ÀÖ´Â °úÀÏ Áß¿¡ ÇØ´ç °úÀÏ »èÁ¦
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
             plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
 
@@ -267,17 +267,17 @@ public class Manager_Seq_3 : Base_GameManager
 
             selectedFruitCount++;
 
-            // 5°³ ¼±ÅÃ ½Ã Ã³¸®
+            // 5ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½
             if (selectedFruitCount == maxRounds)
             {
-                Debug.Log("¼±ÅÃµÈ °úÀÏ 5°³ ¿Ï·á!");
-                selectedFruitCount = 0; // ÃÊ±âÈ­
+                Debug.Log("ï¿½ï¿½ï¿½Ãµï¿½ ï¿½ï¿½ï¿½ï¿½ 5ï¿½ï¿½ ï¿½Ï·ï¿½!");
+                selectedFruitCount = 0; // ï¿½Ê±ï¿½È­
 
                 Content_Seq += 1;
                 toggle = true;
             }
         }
-        //¸ÞÀÎ »ö±ò¿¡¼­ °í¸£Áö ¾ÊÀº °æ¿ì
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ò¿¡¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         else
         {
             Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);
@@ -285,14 +285,14 @@ public class Manager_Seq_3 : Base_GameManager
             Generate_fruit((int)mainColor * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), num_table);
 
         }
-        //ÀÌ°Ô ÇÑ¹øÀÌ¸é »ó°ü ¾ø´Âµ¥ ¿©·¯°³ ÀÌ¸é ¹®Á¦°¡ »ý±æ ¼ö ÀÖÀ» °Í °°À½
-        //ÄÜÅÙÃ÷º° È¿°úÀ½ ¸®½ºÆ®¸¦ µû·Î ÀÛ¼ºÇØ³õ´Â°É·Î ÇÏ°í ±×°É·Î °¢°¢ÀÇ º¯¼ö¸¦ ¼¼ºÐÈ­ ÇØ¼­ °¡Á®°¡´Â°É·Î ÇÏ´Â°Ô ÁÁÀ» °Í °°À½
-        //±×·³ °á±¹ ¿©±â´Â stringÇüÅÂ°¡ ¾Æ´Ï¶ó º¯¼öÇüÅÂ·Î µüµü È£Ãâ ÇÒ ¼ö ÀÖÀ¸´Ï
-        //°á±¹ Å¬¸¯ÇÏ´Â È¿°úÀ½Àº °ÅÀÇ ¸Å ÄÜÅÙÃ÷¸¶´Ù µ¿ÀÏ ÇÒ °ÍÀ¸·Î ¿¹»óµÇ´Ï ¿ì¼±Àº ÀüÃ¼ È¿°úÀ½À» ·ÎµåÇÏ°í ±× Áß¿¡ ÇØ´ç ÄÜÅÙÃ÷ÀÇ
+        //ï¿½Ì°ï¿½ ï¿½Ñ¹ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Âµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½ï¿½Ø³ï¿½ï¿½Â°É·ï¿½ ï¿½Ï°ï¿½ ï¿½×°É·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°É·ï¿½ ï¿½Ï´Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //ï¿½×·ï¿½ ï¿½á±¹ ï¿½ï¿½ï¿½ï¿½ï¿½ stringï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //ï¿½á±¹ Å¬ï¿½ï¿½ï¿½Ï´ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½ì¼±ï¿½ï¿½ ï¿½ï¿½Ã¼ È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Click_" + randomChar, 0.3f);
+        //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/Click_" + randomChar, 0.3f);
     }
-    //´Ù½Ã ¸ðÀ¸´Â°Ô Á¦´ë·Î µ¿ÀÛÇÏÁö ¾ÊÀ½
+    //ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void Inactive_All_fruit()
     {
         for (int i = 5; i < Main_Box_array[round].transform.childCount; i++)
@@ -304,7 +304,7 @@ public class Manager_Seq_3 : Base_GameManager
 
     void Generate_fruit(int num_fruit, int num_table)
     {
-        //°úÀÏÀ» ºñÈ°¼ºÈ­ ÀÎÃ¤·Î ¹Þ¾Æ¿À°í ÆË¾÷ ¾Ö´Ï¸ÞÀÌ¼Ç¿¡¼­ È°¼ºÈ­ÇÔ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­ ï¿½ï¿½Ã¤ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼Ç¿ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½ï¿½
         Transform pos = Manager_Anim.Get_Fp0(num_table);
         Transform fruit_group = Manager_obj_3.instance.Fruit_position.transform;
 
@@ -321,11 +321,11 @@ public class Manager_Seq_3 : Base_GameManager
     IEnumerator ResetAfterTime(float time)
     {
         yield return new WaitForSeconds(time);
-        Init_Game_fruit(UnityEngine.Random.Range(0, 5)); // »õ ·£´ý »ö»óÀ¸·Î ÃÊ±âÈ­
-        StartCoroutine(ResetAfterTime(time)); // °è¼Ó ¹Ýº¹
+        Init_Game_fruit(UnityEngine.Random.Range(0, 5)); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
+        StartCoroutine(ResetAfterTime(time)); // ï¿½ï¿½ï¿½ ï¿½Ýºï¿½
     }
 
-    //¾Æ·¡ºÎÅÍ ±âÁ¸ ½ºÅ©¸³Æ® ³»¿ë
+    //ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     protected override void Init()
     {
         base.Init();
@@ -355,6 +355,8 @@ public class Manager_Seq_3 : Base_GameManager
 
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
+        if(_raycastHits.Length ==0 )Logger.Log("í´ë¦­ëœ ê²ƒì´ ì•„ë¬´ê²ƒë„ ì—†ìŠµë‹ˆë‹¤. ------------------");
+        
         foreach (var hit in _raycastHits)
         {
             Debug.Log(hit.transform.gameObject.tag);
@@ -363,25 +365,27 @@ public class Manager_Seq_3 : Base_GameManager
             if (hit.transform.gameObject.CompareTag("MainObject"))
             {
                 Debug.Log("Fruit Clicked!");
-                //¿©±â°¡ ³ª¿À´ÂÁö È®ÀÎ ÇÊ¿äÇÔ
+                //ï¿½ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½
                 Selected_fruit = hit.transform.gameObject;
                 Selected_fruit.GetComponent<Clicked_fruit>().Click();
+                return;
             }
-            //¼Ò¸® ³ª´Â°Í È®ÀÎÇÏ¿´À½
+            
+            //ï¿½Ò¸ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ È®ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½
             var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Click_" + randomChar,0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/Click_" + randomChar,0.3f);
 
-            return;
+        
         }
     }
 
     protected override void OnStartButtonClicked()
     {
-        //Update ½ÇÇà¿ë
+        //Update ï¿½ï¿½ï¿½ï¿½ï¿½
         toggle = true;
         base.OnStartButtonClicked();
     }
-    //¹º°¡ Å¬¸¯ÀÌ µÎ¹ø¾¿ ¹ß»ýÇÏ´Â ÀÌÀ¯°¡ ¹¹Áö?
+    //ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½Î¹ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?
 
     public void ButtonClicked()
     {
