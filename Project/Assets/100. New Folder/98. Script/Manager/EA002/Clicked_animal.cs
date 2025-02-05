@@ -1,26 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class Clicked_animal : MonoBehaviour,IPointerClickHandler
+public class Clicked_animal : MonoBehaviour
 {
     public int Number_animal;
+    public int Clicked_number;
+    private Manager_Seq_2 Manager_Seq;
     // Start is called before the first frame update
     void Start()
     {
-        
+        Clicked_number = 0;
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
     }
 
-    // Update is called once per frame
-    void Update()
+
+    //public void OnPointerClick(PointerEventData eventData)
+    //{
+    //    //Debug.Log("CLECKED");
+    //    Manager_Seq_2.instance.animal_click(Number_animal);
+    //}
+    public void Click()
     {
-        
+        Manager_Seq.animal_click(Number_animal);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void Set_Clickednumber()
     {
-        //Debug.Log("CLECKED");
-        Manager_Seq_2.instance.animal_button(Number_animal);
+        Clicked_number += 1;
+    }
+    public int Get_Clickednumber()
+    {
+        return Clicked_number;
     }
 }

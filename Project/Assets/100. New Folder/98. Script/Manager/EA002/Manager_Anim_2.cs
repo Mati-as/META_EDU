@@ -134,23 +134,38 @@ public class Manager_Anim_2 : MonoBehaviour
         //(임시) 해당 동물 클릭 스크립트 비활성화
         Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
 
-        //돼지가 한번 크게 움직이는 애니메이션 이후
-        //뒤 돌고, 이동하면서 뛰어가는 애니메이션
     }
     public void Reveal_Seq_animal(int Num)
     {
         Reveal_a_seq[Num].Play();
 
         DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
-        DOVirtual.Float(0, 0, 6f, _ => { }).OnComplete(() => StartRunning(Main_Animal_array[Num]));
+        DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() => StartRunning(Main_Animal_array[Num]));
 
+        //해당 부분 애니메이션도 여기에 있음
+
+    }
+    public void Read_Seq_animal(int Num)
+    {
+        DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
+        DOVirtual.Float(0, 0, 4f, _ => { }).OnComplete(() => ReturnToIdle(Main_Animal_array[Num]));
+    }
+    public void Final_Click_Seq_animal(int Num)
+    {
+        DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
+        DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() => ReturnToIdle(Main_Animal_array[Num]));
     }
 
     public void Reset_Seq_animal(int Num)
     {
+        Reveal_a_seq[Num].Pause();
+        //현재하고 있는 시퀀스 스탑하고 다시 재생하는 걸로?
         Reset_a_seq[Num].Play();
+
         //(임시) 해당 동물 클릭 스크립트 활성화
         Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = true;
+
+        DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => ReturnToIdle(Main_Animal_array[Num]));
     }
 
     //(임시) 동물 클릭 스크립트 활성화

@@ -11,7 +11,7 @@ public class Manager_Text : MonoBehaviour
 
     private GameObject UI_Text;
     private GameObject UI_Message;
-    private GameObject Panel;
+    private GameObject UI_Panel;
 
     private Sequence Seq_panel;
 
@@ -37,10 +37,13 @@ public class Manager_Text : MonoBehaviour
     }
 
     //텍스트 저장
-    public void Init_UI_text(GameObject text, GameObject message)
+    public void Init_UI_text(GameObject text, GameObject message, GameObject panel)
     {
         UI_Text = text;
         UI_Message = message;
+        UI_Panel = panel;
+
+
 
         if (UI_Text != null)
         {
@@ -70,11 +73,11 @@ public class Manager_Text : MonoBehaviour
     //}
     public void Init_UI_panel(GameObject panel, float time)
     {
-        Panel = panel;
+        UI_Panel = panel;
         Seq_panel = DOTween.Sequence().SetAutoKill(false);
 
-        Seq_panel.Append(Panel.transform.DOScale(1, 0.1f).From(0));
-        Seq_panel.Append(Panel.transform.DOScale(0, 0.1f).From(1).SetDelay(time));
+        Seq_panel.Append(UI_Panel.transform.DOScale(1, 0.1f).From(0));
+        Seq_panel.Append(UI_Panel.transform.DOScale(0, 0.1f).From(1).SetDelay(time));
         //Panel.SetActive(false);
     }
     //텍스트 활성화, 이전 텍스트 비활성화, 애니메이션 재생
@@ -166,11 +169,11 @@ public class Manager_Text : MonoBehaviour
     }
     public void Active_UI_Panel()
     {
-        Panel.SetActive(true);
+        UI_Panel.SetActive(true);
         Seq_panel.Restart();
     }
     public void Inactive_UI_Panel()
     {
-        Panel.SetActive(false);
+        UI_Panel.SetActive(false);
     }
 }

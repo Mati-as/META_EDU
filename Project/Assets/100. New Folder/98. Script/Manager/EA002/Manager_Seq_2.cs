@@ -1,15 +1,24 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
 using DG.Tweening;
 using Random = UnityEngine.Random;
+using UnityEngine.Rendering.Universal;
 
-public class Manager_Seq_2 : MonoBehaviour
+
+public class Manager_Seq_2 : Base_GameManager
 {
+    private static GameObject s_UIManager;
 
-    public static Manager_Seq_2 instance = null;
+    private ParticleSystem _finishMakingPs;
+
+    public static bool isGameStart { get; private set; }
+
+    private bool _isClickable = true;
+
+    //  previous system ------------------------------------------------------------------------
 
     private Manager_Text Manager_Text;
     private Manager_Anim_2  Manager_Anim;
@@ -17,31 +26,18 @@ public class Manager_Seq_2 : MonoBehaviour
 
     public GameObject Eventsystem;
 
-    private bool toggle = true;
+    public bool toggle = false;
 
-    //µ¿¹° ±×·ì
-    private int On_game;
+    //ë™ë¬¼ ê·¸ë£¹
+    public int On_game;
 
     [Header("[ COMPONENT CHECK ]")]
 
     public int Content_Seq = 0;
-    //ÃÖÃÊ ¿¹¿Ü Ã³¸® ´ë½Å¿¡ 0À¸·Î ¼³Á¤
+    //ìµœì´ˆ ì˜ˆì™¸ ì²˜ë¦¬ ëŒ€ì‹ ì— 0ìœ¼ë¡œ ì„¤ì •
     public float Sequence_timer = 0f;
-    //½Ã°£, °ÔÀÓ À¯¹«?
+    //ì‹œê°„, ê²Œì„ ìœ ë¬´?
 
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -59,7 +55,7 @@ public class Manager_Seq_2 : MonoBehaviour
     void Update()
     {
 
-        //±Ùµ¥ ¾÷µ¥ÀÌÆ®¿¡ °è¼Ó ±×°Ô ÀÖÀ¸¸é °è¼Ó µ¹¾Æ°¥ÅÙµ¥?
+        //ê·¼ë° ì—…ë°ì´íŠ¸ì— ê³„ì† ê·¸ê²Œ ìˆìœ¼ë©´ ê³„ì† ëŒì•„ê°ˆí…ë°?
 
         Sequence_timer -= Time.deltaTime;
         if (Sequence_timer < 0)
@@ -79,14 +75,14 @@ public class Manager_Seq_2 : MonoBehaviour
         Manager_Narr.Change_Audio_narr(Content_Seq);
         Manager_Anim.Change_Animation(Content_Seq);
 
-        //¿©±â´Â ÀÌ¹Ì 2¹øÀÎµ¥ ÅØ½ºÆ®, ³ª·¹ÀÌ¼ÇÀº ¾ÆÁ÷ 1¹øÀÌ¾î¼­ ¿À´Â ±«¸®°¡¹Ì ÀÖÀ½
+        //ì—¬ê¸°ëŠ” ì´ë¯¸ 2ë²ˆì¸ë° í…ìŠ¤íŠ¸, ë‚˜ë ˆì´ì…˜ì€ ì•„ì§ 1ë²ˆì´ì–´ì„œ ì˜¤ëŠ” ê´´ë¦¬ê°€ë¯¸ ìˆìŒ
         if (Content_Seq == 2)
         {
             Init_Game_hide();
         }
         else if (Content_Seq == 3)
         {
-            //ÀÌÀü »ç¿îµå Á¾·á ¿ë
+            //ì´ì „ ì‚¬ìš´ë“œ ì¢…ë£Œ ìš©
             Managers.soundManager.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
 
@@ -100,7 +96,6 @@ public class Manager_Seq_2 : MonoBehaviour
         }
         else if (Content_Seq == 5)
         {
-
             Managers.soundManager.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
             Init_Game_read();
@@ -115,7 +110,8 @@ public class Manager_Seq_2 : MonoBehaviour
         }
         else if (Content_Seq == 13)
         {
-            //End, Å¬¸¯ È°¼ºÈ­
+            //End, í´ë¦­ í™œì„±í™”
+            On_game = 0;
             Eventsystem.SetActive(true);
         }
         else
@@ -128,7 +124,7 @@ public class Manager_Seq_2 : MonoBehaviour
 
     void Init_Game_hide()
     {
-        //¸Ş½ÃÁöÀÇ °æ¿ì, T - L - E - R - P - Z - F ¼ø¼­, hide, reveal
+        //ë©”ì‹œì§€ì˜ ê²½ìš°, T - L - E - R - P - Z - F ìˆœì„œ, hide, reveal
 
         Eventsystem.SetActive(true);
         On_game = 0;
@@ -138,15 +134,15 @@ public class Manager_Seq_2 : MonoBehaviour
     {
         Eventsystem.SetActive(true);
         Manager_Anim.Active_click_animal();
-        //´Ù½Ã µ¿¹° ½ºÅ©¸³Æ® È°¼ºÈ­
+        //ë‹¤ì‹œ ë™ë¬¼ ìŠ¤í¬ë¦½íŠ¸ í™œì„±í™”
         On_game = 0;
     }
     void Init_Game_read()
     {
-        //µ¿¹°µé À§Ä¡ ¿ø»ó º¹±¸
+        //ë™ë¬¼ë“¤ ìœ„ì¹˜ ì›ìƒ ë³µêµ¬
         On_game = 0;
         Eventsystem.SetActive(false);
-        //¿ŞÂÊºÎÅÍ ¼ø¼­´ë·Î ÁøÇàµÇµµ·Ï ¼ø¼­ Á¶Á¤ ÇÊ¿ä
+        //ì™¼ìª½ë¶€í„° ìˆœì„œëŒ€ë¡œ ì§„í–‰ë˜ë„ë¡ ìˆœì„œ ì¡°ì • í•„ìš”
         Manager_Anim.Reset_Seq_animal(0);
         Manager_Anim.Reset_Seq_animal(1);
         Manager_Anim.Reset_Seq_animal(2);
@@ -157,22 +153,24 @@ public class Manager_Seq_2 : MonoBehaviour
     }
     void Game_read()
     {
+        Manager_Anim.Read_Seq_animal(On_game);
+        Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[On_game], 1f);
+        //ë™ë¬¼ ìš¸ìŒì†Œë¦¬ë„ ë§ˆì°¬ê°€ì§€ë¡œ ì¬ìƒ í•„ìš”
         On_game += 1;
         toggle = true;
         Content_Seq += 1;
         Timer_set();
-        //ÇØ´çÇÏ´Â µ¿¹° ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
     }
     void Timer_set()
     {
         Sequence_timer = 5f;
-        //¿©±â ÀÌ ºÎºĞÀ» ³ªÁß¿¡´Â ÁöÁ¤À» ÇØÁÖ´ø°¡ ¾Æ´Ï¸é ±× Æ¯Á¤ ºÎºĞ¸¸ ´Ù¸¥ µ¥ÀÌÅÍ·Î ³Ö¾îÁÖ´ø°¡ ÇØ¾ßÇÔ
+        //ì—¬ê¸° ì´ ë¶€ë¶„ì„ ë‚˜ì¤‘ì—ëŠ” ì§€ì •ì„ í•´ì£¼ë˜ê°€ ì•„ë‹ˆë©´ ê·¸ íŠ¹ì • ë¶€ë¶„ë§Œ ë‹¤ë¥¸ ë°ì´í„°ë¡œ ë„£ì–´ì£¼ë˜ê°€ í•´ì•¼í•¨
     }
 
-    public void animal_button(int Num_button)
+    public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ê¸°ë³¸ì»¨í…ì¸ /Sandwich/Click_" + randomChar, 0.3f);
 
         if (Content_Seq == 2)
         {
@@ -180,45 +178,132 @@ public class Manager_Seq_2 : MonoBehaviour
             Manager_Anim.Hide_Seq_animal(Num_button);
             Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
 
-            //ÇØ´ç µ¿¹° È¿°úÀ½ Àç»ı, play·Î ±×¶§±×¶§ ´ëÃ¼µÉ ¼ö ÀÖµµ·Ï ±¸ÇöÇÔ
+            //í•´ë‹¹ ë™ë¬¼ íš¨ê³¼ìŒ ì¬ìƒ, playë¡œ ê·¸ë•Œê·¸ë•Œ ëŒ€ì²´ë  ìˆ˜ ìˆë„ë¡ êµ¬í˜„í•¨
             Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
 
-            //¸Ş½ÃÁö ³ª·¹ÀÌ¼Ç, Á¤»ó ÀÛµ¿ È®ÀÎ
+            //ë©”ì‹œì§€ ë‚˜ë ˆì´ì…˜, ì •ìƒ ì‘ë™ í™•ì¸
             Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
-            Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
 
             On_game += 1;
         }
         else if (Content_Seq == 4)
         {
+            //í•´ë‹¹í•˜ëŠ” ë™ë¬¼ì˜ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì ‘ê·¼ì„ í•´ì•¼í•¨
+            //if()
             Manager_Text.Active_UI_message(Num_button+7);
             Manager_Anim.Reveal_Seq_animal(Num_button);
             Manager_obj_2.instance.Effect_array[Num_button+7].SetActive(true);
 
-            //ÇØ´ç µ¿¹° È¿°úÀ½ Àç»ı, play·Î ±×¶§±×¶§ ´ëÃ¼µÉ ¼ö ÀÖµµ·Ï ±¸ÇöÇÔ
+            //í•´ë‹¹ ë™ë¬¼ íš¨ê³¼ìŒ ì¬ìƒ, playë¡œ ê·¸ë•Œê·¸ë•Œ ëŒ€ì²´ë  ìˆ˜ ìˆë„ë¡ êµ¬í˜„í•¨
             Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
 
-            //¸Ş½ÃÁö ³ª·¹ÀÌ¼Ç, Á¤»ó ÀÛµ¿ È®ÀÎ
+            //ë©”ì‹œì§€ ë‚˜ë ˆì´ì…˜, ì •ìƒ ì‘ë™ í™•ì¸
             Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
 
             Manager_Text.Active_UI_Panel();
             On_game += 1;
+
+            //4ë²ˆ í´ë¦­í•´ì•¼ í•´ë‹¹ ë™ë¬¼ì´ í™œì„±í™” ë  ìˆ˜ ìˆë„ë¡ ìˆ˜ì • í•„ìš”í•¨
+            //ê·¸ì§€ ë°˜ì‘í•˜ëŠ”ê±´ì´ ì•ˆí•˜ëŠ”ì§€ ë°©ì§€í•˜ê¸° ìœ„í•´ íš¨ê³¼ìŒ, ì´í™íŠ¸ê°€ í„°ì§€ëŠ” ê±°ë‹ˆ
+            //ì§§ì€ íš¨ê³¼ìŒì„ ì¶”ê°€ë¡œ ì¬ìƒí•˜ëŠ”ê±´?
+            //ì—¬ê¸°ì—ì„œ ê°ê°ì˜ ë™ë¬¼ë“¤ì€ í´ë¦­ í•  ìˆ˜ ìˆê³ 
+            //ë¬´ì¡°ê±´ 4ë²ˆì„ ì±„ì›Œì•¼ í•´ë‹¹ ë™ë¬¼ì„ ì°¾ì„ ìˆ˜ ìˆë„ë¡í•¨
+            //ëŒ€ì‹ , í•´ë‹¹í•˜ëŠ” ë™ë¬¼ì´ ì• ë‹ˆë©”ì´ì…˜ì´ ì¬ìƒë˜ëŠ” ë™ì•ˆì€ ë‹¤ë¥¸ ë™ë¬¼ì„ ì ì‹œ ì°¾ì„ ìˆ˜ ì—†ë„ë¡ í•¨
+
+            //í´ë¦­í•˜ë©´ ë¬´ì¡°ê±´, ì´í™íŠ¸, íš¨ê³¼ìŒ, ìš¸ìŒì†Œë¦¬
+            //4ë²ˆ ì±„ìš°ë©´ reveal ì• ë‹ˆë©”ì´ì…˜, ë‚˜ë ˆì´ì…˜, ë©”ì‹œì§€
         }
         else if (Content_Seq == 13)
         {
             Manager_Text.Active_UI_message(Num_button + 7);
-            Manager_Anim.Reveal_Seq_animal(Num_button);
+            Manager_Anim.Final_Click_Seq_animal(Num_button);
+            Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
+            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
 
         }
 
         if (On_game == 7)
         {
-
-            //È¿°úÀ½ Àç»ı, ÀÌÆåÆ® ÃâÇö
+            //ì—¬ê¸°ì—ì„œ ì •ìƒì ìœ¼ë¡œ ì‘ë™í•˜ì§€ ì•ŠìŒ
+            Debug.Log("ë™ë¬¼ 7ë§ˆë¦¬ ì±„ì›€");
             Eventsystem.SetActive(false);
             Content_Seq += 1;
             toggle = true;
             Timer_set();
         }
+    }
+
+    protected override void Init()
+    {
+        base.Init();
+    }
+
+    protected override void BindEvent()
+    {
+        base.BindEvent();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+    }
+
+    private bool _isRoundFinished;
+    private readonly int NO_VALID_OBJECT = -1;
+    private RaycastHit[] _raycastHits;
+    private GameObject Selected_animal;
+    //private Clicked_fruit Selected_fruitCF;
+
+    public override void OnRaySynced()
+    {
+        if (!PreCheckOnRaySync()) return;
+
+
+        _raycastHits = Physics.RaycastAll(GameManager_Ray);
+
+        if (_raycastHits.Length == 0) Logger.Log("í´ë¦­ëœ ê²ƒì´ ì•„ë¬´ê²ƒë„ ì—†ìŠµë‹ˆë‹¤. ------------------");
+
+        foreach (var hit in _raycastHits)
+        {
+            Debug.Log(hit.transform.gameObject.tag);
+            Debug.Log(hit.transform.gameObject.name);
+
+            if (hit.transform.gameObject.CompareTag("MainObject"))
+            {
+                Debug.Log("Fruit Clicked!");
+                Selected_animal = hit.transform.gameObject;
+                Selected_animal.GetComponent<Clicked_animal>().Click();
+                return;
+            }
+
+            var randomChar = (char)Random.Range('A', 'F' + 1);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/Click_" + randomChar, 0.3f);
+
+
+        }
+    }
+    protected override void OnStartButtonClicked()
+    {
+        //to start update
+        toggle = true;
+        base.OnStartButtonClicked();
+    }
+
+    public void ButtonClicked()
+    {
+
+        toggle = true;
+    }
+
+    private void StackCamera()
+    {
+        var uiCamera = s_UIManager.GetComponentInChildren<Camera>();
+
+        if (Camera.main.TryGetComponent<UniversalAdditionalCameraData>(out var mainCameraData))
+            mainCameraData.cameraStack.Add(uiCamera);
+        else
+            Debug.LogError("Main camera does not have UniversalAdditionalCameraData component.");
     }
 }

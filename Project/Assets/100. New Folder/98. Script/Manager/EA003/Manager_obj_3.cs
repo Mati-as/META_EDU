@@ -107,7 +107,7 @@ public class Manager_obj_3 : MonoBehaviour
         }
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
-        Manager_Text.Init_UI_text(UI_Text, UI_Message);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
     }
     void init_Audio()
     {
@@ -170,7 +170,7 @@ public class Manager_obj_3 : MonoBehaviour
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
-        Manager_Text.Init_UI_text(UI_Text, UI_Message);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
 
     }
     void init_Prefab()
