@@ -42,6 +42,7 @@ public class Manager_Seq_2 : Base_GameManager
     // Start is called before the first frame update
     void Start()
     {
+        toggle = false;
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_2>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
@@ -167,6 +168,7 @@ public class Manager_Seq_2 : Base_GameManager
         //여기 이 부분을 나중에는 지정을 해주던가 아니면 그 특정 부분만 다른 데이터로 넣어주던가 해야함
     }
 
+    private int Number_animal;
     public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
@@ -188,30 +190,25 @@ public class Manager_Seq_2 : Base_GameManager
         }
         else if (Content_Seq == 4)
         {
-            //해당하는 동물의 스크립트에서 접근을 해야함
-            //if()
-            Manager_Text.Active_UI_message(Num_button+7);
-            Manager_Anim.Reveal_Seq_animal(Num_button);
-            Manager_obj_2.instance.Effect_array[Num_button+7].SetActive(true);
+            Number_animal = Selected_animal.GetComponent<Clicked_animal>().Get_Clickednumber();
+            Manager_obj_2.instance.Effect_array[Num_button + 7].SetActive(true);
+            if (Number_animal < 3)
+            {
+                Selected_animal.GetComponent<Clicked_animal>().Set_Clickednumber();
+                Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+            }
+            else if(Number_animal == 3)
+            {
+                Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+                Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+                //애니메이션 재생하는 동안 잠시 다른 동물 클릭할 수 없도록 해야함
 
-            //해당 동물 효과음 재생, play로 그때그때 대체될 수 있도록 구현함
-            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+                Manager_Text.Active_UI_message(Num_button + 7);
+                Manager_Anim.Reveal_Seq_animal(Num_button);
 
-            //메시지 나레이션, 정상 작동 확인
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
-
-            Manager_Text.Active_UI_Panel();
-            On_game += 1;
-
-            //4번 클릭해야 해당 동물이 활성화 될 수 있도록 수정 필요함
-            //그지 반응하는건이 안하는지 방지하기 위해 효과음, 이펙트가 터지는 거니
-            //짧은 효과음을 추가로 재생하는건?
-            //여기에서 각각의 동물들은 클릭 할 수 있고
-            //무조건 4번을 채워야 해당 동물을 찾을 수 있도록함
-            //대신, 해당하는 동물이 애니메이션이 재생되는 동안은 다른 동물을 잠시 찾을 수 없도록 함
-
-            //클릭하면 무조건, 이펙트, 효과음, 울음소리
-            //4번 채우면 reveal 애니메이션, 나레이션, 메시지
+                //Manager_Text.Active_UI_Panel();
+                On_game += 1;
+            }
         }
         else if (Content_Seq == 13)
         {
@@ -272,14 +269,13 @@ public class Manager_Seq_2 : Base_GameManager
 
             if (hit.transform.gameObject.CompareTag("MainObject"))
             {
-                Debug.Log("Fruit Clicked!");
                 Selected_animal = hit.transform.gameObject;
                 Selected_animal.GetComponent<Clicked_animal>().Click();
                 return;
             }
 
             var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/�⺻������/Sandwich/Click_" + randomChar, 0.3f);
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
 
 
         }

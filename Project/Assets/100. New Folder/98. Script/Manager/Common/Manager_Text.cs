@@ -125,12 +125,14 @@ public class Manager_Text : MonoBehaviour
     }
 
     //(임시) 3컨셉을 위한 도구
-    public void Changed_UI_message_c3(int Number, int Target_num, bool Eng_mode)
+    public void Changed_UI_message_c3(int Number, int Fruit_num, bool Eng_mode)
     {
-        //(0119 수정 필요) 현재는 각 메시지 오브젝트 안에 있는 오디오 소스로 메시지의 나레이션을 읽어줌
-        //해당하는 UI 이미지 스프라이트 변경하고, 오디오 소스의 나레이션 변경하고
         Inactive_UI_Text();
         //메시지 최초 실행시
+
+        GameObject Message_table;
+        Message_table = UI_Message_array[Number];
+
         if (Number_Prev_message != -1)
         {
             UI_Message_array[Number_Prev_message].SetActive(false);
@@ -138,19 +140,20 @@ public class Manager_Text : MonoBehaviour
 
         if (Eng_mode)
         {
-            UI_Message_array[Number].GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite_eng[Target_num];
-            UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration_eng[Target_num];
-        }else
+            Message_table.transform.GetChild(1).GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite_eng[Fruit_num];
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration_eng[Fruit_num], 1f);
+        }
+        else
         {
-            UI_Message_array[Number].GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite[Target_num];
-            UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
+            Message_table.transform.GetChild(1).GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite[Fruit_num];
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration[Fruit_num], 1f);
+
         }
         UI_Message_array[Number].SetActive(true);
         UI_Message_array[Number].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
         UI_Message_array[Number].transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic).SetDelay(2f);
 
-        Debug.Log("텍스트");
-        //금방 비활성화 해야함
+        //Debug.Log("텍스트");
 
         Number_Prev_message = Number;
     }

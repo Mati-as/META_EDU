@@ -32,6 +32,7 @@ public class Manager_obj_3 : MonoBehaviour
     //public GameObject Main_Box;
     public GameObject Main_Box;
     public GameObject Box_position;
+    public GameObject Game_effect;
 
     //Eventsystem
     public GameObject Eventsystem;
@@ -42,6 +43,7 @@ public class Manager_obj_3 : MonoBehaviour
     private Manager_Narr Manager_Narr;
 
     public Manager_Seq_3 manager_seq;
+    public GameObject Btn_Next;
 
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Fruit_prefabs;
@@ -54,6 +56,7 @@ public class Manager_obj_3 : MonoBehaviour
     public AudioClip[] Msg_narration_eng;
     public Sprite[] Msg_textsprite;
     public Sprite[] Msg_textsprite_eng;
+    public GameObject[] Effect_array;
 
     //기능 테스트 시작
     //바구니 및 과일 정상적으로 전부 나오는지 테스트
@@ -83,6 +86,7 @@ public class Manager_obj_3 : MonoBehaviour
         init_Audio();
         init_Text();
         init_Prefab();
+        Init_Effectarray();
     }
 
     //순서대로 폴더에 번호를 맞춰서 넣어주면 좋음
@@ -178,6 +182,16 @@ public class Manager_obj_3 : MonoBehaviour
 
         Fruit_prefabs = Resources.LoadAll<GameObject>("EA003/prefab");
 
+    }
+
+    void Init_Effectarray()
+    {
+        Effect_array = new GameObject[Game_effect.transform.childCount];
+
+        for (int i = 0; i < Game_effect.transform.childCount; i++)
+        {
+            Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
+        }
     }
 
     public Manager_Seq_3 Get_managerseq()

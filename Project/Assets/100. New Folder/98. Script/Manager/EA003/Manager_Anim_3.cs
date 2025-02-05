@@ -278,8 +278,13 @@ public class Manager_Anim_3 : MonoBehaviour
     {
         if (round_number == 5)
         {
-            Manager_Seq.Reset_Game_read();
-            //여기에서 모든 과일 원위치 시키는 함수?
+            //5라운드 도달 했을 때의 행동
+            //여기에서 잠시 유지하는 기능 추가 필요
+
+            Manager_obj_3.instance.Btn_Next.SetActive(true);
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(Manager_obj_3.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
 
             StopCoroutine(Temp_Message(time));
         }

@@ -130,7 +130,6 @@ public class Manager_Anim_2 : MonoBehaviour
     public void Hide_Seq_animal(int Num)
     {
         Hide_a_seq[Num].Play();
-        //해당하는 자리의 이펙트 활성화
         //(임시) 해당 동물 클릭 스크립트 비활성화
         Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
 
@@ -139,10 +138,11 @@ public class Manager_Anim_2 : MonoBehaviour
     {
         Reveal_a_seq[Num].Play();
 
+        //여기에서 비활성화 하고
+        Manager_obj_2.instance.Eventsystem.SetActive(false);
         DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
         DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() => StartRunning(Main_Animal_array[Num]));
-
-        //해당 부분 애니메이션도 여기에 있음
+        //러닝에서 다시 활성화 하는건?
 
     }
     public void Read_Seq_animal(int Num)
@@ -211,17 +211,9 @@ public class Manager_Anim_2 : MonoBehaviour
 
     }
 
-    //동물 애니메이션 제어를 하기 위해서
-    //동물 오브젝트를 받아오고
-    //해당 애니메이터 받아오고
-    //해당 하는 애니 재생함
-
-    //지금은 번호별로 해당하는 애니메이션을 재생하고 있으므로
-    //그 애니메이션 안에다가 아래의 제어 부분도 추가를 해줌
-
-    //동물 애니메이터 컨트롤러 부분
     public void StartRunning(GameObject Animal)
     {
+        Manager_obj_2.instance.Eventsystem.SetActive(true);
         Animator animator = Animal.GetComponent<Animator>();
 
         //초기화 부분
@@ -230,10 +222,9 @@ public class Manager_Anim_2 : MonoBehaviour
         animator.SetBool("isAttacking", false);
 
         animator.SetBool("isRunning", true);
-        Debug.Log("Running animation started.");
+        //Debug.Log("Running animation started.");
     }
 
-    // 공격 애니메이션 실행 (달리기 중에도 바로 전환)
     public void StartAttacking(GameObject Animal)
     {
         Animator animator = Animal.GetComponent<Animator>();
@@ -244,10 +235,9 @@ public class Manager_Anim_2 : MonoBehaviour
         animator.SetBool("isAttacking", false);
 
         animator.SetBool("isAttacking", true);
-        Debug.Log("Attacking animation started.");
+        //Debug.Log("Attacking animation started.");
     }
 
-    // 걷기 애니메이션 시작
     public void StartWalking(GameObject Animal)
     {
         Animator animator = Animal.GetComponent<Animator>();
@@ -257,10 +247,8 @@ public class Manager_Anim_2 : MonoBehaviour
         animator.SetBool("isAttacking", false);
 
         animator.SetBool("isWalking", true);
-        Debug.Log("Walking animation started.");
+        //Debug.Log("Walking animation started.");
     }
-
-    // Idle 상태로 전환
     public void ReturnToIdle(GameObject Animal)
     {
         Animator animator = Animal.GetComponent<Animator>();
@@ -269,6 +257,6 @@ public class Manager_Anim_2 : MonoBehaviour
         animator.SetBool("isWalking", false);
         animator.SetBool("isAttacking", false);
 
-        Debug.Log("Returning to Idle.");
+        //Debug.Log("Returning to Idle.");
     }
 }
