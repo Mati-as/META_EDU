@@ -61,6 +61,7 @@ public class Manager_Seq_3 : Base_GameManager
     private const int MaxFruits = 16;
     private const int MaxFruitsinColor = 4;
 
+    public AudioClip Effect_Success;
 
     [Header("[ COMPONENT CHECK ]")]
 
@@ -163,6 +164,7 @@ public class Manager_Seq_3 : Base_GameManager
         }
         else if (Content_Seq == 12 || Content_Seq == 13 || Content_Seq == 14 || Content_Seq == 15 || Content_Seq == 16)
         {
+            Onclick = true;
             Read_fruit(round);
             //기다리는 기능을 추가할게 아니라 펼쳐진채로 다음버튼을 클릭해야 다음으로 진행되게끔 수정 필요
 
@@ -216,54 +218,79 @@ public class Manager_Seq_3 : Base_GameManager
         Manager_Anim.Read_Seq_fruit(round);
     }
 
-
     public void Reset_Game_read()
     {
         for (int i = 0; i < maxRounds; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
-            Manager_Anim.Devide_Seq_fruit(fruit, i);
+            Inactive_fruit_collider(fruit);
+            Manager_Anim.Return_Seq_fruit(fruit, i);
         }
     }
 
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
-
-        if (num_fruit / 4 == (int)mainColor)
+        if (Content_Seq >= 12)
         {
-            Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
-            plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
-
-            Manager_Text.Changed_UI_message_c3(num_table, num_fruit, Eng_MODE);
-            Manager_obj_3.instance.Effect_array[num_table].SetActive(true);
-
-            Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
-
-            selectedFruitCount++;
-
-            if (selectedFruitCount == maxRounds)
+            Debug.Log("clicked");
+            Manager_Text.Changed_UI_message_c3(num_table + 7, num_fruit, Eng_MODE); // 새 랜덤 색상으로 초기화
+            plate_Fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad);
+        }
+        else{
+            //맞는 과일 눌렀을 때
+            if (num_fruit / 4 == (int)mainColor)
             {
-                Debug.Log("���õ� ���� 5�� �Ϸ�!");
-                selectedFruitCount = 0; 
+                Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
+                plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
+                Inactive_fruit_collider(plate_Fruit);
 
-                Content_Seq += 1;
-                toggle = true;
-                Onclick = false;
+                Manager_Text.Changed_UI_message_c3(num_table, num_fruit, Eng_MODE);
+                Manager_obj_3.instance.Effect_array[num_table].SetActive(true);
+
+                Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
+
+                //순서대로 테이블 넘버 재지정 필요
+                plate_Fruit.GetComponent<Clicked_fruit>().Number_table = selectedFruitCount;
+                selectedFruitCount++;
+
+                if (selectedFruitCount == maxRounds)
+                {
+                    //효과음 추가 필요
+
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+
+                    Debug.Log("5 FRUITS!");
+                    selectedFruitCount = 0;
+
+                    Content_Seq += 1;
+                    toggle = true;
+                    Onclick = false;
+                }
+            }
+            else
+            {
+                //틀린 과일 눌렀을 때
+                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+                Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
+
+                Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);
+
+                Generate_fruit((int)mainColor * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), num_table);
+
             }
         }
-        else
-        {
-            //틀린 과일 눌렀을 때 효과음
-            var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
-
-            Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);
-
-            Generate_fruit((int)mainColor * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), num_table);
-
-        }
-        //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/�⺻������/Sandwich/Click_" + randomChar, 0.3f);
     }
+    public void Inactive_fruit_collider(GameObject plate_Fruit)
+    {
+        plate_Fruit.GetComponent<BoxCollider>().enabled = false;
+    }
+
+    public void Active_fruit_collider(GameObject plate_Fruit)
+    {
+        plate_Fruit.GetComponent<BoxCollider>().enabled = true;
+    }
+
+
     public void Inactive_All_fruit()
     {
         for (int i = 5; i < Main_Box_array[round].transform.childCount; i++)
@@ -360,6 +387,12 @@ public class Manager_Seq_3 : Base_GameManager
     {
         //버튼 클릭하면 원위치 시작
         Reset_Game_read();
+        Manager_obj_3.instance.Btn_Next.SetActive(false);
+        Sequence seq = DOTween.Sequence();
+        seq.Append(Manager_obj_3.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
+
+
+        //여기서 클릭 받으면 현재 박스 들어가기전에 해당하는 과일 전부 다시 비활성화 필요
 
         Content_Seq += 1;
         toggle = true;

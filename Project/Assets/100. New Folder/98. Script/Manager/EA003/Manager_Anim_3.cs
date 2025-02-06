@@ -53,6 +53,7 @@ public class Manager_Anim_3 : MonoBehaviour
     public Transform[] F_p0; //과일 게임 과일 위치
     private Transform[] F_p1; //박스내 과일 위치
     private Transform[] F_p2; //과일 읽기 과일 위치
+    private Transform[] F_p3; //읽기 게임 박스내 과일 위치
 
     [Header("[ COMPONENT CHECK ]")]
     //위치 입력값 확인용
@@ -112,9 +113,10 @@ public class Manager_Anim_3 : MonoBehaviour
         Fruit_pos_array = new GameObject[Fruit_position.transform.childCount];
 
 
-        F_p0 = new Transform[7]; //과일 게임 과일 위치
-        F_p1 = new Transform[5]; //박스내 과일 위치
-        F_p2 = new Transform[5]; //과일 읽기 과일 위치
+        F_p0 = new Transform[7]; 
+        F_p1 = new Transform[5]; 
+        F_p2 = new Transform[5]; 
+        F_p3 = new Transform[5];
 
         for (int i = 0; i < Fruit_position.transform.childCount; i++)
         {
@@ -138,6 +140,11 @@ public class Manager_Anim_3 : MonoBehaviour
         F_p2[2] = Fruit_position.transform.GetChild(14);
         F_p2[3] = Fruit_position.transform.GetChild(15);
         F_p2[4] = Fruit_position.transform.GetChild(16);
+        F_p3[0] = Fruit_position.transform.GetChild(17);
+        F_p3[1] = Fruit_position.transform.GetChild(18);
+        F_p3[2] = Fruit_position.transform.GetChild(19);
+        F_p3[3] = Fruit_position.transform.GetChild(20);
+        F_p3[4] = Fruit_position.transform.GetChild(21);
 
 
     }
@@ -262,6 +269,15 @@ public class Manager_Anim_3 : MonoBehaviour
 
         Jump_fruit(plate_Fruit, F_p1[number], 0f);
     }
+    public void Return_Seq_fruit(GameObject plate_Fruit, int number)
+    {
+        //과일접시 옮기고 접시는 비활성화
+        GameObject plate = plate_Fruit.transform.GetChild(0).gameObject;
+        plate.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+        plate.SetActive(false);
+
+        Jump_fruit(plate_Fruit, F_p3[number], 0f);
+    }
 
     public void Read_Seq_fruit(int round)
     {
@@ -292,6 +308,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
             yield return new WaitForSeconds(time);
 
+            //바구니에서 과일 꺼내는 부분
             GameObject Selected_fruit;
             int fruit_number;
 
@@ -303,6 +320,8 @@ public class Manager_Anim_3 : MonoBehaviour
             //순서대로 진행됨
             seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
             seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+            //이동하고 난 다음에 클릭 다시 활성화
+            Manager_Seq.Active_fruit_collider(Selected_fruit);
 
 
             //영어 모드인지 아닌지 체크가 필요
