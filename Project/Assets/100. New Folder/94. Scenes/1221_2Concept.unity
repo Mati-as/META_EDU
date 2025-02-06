@@ -5547,10 +5547,13 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 0
+  Eng_MODE: 0
   toggle: 0
+  Onclick: 1
   fruitPrefabs: []
   mainColor: 0
   selectedFruitCount: 0
+  Effect_Success: {fileID: 0}
   Content_Seq: 0
   Sequence_timer: 0
 --- !u!114 &144448031
@@ -5714,7 +5717,10 @@ MonoBehaviour:
   Fruit_position: {fileID: 442998283}
   Main_Box: {fileID: 895546033}
   Box_position: {fileID: 919529477}
+  Game_effect: {fileID: 0}
   Eventsystem: {fileID: 1213712110}
+  manager_seq: {fileID: 0}
+  Btn_Next: {fileID: 0}
   Fruit_prefabs:
   - {fileID: 6947128108400005497, guid: c6fa34234feac6f4c82086c010b2a3ad, type: 3}
   - {fileID: 1701125592480413746, guid: f47114cc3baf50e4bbb92346a4113ca4, type: 3}
@@ -5739,7 +5745,10 @@ MonoBehaviour:
   Fruit_textsprite: []
   Seq_narration: []
   Msg_narration: []
+  Msg_narration_eng: []
   Msg_textsprite: []
+  Msg_textsprite_eng: []
+  Effect_array: []
 --- !u!1 &150762543
 GameObject:
   m_ObjectHideFlags: 0
