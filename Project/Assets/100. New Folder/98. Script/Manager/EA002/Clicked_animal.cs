@@ -11,7 +11,7 @@ public class Clicked_animal : MonoBehaviour
     void Start()
     {
         Clicked_number = 0;
-        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        //Manager_Seq = Manager_obj_2.instance.Get_managerseq();
     }
 
 
@@ -22,6 +22,7 @@ public class Clicked_animal : MonoBehaviour
     //}
     public void Click()
     {
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
         Manager_Seq.animal_click(Number_animal);
     }
 

@@ -24,12 +24,13 @@ public class Manager_Seq_2 : Base_GameManager
     private Manager_Anim_2  Manager_Anim;
     private Manager_Narr Manager_Narr;
 
-    public GameObject Eventsystem;
-
     public bool toggle = false;
+    public bool Onclick = true;
 
     //동물 그룹
     public int On_game;
+
+    public AudioClip Effect_Success;
 
     [Header("[ COMPONENT CHECK ]")]
 
@@ -48,8 +49,9 @@ public class Manager_Seq_2 : Base_GameManager
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
 
-        Eventsystem = Manager_obj_2.instance.Eventsystem;
-        Eventsystem.SetActive(false);
+        //Eventsystem = Manager_obj_2.instance.Eventsystem;
+        //Eventsystem.SetActive(false);
+        Onclick = false;
     }
 
     // Update is called once per frame
@@ -113,7 +115,9 @@ public class Manager_Seq_2 : Base_GameManager
         {
             //End, 클릭 활성화
             On_game = 0;
-            Eventsystem.SetActive(true);
+            //Eventsystem.SetActive(true);
+
+            Onclick = true;
         }
         else
         {
@@ -127,13 +131,15 @@ public class Manager_Seq_2 : Base_GameManager
     {
         //메시지의 경우, T - L - E - R - P - Z - F 순서, hide, reveal
 
-        Eventsystem.SetActive(true);
+        Onclick = true;
+        //Eventsystem.SetActive(true);
         On_game = 0;
         //Manager_Anim.Hide_All_animal();
     }
     void Init_Game_reveal()
     {
-        Eventsystem.SetActive(true);
+        Onclick = true;
+        //Eventsystem.SetActive(true);
         Manager_Anim.Active_click_animal();
         //다시 동물 스크립트 활성화
         On_game = 0;
@@ -142,7 +148,8 @@ public class Manager_Seq_2 : Base_GameManager
     {
         //동물들 위치 원상 복구
         On_game = 0;
-        Eventsystem.SetActive(false);
+        Onclick = false;
+        //Eventsystem.SetActive(false);
         //왼쪽부터 순서대로 진행되도록 순서 조정 필요
         Manager_Anim.Reset_Seq_animal(0);
         Manager_Anim.Reset_Seq_animal(1);
@@ -169,6 +176,12 @@ public class Manager_Seq_2 : Base_GameManager
     }
 
     private int Number_animal;
+
+    //3번 클릭해야 되는데
+    //3번 다 클릭하면 성공하는 효과음 추가해주고
+    //그리고 3번 다 클릭 끝나면 클릭 못 하게끔 비활성화 해주고
+    //동물 한마리 나오면 다른 동물은 어떻게?
+
     public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
@@ -192,6 +205,7 @@ public class Manager_Seq_2 : Base_GameManager
         {
             Number_animal = Selected_animal.GetComponent<Clicked_animal>().Get_Clickednumber();
             Manager_obj_2.instance.Effect_array[Num_button + 7].SetActive(true);
+
             if (Number_animal < 3)
             {
                 Selected_animal.GetComponent<Clicked_animal>().Set_Clickednumber();
@@ -199,6 +213,8 @@ public class Manager_Seq_2 : Base_GameManager
             }
             else if(Number_animal == 3)
             {
+
+                Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
                 Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
                 Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
                 //애니메이션 재생하는 동안 잠시 다른 동물 클릭할 수 없도록 해야함
@@ -222,9 +238,11 @@ public class Manager_Seq_2 : Base_GameManager
 
         if (On_game == 7)
         {
+            Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
             //여기에서 정상적으로 작동하지 않음
             Debug.Log("동물 7마리 채움");
-            Eventsystem.SetActive(false);
+            Onclick = false;
+            //Eventsystem.SetActive(false);
             Content_Seq += 1;
             toggle = true;
             Timer_set();
@@ -244,7 +262,6 @@ public class Manager_Seq_2 : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
     }
 
     private bool _isRoundFinished;
@@ -266,12 +283,14 @@ public class Manager_Seq_2 : Base_GameManager
         {
             Debug.Log(hit.transform.gameObject.tag);
             Debug.Log(hit.transform.gameObject.name);
-
-            if (hit.transform.gameObject.CompareTag("MainObject"))
+            if (Onclick)
             {
-                Selected_animal = hit.transform.gameObject;
-                Selected_animal.GetComponent<Clicked_animal>().Click();
-                return;
+                if (hit.transform.gameObject.CompareTag("MainObject"))
+                {
+                    Selected_animal = hit.transform.gameObject;
+                    Selected_animal.GetComponent<Clicked_animal>().Click();
+                    return;
+                }
             }
 
             var randomChar = (char)Random.Range('A', 'F' + 1);
@@ -289,7 +308,6 @@ public class Manager_Seq_2 : Base_GameManager
 
     public void ButtonClicked()
     {
-
         toggle = true;
     }
 

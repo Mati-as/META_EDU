@@ -25,6 +25,7 @@ public class Manager_Anim_2 : MonoBehaviour
 
     //동물 애니메이터
     private Animator Animalanim;
+    private Manager_Seq_2 Manager_Seq;
 
     [Header("[ COMPONENT CHECK ]")]
     //입력 값 확인용
@@ -40,6 +41,7 @@ public class Manager_Anim_2 : MonoBehaviour
         Camera_position = Manager_obj_2.instance.Camera_position;
         Main_Camera = Manager_obj_2.instance.Main_Camera;
 
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
         Init_Seq_camera();
     }
     //공통으로 활용할 부분
@@ -138,11 +140,10 @@ public class Manager_Anim_2 : MonoBehaviour
     {
         Reveal_a_seq[Num].Play();
 
-        //여기에서 비활성화 하고
-        Manager_obj_2.instance.Eventsystem.SetActive(false);
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        Manager_Seq.Onclick = false;
         DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
         DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() => StartRunning(Main_Animal_array[Num]));
-        //러닝에서 다시 활성화 하는건?
 
     }
     public void Read_Seq_animal(int Num)
@@ -213,7 +214,8 @@ public class Manager_Anim_2 : MonoBehaviour
 
     public void StartRunning(GameObject Animal)
     {
-        Manager_obj_2.instance.Eventsystem.SetActive(true);
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        Manager_Seq.Onclick = true;
         Animator animator = Animal.GetComponent<Animator>();
 
         //초기화 부분
