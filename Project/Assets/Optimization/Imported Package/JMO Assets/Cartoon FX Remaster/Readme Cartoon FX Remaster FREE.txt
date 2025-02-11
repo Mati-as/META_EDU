@@ -1,5 +1,5 @@
-﻿Cartoon FX Remaster FREE, version R 1.0
-2023/09/04
+﻿Cartoon FX Remaster FREE, version R 1.3
+2023/11/03
 © 2012-2023 - Jean Moreno
 =======================================
 
@@ -78,6 +78,13 @@ I'd be happy to see any effects used in your project, so feel free to drop me a 
 
 RELEASE NOTES
 -------------
+
+R 1.3.1
+- Removed 'NEW' suffix in shader names, as it was meant for internal testing
+
+R 1.3.0
+- Replaced the old .shader files with a new .cfxrshader file format, that will only compile them for the currently active render pipeline (this should fix all issues related to the effects not working in builds using Addressables or Asset Bundles)
+- Harmonized version numbering across all Cartoon FX packs
 
 R 1.0.7
 - Distortion effects now work with URP 2D Renderer
