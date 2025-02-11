@@ -8,7 +8,7 @@ public class LauncherGameManager : Base_GameManager
   protected override void Init()
   {
     base.Init();
-    waitForClickableFloatObj = 0.35f;
+    waitForClickableInGameRay = 0.35f;
     
     ManageProjectSettings(100,0.55f);
   }
