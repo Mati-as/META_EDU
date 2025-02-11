@@ -10,22 +10,29 @@ public class Clicked_fruit : MonoBehaviour
 
 
     private Manager_Seq_3 Manager_Seq;
+
+    public bool Clickable = true;
     // Start is called before the first frame update
     void Start()
     {
-        Manager_Seq = Manager_obj_3.instance.Get_managerseq();
+
     }
 
     
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Debug.Log("CLECKED");
-       // Manager_Seq_3.instance.Click(this.gameObject, Number_fruit, Number_table);
-    }
+    //public void OnPointerClick(PointerEventData eventData)
+    //{
+    //    Debug.Log("CLECKED");
+    //   // Manager_Seq_3.instance.Click(this.gameObject, Number_fruit, Number_table);
+    //}
     public void Click()
     {
-        Manager_Seq.Click(this.gameObject, Number_fruit, Number_table);
+        //Debug.Log("Clicked");
+        if (Clickable)
+        {
+            Manager_Seq = Manager_obj_3.instance.Get_managerseq();
+            Manager_Seq.Click(this.gameObject, Number_fruit, Number_table);
+        }
     }
 
     public void Set_Number_fruit(int num)
@@ -36,5 +43,14 @@ public class Clicked_fruit : MonoBehaviour
     {
         Number_table = num;
 
+    }
+
+    public void Active_Clickable()
+    {
+        Clickable = true;
+    }
+    public void Inactive_Clickable()
+    {
+        Clickable = false;
     }
 }

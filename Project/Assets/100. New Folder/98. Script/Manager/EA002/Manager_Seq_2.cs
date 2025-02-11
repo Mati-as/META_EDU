@@ -31,6 +31,7 @@ public class Manager_Seq_2 : Base_GameManager
     public int On_game;
 
     public AudioClip Effect_Success;
+    public AudioClip BGM;
 
     [Header("[ COMPONENT CHECK ]")]
 
@@ -52,6 +53,8 @@ public class Manager_Seq_2 : Base_GameManager
         //Eventsystem = Manager_obj_2.instance.Eventsystem;
         //Eventsystem.SetActive(false);
         Onclick = false;
+
+        Managers.soundManager.Play(SoundManager.Sound.Bgm, BGM, 0.3f);
     }
 
     // Update is called once per frame
@@ -96,6 +99,7 @@ public class Manager_Seq_2 : Base_GameManager
         else if (Content_Seq == 4)
         {
             Init_Game_reveal();
+            //여기에서 전부 다시 활성화
         }
         else if (Content_Seq == 5)
         {
@@ -114,7 +118,9 @@ public class Manager_Seq_2 : Base_GameManager
         else if (Content_Seq == 13)
         {
             //End, 클릭 활성화
+            Manager_Anim.Active_click_animal();
             On_game = 0;
+            //여기에서 다시 전부 활성화
             //Eventsystem.SetActive(true);
 
             Onclick = true;
@@ -140,8 +146,8 @@ public class Manager_Seq_2 : Base_GameManager
     {
         Onclick = true;
         //Eventsystem.SetActive(true);
-        Manager_Anim.Active_click_animal();
         //다시 동물 스크립트 활성화
+        Manager_Anim.Active_click_animal();
         On_game = 0;
     }
     void Init_Game_read()
@@ -177,15 +183,16 @@ public class Manager_Seq_2 : Base_GameManager
 
     private int Number_animal;
 
-    //3번 클릭해야 되는데
-    //3번 다 클릭하면 성공하는 효과음 추가해주고
-    //그리고 3번 다 클릭 끝나면 클릭 못 하게끔 비활성화 해주고
-    //동물 한마리 나오면 다른 동물은 어떻게?
+    //숨기기에서 한번 클릭하고 비활성화
+    //숨기기 전부 끝나고 난 다음에 찾기 하기 전에 다시 활성화
+    //찾기에서 3번 클릭하고 난 다음 비활성화
+    //찾기 전부 끝나고 난 다음에 읽기 다 끝난 다음에 다시 활성화
 
     public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
+        //그게 비활성화 되어있는지 활성화 되어있는지를 어떻게 알아낸담?
 
         if (Content_Seq == 2)
         {
@@ -195,6 +202,7 @@ public class Manager_Seq_2 : Base_GameManager
 
             //해당 동물 효과음 재생, play로 그때그때 대체될 수 있도록 구현함
             Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+            //BGM 소리 줄이는 기능 필요
 
             //메시지 나레이션, 정상 작동 확인
             Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
@@ -210,6 +218,7 @@ public class Manager_Seq_2 : Base_GameManager
             {
                 Selected_animal.GetComponent<Clicked_animal>().Set_Clickednumber();
                 Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+                //BGM 소리 줄이는 기능 필요
             }
             else if(Number_animal == 3)
             {
@@ -217,6 +226,8 @@ public class Manager_Seq_2 : Base_GameManager
                 Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
                 Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
                 Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+                //BGM 소리 줄이는 기능 필요
+
                 //애니메이션 재생하는 동안 잠시 다른 동물 클릭할 수 없도록 해야함
 
                 Manager_Text.Active_UI_message(Num_button + 7);
@@ -233,7 +244,7 @@ public class Manager_Seq_2 : Base_GameManager
             Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
             Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
             Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
-
+            //BGM 소리 줄이는 기능 필요
         }
 
         if (On_game == 7)
@@ -248,6 +259,17 @@ public class Manager_Seq_2 : Base_GameManager
             Timer_set();
         }
     }
+
+    public void Inactive_animal_clickable(GameObject animal)
+    {
+        animal.GetComponent<Clicked_animal>().Inactive_Clickable();
+    }
+
+    public void Active_animal_clickable(GameObject animal)
+    {
+        animal.GetComponent<Clicked_animal>().Active_Clickable();
+    }
+
 
     protected override void Init()
     {
@@ -281,8 +303,8 @@ public class Manager_Seq_2 : Base_GameManager
 
         foreach (var hit in _raycastHits)
         {
-            Debug.Log(hit.transform.gameObject.tag);
-            Debug.Log(hit.transform.gameObject.name);
+            //Debug.Log(hit.transform.gameObject.tag);
+            //Debug.Log(hit.transform.gameObject.name);
             if (Onclick)
             {
                 if (hit.transform.gameObject.CompareTag("MainObject"))

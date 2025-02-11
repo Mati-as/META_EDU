@@ -295,7 +295,6 @@ public class Manager_Anim_3 : MonoBehaviour
         if (round_number == 5)
         {
             //5라운드 도달 했을 때의 행동
-            //여기에서 잠시 유지하는 기능 추가 필요
 
             Manager_obj_3.instance.Btn_Next.SetActive(true);
 
@@ -308,7 +307,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
             yield return new WaitForSeconds(time);
 
-            //바구니에서 과일 꺼내는 부분
+            //바구니에서 과일 꺼내는 부분, 애니메이션 및 텍스트까지 구현됨
             GameObject Selected_fruit;
             int fruit_number;
 
@@ -320,8 +319,9 @@ public class Manager_Anim_3 : MonoBehaviour
             //순서대로 진행됨
             seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
             seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+
             //이동하고 난 다음에 클릭 다시 활성화
-            Manager_Seq.Active_fruit_collider(Selected_fruit);
+            Manager_Seq.Active_fruit_clickable(Selected_fruit);
 
 
             //영어 모드인지 아닌지 체크가 필요

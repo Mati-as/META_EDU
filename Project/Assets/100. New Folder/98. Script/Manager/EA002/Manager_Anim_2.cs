@@ -41,7 +41,6 @@ public class Manager_Anim_2 : MonoBehaviour
         Camera_position = Manager_obj_2.instance.Camera_position;
         Main_Camera = Manager_obj_2.instance.Main_Camera;
 
-        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
         Init_Seq_camera();
     }
     //공통으로 활용할 부분
@@ -133,11 +132,17 @@ public class Manager_Anim_2 : MonoBehaviour
     {
         Hide_a_seq[Num].Play();
         //(임시) 해당 동물 클릭 스크립트 비활성화
-        Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
+        //Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
+        //Main_Animal_array[Num].GetComponent<BoxCollider>().enabled = false;
 
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        Manager_Seq.Inactive_animal_clickable(Main_Animal_array[Num]);
     }
     public void Reveal_Seq_animal(int Num)
     {
+
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        Manager_Seq.Inactive_animal_clickable(Main_Animal_array[Num]);
         Reveal_a_seq[Num].Play();
 
         Manager_Seq = Manager_obj_2.instance.Get_managerseq();
@@ -172,13 +177,12 @@ public class Manager_Anim_2 : MonoBehaviour
     //(임시) 동물 클릭 스크립트 활성화
     public void Active_click_animal()
     {
-        Main_Animal_array[0].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[1].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[2].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[3].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[4].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[5].GetComponent<Clicked_animal>().enabled = true;
-        Main_Animal_array[6].GetComponent<Clicked_animal>().enabled = true;
+        for(int i = 0; i < 7; i++)
+        {
+            Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+            Manager_Seq.Active_animal_clickable(Main_Animal_array[i]);
+            Main_Animal_array[i].GetComponent<Clicked_animal>().enabled = true;
+        }
     }
 
     public void Reveal_All_animal()
