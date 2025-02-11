@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-using static Manager_Seq_3;
-using static UnityEditor.PlayerSettings;
-
 public class Manager_Anim_3 : MonoBehaviour
 {
     //Common
@@ -35,28 +32,28 @@ public class Manager_Anim_3 : MonoBehaviour
     private int round_number;
     private int Box_number;
 
-    //p0 ±×·ì 7°³
-    //p1 ±×·ì 5°³
-    //p2 ±×·ì 5°³
+    //p0 ï¿½×·ï¿½ 7ï¿½ï¿½
+    //p1 ï¿½×·ï¿½ 5ï¿½ï¿½
+    //p2 ï¿½×·ï¿½ 5ï¿½ï¿½
 
-    //°úÀÏ ¾Ö´Ï¸ÞÀÌ¼Ç °ü¸®
-    //0~6¹ø
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //0~6ï¿½ï¿½
     private Sequence[] Reveal_f_seq;
 
-    //´ë½Å transformÀ» ÀüºÎ °¡Áö°í ÀÖ°í ±×°É Á¶ÇÕÇØ¼­ »ç¿ëÇÏ´Â °É·Î
-    //°úÀÏ ¾î·¹ÀÌ´Â ¾ðÁ¦µçÁö ´Þ¶óÁú ¼ö ÀÖÀ½
+    //ï¿½ï¿½ï¿½ transformï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½×°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½É·ï¿½
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½î·¹ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¶ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    private Transform[] B_p0; //¹Ú½º ÃÊ±â À§Ä¡ 5°³
-    private Transform B_p1; //°úÀÏ °ÔÀÓ ¹Ú½º À§Ä¡
-    private Transform B_p2; //°úÀÏ ÀÐ±â ¹Ú½º À§Ä¡
+    private Transform[] B_p0; //ï¿½Ú½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡ 5ï¿½ï¿½
+    private Transform B_p1; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½Ä¡
+    private Transform B_p2; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½Ä¡
 
-    public Transform[] F_p0; //°úÀÏ °ÔÀÓ °úÀÏ À§Ä¡
-    private Transform[] F_p1; //¹Ú½º³» °úÀÏ À§Ä¡
-    private Transform[] F_p2; //°úÀÏ ÀÐ±â °úÀÏ À§Ä¡
-    private Transform[] F_p3; //ÀÐ±â °ÔÀÓ ¹Ú½º³» °úÀÏ À§Ä¡
+    public Transform[] F_p0; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+    private Transform[] F_p1; //ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+    private Transform[] F_p2; //ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+    private Transform[] F_p3; //ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 
     [Header("[ COMPONENT CHECK ]")]
-    //À§Ä¡ ÀÔ·Â°ª È®ÀÎ¿ë
+    //ï¿½ï¿½Ä¡ ï¿½Ô·Â°ï¿½ È®ï¿½Î¿ï¿½
     public GameObject[] Camera_pos_array;
     public GameObject[] Fruit_pos_array;
     public GameObject[] Box_pos_array;
@@ -78,7 +75,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
         Eng_mode = Manager_Seq.Eng_MODE;
     }
-    //°øÅëÀ¸·Î È°¿ëÇÒ ºÎºÐ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½
     void Init_M_obj()
     {
 
@@ -105,9 +102,9 @@ public class Manager_Anim_3 : MonoBehaviour
         }
     }
 
-    //±×·¸´Ù¸é ÀÌ°Ô Å©°Ô ÀÇ¹Ì°¡ ¾øÀ»µí?
-    //±×³É ±×¶§ ±×¶§ ÃÊ±âÈ­ÇØ¼­ ¸¸µé°í ½ÇÇàÇØµµ Å©°Ô »ó°ü¾øÀ» °Í °°±âµµÇÏ°í
-    //±×³É transform°ª¸¸ ÀüºÎ Àß °¡Áö°í ÀÖ´Â°É·Î?
+    //ï¿½×·ï¿½ï¿½Ù¸ï¿½ ï¿½Ì°ï¿½ Å©ï¿½ï¿½ ï¿½Ç¹Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+    //ï¿½×³ï¿½ ï¿½×¶ï¿½ ï¿½×¶ï¿½ ï¿½Ê±ï¿½È­ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½âµµï¿½Ï°ï¿½
+    //ï¿½×³ï¿½ transformï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Â°É·ï¿½?
     void Init_Seq_fruit()
     {
         Fruit_pos_array = new GameObject[Fruit_position.transform.childCount];
@@ -151,7 +148,7 @@ public class Manager_Anim_3 : MonoBehaviour
     void Init_Seq_box()
     {
 
-        B_p0 = new Transform[5];  //¹Ú½º ÃÊ±â À§Ä¡ 5°³
+        B_p0 = new Transform[5];  //ï¿½Ú½ï¿½ ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡ 5ï¿½ï¿½
 
         Main_Box_array = new GameObject[Main_Box.transform.childCount];
         Box_pos_array = new GameObject[Box_position.transform.childCount];
@@ -187,12 +184,12 @@ public class Manager_Anim_3 : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
 
-        //2ÃÊ µÚ ÆË¾÷ ¾Ö´Ï¸ÞÀÌ¼Ç ¹× °úÀÏ È°¼ºÈ­
+        //2ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¾ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
         seq.Append(fruit.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => fruit.SetActive(true))).SetDelay(2f);
         //seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
     }
 
-    //ÇØ´çÇÏ´Â °úÀÏÀ» ¾î´À Æ÷Áö¼ÇÀ¸·Î ÀÌµ¿ÇÒÁö
+    //ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½
     public void Jump_fruit(GameObject fruit, Transform pos, float timer)
     {
         Sequence seq = DOTween.Sequence();
@@ -220,7 +217,7 @@ public class Manager_Anim_3 : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
 
-        //Á¶±Ý ½Ã°£ Áö³­ ´ÙÀ½¿¡ Á¡ÇÁÇÏ´Â ¾Ö´Ï¸ÞÀÌ¼Ç
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½
         seq.Append(Main_Box_array[round].transform.DOJump(B_p0[round].position, 1f, 1, 1f)).SetDelay(3f);
         seq.Join(Main_Box_array[round].transform.DOShakeScale(0.5f, 1, 10, 90, true).SetEase(Ease.OutQuad));
         seq.Append(Main_Box_array[round].transform.DOScale(B_p0[round].localScale, 1f));
@@ -235,7 +232,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
         if (round != 0)
         {
-            //Á÷Àü ¹Ù±¸´Ï¸¦ Áý¾î³Ö¾îÁÖ°í ±× ´ÙÀ½¿¡ Áö±Ý ¼ø¹ø ¹Ù±¸´Ï¸¦ ²¨³¿
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½Ö°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½
             seq.Append(Main_Box_array[round - 1].transform.DOMove(B_p0[round - 1].position, 1f).SetEase(Ease.InOutQuad));
             seq.Join(Main_Box_array[round - 1].transform.DOScale(B_p0[round - 1].localScale, 1f));
             seq.Append(Main_Box_array[round].transform.DOMove(B_p2.position, 1f).SetEase(Ease.InOutQuad));
@@ -249,8 +246,8 @@ public class Manager_Anim_3 : MonoBehaviour
     }
     public void Inactive_Seq_fruit(GameObject fruit, float timer)
     {
-        //¹º°¡ °úÀÏÀÌ »ç¶óÁö´Â°Ô Á¶±Ý ´ÊÀº °Í °°Àº ±âºÐ
-        //(ÀÌ½´) °úÀÏÀÌ ¸¶Áö¸·¿¡ ÇÑ¹ø¿¡ »ç¶óÁö´Â °Å¶û Á÷Àü¿¡ ¸ÞÀÎ »ö±ò °úÀÏ »ç¶óÁö°Ô ÇÏ´Â°Å¶û ¹¦ÇÏ°Ô Ãæµ¹ ¹ß»ýÇÏ´Â °Í °°À½
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        //(ï¿½Ì½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´Â°Å¶ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½æµ¹ ï¿½ß»ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (timer != 0f)
         {
             fruit.transform.DOScale(0, 0.5f).SetEase(Ease.InOutQuint).OnComplete(() => Destroy(fruit)).SetDelay(timer);
@@ -262,7 +259,7 @@ public class Manager_Anim_3 : MonoBehaviour
     }
     public void Devide_Seq_fruit(GameObject plate_Fruit, int number)
     {
-        //°úÀÏÁ¢½Ã ¿Å±â°í Á¢½Ã´Â ºñÈ°¼ºÈ­
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿½ ï¿½ï¿½ï¿½Ã´ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         GameObject plate = plate_Fruit.transform.GetChild(0).gameObject;
         plate.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
         plate.SetActive(false);
@@ -271,7 +268,7 @@ public class Manager_Anim_3 : MonoBehaviour
     }
     public void Return_Seq_fruit(GameObject plate_Fruit, int number)
     {
-        //°úÀÏÁ¢½Ã ¿Å±â°í Á¢½Ã´Â ºñÈ°¼ºÈ­
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å±ï¿½ï¿½ ï¿½ï¿½ï¿½Ã´ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         GameObject plate = plate_Fruit.transform.GetChild(0).gameObject;
         plate.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
         plate.SetActive(false);
@@ -281,7 +278,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
     public void Read_Seq_fruit(int round)
     {
-        //(ÀÓ½Ã) ¸Å´ÏÀú seq 3 È£ÃâÇÔ
+        //(ï¿½Ó½ï¿½) ï¿½Å´ï¿½ï¿½ï¿½ seq 3 È£ï¿½ï¿½ï¿½ï¿½
         //Sequence seq = DOTween.Sequence();
         //this.transform.DOScale(1, 11f).OnComplete(() => Manager_Seq_3.instance.Reset_Game_read());
 
@@ -294,8 +291,8 @@ public class Manager_Anim_3 : MonoBehaviour
     {
         if (round_number == 5)
         {
-            //5¶ó¿îµå µµ´Þ ÇßÀ» ¶§ÀÇ Çàµ¿
-            //¿©±â¿¡¼­ Àá½Ã À¯ÁöÇÏ´Â ±â´É Ãß°¡ ÇÊ¿ä
+            //5ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿
+            //ï¿½ï¿½ï¿½â¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ê¿ï¿½
 
             Manager_obj_3.instance.Btn_Next.SetActive(true);
 
@@ -308,7 +305,7 @@ public class Manager_Anim_3 : MonoBehaviour
 
             yield return new WaitForSeconds(time);
 
-            //¹Ù±¸´Ï¿¡¼­ °úÀÏ ²¨³»´Â ºÎºÐ
+            //ï¿½Ù±ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½
             GameObject Selected_fruit;
             int fruit_number;
 
@@ -317,18 +314,18 @@ public class Manager_Anim_3 : MonoBehaviour
             Selected_fruit = Main_Box_array[Box_number].transform.GetChild(round_number).gameObject;
             fruit_number = Selected_fruit.GetComponent<Clicked_fruit>().Number_fruit;
 
-            //¼ø¼­´ë·Î ÁøÇàµÊ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
             seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-            //ÀÌµ¿ÇÏ°í ³­ ´ÙÀ½¿¡ Å¬¸¯ ´Ù½Ã È°¼ºÈ­
+            //ï¿½Ìµï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½Ù½ï¿½ È°ï¿½ï¿½È­
             Manager_Seq.Active_fruit_collider(Selected_fruit);
 
 
-            //¿µ¾î ¸ðµåÀÎÁö ¾Æ´ÑÁö Ã¼Å©°¡ ÇÊ¿ä
-            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // »õ ·£´ý »ö»óÀ¸·Î ÃÊ±âÈ­
+            //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ï¿½ï¿½ Ã¼Å©ï¿½ï¿½ ï¿½Ê¿ï¿½
+            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
             round_number += 1;
 
-            StartCoroutine(Temp_Message(time)); // °è¼Ó ¹Ýº¹
+            StartCoroutine(Temp_Message(time)); // ï¿½ï¿½ï¿½ ï¿½Ýºï¿½
         }
     }
 
