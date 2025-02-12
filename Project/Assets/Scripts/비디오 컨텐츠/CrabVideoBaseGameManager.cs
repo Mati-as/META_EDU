@@ -59,7 +59,7 @@ public class CrabVideoBaseGameManager : InteractableVideoBaseGameManager
         base.Start();
         DOTween.Init().SetCapacity(1000,1000);
         isCrabAppearable = true;
-        gmSensorSensitivity = 0.55f;
+        SensorSensitivity = 0.55f;
         
         SubscribeEvent();
 

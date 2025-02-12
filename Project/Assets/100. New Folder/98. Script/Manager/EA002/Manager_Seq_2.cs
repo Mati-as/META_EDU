@@ -50,6 +50,7 @@ public class Manager_Seq_2 : Base_GameManager
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
 
+        waitForClickableInGameRay = 0.6f;
         //Eventsystem = Manager_obj_2.instance.Eventsystem;
         //Eventsystem.SetActive(false);
         Onclick = false;
@@ -294,8 +295,7 @@ public class Manager_Seq_2 : Base_GameManager
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
-
-
+        
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
         if (_raycastHits.Length == 0) Logger.Log("클릭된 것이 아무것도 없습니다. ------------------");
