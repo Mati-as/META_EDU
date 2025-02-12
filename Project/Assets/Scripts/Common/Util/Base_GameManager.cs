@@ -36,7 +36,10 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected float BGM_VOLUME { get; set; } = 0.105f;
 
-    protected float waitForClickableInGameRayRay = 0.08f;
+    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY =0.08f;
+    protected const float CLICKABLE_IN_GAME_DELAY_MIN =0.035f; 
+    protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
+    
 
     protected float waitForClickableInGameRay
     {
@@ -44,9 +47,9 @@ public abstract class Base_GameManager : MonoBehaviour
 
         set
         {
-            if (value < 0.035f)
+            if (value < CLICKABLE_IN_GAME_DELAY_MIN)
             {
-                waitForClickableInGameRay = 0.035f;
+                waitForClickableInGameRay = CLICKABLE_IN_GAME_DELAY_MIN;
             }
 
             else
@@ -62,7 +65,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
 
     private float _seonsorSensitivity=SensorManager.SENSOR_DEFAULT_SENSITIVITY;
-    public float gmSensorSensitivity
+    public float SensorSensitivity
     {
         get => _seonsorSensitivity;
 
@@ -70,7 +73,7 @@ public abstract class Base_GameManager : MonoBehaviour
         {
             if (value < SensorManager.SENSOR_DEFAULT_SENSITIVITY)
             {
-                _seonsorSensitivity = 0.035f;
+                _seonsorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
                 SensorManager.sensorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
             }
 
@@ -137,18 +140,18 @@ public abstract class Base_GameManager : MonoBehaviour
             return;
         }
 
+        //초기값설정 후 이후에 상속받은 게임매니저에서 민감도 별도 설정
+        waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY; 
 
-        ManageProjectSettings(SHADOW_MAX_DISTANCE, gmSensorSensitivity);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, SensorSensitivity);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) PlayNarration();
 
         SetLayerMask();
-#if UNITY_EDITOR
-        Debug.Log("scene is initialzied");
-#endif
-        Debug.Log("scene is initialzied");
+
+        Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         isInitialized = true;
     }

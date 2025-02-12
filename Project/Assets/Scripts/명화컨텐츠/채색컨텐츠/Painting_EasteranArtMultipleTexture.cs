@@ -32,7 +32,7 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
      private bool _isSceneChanging; // 씬 이동중 로직 충돌방지
     protected override void Init()
     {
-        gmSensorSensitivity = 0.35f;
+        SensorSensitivity = 0.35f;
         Camera.main.TryGetComponent<Volume>(out vol);
         
         if (vol == null)

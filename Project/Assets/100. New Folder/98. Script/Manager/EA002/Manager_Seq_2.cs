@@ -49,7 +49,7 @@ public class Manager_Seq_2 : Base_GameManager
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
 
-        waitForClickableInGameRay = 0.3f;
+        waitForClickableInGameRay = 0.6f;
         //Eventsystem = Manager_obj_2.instance.Eventsystem;
         //Eventsystem.SetActive(false);
         Onclick = false;
