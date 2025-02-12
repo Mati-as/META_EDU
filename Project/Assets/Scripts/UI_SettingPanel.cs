@@ -40,6 +40,8 @@ public class UI_SettingPanel : MonoBehaviour
         };
 
         List<RaycastResult> results = new List<RaycastResult>();
+
+        if (EventSystem.current == null) return false;
         EventSystem.current.RaycastAll(pointerEventData, results);
 
         foreach (RaycastResult result in results)

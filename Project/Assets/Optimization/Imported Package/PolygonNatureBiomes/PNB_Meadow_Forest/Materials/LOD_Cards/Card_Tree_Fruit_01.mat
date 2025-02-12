@@ -8,9 +8,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Card_Tree_Fruit_01
-  m_Shader: {fileID: 4800000, guid: 6697e1f185bc8b840a2f02567abf15b5, type: 3}
+  m_Shader: {fileID: 4800000, guid: e5cf341aa7a312c4aa1dde88e8f1d2ad, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _ALPHATEST_ON
   - _CARDTOGGLE_ON
   - _FLATCOLOURSWITCH_ON
   - _LEAFFLATCOLOURSWITCH_ON
@@ -159,9 +160,22 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AO_Amount: 1
+    - _AlphaClip: 0.5
     - _AlphaCutoff: 0.5
     - _Big_Wave: 10
     - _Big_WindAmount: 1.22
@@ -175,6 +189,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EmissiveAmount: 0
+    - _EnvironmentReflections: 1
     - _FlatColourSwitch: 1
     - _Float0: 0
     - _Float1: 0.05
@@ -184,11 +199,11 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GustAmount: 0.015
+    - _GustAmount: 0.166
     - _GustFreq: 0.224
     - _GustLargeFreq: 0.094
     - _GustScale: 0.311
-    - _GustSmallFreq: 0.135
+    - _GustSmallFreq: 0.468
     - _JitterAmount: 0.241
     - _JitterFreq: 0.093
     - _LOD_FADE_CROSSFADE: 1
@@ -211,6 +226,11 @@ Material:
     - _PanningSpeed: 0.007
     - _PanningSpeed1: 0.127
     - _Parallax: 0.02
+    - _PulseSpeed: 0.04
+    - _PulseTiling: 0.03
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _Small_Wave: 2.1
     - _Smoothness: 0.2
     - _SmoothnessTextureChannel: 0
@@ -221,7 +241,7 @@ Material:
     - _SrcBlend: 1
     - _Tiling: 1
     - _Tint_Tiling: 0.5
-    - _TotalWindAmount: 0.087
+    - _TotalWindAmount: 0.5
     - _TrunkFlatColourSwitch: 0
     - _TrunkMetallic: 0
     - _TrunkNormalAmount: 0.5
@@ -229,14 +249,14 @@ Material:
     - _UVSec: 0
     - _WindAmount: 1
     - _WindBaseline: 0
-    - _WindDirection: 0.151
+    - _WindDirection: 0.77
     - _WindDirection1: 0
     - _WindNoiseScale: 0.018
     - _WindNoiseScale1: 14.76
     - _WindNoiseScale2: 0.5
     - _WindWorldScale: 0.08
     - _WindWorldScale1: 0.001
-    - _Y_multiplier: -1.01
+    - _Y_multiplier: -0.5
     - _ZWrite: 1
     - __dirty: 0
     - _leafNoiseScale: 1
@@ -257,13 +277,13 @@ Material:
     - _FrostingColour: {r: 1, g: 1, b: 1, a: 0}
     - _GustHighlight: {r: 0, g: 0, b: 0, a: 0}
     - _GustSmoothing: {r: 0.5, g: 0.5, b: 0.5, a: 0}
-    - _LeafBaseColour: {r: 0, g: 0, b: 0, a: 0}
-    - _LeafNoiseColour: {r: 0.6037736, g: 0.25219077, b: 0.09967959, a: 0}
-    - _LeafNoiseLargeColour: {r: 0.6037736, g: 0.31140453, b: 0.0768957, a: 0}
+    - _LeafBaseColour: {r: 0.42352942, g: 0.5882353, b: 0, a: 0}
+    - _LeafNoiseColour: {r: 0.42202848, g: 0.56700003, b: 0, a: 0}
+    - _LeafNoiseLargeColour: {r: 0.49405882, g: 0.681, b: 0, a: 0}
     - _LeafTint: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
     - _SnowColour: {r: 1, g: 1, b: 1, a: 0}
     - _Tint: {r: 0, g: 0, b: 0, a: 0}
-    - _TrunkBaseColour: {r: 0.5188679, g: 0.39642814, b: 0.35488605, a: 0}
+    - _TrunkBaseColour: {r: 0.51886785, g: 0.3964281, b: 0.35488603, a: 0}
     - _TrunkEmissiveColour: {r: 0, g: 0, b: 0, a: 0}
     - _TrunkNoiseColour: {r: 0.6132076, g: 0.4729219, b: 0.3326362, a: 0}
     - _TrunkTint: {r: 0.07843138, g: 0.02015968, b: 0, a: 0}
