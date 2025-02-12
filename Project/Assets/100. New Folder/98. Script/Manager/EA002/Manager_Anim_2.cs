@@ -158,8 +158,11 @@ public class Manager_Anim_2 : MonoBehaviour
     }
     public void Final_Click_Seq_animal(int Num)
     {
+        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+        Manager_Seq.Inactive_animal_clickable(Main_Animal_array[Num]);
         DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => StartAttacking(Main_Animal_array[Num]));
         DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() => ReturnToIdle(Main_Animal_array[Num]));
+        DOVirtual.Float(0, 0, 2f, _ => { }).OnComplete(() => Manager_Seq.Active_animal_clickable(Main_Animal_array[Num]));
     }
 
     public void Reset_Seq_animal(int Num)

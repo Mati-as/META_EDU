@@ -230,12 +230,17 @@ public class Manager_Seq_3 : Base_GameManager
 
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
+        var randomChar = (char)Random.Range('A', 'F' + 1);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
 
         if (Content_Seq >= 12)
         {
-            
+            //일단 비활성화
+            Inactive_fruit_clickable(plate_Fruit);
             Manager_Text.Changed_UI_message_c3(num_table + 7, num_fruit, Eng_MODE); // 새 랜덤 색상으로 초기화
-            plate_Fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad);
+
+            //스케일값이 바뀌고 난 다음에 다시 활성화
+            plate_Fruit.transform.DOShakeScale(1.5f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(()=> Active_fruit_clickable(plate_Fruit));
         }
         else{
             
@@ -368,9 +373,6 @@ public class Manager_Seq_3 : Base_GameManager
                 }
                 return;
             }
-            
-            var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,0.3f);
         }
     }
 

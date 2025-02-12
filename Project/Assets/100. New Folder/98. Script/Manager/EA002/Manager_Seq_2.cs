@@ -193,7 +193,6 @@ public class Manager_Seq_2 : Base_GameManager
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
-        //그게 비활성화 되어있는지 활성화 되어있는지를 어떻게 알아낸담?
 
         if (Content_Seq == 2)
         {
@@ -314,9 +313,6 @@ public class Manager_Seq_2 : Base_GameManager
                     return;
                 }
             }
-
-            var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
 
 
         }
