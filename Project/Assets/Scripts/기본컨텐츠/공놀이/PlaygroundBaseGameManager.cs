@@ -32,7 +32,7 @@ public class PlaygroundBaseGameManager : Base_GameManager
 
     protected override void Init()
     {
-        gmSensorSensitivity = 0.1f;
+        SensorSensitivity = 0.1f;
         SHADOW_MAX_DISTANCE = 80f;
         base.Init();
         isBallClickable = new Dictionary<int, bool>();

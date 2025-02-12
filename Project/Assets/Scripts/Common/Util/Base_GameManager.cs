@@ -16,12 +16,12 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected WaitForSeconds _waitForClickable;
 
-    protected bool _isClikableBySensorReady = true;
+    protected bool _isClikableInGameRay = true;
 
-    public bool isClikableBySensorReady
+    public bool isClikableInGameRay
     {
-        get => _isClikableBySensorReady;
-        protected set => _isClikableBySensorReady = value;
+        get => _isClikableInGameRay;
+        protected set => _isClikableInGameRay = value;
     }
 
     /// <summary>
@@ -36,25 +36,28 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected float BGM_VOLUME { get; set; } = 0.105f;
 
-    protected float _waitForClickableFloat = 0.08f;
+    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY =0.08f;
+    protected const float CLICKABLE_IN_GAME_DELAY_MIN =0.035f; 
+    protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
+    
 
-    protected float waitForClickableFloatObj
+    protected float waitForClickableInGameRay
     {
-        get => _waitForClickableFloat;
+        get => waitForClickableInGameRayRay;
 
         set
         {
-            if (value < 0.035f)
+            if (value < CLICKABLE_IN_GAME_DELAY_MIN)
             {
-                waitForClickableFloatObj = 0.035f;
+                waitForClickableInGameRay = CLICKABLE_IN_GAME_DELAY_MIN;
             }
 
             else
             {
-                if (Math.Abs(value - waitForClickableFloatObj) < 0.005f) return;
+                if (Math.Abs(value - waitForClickableInGameRay) < 0.005f) return;
                 
-                _waitForClickableFloat = value;
-                _waitForClickable = new WaitForSeconds(_waitForClickableFloat);
+                waitForClickableInGameRayRay = value;
+                _waitForClickable = new WaitForSeconds(waitForClickableInGameRayRay);
             }
         }
     }
@@ -62,7 +65,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
 
     private float _seonsorSensitivity=SensorManager.SENSOR_DEFAULT_SENSITIVITY;
-    public float gmSensorSensitivity
+    public float SensorSensitivity
     {
         get => _seonsorSensitivity;
 
@@ -70,7 +73,7 @@ public abstract class Base_GameManager : MonoBehaviour
         {
             if (value < SensorManager.SENSOR_DEFAULT_SENSITIVITY)
             {
-                _seonsorSensitivity = 0.035f;
+                _seonsorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
                 SensorManager.sensorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
             }
 
@@ -87,11 +90,11 @@ public abstract class Base_GameManager : MonoBehaviour
 
         if (waitTime <= 0.001f)
         {
-            waitTime = waitForClickableFloatObj; 
+            waitTime = waitForClickableInGameRay; 
         }
        
 
-        if (!isClikableBySensorReady) return;
+        if (!isClikableInGameRay) return;
         StartCoroutine(SetClickableWithDelayCo(waitTime));
     }
 
@@ -99,9 +102,9 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (_waitForClickable == null) _waitForClickable = new WaitForSeconds(waitTime);
         
-        isClikableBySensorReady = false;
+        isClikableInGameRay = false;
         yield return _waitForClickable;
-        isClikableBySensorReady = true;
+        isClikableInGameRay = true;
     }
 
     //런타임에서 고정
@@ -137,18 +140,18 @@ public abstract class Base_GameManager : MonoBehaviour
             return;
         }
 
+        //초기값설정 후 이후에 상속받은 게임매니저에서 민감도 별도 설정
+        waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY; 
 
-        ManageProjectSettings(SHADOW_MAX_DISTANCE, gmSensorSensitivity);
+        ManageProjectSettings(SHADOW_MAX_DISTANCE, SensorSensitivity);
         BindEvent();
         SetResolution(1920, 1080, TARGET_FRAME);
 
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) PlayNarration();
 
         SetLayerMask();
-#if UNITY_EDITOR
-        Debug.Log("scene is initialzied");
-#endif
-        Debug.Log("scene is initialzied");
+
+        Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         isInitialized = true;
     }
@@ -172,13 +175,13 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         SensorManager.sensorSensitivity = defaultSensorSensitivity;
 
-        if (waitForClickableFloatObj < 0.05f)
+        if (waitForClickableInGameRay < 0.05f)
         {
 
         }
         else
         {
-            waitForClickableFloatObj = objSensitivity;
+            waitForClickableInGameRay = objSensitivity;
         }
        
         
@@ -233,31 +236,33 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (!isStartButtonClicked)
         {
-#if UNITY_EDITOR
-            Debug.Log("StartBtn Should be Clicked");
-#endif
+            Logger.Log("StartBtn Should be Clicked");
+
             return false;
         }
-        
+
         if (Managers.isGameStopped)
         {
-#if UNITY_EDITOR
-            Debug.Log("gameStopped, Can't be clicked");
-#endif
+            Logger.Log("gameStopped, Can't be clicked");
+
             return false;
         }
 
-//         if (!isClikableBySensorReady)
-//         {
-// #if UNITY_EDITOR
-//             Debug.Log("clicking or sensoring too fast for this game.. return");
-// #endif
-//             return false;
-//         }
+        {
 
-        Logger.Log($"게임 내 센서 민감도 : {waitForClickableFloatObj}초");
-        SetClickableWithDelay(waitForClickableFloatObj);
-        return true;
+        if (!isClikableInGameRay)
+        {
+            Logger.Log("Clicking Too Fast, Can't be clicked");
+
+            return false;
+        }
+
+
+
+            Logger.Log($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
+            SetClickableWithDelay(waitForClickableInGameRay);
+            return true;
+        }
     }
 
     protected virtual void BindEvent()
