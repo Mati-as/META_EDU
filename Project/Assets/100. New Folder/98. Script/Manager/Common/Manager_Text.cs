@@ -4,7 +4,6 @@ using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using static UnityEditor.PlayerSettings;
 
 public class Manager_Text : MonoBehaviour
 {

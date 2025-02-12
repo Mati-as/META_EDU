@@ -772,10 +772,10 @@ Shader "SyntyStudios/SkyboxUnlit"
 					outputDepth = DepthValue;
 				#endif
 
-				#ifdef _WRITE_RENDERING_LAYERS
-					uint renderingLayers = GetMeshRenderingLayer();
-					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
-				#endif
+				// #ifdef _WRITE_RENDERING_LAYERS
+				// 	uint renderingLayers = GetMeshRenderingLayer();
+				// 	outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
+				// #endif
 
 				return color;
 			}
@@ -2244,10 +2244,10 @@ Shader "SyntyStudios/SkyboxUnlit"
 					outNormalWS = half4(NormalizeNormalPerPixel(normalWS), 0.0);
 				#endif
 
-				#ifdef _WRITE_RENDERING_LAYERS
-					uint renderingLayers = GetMeshRenderingLayer();
-					outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
-				#endif
+				// #ifdef _WRITE_RENDERING_LAYERS
+				// 	uint renderingLayers = GetMeshRenderingLayer();
+				// 	outRenderingLayers = float4( EncodeMeshRenderingLayer( renderingLayers ), 0, 0, 0 );
+				// #endif
 			}
 			ENDHLSL
 		}
