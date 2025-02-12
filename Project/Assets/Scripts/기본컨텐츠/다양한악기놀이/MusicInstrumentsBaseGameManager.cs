@@ -16,7 +16,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     protected override void Init()
     {
         base.Init();
-        gmSensorSensitivity = 0.5f;
+        SensorSensitivity = 0.5f;
         
         
         _effectContainer = new Stack<ParticleSystem>();
