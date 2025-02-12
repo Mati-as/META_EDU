@@ -440,6 +440,10 @@ public class SensorManager : MonoBehaviour
 
 
     private float _timer;
+    private Vector3 lastTouchPos = Vector3.zero; // 마지막 터치 좌표
+    private float lastTouchTime = 0f; // 마지막 터치 시간
+    private float moveThreshold = 0.02f; // 2cm 이상 움직여야 터치 인정
+    private float touchCooldown = 0.2f; // 200ms 동안 터치 1회만 허용
 
     private void GenerateDectectedPos()
     {
@@ -470,11 +474,13 @@ public class SensorManager : MonoBehaviour
                             {
                                 // _filteringAmount = 8;
                                 _filteringAmount = 4;
+                                Filtering_touchpoint();
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                             else
                             {
                                 _filteringAmount = 3;
+                                Filtering_touchpoint();
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                         }
@@ -484,6 +490,17 @@ public class SensorManager : MonoBehaviour
             }
 
             m_datachanged = false;
+        }
+    }
+
+    //0212
+    private void Filtering_touchpoint()
+    {
+        if(Time.time - lastTouchTime > touchCooldown && Vector3.Distance(lastTouchPos, new Vector3(sensored_X, sensored_Y, 0)) > moveThreshold)
+        {
+            lastTouchPos = new Vector3(sensored_X, sensored_Y, 0); // 터치 좌표 업데이트
+            lastTouchTime = Time.time; // 터치 시간 업데이트
+            ShowFilteredSensorPos(sensored_X, sensored_Y); // 터치 이벤트 실행
         }
     }
 
