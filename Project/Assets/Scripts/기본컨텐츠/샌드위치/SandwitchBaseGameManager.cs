@@ -148,8 +148,6 @@ public class SandwitchBaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        
-        
         onRoundReady -= OnRoundReady;
         onSandwichMakingFinish -= OnSandwichMakingFinish;
         sandwich_AnimalController.onAllFinishAnimOver -= AllFinishAnimOver;

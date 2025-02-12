@@ -34,11 +34,11 @@ public class Fish_T_UI_Setting_Panel : MonoBehaviour
 
     private void Awake()
     {
-        OriginalHardVer_FishOnWater_UIManager.OnModeSelectionUIAppear -= OnModeSelection;
-        OriginalHardVer_FishOnWater_UIManager.OnModeSelectionUIAppear += OnModeSelection;
+        U_FishOnWater_UIManager.OnModeSelectionUIAppear -= OnModeSelection;
+        U_FishOnWater_UIManager.OnModeSelectionUIAppear += OnModeSelection;
         
-        OriginalHardVer_FishOnWater_UIManager.OnReadyUIAppear -= OnGameStart;
-        OriginalHardVer_FishOnWater_UIManager.OnReadyUIAppear += OnGameStart;
+        U_FishOnWater_UIManager.OnReadyUIAppear -= OnGameStart;
+        U_FishOnWater_UIManager.OnReadyUIAppear += OnGameStart;
         
         _button = GetComponent<Button>();
         _button.onClick.AddListener(OnClick);
@@ -49,8 +49,8 @@ public class Fish_T_UI_Setting_Panel : MonoBehaviour
 
     private void OnDestroy()
     {
-        OriginalHardVer_FishOnWater_UIManager.OnRestartBtnClicked -= OnModeSelection;
-        OriginalHardVer_FishOnWater_UIManager.OnReadyUIAppear -= OnGameStart;
+        U_FishOnWater_UIManager.OnRestartBtnClicked -= OnModeSelection;
+        U_FishOnWater_UIManager.OnReadyUIAppear -= OnGameStart;
     }
 
     public void OnClick()

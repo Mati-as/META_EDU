@@ -41,10 +41,6 @@ public class UI_Scene_StartBtn : MonoBehaviour
         Message_anim_controller.onIntroUIOff += OnAnimOff;
         onBtnShut -= OnButtonShut;
         onBtnShut += OnButtonShut;
-        
-        onBtnShut -= OnInvoke;
-        onBtnShut += OnInvoke;
-
 
         _btnImage.DOFade(0, 0.01f);
         _tmp_Start.DOFade(0, 0.01f);
@@ -65,13 +61,6 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _tmp_Time.DOFade(1, 0.5f)
             .OnStart(() => { _isClickable = true; })
             .SetDelay(3f);
-    }
-
-    private void OnDestroy()
-    {
-        onBtnShut -= OnButtonShut;
-        onBtnShut -= OnInvoke;
-        Message_anim_controller.onIntroUIOff -= OnAnimOff;
     }
 
     private Message_anim_controller FindActiveMessageAnimController()
@@ -100,7 +89,6 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _tmp_Time.text = $"{_remainTime}초";
         if (_remainTime <= 0 && !_isInvoked)
         {
-            Logger.Log("10초 지나 인트로 자동 닫힘.");
             _isInvoked = true;
             onBtnShut?.Invoke();
         }
@@ -143,12 +131,6 @@ public class UI_Scene_StartBtn : MonoBehaviour
             onBtnShut?.Invoke();
             FadeOutBtn();
         }
-    }
-
-
-    private void OnInvoke()
-    {
-        Logger.Log("StartBtn event Invoke");
     }
 
     private void OnButtonShut()
