@@ -245,12 +245,13 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         if (!PreCheckOnRaySync()) return;
         foreach (var hit in GameManager_Hits)
             if ((hit.transform.gameObject.name.Contains("Btn") || hit.transform.gameObject.name.Contains("Color"))
-                && _isClickable)
+                && _isClickable && !_isAlreadtySelected)
             {
                 var randomChar = Random.Range('B', 'C' + 1);
                 Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar);
                 _currentlyClickedBallInstanceID = hit.transform.GetInstanceID();
                 _isClickable = false;
+                _isAlreadtySelected = true;
                 OnSelect(hit.transform);
             }
     }
@@ -290,6 +291,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
         }
     }
 
+    private bool _isAlreadtySelected;
     private IEnumerator OnSelectCo(Transform colorBall, float delay = 1f)
     {
         yield return colorBall.DOShakePosition(0.75f, 0.3f, 20).WaitForCompletion();
@@ -555,6 +557,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
     private void Reinit()
     {
         _isClickable = false;
+        _isAlreadtySelected = false;
         _currentStage = 0;
         
         _TMPs[0].text = "병아리";
@@ -630,6 +633,7 @@ public class FavoriteOneBaseGameManager : Base_GameManager
     private void StageInit()
     {
         _currentStage++;
+        _isAlreadtySelected = false;
         
         if (_currentStage == (int)Stage.Fruit)
         {
