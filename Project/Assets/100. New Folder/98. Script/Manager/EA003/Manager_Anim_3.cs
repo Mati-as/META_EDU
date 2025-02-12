@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+<<<<<<< HEAD
+=======
 
+>>>>>>> e0d85006f2c00aa48779501356461fc3f2f9c0e1
 public class Manager_Anim_3 : MonoBehaviour
 {
     //Common
@@ -293,6 +296,10 @@ public class Manager_Anim_3 : MonoBehaviour
         if (round_number == 5)
         {
             //5���� ���� ���� ���� �ൿ
+<<<<<<< HEAD
+            //���⿡�� ��� �����ϴ� ��� �߰� �ʿ�
+=======
+>>>>>>> e0d85006f2c00aa48779501356461fc3f2f9c0e1
 
             Manager_obj_3.instance.Btn_Next.SetActive(true);
 
@@ -305,7 +312,11 @@ public class Manager_Anim_3 : MonoBehaviour
 
             yield return new WaitForSeconds(time);
 
+<<<<<<< HEAD
+            //�ٱ��Ͽ��� ���� ������ �κ�
+=======
             //�ٱ��Ͽ��� ���� ������ �κ�, �ִϸ��̼� �� �ؽ�Ʈ���� ������
+>>>>>>> e0d85006f2c00aa48779501356461fc3f2f9c0e1
             GameObject Selected_fruit;
             int fruit_number;
 
@@ -317,9 +328,14 @@ public class Manager_Anim_3 : MonoBehaviour
             //������� �����
             seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
             seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+<<<<<<< HEAD
+            //�̵��ϰ� �� ������ Ŭ�� �ٽ� Ȱ��ȭ
+            Manager_Seq.Active_fruit_collider(Selected_fruit);
+=======
 
             //�̵��ϰ� �� ������ Ŭ�� �ٽ� Ȱ��ȭ
             Manager_Seq.Active_fruit_clickable(Selected_fruit);
+>>>>>>> e0d85006f2c00aa48779501356461fc3f2f9c0e1
 
 
             //���� ������� �ƴ��� üũ�� �ʿ�

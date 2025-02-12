@@ -45,7 +45,7 @@ public class EvaArmisenBaseGameManager : Base_GameManager
     {
         base.Init();
 
-        waitForClickableFloatObj = 0.13f;
+        waitForClickableInGameRay = 0.13f;
 
         DOTween.Init().SetCapacity(12500, 300);
         

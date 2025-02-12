@@ -7,15 +7,15 @@ public class Manager_obj_2 : MonoBehaviour
     public static Manager_obj_2 instance = null;
     // Start is called before the first frame update
 
-    //Camera, ¿©±â´Â ¾Æ¸¶ °øÅë
+    //Camera, ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     public GameObject Main_Camera;
     public GameObject Camera_position;
 
-    //Eventsystem, ¿©±â±îÁö ¾Æ¸¶ °øÅë
+    //Eventsystem, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     public GameObject Eventsystem;
     // Start is called before the first frame update
 
-    //UI Text,Msg, ¿©±âµµ °øÅë
+    //UI Text,Msg, ï¿½ï¿½ï¿½âµµ ï¿½ï¿½ï¿½ï¿½
     public GameObject UI_Text;
     public GameObject UI_Message;
     public GameObject Panel;
@@ -27,17 +27,17 @@ public class Manager_obj_2 : MonoBehaviour
     public GameObject Game_effect;
 
 
-    //¾À¸¶´Ù º¯°æµÇ¾î¾ßÇÏ´Â ºÎºÐ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Îºï¿½
     private Manager_Anim_2 Manager_Anim;
     public Manager_Seq_2 manager_seq;
 
-    //¿©±âµµ °øÅë
+    //ï¿½ï¿½ï¿½âµµ ï¿½ï¿½ï¿½ï¿½
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
 
-    //ÅØ½ºÆ® ÀÌ¹ÌÁö, ³ª·¹ÀÌ¼ÇÀº À§Ä¡°¡ Á¤ÇØÁ®ÀÖÀ¸¹Ç·Î µû·Î Á¤ÀÇÇÏÁö ¾ÊÀ½
-    //È¿°úÀ½¸¸ µû·Î ÀúÀå
+    //ï¿½Ø½ï¿½Æ® ï¿½Ì¹ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public Sprite[] Animal_text;
     public Sprite[] Animal_textsprite;
     public AudioClip[] Animal_effect;
@@ -77,13 +77,14 @@ public class Manager_obj_2 : MonoBehaviour
         init_Text();
         Init_Animalarray();
         Init_Effectarray();
+        
     }
 
     void init_Text()
     {
-        //¿©±âÀÇ °æ¿ì ±×°É ³Ö¾îÁÙ ÇÊ¿ä°¡ ÀÖ¾ú³ª?
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½×°ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½Ê¿ä°¡ ï¿½Ö¾ï¿½ï¿½ï¿½?
 
-        //ÀüÃ¼ ÇÒ´ç ¹Þ¾Æ¿À°í ¸¶Áö¸·¿¡ ÇØ´çÇÏ´Â ½ºÅ©¸³Æ®¿¡ ´øÁ®ÁÜ
+        //ï¿½ï¿½Ã¼ ï¿½Ò´ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
     }
     void init_Audio()
@@ -93,12 +94,12 @@ public class Manager_obj_2 : MonoBehaviour
         AudioClip[] Temp_Msg_narration;
 
 
-        //ÀÌ¹Ì ¼ø¼­°¡ ¸ÂÃçÁ®¼­ ±»ÀÌ Ãß°¡ ¼öÁ¤ÇÏÁö ¾ÊÀ½
+        //ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Msg_narration = Resources.LoadAll<AudioClip>("EA002/audio_message");
         Seq_narration = Resources.LoadAll<AudioClip>("EA002/audio_seq");
         Animal_effect = Resources.LoadAll<AudioClip>("EA002/audio_effect");
 
-        //ÀüÃ¼ ÇÒ´ç ¹Þ¾Æ¿À°í ¸¶Áö¸·¿¡ ÇØ´çÇÏ´Â ½ºÅ©¸³Æ®¿¡ ´øÁ®ÁÜ
+        //ï¿½ï¿½Ã¼ ï¿½Ò´ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
 
     }
@@ -112,7 +113,7 @@ public class Manager_obj_2 : MonoBehaviour
             Main_Animal_array[i] = Main_Animal.transform.GetChild(i).gameObject;
         }
 
-        //ÀüÃ¼ ÇÒ´ç ¹Þ¾Æ¿À°í ¸¶Áö¸·¿¡ ÇØ´çÇÏ´Â ½ºÅ©¸³Æ®¿¡ ´øÁ®ÁÜ
+        //ï¿½ï¿½Ã¼ ï¿½Ò´ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Manager_Anim.Init_Animalarray();
     }
     void Init_Effectarray()
@@ -124,7 +125,7 @@ public class Manager_obj_2 : MonoBehaviour
             Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
         }
 
-        //ÀüÃ¼ ÇÒ´ç ¹Þ¾Æ¿À°í ¸¶Áö¸·¿¡ ÇØ´çÇÏ´Â ½ºÅ©¸³Æ®¿¡ ´øÁ®ÁÜ
+        //ï¿½ï¿½Ã¼ ï¿½Ò´ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Manager_Anim.Init_Animalarray();
     }
 

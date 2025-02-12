@@ -243,7 +243,9 @@ public class SoundManager : MonoBehaviour
 
         return false;
     }
-    //(임시) 0111 임시로 오버라이드 해서 오디오 클립을 직접 전달하는 경우에 활용
+
+    #region New
+    
     public bool Play(Sound type, AudioClip audio, float volume = 1.0f, float pitch = 1.0f)
     {
        
@@ -305,6 +307,8 @@ public class SoundManager : MonoBehaviour
         return false;
     }
 
+#endregion
+   
     public void Stop(Sound type)
     {
         var audioSource = audioSources[(int)type];
