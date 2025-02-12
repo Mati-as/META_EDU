@@ -7,6 +7,8 @@ public class Clicked_animal : MonoBehaviour
     public int Number_animal;
     public int Clicked_number;
     private Manager_Seq_2 Manager_Seq;
+
+    public bool Clickable = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,8 +24,11 @@ public class Clicked_animal : MonoBehaviour
     //}
     public void Click()
     {
-        Manager_Seq = Manager_obj_2.instance.Get_managerseq();
-        Manager_Seq.animal_click(Number_animal);
+        if (Clickable)
+        {
+            Manager_Seq = Manager_obj_2.instance.Get_managerseq();
+            Manager_Seq.animal_click(Number_animal);
+        }
     }
 
     public void Set_Clickednumber()
@@ -33,5 +38,13 @@ public class Clicked_animal : MonoBehaviour
     public int Get_Clickednumber()
     {
         return Clicked_number;
+    }
+    public void Active_Clickable()
+    {
+        Clickable = true;
+    }
+    public void Inactive_Clickable()
+    {
+        Clickable = false;
     }
 }

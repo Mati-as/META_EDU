@@ -223,40 +223,39 @@ public class Manager_Seq_3 : Base_GameManager
         for (int i = 0; i < maxRounds; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
-            Inactive_fruit_collider(fruit);
+            Inactive_fruit_clickable(fruit);
             Manager_Anim.Return_Seq_fruit(fruit, i);
         }
     }
 
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
+
         if (Content_Seq >= 12)
         {
-            Debug.Log("clicked");
+            
             Manager_Text.Changed_UI_message_c3(num_table + 7, num_fruit, Eng_MODE); // 새 랜덤 색상으로 초기화
             plate_Fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad);
         }
         else{
+            
+            Inactive_fruit_clickable(plate_Fruit);
             //맞는 과일 눌렀을 때
             if (num_fruit / 4 == (int)mainColor)
             {
                 Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
                 plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
-                Inactive_fruit_collider(plate_Fruit);
 
                 Manager_Text.Changed_UI_message_c3(num_table, num_fruit, Eng_MODE);
                 Manager_obj_3.instance.Effect_array[num_table].SetActive(true);
 
                 Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
 
-                //순서대로 테이블 넘버 재지정 필요
                 plate_Fruit.GetComponent<Clicked_fruit>().Number_table = selectedFruitCount;
                 selectedFruitCount++;
 
                 if (selectedFruitCount == maxRounds)
                 {
-                    //효과음 추가 필요
-
                     Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
 
                     Debug.Log("5 FRUITS!");
@@ -280,20 +279,19 @@ public class Manager_Seq_3 : Base_GameManager
             }
         }
     }
-    public void Inactive_fruit_collider(GameObject plate_Fruit)
+    public void Inactive_fruit_clickable(GameObject plate_Fruit)
     {
-        plate_Fruit.GetComponent<BoxCollider>().enabled = false;
+        plate_Fruit.GetComponent<Clicked_fruit>().Inactive_Clickable();
     }
 
-    public void Active_fruit_collider(GameObject plate_Fruit)
+    public void Active_fruit_clickable(GameObject plate_Fruit)
     {
-        plate_Fruit.GetComponent<BoxCollider>().enabled = true;
+        plate_Fruit.GetComponent<Clicked_fruit>().Active_Clickable();
     }
-
 
     public void Inactive_All_fruit()
     {
-        for (int i = 5; i < Main_Box_array[round].transform.childCount; i++)
+        for (int i = 6; i < Main_Box_array[round].transform.childCount; i++)
         {
             GameObject fruit = Main_Box_array[round].transform.GetChild(i).gameObject;
             Manager_Anim.Inactive_Seq_fruit(fruit, 2f);
@@ -309,6 +307,7 @@ public class Manager_Seq_3 : Base_GameManager
         fruit.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         fruit.transform.SetParent(Main_Box_array[round].transform);
         fruit.transform.localPosition = pos.localPosition;
+        fruit.transform.localRotation = Quaternion.Euler(0,0,0);
 
         fruit.GetComponent<Clicked_fruit>().Set_Number_fruit(num_fruit);
         fruit.GetComponent<Clicked_fruit>().Set_Number_table(num_table);
@@ -363,8 +362,7 @@ public class Manager_Seq_3 : Base_GameManager
             {
                 if (Onclick)
                 {
-                    //여기에 태그를 만들어서 할 수 있게 없게 만드는게 나을지도
-                    Debug.Log("Fruit Clicked!");
+                    //Debug.Log("Fruit Clicked!");
                     Selected_fruit = hit.transform.gameObject;
                     Selected_fruit.GetComponent<Clicked_fruit>().Click();
                 }
