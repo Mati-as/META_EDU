@@ -34,9 +34,6 @@ public class Manager_obj_3 : MonoBehaviour
     public GameObject Box_position;
     public GameObject Game_effect;
 
-    //Eventsystem
-    public GameObject Eventsystem;
-
 
     private Manager_Anim_3 Manager_Anim;
     private Manager_Text Manager_Text;

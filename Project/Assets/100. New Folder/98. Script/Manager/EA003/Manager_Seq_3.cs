@@ -24,8 +24,6 @@ public class Manager_Seq_3 : Base_GameManager
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
-    private GameObject Eventsystem;
-
     public bool toggle = false;
     public bool Onclick = true;
 
@@ -77,7 +75,6 @@ public class Manager_Seq_3 : Base_GameManager
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_3>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
-        Eventsystem = Manager_obj_3.instance.Eventsystem;
         Main_Box = Manager_obj_3.instance.Main_Box;
 
         Main_Box_array = new GameObject[Main_Box.transform.childCount];
@@ -183,7 +180,6 @@ public class Manager_Seq_3 : Base_GameManager
     void Init_Game_read()
     {
         round = 0;
-        Eventsystem.SetActive(false);
     }
     void Timer_set()
     {
