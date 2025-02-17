@@ -51,8 +51,6 @@ public class Manager_Seq_2 : Base_GameManager
 
 
         waitForClickableInGameRay = 0.6f;
-        //Eventsystem = Manager_obj_2.instance.Eventsystem;
-        //Eventsystem.SetActive(false);
         Onclick = false;
 
         Managers.soundManager.Play(SoundManager.Sound.Bgm, BGM, 0.3f);
@@ -121,8 +119,6 @@ public class Manager_Seq_2 : Base_GameManager
             //End, 클릭 활성화
             Manager_Anim.Active_click_animal();
             On_game = 0;
-            //여기에서 다시 전부 활성화
-            //Eventsystem.SetActive(true);
 
             Onclick = true;
         }
@@ -139,14 +135,12 @@ public class Manager_Seq_2 : Base_GameManager
         //메시지의 경우, T - L - E - R - P - Z - F 순서, hide, reveal
 
         Onclick = true;
-        //Eventsystem.SetActive(true);
         On_game = 0;
         //Manager_Anim.Hide_All_animal();
     }
     void Init_Game_reveal()
     {
         Onclick = true;
-        //Eventsystem.SetActive(true);
         //다시 동물 스크립트 활성화
         Manager_Anim.Active_click_animal();
         On_game = 0;
@@ -156,7 +150,6 @@ public class Manager_Seq_2 : Base_GameManager
         //동물들 위치 원상 복구
         On_game = 0;
         Onclick = false;
-        //Eventsystem.SetActive(false);
         //왼쪽부터 순서대로 진행되도록 순서 조정 필요
         Manager_Anim.Reset_Seq_animal(0);
         Manager_Anim.Reset_Seq_animal(1);
@@ -253,7 +246,6 @@ public class Manager_Seq_2 : Base_GameManager
             //여기에서 정상적으로 작동하지 않음
             Debug.Log("동물 7마리 채움");
             Onclick = false;
-            //Eventsystem.SetActive(false);
             Content_Seq += 1;
             toggle = true;
             Timer_set();

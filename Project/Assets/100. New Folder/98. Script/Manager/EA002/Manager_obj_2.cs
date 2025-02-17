@@ -12,8 +12,6 @@ public class Manager_obj_2 : MonoBehaviour
     public GameObject Camera_position;
 
     //Eventsystem, ������� �Ƹ� ����
-    public GameObject Eventsystem;
-    // Start is called before the first frame update
 
     //UI Text,Msg, ���⵵ ����
     public GameObject UI_Text;
