@@ -19,9 +19,9 @@ public class Button_Development_Menu : MonoBehaviour, IPointerClickHandler
         // 2.28 임시로 코드 추가 (민석)
         rplidar = GameObject.FindWithTag("RaySynchronizer").GetComponent<SensorManager>();
 
-        UI_ONOFF = false;
-        BALL_ONOFF = true;
-        SF_ONOFF = false; 
+        // UI_ONOFF = false;
+        // BALL_ONOFF = true;
+        // SF_ONOFF = false; 
        
     }
     public void OnPointerClick(PointerEventData eventData)
