@@ -102,12 +102,12 @@ public class EasternArtBaseGameManager : Base_GameManager
          
         if (_sceneName == "AB002FromBA001") //BA001 (명화그리기) 컨텐츠와 연계되어 실행된 경우
         {
-            OnBtnShut();
+            OnGameStartBtnShut();
         }
         else
         {
-            UI_Scene_StartBtn.onBtnShut -= OnBtnShut;
-            UI_Scene_StartBtn.onBtnShut += OnBtnShut;
+            UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnShut;
+            UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnShut;
         }
 
     }
@@ -144,7 +144,7 @@ public class EasternArtBaseGameManager : Base_GameManager
         camera.DOLookAt(lookAtA.position, 0.01f);
     }
 
-    private void OnBtnShut()
+    private void OnGameStartBtnShut()
     {
 #if UNITY_EDITOR
 //        Debug.Log($"{SceneManager.GetActiveScene().name}'s started");

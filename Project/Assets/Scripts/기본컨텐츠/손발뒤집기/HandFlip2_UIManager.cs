@@ -74,8 +74,8 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinishedForUI += OnRoundFinish;
@@ -85,21 +85,21 @@ public class HandFlip2_UIManager : UI_PopUp
         HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
         HandFlip2BaseGameManager.onRoundFinished += PopStopUI;
         
-        HandFlip2BaseGameManager.restart -= OnStart;
-        HandFlip2BaseGameManager.restart += OnStart;
+        HandFlip2BaseGameManager.restart -= OnGameStartStart;
+        HandFlip2BaseGameManager.restart += OnGameStartStart;
         return true;
         
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
-        HandFlip2BaseGameManager.restart -= OnStart;
+        HandFlip2BaseGameManager.restart -= OnGameStartStart;
     
     }
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");

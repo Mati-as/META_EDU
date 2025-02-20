@@ -207,9 +207,9 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
         }
     }
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
         PlayBalloonAppearAnim();
     }
 

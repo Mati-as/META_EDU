@@ -63,11 +63,11 @@ public class EvaArmisen_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
-        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
-        EvaArmisenBaseGameManager.onRoundRestart += OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnGameStartStart;
+        EvaArmisenBaseGameManager.onRoundRestart += OnGameStartStart;
 
         EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
         EvaArmisenBaseGameManager.OnStampingFinished += PopUpStopUI;
@@ -78,11 +78,11 @@ public class EvaArmisen_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnGameStartStart;
         EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
     }
 
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");

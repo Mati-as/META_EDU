@@ -41,9 +41,9 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     
     
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
         var images = _parrotSlider.GetComponentsInChildren<Image>();
         foreach (var image in images)
         {
