@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using DG.Tweening.Core;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
@@ -33,9 +32,9 @@ public class SandwitchBaseGameManager : Base_GameManager
     }
 
     private static GameObject s_UIManager;
-    
+
     private int[] _currentSmallPlateLocationIndex;
-    
+
     private Transform[] _ingredientsOnBigPlate;
     private Transform[] _selectableIngredientsOnSmallPlates;
     private Vector3[] _ingredientsDefaultScales;
@@ -44,17 +43,17 @@ public class SandwitchBaseGameManager : Base_GameManager
     private readonly int INGREDIENT_COUNT = (int)Sandwich.Max;
     private readonly int ING_MAX_COUNT = 5;
     private int _ingsPickinigOrder = 1;
-    
+
     public Transform currentClickedIng;
-    
+
     private Dictionary<Transform, Tween> _pathTwMap;
     private Dictionary<Transform, Tween> _shakeTwMap;
     private Dictionary<Transform, Tween> _scaleMap;
-    private Dictionary<Transform, int>  _currentPositionMap;
-    
-    
+    private Dictionary<Transform, int> _currentPositionMap;
+
+
     private ParticleSystem _finishMakingPs;
-    
+
     private bool _isFirstRound;
     private Transform[] _initialLocations;
 
@@ -87,8 +86,8 @@ public class SandwitchBaseGameManager : Base_GameManager
     public static event Action onSandwichArrive;
 
 
-
     public static event Action onSandwichMakingRestart;
+
     //Positions
     private Vector3 _moveOutP;
     private Vector3 _ingredientGenerationPosition;
@@ -115,12 +114,9 @@ public class SandwitchBaseGameManager : Base_GameManager
 
         base.Init();
 
-       
-        
+
         SetSandwich();
         InitIngredients();
-
-        
     }
 
 
@@ -148,12 +144,11 @@ public class SandwitchBaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        
-        
+
+
         onRoundReady -= OnRoundReady;
         onSandwichMakingFinish -= OnSandwichMakingFinish;
         sandwich_AnimalController.onAllFinishAnimOver -= AllFinishAnimOver;
-
     }
 
     private bool _isRoundFinished;
@@ -163,35 +158,32 @@ public class SandwitchBaseGameManager : Base_GameManager
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
-        
-        
+
+
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
-        
+
         if (_isRoundFinished) return;
         if (!isGameStart) return;
-        
-        
+
+
         if (!_isClickable)
         {
-#if UNITY_EDITOR
-            Debug.Log("Can't be clicked : isClickable is false");
-#endif
+            Logger.Log("Can't be clicked : isClickable is false");
+
             return;
         }
 
         foreach (var hit in _raycastHits)
         {
-#if UNITY_EDITOR
-            Debug.Log($"작은접시생성위치 갱신: 클릭오브젝트 이름: {hit.transform.gameObject.name}, " +
-                      $"클릭오브젝트 위치: {hit.transform.position}" +
-                      $"갱신위치: {_previousShrinkingPoint}");
-#endif
+            Logger.Log($"작은접시생성위치 갱신: 클릭오브젝트 이름: {hit.transform.gameObject.name}, " +
+                       $"클릭오브젝트 위치: {hit.transform.position}" +
+                       $"갱신위치: {_previousShrinkingPoint}");
+
             var selectedIndex = FindIndexByName(hit.transform.gameObject.name);
             if (selectedIndex == NO_VALID_OBJECT)
             {
-#if UNITY_EDITOR
-                Debug.Log($"isNotValid: {hit.transform.gameObject.name} : selectedIndex: {selectedIndex}X");
-#endif
+                Logger.Log($"isNotValid: {hit.transform.gameObject.name} : selectedIndex: {selectedIndex}X");
+
                 return;
             }
 
@@ -247,9 +239,9 @@ public class SandwitchBaseGameManager : Base_GameManager
 
                 var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
                 Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
-#if UNITY_EDITOR
-                Debug.Log($"fallingsound : path : {path}");
-#endif
+
+                Logger.Log($"fallingsound : path : {path}");
+
                 obj.transform.DOShakeRotation(fallingDuration, 1, 1, 1);
                 var rb = obj.GetComponent<Rigidbody>();
                 SetRbConstraint(rb);
@@ -273,9 +265,8 @@ public class SandwitchBaseGameManager : Base_GameManager
                         {
                             _ingsPickinigOrder++;
 
-#if UNITY_EDITOR
-                            Debug.Log($"_ingsPickinigOrder : {_ingsPickinigOrder}");
-#endif
+
+                            Logger.Log($"_ingsPickinigOrder : {_ingsPickinigOrder}");
                         }
                     });
             });
@@ -295,14 +286,11 @@ public class SandwitchBaseGameManager : Base_GameManager
     private void PlayShrinkAnim(Transform obj)
     {
         obj.GetComponent<Collider>().enabled = false;
-        
-    
 
-#if UNITY_EDITOR
-//Debug.Log($"Previous Point Refreshed : {_ingsPickinigOrder}");
-#endif
-      
-     
+
+//Logger.Log($"Previous Point Refreshed : {_ingsPickinigOrder}");
+
+
         obj.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBack)
             .OnComplete(() =>
             {
@@ -310,13 +298,12 @@ public class SandwitchBaseGameManager : Base_GameManager
                 DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
                 {
                     obj.gameObject.SetActive(false);
-                 
+
 
                     ScaleUpSingleIng();
                 });
             });
     }
-
 
 
     private void StackCamera()
@@ -326,19 +313,19 @@ public class SandwitchBaseGameManager : Base_GameManager
         if (Camera.main.TryGetComponent<UniversalAdditionalCameraData>(out var mainCameraData))
             mainCameraData.cameraStack.Add(uiCamera);
         else
-            Debug.LogError("Main camera does not have UniversalAdditionalCameraData component.");
+            Logger.LogError("Main camera does not have UniversalAdditionalCameraData component.");
     }
 
     private void InitUI()
     {
-        // Debug.Log("UI Init");
+        // Logger.Log("UI Init");
         // var uiInstance =
         //     Resources.Load<GameObject>("Common/Prefab/UI/Sandwich_UI_Scene");
         // var root = GameObject.Find("@Root");
         //
         // if (s_UIManager != null)
         // {
-        //     Debug.LogError("more than two UIManagers");
+        //     Logger.LogError("more than two UIManagers");
         //     return;
         // }
         //
@@ -386,7 +373,7 @@ public class SandwitchBaseGameManager : Base_GameManager
         //초기 샌드위치 할당 및 추후 접시위 
         _sandWichOrigin = GameObject.Find("Sandwich");
 
-     
+
         _thisSandwich = Instantiate(_sandWichOrigin, transform);
         for (var i = (int)Sandwich.BreadT; i < INGREDIENT_COUNT; i++)
             _ingredientsOnBigPlate[i] = _sandWichOrigin.transform.GetChild(i);
@@ -442,8 +429,6 @@ public class SandwitchBaseGameManager : Base_GameManager
     // 첫번쨰는 무조건 빵이 포함되도록 섞기위한 불 연산자 입니다. 
 
 
-   
-
     private void ShuffleIngredients()
     {
         if (!_isFirstRound)
@@ -464,72 +449,56 @@ public class SandwitchBaseGameManager : Base_GameManager
             _currentPositionMap[_selectableIngredientsOnSmallPlates[i]] = randomIndex;
             _currentPositionMap[_selectableIngredientsOnSmallPlates[randomIndex]] = i;
         }
-        
     }
 
 
     private void ScaleUpAllIngs(float delay)
     {
         var count = 0;
-     
+
         var shakeSeq = DOTween.Sequence();
         ShuffleIngredients();
 
 
+        for (var i = 0; i < _selectableIngredientsOnSmallPlates.Length; i++)
+            if (i < 5)
+            {
+                _selectableIngredientsOnSmallPlates[i].position
+                    = _ingredientsAppearPosition[i];
+                _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(true);
 
-    
+                var i1 = i;
+                _selectableIngredientsOnSmallPlates[i].DOScale(_ingredientsDefaultScales[count], 1.3456789f)
+                    .OnStart(() =>
+                    {
+                        Logger.Log("popup sound");
 
-
-            for (var i = 0; i < _selectableIngredientsOnSmallPlates.Length; i++)
-                if (i < 5)
-                {
-                    _selectableIngredientsOnSmallPlates[i].position
-                        = _ingredientsAppearPosition[i];
-                    _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(true);
-
-                    var i1 = i;
-                    _selectableIngredientsOnSmallPlates[i].DOScale(_ingredientsDefaultScales[count], 1.3456789f)
-                        .OnStart(() =>
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A", 0.3f);
+                    })
+                    .SetEase(Ease.InOutBounce)
+                    .SetDelay(delay + Random.Range(0, 0.5f))
+                    .OnComplete(() =>
+                    {
+                        if (i1 >= 4)
                         {
-#if UNITY_EDITOR
-                            Debug.Log("popup sound");
-#endif
-                            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A", 0.3f);
-                        })
-                        .SetEase(Ease.InOutBounce)
-                        .SetDelay(delay + Random.Range(0, 0.5f))
-                        .OnComplete(() =>
-                        {
-                            if (i1 >= 4)
-                            {
-                                //ScaleUp이후 클릭가능시작시점 딜레이
-                                var gameStartDelay = 0.75f;
-                                DOVirtual.Float(0, 0, gameStartDelay, _ => { }).OnComplete(() =>
-                                {
-                                    isGameStart = true;
-                                });
-                              
-                            }
-                     
-                        });
+                            //ScaleUp이후 클릭가능시작시점 딜레이
+                            var gameStartDelay = 0.75f;
+                            DOVirtual.Float(0, 0, gameStartDelay, _ => { }).OnComplete(() => { isGameStart = true; });
+                        }
+                    });
 
-                    shakeSeq.Append(
-                        _selectableIngredientsOnSmallPlates[i]
-                            .DOShakeRotation(1f, 3f, 1, 15));
-                }
-                else
-                {
-                    _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(false);
-                }
+                shakeSeq.Append(
+                    _selectableIngredientsOnSmallPlates[i]
+                        .DOShakeRotation(1f, 3f, 1, 15));
+            }
+            else
+            {
+                _selectableIngredientsOnSmallPlates[i].gameObject.SetActive(false);
+            }
 
-           
-        
 
-       
         foreach (var obj in _selectableIngredientsOnSmallPlates)
         {
-        
-
             var path = SetPath(obj.transform.position);
             obj.transform.position = path[0];
 
@@ -564,20 +533,18 @@ public class SandwitchBaseGameManager : Base_GameManager
     }
 
 
-    
     private void OnSandwichMakingFinish()
     {
         _isRoundFinished = true;
         isGameStart = false;
-#if UNITY_EDITOR
-        Debug.Log("Making Sandwich is finished");
-#endif
+
+        Logger.Log("Making Sandwich is finished");
+
 
         Managers.soundManager.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/Sandwich/Complete", 1f);
 
-       
-        
+
         Managers.soundManager.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0" + Random.Range(1, 5), 0.5f);
 
@@ -596,7 +563,8 @@ public class SandwitchBaseGameManager : Base_GameManager
             obj.DOScale(Vector3.zero, 1.0f)
                 .OnStart(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup");
+                    Managers.soundManager.Play(SoundManager.Sound.Effect,
+                        "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup");
                 })
                 .SetEase(Ease.InOutBounce);
     }
@@ -620,7 +588,12 @@ public class SandwitchBaseGameManager : Base_GameManager
     {
         DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>
         {
-            DOVirtual.Float(0, 0, 2.8f, _ => { Camera.main.transform.DOLookAt(_thisSandwich.transform.position + cameraLookAtOffsetOfSandwich, 0.5f); });
+            DOVirtual.Float(0, 0, 2.8f,
+                _ =>
+                {
+                    Camera.main.transform.DOLookAt(_thisSandwich.transform.position + cameraLookAtOffsetOfSandwich,
+                        0.5f);
+                });
 
             _thisSandwich.transform
                 .DOMove(posMid, 1.8f)
@@ -654,13 +627,8 @@ public class SandwitchBaseGameManager : Base_GameManager
     ///     시작시 모든 재료를 스케일업하는 것이 아닌, 사용자가 클릭한 후 하나씩 스케일업 합니다.
     ///     이미 클릭된 재료중에서만 ScaleUp하도록 합니다.
     /// </summary>
-
-
-
     public void ScaleUpSingleIng(float delay = 1.88f)
     {
-      
-        
         var obj = _selectableIngredientsOnSmallPlates.FirstOrDefault(x =>
             !x.gameObject.gameObject.name.Contains("Bread")
             && !x.gameObject.activeSelf);
@@ -672,40 +640,32 @@ public class SandwitchBaseGameManager : Base_GameManager
             obj = _selectableIngredientsOnSmallPlates.FirstOrDefault(x =>
                 !x.gameObject.gameObject.name.Contains("Bread")
                 && !x.gameObject.activeSelf);
-#if UNITY_EDITOR
-            Debug.Log($"재료표출:{obj.gameObject.name} 생성위치 : {_previousShrinkingPoint}");
-#endif
+
+            Logger.Log($"재료표출:{obj.gameObject.name} 생성위치 : {_previousShrinkingPoint}");
         }
 
         else
         {
-#if UNITY_EDITOR
-            Debug.Log("빵 표출가능 ");
-#endif
+            Logger.Log("빵 표출가능 ");
+
             obj = _selectableIngredientsOnSmallPlates.FirstOrDefault(x =>
                 x.gameObject.gameObject.name.Contains("Bread")
                 && !x.gameObject.activeSelf);
             if (obj != null)
-            {
-#if UNITY_EDITOR
-                Debug.Log($"빵 표출: 생성위치 : {_previousShrinkingPoint}");
-#endif
-            }
+                Logger.Log($"빵 표출: 생성위치 : {_previousShrinkingPoint}");
             else
-            {
                 obj = _selectableIngredientsOnSmallPlates
                     .FirstOrDefault(x => !x.gameObject.activeSelf);
-            }
         }
+
         if (obj == null)
         {
-#if UNITY_EDITOR
-            Debug.Log($"표출할 재료 없음: 모든 재료가 활성화상태 && 빵선택 단계 아님");
-#endif
+            Logger.Log("표출할 재료 없음: 모든 재료가 활성화상태 && 빵선택 단계 아님");
+
             _isScalingUp = false;
             return;
         }
-        
+
         AppendAnim(obj);
     }
 
@@ -713,59 +673,43 @@ public class SandwitchBaseGameManager : Base_GameManager
     {
         obj.gameObject.SetActive(true);
         obj.localScale = Vector3.zero;
-      
+
 
         _shakeTwMap[obj].Kill();
-       
+
         Tween newShakeTween = obj.DOShakeRotation(1f, 3f, 1, 15).OnStart(() =>
         {
             obj.DOScale(_ingredientsDefaultScales[0], 2f)
-                .OnStart(() =>
-                {
-                   
-                    obj.GetComponent<Collider>().enabled = true;
-                })
+                .OnStart(() => { obj.GetComponent<Collider>().enabled = true; })
                 .SetEase(Ease.InOutBounce);
         });
-    
+
         _shakeTwMap[obj] = newShakeTween;
 
-        
-  
-     // Ensure this is the starting position you want
 
-#if UNITY_EDITOR
-        Debug.Log($"Animation starting point: {_previousShrinkingPoint}");
-#endif
+        // Ensure this is the starting position you want
+
+
+        Logger.Log($"Animation starting point: {_previousShrinkingPoint}");
+
         _pathTwMap[obj].Kill();
-        
+
         // Set the object's position to the start of the path immediately
         var newPath = new Vector3[2];
         newPath[0] = _previousShrinkingPoint + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
         newPath[1] = _previousShrinkingPoint + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
-        obj.position =  newPath[0]; 
-        
-        
-        Tween newPathTween =obj.DOPath(newPath, Random.Range(7f, 10.5f))
+        obj.position = newPath[0];
+
+
+        Tween newPathTween = obj.DOPath(newPath, Random.Range(7f, 10.5f))
             .SetLoops(20, LoopType.Yoyo)
             .SetDelay(Random.Range(0.5f, 1.5f))
             .SetEase((Ease)Random.Range(0, 5))
-            .OnStart(() =>
-            {
-#if UNITY_EDITOR
-                Debug.Log($"Scale up complete, DoPathStart position: {obj.transform.position}");
-#endif
-                
-            })
-            .OnComplete(() =>
-            {
+            .OnStart(() => { Logger.Log($"Scale up complete, DoPathStart position: {obj.transform.position}"); })
+            .OnComplete(() => { _isScalingUp = false; });
 
-                _isScalingUp = false;
-            });
 
-      
         _pathTwMap[obj] = newPathTween;
-
     }
 
 
@@ -804,27 +748,19 @@ public class SandwitchBaseGameManager : Base_GameManager
         _thisSandwich.transform.position = _sandWichOrigin.transform.position;
 
 
-        foreach (var seq in _pathTwMap.Keys.ToList())
-        {
-            _pathTwMap[seq].Kill();
-        }
-        
-        
-        foreach (var seq in _shakeTwMap.Keys.ToList())
-        {
-            _shakeTwMap[seq].Kill();
-        }
+        foreach (var seq in _pathTwMap.Keys.ToList()) _pathTwMap[seq].Kill();
+
+
+        foreach (var seq in _shakeTwMap.Keys.ToList()) _shakeTwMap[seq].Kill();
 
         _pathTwMap = new Dictionary<Transform, Tween>();
         _shakeTwMap = new Dictionary<Transform, Tween>();
 
-#if UNITY_EDITOR
-        Debug.Log("게임재시작");
-#endif
+
+        Logger.Log("게임재시작");
+
         ScaleUpAllIngs(RESTART_DELAY);
 
         onSandwichMakingRestart?.Invoke();
     }
-
-
 }

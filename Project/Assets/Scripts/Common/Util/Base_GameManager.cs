@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -39,7 +40,12 @@ public abstract class Base_GameManager : MonoBehaviour
     protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY =0.08f;
     protected const float CLICKABLE_IN_GAME_DELAY_MIN =0.035f; 
     protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
-    
+
+    public void LoadUIManager()
+    {
+        var UIManagerCheck = GameObject.FindWithTag("UIManager");
+      //  if (UIManagerCheck == null) Managers.UI.ShowPopupUI("UIManager_"+SceneManager.GetActiveScene().name);
+    }
 
     protected float waitForClickableInGameRay
     {
@@ -124,7 +130,9 @@ public abstract class Base_GameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
+        
         Debug.Assert(PrecheckOnInit());
+
     }
 
 
@@ -132,9 +140,9 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (isInitialized)
         {
-#if UNITY_EDITOR
-            Debug.LogWarning("Scene is already initialized.");
-#endif
+
+        Logger.LogWarning("Scene is already initialized.");
+
 
 
             return;
@@ -153,6 +161,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
+        LoadUIManager();
         isInitialized = true;
     }
 
@@ -249,14 +258,13 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
         {
-
-        if (!isClikableInGameRay)
-        {
-            Logger.Log("Clicking Too Fast, Can't be clicked");
-
-            return false;
-        }
-
+            // if (!isClikableInGameRay)
+            // {
+            //     Logger.Log("Clicking Too Fast, Can't be clicked");
+            //
+            //     return false;
+            //     
+            // }
 
 
             Logger.Log($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");

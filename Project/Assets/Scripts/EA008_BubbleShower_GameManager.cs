@@ -23,11 +23,13 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     private Vector3 _rotateVector;
    
     
-    private HandFlip2_UIManager _UIManager;
+    private EA008_BubbleShower_UIManager _UIManager;
 
 
     //쌍이되는 컬러를  String으로 할당하여, 색상이름(string)에 따라 제어.
     private Dictionary<int, BubbleImage> _PrintMap;
+
+    private Dictionary<int, Quaternion> _originalEulerMap;
     private Dictionary<string, Color> _colorPair;
     private Dictionary<int, MeshRenderer> _meshRendererMap;
     private Dictionary<int, MeshRenderer> _childMeshRendererMap;
@@ -54,10 +56,11 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     public bool _isRoundFinished { get; private set; }
     private float _remainTime;
     private float _elapsed;
-    private readonly float TIME_LIMIT = 30f;
+    [SerializeField]
+    private  float TIME_LIMIT = 30f;
 
-    private int _colorACount;
-    private int _colorBCount;
+    private int _germCount;
+    private int _bubbleCount;
 
 
     public void OnStart()
@@ -136,13 +139,14 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     {
         foreach (var print in _prints)
         {
-            if (print.printObj.GetComponent<MeshRenderer>().material.color == ColorA)
+           // if (print.printObj.GetComponent<MeshRenderer>().material.color == ColorA)
+           if (print.isGermSide)
             {
-                _colorACount++;
+                _germCount++;
             }
             else
             {
-                _colorBCount++;
+                _bubbleCount++;
             }
         }
 
@@ -170,8 +174,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     }
     private void CheckWinner()
     {
-        UpdateResultTMP(_colorACount.ToString(),_colorBCount.ToString());
-        isATeamWin = _colorACount > _colorBCount;
+        UpdateResultTMP(_germCount.ToString(),_bubbleCount.ToString());
+        isATeamWin = _germCount > _bubbleCount;
 
         StartCoroutine(Initialize());
     }
@@ -180,8 +184,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     {
         base.OnDestroy();
         UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
-        HandFlip2_UIManager.onStartUIFinished -= OnStart;
-        HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
+        EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
+        EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -=  FlipAll;
         onRoundFinished -= OnRoundFinished;
     }
     
@@ -194,6 +198,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         UpdateResultTMP(String.Empty,String.Empty,String.Empty);
         _tmp.text = "놀이를 다시 준비하고 있어요";
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
+      
+        InitFlip();
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
        
         _tmp.text = "";
@@ -205,23 +211,23 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
       
         
-        foreach(var item in _meshRendererMap)
-        {
-            MeshRenderer meshRenderer = item.Value;
-            meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
-            _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
-            count++;
-        }
+        // foreach(var item in _meshRendererMap)
+        // {
+        //     MeshRenderer meshRenderer = item.Value;
+        //     meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
+        //     _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
+        //     count++;
+        // }
+        //
+        // foreach(var item in _childMeshRendererMap)
+        // {
+        //     MeshRenderer meshRenderer = item.Value;
+        //     meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
+        //     _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
+        //     count++;
+        // }
         
-        foreach(var item in _childMeshRendererMap)
-        {
-            MeshRenderer meshRenderer = item.Value;
-            meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
-            _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
-            count++;
-        }
-        
-        FlipAll();
+      
         
         yield return DOVirtual.Float(0, 0, 5f, _ => { }).WaitForCompletion();
         
@@ -244,8 +250,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _elapsed = 0;
         _remainTime = TIME_LIMIT;
         _currentRound++;
-        _colorACount = 0;
-        _colorBCount = 0;
+        _germCount = 0;
+        _bubbleCount = 0;
         _elapsedToCount = 0f;
         _isCountNarrationPlaying = false;
     }
@@ -259,11 +265,11 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
         UI_Scene_StartBtn.onBtnShut += OnButtonClicked;
 
-        HandFlip2_UIManager.onStartUIFinished -= OnStart;
-        HandFlip2_UIManager.onStartUIFinished += OnStart;
+        EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
+        EA008_BubbleShower_UIManager.onStartUIFinished += OnStart;
 
-        HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
-        HandFlip2_BlackPrintsController.onAllBlackPrintClicked += FlipAll;
+        EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -= FlipAll;
+        EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked += FlipAll;
 
         onRoundFinished -= OnRoundFinished;
         onRoundFinished += OnRoundFinished;
@@ -272,6 +278,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
         _defaultPosition = Camera.main.transform.position;
 
+        _originalEulerMap = new Dictionary<int, Quaternion>();
         _PrintMap = new Dictionary<int, BubbleImage>();
         _colorPair = new Dictionary<string, Color>();
         _meshRendererMap = new Dictionary<int, MeshRenderer>();
@@ -280,7 +287,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
         GetResultTMPs();
-        _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<HandFlip2_UIManager>();
+        _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<EA008_BubbleShower_UIManager>();
 
 
         Debug.Log($"(start)color option length: {colorOptions.Length}");
@@ -302,7 +309,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 #if UNITY_EDITOR
         Debug.Assert(PRINTS_COUNT % 2 == 1);
 #endif
-        
+      
         
         _prints = new BubbleImage[PRINTS_COUNT];
 
@@ -334,6 +341,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             var meshRenderer = currentTransform.GetComponent<MeshRenderer>();
             _meshRendererMap.TryAdd(currentInstanceID, meshRenderer);
 
+            _originalEulerMap.TryAdd(currentInstanceID, printsParent.transform.rotation);
             meshRenderer.material.color = CurrentColorPair[i % (int)ColorSide.ColorCount];
 
 
@@ -345,6 +353,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
             printsParent.transform.GetChild(i).gameObject.transform.localScale = Vector3.zero;
         }
+        
+        InitFlip();
 
     
     }
@@ -420,41 +430,34 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             var currentInstanceID = hit.transform.gameObject.GetInstanceID();
 
             // Check if the object is already flipping or the sequence is active.
-            if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
-                (printData.seq.IsActive() || printData.isCurrentlyFlipping))
+            if (_PrintMap.TryGetValue(currentInstanceID, out var bubbleOrGermData) &&
+                (bubbleOrGermData.seq.IsActive() || bubbleOrGermData.isCurrentlyFlipping))
             {
                // Debug.Log("The seq is currently Active! Click later..");
                 return;
             }
 
             // Ensure the sequence is initialized.
-            printData.seq = DOTween.Sequence();
+            bubbleOrGermData.seq = DOTween.Sequence();
 
-            printData.seq.Append(hit.transform
-                .DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+            bubbleOrGermData.seq.Append(hit.transform
+                .DOLocalRotate(_rotateVector + bubbleOrGermData.printObj.transform.rotation.eulerAngles, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
-                    printData.isCurrentlyFlipping = true;
+                    bubbleOrGermData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
                     Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
-                    // Toggle 
-                    var targetColor = printData.currentColor == ColorA ? ColorB : ColorA;
-                   // Debug.Log($"Changing to {(targetColor == ColorA ? "ColorA" : "ColorB")}");
-                    printData.currentColor = targetColor;
-
-                    // Apply the color
-                    Action<Renderer, Color> doColorChange = (renderer, color) =>
-                        renderer.material.DOColor(color, 0.2f).SetDelay(0.235f);
-                    doColorChange(_meshRendererMap[currentInstanceID], targetColor);
-                    doColorChange(_childMeshRendererMap[currentInstanceID], targetColor);
+                    bubbleOrGermData.isGermSide = !bubbleOrGermData.isGermSide; 
+                
+                  
                 })
-                .OnComplete(() => printData.isCurrentlyFlipping = false));
+                .OnComplete(() => bubbleOrGermData.isCurrentlyFlipping = false));
 
-            printData.seq.Play();
+            bubbleOrGermData.seq.Play();
         }
         else
         {
@@ -465,11 +468,11 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     }
 
 
-    private void FlipAll()
+    private void InitFlip()
     {
-#if UNITY_EDITOR
-        Debug.Log("검은색 모두 뒤집기");
-#endif
+
+
+        var count = 0;
 
         foreach (var print in _prints)
         {
@@ -478,44 +481,99 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             // Check if the object is already flipping or the sequence is active.
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
                 (printData.seq.IsActive() || printData.isCurrentlyFlipping))
-            {
-               // Debug.Log("The seq is currently Active! Click later..");
+                // Debug.Log("The seq is currently Active! Click later..");
                 return;
+
+            var isGermSide = false;
+            var eulerToFlip = Vector3.zero;
+            if (count % 2 == 0)
+            {
+                isGermSide = false;
+                eulerToFlip = _originalEulerMap[currentInstanceID].eulerAngles +_rotateVector;
+                printData.seq = DOTween.Sequence();
+               
+            }
+            else
+            {
+                isGermSide = true;
+                eulerToFlip = _originalEulerMap[currentInstanceID].eulerAngles;
+                printData.seq = DOTween.Sequence();
+               
             }
 
-            // Ensure the sequence is initialized.
-            printData.seq = DOTween.Sequence();
 
             printData.seq.Append(print.printObj.transform
-                .DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+                .DOLocalRotate(eulerToFlip, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
                     printData.isCurrentlyFlipping = true;
-
+                    printData.isGermSide = isGermSide;
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    Managers.soundManager.Play(SoundManager.Sound.Effect,
+                        $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
-
-                    // Toggle 
-                    var targetColor = printData.currentColor == ColorA ? ColorB : ColorA;
-                   // Debug.Log($"Changing to {(targetColor == _colorA ? "ColorA" : "ColorB")}");
-                    printData.currentColor = targetColor;
-
-                    // Apply the color
-                    Action<Renderer, Color> doColorChange = (renderer, color) =>
-                        renderer.material.DOColor(color, 0.2f).SetDelay(0.235f);
-                    doColorChange(_meshRendererMap[currentInstanceID], targetColor);
-                    doColorChange(_childMeshRendererMap[currentInstanceID], targetColor);
                 })
                 .OnComplete(() => printData.isCurrentlyFlipping = false)
                 .SetDelay(Random.Range(1.0f, 1.5f)));
 
 
             printData.seq.Play();
+            count++;
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip", 0.65f);
+    }
+    
+     private void FlipAll()
+    {
+    
+    
+        var count = 0;
+        foreach (var print in _prints)
+        {
+            // if (count %2== 0)
+            // {
+            //     count++; continue;
+            // }
+            
+          //  count++;
+    
+            var currentInstanceID = print.printObj.GetInstanceID();
+    
+            // Check if the object is already flipping or the sequence is active.
+            if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
+                (printData.seq.IsActive() || printData.isCurrentlyFlipping))
+            {
+                return;
+            }
+    
+            // Ensure the sequence is initialized.
+            printData.seq = DOTween.Sequence();
+          
+    
+            printData.seq.Append(print.printObj.transform
+                .DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+                .SetEase(Ease.InOutQuint)
+                .OnStart(() =>
+                {
+                    printData.isCurrentlyFlipping = true;
+    
+                    printData.isGermSide = !printData.isGermSide;
+                    var randomChar = (char)Random.Range('A', 'F' + 1);
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                        0.3f);
+                    
+                  
+                })
+                .OnComplete(() => printData.isCurrentlyFlipping = false)
+                .SetDelay(Random.Range(1.0f, 1.5f)));
+    
+    
+            printData.seq.Play();
+        }
+    
+       // Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
     }
 }
 
@@ -523,7 +581,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 public class BubbleImage
 {
     public GameObject printObj;
-    public bool side;
+    public bool isGermSide;
     public bool isCurrentlyFlipping;
     public Vector3 defaultVector;
     public Vector3 defaultSize;

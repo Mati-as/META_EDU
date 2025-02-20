@@ -1,14 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine;
+
 
 public class HandFlip2_UIManager : UI_PopUp
 {
