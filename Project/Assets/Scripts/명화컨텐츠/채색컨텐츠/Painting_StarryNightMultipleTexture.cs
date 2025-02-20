@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class Painting_StarryNightMultipleTexture : IGameManager
+public class Painting_StarryNightMultipleTexture : Base_GameManager
 {
     [SerializeField]
     private Shader paintShader;
@@ -35,7 +35,7 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     protected override void Init()
     {
         BGM_VOLUME = bgmVol;
-         
+        SensorSensitivity = 0.5f; 
         
         Camera.main.TryGetComponent<Volume>(out vol);
         if (vol == null)
@@ -73,8 +73,9 @@ public class Painting_StarryNightMultipleTexture : IGameManager
         base.BindEvent();
     }
 
-    protected  void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         ChangeScene -= OnChangeScene;
     }
 
@@ -86,7 +87,7 @@ public class Painting_StarryNightMultipleTexture : IGameManager
             _isSceneChanging = true;
         }).OnComplete(() =>
         {
-            SceneManager.LoadScene("AB001");
+            SceneManager.LoadScene("AB001FromBA001");
         });
         
     }
@@ -109,12 +110,12 @@ public class Painting_StarryNightMultipleTexture : IGameManager
     public float currentRotation;
     
     private float _elapsed;
-    private readonly float _timeLimitForSceneChange = 50;
+    [FormerlySerializedAs("_timeLimitForSceneChange")] public float timeLimitForSceneChange;
     
     private void Update()
     {
         _elapsed += Time.deltaTime;
-        if (_elapsed > _timeLimitForSceneChange)
+        if (_elapsed > timeLimitForSceneChange)
         {
             ChangeScene?.Invoke();
             _elapsed = 0; 
@@ -173,8 +174,7 @@ public class Painting_StarryNightMultipleTexture : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
         Paint();
     }
 }

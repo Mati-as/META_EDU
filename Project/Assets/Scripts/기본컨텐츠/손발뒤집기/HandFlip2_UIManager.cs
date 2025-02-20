@@ -1,14 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
-using Unity.VisualScripting;
-using UnityEngine;
+
 
 public class HandFlip2_UIManager : UI_PopUp
 {
@@ -30,7 +25,7 @@ public class HandFlip2_UIManager : UI_PopUp
         Red_Win
     }
 
-    private HandFlip2_GameManager _gm; 
+    private HandFlip2BaseGameManager _gm; 
     private CanvasGroup _canvasGroup;
 
     private GameObject _ready;
@@ -50,7 +45,7 @@ public class HandFlip2_UIManager : UI_PopUp
     public override bool Init()
     {
 
-        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
+        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2BaseGameManager>();
         
         BindObject(typeof(HandFlip_UI_Type));
 
@@ -79,23 +74,31 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
-        UI_Scene_Button.onBtnShut -= OnStart;
-        UI_Scene_Button.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut += OnStart;
         
-        HandFlip2_GameManager.onRoundFinishedForUI -= OnRoundFinish;
-        HandFlip2_GameManager.onRoundFinishedForUI += OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinishedForUI += OnRoundFinish;
         
         
            
-        HandFlip2_GameManager.onRoundFinished -= PopStopUI;
-        HandFlip2_GameManager.onRoundFinished += PopStopUI;
+        HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
+        HandFlip2BaseGameManager.onRoundFinished += PopStopUI;
         
-        HandFlip2_GameManager.restart -= OnStart;
-        HandFlip2_GameManager.restart += OnStart;
+        HandFlip2BaseGameManager.restart -= OnStart;
+        HandFlip2BaseGameManager.restart += OnStart;
         return true;
         
     }
 
+    private void OnDestroy()
+    {
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
+        HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
+        HandFlip2BaseGameManager.restart -= OnStart;
+    
+    }
     public void OnStart()
     {
 #if UNITY_EDITOR
@@ -166,6 +169,7 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
+                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Red_Win");
                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/RedWin",0.8f);
                 })
                 .WaitForCompletion();
@@ -180,6 +184,7 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
+                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Blue_Win");
                     Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/BlueWin",0.8f);
                 }).WaitForCompletion();
           

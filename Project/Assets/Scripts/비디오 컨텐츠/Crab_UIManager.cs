@@ -28,7 +28,7 @@ public class Crab_UIManager : UI_PopUp
     }
   
 
-    private HandFlip2_GameManager _gm; 
+    private HandFlip2BaseGameManager _gm; 
     private CanvasGroup _canvasGroup;
     private Vector3 _SpeechBubbleDefaultScale;
     private Vector3 _defaultScale;
@@ -63,7 +63,7 @@ public class Crab_UIManager : UI_PopUp
     {
 
       
-        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2_GameManager>();
+        _gm = GameObject.Find("GameManager").GetComponent<HandFlip2BaseGameManager>();
         _dialogues = new RectTransform[Enum.GetNames(typeof(CrabDialogue)).Length];
         defaultScales = new Vector3[Enum.GetNames(typeof(CrabDialogue)).Length];
         BindObject(typeof(CrabDialogue));
@@ -120,17 +120,17 @@ public class Crab_UIManager : UI_PopUp
         _dialogues[(int)CrabDialogue.Crab_SpeechBubble_Flipped] = _rectSpeechBubbleFlipped;
 
 
-        CrabVideoGameManager.onRewind -= OnCrabReWind;
-        CrabVideoGameManager.onRewind += OnCrabReWind;
+        CrabVideoBaseGameManager.onRewind -= OnCrabReWind;
+        CrabVideoBaseGameManager.onRewind += OnCrabReWind;
         
-        CrabVideoGameManager.onRewind -= OnCrabReWind;
-        CrabVideoGameManager.onRewind += OnCrabReWind;
+        CrabVideoBaseGameManager.onRewind -= OnCrabReWind;
+        CrabVideoBaseGameManager.onRewind += OnCrabReWind;
 
-        CrabVideoGameManager.onCrabAppear -= OnCrabUIStart;
-        CrabVideoGameManager.onCrabAppear += OnCrabUIStart;
+        CrabVideoBaseGameManager.onCrabAppear -= OnCrabUIStart;
+        CrabVideoBaseGameManager.onCrabAppear += OnCrabUIStart;
 
-        CrabVideoGameManager.onRaySyncForCrabUI -= OnRaySyncForUI;
-        CrabVideoGameManager.onRaySyncForCrabUI += OnRaySyncForUI;
+        CrabVideoBaseGameManager.onRaySyncForCrabUI -= OnRaySyncForUI;
+        CrabVideoBaseGameManager.onRaySyncForCrabUI += OnRaySyncForUI;
 
 
         return true;
@@ -140,7 +140,7 @@ public class Crab_UIManager : UI_PopUp
 
     private void OnCrabUIStart()
     {
-        DOVirtual.Float(0,1,CrabVideoGameManager.VIDEO_STOP_DELAY - 10, _ => { })
+        DOVirtual.Float(0,1,CrabVideoBaseGameManager.VIDEO_STOP_DELAY - 10, _ => { })
             .OnComplete(() =>
             {
                 Crab_SpeechBubble.SetActive(true);

@@ -21,10 +21,9 @@ public class FPSCounter : MonoBehaviour
         _fpsText = GetComponent<TextMeshProUGUI>();
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
         var fps = 1.0f / deltaTime;
-      
+       
         _fpsText.text =  string.Format("{0:0.0} fps", fps);
 #endif
-     
     }
     
  

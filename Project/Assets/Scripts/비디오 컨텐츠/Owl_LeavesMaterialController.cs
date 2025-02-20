@@ -34,7 +34,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     public Dictionary<string, bool> isCountedMap;
 
 
-    private Owl_VideoGameManager _gameManager;
+    private OwlVideoBaseGameManager _baseGameManager;
     private Ray rayForShader;
     [SerializeField] private float _intensity = 4.5f;
     private Color _brightenColor;
@@ -93,23 +93,23 @@ public class Owl_LeavesMaterialController : MonoBehaviour
 
     private void BindEvent()
     {
-        IGameManager.On_GmRay_Synced -= OnClicked;
-        IGameManager.On_GmRay_Synced += OnClicked;
+        Base_GameManager.On_GmRay_Synced -= OnClicked;
+        Base_GameManager.On_GmRay_Synced += OnClicked;
 
-        Owl_VideoGameManager.onOwlSpeechBubbleFinished -= OnOwnSpeechBubbleFinished;
-        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
+        OwlVideoBaseGameManager.onOwlSpeechBubbleFinished -= OnOwnSpeechBubbleFinished;
+        OwlVideoBaseGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
 
-        InteractableVideoGameManager.onRewind -= OnRewind;
-        InteractableVideoGameManager.onRewind += OnRewind;
+        InteractableVideoBaseGameManager.onRewind -= OnRewind;
+        InteractableVideoBaseGameManager.onRewind += OnRewind;
     }
 
     private void OnDestroy()
     {
-        IGameManager.On_GmRay_Synced -= OnClicked;
+        Base_GameManager.On_GmRay_Synced -= OnClicked;
 
 
-        InteractableVideoGameManager.onRewind -= OnRewind;
-        Owl_VideoGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
+        InteractableVideoBaseGameManager.onRewind -= OnRewind;
+        OwlVideoBaseGameManager.onOwlSpeechBubbleFinished += OnOwnSpeechBubbleFinished;
     }
 
     private void BrightenUp(Material mat)
@@ -134,7 +134,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     private void OnOwnSpeechBubbleFinished()
     {
         _darkendCount = 0;
-        if (Owl_VideoGameManager.isJustRewind)
+        if (OwlVideoBaseGameManager.isJustRewind)
         {
             BrightenLeaves();
             foreach (var leaves in isCountedMap.Keys.ToList()) isCountedMap[leaves] = false;
@@ -164,7 +164,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
     {
      
 
-        rayForShader = IGameManager.GameManager_Ray;
+        rayForShader = Base_GameManager.GameManager_Ray;
         RaycastHit hit;
 
         if (!_isGameInited) 
@@ -174,7 +174,7 @@ Debug.Log($"material is glowing yet");
 #endif
 return;
 }
-if (!Owl_VideoGameManager.isOwlUIFinished)
+if (!OwlVideoBaseGameManager.isOwlUIFinished)
 {
 #if UNITY_EDITOR
 Debug.Log($"owl ui isn't finished yet.");
@@ -216,7 +216,7 @@ Debug.Log($"owl ui isn't finished yet.");
 
     private void Init()
     {
-        GameObject.FindWithTag("GameManager").TryGetComponent(out _gameManager);
+        GameObject.FindWithTag("GameManager").TryGetComponent(out _baseGameManager);
 
         _darkenCountToReplay = (int)LeaveLocation.Max;
 

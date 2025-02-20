@@ -28,7 +28,7 @@ public class StoryUIButtonListener : MonoBehaviour
     public void ButtonClicked()
     {
         //storyUI 구분을 위한 로직
-        if (AnimalTrip_GameManager.isCameraArrivedToPlay)
+        if (AnimalTripBaseGameManager.isCameraArrivedToPlay)
         {
            // _storyUIController.gameObject.SetActive(false);
         }

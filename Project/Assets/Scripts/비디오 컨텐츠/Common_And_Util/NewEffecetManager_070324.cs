@@ -77,7 +77,7 @@ private bool _isRaySet;
     
     protected virtual void OnGmRaySyncedByOnGm()
     {
-        ray_EffectManager = IGameManager.GameManager_Ray;
+        ray_EffectManager = Base_GameManager.GameManager_Ray;
         
         hits = Physics.RaycastAll(ray_EffectManager);
         foreach (var hit in hits)
@@ -144,7 +144,7 @@ if (!_isRaySet)
 
     protected virtual void OnDestroy()
     {
-        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
+        Base_GameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
     }
 
     /// <summary>
@@ -190,8 +190,8 @@ if (!_isRaySet)
 
     protected virtual void BindEvent()
     {
-        IGameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
-        IGameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
+        Base_GameManager.On_GmRay_Synced -= OnGmRaySyncedByOnGm;
+        Base_GameManager.On_GmRay_Synced += OnGmRaySyncedByOnGm;
     }
 
     protected void PlayAudio(string audioPath = null,bool isBurst = false,

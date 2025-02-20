@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EvaArmisen_ToolManager : MonoBehaviour
@@ -11,10 +12,10 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private enum ToolList
     {
         Eraser,
-        Stamp,
+        SelectStamp,
         Reset,
         Download,
-        Count
+        Stamps
     }
 
     private enum UI
@@ -23,6 +24,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         FlowerStamps
     }
 
+    private bool _clickable;
     public bool _isEraserMode { get; private set; }
     private Button[] _toolBtns;
     private TextMeshProUGUI[] _toolTexts;
@@ -30,6 +32,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private Button[] _stampBtns;
     private Sprite _currentSprite;
     public int currentStampIndex { get; private set; }
+    public bool isInitialStampSet { get; private set; }
     private CanvasGroup _cvsGroup;
     public int FLOWER_STAMP_COUNT;
     private SpriteState _originalState;
@@ -42,22 +45,22 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private bool[] _isUIAnimWorking;
 
     public static event Action OnResetClicked;
-   
 
+    
     public void Init()
     {
         
         
-        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
-        UI_Scene_Button.onBtnShut += OnStartBtnClicked;
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_StartBtn.onBtnShut += OnStartBtnClicked;
 
-        _isUIOn = new bool[(int)ToolList.Count];
-        _toolTexts = new TextMeshProUGUI[(int)ToolList.Count];
-        _isUIAnimWorking = new bool[(int)ToolList.Count];
+        _isUIOn = new bool[(int)ToolList.Stamps];
+        _toolTexts = new TextMeshProUGUI[(int)ToolList.Stamps];
+        _isUIAnimWorking = new bool[(int)ToolList.Stamps];
 
         var toolsParent = transform.GetChild((int)UI.Tools);
-        _toolBtns = new Button[(int)ToolList.Count];
-        for (var i = 0; i < (int)ToolList.Count; i++)
+        _toolBtns = new Button[(int)ToolList.Stamps];
+        for (var i = 0; i < (int)ToolList.Stamps; i++)
         {
 #if UNITY_EDITOR
             Debug.Log($"tool Assigned: {(ToolList)i}");
@@ -81,20 +84,34 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         hidePos = flowerStampDefaultPos + Vector3.down * HIDE_POS_AMOUNT;
         rectFlowerStamp.anchoredPosition = hidePos;
         flowerStamps.GetComponent<Button>();
-        _toolBtns[(int)ToolList.Stamp].onClick.AddListener(() =>
+        _toolBtns[(int)ToolList.SelectStamp].gameObject.BindEvent(()=>
         {
-            if (_isUIAnimWorking[(int)ToolList.Stamp]) return;
-            _isUIAnimWorking[(int)ToolList.Stamp] = true;
-            _toolTexts[(int)ToolList.Stamp].text = _isUIOn[(int)ToolList.Stamp] ? "도장 고르기\nOFF" : "도장 고르기\nON";
-            var target = _isUIOn[(int)ToolList.Stamp] ? hidePos : flowerStampDefaultPos;
-            OnUIClicked(rectFlowerStamp, target, ToolList.Stamp);
+            if (!_clickable) return;
+            SetStampSelectionUI();
         });
 
-        _toolBtns[(int)ToolList.Reset].onClick.AddListener(() => { OnResetClicked?.Invoke(); });
+        _toolBtns[(int)ToolList.Reset].gameObject.BindEvent(() =>
+        {
+            if (!_clickable) return;
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Logger.Log("리셋 버튼은 마우스로만 동작합니다. 센서로 인식하려는 경우 코드수정이 필요합니다.");
+                return; //
+            }
+            
+            OnResetClicked?.Invoke();
+        });
 
         _toolBtns[(int)ToolList.Eraser].onClick.AddListener(() =>
         {
             if (_isUIAnimWorking[(int)ToolList.Eraser]) return;
+            if (!_clickable) return;
+            
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                Logger.Log("지우개 버튼은 마우스로만 동작합니다. 센서로 인식하려는 경우 코드수정이 필요합니다.");
+                return; //
+            }
             
             _isUIAnimWorking[(int)ToolList.Eraser] = true;
             _isEraserMode = !_isEraserMode;
@@ -109,10 +126,14 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 
             var index = i; // 변수 라이프 사이클로 인해 캐싱 필요합니다. 
 
-            _stampBtns[i].onClick.AddListener(() =>
+            _stampBtns[i].gameObject.BindEvent(() =>
             {
                 if (currentStampIndexMap.ContainsKey(_stampBtns[index].GetInstanceID()))
                 {
+
+                    SetStampSelectionUI();
+                    isInitialStampSet = true;
+                    
                     OnClick(currentStampIndexMap[_stampBtns[index].GetInstanceID()]);
                     _isEraserMode = false;
 
@@ -123,12 +144,26 @@ public class EvaArmisen_ToolManager : MonoBehaviour
             currentStampIndexMap.Add(_stampBtns[i].GetInstanceID(), i);
         }
 
+
+        SetStampSelectionUI();
+        
+        _toolTexts[(int)ToolList.Eraser].text = _isEraserMode ? "지우개\nON" : "지우개\nOFF";
         _originalState = _stampBtns[0].spriteState;
+    }
+
+    private void SetStampSelectionUI()
+    {
+        if (_isUIAnimWorking[(int)ToolList.SelectStamp]) return;
+        _isUIAnimWorking[(int)ToolList.SelectStamp] = true;
+        _toolTexts[(int)ToolList.SelectStamp].text = _isUIOn[(int)ToolList.SelectStamp] ? "도장 고르기\nOFF" : "도장 고르기\nON";
+        var target = _isUIOn[(int)ToolList.SelectStamp] ? hidePos : flowerStampDefaultPos;
+        OnUIClicked(rectFlowerStamp, target, ToolList.SelectStamp);
     }
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnShut -= OnStartBtnClicked;
+        
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
     }
 
     private void OnClick(int btnIndex)
@@ -157,15 +192,21 @@ public class EvaArmisen_ToolManager : MonoBehaviour
 #if UNITY_EDITOR
         Debug.Log($"원래위치로! : {target}!");
 #endif
+        _clickable = false;
         yield return rect.DOAnchorPos(target, 0.7f).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
+        yield return DOVirtual.Float(0, 0, 2.0f, _ => { }).WaitForCompletion();
+        _clickable = true;
     }
     
     private IEnumerator OnClickCo(ToolList toolName)
     {
+        _clickable = false;
         yield return DOVirtual.Float(0, 0, 1.0f, _ => { }).WaitForCompletion();
         _isUIOn[(int)toolName] = !_isUIOn[(int)toolName];
         _isUIAnimWorking[(int)toolName] = false;
+        yield return DOVirtual.Float(0, 0, 2.0f, _ => { }).WaitForCompletion();
+        _clickable = true;
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Serialization;
 
-public class ScratchPainting_ScratchMode : IGameManager
+public class ScratchPainting_ScratchMode : Base_GameManager
 {
      [SerializeField]
     private Shader paintShader;
@@ -25,21 +25,22 @@ public class ScratchPainting_ScratchMode : IGameManager
 
      private bool _isPaintable; // 도장직기 중에는 플레아금지 
 
-     private IGameManager _gm;
+     private Base_GameManager _gm;
      private void Awake()
      {
-         _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
-         IGameManager.On_GmRay_Synced -= Paint;
-         IGameManager.On_GmRay_Synced += Paint;
-         ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
-         ScratchPainting_GameManager.OnStampingFinished += OnStampingFinished;
+         _gm = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+         Base_GameManager.On_GmRay_Synced -= Paint;
+         Base_GameManager.On_GmRay_Synced += Paint;
+         ScratchPaintingBaseGameManager.OnStampingFinished -= OnStampingFinished;
+         ScratchPaintingBaseGameManager.OnStampingFinished += OnStampingFinished;
          
          
      }
 
-     private void OnDestroy()
+     protected override void OnDestroy()
      {
-         ScratchPainting_GameManager.OnStampingFinished -= OnStampingFinished;
+         base.OnDestroy();
+         ScratchPaintingBaseGameManager.OnStampingFinished -= OnStampingFinished;
      }
      Color _glowDefaultColor;
          

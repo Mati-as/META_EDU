@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
@@ -25,15 +23,18 @@ public class MetaEduLauncher : UI_PopUp
         Home,
         Result,
         SelectMode,
-        ContentA, // 신체놀이
-        ContentB, // 미술놀이
-        ContentC, // 음악놀이
-        ContentD, // 영상놀이
+        ContentA_PE, // 신체놀이
+        ContentB_Art, // 미술놀이
+        ContentC_Music, // 음악놀이
+        ContentD_Video, // 영상놀이
         Setting,
+
         //TopMenu_OnLauncher,
+        UI_Confirm,
         MainVolume,
         BGMVolume,
         EffectVolume,
+
         NarrationVolume
         //Login,
         //Survey
@@ -49,10 +50,14 @@ public class MetaEduLauncher : UI_PopUp
         ContentAButton,
         ContentBButton,
         ContentCButton,
+        ContentDButton,
         Btn_Setting,
         Btn_Back,
         Btn_Quit,
-        SettingCloseButton
+        SettingCloseButton,
+        Btn_BackToGameSelect,
+        Btn_ConfirmToStart
+
         //Btn_Result, //사용시 주석해제
         //LoginButton,
         //SurveyButton
@@ -65,75 +70,113 @@ public class MetaEduLauncher : UI_PopUp
     private GameObject[] _UIs;
     private Animation messageAnim;
     private List<string> _animClips = new();
-    private readonly float _clickableInterval = 0.48f;
+    private readonly float _clickableIntervalForSensor = 2f;
+    private readonly float _clickableIntervalForMouse = 0.75f;
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
-
+    public Camera _uiCamera;
 
     public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
 
     private void Start()
     {
         Managers.soundManager.Play(SoundManager.Sound.Bgm, "Audio/Bgm/Launcher", 0.05f);
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+        _uiCamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+
     }
 
 
     private void OnBackBtnClicked()
     {
         Debug.Log("뒤로가기 버튼 클릭");
-        
-            
+
+
         if (currentUITab == UIType.SelectMode)
-        {
             ShowTab(UIType.Home);
-        }
-        else if (currentUITab == UIType.ContentA || currentUITab == UIType.ContentB ||currentUITab == UIType.ContentC
-                 ||currentUITab == UIType.ContentD)
-        {
+        else if (currentUITab == UIType.ContentA_PE ||
+                 currentUITab == UIType.ContentB_Art ||
+                 currentUITab == UIType.ContentC_Music ||
+                 currentUITab == UIType.ContentD_Video)
             ShowTab(UIType.SelectMode);
-        }
+        else if (currentUITab == UIType.UI_Confirm) Logger.Log($"not valid click : {currentUITab}");
     }
 
+ 
     private void Awake()
     {
         _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
-        
-        
+
+
         LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
 
+
+
+        FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
+        FP_Prefab.onPrefabInput += OnRaySyncByPrefab;
+
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         RaySynchronizer.OnGetInputFromUser += OnRaySynced;
-
-        Destroy_prefab.onPrefabInput -= OnRaySyncByPrefab;
-        Destroy_prefab.onPrefabInput += OnRaySyncByPrefab;
-
-       
-
+        
+        
         BindObject(typeof(UIType));
 
         BindButton(typeof(UIButtons));
 
         GetButton((int)UIButtons.Btn_Home).gameObject.BindEvent(() => ShowTab(UIType.Home));
         GetButton((int)UIButtons.Btn_SelectMode).gameObject.BindEvent(() => ShowTab(UIType.SelectMode));
-        GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA));
-        GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB));
-        GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC));
+        GetButton((int)UIButtons.ContentAButton).gameObject.BindEvent(() => ShowTab(UIType.ContentA_PE));
+        GetButton((int)UIButtons.ContentBButton).gameObject.BindEvent(() => ShowTab(UIType.ContentB_Art));
+        GetButton((int)UIButtons.ContentCButton).gameObject.BindEvent(() => ShowTab(UIType.ContentC_Music));
+        GetButton((int)UIButtons.ContentDButton).gameObject.BindEvent(() => ShowTab(UIType.ContentD_Video));
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
-        // GetButton((int)UIButtons.Btn_Result).gameObject.BindEvent(() => ShowTab(UIType.Result));
         GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
 
 
+        GetButton((int)UIButtons.Btn_ConfirmToStart).gameObject.BindEvent(() =>
+        {
+            LoadScene(_gameNameWaitingForConfirmation);
+        });
+        GetButton((int)UIButtons.Btn_BackToGameSelect).gameObject.BindEvent(OnBackBtnOnConfirmMessageClicked);
         GetButton((int)UIButtons.Btn_Back).gameObject.BindEvent(OnBackBtnClicked);
-       
-        
-        
-        
+
+
         GetButton((int)UIButtons.SettingCloseButton).gameObject.BindEvent(() =>
         {
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
             ShowTab(currentUITab);
         });
+
+        var sceneObjects = FindObjectsOfType<GameObject>();
+
+        foreach (var obj in sceneObjects)
+        {
+            // 이름에 "SceneName_"이 포함된 오브젝트 필터링
+            if (obj.name.Contains("SceneName_"))
+            {
+                // 버튼 컴포넌트를 찾음
+                var button = obj.GetComponent<Button>();
+
+                // 버튼이 존재하면 이벤트를 할당
+                if (button != null)
+                    // 버튼에 이벤트 바인딩
+                    button.gameObject.BindEvent(() =>
+                    {
+                        if (!_isClikcable) return;
+                        CheckAndSetClickable();
+                        
+                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+                        //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
+                        _gameNameWaitingForConfirmation = button.gameObject.name;
+                        GetObject((int)UIType.UI_Confirm).SetActive(true);
+                    }); // 원하는 동작 할당
+
+                Logger.Log($"게임 컨텐츠 객체 버튼 할당 :{obj.name}");
+            }
+        }
+   
         // GetButton((int)UIButtons.LoginButton).gameObject.BindEvent(() => ShowTab(UIType.Login));
         // GetButton((int)UIButtons.SurveyButton).gameObject.BindEvent(() => ShowTab(UIType.Survey));
 
@@ -190,9 +233,7 @@ public class MetaEduLauncher : UI_PopUp
                     Managers.soundManager.volumes[(int)SoundManager.Sound.Main] *
                     _volumeSliders[(int)SoundManager.Sound.Narration].value);
 
-        //    A_SettingManager.SaveCurrentSetting(SensorManager.height,);
-
-
+            //    A_SettingManager.SaveCurrentSetting(SensorManager.height,);
         });
         _volumeSliders[(int)SoundManager.Sound.Bgm].onValueChanged.AddListener(_ =>
         {
@@ -229,16 +270,16 @@ public class MetaEduLauncher : UI_PopUp
         });
 
 
-      //  GetObject((int)UIType.Loading).gameObject.SetActive(false);
+        //  GetObject((int)UIType.Loading).gameObject.SetActive(false);
         GetObject((int)UIType.Home).gameObject.SetActive(false);
         GetObject((int)UIType.Result).gameObject.SetActive(false);
         GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentA).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentB).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentC).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentD).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentA_PE).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentB_Art).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
-        GetObject((int)UIType.Setting).gameObject.SetActive(false);
+        GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
 
 
 #if UNITY_EDITOR
@@ -255,19 +296,14 @@ public class MetaEduLauncher : UI_PopUp
         }
 
         DOVirtual.Float(0, 0, 2.5f, _ => { })
-            .OnComplete(() =>
-        {
-            Managers.isGameStopped = false;
-        });
-        
-
+            .OnComplete(() => { Managers.isGameStopped = false; });
     }
 
     private void OnDestroy()
     {
         LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
-        Destroy_prefab.onPrefabInput -= OnRaySyncByPrefab;
+        FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
 
         Managers.soundManager.Stop(SoundManager.Sound.Bgm);
     }
@@ -276,29 +312,28 @@ public class MetaEduLauncher : UI_PopUp
     {
         Init();
         SetUIEssentials();
-        
+
         // 널방지를 위한 딜레이 입니다.
-        DOVirtual.Float(0, 0, 1f, _ => { }).OnComplete(() =>
-        {
-         _isLoadFinished = true;
-        });
-     
+        DOVirtual.Float(0, 0, 1f, _ => { }).OnComplete(() => { _isLoadFinished = true; });
     }
 
     private UIType currentUITab = UIType.Home;
 
     public override bool Init()
     {
+        
         return true;
     }
 
 
     public void ShowTab(UIType tab)
     {
-        if (!_isClikcable) return;
-        _isClikcable = false;
-        DOVirtual.Float(0, 0, _clickableInterval, _ => { })
-            .OnComplete(() => { _isClikcable = true; });
+        if (!_isClikcable)
+        {
+            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭 --------------런쳐 ");
+            return;
+        }
+        CheckAndSetClickable();
 
         if ((UIType)_UItab == tab) return;
 
@@ -309,21 +344,16 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.Home).gameObject.SetActive(false);
         GetObject((int)UIType.Result).gameObject.SetActive(false);
         GetObject((int)UIType.SelectMode).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentA).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentB).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentC).gameObject.SetActive(false);
-        GetObject((int)UIType.ContentD).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentA_PE).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentB_Art).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
+        GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
 
         if (currentUITab == UIType.Home)
-        {
             GetButton((int)UIButtons.Btn_Back).gameObject.SetActive(false);
-        }
         else
-        {
-        GetButton((int)UIButtons.Btn_Back).gameObject.SetActive(true);
-            
-        }
+            GetButton((int)UIButtons.Btn_Back).gameObject.SetActive(true);
         //GetObject((int)UIType.Login).gameObject.SetActive(false);
         //GetObject((int)UIType.Survey).gameObject.SetActive(false);
 
@@ -343,6 +373,7 @@ public class MetaEduLauncher : UI_PopUp
                 break;
 
             case UIType.SelectMode:
+              
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
                 GetObject((int)UIType.SelectMode).gameObject.SetActive(true);
                 GetObject((int)UIType.SelectMode).GetComponent<ScrollRect>().ResetHorizontal();
@@ -350,28 +381,41 @@ public class MetaEduLauncher : UI_PopUp
 
                 break;
 
-            case UIType.ContentA:
+            case UIType.ContentA_PE:
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentA).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentA).GetComponent<ScrollRect>().ResetHorizontal();
+                
+              
+                
+                GetObject((int)UIType.ContentA_PE).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentA_PE).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentB:
+            case UIType.ContentB_Art:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentB).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentB).GetComponent<ScrollRect>().ResetHorizontal();
+                
+              
+                
+                GetObject((int)UIType.ContentB_Art).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentB_Art).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentC:
+            case UIType.ContentC_Music:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentC).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentC).GetComponent<ScrollRect>().ResetHorizontal();
+                
+               
+                
+                GetObject((int)UIType.ContentC_Music).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentC_Music).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
-            case UIType.ContentD:
+            case UIType.ContentD_Video:
+                
                 Managers.soundManager.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.ContentD).gameObject.SetActive(true);
-                GetObject((int)UIType.ContentD).GetComponent<ScrollRect>().ResetHorizontal();
+                
+                GetObject((int)UIType.ContentD_Video).gameObject.SetActive(true);
+                GetObject((int)UIType.ContentD_Video).GetComponent<ScrollRect>().ResetHorizontal();
                 break;
 
             case UIType.Setting:
@@ -399,9 +443,58 @@ public class MetaEduLauncher : UI_PopUp
             // 	break;
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click",volume:1f);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
     }
 
+    private void OnBackBtnOnConfirmMessageClicked()
+    {
+        if (!_isClikcable)
+        {
+            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭  ");
+            return;
+        }
+        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+        CheckAndSetClickable();
+        GetObject((int)UIType.UI_Confirm).gameObject.SetActive(false);
+    }
+
+    private void CheckAndSetClickable()
+    {
+        if (_isClikcable)
+        {
+            StartCoroutine(CheckAndSetClickableCo());
+        }
+    }
+
+    private WaitForSeconds _waitForSensorClick;
+    private WaitForSeconds _waitForMouseClick;
+
+    private IEnumerator CheckAndSetClickableCo()
+    {
+        if (!_isClikcable ) //!EventSystem.current.IsPointerOverGameObject()
+            yield break;
+        _isClikcable = false;
+
+
+        if (_waitForSensorClick == null) _waitForSensorClick = new WaitForSeconds(_clickableIntervalForSensor);
+        if (_waitForMouseClick == null) _waitForMouseClick = new WaitForSeconds(_clickableIntervalForMouse);
+
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            yield return _waitForMouseClick;
+
+        }
+        else
+        {
+        yield return _waitForSensorClick;
+            
+        }
+
+
+        _isClikcable = true;
+        Logger.Log("클릭가능---------------------------------------------");
+    }
 
     private GraphicRaycaster _launcherGR;
     private PointerEventData _launcherPED;
@@ -414,11 +507,13 @@ public class MetaEduLauncher : UI_PopUp
     }
 
     private RaySynchronizer _raySynchronizer;
+ 
     private List<RaycastResult> _results;
     private Ray _ray;
     private Vector3 screenPosition;
 
 
+    public Base_GameManager _gm;
     //Raysychronizer.cs와 동일한 로직사용. 
     public void OnRaySynced()
     {
@@ -430,17 +525,20 @@ public class MetaEduLauncher : UI_PopUp
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
 
-        if(_launcherPED!=null) _launcherPED.position = screenPosition;
+        if (_launcherPED != null) _launcherPED.position = screenPosition;
 
         _results = new List<RaycastResult>();
-        if(_launcherGR!=null)_launcherGR.Raycast(_launcherPED, _results);
+        if (_launcherGR != null) _launcherGR.Raycast(_launcherPED, _results);
 
         if (_results.Count <= 0) return;
-        ShowTabOrLoadScene(_results);
+        {
+            ShowTabOrLoadScene(_results);
+        }
     }
 
+
     private List<RaycastResult> _resultsByPrefab;
-    public Vector3 currentPrefabPosition { private get; set; }
+    public Vector3 currentPrefabPosition { get; set; }
     private Vector3 _screenPositionByPrefab;
 
 
@@ -448,72 +546,60 @@ public class MetaEduLauncher : UI_PopUp
     ///     하드웨어(빔 프로젝터) 상에서 프리팹으로 클릭하는 로직을 위한 OnRaySync 커스텀 이벤트 함수입니다.
     ///     씬변경 후 일반 게임로직에서는 동작하지 않습닌다
     /// </summary>
+     private Button _btn;
     private void OnRaySyncByPrefab()
     {
-        //_screenPositionByPrefab = _uiCamera.WorldToScreenPoint(currentPrefabPosition);
-        // _ray = _uiCamera.ScreenPointToRay(_screenPositionByPrefab);
-
-        _launcherPED.position = currentPrefabPosition;
-        _resultsByPrefab = new List<RaycastResult>();
-        _launcherGR.Raycast(_launcherPED, _resultsByPrefab);
-
-#if UNITY_EDITOR
-        Debug.Log($"프리팹 시 PED Position 변환 전: {currentPrefabPosition}");
-#endif
-
-#if UNITY_EDITOR
-        Debug.Log($"프리팹 시 PED Position 변환 후 : {_launcherPED.position}");
-#endif
-
-        if (_resultsByPrefab != null)
-        {
-            ShowTabOrLoadScene(_resultsByPrefab);
-        }
-
-
-        else
-        {
-#if UNITY_EDITOR
-            Debug.LogError("result is null");
-#endif
-        }
+        //테스트 후 삭제 필요
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
 
-        var radius = 10f;
+        var radius = 50f;
         Gizmos.DrawSphere(currentPrefabPosition, radius);
     }
 
 
-    public void ShowTabOrLoadScene(List<RaycastResult> results)
+    private string _gameNameWaitingForConfirmation;
+
+    public void ShowTabOrLoadScene( List<RaycastResult> results)
     {
-        if (!_isClikcable) return;
-        DOVirtual.Float(0, 0, 0.1f, _ => { })
+        DOVirtual.Float(0, 0, 0.25f, _ => { })
             .OnComplete(() =>
             {
                 UIType clickedUI = 0;
-#if UNITY_EDITOR
-                //			Debug.Log("LAUNCHER RAY");
-#endif
+
                 foreach (var result in results)
                 {
-#if UNITY_EDITOR
-//					Debug.Log($" result Name:{result.gameObject.name}");
-#endif
                     // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
-                    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI)) ShowTab(clickedUI);
+                    if (Enum.TryParse(SetButtonString(result.gameObject.name), out clickedUI))
+                    {
+                        ShowTab(clickedUI);
+                        return;
+                    }
+                    if (result.gameObject.name.Contains("SceneName"))
+                    {
+                        // ** 씬 로드** ---------------------------------------------------------
+                        Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
+                        if (!_isClikcable)
+                        {
+                            Logger.Log("클릭 시도가 너무 빠름. 잠시 후 다시 클릭 --------------런쳐 ");
+                            return;
+                        }
 
-                    // ** 씬 로드** ---------------------------------------------------------
-                    if (result.gameObject.name.Contains("SceneName_")) LoadScene(result.gameObject.name);
+                       
+                    
+                        return;
+                    }
+                   
                 }
+                
             });
     }
 
 
-    private void LoadScene(string sceneName)
+    public void LoadScene(string sceneName)
     {
         var originalName = sceneName;
         var modifiedName = originalName.Substring("SceneName_".Length);
@@ -537,7 +623,4 @@ public class MetaEduLauncher : UI_PopUp
         yield return new WaitForSeconds(1f);
         gameObject.SetActive(false);
     }
-
-
-
 }

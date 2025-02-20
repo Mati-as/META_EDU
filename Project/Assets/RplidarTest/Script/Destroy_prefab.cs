@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class Destroy_prefab : RaySynchronizer
 {
-    private VidoContentGameManager _vidoContentGameManager;
+    private VideoContentBaseGameManager _videoContentBaseGameManager;
     //private GameObject uiCamera;
     private readonly string GAME_MANAGER = "GameManager";
 
@@ -20,7 +20,7 @@ public class Destroy_prefab : RaySynchronizer
     public override void Init()
     {
         base.Init();
-        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _vidoContentGameManager);
+        GameObject.FindWithTag(GAME_MANAGER).TryGetComponent(out _videoContentBaseGameManager);
     }
 
     void Start()
@@ -50,7 +50,7 @@ public class Destroy_prefab : RaySynchronizer
                 button?.onClick?.Invoke();
             }
         
-        if (SceneManager.GetActiveScene().name == "Launcher_METAEDU")
+        if (SceneManager.GetActiveScene().name == "METAEDU_LAUNCHER")
         {
             UI_Canvas.TryGetComponent(out _launcher);
 
@@ -68,21 +68,21 @@ public class Destroy_prefab : RaySynchronizer
 
   
     // Update is called once per frame
-    void Update()
-    {
-        if (timer < FP_Prefab.Limit_Time)
-        {
-            timer += Time.deltaTime;
-        }
-        else
-        {
-            timer = 0f;
-            //Destroy_obj();
-        }
-    }
+    // void Update()
+    // {
+    //     if (timer < FP_Prefab.Limit_Time)
+    //     {
+    //         timer += Time.deltaTime;
+    //     }
+    //     else
+    //     {
+    //         timer = 0f;
+    //         //Destroy_obj();
+    //     }
+    // }
 
-    void Destroy_obj()
-    {
-        Destroy(this.gameObject);
-    }
+    // void Destroy_obj()
+    // {
+    //     Destroy(this.gameObject);
+    // }
 }

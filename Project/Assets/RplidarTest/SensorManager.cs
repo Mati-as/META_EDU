@@ -21,7 +21,7 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    private static readonly string port = "COM3";
+    public static readonly string PORT = "COM3";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
 
@@ -39,6 +39,36 @@ public class SensorManager : MonoBehaviour
     public bool m_onscan;
     private Thread m_thread;
 
+
+    public static readonly float SENSOR_DEFAULT_SENSITIVITY = 0.095f;
+
+    private static readonly float SENSOR_SENTSITIVITY_TOLERANCE = 0.005f;
+    private static float _sensorSensitivity;
+    public static float sensorSensitivity
+    {
+        get
+        {
+            return _sensorSensitivity;
+        }
+        set
+        {
+            if (value < SENSOR_DEFAULT_SENSITIVITY )
+            {
+                _sensorSensitivity = SENSOR_DEFAULT_SENSITIVITY;
+                Logger.LogWarning("sensitivity is too small. set as 0.05f");
+            }
+            else
+            {
+                if (Math.Abs(value - sensorSensitivity) < SENSOR_SENTSITIVITY_TOLERANCE) return;
+                _poolReturnWait = new WaitForSeconds(sensorSensitivity);
+                _sensorSensitivity = value;
+                Logger.Log($"current sensitivity {value}");
+            }
+            
+        }
+    }
+
+
     private bool m_datachanged;
 
     //=====
@@ -55,7 +85,7 @@ public class SensorManager : MonoBehaviour
     //
 
     //1015
-    private static float _height = 182;
+    private static float _height = 172;
 
     public static float height
     {
@@ -105,12 +135,12 @@ public class SensorManager : MonoBehaviour
     private float pre_y;
 
     private bool UI_Active;
-    private bool BALL_Active = true;
+    public static bool BallActive { get; set; }
     private bool SF_Active = true;
     private readonly int LIDAR_DATA_SIZE = 720;
 
-    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 2/28/24
-//pvate Slider _sensitivitySlider;
+    //슬라이더를 통한 감도조절기능 추가(민석) 불필요시삭제 10/4/24
+    private Slider _sensitivitySlider;
     private TextMeshProUGUI _sensitivityText;
 
 
@@ -154,20 +184,19 @@ public class SensorManager : MonoBehaviour
     /// /////////////////
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
-
-        Init();
+        //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
+        //if (SceneManager.GetActiveScene().name.Contains("METAEDU")) return;
         
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
-
-        TopMenuUI.OnRefreshEvent -= RefreshSensor;
-        TopMenuUI.OnRefreshEvent += RefreshSensor;
+        _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
+        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
+        InGame_SideMenu.OnRefreshEvent += RefreshSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
     }
 
     private void OnDestroy()
     {
-        TopMenuUI.OnRefreshEvent -= RefreshSensor;
+        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
         Destroy(this.gameObject);
         UnBindLidar();
     }
@@ -193,8 +222,8 @@ public class SensorManager : MonoBehaviour
 
         yield return _refreshWait;
 
-        var result = RplidarBinding.OnConnect(port);
-        Debug.Log("Connect on " + port + " result:" + result);
+        var result = RplidarBinding.OnConnect(PORT);
+        Debug.Log("Connect on " + PORT + " result:" + result);
 
         isMoterStarted = RplidarBinding.StartMotor();
         Debug.Log("StartMotor:" + isMoterStarted);
@@ -203,14 +232,85 @@ public class SensorManager : MonoBehaviour
         Debug.Log("StartScan:" + m_onscan);
 
         var isSensorOn = isMoterStarted || m_onscan;
-        OnSenSorInit?.Invoke(isSensorOn);
+       
 
         if (m_onscan)
         {
             m_thread = new Thread(GenerateMesh);
             m_thread.Start();
         }
+        
+        OnSenSorInit?.Invoke(isSensorOn);
     }
+    
+    private void InitSensor()
+    {
+        StartCoroutine(InitSensorCo());
+    }
+    
+    private IEnumerator InitSensorCo()
+    { 
+        yield return _refreshWait;
+        
+        var result = RplidarBinding.OnConnect(PORT);
+        isMoterStarted = RplidarBinding.StartMotor();
+
+        m_onscan = RplidarBinding.StartScan();
+        Debug.Log("Connect on " + PORT + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
+                  m_onscan);
+
+        if (m_onscan)
+        {
+            m_thread = new Thread(GenerateMesh);
+            m_thread.Start();
+        }
+
+        var isSensorOn = isMoterStarted || m_onscan;
+    
+
+        Img_Rect_transform = GetComponent<RectTransform>();
+
+        UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
+        UI_Camera = Manager_Sensor.instance.Get_UIcamera();
+
+        //guide라인이랑 동기화 기능
+        min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x -
+                Guideline.GetComponent<RectTransform>().rect.width / 2;
+        min_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y -
+                Guideline.GetComponent<RectTransform>().rect.height / 2;
+        max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x +
+                Guideline.GetComponent<RectTransform>().rect.width / 2;
+        max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y +
+                Guideline.GetComponent<RectTransform>().rect.height / 2;
+
+        TESTUI.SetActive(false);
+
+          _sensitivitySlider.onValueChanged.AddListener(_ =>
+          {
+                _sensorSensitivity = _sensitivitySlider.value;
+               _poolReturnWait = new WaitForSeconds(sensorSensitivity);
+                
+                Logger.Log($"prefab limit time is {_sensitivitySlider.value }");
+          });
+
+
+        _projectorLookUpTable = new Dictionary<int, Vector2>();
+        
+        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
+            sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
+
+        height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+        _screenRatio = (Resolution_Y / (height * 10));
+        Debug.Log($"Height Set FROM XML:{Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
+        Debug.Log($"Ratio:{_screenRatio}");
+        
+        
+        _sensorDetectedPositionPool = new Stack<RectTransform>();
+        SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
+        
+        OnSenSorInit?.Invoke(isSensorOn);
+    }
+
 
 
     /// <summary>
@@ -227,40 +327,24 @@ public class SensorManager : MonoBehaviour
 
     private Stack<RectTransform> _sensorDetectedPositionPool;
 
-    public void Init()
-    {
-        //_screenRatio = Resolution_Y / (_height * 10);
-#if UNITY_EDITOR
-        Debug.Log($"Screen Ration is {_screenRatio}");
-#endif
-        
-        // InitializeSlider("HeightSlider", out _heightSlider);
-        // InitializeSlider("OffsetYSlider", out sensorDistance);
-        // InitializeSlider("ScreenRatioSlider", out _screenRatioSlider);
-      
-  
-        
-        
-    }
 
-    private WaitForSeconds _poolReturnWait;
+
+    private static WaitForSeconds _poolReturnWait;
 
     protected IEnumerator ReturnToPoolAfterDelay(RectTransform obj, Stack<RectTransform> pool)
     {
-        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(FP_Prefab.Limit_Time);
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(sensorSensitivity);
 
         yield return _poolReturnWait;
         obj.gameObject.SetActive(false);
-#if UNITY_EDITOR
-
-#endif
 
         pool.Push(obj); // Return the particle system to the pool
     }
 
-    private void SetPool<T>(Stack<T> pool, string path, int poolCount = 500) where T : Object
+    private void SetPool<T>(Stack<T> pool, string path, int poolCount = 100) where T : Object
     {
-        if (SceneManager.GetActiveScene().name == "METAEDU_LAUNCHER") return;
+        //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
+        //if (SceneManager.GetActiveScene().name == "METAEDU_LAUNCHER") return;
         
         for (var poolSize = 0; poolSize < poolCount; poolSize++)
         {
@@ -305,19 +389,15 @@ public class SensorManager : MonoBehaviour
 
         if (detectedPosRect == null)
         {
-#if UNITY_EDITOR
-            Debug.LogError("No RectTransform available in the pool.");
-#endif
+
             return;
         }
+
 #if UNITY_EDITOR
-//        Debug.Log("Get RectRansfrom Pool.");
-#endif
-#if UNITY_EDITOR
-        Debug.Log($"sensor: {rectX},{rectY}");
+//        Debug.Log($"sensor: {rectX},{rectY}");
 #endif
         detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
-        detectedPosRect.gameObject.SetActive(true);
+        detectedPosRect?.gameObject.SetActive(true);
         StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
     }
 
@@ -340,107 +420,7 @@ public class SensorManager : MonoBehaviour
 
     private void Start()
     {
-        var result = RplidarBinding.OnConnect(port);
-        isMoterStarted = RplidarBinding.StartMotor();
-
-        m_onscan = RplidarBinding.StartScan();
-        Debug.Log("Connect on " + port + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
-                  m_onscan);
-
-        if (m_onscan)
-        {
-            m_thread = new Thread(GenerateMesh);
-            m_thread.Start();
-        }
-
-        var isSensorOn = isMoterStarted || m_onscan;
-        OnSenSorInit?.Invoke(isSensorOn);
-
-        Img_Rect_transform = GetComponent<RectTransform>();
-
-        UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-        UI_Camera = Manager_Sensor.instance.Get_UIcamera();
-
-        //guide라인이랑 동기화 기능
-        min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x -
-                Guideline.GetComponent<RectTransform>().rect.width / 2;
-        min_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y -
-                Guideline.GetComponent<RectTransform>().rect.height / 2;
-        max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x +
-                Guideline.GetComponent<RectTransform>().rect.width / 2;
-        max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y +
-                Guideline.GetComponent<RectTransform>().rect.height / 2;
-
-        TESTUI.SetActive(false);
-
-        // _sensitivitySlider.onValueChanged.AddListener(_ =>
-        //    {
-        //  FP_Prefab.Limit_Time = _sensitivitySlider.value * 2f;
-        //  });
-
-
-        _projectorLookUpTable = new Dictionary<int, Vector2>();
-
-        //IGameManager init이후에 동작해야합니다. 따라서 Awake가 아닌 Start에서만 사용해야합니다. 4/4/24
-        //  _sensitivitySlider.value = IGameManager.DEFAULT_SENSITIVITY / 2;
-
-        //_TMP_seonsorDistance.text = "Sensor Distance: " + sensorDistanceFromProjection.ToString("F1");
-        //_TMP_ScreenRatio.text = "SCREEN RATIO: " + _screenRatio.ToString("F1");
-
-        //InitializeSlider("SensitivitySlider", out _sensitivitySlider, out _sensitivityText);
-        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-            sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-        
-       // _heightSlider.value = heightCm;
-       // sensorDistanceSlider.value = sensorDistanceFromProjection;
-        //_screenRatioSlider.value = _screenRatio;
-
-        
-        //_sensorEditModeButton = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<Button>();
-        //_TMP_sensorEditMode = GameObject.Find("SensorEditModeCheckBox").GetComponentInChildren<TextMeshProUGUI>();
-       // _sensorEditModCheckImage = GameObject.Find("EditModeCheckImage").GetComponent<Image>();
-
-       // _sensorEditModCheckImage.enabled = isSensorEditMode;
-       // _TMP_sensorEditMode.text = isSensorEditMode ? "Sensor Edit Mode: ON" : "Sensor Edit Mode: OFF";
-
-      //  _sensorEditModeButton.onClick.AddListener(OnEditSensorModeBtnClicked);
-
-        ///////////////////////////////////////////////////////////////////////// (1)
-
-        height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-      //  _heightSlider.value = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-     //   _TMP_height.text = "HEIGHT : " + Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML.ToString("F1");
-        _screenRatio = (Resolution_Y / (height * 10));
-        Debug.Log($"Height Set FROM XML:{Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
-        Debug.Log($"Ratio:{_screenRatio}");
-        
-        
-        // y_offset = ((X_length / screen_ratio) / 2) + distance;
-        //X_length = _height / THROW_RATIO;
-        // Y_length = X_length / (1920 / 1080);
-        // correction_value = -(Resolution_X / (_screenRatio)) * (_height / THROW_RATIO / Resolution_Y);
-
-        ///////////////////////// Pool
-        _sensorDetectedPositionPool = new Stack<RectTransform>();
-        SetPool(_sensorDetectedPositionPool, "Rplidar/FP");
-        
-        // /////////////////////////(3)
-        // ConfigureSlider(_heightSlider, HEIGHT_MAX, value =>
-        // {
-        //     _height = value;
-        //     UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-        //    // _TMP_height.text = "HEIGHT : " + height.ToString("F1");
-        // }, HEIGHT_MIN);
-        //
-        //
-        //
-        // ConfigureSlider(sensorDistanceSlider, SENSEOR_OFFSET_MAX_VALUE, value =>
-        // {
-        //     sensorDistanceFromProjection = value;
-        //     //_TMP_seonsorDistance.text = "DISTANCE_FROM_SENSOR: " + sensorDistanceFromProjection.ToString("F1");
-        //     UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-        //         sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
-        // }, -2000);
+        InitSensor();
     }
 
 
@@ -458,24 +438,17 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    // private int GenerateKey(int angle, int distance)
-    // {
-    //     unchecked
-    //     {
-    //         var hash = 17;
-    //         hash = hash * 100 + angle.GetHashCode();
-    //         hash = hash * 100 + distance.GetHashCode();
-    //         return hash;
-    //     }
-    // }
-
 
     private float _timer;
+    private Vector3 lastTouchPos = Vector3.zero; // 마지막 터치 좌표
+    private float lastTouchTime = 0f; // 마지막 터치 시간
+    private float moveThreshold = 0.02f; // 2cm 이상 움직여야 터치 인정
+    private float touchCooldown = 0.2f; // 200ms 동안 터치 1회만 허용
 
     private void GenerateDectectedPos()
     {
         if (!isMoterStarted) return;
-        
+        if (Managers.isGameStopped) return;
         _timer = 0f;
 
 
@@ -483,9 +456,6 @@ public class SensorManager : MonoBehaviour
         {
             for (var i = 0; i < 720; i++)
             {
-             //   var key = GenerateKey((int)_lidarDatas[i].theta * 10, (int)_lidarDatas[i].distant);
-
-                //_lidarDatas[i].distant = Mathf.Clamp(_lidarDatas[i].distant, 0, 2550);
 
                 //6배
                 if (_lidarDatas[i].theta > 90 && _lidarDatas[i].theta < 270) continue;
@@ -504,11 +474,13 @@ public class SensorManager : MonoBehaviour
                             {
                                 // _filteringAmount = 8;
                                 _filteringAmount = 4;
+                                Filtering_touchpoint();
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                             else
                             {
                                 _filteringAmount = 3;
+                                Filtering_touchpoint();
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                         }
@@ -521,10 +493,28 @@ public class SensorManager : MonoBehaviour
         }
     }
 
+    //0212
+    private void Filtering_touchpoint()
+    {
+        if(Time.time - lastTouchTime > touchCooldown && Vector3.Distance(lastTouchPos, new Vector3(sensored_X, sensored_Y, 0)) > moveThreshold)
+        {
+            lastTouchPos = new Vector3(sensored_X, sensored_Y, 0); // 터치 좌표 업데이트
+            lastTouchTime = Time.time; // 터치 시간 업데이트
+            ShowFilteredSensorPos(sensored_X, sensored_Y); // 터치 이벤트 실행
+        }
+    }
+
     // Update is called once per frame
     private void FixedUpdate()
     {
-        GenerateDectectedPos();
+
+        _timer += Time.deltaTime;
+        if (_timer > sensorSensitivity)
+        {
+            _timer = 0;
+          GenerateDectectedPos();
+        }
+       
     }
 
     private int _filteringAmount = 2;
@@ -593,9 +583,10 @@ public class SensorManager : MonoBehaviour
 
     public bool Ball_Active_ONOFF()
     {
-        BALL_Active = !BALL_Active;
+        BallActive = !BallActive;
 
-        return BALL_Active;
+        Logger.Log("Ball Image Active");
+        return BallActive;
     }
 
     public bool SF_Active_ONOFF()

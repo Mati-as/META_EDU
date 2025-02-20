@@ -48,19 +48,19 @@ public class BeadsDrum_Controller : MonoBehaviour
         _defaultQuatRight = _drurmStickRight.rotation;
 
 
-        BeadsDrum_GameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
-        BeadsDrum_GameManager.OnLeftDrumClicked += OnLeftDrumClicked;
+        BeadsDrumBaseGameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
+        BeadsDrumBaseGameManager.OnLeftDrumClicked += OnLeftDrumClicked;
         
-        BeadsDrum_GameManager.OnRightDrumClicked -= OnRightDrumClicked;
-        BeadsDrum_GameManager.OnRightDrumClicked += OnRightDrumClicked;
+        BeadsDrumBaseGameManager.OnRightDrumClicked -= OnRightDrumClicked;
+        BeadsDrumBaseGameManager.OnRightDrumClicked += OnRightDrumClicked;
 
 
     }
 
     private void OnDestroy()
     {
-        BeadsDrum_GameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
-        BeadsDrum_GameManager.OnRightDrumClicked -= OnRightDrumClicked;
+        BeadsDrumBaseGameManager.OnLeftDrumClicked -= OnLeftDrumClicked;
+        BeadsDrumBaseGameManager.OnRightDrumClicked -= OnRightDrumClicked;
     }
 
     // private void OnStartButtonClicked()

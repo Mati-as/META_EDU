@@ -18,20 +18,22 @@ public struct LidarData
 
 public class RplidarBinding
 {
-    // 구형버전, 빨강센서
-    // private const string DLL_FILENAME = "RplidarCppLegacy.dll";
-    // private const string DLL_PATH = "/Plugins_Legacy/x86_64";
-    //
-     // 신형버전, 보라색센서 (모델명: A2M12)
-     private const string DLL_FILENAME = "RplidarCppA2M12.dll";
-     private const string DLL_PATH = "/Plugins_A2M12/x86_64/";
+    public const bool USING_LEGACY_SENSOR =false;
+
+    // 구형버전, 빨강센서  :  // 신형버전, 보라색센서 (모델명: A2M12)
+        private const string DLL_FILENAME = USING_LEGACY_SENSOR  ? "RplidarCppLegacy.dll": "RplidarCppA2M12.dll";
+        private const string DLL_PATH = USING_LEGACY_SENSOR? "/Plugins_Legacy/x86_64" : "/Plugins_A2M12/x86_64/";
+    
+    
+     // private const string DLL_FILENAME = "RplidarCppA2M12.dll";
+     // private const string DLL_PATH = "/Plugins_A2M12/x86_64/";
 
 
     static RplidarBinding()
     {
         var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
         currentPath += Path.PathSeparator + Application.dataPath + DLL_PATH;
-        Debug.Log($"Filename: {DLL_FILENAME}, current Path Of Lida: {currentPath}");
+        Debug.Log($"Port{SensorManager.PORT} //\n Filename: {DLL_FILENAME},//\n current Path Of Lida: {currentPath}, ");
         Environment.SetEnvironmentVariable("PATH", currentPath);
     }
 

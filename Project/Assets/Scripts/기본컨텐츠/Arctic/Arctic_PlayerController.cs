@@ -57,8 +57,8 @@ public class Arctic_PlayerController : MonoBehaviour
 
     private void BindEvent()
     {
-        Arctic_GameManager.On_GmRay_Synced -= OnRaySynced;
-        Arctic_GameManager.On_GmRay_Synced += OnRaySynced;
+        ArcticBaseGameManager.On_GmRay_Synced -= OnRaySynced;
+        ArcticBaseGameManager.On_GmRay_Synced += OnRaySynced;
     }
 
     private Transform currentClickedGlacier;
@@ -68,7 +68,7 @@ public class Arctic_PlayerController : MonoBehaviour
     {
         if (_isDoingPath) return;
         
-        if (Physics.Raycast(IGameManager.GameManager_Ray, out hit))
+        if (Physics.Raycast(Base_GameManager.GameManager_Ray, out hit))
             if (hit.transform.gameObject.name.Contains(gameObject.name))
             {
                 if (Enum.TryParse(gameObject.name, out _glacierEnum))

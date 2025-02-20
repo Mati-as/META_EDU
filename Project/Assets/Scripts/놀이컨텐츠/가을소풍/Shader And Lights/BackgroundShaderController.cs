@@ -97,33 +97,33 @@ public class BackgroundShaderController : MonoBehaviour
     
    private void SubscribeGameManagerEvents()
    {
-       AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-       AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+       AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+       AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
         
-       AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-       AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
+       AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+       AnimalTripBaseGameManager.onRoundReadyEvent += OnRoundReady;
 
-       AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-       AnimalTrip_GameManager.onCorrectedEvent += OnCorrect;
+       AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+       AnimalTripBaseGameManager.onCorrectedEvent += OnCorrect;
 
-       AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-       AnimalTrip_GameManager.onRoundFinishedEvent += OnRoundFinished;
+       AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+       AnimalTripBaseGameManager.onRoundFinishedEvent += OnRoundFinished;
 
-       AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-       AnimalTrip_GameManager.onRoundStartedEvent += OnRoundStarted;
+       AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+       AnimalTripBaseGameManager.onRoundStartedEvent += OnRoundStarted;
         
-       AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
-       AnimalTrip_GameManager.onGameFinishedEvent += OnGameFinished;
+       AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
+       AnimalTripBaseGameManager.onGameFinishedEvent += OnGameFinished;
    }
     
    private void UnsubscribeGamaManagerEvents()
    {
-       AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-       AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
-       AnimalTrip_GameManager.onCorrectedEvent -= OnCorrect;
-       AnimalTrip_GameManager.onRoundFinishedEvent -= OnRoundFinished;
-       AnimalTrip_GameManager.onRoundStartedEvent -= OnRoundStarted;
-       AnimalTrip_GameManager.onGameFinishedEvent -= OnGameFinished;
+       AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+       AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
+       AnimalTripBaseGameManager.onCorrectedEvent -= OnCorrect;
+       AnimalTripBaseGameManager.onRoundFinishedEvent -= OnRoundFinished;
+       AnimalTripBaseGameManager.onRoundStartedEvent -= OnRoundStarted;
+       AnimalTripBaseGameManager.onGameFinishedEvent -= OnGameFinished;
    }
 
 

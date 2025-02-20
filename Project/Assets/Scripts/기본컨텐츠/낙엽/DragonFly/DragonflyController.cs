@@ -85,6 +85,7 @@ public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClick
     private void Start()
     {
         PlayIdleAnim();
+        _audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private bool _initialMoveStart;
@@ -94,7 +95,7 @@ public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClick
 
     private void Update()
     {
-        _audioSource = gameObject.AddComponent<AudioSource>();
+   
         _elapsed += Time.deltaTime;
         if (_elapsed > _dragonFlySoundInterval)
         {

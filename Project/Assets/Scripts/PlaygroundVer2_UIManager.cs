@@ -19,7 +19,7 @@ public class PlaygroundVer2_UIManager : UI_PopUp
     }
 
     private TextMeshProUGUI[] _scoreBoards;
-    private PlaygroundVer2_GameManager _gm;
+    private PlaygroundBaseVer2GameManager _gm;
 
 
     private GameObject _leftScore;
@@ -40,13 +40,13 @@ public class PlaygroundVer2_UIManager : UI_PopUp
     public static event Action OnReInitUIFinished;
     public override bool Init()
     {
-        PlaygroundVer2_GameManager.OnTimeOver -= OnTimeOver;
-        PlaygroundVer2_GameManager.OnTimeOver += OnTimeOver;
+        PlaygroundBaseVer2GameManager.OnTimeOver -= OnTimeOver;
+        PlaygroundBaseVer2GameManager.OnTimeOver += OnTimeOver;
 
-        PlaygroundVer2_GameManager.OnScoreValueChange -= OnScoreValueChanged;
-        PlaygroundVer2_GameManager.OnScoreValueChange += OnScoreValueChanged;
+        PlaygroundBaseVer2GameManager.OnScoreValueChange -= OnScoreValueChanged;
+        PlaygroundBaseVer2GameManager.OnScoreValueChange += OnScoreValueChanged;
 
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<PlaygroundVer2_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<PlaygroundBaseVer2GameManager>();
 
         _scoreBoards = new TextMeshProUGUI[3];
 
@@ -79,8 +79,8 @@ public class PlaygroundVer2_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        PlaygroundVer2_GameManager.OnScoreValueChange -= OnScoreValueChanged;
-        PlaygroundVer2_GameManager.OnTimeOver -= OnTimeOver;
+        PlaygroundBaseVer2GameManager.OnScoreValueChange -= OnScoreValueChanged;
+        PlaygroundBaseVer2GameManager.OnTimeOver -= OnTimeOver;
     }
 
     private void Update()

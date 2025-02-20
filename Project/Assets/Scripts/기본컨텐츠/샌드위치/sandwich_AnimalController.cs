@@ -31,11 +31,11 @@ public class sandwich_AnimalController : MonoBehaviour
             _controllers[i] = transform.GetChild(i).GetComponent<Animator>();
         }
 
-        Sandwitch_GameManager.onSandwichArrive -= OnSandwichArrive;
-        Sandwitch_GameManager.onSandwichArrive += OnSandwichArrive;
+        SandwitchBaseGameManager.onSandwichArrive -= OnSandwichArrive;
+        SandwitchBaseGameManager.onSandwichArrive += OnSandwichArrive;
 
-        Sandwitch_GameManager.onSandwichMakingRestart -= OnSandwichMakingRestart;
-        Sandwitch_GameManager.onSandwichMakingRestart += OnSandwichMakingRestart;
+        SandwitchBaseGameManager.onSandwichMakingRestart -= OnSandwichMakingRestart;
+        SandwitchBaseGameManager.onSandwichMakingRestart += OnSandwichMakingRestart;
 
 
         foreach (var animal in _animals)

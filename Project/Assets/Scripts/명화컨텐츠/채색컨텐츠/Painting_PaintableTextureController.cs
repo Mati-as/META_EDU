@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class Painting_PaintableTextureController : IGameManager
+public class Painting_PaintableTextureController : Base_GameManager
 {
     public Shader paintShader;
     private Material paintMaterial;
@@ -106,8 +106,8 @@ public class Painting_PaintableTextureController : IGameManager
     
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!isStartButtonClicked) return;
+        if (!PreCheckOnRaySync()) return;
+        
         
         Paint();
     }

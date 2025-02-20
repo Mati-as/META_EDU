@@ -23,7 +23,7 @@ public class ContentLauncher : MonoBehaviour
     private GameObject Message_YESNO;
     private GameObject Message_Intro;
     private GameObject Message_OK;
-    private Message_anim_controller MAC;
+    private Message_anim_controller _messageAnimController;
 
     private GameObject Prev_page;
     private GameObject Next_page;
@@ -210,15 +210,15 @@ public class ContentLauncher : MonoBehaviour
         {
             //Run_Contents();
             Message_OK.SetActive(true);
-            MAC.Change_text("준비 중 입니다");
-            MAC.Change_text_sub(" 확인 버튼을 눌러주세요");
+            _messageAnimController.Change_text("준비 중 입니다");
+            _messageAnimController.Change_text_sub(" 확인 버튼을 눌러주세요");
         }
         else if (char_mode == 'C')
         {
             //Run_Contents();
             Message_OK.SetActive(true);
-            MAC.Change_text("준비 중 입니다");
-            MAC.Change_text_sub(" 확인 버튼을 눌러주세요");
+            _messageAnimController.Change_text("준비 중 입니다");
+            _messageAnimController.Change_text_sub(" 확인 버튼을 눌러주세요");
         }
     }
     public void Button_BackToMainscene(int page)
@@ -267,14 +267,14 @@ public class ContentLauncher : MonoBehaviour
         {
             //Debug.Log("CONTENT 2");
             Message_OK.SetActive(true);
-            MAC.Change_text("준비 중 입니다");
-            MAC.Change_text_sub(" 확인 버튼을 눌러주세요");
+            _messageAnimController.Change_text("준비 중 입니다");
+            _messageAnimController.Change_text_sub(" 확인 버튼을 눌러주세요");
         }
         else if (content_func == 3)
         {
             Message_OK.SetActive(true);
-            MAC.Change_text("준비 중 입니다");
-            MAC.Change_text_sub(" 확인 버튼을 눌러주세요");
+            _messageAnimController.Change_text("준비 중 입니다");
+            _messageAnimController.Change_text_sub(" 확인 버튼을 눌러주세요");
         }
         else
         {
@@ -394,7 +394,7 @@ public class ContentLauncher : MonoBehaviour
 
         //Message_Intro setting, Inspector에서 scale 0,0,0으로 변경
         //Message_Intro.SetActive(true);
-        MAC = Message_OK.GetComponent<Message_anim_controller>();
+        _messageAnimController = Message_OK.GetComponent<Message_anim_controller>();
 
     }
 

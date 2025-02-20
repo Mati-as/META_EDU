@@ -19,15 +19,15 @@ public class EvaArmisen_PaintController : MonoBehaviour
 
     private void Awake()
     {
-        EvaArmisen_GameManager.OnStampingFinished -= OnStampingFinished;
-        EvaArmisen_GameManager.OnStampingFinished += OnStampingFinished;
+        EvaArmisenBaseGameManager.OnStampingFinished -= OnStampingFinished;
+        EvaArmisenBaseGameManager.OnStampingFinished += OnStampingFinished;
     }
 
     
 
     private void OnDestroy()
     {
-        EvaArmisen_GameManager.OnStampingFinished -= OnStampingFinished;
+        EvaArmisenBaseGameManager.OnStampingFinished -= OnStampingFinished;
     }
 
     private void OnStampingFinished()

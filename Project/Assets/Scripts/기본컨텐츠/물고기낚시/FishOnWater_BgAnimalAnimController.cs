@@ -27,12 +27,12 @@ public class FishOnWater_BgAnimalAnimController : UI_Base
 
     private void OnDestroy()
     {
-        UI_Scene_Button.onBtnShut -= OnStartBtnShut;
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnShut;
     }
     private void BindEvent()
     {
-        UI_Scene_Button.onBtnShut -= OnStartBtnShut;
-        UI_Scene_Button.onBtnShut += OnStartBtnShut;
+        UI_Scene_StartBtn.onBtnShut -= OnStartBtnShut;
+        UI_Scene_StartBtn.onBtnShut += OnStartBtnShut;
     }
 
     private void Start()

@@ -10,8 +10,8 @@ public class Sandwich_UIManager : UI_PopUp
 
     enum SandwichUI
     {
-        RectUI_Sandwich_AnimalReaction,
-        Complete
+        Image_AnimalHeartEmoji,
+        Image_CompeleteText
     }
 
 
@@ -30,29 +30,34 @@ public class Sandwich_UIManager : UI_PopUp
 
         BindObject(typeof(SandwichUI));
         
-        _animalReaction = GetObject((int)SandwichUI.RectUI_Sandwich_AnimalReaction);
+        _animalReaction = GetObject((int)SandwichUI.Image_AnimalHeartEmoji);
         _rectAnimalReaction = _animalReaction.GetComponent<RectTransform>();
         _reactionDefaultScale = _rectAnimalReaction.localScale;
         _rectAnimalReaction.localScale = Vector3.zero;
         _animalReaction.SetActive(false);
       
         
-        _complete = GetObject((int)SandwichUI.Complete);
+        _complete = GetObject((int)SandwichUI.Image_CompeleteText);
         _rectComplete = _complete.GetComponent<RectTransform>();
         _completeDefaultScale = _rectComplete.localScale;
         _rectComplete.localScale = Vector3.zero;
         _complete.SetActive(false);
 
         sandwich_AnimalController.onFinishEating -= OnFinishEationg;
-        Sandwitch_GameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
+        SandwitchBaseGameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
 
         sandwich_AnimalController.onFinishEating += OnFinishEationg;
-        Sandwitch_GameManager.onSandwichMakingFinish += OnSandwichMakingFinish;
+        SandwitchBaseGameManager.onSandwichMakingFinish += OnSandwichMakingFinish;
         
 
         return true;
     }
 
+    private void OnDestroy()
+    {
+        sandwich_AnimalController.onFinishEating -= OnFinishEationg;
+        SandwitchBaseGameManager.onSandwichMakingFinish -= OnSandwichMakingFinish;
+    }
     private void OnFinishEationg()
     {
         _animalReaction.SetActive(true);

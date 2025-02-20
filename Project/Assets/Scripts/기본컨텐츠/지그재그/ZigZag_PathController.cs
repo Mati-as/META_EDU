@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class ZigZag_PathController : IGameManager
+public class ZigZag_PathController : Base_GameManager
 {
     private enum ZigZagPath
     {
@@ -147,7 +147,8 @@ public class ZigZag_PathController : IGameManager
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
+        
         if (_isResetting) return;
 
         foreach (var hit in GameManager_Hits)

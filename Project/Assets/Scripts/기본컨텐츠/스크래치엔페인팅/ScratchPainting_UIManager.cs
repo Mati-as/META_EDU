@@ -64,14 +64,14 @@ public class ScratchPainting_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_Button.onBtnShut -= OnStart;
-        UI_Scene_Button.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut += OnStart;
         
-        ScratchPainting_GameManager.onRoundRestart -= OnStart;
-        ScratchPainting_GameManager.onRoundRestart += OnStart;
+        ScratchPaintingBaseGameManager.onRoundRestart -= OnStart;
+        ScratchPaintingBaseGameManager.onRoundRestart += OnStart;
 
-        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
-        ScratchPainting_GameManager.OnStampingFinished += PopUpStopUI;
+        ScratchPaintingBaseGameManager.OnStampingFinished -= PopUpStopUI;
+        ScratchPaintingBaseGameManager.OnStampingFinished += PopUpStopUI;
     
         return true;
         
@@ -79,8 +79,8 @@ public class ScratchPainting_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        ScratchPainting_GameManager.onRoundRestart -= OnStart;
-        ScratchPainting_GameManager.OnStampingFinished -= PopUpStopUI;
+        ScratchPaintingBaseGameManager.onRoundRestart -= OnStart;
+        ScratchPaintingBaseGameManager.OnStampingFinished -= PopUpStopUI;
     }
 
     public void OnStart()

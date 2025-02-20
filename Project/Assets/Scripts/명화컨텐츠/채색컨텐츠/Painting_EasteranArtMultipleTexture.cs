@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class Painting_EasteranArtMultipleTexture : IGameManager
+public class Painting_EasteranArtMultipleTexture : Base_GameManager
 {
      [SerializeField]
     private Shader paintShader;
@@ -32,6 +32,7 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
      private bool _isSceneChanging; // 씬 이동중 로직 충돌방지
     protected override void Init()
     {
+        SensorSensitivity = 0.35f;
         Camera.main.TryGetComponent<Volume>(out vol);
         
         if (vol == null)
@@ -207,11 +208,11 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     }
     IEnumerator ResetClickableWithDelayCo()
     {
-        if(!PreCheck()) yield break;
+      //  if(!PreCheckOnRaySync()) yield break;
         _isPaintable = false;
-        if(!PreCheck()) yield break;
-        yield return _waitForPaint;
-        if(!PreCheck()) yield break;
+        //if(!PreCheckOnRaySync()) yield break;
+        yield return null;//_waitForPaint;
+       // if(!PreCheckOnRaySync()) yield break;
         _isPaintable = true;
     }
 
@@ -224,15 +225,15 @@ public class Painting_EasteranArtMultipleTexture : IGameManager
     {
         base.OnRaySynced();
         if (!isStartButtonClicked) return;
-        if(!PreCheck()) return;
+        if(!PreCheckOnRaySync()) return;
         if (SceneManager.GetActiveScene().name != "BA001") return;
-        if (!_isPaintable)
-        {
-#if UNITY_EDITOR
-            Debug.Log("It's not clickable");
-#endif
-            return;
-        }
+//         if (!_isPaintable)
+//         {
+// #if UNITY_EDITOR
+//             Debug.Log("It's not clickable");
+// #endif
+//             return;
+//         }
         
         ResetDelayWithDelay();
         

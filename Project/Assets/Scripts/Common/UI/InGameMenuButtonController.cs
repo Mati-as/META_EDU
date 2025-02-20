@@ -9,13 +9,13 @@ using UnityEngine.UI;
 public class InGameMenuButtonController : MonoBehaviour
 {
     private Button _button;
-    private IGameManager _gm;
+    private Base_GameManager _gm;
     
   
     private void Awake()
     {
         _button = GetComponent<Button>();
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
     }
     
     private void Start()

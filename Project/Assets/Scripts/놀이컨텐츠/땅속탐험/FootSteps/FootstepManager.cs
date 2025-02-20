@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using MyCustomizedEditor;
 #endif
 
-public class FootstepManager : IGameManager
+public class FootstepManager : Base_GameManager
 {
  
     private enum FootstepSounds
@@ -225,8 +225,9 @@ public class FootstepManager : IGameManager
     }
 
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Underground_PopUpUI_Button.onPopUpButtonEvent -= pageFinishToggle;
     }
 
@@ -240,7 +241,7 @@ public class FootstepManager : IGameManager
     //public void OnMouseClicked(InputAction.CallbackContext context)
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
 
         hits = Physics.RaycastAll(GameManager_Ray);
         

@@ -6,7 +6,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Piano_MusicController : IGameManager
+public class Piano_MusicController : Base_GameManager
 {
     private enum SongList
     {
@@ -156,15 +156,17 @@ public class Piano_MusicController : IGameManager
         Camera.main.transform.DOLookAt(cameraLookAt, 0.01f);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         OnSongFinished -= PlayNextSong;
     }
 
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
+        if (!PreCheckOnRaySync()) return;
+        
         foreach (var hit in GameManager_Hits)
         {
             var clickedName = hit.transform.gameObject.name;

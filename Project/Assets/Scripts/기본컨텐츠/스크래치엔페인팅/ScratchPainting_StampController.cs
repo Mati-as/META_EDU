@@ -6,14 +6,14 @@ using UnityEngine;
 public class ScratchPainting_StampController : MonoBehaviour
 {
     private Vector3 _defaultSize;
-    private ScratchPainting_GameManager _gm;
+    private ScratchPaintingBaseGameManager _gm;
     
     private void Awake()
     {
         _defaultSize = transform.localScale;
        
-        ScratchPainting_GameManager.printInitEvent -= OnRestartInit;
-        ScratchPainting_GameManager.printInitEvent += OnRestartInit;
+        ScratchPaintingBaseGameManager.printInitEvent -= OnRestartInit;
+        ScratchPaintingBaseGameManager.printInitEvent += OnRestartInit;
     }
 
     private void Start()
@@ -23,7 +23,7 @@ public class ScratchPainting_StampController : MonoBehaviour
             Debug.LogError("Default size is zero. Awake order must be changed");
         }
 
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<ScratchPainting_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<ScratchPaintingBaseGameManager>();
         Debug.Assert(_gm!=null);
        
 
@@ -31,7 +31,7 @@ public class ScratchPainting_StampController : MonoBehaviour
     private void OnEnable()
     {
 
-        if (!HandFootPainting_GameManager.isInit) return;
+        if (!HandFootPaintingBaseGameManager.isInit) return;
         
         transform.localScale = Vector3.zero;
         transform.DOScale(_defaultSize, 0.055f).SetEase(Ease.OutBounce);
@@ -49,7 +49,7 @@ public class ScratchPainting_StampController : MonoBehaviour
 
     private void OnDisable()
     {
-        if (!ScratchPainting_GameManager.isInit) return;
+        if (!ScratchPaintingBaseGameManager.isInit) return;
         _gm.printPool.Enqueue(gameObject);
 
     }

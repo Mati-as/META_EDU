@@ -7,15 +7,15 @@ using UnityEngine;
 public class HandFootPainting_PrintController : MonoBehaviour
 {
     private Vector3 _defaultSize;
-    private HandFootPainting_GameManager _gm;
+    private HandFootPaintingBaseGameManager _gm;
     
     
     private void Awake()
     {
         _defaultSize = transform.localScale;
        
-        HandFootPainting_GameManager.printInitEvent -= OnRestartInit;
-        HandFootPainting_GameManager.printInitEvent += OnRestartInit;
+        HandFootPaintingBaseGameManager.printInitEvent -= OnRestartInit;
+        HandFootPaintingBaseGameManager.printInitEvent += OnRestartInit;
     }
 
     private void Start()
@@ -25,7 +25,7 @@ public class HandFootPainting_PrintController : MonoBehaviour
             Debug.LogError("Default size is zero. Awake order must be changed");
         }
 
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFootPainting_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFootPaintingBaseGameManager>();
         Debug.Assert(_gm!=null);
        
 
@@ -33,7 +33,7 @@ public class HandFootPainting_PrintController : MonoBehaviour
     private void OnEnable()
     {
 
-        if (!HandFootPainting_GameManager.isInit) return;
+        if (!HandFootPaintingBaseGameManager.isInit) return;
         
         transform.localScale = Vector3.zero;
         transform.DOScale(_defaultSize, 0.055f).SetEase(Ease.OutBounce);
@@ -49,7 +49,7 @@ public class HandFootPainting_PrintController : MonoBehaviour
   
     private void OnDisable()
     {
-        if (!HandFootPainting_GameManager.isInit) return;
+        if (!HandFootPaintingBaseGameManager.isInit) return;
         _gm.printPool.Enqueue(gameObject);
 
     }

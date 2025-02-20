@@ -11,13 +11,13 @@ public class PositionSaver : MonoBehaviour
     
     void Start()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= SavePosition;
-        AnimalTrip_GameManager.onGameStartEvent += SavePosition;
+        AnimalTripBaseGameManager.onGameStartEvent -= SavePosition;
+        AnimalTripBaseGameManager.onGameStartEvent += SavePosition;
         _lookAtPosition = GetComponentInChildren<Transform>();
     }
     void OnDestroy()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= SavePosition;
+        AnimalTripBaseGameManager.onGameStartEvent -= SavePosition;
     }
     
     /// <summary>

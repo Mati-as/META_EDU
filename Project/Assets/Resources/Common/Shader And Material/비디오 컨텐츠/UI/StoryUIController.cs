@@ -144,7 +144,7 @@ public class StoryUIController : MonoBehaviour
             playerIcon.position = Vector3.Lerp(playerIconDefault.position, playerIconMovePosition.position, t);
 
             
-            if (AnimalTrip_GameManager.isCameraArrivedToPlay)
+            if (AnimalTripBaseGameManager.isCameraArrivedToPlay)
             {
                 if (_coroutineA != null && _coroutineB != null)
                 {
@@ -164,8 +164,8 @@ public class StoryUIController : MonoBehaviour
     {
             
         
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onGameStartEvent += OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onGameStartEvent += OnGameStart;
 
         // AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         // AnimalTrip_UIManager.HowToPlayUIFinishedEvent += OnHowToPlayUIFinished;
@@ -176,8 +176,8 @@ public class StoryUIController : MonoBehaviour
         AnimalTrip_UIManager.GameFinishUIActivateEvent -= OnFinishUIActiavte;
         AnimalTrip_UIManager.GameFinishUIActivateEvent += OnFinishUIActiavte;
             
-        AnimalTrip_GameManager.onGameStartEvent -= OnRoundReady;
-        AnimalTrip_GameManager.onRoundReadyEvent += OnRoundReady;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onRoundReadyEvent += OnRoundReady;
 
         // GameManager.onCorrectedEvent -= OnCorrect;
         // GameManager.onCorrectedEvent += OnCorrect;
@@ -194,8 +194,8 @@ public class StoryUIController : MonoBehaviour
 
     private void UnsubscribeGamaManagerEvents()
     {
-        AnimalTrip_GameManager.onGameStartEvent -= OnGameStart;
-        AnimalTrip_GameManager.onRoundReadyEvent -= OnRoundReady;
+        AnimalTripBaseGameManager.onGameStartEvent -= OnGameStart;
+        AnimalTripBaseGameManager.onRoundReadyEvent -= OnRoundReady;
         // AnimalTrip_UIManager.HowToPlayUIFinishedEvent -= OnHowToPlayUIFinished;
         //     GameManager.onCorrectedEvent -= OnCorrect;
         //     GameManager.onRoundFinishedEvent -= OnRoundFinished;

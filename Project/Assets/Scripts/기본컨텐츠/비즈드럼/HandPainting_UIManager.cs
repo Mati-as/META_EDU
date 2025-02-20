@@ -54,14 +54,14 @@ public class HandPainting_UIManager : UI_PopUp
         _stop.SetActive(false);
         
 
-        UI_Scene_Button.onBtnShut -= OnStart;
-        UI_Scene_Button.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onBtnShut += OnStart;
         
-        HandFootPainting_GameManager.onRoundRestart -= OnStart;
-        HandFootPainting_GameManager.onRoundRestart += OnStart;
+        HandFootPaintingBaseGameManager.onRoundRestart -= OnStart;
+        HandFootPaintingBaseGameManager.onRoundRestart += OnStart;
 
-        HandFootPainting_GameManager.onRoundFinished -= PopUpStopUI;
-        HandFootPainting_GameManager.onRoundFinished += PopUpStopUI;
+        HandFootPaintingBaseGameManager.onRoundFinished -= PopUpStopUI;
+        HandFootPaintingBaseGameManager.onRoundFinished += PopUpStopUI;
     
         return true;
         

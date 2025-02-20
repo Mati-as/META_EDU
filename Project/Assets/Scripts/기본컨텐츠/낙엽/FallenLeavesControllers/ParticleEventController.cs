@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class ParticleEventController : IGameManager, IOnClicked
+public class ParticleEventController : Base_GameManager, IOnClicked
 {
     private ParticleSystem.Particle[] particles;
 
@@ -94,8 +94,8 @@ public class ParticleEventController : IGameManager, IOnClicked
 
     public override void OnRaySynced()
     {
-        base.OnRaySynced();
-        if (!PreCheck()){ return;}
+       
+        if (!PreCheckOnRaySync()) return;
 
         if (SceneManager.GetActiveScene().name != "BC001") return;
 
