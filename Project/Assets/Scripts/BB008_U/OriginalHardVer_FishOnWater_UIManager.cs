@@ -247,8 +247,8 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished += ShowStopUI;
 
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
-        UI_Scene_StartBtn.onBtnShut += OnStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
         
         
         
@@ -406,7 +406,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
     //     //_uiBtns[(int)UI_Button.Btn_SettingDisplay].GetComponent<Fish_T_UI_Setting_Panel>().OnClick();
     // }
 
-    private void OnStartBtnClicked()
+    private void OnGameStartStartBtnClicked()
     {
         ShowModeSelectionMode();
     }
@@ -519,7 +519,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
     }
 
     private void Update()

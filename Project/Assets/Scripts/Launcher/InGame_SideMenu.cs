@@ -29,10 +29,13 @@ public class InGame_SideMenu : UI_PopUp
     }
 
     //sensor-related part.-----------------------------------
-    public static event Action OnRefreshEvent;
+    
+    // 센서 활성화(초기화) 시작버튼으로 이전
+    // public static event Action OnRefreshEvent;
+    // private bool _isSensorRefreshable = true;
     public static event Action<string, DateTime> OnSceneQuit;
     public static event Action<string, DateTime> OnAppQuit;
-    private bool _isSensorRefreshable = true;
+    
     private bool _isXMLSavable = true;
 
     private const int REFRESH_INTERIM_MIN = 10;
@@ -50,7 +53,7 @@ public class InGame_SideMenu : UI_PopUp
         GetButton((int)Btn_Type.Btn_Home).gameObject.BindEvent(OnHomeBtnClicked);
         
         GetButton((int)Btn_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
-        GetButton((int)Btn_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
+       // GetButton((int)Btn_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
         
         GetButton((int)Btn_Type.Btn_Setting).gameObject.BindEvent(OnSettingBtnClicked,Define.UIEvent.PointerUp);
         GetButton((int)Btn_Type.SettingCloseButton).gameObject.BindEvent(() =>
@@ -65,20 +68,20 @@ public class InGame_SideMenu : UI_PopUp
         SetSlider();
     }
 
-    private void RefreshSensor()
-    {
-        if (!_isSensorRefreshable) return;
-
-        StartCoroutine(ResetSensorRefreshable());
-        OnRefreshEvent?.Invoke();
-    }
-
-    private IEnumerator ResetSensorRefreshable()
-    {
-        _isSensorRefreshable = false;
-        yield return _wait;
-        _isSensorRefreshable = true;
-    }
+    // private void RefreshSensor()
+    // {
+    //     if (!_isSensorRefreshable) return;
+    //
+    //     StartCoroutine(ResetSensorRefreshable());
+    //     OnRefreshEvent?.Invoke();
+    // }
+    //
+    // private IEnumerator ResetSensorRefreshable()
+    // {
+    //     _isSensorRefreshable = false;
+    //     yield return _wait;
+    //     _isSensorRefreshable = true;
+    // }
 
     private IEnumerator XMLSaveCo()
     {

@@ -239,7 +239,7 @@ public class AnimalTripBaseGameManager : Base_GameManager
     private GameObject _storyUIController;
 
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
         _storyUIController.SetActive(true);
         _storyUIController.SetActive(true);

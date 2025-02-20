@@ -698,9 +698,9 @@ public class FavoriteOneBaseGameManager : Base_GameManager
     }
 
    
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
         TypeIn(_narrations[(int)Narration.Narration_Animal]);
         DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
         {

@@ -180,7 +180,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         HandFlip2_UIManager.onStartUIFinished -= OnStart;
         HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -257,8 +257,8 @@ public class HandFlip2BaseGameManager : Base_GameManager
     protected override void Init()
     {
         
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
-        UI_Scene_StartBtn.onBtnShut += OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
         HandFlip2_UIManager.onStartUIFinished -= OnStart;
         HandFlip2_UIManager.onStartUIFinished += OnStart;
@@ -387,7 +387,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
         Camera.main.transform.DOMove(_defaultPosition, 0.3f);
     });
 
-    private void OnButtonClicked()
+    private void OnGameStartButtonClicked()
     {
         
         PrintsAppear();

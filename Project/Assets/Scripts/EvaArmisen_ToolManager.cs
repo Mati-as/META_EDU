@@ -51,8 +51,8 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     {
         
         
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
-        UI_Scene_StartBtn.onBtnShut += OnStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
 
         _isUIOn = new bool[(int)ToolList.Stamps];
         _toolTexts = new TextMeshProUGUI[(int)ToolList.Stamps];
@@ -163,7 +163,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
     private void OnDestroy()
     {
         
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
     }
 
     private void OnClick(int btnIndex)
@@ -177,7 +177,7 @@ public class EvaArmisen_ToolManager : MonoBehaviour
         _stampBtns[currentStampIndex].spriteState = pressedState;
     }
 
-    private void OnStartBtnClicked()
+    private void OnGameStartStartBtnClicked()
     {
         DOVirtual.Float(0, 1, 0.5f, val => { _cvsGroup.alpha = val; }).SetDelay(0.3f);
     }

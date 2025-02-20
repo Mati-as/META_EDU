@@ -64,11 +64,11 @@ public class ScratchPainting_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
-        ScratchPaintingBaseGameManager.onRoundRestart -= OnStart;
-        ScratchPaintingBaseGameManager.onRoundRestart += OnStart;
+        ScratchPaintingBaseGameManager.onRoundRestart -= OnGameStartStart;
+        ScratchPaintingBaseGameManager.onRoundRestart += OnGameStartStart;
 
         ScratchPaintingBaseGameManager.OnStampingFinished -= PopUpStopUI;
         ScratchPaintingBaseGameManager.OnStampingFinished += PopUpStopUI;
@@ -79,11 +79,11 @@ public class ScratchPainting_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        ScratchPaintingBaseGameManager.onRoundRestart -= OnStart;
+        ScratchPaintingBaseGameManager.onRoundRestart -= OnGameStartStart;
         ScratchPaintingBaseGameManager.OnStampingFinished -= PopUpStopUI;
     }
 
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");

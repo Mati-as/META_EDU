@@ -54,11 +54,11 @@ public class HandPainting_UIManager : UI_PopUp
         _stop.SetActive(false);
         
 
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
-        HandFootPaintingBaseGameManager.onRoundRestart -= OnStart;
-        HandFootPaintingBaseGameManager.onRoundRestart += OnStart;
+        HandFootPaintingBaseGameManager.onRoundRestart -= OnGameStartStart;
+        HandFootPaintingBaseGameManager.onRoundRestart += OnGameStartStart;
 
         HandFootPaintingBaseGameManager.onRoundFinished -= PopUpStopUI;
         HandFootPaintingBaseGameManager.onRoundFinished += PopUpStopUI;
@@ -67,7 +67,7 @@ public class HandPainting_UIManager : UI_PopUp
         
     }
 
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");

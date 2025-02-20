@@ -16,15 +16,15 @@ public class Test_manager_scene : Base_GameManager
    
     public static bool isGameStart { get; private set; }
 
-    //Áßº¹Å¬¸¯¹æÁö
+    //ì¤‘ë³µí´ë¦­ë°©ì§€
     private bool _isClickable = true;
 
-    // ±âÁ¸ ³»¿ë ------------------------------------------------------------------------
+    // ê¸°ì¡´ ë‚´ìš© ------------------------------------------------------------------------
 
     protected override void Init()
     {
-        //¿©±â¿¡¼­ ÇÊ¿äÇÑ Ä«¸Ş¶ó, ¿ÀºêÁ§Æ®, ÀÌ·± °ÍµéÀ» »çÀü¿¡ ÀúÀåÀ» ÇØÁÖ¸é ÁÁÀ» °Í °°À½
-        //±×¸®°í ³­ ¹«Á¶°Ç findÇÏÁö ¾Ê°í ÀÎ½ºÆåÅÍÃ¢¿¡¼­ ÀúÀåÇÏ´Â°Ô ¾î¶³±î ½Í¤·¹Ç
+        //ì—¬ê¸°ì—ì„œ í•„ìš”í•œ ì¹´ë©”ë¼, ì˜¤ë¸Œì íŠ¸, ì´ëŸ° ê²ƒë“¤ì„ ì‚¬ì „ì— ì €ì¥ì„ í•´ì£¼ë©´ ì¢‹ì„ ê²ƒ ê°™ìŒ
+        //ê·¸ë¦¬ê³  ë‚œ ë¬´ì¡°ê±´ findí•˜ì§€ ì•Šê³  ì¸ìŠ¤í™í„°ì°½ì—ì„œ ì €ì¥í•˜ëŠ”ê²Œ ì–´ë–¨ê¹Œ ì‹¶ã…‡ë¯€
 
         _finishMakingPs = GameObject.Find("CFX_FinishMaking").GetComponent<ParticleSystem>();
 
@@ -73,13 +73,13 @@ public class Test_manager_scene : Base_GameManager
 
         foreach (var hit in _raycastHits)
         {
-            //¿©±ä ¾î¶»°Ô °ü¸®ÇÏ¸é µÇ³ª?
+            //ì—¬ê¸´ ì–´ë–»ê²Œ ê´€ë¦¬í•˜ë©´ ë˜ë‚˜?
             //var selectedIndex = FindIndexByName(hit.transform.gameObject.name);
 
             var randomChar = (char)Random.Range('A', 'F' + 1);
 
-            //¿©±â°¡ Å¬¸¯ È¿°úÀ½ Àç»ıÇÏ´Â ºÎºĞÀÎ °Í °°°í
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Click_" + randomChar,
+            //ì—¬ê¸°ê°€ í´ë¦­ íš¨ê³¼ìŒ ì¬ìƒí•˜ëŠ” ë¶€ë¶„ì¸ ê²ƒ ê°™ê³ 
+            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ê¸°ë³¸ì»¨í…ì¸ /Sandwich/Click_" + randomChar,
                 0.3f);
 
             return;
@@ -87,11 +87,11 @@ public class Test_manager_scene : Base_GameManager
     }
 
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
 
-        //Ã³À½¿¡ ½ÃÀÛÇÏ´Â ºÎºĞÀÎ °Í °°°í
+        //ì²˜ìŒì— ì‹œì‘í•˜ëŠ” ë¶€ë¶„ì¸ ê²ƒ ê°™ê³ 
     }
 
 
@@ -115,19 +115,19 @@ public class Test_manager_scene : Base_GameManager
 
 
 
-    ////È¿°úÀ½ Àç»ı Âü°í¿ëÀ¸·Î »ì·ÁµÒ
+    ////íš¨ê³¼ìŒ ì¬ìƒ ì°¸ê³ ìš©ìœ¼ë¡œ ì‚´ë ¤ë‘ 
     //private void ScaleDown()
     //{
     //    foreach (var obj in _selectableIngredientsOnSmallPlates)
     //        obj.DOScale(Vector3.zero, 1.0f)
     //            .OnStart(() =>
     //            {
-    //                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Sandwich_Ing_Popup");
+    //                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/ê¸°ë³¸ì»¨í…ì¸ /Sandwich/Sandwich_Ing_Popup");
     //            })
     //            .SetEase(Ease.InOutBounce);
     //}
 
-    ////ÆÄÆ¼Å¬ Àç»ı Âü°í¿ëÀ¸·Î »ì·ÁµÒ
+    ////íŒŒí‹°í´ ì¬ìƒ ì°¸ê³ ìš©ìœ¼ë¡œ ì‚´ë ¤ë‘ 
     //private void PlayParticle(float delay)
     //{
     //    DOVirtual.Float(0, 0, delay, _ => { }).OnComplete(() =>

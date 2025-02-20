@@ -189,14 +189,14 @@ public class SensorManager : MonoBehaviour
         
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
-        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
-        InGame_SideMenu.OnRefreshEvent += RefreshSensor;
+        UI_Scene_StartBtn.OnSensorRefreshEvent -= InitSensor;
+        UI_Scene_StartBtn.OnSensorRefreshEvent += InitSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
     }
 
     private void OnDestroy()
     {
-        InGame_SideMenu.OnRefreshEvent -= RefreshSensor;
+        UI_Scene_StartBtn.OnSensorRefreshEvent -= InitSensor;
         Destroy(this.gameObject);
         UnBindLidar();
     }
@@ -204,7 +204,11 @@ public class SensorManager : MonoBehaviour
 
     private void RefreshSensor()
     {
-        StartCoroutine(RefreshSensorCo());
+        if (GameObject.FindWithTag("Launcher") ==null) StartCoroutine(RefreshSensorCo());
+        else
+        {
+            Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
+        }
     }
 
     private readonly WaitForSeconds _refreshWait = new(0.5f);
@@ -245,13 +249,18 @@ public class SensorManager : MonoBehaviour
     
     private void InitSensor()
     {
-        StartCoroutine(InitSensorCo());
+        if (GameObject.FindWithTag("Launcher") ==null)  StartCoroutine(InitSensorCo());
+        else
+        {
+            Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
+        }
+       
     }
-    
+
     private IEnumerator InitSensorCo()
-    { 
+    {
         yield return _refreshWait;
-        
+
         var result = RplidarBinding.OnConnect(PORT);
         isMoterStarted = RplidarBinding.StartMotor();
 
@@ -266,7 +275,7 @@ public class SensorManager : MonoBehaviour
         }
 
         var isSensorOn = isMoterStarted || m_onscan;
-    
+
 
         Img_Rect_transform = GetComponent<RectTransform>();
 
@@ -285,29 +294,29 @@ public class SensorManager : MonoBehaviour
 
         TESTUI.SetActive(false);
 
-          _sensitivitySlider.onValueChanged.AddListener(_ =>
-          {
-                _sensorSensitivity = _sensitivitySlider.value;
-               _poolReturnWait = new WaitForSeconds(sensorSensitivity);
-                
-                Logger.Log($"prefab limit time is {_sensitivitySlider.value }");
-          });
+        _sensitivitySlider.onValueChanged.AddListener(_ =>
+        {
+            _sensorSensitivity = _sensitivitySlider.value;
+            _poolReturnWait = new WaitForSeconds(sensorSensitivity);
+
+            Logger.Log($"prefab limit time is {_sensitivitySlider.value}");
+        });
 
 
         _projectorLookUpTable = new Dictionary<int, Vector2>();
-        
+
         UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
             sensorDistanceFromProjection + _height * 10 / 2; //height의 절반을 mm로 단위로 계산
 
         height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-        _screenRatio = (Resolution_Y / (height * 10));
+        _screenRatio = Resolution_Y / (height * 10);
         Debug.Log($"Height Set FROM XML:{Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
         Debug.Log($"Ratio:{_screenRatio}");
-        
-        
+
+
         _sensorDetectedPositionPool = new Stack<RectTransform>();
         SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
-        
+
         OnSenSorInit?.Invoke(isSensorOn);
     }
 
@@ -420,7 +429,7 @@ public class SensorManager : MonoBehaviour
 
     private void Start()
     {
-        InitSensor();
+       // InitSensor();
     }
 
 
@@ -437,6 +446,24 @@ public class SensorManager : MonoBehaviour
         }
     }
 
+    
+    private void PlayGenrateMeshCo()
+    {
+        StartCoroutine(GenerateMeshCo());
+    }
+    private WaitForSeconds _waitForSensorGetMesh = new WaitForSeconds(0.005f);
+    private IEnumerator GenerateMeshCo()
+    {
+        while (true)
+        {
+            var datacount = RplidarBinding.GetData(ref _lidarDatas);
+
+            if (datacount == 0)
+                yield return _waitForSensorGetMesh;
+            else
+                m_datachanged = true;
+        }
+    }
 
 
     private float _timer;

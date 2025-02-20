@@ -183,7 +183,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -=  FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -262,8 +262,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     protected override void Init()
     {
         
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
-        UI_Scene_StartBtn.onBtnShut += OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_UIManager.onStartUIFinished += OnStart;
@@ -396,7 +396,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         Camera.main.transform.DOMove(_defaultPosition, 0.3f);
     });
 
-    private void OnButtonClicked()
+    private void OnGameStartButtonClicked()
     {
         
         PrintsAppear();
