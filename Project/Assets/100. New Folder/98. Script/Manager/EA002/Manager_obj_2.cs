@@ -7,13 +7,11 @@ public class Manager_obj_2 : MonoBehaviour
     public static Manager_obj_2 instance = null;
     // Start is called before the first frame update
 
-    //Camera, ����� �Ƹ� ����
+    //[common] Camera
     public GameObject Main_Camera;
     public GameObject Camera_position;
 
-    //Eventsystem, ������� �Ƹ� ����
-
-    //UI Text,Msg, ���⵵ ����
+    //[common] UI Text, Msg
     public GameObject UI_Text;
     public GameObject UI_Message;
     public GameObject Panel;
@@ -25,17 +23,14 @@ public class Manager_obj_2 : MonoBehaviour
     public GameObject Game_effect;
 
 
-    //������ ����Ǿ���ϴ� �κ�
+    //[common, EDIT] Manager
     private Manager_Anim_2 Manager_Anim;
     public Manager_Seq_2 manager_seq;
-
-    //���⵵ ����
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
 
-    //�ؽ�Ʈ �̹���, �����̼��� ��ġ�� �����������Ƿ� ���� �������� ����
-    //ȿ������ ���� ����
+    //[EDIT]
     public Sprite[] Animal_text;
     public Sprite[] Animal_textsprite;
     public AudioClip[] Animal_effect;
