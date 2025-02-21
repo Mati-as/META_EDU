@@ -25,7 +25,7 @@ public class Manager_obj_4 : MonoBehaviour
 
     //[common, EDIT] Manager
     private Manager_anim_4 Manager_Anim;
-    public Manager_seq_4 Manager_seq;
+    public Manager_SEQ_4 Manager_Seq;
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
@@ -61,7 +61,7 @@ public class Manager_obj_4 : MonoBehaviour
     {
 
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_4>();
-        //Manager_seq = this.gameObject.GetComponent<Manager_seq>();
+        Manager_Seq = this.gameObject.GetComponent<Manager_SEQ_4>();
 
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
@@ -75,28 +75,22 @@ public class Manager_obj_4 : MonoBehaviour
 
     void init_Text()
     {
-        //?????? ??? ??? ????? ??? ??????
-
-        //??? ??? ?????? ???????? ?????? ???????? ??????
         Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
     }
     void init_Audio()
     {
-        //
         AudioClip[] Temp_Seq_narration;
         AudioClip[] Temp_Msg_narration;
 
+        Msg_narration = Resources.LoadAll<AudioClip>("EA004/audio_message");
+        Seq_narration = Resources.LoadAll<AudioClip>("EA004/audio_seq");
+        //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
-        //??? ?????? ???????? ???? ??? ???????? ????
-        Msg_narration = Resources.LoadAll<AudioClip>("EA002/audio_message");
-        Seq_narration = Resources.LoadAll<AudioClip>("EA002/audio_seq");
-        Animal_effect = Resources.LoadAll<AudioClip>("EA002/audio_effect");
-
-        //??? ??? ?????? ???????? ?????? ???????? ??????
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
 
     }
 
+    //¾Æ¸¶ Ç¥Á¤À¸·Î ¹Ù²î¸é °Â³×¸¦ ÇØÁà¾ßÇÒµí
     void Init_Animalarray()
     {
         Main_Animal_array = new GameObject[Main_Animal.transform.childCount];
@@ -105,9 +99,8 @@ public class Manager_obj_4 : MonoBehaviour
         {
             Main_Animal_array[i] = Main_Animal.transform.GetChild(i).gameObject;
         }
-
-        //??? ??? ?????? ???????? ?????? ???????? ??????
-        Manager_Anim.Init_Animalarray();
+        //¾Æ¸¶ Ç¥Á¤À¸·Î ¹Ù²î¸é °Â³×¸¦ ÇØÁà¾ßÇÒµí
+        //Manager_Anim.Init_Animalarray();
     }
     void Init_Effectarray()
     {
@@ -117,13 +110,10 @@ public class Manager_obj_4 : MonoBehaviour
         {
             Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
         }
-
-        //??? ??? ?????? ???????? ?????? ???????? ??????
-        Manager_Anim.Init_Animalarray();
     }
 
-    public Manager_Seq_2 Get_managerseq()
+    public Manager_SEQ_4 Get_managerseq()
     {
-        return manager_seq;
+        return Manager_Seq;
     }
 }
