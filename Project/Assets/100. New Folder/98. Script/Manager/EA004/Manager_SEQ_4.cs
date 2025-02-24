@@ -33,19 +33,11 @@ public class Manager_SEQ_4 : Base_GameManager
         Red, Purple, Green, Orange, Yellow
     }
 
-    public enum Fruit
-    {
-        Strawberry, Apple, Tomato, Cherry,
-        Grapes, Blueberry, Eggplant, Beetroot,
-        Watermelon, Cucumber, Avocado, GreenOnion,
-        Carrot, Pumpkin, Orange, Onion,
-        Banana, Lemon, Corn, Pineapple
-    }
-
     // Ex) Orange, Carrot -> 1,0
     public GameObject[] fruitPrefabs;
 
-    private GameObject Main_Box;
+    private GameObject Main_Icon_1;
+    private GameObject Main_Icon_2;
 
 
     private GameObject[] Main_Box_array;
@@ -75,17 +67,17 @@ public class Manager_SEQ_4 : Base_GameManager
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_4>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
-        //Main_Box = Manager_obj_4.instance.Main_Box;
+        Main_Icon_1 = Manager_obj_4.instance.Main_Icon_1;
 
-        Main_Box_array = new GameObject[Main_Box.transform.childCount];
+        //Main_Box_array = new GameObject[Main_Box.transform.childCount];
 
-        for (int i = 0; i < Main_Box.transform.childCount; i++)
-        {
-            Main_Box_array[i] = Main_Box.transform.GetChild(i).gameObject;
-        }
+        //for (int i = 0; i < Main_Box.transform.childCount; i++)
+        //{
+        //    Main_Box_array[i] = Main_Box.transform.GetChild(i).gameObject;
+        //}
 
         //
-        //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
+        Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
     }
 
     // Update is called once per frame
@@ -112,7 +104,11 @@ public class Manager_SEQ_4 : Base_GameManager
 
         if (Content_Seq == 0)
         {
-            //Init_Game_fruit((int)FruitColor.Red);
+            //icon_1이 화면에 나타나 있는채로 시작
+            //일단 Icon_1에 있는 이모지 전부 애니메이션 활성화
+            Manager_obj_4.instance.BG.SetActive(true);
+            Manager_Anim.Activate_all_emoji1();
+
             Onclick = false;
 
             Content_Seq += 1;
@@ -121,10 +117,27 @@ public class Manager_SEQ_4 : Base_GameManager
         }
         else if (Content_Seq == 1)
         {
+            //전체 애니메이션 스탑 O
+            //클릭하면 나레이션 읽어주는 기능 활성화 O
+            //다음버튼 누르면 다음으로 진행
+            Manager_Anim.Inactivate_all_emoji1();
+            Read_Emoji();
+
+            Onclick = true;
+        }
+        else if (Content_Seq == 2)
+        {
+            //대신 버튼 클릭할 수 없도록 비활성화 필요
+            Init_Game_emoji();
             Onclick = true;
         }
         else if (Content_Seq == 3)
         {
+            //panel, icon_2 중 good 활성화
+            //그리고 클릭할 수 있는 게임 진행
+            //화면상에 있는 해당 이모지 애니메이션 활성화
+            //
+
             //Init_Game_fruit((int)FruitColor.Orange);
             Onclick = true;
         }
@@ -133,49 +146,6 @@ public class Manager_SEQ_4 : Base_GameManager
             //Init_Game_fruit((int)FruitColor.Yellow);
             Onclick = true;
         }
-        else if (Content_Seq == 7)
-        {
-            //Init_Game_fruit((int)FruitColor.Green);
-            Onclick = true;
-        }
-        else if (Content_Seq == 9)
-        {
-            //Init_Game_fruit((int)FruitColor.Purple);
-            Onclick = true;
-        }
-        else if (Content_Seq == 2 || Content_Seq == 4 || Content_Seq == 6 || Content_Seq == 8 || Content_Seq == 10)
-        {
-            //End_Game_fruit();
-
-            Content_Seq += 1;
-            toggle = true;
-            Timer_set();
-        }
-        else if (Content_Seq == 11)
-        {
-            //Init_Game_read();
-
-            Content_Seq += 1;
-            toggle = true;
-            Timer_set();
-        }
-        else if (Content_Seq == 12 || Content_Seq == 13 || Content_Seq == 14 || Content_Seq == 15 || Content_Seq == 16)
-        {
-            Onclick = true;
-            //Read_fruit(round);
-            //기다리는 기능을 추가할게 아니라 펼쳐진채로 다음버튼을 클릭해야 다음으로 진행되게끔 수정 필요
-
-        }
-        else if (Content_Seq == 17)
-        {
-            Manager_Anim.Jump_box_bp0(4);
-        }
-        else
-        {
-            Content_Seq += 1;
-            toggle = true;
-            Timer_set();
-        }
     }
 
     void Timer_set()
@@ -183,10 +153,28 @@ public class Manager_SEQ_4 : Base_GameManager
         Sequence_timer = 5f;
     }
 
-    //void Init_Game_read()
-    //{
-    //    round = 0;
-    //}
+    void Read_Emoji()
+    {
+        Manager_Anim.Read_Seq_Emoji();
+    }
+
+    void Init_Game_emoji()
+    {
+        var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
+
+        round = 0;
+        //1번 아이콘 비활성화
+        Manager_Anim.Inactive_Seq_Icon_1();
+        //2번 아이콘 활성화 애니메이션 추가
+        //Manager_Anim.Inactive_Seq_Icon_1();
+        Main_Icon_2.SetActive(false);
+        //여기에서 Icon_1번에 있던거 전부 비활성화 및 화면 세팅
+        //버튼들 활성화
+
+        //마찬가지로 해당하는 버튼 클릭하면 읽어주고 해당하는 이모지 애니메이션 끄기
+        //
+    }
 
     //void Init_Game_fruit(int colorIndex)
     //{
@@ -226,20 +214,25 @@ public class Manager_SEQ_4 : Base_GameManager
     //    }
     //}
 
-    public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
+    public void Click(GameObject Emoji, int num_emoji, int num_table)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
 
-        //if (Content_Seq >= 12)
-        //{
-        //    //일단 비활성화
-        //    Inactive_fruit_clickable(plate_Fruit);
-        //    Manager_Text.Changed_UI_message_c3(num_table + 7, num_fruit, Eng_MODE); // 새 랜덤 색상으로 초기화
+        if (Content_Seq == 1)
+        {
+            //일단 비활성화
+            Inactive_emoji_clickable(Emoji);
 
-        //    //스케일값이 바뀌고 난 다음에 다시 활성화
-        //    plate_Fruit.transform.DOShakeScale(1.5f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_fruit_clickable(plate_Fruit));
-        //}
+            //Activate selected emoji animation
+            Manager_Anim.Activate_emoji(Emoji);
+
+            //Activate selected emoji text animation
+            Manager_Anim.Activate_emojitext_popup(Emoji);
+
+            //스케일값이 바뀌고 난 다음에 다시 활성화
+            Emoji.transform.DOShakeScale(1.5f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_emoji_clickable(Emoji));
+        }
         //else
         //{
 
@@ -283,15 +276,15 @@ public class Manager_SEQ_4 : Base_GameManager
         //    }
         //}
     }
-    //public void Inactive_fruit_clickable(GameObject plate_Fruit)
-    //{
-    //    plate_Fruit.GetComponent<Clicked_fruit>().Inactive_Clickable();
-    //}
+    public void Inactive_emoji_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_emoji>().Inactive_Clickable();
+    }
 
-    //public void Active_fruit_clickable(GameObject plate_Fruit)
-    //{
-    //    plate_Fruit.GetComponent<Clicked_fruit>().Active_Clickable();
-    //}
+    public void Active_emoji_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_emoji>().Active_Clickable();
+    }
 
     //public void Inactive_All_fruit()
     //{
@@ -384,22 +377,18 @@ public class Manager_SEQ_4 : Base_GameManager
         base.OnGameStartStartButtonClicked();
     }
 
-    //public void ButtonClicked()
-    //{
-    //    //버튼 클릭하면 원위치 시작
-    //    Reset_Game_read();
-    //    Manager_obj_3.instance.Btn_Next.SetActive(false);
-    //    Sequence seq = DOTween.Sequence();
-    //    seq.Append(Manager_obj_3.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
+    public void ButtonClicked()
+    {
+        //버튼 클릭하면 그냥 다음으로 진행
+        Manager_obj_4.instance.Btn_Next.SetActive(false);
+        Sequence seq = DOTween.Sequence();
+        seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
 
-
-    //    //여기서 클릭 받으면 현재 박스 들어가기전에 해당하는 과일 전부 다시 비활성화 필요
-
-    //    Content_Seq += 1;
-    //    toggle = true;
-    //    Timer_set();
-    //    round += 1;
-    //}
+        Content_Seq += 1;
+        toggle = true;
+        Timer_set();
+        round += 1;
+    }
 
     private void StackCamera()
     {

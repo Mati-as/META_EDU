@@ -17,18 +17,25 @@ public class Manager_obj_4 : MonoBehaviour
     public GameObject Panel;
 
 
-    //Animal
-    public GameObject Main_Animal;
-    public GameObject Animal_position;
+    //Emoji icon
+    public GameObject Main_Icon_1;
+    public GameObject Main_Icon_2;
+    public GameObject Main_Icon_3;
+    public GameObject Icon_buttion_position;
+    public GameObject BG;
     public GameObject Game_effect;
 
+
+    //icon_1의 경우 클릭해서 텍스트 나레이션, 효과음 재생
+    //icon_2의 경우 클릭 X
+    //icon_3의 경우 클릭 필요
 
     //[common, EDIT] Manager
     private Manager_anim_4 Manager_Anim;
     public Manager_SEQ_4 Manager_Seq;
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
-
+    public GameObject Btn_Next;
 
     //[EDIT]
     public Sprite[] Animal_text;
@@ -36,7 +43,9 @@ public class Manager_obj_4 : MonoBehaviour
     public AudioClip[] Animal_effect;
 
     [Header("[ COMPONENT CHECK ]")]
-    public GameObject[] Main_Animal_array;
+    public GameObject[] Main_Icon_1_array;
+    public GameObject[] Main_Icon_2_array;
+    public GameObject[] Main_Icon_3_array;
     public AudioClip[] Seq_narration;
     public AudioClip[] Msg_narration;
     public AudioClip[] Msg_narration_eng;
@@ -68,7 +77,7 @@ public class Manager_obj_4 : MonoBehaviour
 
         init_Audio();
         init_Text();
-        Init_Animalarray();
+        Init_Icon_array();
         Init_Effectarray();
 
     }
@@ -90,17 +99,24 @@ public class Manager_obj_4 : MonoBehaviour
 
     }
 
-    //아마 표정으로 바뀌면 걔네를 해줘야할듯
-    void Init_Animalarray()
+    //표정 아이콘 1,2 초기화
+    void Init_Icon_array()
     {
-        Main_Animal_array = new GameObject[Main_Animal.transform.childCount];
+        Main_Icon_1_array = new GameObject[Main_Icon_1.transform.childCount];
 
-        for (int i = 0; i < Animal_position.transform.childCount; i++)
+        for (int i = 0; i < Main_Icon_1.transform.childCount; i++)
         {
-            Main_Animal_array[i] = Main_Animal.transform.GetChild(i).gameObject;
+            Main_Icon_1_array[i] = Main_Icon_1.transform.GetChild(i).gameObject;
         }
-        //아마 표정으로 바뀌면 걔네를 해줘야할듯
-        //Manager_Anim.Init_Animalarray();
+
+        Main_Icon_2_array = new GameObject[Main_Icon_2.transform.childCount];
+
+        for (int i = 0; i < Main_Icon_2.transform.childCount; i++)
+        {
+            Main_Icon_2_array[i] = Main_Icon_2.transform.GetChild(i).gameObject;
+        }
+
+        Manager_Anim.Init_Icon_array();
     }
     void Init_Effectarray()
     {

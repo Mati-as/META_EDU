@@ -23,9 +23,13 @@ public class Manager_anim_4 : MonoBehaviour
     //[EDIT]
     private GameObject Fruit_position;
 
-    private GameObject Main_Box;
-    private GameObject[] Main_Box_array;
-    private GameObject Box_position;
+    private GameObject Main_Icon_1;
+    private GameObject[] Main_Icon_1_array;
+    private GameObject Main_Icon_2;
+    private GameObject[] Main_Icon_2_array;
+    private GameObject Main_Icon_3;
+    private GameObject[] Main_Icon_3_array;
+    private GameObject Icon_buttion_position;
 
 
     private GameObject Selected_fruit;
@@ -36,9 +40,9 @@ public class Manager_anim_4 : MonoBehaviour
     private Sequence[] Reveal_f_seq;
 
     //[EDIT] object position transform
-    private Transform[] B_p0; 
-    private Transform B_p1; 
-    private Transform B_p2; 
+    private Transform[] B_p0;
+    private Transform B_p1;
+    private Transform B_p2;
 
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Camera_pos_array;
@@ -58,7 +62,6 @@ public class Manager_anim_4 : MonoBehaviour
 
         Init_Seq_camera();
         //Init_Seq_fruit();
-        Init_Seq_box();
 
     }
 
@@ -90,6 +93,7 @@ public class Manager_anim_4 : MonoBehaviour
         Number_Camera_seq++;
         //Debug.Log("C_SEQ = " + Number_Camera_seq);
     }
+
     //[EDIT] Contents camera sequence
     public void Change_Animation(int Number_seq)
     {
@@ -100,118 +104,93 @@ public class Manager_anim_4 : MonoBehaviour
             //Debug.Log("SEQ = " + Content_Seq);
         }
     }
-    void Init_Seq_box()
+
+    public void Init_Icon_array()
     {
+        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
+        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
 
-        B_p0 = new Transform[5];  //�ڽ� �ʱ� ��ġ 5��
-
-        Main_Box_array = new GameObject[Main_Box.transform.childCount];
-        Box_pos_array = new GameObject[Box_position.transform.childCount];
-
-        for (int i = 0; i < Box_position.transform.childCount; i++)
-        {
-            Box_pos_array[i] = Box_position.transform.GetChild(i).gameObject;
-        }
-
-        for (int i = 0; i < Main_Box.transform.childCount; i++)
-        {
-            Main_Box_array[i] = Main_Box.transform.GetChild(i).gameObject;
-        }
-        //BP
-        B_p0[0] = Box_position.transform.GetChild(0);
-        B_p0[1] = Box_position.transform.GetChild(1);
-        B_p0[2] = Box_position.transform.GetChild(2);
-        B_p0[3] = Box_position.transform.GetChild(3);
-        B_p0[4] = Box_position.transform.GetChild(4);
-        B_p1 = Box_position.transform.GetChild(5);
-        B_p2 = Box_position.transform.GetChild(6);
-
+        //근데 3번은 아마도 재생성할듯
+        //Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
+        Icon_buttion_position = Manager_obj_4.instance.Icon_buttion_position;
     }
-    public void Popup_fruit(GameObject fruit)
+    public void Activate_all_emoji1()
     {
-        Sequence seq = DOTween.Sequence();
-
-        //2�� �� �˾� �ִϸ��̼� �� ���� Ȱ��ȭ
-        seq.Append(fruit.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => fruit.SetActive(true))).SetDelay(2f);
-        //seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-    }
-
-    //�ش��ϴ� ������ ��� ���������� �̵�����
-    public void Jump_fruit(GameObject fruit, Transform pos, float timer)
-    {
-        Sequence seq = DOTween.Sequence();
-
-        if (timer != 0f)
+        //Icon_1에 있는 이모지 전부 받아와서
+        //전부 활성화
+        GameObject emoji;
+        for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
-            seq.Append(fruit.transform.DOJump(pos.position, 1f, 1, 1f)).SetDelay(timer);
-            seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-        }
-        else
-        {
-            seq.Append(fruit.transform.DOJump(pos.position, 1f, 1, 1f));
-            seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+            emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
+            Animator animator = emoji.GetComponent<Animator>();
+
+            animator.SetBool("ON", true);
         }
     }
-
-    public void Jump_box_bp1(int round)
+    public void Inactivate_all_emoji1()
     {
-        Sequence seq = DOTween.Sequence();
-
-        seq.Append(Main_Box_array[round].transform.DOJump(B_p1.position, 1f, 1, 1f));
-        seq.Append(Main_Box_array[round].transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-    }
-    public void Jump_box_bp0(int round)
-    {
-        Sequence seq = DOTween.Sequence();
-
-        //���� �ð� ���� ������ �����ϴ� �ִϸ��̼�
-        seq.Append(Main_Box_array[round].transform.DOJump(B_p0[round].position, 1f, 1, 1f)).SetDelay(3f);
-        seq.Join(Main_Box_array[round].transform.DOShakeScale(0.5f, 1, 10, 90, true).SetEase(Ease.OutQuad));
-        seq.Append(Main_Box_array[round].transform.DOScale(B_p0[round].localScale, 1f));
-
-
-        //seq.Append(Main_Box_array[round].transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-
-    }
-    public void Move_box_bp2(int round)
-    {
-        Sequence seq = DOTween.Sequence();
-
-        if (round != 0)
+        //Icon_1에 있는 이모지 전부 받아와서
+        //전부 활성화
+        GameObject emoji;
+        for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
-            //���� �ٱ��ϸ� ����־��ְ� �� ������ ���� ���� �ٱ��ϸ� ����
-            seq.Append(Main_Box_array[round - 1].transform.DOMove(B_p0[round - 1].position, 1f).SetEase(Ease.InOutQuad));
-            seq.Join(Main_Box_array[round - 1].transform.DOScale(B_p0[round - 1].localScale, 1f));
-            seq.Append(Main_Box_array[round].transform.DOMove(B_p2.position, 1f).SetEase(Ease.InOutQuad));
-        }
-        else
-        {
-            seq.Append(Main_Box_array[round].transform.DOMove(B_p2.position, 1f).SetEase(Ease.InOutQuad));
-        }
-
-        seq.Join(Main_Box_array[round].transform.DOScale(B_p2.localScale, 1f));
-    }
-    public void Inactive_Seq_fruit(GameObject fruit, float timer)
-    {
-        //���� ������ ������°� ���� ���� �� ���� ���
-        //(�̽�) ������ �������� �ѹ��� ������� �Ŷ� ������ ���� ���� ���� ������� �ϴ°Ŷ� ���ϰ� �浹 �߻��ϴ� �� ����
-        if (timer != 0f)
-        {
-            fruit.transform.DOScale(0, 0.5f).SetEase(Ease.InOutQuint).OnComplete(() => Destroy(fruit)).SetDelay(timer);
-        }
-        else
-        {
-            fruit.transform.DOScale(0, 0.5f).SetEase(Ease.InOutQuint).OnComplete(() => Destroy(fruit));
+            emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
+            Animator animator = emoji.GetComponent<Animator>();
+            animator.SetBool("ON", false);
         }
     }
-    public void Read_Seq_fruit(int round)
+    public void Activate_emoji(GameObject Emoji)
     {
-        //(�ӽ�) �Ŵ��� seq 3 ȣ����
-        //Sequence seq = DOTween.Sequence();
-        //this.transform.DOScale(1, 11f).OnComplete(() => Manager_Seq_3.instance.Reset_Game_read());
 
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        //자연스럽게 커졌다가 작아지는 부분
+        emoji.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
+         emoji.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
+         );
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", true);
+    }
+    public void Inactivate_emoji(GameObject Emoji)
+    {
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", false);
+    }
+    public void Activate_emojitext_popup(GameObject Emoji)
+    {
+        GameObject Selected_emoji_text;
+        Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
+        //(구현필요) 해당 하는 이모지 나레이션 재생 필요
+
+        Sequence seq_read = DOTween.Sequence();
+        seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+    }
+
+    public void Inactive_Seq_Icon_1()
+    { 
+        GameObject Emoji;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Emoji = Main_Icon_1_array[i];
+            Emoji.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+            Emoji.SetActive(false);
+        }
+    }
+    public void Read_Seq_Emoji()
+    {
+
+        //그냥 해당 이모지 활성화
+        //해당 이모지 텍스트 팝업, 나레이션 재생
+        //다 끝나면 다음버튼 활성화
         round_number = 0;
-        Box_number = round;
+
         StartCoroutine(Temp_Message());
     }
 
@@ -219,42 +198,40 @@ public class Manager_anim_4 : MonoBehaviour
     {
         if (round_number == 5)
         {
-            //5���� ���� ���� ���� �ൿ
-
-            Manager_obj_3.instance.Btn_Next.SetActive(true);
+            //5, Active next button
+            Manager_obj_4.instance.Btn_Next.SetActive(true);
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(Manager_obj_3.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
+            seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
 
             StopCoroutine(Temp_Message(time));
         }
         else
         {
-
             yield return new WaitForSeconds(time);
 
-            //�ٱ��Ͽ��� ���� ������ �κ�, �ִϸ��̼� �� �ؽ�Ʈ���� ������
-            GameObject Selected_fruit;
-            int fruit_number;
+            GameObject Selected_emoji;
+            int emoji_number;
 
-            Sequence seq_read = DOTween.Sequence();
+            Selected_emoji = Main_Icon_1_array[round_number].transform.gameObject;
+            emoji_number = Selected_emoji.GetComponent<Clicked_emoji>().Number_emoji;
 
-            Selected_fruit = Main_Box_array[Box_number].transform.GetChild(round_number).gameObject;
-            fruit_number = Selected_fruit.GetComponent<Clicked_fruit>().Number_fruit;
-
-            //������� �����
-            //seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
-            seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-
-            //�̵��ϰ� �� ������ Ŭ�� �ٽ� Ȱ��ȭ
-            //Manager_Seq.Active_fruit_clickable(Selected_fruit);
+            //Shake dotween, Active emoji animation
+            Activate_emoji(Selected_emoji);
+            //Selected_emoji.transform.DOShakeScale(1f, 1, 10, 90, true).SetEase(Ease.OutQuad);
+            Activate_emojitext_popup(Selected_emoji);
+            this.transform.DOShakeScale(2f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Inactivate_emoji(Selected_emoji));
 
 
-            //���� ������� �ƴ��� üũ�� �ʿ�
-            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // �� ���� �������� �ʱ�ȭ
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+
             round_number += 1;
 
-            StartCoroutine(Temp_Message(time)); // ��� �ݺ�
+            StartCoroutine(Temp_Message(time));
+
+            //Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // �� ���� �������� �ʱ�ȭ
+
         }
     }
 
