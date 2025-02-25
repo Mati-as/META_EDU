@@ -114,7 +114,7 @@ public class ParticleEventController : Base_GameManager, IOnClicked
             
             _hit.transform.gameObject.TryGetComponent(out _iOnClicked);
             _iOnClicked?.OnClicked();
-
+            DEV_OnValidClick();
             Debug.Log("Ray _hit: " + _hit.transform.name);
             ClickEventApplyRadialForce(_hit.point, particleSystemA);
             ClickEventApplyRadialForce(_hit.point, particleSystemB);

@@ -23,6 +23,9 @@ public class PlayerHistoryManager : MonoBehaviour
     private XmlDocument _doc;
     private bool _isInit;
 
+    private int _validClickCount;
+    private int _sensorClickCount;
+
    
     private string _playerInfoXmlPath ;
     public bool Init()
@@ -103,7 +106,25 @@ public class PlayerHistoryManager : MonoBehaviour
         _playTime = lastestSceneQuitTime - latestSceneStartTime;
         string formattedPlaytime = string.Format("{0:D2}분 {1:D2}초", _playTime.Minutes, _playTime.Seconds);
         Debug.Log($"플레이시간 : {formattedPlaytime}");
+
+
+
+        SaveInGameClickData();
         AddPlayInfoNode(ref _doc);
+    }
+
+    public void SaveInGameClickData()
+    {
+        var currentGameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+        if (currentGameManager != null)
+        {
+            _sensorClickCount = currentGameManager.DEV_sensorClick;
+            _validClickCount = currentGameManager.DEV_validClick;
+        }
+        else
+        {
+            Debug.LogWarning("GameManager is not found To Save XML Data");
+        }
     }
     public void AddPlayInfoNode(ref XmlDocument xmlDoc)
     {
@@ -129,6 +150,8 @@ public class PlayerHistoryManager : MonoBehaviour
         newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
         newUser.SetAttribute("sceneid", currentSceneName);
         newUser.SetAttribute("playtimesec",formattedPlaytime.ToString());
+        newUser.SetAttribute("validClick", _validClickCount.ToString());
+        newUser.SetAttribute("sensorClick", _sensorClickCount.ToString());
         root?.AppendChild(newUser);
         
         Utils.SaveXML(ref _doc, _playerInfoXmlPath);

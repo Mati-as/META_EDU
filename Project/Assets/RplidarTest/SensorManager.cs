@@ -94,6 +94,7 @@ public class SensorManager : MonoBehaviour
             Debug.Assert(!(Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML < 175)
                          || !(Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML > 190));
             _height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            _height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
         }
     } //cm 
 

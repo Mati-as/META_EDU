@@ -279,7 +279,13 @@ public class WaterMusic_XylophoneController : MonoBehaviour
                 
              
             }
-            
+
+
+            baseGameManager.DEV_validClick++;
+        }
+        else
+        {
+            baseGameManager.DEV_sensorClick++;
         }
 
      

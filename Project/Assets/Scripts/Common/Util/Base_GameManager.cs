@@ -7,12 +7,35 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
 public abstract class Base_GameManager : MonoBehaviour
 {
+    
+    
+    //20250225 플레이 활동성 체크용 활용변수 
+    public int DEV_sensorClick { get;  set; } // 센서로 클릭이 발생한 빈도 수
+    
+    public int DEV_validClick { get;  set; }//물체가 한개이상 클릭되어 게임로직이 실행된 경우의 빈도수
+    
+    private void InitValidClickCount()
+    {
+        DEV_sensorClick = 0;
+        DEV_validClick = 0;
+    }
+
+    protected void DEV_OnValidClick()
+    {
+        DEV_validClick++;
+    }
+    
+    protected void DEV_OnSensorClick()
+    {
+        DEV_validClick++;
+    }
     private readonly string METAEDU_LAUNCHER = "METAEDU_LAUNCHER";
 
     protected WaitForSeconds _waitForClickable;
@@ -140,16 +163,14 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (isInitialized)
         {
-
-        Logger.LogWarning("Scene is already initialized.");
-
+            Logger.LogWarning("Scene is already initialized.");
 
 
             return;
         }
 
         //초기값설정 후 이후에 상속받은 게임매니저에서 민감도 별도 설정
-        waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY; 
+        waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
         ManageProjectSettings(SHADOW_MAX_DISTANCE, SensorSensitivity);
         BindEvent();
@@ -162,6 +183,9 @@ public abstract class Base_GameManager : MonoBehaviour
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         LoadUIManager();
+
+
+        InitValidClickCount();
         isInitialized = true;
     }
 
@@ -177,6 +201,8 @@ public abstract class Base_GameManager : MonoBehaviour
         GameManager_Ray = RaySynchronizer.initialRay;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
+        
+        
         On_GmRay_Synced?.Invoke();
     }
 
@@ -257,6 +283,7 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
+
         {
             // if (!isClikableInGameRay)
             // {
@@ -265,13 +292,19 @@ public abstract class Base_GameManager : MonoBehaviour
             //     return false;
             //     
             // }
-
+            
 
             Logger.Log($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
             SetClickableWithDelay(waitForClickableInGameRay);
+            
+            
+            DEV_sensorClick++;
             return true;
         }
+        
     }
+    
+  
 
     protected virtual void BindEvent()
     {

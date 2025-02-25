@@ -51,9 +51,9 @@ public class WaterPlaygroundBaseGameManager : Base_GameManager
                 Managers.soundManager.Play(SoundManager.Sound.Effect, 
                     "Audio/기본컨텐츠/WaterPlayground/Click" + randomChar,0.35f);
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
-            }
 
-            
+                DEV_OnValidClick();
+            }
             
         }
         
