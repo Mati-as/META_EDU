@@ -20,7 +20,7 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    public static readonly string PORT = "COM3";
+    public static readonly string PORT = "COM4";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
 
@@ -222,6 +222,7 @@ public class SensorManager : MonoBehaviour
         yield return _refreshWait;
 
         var result = RplidarBinding.OnConnect(PORT);
+        
         Debug.Log("Connect on " + PORT + " result:" + result);
 
         isMoterStarted = RplidarBinding.StartMotor();
@@ -255,9 +256,24 @@ public class SensorManager : MonoBehaviour
     {
         await Task.Delay(_refreshWaitTimeSpan);
 
-        var result = await Task.Run(() => RplidarBinding.OnConnect(PORT));
-        isMoterStarted = await Task.Run(() => RplidarBinding.StartMotor());
+        var result = RplidarBinding.OnConnect(PORT);
+        if (result < 0)
+        {
+            var alterntivePort = PORT == "COM3" ? "COM4" : "COM3"; 
+            result = RplidarBinding.OnConnect(alterntivePort);
+            Debug.Log("trying another port  " + alterntivePort + " result:" + result);
+        }
+        else
+        {      
+            Debug.Log("Connect on " + PORT + " result:" + result);
+        }
+     
+        isMoterStarted =RplidarBinding.StartMotor();
 
+        
+        
+        
+        
         m_onscan = await Task.Run(() => RplidarBinding.StartScan());
         Debug.Log("Connect on " + PORT + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
                   m_onscan);
@@ -569,18 +585,52 @@ public class SensorManager : MonoBehaviour
         UnBindLidar();
     }
 
-    private void UnBindLidar()
+
+    private TimeSpan _refreshWaitTimeSpanQuitSensor = TimeSpan.FromSeconds(0.5f);
+
+    private async Task UnbindSensorAsync()
     {
+        // 비동기 대기
+        await Task.Delay(_refreshWaitTimeSpanQuitSensor);
+        
+        // 센서 연결 해제 로직 실행
         RplidarBinding.EndScan();
         RplidarBinding.EndMotor();
         RplidarBinding.OnDisconnect();
         RplidarBinding.ReleaseDrive();
 
-        //StopCoroutine(GenMesh());
+        // 기존의 StopCoroutine(GenMesh());는 필요 없을 가능성이 큼 (코루틴을 비동기로 대체했기 때문)
 
-        m_thread?.Abort();
+        // 스레드 종료
+        if (m_thread != null)
+        {
+            m_thread.Abort();
+            m_thread = null;
+        }
 
+        // 상태 업데이트
         m_onscan = false;
+    }
+
+
+    private async void UnBindLidar()
+    {
+        
+        if (GameObject.FindWithTag("Launcher") == null)
+            await UnbindSensorAsync();
+        else
+            Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
+        
+        // RplidarBinding.EndScan();
+        // RplidarBinding.EndMotor();
+        // RplidarBinding.OnDisconnect();
+        // RplidarBinding.ReleaseDrive();
+        //
+        // //StopCoroutine(GenMesh());
+        //
+        // m_thread?.Abort();
+        //
+        // m_onscan = false;
     }
 
     public bool UI_Active_ONOFF()
