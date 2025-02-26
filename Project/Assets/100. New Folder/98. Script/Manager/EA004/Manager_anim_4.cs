@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class Manager_anim_4 : MonoBehaviour
@@ -36,8 +37,6 @@ public class Manager_anim_4 : MonoBehaviour
     private int fruit_number;
     private int round_number;
     private int Box_number;
-
-    private Sequence[] Reveal_f_seq;
 
     //[EDIT] object position transform
     private Transform[] B_p0;
@@ -119,6 +118,7 @@ public class Manager_anim_4 : MonoBehaviour
         //Icon_1에 있는 이모지 전부 받아와서
         //전부 활성화
         GameObject emoji;
+        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
         for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
             emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
@@ -171,6 +171,27 @@ public class Manager_anim_4 : MonoBehaviour
         Sequence seq_read = DOTween.Sequence();
         seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
     }
+    //오토로 크기가 커졌다가 작아졌다가 하는 부분은 그냥 별도로 만들어주는걸로?
+    
+    public void Activate_emoji_loop(GameObject Emoji)
+    {
+
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        //자연스럽게 커졌다가 작아지는 부분, 이 부분을 반복되게끔 수정 필요
+        //시퀀스를 미리 만들어놨다가 해당하는 시퀀스를 그때 pause
+        //그럼 시퀀스는 배열로 만들고 그때그때 넣었다가 뺏다가 하는걸로
+
+        emoji.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
+         emoji.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
+         );
+        //그럼 여기에서 해당하는 트위닝을 실행을 하는데
+        //클릭하고 나면 그걸 없애는걸 어떻게 하나?
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", true);
+    }
 
     public void Inactive_Seq_Icon_1()
     { 
@@ -183,6 +204,68 @@ public class Manager_anim_4 : MonoBehaviour
             Emoji.SetActive(false);
         }
     }
+    int Max_emoji = 24;
+    int Round_number_emoji = 0;
+    public void Setting_Seq_Icon_2()
+    {
+        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
+
+        Manager_obj_4.instance.Main_Icon_2.SetActive(true);
+
+        StartCoroutine(Setting_icon_2());
+    }
+
+    IEnumerator Setting_icon_2(float time = 0.2f)
+    {
+        if (Round_number_emoji == Max_emoji)
+        {
+            StopCoroutine(Setting_icon_2(time));
+        }
+        else
+        {
+            yield return new WaitForSeconds(time);
+
+            GameObject Selected_emoji;
+
+            Selected_emoji = Main_Icon_2_array[Round_number_emoji];
+
+            Selected_emoji.SetActive(true);
+            Selected_emoji.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+            
+            //나중에 효과음 추가한다면 여기에 추가 필요
+            //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+
+            //클릭 할 수 있도록 기능 활성화
+            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+
+            Round_number_emoji += 1;
+
+            StartCoroutine(Setting_icon_2(time));
+        }
+    }
+    //패널, 제시 활성화
+    public void Setting_Seq_Eachgame(int round)
+    {
+        Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
+
+        Main_Icon_3_array[round].SetActive(true);
+        Main_Icon_3_array[round].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+        this.transform.DOShakeScale(5f, 1, 10, 90, true).SetEase(Ease.OutQuad)
+            .OnComplete(() => Main_Icon_3_array[round].SetActive(false));
+
+        for (int i = 0; i < Main_Icon_2_array.Length; i++)
+        {
+            int num = Main_Icon_2_array[i].GetComponent<Clicked_emoji>().Number_emoji;
+            Inactivate_emoji(Main_Icon_2_array[i]);
+
+            if (round== num)
+            {
+                Activate_emoji(Main_Icon_2_array[i]);
+                Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
+            }
+        }
+    }
+
     public void Read_Seq_Emoji()
     {
 
@@ -190,7 +273,6 @@ public class Manager_anim_4 : MonoBehaviour
         //해당 이모지 텍스트 팝업, 나레이션 재생
         //다 끝나면 다음버튼 활성화
         round_number = 0;
-
         StartCoroutine(Temp_Message());
     }
 
@@ -234,10 +316,4 @@ public class Manager_anim_4 : MonoBehaviour
 
         }
     }
-
-
-    //public Transform [] Get_Fp2(int round)
-    //{
-    //    return F_p2[num];
-    //}
 }

@@ -47,6 +47,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
     private int round = 0;
     private int maxRounds = 5;
+    private int Number_Maxemoji_game;
 
     private const int MaxFruits = 16;
     private const int MaxFruitsinColor = 4;
@@ -127,24 +128,25 @@ public class Manager_SEQ_4 : Base_GameManager
         }
         else if (Content_Seq == 2)
         {
-            //대신 버튼 클릭할 수 없도록 비활성화 필요
             Init_Game_emoji();
-            Onclick = true;
-        }
-        else if (Content_Seq == 3)
-        {
-            //panel, icon_2 중 good 활성화
-            //그리고 클릭할 수 있는 게임 진행
-            //화면상에 있는 해당 이모지 애니메이션 활성화
-            //
 
-            //Init_Game_fruit((int)FruitColor.Orange);
-            Onclick = true;
+            Content_Seq += 1;
+            toggle = true;
+            Timer_set();
+            Onclick = false;
         }
-        else if (Content_Seq == 5)
+        else if (Content_Seq == 3 || Content_Seq == 5 || Content_Seq == 7 || Content_Seq == 9 || Content_Seq == 11)
         {
-            //Init_Game_fruit((int)FruitColor.Yellow);
+            //클릭 활성화
+            Init_EachGame_emoji(Game_round);
+
+            //해당 하는 게임 패널 세팅
+            //그 다음 후속 번호에서는 닥히 할 거 없이 그냥 테스트, 나레이션만 재생
             Onclick = true;
+
+            Content_Seq += 1;
+            toggle = true;
+            Timer_set();
         }
     }
 
@@ -166,43 +168,30 @@ public class Manager_SEQ_4 : Base_GameManager
         round = 0;
         //1번 아이콘 비활성화
         Manager_Anim.Inactive_Seq_Icon_1();
-        //2번 아이콘 활성화 애니메이션 추가
-        //Manager_Anim.Inactive_Seq_Icon_1();
-        Main_Icon_2.SetActive(false);
-        //여기에서 Icon_1번에 있던거 전부 비활성화 및 화면 세팅
-        //버튼들 활성화
 
-        //마찬가지로 해당하는 버튼 클릭하면 읽어주고 해당하는 이모지 애니메이션 끄기
-        //
+        //2번 아이콘 활성화
+        Manager_Anim.Setting_Seq_Icon_2();
     }
 
-    //void Init_Game_fruit(int colorIndex)
-    //{
-    //    mainColor = (FruitColor)colorIndex;
+    int Game_round = 0;
+    void Init_EachGame_emoji(int round)
+    {
+        var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-    //    Manager_Anim.Jump_box_bp1(round);
+        //패널 활성화, 패널 잠시후 비활성화
+        Manager_Anim.Setting_Seq_Eachgame(round);
+        Number_Maxemoji_game = Manager_obj_4.instance.Number_of_Eachemoji[round];
 
-    //    Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 0);
-    //    Generate_fruit(colorIndex * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), 1);
+    }
 
-    //    for (int i = 0; i < 5; i++)
-    //    {
-    //        Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), i + 2);
-    //    }
-    //}
+    void End_Game_emoji()
+    {
+        //Manager_Anim.Jump_box_bp0(round);
+        //Inactive_All_fruit();
 
-    //void End_Game_fruit()
-    //{
-    //    Manager_Anim.Jump_box_bp0(round);
-    //    Inactive_All_fruit();
-
-    //    round += 1;
-    //}
-    //void Read_fruit(int round)
-    //{
-    //    Manager_Anim.Move_box_bp2(round);
-    //    Manager_Anim.Read_Seq_fruit(round);
-    //}
+        //round += 1;
+    }
 
     //public void Reset_Game_read()
     //{
@@ -233,48 +222,33 @@ public class Manager_SEQ_4 : Base_GameManager
             //스케일값이 바뀌고 난 다음에 다시 활성화
             Emoji.transform.DOShakeScale(1.5f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_emoji_clickable(Emoji));
         }
-        //else
-        //{
+        else if(Content_Seq == 4 || Content_Seq == 6 || Content_Seq == 8 || Content_Seq == 10 || Content_Seq == 12)
+        {
+            //현재 이모지에 맞는 이모지 눌렀을 때
+            if (Game_round == num_emoji)
+            {
+                Number_Maxemoji_game -= 1;
+                Manager_Anim.Inactivate_emoji(Emoji);
+                Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[num_emoji], 1f);
+                Emoji.GetComponent<Image>().sprite = Manager_obj_4.instance.White;
 
-        //    Inactive_fruit_clickable(plate_Fruit);
-        //    //맞는 과일 눌렀을 때
-        //    if (num_fruit / 4 == (int)mainColor)
-        //    {
-        //        Manager_Anim.Devide_Seq_fruit(plate_Fruit, selectedFruitCount);
-        //        plate_Fruit.transform.SetSiblingIndex(selectedFruitCount);
+                if (Number_Maxemoji_game == 0)
+                {
+                    Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
 
-        //        Manager_Text.Changed_UI_message_c3(num_table, num_fruit, Eng_MODE);
-        //        Manager_obj_3.instance.Effect_array[num_table].SetActive(true);
+                    Debug.Log("ALL EMOJI FOUND!");
+                    selectedFruitCount = 0;
+                    Game_round += 1;
 
-        //        Generate_fruit(UnityEngine.Random.Range(0, MaxFruits), num_table);
+                    Content_Seq += 1;
+                    toggle = true;
+                    Onclick = false;
+                }
+            }
+            else{
 
-        //        plate_Fruit.GetComponent<Clicked_fruit>().Number_table = selectedFruitCount;
-        //        selectedFruitCount++;
-
-        //        if (selectedFruitCount == maxRounds)
-        //        {
-        //            Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
-
-        //            Debug.Log("5 FRUITS!");
-        //            selectedFruitCount = 0;
-
-        //            Content_Seq += 1;
-        //            toggle = true;
-        //            Onclick = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        //틀린 과일 눌렀을 때
-        //        var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
-        //        Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
-
-        //        Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);
-
-        //        Generate_fruit((int)mainColor * 4 + UnityEngine.Random.Range(0, MaxFruitsinColor), num_table);
-
-        //    }
-        //}
+            }
+        }
     }
     public void Inactive_emoji_clickable(GameObject Emoji)
     {
@@ -295,22 +269,6 @@ public class Manager_SEQ_4 : Base_GameManager
     //    }
     //}
 
-    //void Generate_fruit(int num_fruit, int num_table)
-    //{
-    //    Transform pos = Manager_Anim.Get_Fp0(num_table);
-    //    Transform fruit_group = Manager_obj_3.instance.Fruit_position.transform;
-
-    //    GameObject fruit = Instantiate(Manager_obj_3.instance.Fruit_prefabs[num_fruit]);
-    //    fruit.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-    //    fruit.transform.SetParent(Main_Box_array[round].transform);
-    //    fruit.transform.localPosition = pos.localPosition;
-    //    fruit.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-    //    fruit.GetComponent<Clicked_fruit>().Set_Number_fruit(num_fruit);
-    //    fruit.GetComponent<Clicked_fruit>().Set_Number_table(num_table);
-
-    //    Manager_Anim.Popup_fruit(fruit);
-    //}
 
     //IEnumerator ResetAfterTime(float time)
     //{
@@ -354,11 +312,8 @@ public class Manager_SEQ_4 : Base_GameManager
 
         foreach (var hit in _raycastHits)
         {
-            //Debug.Log(hit.transform.gameObject.tag);
-            //Debug.Log(hit.transform.gameObject.name);
-
             if (hit.transform.gameObject.CompareTag("MainObject"))
-            {
+            { 
                 if (Onclick)
                 {
                     //Debug.Log("Fruit Clicked!");
@@ -379,15 +334,12 @@ public class Manager_SEQ_4 : Base_GameManager
 
     public void ButtonClicked()
     {
-        //버튼 클릭하면 그냥 다음으로 진행
         Manager_obj_4.instance.Btn_Next.SetActive(false);
         Sequence seq = DOTween.Sequence();
         seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
 
         Content_Seq += 1;
         toggle = true;
-        Timer_set();
-        round += 1;
     }
 
     private void StackCamera()

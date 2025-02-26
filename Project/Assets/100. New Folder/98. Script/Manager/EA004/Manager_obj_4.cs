@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Manager_obj_4 : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class Manager_obj_4 : MonoBehaviour
     public GameObject Icon_buttion_position;
     public GameObject BG;
     public GameObject Game_effect;
+    public Sprite White;
+    public Sprite Yellow;
 
 
     //icon_1의 경우 클릭해서 텍스트 나레이션, 효과음 재생
@@ -42,7 +45,12 @@ public class Manager_obj_4 : MonoBehaviour
     public Sprite[] Animal_textsprite;
     public AudioClip[] Animal_effect;
 
+    private int MaxEmoji = 5;
+
     [Header("[ COMPONENT CHECK ]")]
+    public int[] Number_of_Eachemoji;
+
+    public GameObject[] Emoji_prefabs;
     public GameObject[] Main_Icon_1_array;
     public GameObject[] Main_Icon_2_array;
     public GameObject[] Main_Icon_3_array;
@@ -77,9 +85,9 @@ public class Manager_obj_4 : MonoBehaviour
 
         init_Audio();
         init_Text();
-        Init_Icon_array();
+        init_Prefab();
         Init_Effectarray();
-
+        Init_Icon_array();
     }
 
     void init_Text()
@@ -99,7 +107,7 @@ public class Manager_obj_4 : MonoBehaviour
 
     }
 
-    //표정 아이콘 1,2 초기화
+    //Emoji icon 1,2,3 init
     void Init_Icon_array()
     {
         Main_Icon_1_array = new GameObject[Main_Icon_1.transform.childCount];
@@ -109,14 +117,50 @@ public class Manager_obj_4 : MonoBehaviour
             Main_Icon_1_array[i] = Main_Icon_1.transform.GetChild(i).gameObject;
         }
 
-        Main_Icon_2_array = new GameObject[Main_Icon_2.transform.childCount];
+        Main_Icon_2_array = new GameObject[Icon_buttion_position.transform.childCount];
+        Number_of_Eachemoji = new int[5] { 0, 0, 0, 0, 0 };
 
-        for (int i = 0; i < Main_Icon_2.transform.childCount; i++)
+        for (int i = 0; i < Icon_buttion_position.transform.childCount; i++)
         {
-            Main_Icon_2_array[i] = Main_Icon_2.transform.GetChild(i).gameObject;
+            //해당 하는 번호가 몇개인지 체크?
+            int Random_number = UnityEngine.Random.Range(0, MaxEmoji);
+            Number_of_Eachemoji[Random_number] += 1;
+            Generate_emoji(Random_number, i);
+        }
+
+        Main_Icon_3_array = new GameObject[Main_Icon_3.transform.childCount];
+
+        for (int i = 0; i < Main_Icon_3.transform.childCount; i++)
+        {
+            Main_Icon_3_array[i] = Main_Icon_3.transform.GetChild(i).gameObject;
+            Main_Icon_3_array[i].SetActive(false);
         }
 
         Manager_Anim.Init_Icon_array();
+    }
+
+    void init_Prefab()
+    {
+        Emoji_prefabs = Resources.LoadAll<GameObject>("EA004/prefab");
+    }
+    void Generate_emoji(int num_emoji, int num_table)
+    {
+        //그냥 0 ~ 마지막 번호까지 for문돌리고
+        //각 테이블 위치에 랜덤으로 표정 프리팹을 배치시킴
+
+        GameObject emoji = Instantiate(Manager_obj_4.instance.Emoji_prefabs[num_emoji]);
+        RectTransform pos = Icon_buttion_position.transform.GetChild(num_table).GetComponent<RectTransform>();
+
+        emoji.transform.SetParent(Main_Icon_2.transform);
+        emoji.GetComponent<RectTransform>().localScale = new Vector3(0f, 0f, 0f);
+        emoji.GetComponent<RectTransform>().anchoredPosition = new Vector3 (pos.anchoredPosition.x, pos.anchoredPosition.y,0f);
+        emoji.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+
+        emoji.GetComponent<Clicked_emoji>().Set_Number_emoji(num_emoji);
+        emoji.GetComponent<Clicked_emoji>().Set_Number_table(num_table);
+
+        Main_Icon_2_array[num_table] = emoji;
+        //Manager_Anim.Popup_fruit(emoji);
     }
     void Init_Effectarray()
     {

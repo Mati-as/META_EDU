@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class Clicked_emoji : MonoBehaviour
+public class Clicked_emoji : MonoBehaviour, IPointerEnterHandler
 {
     public int Number_emoji;
     public int Number_table;
@@ -17,13 +18,13 @@ public class Clicked_emoji : MonoBehaviour
 
     }
 
-
-
     //public void OnPointerClick(PointerEventData eventData)
     //{
     //    Debug.Log("CLECKED");
     //   // Manager_Seq_3.instance.Click(this.gameObject, Number_fruit, Number_table);
     //}
+
+    //그래픽 레이캐스트로 구현 필요
     public void Click()
     {
         //Debug.Log("Clicked");
@@ -51,5 +52,10 @@ public class Clicked_emoji : MonoBehaviour
     public void Inactive_Clickable()
     {
         Clickable = false;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Debug.Log("클릭 이벤트 확인");
     }
 }
