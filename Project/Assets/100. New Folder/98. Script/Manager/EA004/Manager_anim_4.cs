@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class Manager_anim_4 : MonoBehaviour
@@ -21,11 +22,17 @@ public class Manager_anim_4 : MonoBehaviour
 
 
     //[EDIT]
+    private Tween[] Emoji_seq_loop;
+
     private GameObject Fruit_position;
 
-    private GameObject Main_Box;
-    private GameObject[] Main_Box_array;
-    private GameObject Box_position;
+    private GameObject Main_Icon_1;
+    private GameObject[] Main_Icon_1_array;
+    private GameObject Main_Icon_2;
+    private GameObject[] Main_Icon_2_array;
+    private GameObject Main_Icon_3;
+    private GameObject[] Main_Icon_3_array;
+    private GameObject Icon_buttion_position;
 
 
     private GameObject Selected_fruit;
@@ -33,12 +40,10 @@ public class Manager_anim_4 : MonoBehaviour
     private int round_number;
     private int Box_number;
 
-    private Sequence[] Reveal_f_seq;
-
     //[EDIT] object position transform
-    private Transform[] B_p0; 
-    private Transform B_p1; 
-    private Transform B_p2; 
+    private Transform[] B_p0;
+    private Transform B_p1;
+    private Transform B_p2;
 
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Camera_pos_array;
@@ -47,171 +52,207 @@ public class Manager_anim_4 : MonoBehaviour
 
     void Start()
     {
-        Camera_position = Manager_obj_4.instance.Camera_position;
-        Main_Camera = Manager_obj_4.instance.Main_Camera;
-        //Fruit_position = Manager_obj_4.instance.Fruit_position;
-        //Box_position = Manager_obj_4.instance.Box_position;
-        //Main_Box = Manager_obj_4.instance.Main_Box;
+        //Camera_position = Manager_obj_4.instance.Camera_position;
+        //Main_Camera = Manager_obj_4.instance.Main_Camera;
 
         Manager_Seq = Manager_obj_4.instance.Get_managerseq();
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
 
-        Init_Seq_camera();
-        //Init_Seq_fruit();
-        Init_Seq_box();
-
+        //Init_Seq_camera();
     }
 
     //[common] Camera
-    void Init_Seq_camera()
-    {
-        Camera_pos_array = new GameObject[Camera_position.transform.childCount];
-        Camera_seq = new Sequence[Camera_position.transform.childCount];
-        Number_Camera_seq = 0;
+    //void Init_Seq_camera()
+    //{
+    //    Camera_pos_array = new GameObject[Camera_position.transform.childCount];
+    //    Camera_seq = new Sequence[Camera_position.transform.childCount];
+    //    Number_Camera_seq = 0;
 
-        for (int i = 0; i < Camera_position.transform.childCount; i++)
-        {
-            Camera_pos_array[i] = Camera_position.transform.GetChild(i).gameObject;
+    //    for (int i = 0; i < Camera_position.transform.childCount; i++)
+    //    {
+    //        Camera_pos_array[i] = Camera_position.transform.GetChild(i).gameObject;
 
-            Camera_seq[i] = DOTween.Sequence();
+    //        Camera_seq[i] = DOTween.Sequence();
 
-            Transform pos = Camera_position.transform.GetChild(i).transform;
-            Camera_seq[i].Append(Main_Camera.transform.DORotate(pos.transform.rotation.eulerAngles, 1f));
-            Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
-            Camera_seq[i].Pause();
+    //        Transform pos = Camera_position.transform.GetChild(i).transform;
+    //        Camera_seq[i].Append(Main_Camera.transform.DORotate(pos.transform.rotation.eulerAngles, 1f));
+    //        Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
+    //        Camera_seq[i].Pause();
 
 
-            //Debug.Log("length " + Camera_seq.Length);
-        }
-    }
+    //        //Debug.Log("length " + Camera_seq.Length);
+    //    }
+    //}
     public void Move_Seq_camera()
     {
         Camera_seq[Number_Camera_seq].Play();
         Number_Camera_seq++;
         //Debug.Log("C_SEQ = " + Number_Camera_seq);
     }
+
     //[EDIT] Contents camera sequence
     public void Change_Animation(int Number_seq)
     {
         Content_Seq = Number_seq;
-        if (Content_Seq == 11 || Content_Seq == 12 || Content_Seq == 17)
-        {
-            Move_Seq_camera();
-            //Debug.Log("SEQ = " + Content_Seq);
-        }
-    }
-    void Init_Seq_box()
-    {
-
-        B_p0 = new Transform[5];  //�ڽ� �ʱ� ��ġ 5��
-
-        Main_Box_array = new GameObject[Main_Box.transform.childCount];
-        Box_pos_array = new GameObject[Box_position.transform.childCount];
-
-        for (int i = 0; i < Box_position.transform.childCount; i++)
-        {
-            Box_pos_array[i] = Box_position.transform.GetChild(i).gameObject;
-        }
-
-        for (int i = 0; i < Main_Box.transform.childCount; i++)
-        {
-            Main_Box_array[i] = Main_Box.transform.GetChild(i).gameObject;
-        }
-        //BP
-        B_p0[0] = Box_position.transform.GetChild(0);
-        B_p0[1] = Box_position.transform.GetChild(1);
-        B_p0[2] = Box_position.transform.GetChild(2);
-        B_p0[3] = Box_position.transform.GetChild(3);
-        B_p0[4] = Box_position.transform.GetChild(4);
-        B_p1 = Box_position.transform.GetChild(5);
-        B_p2 = Box_position.transform.GetChild(6);
-
-    }
-    public void Popup_fruit(GameObject fruit)
-    {
-        Sequence seq = DOTween.Sequence();
-
-        //2�� �� �˾� �ִϸ��̼� �� ���� Ȱ��ȭ
-        seq.Append(fruit.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => fruit.SetActive(true))).SetDelay(2f);
-        //seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+        //if (Content_Seq == 11 || Content_Seq == 12 || Content_Seq == 17)
+        //{
+        //    Move_Seq_camera();
+        //    //Debug.Log("SEQ = " + Content_Seq);
+        //}
     }
 
-    //�ش��ϴ� ������ ��� ���������� �̵�����
-    public void Jump_fruit(GameObject fruit, Transform pos, float timer)
+    public void Init_Icon_array()
     {
-        Sequence seq = DOTween.Sequence();
+        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
+        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
 
-        if (timer != 0f)
+        Icon_buttion_position = Manager_obj_4.instance.Icon_buttion_position;
+    }
+    public void Activate_all_emoji1()
+    {
+        GameObject emoji;
+        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
+        for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
-            seq.Append(fruit.transform.DOJump(pos.position, 1f, 1, 1f)).SetDelay(timer);
-            seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+            emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
+            Animator animator = emoji.GetComponent<Animator>();
+
+            animator.SetBool("ON", true);
+        }
+    }
+    public void Inactivate_all_emoji1()
+    {
+        GameObject emoji;
+        for (int i = 0; i < Main_Icon_1_array.Length; i++)
+        {
+            emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
+            Animator animator = emoji.GetComponent<Animator>();
+            animator.SetBool("ON", false);
+        }
+    }
+    public void Activate_emoji(GameObject Emoji)
+    {
+
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        //자연스럽게 커졌다가 작아지는 부분
+        emoji.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
+         emoji.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
+         );
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", true);
+    }
+    public void Activate_emoji_forgame(GameObject Emoji)
+    {
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", true);
+    }
+    public void Inactivate_emoji(GameObject Emoji)
+    {
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", false);
+    }
+    public void Activate_emojitext_popup(GameObject Emoji)
+    {
+        GameObject Selected_emoji_text;
+        int emoji_number;
+        Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
+        emoji_number = Emoji.GetComponent<Clicked_emoji>().Number_emoji;
+
+        Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+
+        Sequence seq_read = DOTween.Sequence();
+        seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+    }
+
+
+    public void Inactive_Seq_Icon_1()
+    { 
+        GameObject Emoji;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Emoji = Main_Icon_1_array[i];
+            Emoji.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+            Emoji.SetActive(false);
+        }
+    }
+    int Max_emoji = 24;
+    int Round_number_emoji = 0;
+    public void Setting_Seq_Icon_2()
+    {
+        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
+
+        Manager_obj_4.instance.Main_Icon_2.SetActive(true);
+
+        StartCoroutine(Setting_icon_2());
+    }
+
+    IEnumerator Setting_icon_2(float time = 0.2f)
+    {
+        if (Round_number_emoji == Max_emoji)
+        {
+            StopCoroutine(Setting_icon_2(time));
         }
         else
         {
-            seq.Append(fruit.transform.DOJump(pos.position, 1f, 1, 1f));
-            seq.Append(fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+            yield return new WaitForSeconds(time);
+
+            GameObject Selected_emoji;
+
+            Selected_emoji = Main_Icon_2_array[Round_number_emoji];
+
+            Selected_emoji.SetActive(true);
+            Selected_emoji.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+            
+            //나중에 효과음 추가한다면 여기에 추가 필요
+            //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+
+            //클릭 할 수 있도록 기능 활성화
+            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+
+            Round_number_emoji += 1;
+
+            StartCoroutine(Setting_icon_2(time));
         }
     }
-
-    public void Jump_box_bp1(int round)
+    //패널, 제시 활성화
+    public void Setting_Seq_Eachgame(int round)
     {
-        Sequence seq = DOTween.Sequence();
+        Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
 
-        seq.Append(Main_Box_array[round].transform.DOJump(B_p1.position, 1f, 1, 1f));
-        seq.Append(Main_Box_array[round].transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-    }
-    public void Jump_box_bp0(int round)
-    {
-        Sequence seq = DOTween.Sequence();
+        Main_Icon_3_array[round].SetActive(true);
+        Main_Icon_3_array[round].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+        this.transform.DOShakeScale(5f, 1, 10, 90, true).SetEase(Ease.OutQuad)
+            .OnComplete(() => Main_Icon_3_array[round].SetActive(false));
 
-        //���� �ð� ���� ������ �����ϴ� �ִϸ��̼�
-        seq.Append(Main_Box_array[round].transform.DOJump(B_p0[round].position, 1f, 1, 1f)).SetDelay(3f);
-        seq.Join(Main_Box_array[round].transform.DOShakeScale(0.5f, 1, 10, 90, true).SetEase(Ease.OutQuad));
-        seq.Append(Main_Box_array[round].transform.DOScale(B_p0[round].localScale, 1f));
-
-
-        //seq.Append(Main_Box_array[round].transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-
-    }
-    public void Move_box_bp2(int round)
-    {
-        Sequence seq = DOTween.Sequence();
-
-        if (round != 0)
+        for (int i = 0; i < Main_Icon_2_array.Length; i++)
         {
-            //���� �ٱ��ϸ� ����־��ְ� �� ������ ���� ���� �ٱ��ϸ� ����
-            seq.Append(Main_Box_array[round - 1].transform.DOMove(B_p0[round - 1].position, 1f).SetEase(Ease.InOutQuad));
-            seq.Join(Main_Box_array[round - 1].transform.DOScale(B_p0[round - 1].localScale, 1f));
-            seq.Append(Main_Box_array[round].transform.DOMove(B_p2.position, 1f).SetEase(Ease.InOutQuad));
-        }
-        else
-        {
-            seq.Append(Main_Box_array[round].transform.DOMove(B_p2.position, 1f).SetEase(Ease.InOutQuad));
-        }
+            int num = Main_Icon_2_array[i].GetComponent<Clicked_emoji>().Number_emoji;
+            Inactivate_emoji(Main_Icon_2_array[i]);
 
-        seq.Join(Main_Box_array[round].transform.DOScale(B_p2.localScale, 1f));
-    }
-    public void Inactive_Seq_fruit(GameObject fruit, float timer)
-    {
-        //���� ������ ������°� ���� ���� �� ���� ���
-        //(�̽�) ������ �������� �ѹ��� ������� �Ŷ� ������ ���� ���� ���� ������� �ϴ°Ŷ� ���ϰ� �浹 �߻��ϴ� �� ����
-        if (timer != 0f)
-        {
-            fruit.transform.DOScale(0, 0.5f).SetEase(Ease.InOutQuint).OnComplete(() => Destroy(fruit)).SetDelay(timer);
-        }
-        else
-        {
-            fruit.transform.DOScale(0, 0.5f).SetEase(Ease.InOutQuint).OnComplete(() => Destroy(fruit));
+            if (round== num)
+            {
+                Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
+                Activate_emoji_forgame(Main_Icon_2_array[i]);
+                Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
+            }
         }
     }
-    public void Read_Seq_fruit(int round)
-    {
-        //(�ӽ�) �Ŵ��� seq 3 ȣ����
-        //Sequence seq = DOTween.Sequence();
-        //this.transform.DOScale(1, 11f).OnComplete(() => Manager_Seq_3.instance.Reset_Game_read());
 
+    public void Read_Seq_Emoji()
+    {
         round_number = 0;
-        Box_number = round;
         StartCoroutine(Temp_Message());
     }
 
@@ -219,48 +260,37 @@ public class Manager_anim_4 : MonoBehaviour
     {
         if (round_number == 5)
         {
-            //5���� ���� ���� ���� �ൿ
-
-            Manager_obj_3.instance.Btn_Next.SetActive(true);
+            //5, Active next button
+            Manager_obj_4.instance.Btn_Next.SetActive(true);
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(Manager_obj_3.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
+            seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
 
             StopCoroutine(Temp_Message(time));
         }
         else
         {
-
             yield return new WaitForSeconds(time);
 
-            //�ٱ��Ͽ��� ���� ������ �κ�, �ִϸ��̼� �� �ؽ�Ʈ���� ������
-            GameObject Selected_fruit;
-            int fruit_number;
+            GameObject Selected_emoji;
+            int emoji_number;
 
-            Sequence seq_read = DOTween.Sequence();
+            Selected_emoji = Main_Icon_1_array[round_number].transform.gameObject;
+            emoji_number = Selected_emoji.GetComponent<Clicked_emoji>().Number_emoji;
 
-            Selected_fruit = Main_Box_array[Box_number].transform.GetChild(round_number).gameObject;
-            fruit_number = Selected_fruit.GetComponent<Clicked_fruit>().Number_fruit;
-
-            //������� �����
-            //seq_read.Append(Selected_fruit.transform.DOJump(F_p2[round_number].position, 1f, 1, 1f));
-            seq_read.Append(Selected_fruit.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
-
-            //�̵��ϰ� �� ������ Ŭ�� �ٽ� Ȱ��ȭ
-            //Manager_Seq.Active_fruit_clickable(Selected_fruit);
+            //Shake dotween, Active emoji animation
+            Activate_emoji(Selected_emoji);
+            //Selected_emoji.transform.DOShakeScale(1f, 1, 10, 90, true).SetEase(Ease.OutQuad);
+            Activate_emojitext_popup(Selected_emoji);
+            this.transform.DOShakeScale(2f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Inactivate_emoji(Selected_emoji));
 
 
-            //���� ������� �ƴ��� üũ�� �ʿ�
-            Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // �� ���� �������� �ʱ�ȭ
+            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+
             round_number += 1;
 
-            StartCoroutine(Temp_Message(time)); // ��� �ݺ�
+            StartCoroutine(Temp_Message(time));
         }
     }
-
-
-    //public Transform [] Get_Fp2(int round)
-    //{
-    //    return F_p2[num];
-    //}
 }

@@ -6,25 +6,15 @@ using DG.Tweening;
 
 public class Manager_obj_3 : MonoBehaviour
 {
-    //여기에서 다음부터 상속을 받아서 일괄 구현을 할텐데
-    //결국 중요한 text에 필요한 오브젝트를 사전에 연결을 해주고
-    //seq도 마찬가지로 필요한 오브젝트를 사전에 연결해줌
-
-    //순서대로 저장하는 것들 어떻게 하면 좋을지
-    //기존의 방법은 하나하나 추적해서 가져오는걸로 했는데
-
     public static Manager_obj_3 instance = null;
     // Start is called before the first frame update
 
-    //Camera
+    //[common] Camera
     public GameObject Main_Camera;
     public GameObject Camera_position;
-
-
-    //UI Text,Msg
     public GameObject UI_Text;
     public GameObject UI_Message;
-    public GameObject Panel;
+    public GameObject UI_Panel;
 
     //Fruit
     public GameObject Fruit_position;
@@ -73,7 +63,11 @@ public class Manager_obj_3 : MonoBehaviour
 
     void Start()
     {
-        //이벤트 시스템은 그냥 하나 할당 해주는 걸로
+        UI_Text = GameObject.Find("UI_Text");
+        UI_Message = GameObject.Find("UI_Message");
+        Main_Camera = GameObject.Find("Main Camera");
+        Camera_position = GameObject.Find("Camera_position");
+        UI_Panel = GameObject.Find("UI_Panel");
 
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_3>();
@@ -108,7 +102,7 @@ public class Manager_obj_3 : MonoBehaviour
         }
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
-        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
     {
@@ -171,7 +165,7 @@ public class Manager_obj_3 : MonoBehaviour
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
 
         //전체 할당 받아오고 마지막에 해당하는 스크립트에 던져줌
-        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
 
     }
     void init_Prefab()
