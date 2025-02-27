@@ -195,7 +195,7 @@ public class SensorManager : MonoBehaviour
     {
         UI_Scene_StartBtn.OnSensorRefreshEvent -= InitSensor;
         Destroy(gameObject);
-        UnBindLidar();
+        StopSensor();
     }
 
 
@@ -241,7 +241,7 @@ public class SensorManager : MonoBehaviour
 
         OnSenSorInit?.Invoke(isSensorOn);
     }
-
+    private TimeSpan _refreshWaitTimeSpan = TimeSpan.FromSeconds(0.5f);
     private async void InitSensor()
     {
         if (GameObject.FindWithTag("Launcher") == null)
@@ -250,12 +250,19 @@ public class SensorManager : MonoBehaviour
             Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
     }
 
-    private TimeSpan _refreshWaitTimeSpan = TimeSpan.FromSeconds(0.5f);
+   
     private async Task InitSensorAsync()
     {
         await Task.Delay(_refreshWaitTimeSpan);
 
         var result = await Task.Run(() => RplidarBinding.OnConnect(PORT));
+        if (result < 0)
+        {
+            result = await Task.Run(() => RplidarBinding.OnConnect(PORT=="COM3"?"COM4":"COM3"));
+        }
+        
+        
+        
         isMoterStarted = await Task.Run(() => RplidarBinding.StartMotor());
 
         m_onscan = await Task.Run(() => RplidarBinding.StartScan());
@@ -566,10 +573,10 @@ public class SensorManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        UnBindLidar();
+        StopSensor();
     }
 
-    private void UnBindLidar()
+    private void StopSensor()
     {
         RplidarBinding.EndScan();
         RplidarBinding.EndMotor();
