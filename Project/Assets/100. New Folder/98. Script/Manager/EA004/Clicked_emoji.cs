@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Clicked_emoji : MonoBehaviour, IPointerEnterHandler
+public class Clicked_emoji : MonoBehaviour
 {
     public int Number_emoji;
     public int Number_table;
@@ -24,15 +24,14 @@ public class Clicked_emoji : MonoBehaviour, IPointerEnterHandler
     //   // Manager_Seq_3.instance.Click(this.gameObject, Number_fruit, Number_table);
     //}
 
-    //그래픽 레이캐스트로 구현 필요
+    //[common] 3d 일 경우 raysync 안에, 2d 일경우 버튼 컴포넌트 이벤트 안에
     public void Click()
     {
         //Debug.Log("Clicked");
         if (Clickable)
         {
             Manager_Seq = Manager_obj_4.instance.Get_managerseq();
-            //이모지로 바뀌면 그에 따라서 수정 필요
-            //Manager_Seq.Click(this.gameObject, Number_fruit, Number_table);
+            Manager_Seq.Click(this.gameObject, Number_emoji, Number_table);
         }
     }
 
@@ -52,10 +51,5 @@ public class Clicked_emoji : MonoBehaviour, IPointerEnterHandler
     public void Inactive_Clickable()
     {
         Clickable = false;
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Debug.Log("클릭 이벤트 확인");
     }
 }

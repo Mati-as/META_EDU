@@ -22,6 +22,8 @@ public class Manager_anim_4 : MonoBehaviour
 
 
     //[EDIT]
+    private Tween[] Emoji_seq_loop;
+
     private GameObject Fruit_position;
 
     private GameObject Main_Icon_1;
@@ -50,42 +52,37 @@ public class Manager_anim_4 : MonoBehaviour
 
     void Start()
     {
-        Camera_position = Manager_obj_4.instance.Camera_position;
-        Main_Camera = Manager_obj_4.instance.Main_Camera;
-        //Fruit_position = Manager_obj_4.instance.Fruit_position;
-        //Box_position = Manager_obj_4.instance.Box_position;
-        //Main_Box = Manager_obj_4.instance.Main_Box;
+        //Camera_position = Manager_obj_4.instance.Camera_position;
+        //Main_Camera = Manager_obj_4.instance.Main_Camera;
 
         Manager_Seq = Manager_obj_4.instance.Get_managerseq();
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
 
-        Init_Seq_camera();
-        //Init_Seq_fruit();
-
+        //Init_Seq_camera();
     }
 
     //[common] Camera
-    void Init_Seq_camera()
-    {
-        Camera_pos_array = new GameObject[Camera_position.transform.childCount];
-        Camera_seq = new Sequence[Camera_position.transform.childCount];
-        Number_Camera_seq = 0;
+    //void Init_Seq_camera()
+    //{
+    //    Camera_pos_array = new GameObject[Camera_position.transform.childCount];
+    //    Camera_seq = new Sequence[Camera_position.transform.childCount];
+    //    Number_Camera_seq = 0;
 
-        for (int i = 0; i < Camera_position.transform.childCount; i++)
-        {
-            Camera_pos_array[i] = Camera_position.transform.GetChild(i).gameObject;
+    //    for (int i = 0; i < Camera_position.transform.childCount; i++)
+    //    {
+    //        Camera_pos_array[i] = Camera_position.transform.GetChild(i).gameObject;
 
-            Camera_seq[i] = DOTween.Sequence();
+    //        Camera_seq[i] = DOTween.Sequence();
 
-            Transform pos = Camera_position.transform.GetChild(i).transform;
-            Camera_seq[i].Append(Main_Camera.transform.DORotate(pos.transform.rotation.eulerAngles, 1f));
-            Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
-            Camera_seq[i].Pause();
+    //        Transform pos = Camera_position.transform.GetChild(i).transform;
+    //        Camera_seq[i].Append(Main_Camera.transform.DORotate(pos.transform.rotation.eulerAngles, 1f));
+    //        Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
+    //        Camera_seq[i].Pause();
 
 
-            //Debug.Log("length " + Camera_seq.Length);
-        }
-    }
+    //        //Debug.Log("length " + Camera_seq.Length);
+    //    }
+    //}
     public void Move_Seq_camera()
     {
         Camera_seq[Number_Camera_seq].Play();
@@ -97,11 +94,11 @@ public class Manager_anim_4 : MonoBehaviour
     public void Change_Animation(int Number_seq)
     {
         Content_Seq = Number_seq;
-        if (Content_Seq == 11 || Content_Seq == 12 || Content_Seq == 17)
-        {
-            Move_Seq_camera();
-            //Debug.Log("SEQ = " + Content_Seq);
-        }
+        //if (Content_Seq == 11 || Content_Seq == 12 || Content_Seq == 17)
+        //{
+        //    Move_Seq_camera();
+        //    //Debug.Log("SEQ = " + Content_Seq);
+        //}
     }
 
     public void Init_Icon_array()
@@ -109,14 +106,10 @@ public class Manager_anim_4 : MonoBehaviour
         Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
         Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
 
-        //근데 3번은 아마도 재생성할듯
-        //Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
         Icon_buttion_position = Manager_obj_4.instance.Icon_buttion_position;
     }
     public void Activate_all_emoji1()
     {
-        //Icon_1에 있는 이모지 전부 받아와서
-        //전부 활성화
         GameObject emoji;
         Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
         for (int i = 0; i < Main_Icon_1_array.Length; i++)
@@ -129,8 +122,6 @@ public class Manager_anim_4 : MonoBehaviour
     }
     public void Inactivate_all_emoji1()
     {
-        //Icon_1에 있는 이모지 전부 받아와서
-        //전부 활성화
         GameObject emoji;
         for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
@@ -153,6 +144,15 @@ public class Manager_anim_4 : MonoBehaviour
 
         animator.SetBool("ON", true);
     }
+    public void Activate_emoji_forgame(GameObject Emoji)
+    {
+        GameObject emoji;
+        emoji = Emoji.transform.GetChild(0).gameObject;
+        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Animator animator = emoji.GetComponent<Animator>();
+
+        animator.SetBool("ON", true);
+    }
     public void Inactivate_emoji(GameObject Emoji)
     {
         GameObject emoji;
@@ -165,33 +165,16 @@ public class Manager_anim_4 : MonoBehaviour
     public void Activate_emojitext_popup(GameObject Emoji)
     {
         GameObject Selected_emoji_text;
+        int emoji_number;
         Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
-        //(구현필요) 해당 하는 이모지 나레이션 재생 필요
+        emoji_number = Emoji.GetComponent<Clicked_emoji>().Number_emoji;
+
+        Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
 
         Sequence seq_read = DOTween.Sequence();
         seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
     }
-    //오토로 크기가 커졌다가 작아졌다가 하는 부분은 그냥 별도로 만들어주는걸로?
-    
-    public void Activate_emoji_loop(GameObject Emoji)
-    {
 
-        GameObject emoji;
-        emoji = Emoji.transform.GetChild(0).gameObject;
-        //자연스럽게 커졌다가 작아지는 부분, 이 부분을 반복되게끔 수정 필요
-        //시퀀스를 미리 만들어놨다가 해당하는 시퀀스를 그때 pause
-        //그럼 시퀀스는 배열로 만들고 그때그때 넣었다가 뺏다가 하는걸로
-
-        emoji.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
-         emoji.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
-         );
-        //그럼 여기에서 해당하는 트위닝을 실행을 하는데
-        //클릭하고 나면 그걸 없애는걸 어떻게 하나?
-        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
-        Animator animator = emoji.GetComponent<Animator>();
-
-        animator.SetBool("ON", true);
-    }
 
     public void Inactive_Seq_Icon_1()
     { 
@@ -260,7 +243,8 @@ public class Manager_anim_4 : MonoBehaviour
 
             if (round== num)
             {
-                Activate_emoji(Main_Icon_2_array[i]);
+                Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
+                Activate_emoji_forgame(Main_Icon_2_array[i]);
                 Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
             }
         }
@@ -268,10 +252,6 @@ public class Manager_anim_4 : MonoBehaviour
 
     public void Read_Seq_Emoji()
     {
-
-        //그냥 해당 이모지 활성화
-        //해당 이모지 텍스트 팝업, 나레이션 재생
-        //다 끝나면 다음버튼 활성화
         round_number = 0;
         StartCoroutine(Temp_Message());
     }
@@ -311,9 +291,6 @@ public class Manager_anim_4 : MonoBehaviour
             round_number += 1;
 
             StartCoroutine(Temp_Message(time));
-
-            //Manager_Text.Changed_UI_message_c3(round_number + 7, fruit_number, Eng_mode); // �� ���� �������� �ʱ�ȭ
-
         }
     }
 }

@@ -9,14 +9,12 @@ public class Manager_obj_4 : MonoBehaviour
     // Start is called before the first frame update
 
     //[common] Camera
-    public GameObject Main_Camera;
-    public GameObject Camera_position;
-
-    //[common] UI Text, Msg
+    //private GameObject Main_Camera;
+    //private GameObject Camera_position;
     public GameObject UI_Text;
     public GameObject UI_Message;
-    public GameObject Panel;
-
+    public GameObject UI_Panel;
+    public GameObject Game_effect;
 
     //Emoji icon
     public GameObject Main_Icon_1;
@@ -24,7 +22,6 @@ public class Manager_obj_4 : MonoBehaviour
     public GameObject Main_Icon_3;
     public GameObject Icon_buttion_position;
     public GameObject BG;
-    public GameObject Game_effect;
     public Sprite White;
     public Sprite Yellow;
 
@@ -76,6 +73,12 @@ public class Manager_obj_4 : MonoBehaviour
     }
     void Start()
     {
+        UI_Text = GameObject.Find("UI_Text");
+        UI_Message = GameObject.Find("UI_Message");
+        //Main_Camera = GameObject.Find("Main Camera");
+        //Camera_position = GameObject.Find("Camera_position");
+        UI_Panel = GameObject.Find("UI_Panel");
+        Game_effect = GameObject.Find("Game_effect");
 
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_4>();
         Manager_Seq = this.gameObject.GetComponent<Manager_SEQ_4>();
@@ -92,7 +95,7 @@ public class Manager_obj_4 : MonoBehaviour
 
     void init_Text()
     {
-        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
     {
@@ -104,7 +107,6 @@ public class Manager_obj_4 : MonoBehaviour
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
-
     }
 
     //Emoji icon 1,2,3 init
@@ -119,10 +121,15 @@ public class Manager_obj_4 : MonoBehaviour
 
         Main_Icon_2_array = new GameObject[Icon_buttion_position.transform.childCount];
         Number_of_Eachemoji = new int[5] { 0, 0, 0, 0, 0 };
-
-        for (int i = 0; i < Icon_buttion_position.transform.childCount; i++)
+        for (int i = 0; i < 5; i++)
         {
-            //해당 하는 번호가 몇개인지 체크?
+            //각 숫자를 1번씩 랜덤으로 무조건 넣음
+            Number_of_Eachemoji[i] += 1;
+            Generate_emoji(i, i);
+        }
+
+        for (int i = 5; i < Icon_buttion_position.transform.childCount; i++)
+        {
             int Random_number = UnityEngine.Random.Range(0, MaxEmoji);
             Number_of_Eachemoji[Random_number] += 1;
             Generate_emoji(Random_number, i);
@@ -147,20 +154,18 @@ public class Manager_obj_4 : MonoBehaviour
     {
         //그냥 0 ~ 마지막 번호까지 for문돌리고
         //각 테이블 위치에 랜덤으로 표정 프리팹을 배치시킴
-
         GameObject emoji = Instantiate(Manager_obj_4.instance.Emoji_prefabs[num_emoji]);
         RectTransform pos = Icon_buttion_position.transform.GetChild(num_table).GetComponent<RectTransform>();
 
         emoji.transform.SetParent(Main_Icon_2.transform);
         emoji.GetComponent<RectTransform>().localScale = new Vector3(0f, 0f, 0f);
-        emoji.GetComponent<RectTransform>().anchoredPosition = new Vector3 (pos.anchoredPosition.x, pos.anchoredPosition.y,0f);
+        emoji.GetComponent<RectTransform>().localPosition = new Vector3(pos.anchoredPosition.x, pos.anchoredPosition.y, 0f);
         emoji.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
 
         emoji.GetComponent<Clicked_emoji>().Set_Number_emoji(num_emoji);
         emoji.GetComponent<Clicked_emoji>().Set_Number_table(num_table);
 
         Main_Icon_2_array[num_table] = emoji;
-        //Manager_Anim.Popup_fruit(emoji);
     }
     void Init_Effectarray()
     {
