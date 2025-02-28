@@ -178,6 +178,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
                 Number_Maxemoji_game -= 1;
                 Manager_Anim.Inactivate_emoji(Emoji);
+                Inactive_emoji_clickable(Emoji);
                 Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[num_emoji], 1f);
                 Emoji.GetComponent<Image>().sprite = Manager_obj_4.instance.White;
 

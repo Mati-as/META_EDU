@@ -65,8 +65,8 @@ public class Manager_obj_3 : MonoBehaviour
     {
         UI_Text = GameObject.Find("UI_Text");
         UI_Message = GameObject.Find("UI_Message");
-        Main_Camera = GameObject.Find("Main Camera");
-        Camera_position = GameObject.Find("Camera_position");
+        Main_Camera = GameObject.Find("Main_Camera");
+        Camera_position = GameObject.Find("Camera_Position");
         UI_Panel = GameObject.Find("UI_Panel");
 
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
