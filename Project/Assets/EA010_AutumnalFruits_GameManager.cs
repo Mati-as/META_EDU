@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using UnityEditor.iOS;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -58,8 +59,61 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private const int FALL_IMAGE_COUNT = 5;
     private SpriteRenderer FallRelatedPictureSprite;
 
-    private const int ROUND_COUNT = 1; // 5; 
+    private const int ROUND_COUNT = 5; // 5; 
     private int _currentRoundCount;
+
+    private int currentRoundCount
+    {
+        get
+        {
+            return _currentRoundCount;
+        }
+        set
+        {
+            if (_currentRoundCount == (int)Fruits.Chestnut)
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Chestnut];
+                SeqMessageEvent?.Invoke(nameof(Fruits.Chestnut)+'Q');
+                return;
+            }
+            if (_currentRoundCount == (int)Fruits.Acorn)
+            {
+                  Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Acorn];
+                SeqMessageEvent?.Invoke(nameof(Fruits.Acorn)+'Q');
+                return;
+            }
+            if (_currentRoundCount == (int)Fruits.Apple)
+            {
+                  Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Apple];
+                SeqMessageEvent?.Invoke(nameof(Fruits.Apple)+'Q');
+                return;
+            }
+            if (_currentRoundCount == (int)Fruits.Gingko)
+            {
+                  Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Gingko];
+                SeqMessageEvent?.Invoke(nameof(Fruits.Gingko)+'Q');
+                return;
+            }
+
+            if (_currentRoundCount == (int)Fruits.Persimmon)
+            {
+                  Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Persimmon];
+                SeqMessageEvent?.Invoke(nameof(Fruits.Persimmon) + 'Q');
+                return;
+            }
+            
+            
+            Logger.LogError("해당하는 과일없음.");
+
+
+        }
+        
+    }
 
     private const int WOODBLOCK_COUNT_TO_GET_RID_OF = 10;
     private int _currentRemovedWoodBlockCount;
@@ -81,7 +135,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private readonly int DROP = Animator.StringToHash("_drop");
     private int _currentSeqNum;
 
-    public static event Action<string> SequnceMessage;
+    public static event Action<string> SeqMessageEvent;
 
     private readonly Dictionary<int, Animator> _fruitAnimatorMap = new();
 
@@ -104,37 +158,37 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                 case SeqName.OnTreeScene_A:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
                 case SeqName.OnTreeScene_B:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
                 case SeqName.OnTreeScene_C:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
                 case SeqName.OnTreeScene_D:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
                 case SeqName.OnTreeScene_E:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
                 case SeqName.OnFinish:
                     DOVirtual.DelayedCall(2.5f, ()=>
                     {
-                        SequnceMessage?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                     });
                     break;
             }
@@ -144,27 +198,38 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     }
 
 
+    private Sprite[] fruitImages = new Sprite[5];
+
+    private void LoadSpriteImage()
+    {
+        fruitImages[(int)Fruits.Apple] = Resources.Load<Sprite>("Runtime/EA010/" + nameof(Fruits.Apple));
+        fruitImages[(int)Fruits.Gingko] = Resources.Load<Sprite>("Runtime/EA010/" + nameof(Fruits.Gingko));
+        fruitImages[(int)Fruits.Chestnut] = Resources.Load<Sprite>("Runtime/EA010/" + nameof(Fruits.Chestnut));
+        fruitImages[(int)Fruits.Persimmon] = Resources.Load<Sprite>("Runtime/EA010/" + nameof(Fruits.Persimmon));
+        fruitImages[(int)Fruits.Acorn] = Resources.Load<Sprite>("Runtime/EA010/" + nameof(Fruits.Acorn));
+    }
     protected override void Init()
     {
-        base.Init();
-
+        LoadSpriteImage();
         _mainAnimator = GetComponent<Animator>();
-
+        
+        
+        base.Init();
+        
         BindObject(typeof(Obj));
-
         FallRelatedPictureSprite = GetObject((int)Obj.FallRelatedPictureSprite).GetComponent<SpriteRenderer>();
         _isClickable = false;
 
         SetAllWoodBlocks();
 
         currentSeqNum = 0;
-
-
+        
         _fruitAnimatorMap.Add((int)Fruits.Chestnut, GameObject.Find("Chestnut").GetComponent<Animator>());
         _fruitAnimatorMap.Add((int)Fruits.Acorn, GameObject.Find("Acorn").GetComponent<Animator>());
         _fruitAnimatorMap.Add((int)Fruits.Apple, GameObject.Find("Apple").GetComponent<Animator>());
         _fruitAnimatorMap.Add((int)Fruits.Gingko, GameObject.Find("Gingko").GetComponent<Animator>());
         _fruitAnimatorMap.Add((int)Fruits.Persimmon, GameObject.Find("Persimmon").GetComponent<Animator>());
+        
         InitFruitOnTrees();
     }
 
@@ -207,7 +272,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private void OnPuzzleGameStart()
     {
         _isClickable = true;
-        _currentRoundCount = 1;
+        currentRoundCount = 1;
     }
 
     private void OnRaysyncOnPuzzeGame()
@@ -305,7 +370,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         _isRoundFinished = false;
         _isClickable = true;
         _currentRemovedWoodBlockCount = 0;
-        _currentRoundCount++;
+        currentRoundCount++;
 
         foreach (var key in _woodBlockMap.Keys.ToArray())
         {
@@ -368,7 +433,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (currentSeqNum == (int)SeqName.OnTreeScene_A && hit.transform.name.Contains("Chestnut"))
             {
                 DropFruitOnTrees(Fruits.Chestnut);
-                SequnceMessage?.Invoke("chestnut");
+                SeqMessageEvent?.Invoke("chestnut");
                 DOVirtual.DelayedCall(3f, () => { currentSeqNum = (int)SeqName.OnTreeScene_B; });
                 return;
             }
@@ -376,7 +441,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (currentSeqNum == (int)SeqName.OnTreeScene_B && hit.transform.name.Contains("Acorn"))
             {
                 DropFruitOnTrees(Fruits.Acorn);
-                SequnceMessage?.Invoke("Acorn");
+                SeqMessageEvent?.Invoke("Acorn");
                 DOVirtual.DelayedCall(3f, () => { currentSeqNum = (int)SeqName.OnTreeScene_C; });
                 return;
             }
@@ -384,7 +449,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (currentSeqNum == (int)SeqName.OnTreeScene_C && hit.transform.name.Contains("Apple"))
             {
                 DropFruitOnTrees(Fruits.Apple);
-                SequnceMessage?.Invoke("Apple");
+                SeqMessageEvent?.Invoke("Apple");
                 DOVirtual.DelayedCall(3f, () => { currentSeqNum = (int)SeqName.OnTreeScene_D; });
                 return;
             }
@@ -392,7 +457,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (currentSeqNum == (int)SeqName.OnTreeScene_D && hit.transform.name.Contains("Gingko"))
             {
                 DropFruitOnTrees(Fruits.Gingko);
-                SequnceMessage?.Invoke("Gingko");
+                SeqMessageEvent?.Invoke("Gingko");
                 DOVirtual.DelayedCall(3f, () => { currentSeqNum = (int)SeqName.OnTreeScene_E; });
                 return;
             }
@@ -400,7 +465,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (currentSeqNum == (int)SeqName.OnTreeScene_E && hit.transform.name.Contains("Persimmon"))
             {
                 DropFruitOnTrees(Fruits.Persimmon);
-                SequnceMessage?.Invoke("Persimmon");
+                SeqMessageEvent?.Invoke("Persimmon");
                 DOVirtual.DelayedCall(3f, () => { currentSeqNum = (int)SeqName.OnFinish; });
                 return;
             }
