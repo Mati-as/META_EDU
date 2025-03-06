@@ -175,7 +175,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
                 
                 //sound--------------------
                 var randomChar = (char)Random.Range('A', 'F' + 1);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                     0.3f);
                 
                 //particle------------------
@@ -276,7 +276,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
         if (_isSquished[id]) BloatBack(id);
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
 
             sun.DOLocalRotateQuaternion(_sunDefaultRotation *
                                         quaternion.Euler(Random.Range(-45, 45), Random.Range(-45, 45),

@@ -154,11 +154,11 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
         currentRotation = Random.Range(0,360);
       
         var randomChar = (char)Random.Range('A', 'C' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, 
+        Managers.Sound.Play(SoundManager.Sound.Effect, 
             "Audio/명화컨텐츠/BA001/Click" + randomChar,Random.Range(0.003f,0.009f));
         
         var randomCharWater = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, 
+        Managers.Sound.Play(SoundManager.Sound.Effect, 
             "Audio/명화컨텐츠/BA001/Water" + randomCharWater,Random.Range(0.07f,0.10f));
         
         RaycastHit hit;

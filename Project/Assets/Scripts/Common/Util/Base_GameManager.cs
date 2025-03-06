@@ -70,6 +70,11 @@ public abstract class Base_GameManager : MonoBehaviour
       //  if (UIManagerCheck == null) Managers.UI.ShowPopupUI("UIManager_"+SceneManager.GetActiveScene().name);
     }
 
+
+    protected virtual void Start()
+    {
+        
+    }
     protected float waitForClickableInGameRay
     {
         get => waitForClickableInGameRayRay;
@@ -325,7 +330,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        Managers.soundManager.Clear();
+        Managers.Sound.Clear();
 
 
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
@@ -354,7 +359,7 @@ public abstract class Base_GameManager : MonoBehaviour
             DOVirtual.Float(0, 1, 1.5f, _ => { })
                 .OnComplete(() =>
                 {
-                    var isPlaying = Managers.soundManager.Play(SoundManager.Sound.Narration,
+                    var isPlaying = Managers.Sound.Play(SoundManager.Sound.Narration,
                         "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.8f);
 
 #if UNITY_EDITOR
@@ -363,7 +368,7 @@ public abstract class Base_GameManager : MonoBehaviour
 #endif
                 });
 
-            Managers.soundManager.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
+            Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
                 BGM_VOLUME);
         }
     }

@@ -99,7 +99,7 @@ public class Manager_SEQ_4 : Base_GameManager
         }
         else if (Content_Seq == 3 || Content_Seq == 5 || Content_Seq == 7 || Content_Seq == 9 || Content_Seq == 11)
         {
-            //11¹ø¿¡¼­ ¿©±â°¡ ½ÇÇàÀÌ ¾ÈµÈµí
+            //11ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÈµï¿½
             Debug.Log("Content_Seq" + Content_Seq + "setting");
             Init_EachGame_emoji(Game_round);
         }
@@ -123,22 +123,22 @@ public class Manager_SEQ_4 : Base_GameManager
 
     void Init_Game_emoji()
     {
-        var path = "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/SandwichFalling0" + Random.Range(1, 6);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
+        var path = "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-        //1¹ø ¾ÆÀÌÄÜ ºñÈ°¼ºÈ­
+        //1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         Manager_Anim.Inactive_Seq_Icon_1();
 
-        //2¹ø ¾ÆÀÌÄÜ È°¼ºÈ­
+        //2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
         Manager_Anim.Setting_Seq_Icon_2();
     }
 
     void Init_EachGame_emoji(int round)
     {
-        var path = "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/SandwichFalling0" + Random.Range(1, 6);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, path, 0.25f);
+        var path = "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-        //ÆÐ³Î È°¼ºÈ­, ÆÐ³Î Àá½ÃÈÄ ºñÈ°¼ºÈ­
+        //ï¿½Ð³ï¿½ È°ï¿½ï¿½È­, ï¿½Ð³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         Manager_Anim.Setting_Seq_Eachgame(round);
         Number_Maxemoji_game = Manager_obj_4.instance.Number_of_Eachemoji[round];
 
@@ -152,7 +152,7 @@ public class Manager_SEQ_4 : Base_GameManager
     public void Click(GameObject Emoji, int num_emoji, int num_table)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/±âº»ÄÁÅÙÃ÷/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/Sandwich/Click_" + randomChar, 0.3f);
 
         Debug.Log("EMOJI CLICKED!");
 
@@ -179,7 +179,7 @@ public class Manager_SEQ_4 : Base_GameManager
                 Number_Maxemoji_game -= 1;
                 Manager_Anim.Inactivate_emoji(Emoji);
                 Inactive_emoji_clickable(Emoji);
-                Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[num_emoji], 1f);
+                Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[num_emoji], 1f);
                 Emoji.GetComponent<Image>().sprite = Manager_obj_4.instance.White;
 
                 //End
@@ -189,11 +189,11 @@ public class Manager_SEQ_4 : Base_GameManager
                     toggle = true;
                     Game_round += 1;
 
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
 
                     Debug.Log("ALL EMOJI FOUND!");
 
-                    //3d ¿ÀºêÁ§Æ®¿¡¸¸ ÇØ´ç µÇ¹Ç·Î ¼öÁ¤ ÇÊ¿ä
+                    //3d ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½Ç¹Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
                     Onclick = false;
                 }
             }
@@ -243,7 +243,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
-        if (_raycastHits.Length == 0) Logger.Log("Å¬¸¯µÈ °ÍÀÌ ¾Æ¹«°Íµµ ¾ø½À´Ï´Ù. ------------------");
+        if (_raycastHits.Length == 0) Logger.Log("Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ------------------");
 
         foreach (var hit in _raycastHits)
         {
@@ -273,9 +273,9 @@ public class Manager_SEQ_4 : Base_GameManager
         Sequence seq = DOTween.Sequence();
         seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
 
-        //´ÙÀ½À¸·Î ÁøÇàÇÏ´Â È¿°úÀ½?
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ È¿ï¿½ï¿½ï¿½ï¿½?
         //Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
 
         Content_Seq += 1;

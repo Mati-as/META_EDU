@@ -155,7 +155,7 @@ public class Owl_LeavesMaterialController : MonoBehaviour
             seq.AppendInterval(5f);
             seq.AppendCallback(()=>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/AA010_Narration/Owl_ReClickLeaves", 0.5f);
+                Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/AA010_Narration/Owl_ReClickLeaves", 0.5f);
             });
         }
     }
@@ -208,7 +208,7 @@ Debug.Log($"owl ui isn't finished yet.");
     private void DarkenLeaf(string objName)
     {
         var randomChar = (char)Random.Range('A', 'C' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnLeaveClick{randomChar}");
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/비디오 컨텐츠/Owl/OnLeaveClick{randomChar}");
         foreach (var mat in matByNames[objName])
             if (mat != null)
                 mat.DOColor(_defaultDarkenColorMap[mat.GetInstanceID()], 2.3f);

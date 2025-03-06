@@ -112,7 +112,7 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",0.8f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -123,8 +123,8 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",0.8f);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
                 onStartUI?.Invoke();
             }).WaitForCompletion();
         
@@ -148,8 +148,8 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();

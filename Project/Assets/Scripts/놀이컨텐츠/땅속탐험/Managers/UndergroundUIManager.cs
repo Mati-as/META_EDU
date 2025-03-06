@@ -284,7 +284,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                   Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+                   Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -311,7 +311,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
             
         }
           
@@ -327,7 +327,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
         }
 
         // 마지막 동물인 여우가 아닐 때만...

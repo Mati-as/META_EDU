@@ -172,8 +172,8 @@ public class OctopusBaseGameManager : Base_GameManager
     {
 
         StartCoroutine(TypeIn("찾았다!", 0.3f));
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectA");
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectB");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectA");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnCorrectB");
         
         _octopusMeshRenderer.material.SetTexture(_baseMapID, _excitedTexture);
         _isDoingAnimation = true;
@@ -217,7 +217,7 @@ public class OctopusBaseGameManager : Base_GameManager
         var seq = DOTween.Sequence();
         seq.AppendCallback(() =>
         {
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
             StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
         });
         seq.SetDelay(1f);
@@ -243,17 +243,17 @@ public class OctopusBaseGameManager : Base_GameManager
                 soundSeq.AppendCallback(() =>
                 {
                     // nameSpace 
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallClick");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallClick");
                 });
                 soundSeq.AppendInterval(0.8f);
                 soundSeq.AppendCallback(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInPipe");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInPipe");
                 });
                 soundSeq.AppendInterval(1.22f);
                 soundSeq.AppendCallback(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInBody");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB012/OnBallInBody");
                 });
                 soundSeq.Play();
 
@@ -323,7 +323,7 @@ public class OctopusBaseGameManager : Base_GameManager
             soundSeq.AppendCallback(() =>
             {
                 StartCoroutine(TypeIn("공이 내 어느 다리에\n있을지 맞춰봐!", 0.08f));
-                Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB012/Narration_ChooseShoe");
+                Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/BB012/Narration_ChooseShoe");
             });
             soundSeq.Play();
             
@@ -345,7 +345,7 @@ public class OctopusBaseGameManager : Base_GameManager
         foreach (var ball in _ballsQue)
         {
 
-            Managers.soundManager.Play(SoundManager.Sound.Narration,
+            Managers.Sound.Play(SoundManager.Sound.Narration,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/cartoon_squirt_01");
             var id = ball.GetInstanceID();
             _rigidbodies[id].constraints = RigidbodyConstraints.FreezeAll;
@@ -386,7 +386,7 @@ public class OctopusBaseGameManager : Base_GameManager
         var count = 0;
         foreach (var ball in _ballsQue)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Narration,
+            Managers.Sound.Play(SoundManager.Sound.Narration,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Comedy_Cartoon/boat_small_cartoon_propeller_stuttering");
             var id = ball.GetInstanceID();
             var currentOrder = _currentOrderMap[id];
@@ -406,7 +406,7 @@ public class OctopusBaseGameManager : Base_GameManager
                     seq.AppendCallback(() =>
                     {
                         StartCoroutine(TypeIn("색깔공을 눌러봐!", 0.3f));
-                        Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/BB012/Narration_Click");
                     });
                     seq.SetDelay(1f);
                     seq.Play();

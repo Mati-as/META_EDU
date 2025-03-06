@@ -77,7 +77,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
     {
         var i = 0;
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/FallingBeads");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/FallingBeads");
         while (_beadsContainer.Count > 0)
         {
             var bead = GetFromPool(_beadsContainer);

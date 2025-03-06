@@ -21,7 +21,7 @@ public class StarryNight_GameManager : MonoBehaviour
             _gameManager = new StarryNight_GameManager();
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Bgm, "Audio/Bgm/BA002",0.225f);
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/Bgm/BA002",0.225f);
 
         Application.targetFrameRate = 60; 
         

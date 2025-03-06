@@ -196,7 +196,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
 
         if (!_isCountNarrationPlaying)
         {
-            Managers.soundManager.Play
+            Managers.Sound.Play
                 (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}", 0.8f);
             _isCountNarrationPlaying = true;
             _elapsedToCount = 0;
@@ -543,7 +543,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
             moveAnimSeq.OnStart(() =>
             {
                 _psMap[id].Play();
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             });
             moveAnimSeq.InsertCallback(randomDuration * 0.68f, () => { _colliderMap[id].enabled = true; });
             moveAnimSeq.OnComplete(() =>
@@ -638,7 +638,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
                 ps.Play();
 
 
-                Managers.soundManager.Play(SoundManager.Sound.Effect,
+                Managers.Sound.Play(SoundManager.Sound.Effect,
                     "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1), 0.5f);
                 DOVirtual.Float(0, 1, ps.main.startLifetime.constant + 0.5f, _ => { }).OnComplete(() =>
                 {
@@ -742,9 +742,9 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
         OnFishCaught?.Invoke();
 
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
             0.8f);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
             "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
             0.4f);
 

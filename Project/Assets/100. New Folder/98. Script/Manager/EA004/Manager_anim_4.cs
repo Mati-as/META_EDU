@@ -169,7 +169,7 @@ public class Manager_anim_4 : MonoBehaviour
         Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
         emoji_number = Emoji.GetComponent<Clicked_emoji>().Number_emoji;
 
-        Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
 
         Sequence seq_read = DOTween.Sequence();
         seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
@@ -285,7 +285,7 @@ public class Manager_anim_4 : MonoBehaviour
             this.transform.DOShakeScale(2f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Inactivate_emoji(Selected_emoji));
 
 
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
             Manager_Seq.Active_emoji_clickable(Selected_emoji);
 
             round_number += 1;

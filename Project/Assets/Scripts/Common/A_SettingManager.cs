@@ -90,10 +90,10 @@ public class A_SettingManager : MonoBehaviour
 
         var setting = xmlDoc_Setting.CreateElement(nameof(GameSettingData));
         setting.SetAttribute("projectorscreenheight", projectorScreenHeight.ToString("F2"));
-        setting.SetAttribute("mainvolume", Managers.soundManager.volumes[(int)SoundManager.Sound.Main].ToString("F2"));
-        setting.SetAttribute("bgmvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Bgm].ToString("F2"));
-        setting.SetAttribute("effectvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Effect].ToString("F2"));
-        setting.SetAttribute("narrationvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Narration].ToString("F2"));
+        setting.SetAttribute("mainvolume", Managers.Sound.volumes[(int)SoundManager.Sound.Main].ToString("F2"));
+        setting.SetAttribute("bgmvol", Managers.Sound.volumes[(int)SoundManager.Sound.Bgm].ToString("F2"));
+        setting.SetAttribute("effectvol", Managers.Sound.volumes[(int)SoundManager.Sound.Effect].ToString("F2"));
+        setting.SetAttribute("narrationvol", Managers.Sound.volumes[(int)SoundManager.Sound.Narration].ToString("F2"));
 
 
         tempRootSetting.AppendChild(setting);

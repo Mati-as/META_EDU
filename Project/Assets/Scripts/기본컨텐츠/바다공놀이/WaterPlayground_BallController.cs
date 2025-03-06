@@ -76,7 +76,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         {
             
             var randomChar = (char)Random.Range('A', 'C' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hole" + randomChar,0.5f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hole" + randomChar,0.5f);
             
             
              _dolphinController.currentBallInTheHoleColor = _color;
@@ -138,7 +138,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         if (other.transform.gameObject.name.Contains("Ball"))
         {
             
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
                 0.5f );
                
             
@@ -148,7 +148,7 @@ public class WaterPlayground_BallController : MonoBehaviour
 
         if (velproportionalVolume > 0.25f)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Ball", 
                 velproportionalVolume );
         }
         
@@ -256,7 +256,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         currentActivePsCount++;
         
         var randomChar = (char)Random.Range('A', 'C' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hit" + randomChar,0.5f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hit" + randomChar,0.5f);
         _isParticlePlaying = true;
         var ps = particlePool.Dequeue();
         ps.gameObject.SetActive(true);

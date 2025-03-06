@@ -111,7 +111,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
                 scale => { _blackPrints[(int)PrintType.Hand].localScale = Vector3.one * scale; })
             .OnStart(() =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect,
+                Managers.Sound.Play(SoundManager.Sound.Effect,
                     "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
             })
             .OnComplete(() =>
@@ -137,7 +137,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
             .OnComplete(() => { _isClickable = true;})
             .OnStart(() =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect,
+                Managers.Sound.Play(SoundManager.Sound.Effect,
                     "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
             })
             .WaitForCompletion();
@@ -190,7 +190,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
                     Debug.Log($"clicked ID{_firstClickedID}");
 
                     //검정색을 클릭하도록 유도하는 급박한 느낌의 사운드 추가 
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/BlackPrint",0.5f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/BlackPrint",0.5f);
                 }
                 else
                 {
@@ -201,7 +201,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
                         Disappear();
 
                         //사라지는 사운드 추가
-                        Managers.soundManager.Play(SoundManager.Sound.Effect,
+                        Managers.Sound.Play(SoundManager.Sound.Effect,
                             "Audio/Gamemaster Audio - Fun Casual Sounds/User_Interface_Menu/ui_menu_button_click_05", 0.3f);
                     }
                       

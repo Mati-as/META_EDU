@@ -175,7 +175,7 @@ public class Piano_MusicController : Base_GameManager
                 PlayKeyAnimByUser(hit.transform, _defaultPosMap[hit.transform.gameObject.name]);
                 if (SceneManager.GetActiveScene().name == "BD005_UserPlay")
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/"+clickedName,0.05f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/"+clickedName,0.05f);
                 }
             }
               
@@ -249,7 +249,7 @@ public class Piano_MusicController : Base_GameManager
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
                 PlayKeyAnim(_transformMap["Piano" + scoreString[i]], _defaultPosMap["Piano" + scoreString[i]]);
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/Piano" + scoreString[i]);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/Piano" + scoreString[i]);
                 _clickPs.transform.position = arrival;
                 _clickPs.Play();
 

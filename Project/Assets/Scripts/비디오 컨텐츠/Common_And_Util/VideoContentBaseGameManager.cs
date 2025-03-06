@@ -165,7 +165,7 @@ public class VideoContentBaseGameManager : Base_GameManager
 #endif
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/VideoClickEffectSound/" + SCENE_NAME, 0.1f
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/VideoClickEffectSound/" + SCENE_NAME, 0.1f
             , Random.Range(1f, 1.05f));
 
         if (psQueue.Count >= emitAmount) TurnOnParticle(psQueue, position);
@@ -206,7 +206,7 @@ public class VideoContentBaseGameManager : Base_GameManager
 #if UNITY_EDITOR
 Debug.Log("sub sound play -");
 #endif
-        Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/VideoClickEffectSound/{SceneManager.GetActiveScene().name}_OnPsEnd",0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/VideoClickEffectSound/{SceneManager.GetActiveScene().name}_OnPsEnd",0.3f);
         ps.Stop();
         ps.Clear();
         ps.gameObject.SetActive(false);

@@ -175,7 +175,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
 
     private void OnGameStartBtnShut()
     {
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
         _isBtnEventInvoked = true;
         _isClickable = false;

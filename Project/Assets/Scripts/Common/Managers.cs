@@ -35,7 +35,7 @@ public class Managers : MonoBehaviour
     //     } 
     // }
     
-    public static A_SettingManager settingManager
+    public static A_SettingManager Setting
     {  
         get 
         { 
@@ -43,7 +43,7 @@ public class Managers : MonoBehaviour
             return s_SettingManager; 
         } 
     }
-    public static CursorImageManager cursorImageManager
+    public static CursorImageManager CursorImage
     {  
         get 
         { 
@@ -51,7 +51,7 @@ public class Managers : MonoBehaviour
             return s_cursorImageManager; 
         } 
     }
-    public static PlayerHistoryManager historyManager 
+    public static PlayerHistoryManager UserHistory 
     {  
         get 
         { 
@@ -59,7 +59,7 @@ public class Managers : MonoBehaviour
             return s_historyManager; 
         } 
     }
-    public static SoundManager soundManager 
+    public static SoundManager Sound 
     {  
         get 
         { 
@@ -86,7 +86,7 @@ public class Managers : MonoBehaviour
         } 
     }
 
-    public static SensorManager sensorManager
+    public static SensorManager Sensor
     {
         get 
         { 
@@ -120,7 +120,7 @@ public class Managers : MonoBehaviour
             GameObject launcher = GameObject.Find("@LauncherRoot");
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             s_SettingManager.Init();
-            PROJECTOR_SCREEN_HEIGHT = settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            PROJECTOR_SCREEN_HEIGHT = Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
             

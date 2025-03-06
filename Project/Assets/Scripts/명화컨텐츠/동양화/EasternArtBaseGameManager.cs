@@ -322,7 +322,7 @@ public class EasternArtBaseGameManager : Base_GameManager
                     _growlingCount++;
                     var RandomChar = (char)Random.Range('A', 'C' + 1);
                     
-                    Managers.soundManager.Play(SoundManager.Sound.Effect,
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
                         "Audio/명화컨텐츠/TigerGrow" + RandomChar,0.35f);
                     //호랑이 울음횟수 제한을 위한 _roraCount
                     DOVirtual.Float(0, 0, 3.35f, _ => { })

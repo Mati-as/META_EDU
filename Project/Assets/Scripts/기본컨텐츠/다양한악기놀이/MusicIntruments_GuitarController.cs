@@ -11,7 +11,7 @@ public class MusicIntruments_GuitarController : MonoBehaviour, IMusicInstruments
         PlayRotateSeqAnimation(transform, Random.Range(40f, 50f), _defaultQuat);
 
         //  var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
             "Audio/기본컨텐츠/MusicInstruments/GuitarStrumA",
             0.3f, pitch: Random.Range(1.1f, 1.3f));
     }

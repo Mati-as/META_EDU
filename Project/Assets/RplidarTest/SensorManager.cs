@@ -91,10 +91,10 @@ public class SensorManager : MonoBehaviour
 #if UNITY_EDITOR
             Debug.Log($"Height Value changed {_height}---------------------------------");
 #endif
-            Debug.Assert(!(Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML < 175)
-                         || !(Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML > 190));
-            _height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-            _height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            Debug.Assert(!(Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML < 175)
+                         || !(Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML > 190));
+            _height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            _height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
         }
     } //cm 
 
@@ -307,9 +307,9 @@ public class SensorManager : MonoBehaviour
         UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
             sensorDistanceFromProjection + _height * 10 / 2; // height의 절반을 mm로 단위로 계산
 
-        height = Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+        height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
         _screenRatio = Resolution_Y / (height * 10);
-        Debug.Log($"Height Set FROM XML:{Managers.settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
+        Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
         Debug.Log($"Ratio:{_screenRatio}");
 
         _sensorDetectedPositionPool = new Stack<RectTransform>();

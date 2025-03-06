@@ -152,7 +152,7 @@ public class Crab_UIManager : UI_PopUp
                 _dialogues[_currentUiIndex].gameObject.SetActive(true);
                 _dialogues[_currentUiIndex].DOScale(defaultScales[(int)CrabDialogue.Crab_Dialogue1], 1.2f).SetEase(Ease.OutBounce);
 
-                Managers.soundManager.Play(SoundManager.Sound.Effect, 
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
                     "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
                     0,0.5f);
 
@@ -189,7 +189,7 @@ public class Crab_UIManager : UI_PopUp
             _dialogues[_currentUiIndex - 1].DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBounce).OnComplete(() =>
             {
                 
-                Managers.soundManager.Play(SoundManager.Sound.Effect, 
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
                     "Audio/비디오 컨텐츠/Crab/Crab_UI_" + 
                     (_currentUiIndex-2).ToString(),0.5f);
 #if UNITY_EDITOR
