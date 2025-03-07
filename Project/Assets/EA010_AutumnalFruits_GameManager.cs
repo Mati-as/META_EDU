@@ -20,6 +20,10 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         //Jujube,
     }
 
+    
+    /// <summary>
+    /// SeqName에따라 Text및 각종 함수 몇경
+    /// </summary>
     public enum SeqName
     {
         Default,
@@ -57,7 +61,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     }
 
     private const int FALL_IMAGE_COUNT = 5;
-    private SpriteRenderer FallRelatedPictureSprite;
+    private SpriteRenderer spriteRenderer;
 
     private const int ROUND_COUNT = 5; // 5; 
     private int _currentRoundCount;
@@ -70,45 +74,47 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         }
         set
         {
-            if (_currentRoundCount == (int)Fruits.Chestnut)
+            _currentRoundCount = value;
+            
+            if (value == (int)Fruits.Chestnut)
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
-                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Chestnut];
+                spriteRenderer.sprite = fruitImages[(int)Fruits.Chestnut];
                 SeqMessageEvent?.Invoke(nameof(Fruits.Chestnut)+'Q');
                 return;
             }
-            if (_currentRoundCount == (int)Fruits.Acorn)
+            if (value == (int)Fruits.Acorn)
             {
-                  Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
-                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Acorn];
+                Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
+                spriteRenderer.sprite = fruitImages[(int)Fruits.Acorn];
                 SeqMessageEvent?.Invoke(nameof(Fruits.Acorn)+'Q');
                 return;
             }
-            if (_currentRoundCount == (int)Fruits.Apple)
+            if (value == (int)Fruits.Apple)
             {
                   Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
-                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Apple];
+                spriteRenderer.sprite = fruitImages[(int)Fruits.Apple];
                 SeqMessageEvent?.Invoke(nameof(Fruits.Apple)+'Q');
                 return;
             }
-            if (_currentRoundCount == (int)Fruits.Gingko)
+            if (value == (int)Fruits.Gingko)
             {
                   Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
-                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Gingko];
+                spriteRenderer.sprite = fruitImages[(int)Fruits.Gingko];
                 SeqMessageEvent?.Invoke(nameof(Fruits.Gingko)+'Q');
                 return;
             }
 
-            if (_currentRoundCount == (int)Fruits.Persimmon)
+            if (value == (int)Fruits.Persimmon)
             {
                   Managers.Sound.Play(SoundManager.Sound.Narration, "NarrationHere");
-                FallRelatedPictureSprite.sprite = fruitImages[(int)Fruits.Persimmon];
+                spriteRenderer.sprite = fruitImages[(int)Fruits.Persimmon];
                 SeqMessageEvent?.Invoke(nameof(Fruits.Persimmon) + 'Q');
                 return;
             }
             
             
-            Logger.LogError("해당하는 과일없음.");
+            Logger.LogError($"해당하는 과일없음.{value}");
 
 
         }
@@ -145,12 +151,14 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         set
         {
             _currentSeqNum = value;
-            SetSeqNum(_currentSeqNum);
+     
+            SetSeqNumAnim(value);
 
-            switch ((SeqName)currentSeqNum)
+            switch ((SeqName)value)
             {
                 case SeqName.Default:
-                    DOVirtual.DelayedCall(2.5f, OnInitialStart);
+                    DOVirtual.DelayedCall(1f, OnInitialStart);
+                    SeqMessageEvent?.Invoke("Default");
                     break;
                 case SeqName.OnPuzzleClick:
                     DOVirtual.DelayedCall(2.5f, OnPuzzleGameStart);
@@ -217,7 +225,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         base.Init();
         
         BindObject(typeof(Obj));
-        FallRelatedPictureSprite = GetObject((int)Obj.FallRelatedPictureSprite).GetComponent<SpriteRenderer>();
+        spriteRenderer = GetObject((int)Obj.FallRelatedPictureSprite).GetComponent<SpriteRenderer>();
         _isClickable = false;
 
         SetAllWoodBlocks();
@@ -264,7 +272,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     }
 
 
-    private void SetSeqNum(int currentSeq)
+    private void SetSeqNumAnim(int currentSeq)
     {
         _mainAnimator.SetInteger(SEQ_NUM, currentSeq);
     }
@@ -281,7 +289,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         {
             var id = hit.transform.GetInstanceID();
 
-            Logger.Log($"hit.transform.name : {hit.transform.name}");
+//            Logger.Log($"hit.transform.name : {hit.transform.name}");
             if (hit.transform.name.Contains("WoodBlock"))
             {
                 _woodBlockMap.TryAdd(id, hit.transform);
@@ -342,6 +350,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         if (!_isRoundFinished && ROUND_COUNT <= _currentRoundCount)
         {
             _isRoundFinished = true;
+            
             DOVirtual.DelayedCall(2f, () =>
             {
                 Logger.Log($"Next Round Start {_currentRoundCount}");
