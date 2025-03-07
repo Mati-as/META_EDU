@@ -299,7 +299,7 @@ public abstract class Base_GameManager : MonoBehaviour
             // }
             
 
-//            Logger.Log($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
+            Logger.SensorClickLog($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
             SetClickableWithDelay(waitForClickableInGameRay);
             
             

@@ -55,13 +55,13 @@ public class A_SettingManager : MonoBehaviour
             Debug.Assert(count!=1);
             
             var projectorScreenHeight = node.Attributes["projectorscreenheight"].Value;
-            Debug.Log($"Value From Xml Height: {projectorScreenHeight}(cm)");
+            Logger.SensorClickLog($"Value From Xml Height: {projectorScreenHeight}(cm)");
 
             float xmlHeight = 0;
             xmlHeight = float.Parse(projectorScreenHeight);
             SensorManager.height = xmlHeight;
             SCREEN_PROJECTOER_HEIGHT_FROM_XML = xmlHeight;
-            Debug.Log($"load projecotr Xmlhegiht ({xmlHeight}) preset suceess. height: {SCREEN_PROJECTOER_HEIGHT_FROM_XML} (cm)");
+            Logger.SensorClickLog($"load projecotr Xmlhegiht ({xmlHeight}) preset suceess. height: {SCREEN_PROJECTOER_HEIGHT_FROM_XML} (cm)");
            
             var mainVol = node.Attributes["mainvolume"].Value;
             MAIN_VOLIUME = float.Parse(mainVol);
@@ -80,7 +80,7 @@ public class A_SettingManager : MonoBehaviour
         }
         Debug.Assert(count !=0,$"setting Failed there's no {nameof(GameSettingData)}" );
         
-        Debug.Log($"initioal setting completed:  {SensorManager.height} (cm) MainVol: {MAIN_VOLIUME}" );
+        Logger.SensorClickLog($"initioal setting completed:  {SensorManager.height} (cm) MainVol: {MAIN_VOLIUME}" );
     }
 
     public static void SaveCurrentSetting(float projectorScreenHeight, float mainVolume, float effectVol, float bgmVol, float narrationVol)
@@ -106,7 +106,7 @@ public class A_SettingManager : MonoBehaviour
 
         if (File.Exists(path))
         {
-            Debug.Log(fileName + "XML FILE EXIST");
+            Logger.SensorClickLog(fileName + "XML FILE EXIST");
             Utils.ReadXML(ref xmlDoc_Setting,settingXmlPath);
         }
         else
@@ -130,11 +130,11 @@ public class A_SettingManager : MonoBehaviour
             root.AppendChild(initSetting); // Append initSetting to the root element
 
             newXml.Save(path);
-            Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+            Logger.SensorClickLog(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
 
           
         }
-        Debug.Log("History Checker Active");
+        Logger.SensorClickLog("History Checker Active");
     }
     
     public static void WriteXML(XmlDocument document, string path)

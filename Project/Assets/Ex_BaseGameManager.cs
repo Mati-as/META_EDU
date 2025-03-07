@@ -13,10 +13,19 @@ using Object = UnityEngine.Object;
 public abstract class Ex_BaseGameManager : Base_GameManager
     
 {
-   protected Dictionary<Type, Object[]> _objects = new();
+    protected Dictionary<Type, Object[]> _objects = new();
 
     protected bool _init;
 
+
+    protected new virtual void Awake()
+    {
+        Init();
+    }
+    protected new virtual void Init()
+    {
+        base.Init();
+    }
 
     
     protected void Bind<T>(Type type) where T : Object

@@ -89,7 +89,7 @@ public class SensorManager : MonoBehaviour
         set
         {
 #if UNITY_EDITOR
-            Debug.Log($"Height Value changed {_height}---------------------------------");
+            Logger.Log($"Height Value changed {_height}---------------------------------");
 #endif
             Debug.Assert(!(Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML < 175)
                          || !(Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML > 190));

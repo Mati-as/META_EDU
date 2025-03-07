@@ -124,7 +124,7 @@ public class RaySynchronizer : MonoBehaviour
         // check if the pointer is over any ui elements
      
         
-        Logger.Log("클릭 From Raysynchronizer");
+        Logger.SensorClickLog("클릭 From Raysynchronizer");
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         

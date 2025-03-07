@@ -128,7 +128,7 @@ public class Managers : MonoBehaviour
             s_historyManager.Init();
             s_cursorImageManager.Init();
             DontDestroyOnLoad(go);
-            Debug.Log("Managers Set--------");
+//            Debug.Log("Managers Set--------");
         }
     }
     

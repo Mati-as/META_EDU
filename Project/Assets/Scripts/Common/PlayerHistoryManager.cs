@@ -81,21 +81,21 @@ public class PlayerHistoryManager : MonoBehaviour
             newXml.AppendChild(rootElement);
             
             newXml.Save(path);
-            Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+            Logger.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
         }
-        Debug.Log("History Checker Active");
+        Logger.Log("History Checker Active");
     }
     
     private void OnSceneLoad(string sceneName, DateTime dateTime)
     {
         if (sceneName.Contains("LAUNCHER"))
         {
-            Debug.Log($"Launcher: history checking X -------------");
+            Logger.Log($"Launcher: history checking X -------------");
             return;
         }
         latestSceneStartTime = dateTime;
         currentSceneName = sceneName;
-        Debug.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
+        Logger.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
     }
     
     private void OnSceneOrAppQuit(string sceneName, DateTime dateTime)

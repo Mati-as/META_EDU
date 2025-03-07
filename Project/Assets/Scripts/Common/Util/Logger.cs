@@ -24,9 +24,11 @@ public static class Logger
         UnityEngine.Debug.LogErrorFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
     }
     
+    
+    
     [Conditional("RaycastDebug")]
-    public static void CliclLog(string msg)
+    public static void SensorClickLog(string msg)
     {
-        UnityEngine.Debug.LogErrorFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
+        UnityEngine.Debug.LogFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
     }
 }

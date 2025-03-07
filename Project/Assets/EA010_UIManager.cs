@@ -20,22 +20,28 @@ public class EA010_UIManager : UI_Base
 
         EA010_AutumnalFruits_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
         EA010_AutumnalFruits_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
+        GetText((int)TMP.MessageBox).text = string.Empty;
         return true;
     }
 
 
     private void OnGetMessageEventFromGm(string message)
     {
+        
+        Logger.Log($"Get Message ---- {message}");
         switch (message)
         {
-            case nameof(EA010_AutumnalFruits_GameManager.MessageSequence.Intro):
-                GetText((int)TMP.MessageBox).text = "가을에는 주렁주렁열매가 매달려요\n어떤 열매가 있을까요?";
-                break;
-
             case nameof(EA010_AutumnalFruits_GameManager.SeqName.Default):
                 GetText((int)TMP.MessageBox).text = string.Empty;
                 break;
-                     
+            
+             case "Q" : GetText((int)TMP.MessageBox).text ="어떤 열매 일까요?";
+                 break;
+             
+            case nameof(EA010_AutumnalFruits_GameManager.MessageSequence.Intro):
+                GetText((int)TMP.MessageBox).text = "가을에는 주렁주렁열매가 매달려요\n어떤 열매가 있을까요?";
+                break;
+            
             // case nameof(EA010_AutumnalFruits_GameManager.Fruits.Chestnut) + "Q":
             //     DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "이 열매는 갈색이고 딱딱해요~\n어떤 열매 일까요?"; });
             //     break;
@@ -71,7 +77,7 @@ public class EA010_UIManager : UI_Base
             //     DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "이 열매는 노란색이고 동글동글해요~ \n 어떤열매일까요?"; });
                 break;
             
-            case nameof(EA010_AutumnalFruits_GameManager.Fruits.Gingko):
+            case nameof(EA010_AutumnalFruits_GameManager.Fruits.Ginkgo):
                 DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "은행"; });
           
                 break;
