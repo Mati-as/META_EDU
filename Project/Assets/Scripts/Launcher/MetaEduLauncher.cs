@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -75,6 +76,7 @@ public class MetaEduLauncher : UI_PopUp
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
     public Camera _uiCamera;
+    public TextMeshProUGUI tmpConfirm;
 
     public static bool isBackButton { get; set; } // 뒤로가기의 경우, 씬로드 이후 게임선택화면이 나타나야합니다. 
 
@@ -122,6 +124,9 @@ public class MetaEduLauncher : UI_PopUp
         
         BindObject(typeof(UIType));
 
+        tmpConfirm = GetObject(((int)UIType.UI_Confirm)).GetComponentInChildren<TextMeshProUGUI>();
+        
+        
         BindButton(typeof(UIButtons));
 
         GetButton((int)UIButtons.Btn_Home).gameObject.BindEvent(() => ShowTab(UIType.Home));
@@ -133,7 +138,7 @@ public class MetaEduLauncher : UI_PopUp
         GetButton((int)UIButtons.Btn_Setting).gameObject.BindEvent(() => ShowTab(UIType.Setting));
         GetButton((int)UIButtons.Btn_Quit).gameObject.BindEvent(() => { Application.Quit(); });
 
-
+        
         GetButton((int)UIButtons.Btn_ConfirmToStart).gameObject.BindEvent(() =>
         {
             LoadScene(_gameNameWaitingForConfirmation);
@@ -171,6 +176,15 @@ public class MetaEduLauncher : UI_PopUp
                         //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
                         _gameNameWaitingForConfirmation = button.gameObject.name;
                         GetObject((int)UIType.UI_Confirm).SetActive(true);
+                        if (Define.GameNameMap.ContainsKey(_gameNameWaitingForConfirmation))
+                        {
+                            tmpConfirm.text = $"-{Define.GameNameMap[_gameNameWaitingForConfirmation]}-" + "\n해당 놀이를 시작 할까요?";
+                        }
+                        else
+                        {
+                            tmpConfirm.text = "\n해당 놀이를 시작할까요?";
+                        }
+                       
                     }); // 원하는 동작 할당
 
                 Logger.Log($"게임 컨텐츠 객체 버튼 할당 :{obj.name}");

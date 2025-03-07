@@ -418,11 +418,11 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
 
         _currentRemovedWoodBlockCount++;
         var randomEase = (Ease)Random.Range((int)Ease.InOutBack, (int)Ease.OutBounce);
-        var duration = Random.Range(0.5f, 1.5f);
+        var duration = Random.Range(0.15f, 0.40f);
         _woodBlockSeqMap[id].Append(_woodBlockMap[id].DOScale(Vector3.zero, duration).SetEase(randomEase))
             .OnComplete(() => { _woodBlockMap[id].gameObject.SetActive(false); });
 
-        DOVirtual.DelayedCall(0.15f, () => { _isWoodBlockClickable = true; });
+        DOVirtual.DelayedCall(0.11f, () => { _isWoodBlockClickable = true; });
     }
 
     private void OnInitialStart()

@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
@@ -22,7 +21,7 @@ public class Managers : MonoBehaviour
     private static PlayerHistoryManager s_historyManager = new PlayerHistoryManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
     private static A_SettingManager s_SettingManager = new A_SettingManager();
-
+    
     public static float PROJECTOR_SCREEN_HEIGHT; 
     public static bool isGameStopped { get; set; }
 
