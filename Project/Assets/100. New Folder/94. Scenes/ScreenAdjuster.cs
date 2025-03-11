@@ -17,6 +17,8 @@ public class ScreenAdjuster : MonoBehaviour
     private float screenSize = 1.0f;
     private float offsetX = 0.5f; // 기본값을 0.5로 설정하여 중앙 시작
     private float offsetY = 0.5f; // 기본값을 0.5로 설정하여 중앙 시작
+    private float SensoroffsetX ; // 기본값을 0.5로 설정하여 중앙 시작
+    private float SensoroffsetY ; // 기본값을 0.5로 설정하여 중앙 시작
     private readonly Vector2 defaultGuideSize = new Vector2(1920, 1080); // 기본 해상도 설정
 
 
@@ -59,26 +61,24 @@ public class ScreenAdjuster : MonoBehaviour
 
     void LoadSettings()
     {
-        if (File.Exists(xmlPath))
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlPath);
-            XmlNode node = xmlDoc.SelectSingleNode("/Settings/GameSettingData");
+        float screenSize, offsetX, offsetY, sensorOffsetX, sensorOffsetY;
+        XmlManager.LoadSettings(out screenSize, out offsetX, out offsetY, out sensorOffsetX, out sensorOffsetY);
 
-            if (node != null)
-            {
-                screenSize = float.Parse(node.Attributes["screenSize"].Value);
-                offsetX = float.Parse(node.Attributes["offsetX"].Value);
-                offsetY = float.Parse(node.Attributes["offsetY"].Value);
-            }
-        }
-        else
-        {
-            screenSize = 1.0f;
-            offsetX = 0.5f;
-            offsetY = 0.5f;
-            SaveSettings(); // 기본값으로 XML 파일 생성
-        }
+        screenSizeSlider.value = screenSize;
+        offsetXSlider.value = offsetX;
+        offsetYSlider.value = offsetY;
+        SensoroffsetX = sensorOffsetX;
+        SensoroffsetY = sensorOffsetY;
+    }
+
+    void SaveSettings()
+    {
+        XmlManager.SaveSettings(screenSizeSlider.value, offsetXSlider.value, offsetYSlider.value, SensoroffsetX, SensoroffsetY);
+
+        //해당 텍스트 데이터를 확인?
+        Now_xmlScreenSizeText.text = $"{screenSize}";
+        Now_xmlOffsetXText.text = $"{offsetX}";
+        Now_xmlOffsetYText.text = $"{offsetY}";
     }
 
     void ApplySettings()
@@ -152,27 +152,6 @@ public class ScreenAdjuster : MonoBehaviour
         xmlScreenSizeText.text = $"Screen Size: {screenSize}";
         xmlOffsetXText.text = $"Offset X: {offsetX}";
         xmlOffsetYText.text = $"Offset Y: {offsetY}";
-    }
-
-    void SaveSettings()
-    {
-        XmlDocument xmlDoc = new XmlDocument();
-        XmlElement root = xmlDoc.CreateElement("Settings");
-        XmlElement gameSetting = xmlDoc.CreateElement("GameSettingData");
-
-        gameSetting.SetAttribute("screenSize", screenSize.ToString("F2"));
-        gameSetting.SetAttribute("offsetX", offsetX.ToString("F2"));
-        gameSetting.SetAttribute("offsetY", offsetY.ToString("F2"));
-
-        root.AppendChild(gameSetting);
-        xmlDoc.AppendChild(root);
-        xmlDoc.Save(xmlPath);
-
-        //해당 텍스트 데이터를 확인?
-        Now_xmlScreenSizeText.text = $"{screenSize}";
-        Now_xmlOffsetXText.text = $"{offsetX}";
-        Now_xmlOffsetYText.text = $"{offsetY}";
-
     }
 
     void ResetToDefault()

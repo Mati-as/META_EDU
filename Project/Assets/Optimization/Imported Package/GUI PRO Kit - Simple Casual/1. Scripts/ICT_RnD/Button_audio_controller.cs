@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class Button_audio_controller : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    //커서기능만 살려둠
     public void Awake()
     {
         Cursor.SetCursor(Managers.CursorImage.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);

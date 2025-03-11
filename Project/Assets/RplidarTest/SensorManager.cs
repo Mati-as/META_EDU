@@ -242,12 +242,17 @@ public class SensorManager : MonoBehaviour
         OnSenSorInit?.Invoke(isSensorOn);
     }
     private TimeSpan _refreshWaitTimeSpan = TimeSpan.FromSeconds(0.5f);
-    private async void InitSensor()
+    //0311 private -> public
+    //0311 런처로 센서 기능 정상 테스트가 불가능하므로 수정
+    public async void InitSensor()
     {
-        if (GameObject.FindWithTag("Launcher") == null)
-            await InitSensorAsync();
-        else
-            Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
+        //if (GameObject.FindWithTag("Launcher") == null)
+        //    await InitSensorAsync();
+        //else
+        //    Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
+
+        await InitSensorAsync();
+        
     }
 
    
@@ -576,7 +581,9 @@ public class SensorManager : MonoBehaviour
         StopSensor();
     }
 
-    private void StopSensor()
+
+    //0311 private -> public
+    public void StopSensor()
     {
         RplidarBinding.EndScan();
         RplidarBinding.EndMotor();
