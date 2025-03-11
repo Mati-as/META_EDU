@@ -74,7 +74,6 @@ public class SensorManager : MonoBehaviour
 
     //====1012
     public bool Test_check;
-    private double number = 0f;
 
     public GameObject Guideline;
     public GameObject TESTUI;
@@ -128,8 +127,6 @@ public class SensorManager : MonoBehaviour
 
     private float sensored_X;
     private float sensored_Y;
-    private float pre_x;
-    private float pre_y;
 
     private bool UI_Active;
     public static bool BallActive { get; set; }
@@ -165,20 +162,14 @@ public class SensorManager : MonoBehaviour
     // private float screen_ratio;// 화면비 // 유니티 height 1080 : 실제 프로젝션 height (mm)를 비교하여 비례를 조정 
     private float _screenRatio = 0.782f;
 
-
-    private Slider _heightSlider;
-    private Slider sensorDistanceSlider;
-    private Slider _screenRatioSlider;
-
-    private TextMeshProUGUI _TMP_height;
-    private TextMeshProUGUI _TMP_seonsorDistance;
-    private TextMeshProUGUI _TMP_ScreenRatio;
-
     ////////////////// 0719- 센서 테스트용 멤버 새로 추가한 부분///////////////////////////////
 
     private float correction_value; // 화면과 유니티에서의 단위를 맞추기 위한 보정값.
 
-    /// /////////////////
+    //0311 센서 위치 보정 위해 추가
+
+    private RectTransform RT_Lidar_object; // 화면과 유니티에서의 단위를 맞추기 위한 보정값.
+
     private void Awake()
     {
         //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
@@ -252,10 +243,10 @@ public class SensorManager : MonoBehaviour
         //    Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
 
         await InitSensorAsync();
-        
+
     }
 
-   
+
     private async Task InitSensorAsync()
     {
         await Task.Delay(_refreshWaitTimeSpan);
@@ -263,11 +254,11 @@ public class SensorManager : MonoBehaviour
         var result = await Task.Run(() => RplidarBinding.OnConnect(PORT));
         if (result < 0)
         {
-            result = await Task.Run(() => RplidarBinding.OnConnect(PORT=="COM3"?"COM4":"COM3"));
+            result = await Task.Run(() => RplidarBinding.OnConnect(PORT == "COM3" ? "COM4" : "COM3"));
         }
-        
-        
-        
+
+
+
         isMoterStarted = await Task.Run(() => RplidarBinding.StartMotor());
 
         m_onscan = await Task.Run(() => RplidarBinding.StartScan());
@@ -398,7 +389,7 @@ public class SensorManager : MonoBehaviour
         if (detectedPosRect == null) return;
 
 #if UNITY_EDITOR
-//        Debug.Log($"sensor: {rectX},{rectY}");
+        //        Debug.Log($"sensor: {rectX},{rectY}");
 #endif
         detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
         detectedPosRect?.gameObject.SetActive(true);
@@ -425,6 +416,15 @@ public class SensorManager : MonoBehaviour
     private void Start()
     {
         // InitSensor();
+        //0311 센서 위치 보정 추가
+        RT_Lidar_object = GetComponent<RectTransform>();
+
+        //0311
+        if (thresholdInputField != null)
+        {
+            thresholdInputField.onEndEdit.AddListener(UpdateThreshold);
+            thresholdInputField.text = thresholdDistance.ToString(); // ✅ 기본값 표시
+        }
     }
 
 
@@ -469,8 +469,18 @@ public class SensorManager : MonoBehaviour
     private readonly float moveThreshold = 0.02f; // 2cm 이상 움직여야 터치 인정
     private readonly float touchCooldown = 0.2f; // 200ms 동안 터치 1회만 허용
 
+    //0311 센서 위치 보정 추가
+    float Sensor_posx;
+    float Sensor_posy;
+    int _filteringAmount=2;
     private void GenerateDectectedPos()
     {
+
+        //0311 센서 위치 보정 추가
+        Sensor_posx = RT_Lidar_object.anchoredPosition.x;
+        Sensor_posy = RT_Lidar_object.anchoredPosition.y;
+        List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
+
         if (!isMoterStarted) return;
         if (Managers.isGameStopped) return;
         _timer = 0f;
@@ -484,9 +494,9 @@ public class SensorManager : MonoBehaviour
                 if (_lidarDatas[i].theta > 90 && _lidarDatas[i].theta < 270) continue;
 
 
-                sensored_X = -_screenRatio *
+                sensored_X = Sensor_posx - _screenRatio *
                              (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad));
-                sensored_Y = -_screenRatio *
+                sensored_Y = Sensor_posy - _screenRatio *
                              (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad) -
                               UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET);
 
@@ -495,17 +505,18 @@ public class SensorManager : MonoBehaviour
                     if (min_x < sensored_X && sensored_X < max_x)
                         if (min_y < sensored_Y && sensored_Y < max_y)
                         {
+                            //0311 추가
+                            detectedPoints.Add(new Vector2(sensored_X, sensored_Y)); //  감지된 좌표 저장
+
                             if (SF_Active)
                             {
                                 // _filteringAmount = 8;
-                                _filteringAmount = 4;
-                                Filtering_touchpoint();
+                                //_filteringAmount = 4;
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                             else
                             {
-                                _filteringAmount = 3;
-                                Filtering_touchpoint();
+                                //_filteringAmount = 3;
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                         }
@@ -514,19 +525,17 @@ public class SensorManager : MonoBehaviour
 #endif
             }
 
-            m_datachanged = false;
-        }
-    }
+            // 0311 감지된 좌표를 그룹화하여 물체 개수 판별
+            objectClusters = ClusterPoints(detectedPoints, thresholdDistance);
+            Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
 
-    //0212
-    private void Filtering_touchpoint()
-    {
-        if (Time.time - lastTouchTime > touchCooldown &&
-            Vector3.Distance(lastTouchPos, new Vector3(sensored_X, sensored_Y, 0)) > moveThreshold)
-        {
-            lastTouchPos = new Vector3(sensored_X, sensored_Y, 0); // 터치 좌표 업데이트
-            lastTouchTime = Time.time; // 터치 시간 업데이트
-            ShowFilteredSensorPos(sensored_X, sensored_Y); // 터치 이벤트 실행
+            ////[수정됨] 각 그룹의 발 방향 분석 추가
+            //foreach (var cluster in objectClusters)
+            //{
+            //    string orientation = DetectFootOrientation(cluster); // [수정됨] 발 방향 감지 함수 호출
+            //    Debug.Log($"발 방향 분석: {orientation}"); // [수정됨] 방향 결과 출력
+            //}
+            m_datachanged = false;
         }
     }
 
@@ -540,42 +549,102 @@ public class SensorManager : MonoBehaviour
             GenerateDectectedPos();
         }
     }
+    //#0311 정확도 개선 관련 부분
 
-    private int _filteringAmount = 2;
+    //inputfield의 경우 오직 메인화면에서 센서 기능 개선 부분에서만 볼 수 있도록 할 것임
+    public InputField thresholdInputField;  // InputField로 threshold 값 조절 가능
+    private float thresholdDistance = 70f;  // 기본값 설정 (조정 가능)
+    public Text ThresholdText;
 
-    public void Instant_Ball(float temp_x, float temp_y)
+    private List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 좌표 리스트
+    private List<List<Vector2>> objectClusters = new List<List<Vector2>>(); // 그룹화된 물체 리스트
+
+    private void UpdateThreshold(string input)
     {
-        var Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
-            UI_Canvas.transform);
-        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
-        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+        if (float.TryParse(input, out float newThreshold))
+        {
+            thresholdDistance = newThreshold;
+            ThresholdText.text = thresholdDistance.ToString("0.00");
+
+            Debug.Log($"Threshold 값이 {thresholdDistance}로 변경됨");
+        }
     }
 
-    public void Instant_Mouse(float temp_x, float temp_y)
+    /// <summary>
+    /// 거리 기반으로 포인트 그룹화 (Threshold 적용)
+    /// </summary>
+    private List<List<Vector2>> ClusterPoints(List<Vector2> points, float distanceThreshold)
     {
-        var Prefab_pos = Instantiate(MOUSEPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
-            UI_Canvas.transform);
-        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
-        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+        List<List<Vector2>> clusters = new List<List<Vector2>>();
+        HashSet<Vector2> visited = new HashSet<Vector2>();
+
+        foreach (Vector2 point in points)
+        {
+            if (visited.Contains(point)) continue;
+
+            List<Vector2> cluster = new List<Vector2>();
+            Queue<Vector2> queue = new Queue<Vector2>();
+            queue.Enqueue(point);
+
+            while (queue.Count > 0)
+            {
+                Vector2 current = queue.Dequeue();
+                if (visited.Contains(current)) continue;
+
+                visited.Add(current);
+                cluster.Add(current);
+
+                foreach (Vector2 neighbor in points)
+                {
+                    if (!visited.Contains(neighbor) && Vector2.Distance(current, neighbor) < distanceThreshold)
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+
+            if (cluster.Count > 0)
+            {
+                clusters.Add(cluster);
+            }
+        }
+        return clusters;
+    }
+    /// <summary>
+    ///[수정됨] 발의 방향을 판별하는 함수 (세로/가로 구분)
+    /// </summary>
+    private string DetectFootOrientation(List<Vector2> cluster)
+    {
+        float minX = float.MaxValue, maxX = float.MinValue;
+        float minY = float.MaxValue, maxY = float.MinValue;
+
+        foreach (var point in cluster)
+        {
+            if (point.x < minX) minX = point.x;
+            if (point.x > maxX) maxX = point.x;
+            if (point.y < minY) minY = point.y;
+            if (point.y > maxY) maxY = point.y;
+        }
+
+        float width = maxX - minX;  // 가로 길이
+        float height = maxY - minY; // 세로 길이
+
+        if (height > width * 1.2f) return "정면 방향 (Vertical)"; // 세로 방향일 경우
+        else if (width > height * 1.2f) return "측면 방향 (Horizontal)"; // 가로 방향일 경우
+        else return "애매한 방향 (Diagonal or Square)"; // 명확하지 않은 경우
     }
 
-    public void Instant_FP(float temp_x, float temp_y)
-    {
-        var Prefab_pos = Instantiate(FPPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
-            UI_Canvas.transform);
-        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
-        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-    }
+    //#0311
 
 
-    public void InstantiateMiddlePointPrefab(float temp_x, float temp_y)
-    {
-        var Prefab_pos = Instantiate(middlePrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
-            UI_Canvas.transform);
-        Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
-        Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-    }
 
+    //public void Instant_Ball(float temp_x, float temp_y)
+    //{
+    //    var Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
+    //        UI_Canvas.transform);
+    //    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
+    //    Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
+    //}
     private void OnApplicationQuit()
     {
         StopSensor();
