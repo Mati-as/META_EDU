@@ -31,13 +31,8 @@ public class SensorManager : MonoBehaviour
 
 
     //=====071423
-    public GameObject BALLPrefab;
-    public GameObject MOUSEPrefab;
-    public GameObject FPPrefab;
-    public GameObject middlePrefab;
     public bool m_onscan;
     private Thread m_thread;
-
 
     public static readonly float SENSOR_DEFAULT_SENSITIVITY = 0.095f;
 
@@ -311,6 +306,10 @@ public class SensorManager : MonoBehaviour
         _sensorDetectedPositionPool = new Stack<RectTransform>();
         SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
 
+        //0311 각각 가로,세로,대각선 별로 풀 준비함
+        _SDPP_realpoint = new Stack<RectTransform>();
+        SetPool(_SDPP_realpoint, "Rplidar/FP_REAL");
+
         OnSenSorInit?.Invoke(isSensorOn);
     }
 
@@ -326,6 +325,7 @@ public class SensorManager : MonoBehaviour
     }
 
     private Stack<RectTransform> _sensorDetectedPositionPool;
+    private Stack<RectTransform> _SDPP_realpoint;
 
 
     private static WaitForSeconds _poolReturnWait;
@@ -395,6 +395,19 @@ public class SensorManager : MonoBehaviour
         detectedPosRect?.gameObject.SetActive(true);
         StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _sensorDetectedPositionPool));
     }
+    private void SFSP_realpoint(float rectX, float rectY)
+    {
+        var detectedPosRect = GetFromPool(_SDPP_realpoint);
+
+        if (detectedPosRect == null) return;
+
+#if UNITY_EDITOR
+        //        Debug.Log($"sensor: {rectX},{rectY}");
+#endif
+        detectedPosRect.anchoredPosition = new Vector2(rectX, rectY);
+        detectedPosRect?.gameObject.SetActive(true);
+        StartCoroutine(ReturnToPoolAfterDelay(detectedPosRect, _SDPP_realpoint));
+    }
 
 
     private void ConfigureSlider(Slider slider, float maxValue, UnityAction<float> onValueChanged,
@@ -423,7 +436,46 @@ public class SensorManager : MonoBehaviour
         if (thresholdInputField != null)
         {
             thresholdInputField.onEndEdit.AddListener(UpdateThreshold);
-            thresholdInputField.text = thresholdDistance.ToString(); // ✅ 기본값 표시
+            thresholdInputField.text = thresholdDistance.ToString();
+        }
+
+        // ✅ 보정값을 조정할 수 있도록 InputField 이벤트 연결
+        if (adjustYHorizontalInput != null)
+        {
+            adjustYHorizontalInput.onEndEdit.AddListener(value => adjustYHorizontal = float.Parse(value));
+            adjustYHorizontalInput.text = adjustYHorizontal.ToString();
+        }
+        if (adjustYVerticalInput != null)
+        {
+            adjustYVerticalInput.onEndEdit.AddListener(value => adjustYVertical = float.Parse(value));
+            adjustYVerticalInput.text = adjustYVertical.ToString();
+        }
+        if (adjustXDiagonalInput != null)
+        {
+            adjustXDiagonalInput.onEndEdit.AddListener(value => adjustXDiagonal = float.Parse(value));
+            adjustXDiagonalInput.text = adjustXDiagonal.ToString();
+        }
+        if (adjustYDiagonalInput != null)
+        {
+            adjustYDiagonalInput.onEndEdit.AddListener(value => adjustYDiagonal = float.Parse(value));
+            adjustYDiagonalInput.text = adjustYDiagonal.ToString();
+        }
+
+        // ✅ 보정값 조정용 InputField 연결
+        if (adjustYHorizontalInput != null)
+        {
+            adjustYHorizontalInput.onEndEdit.AddListener(value => adjustYHorizontal = float.Parse(value));
+            adjustYHorizontalInput.text = adjustYHorizontal.ToString();
+        }
+        if (adjustXDiagonalLeftInput != null)  // ✅ 왼쪽 방향 보정값 InputField 추가
+        {
+            adjustXDiagonalLeftInput.onEndEdit.AddListener(value => adjustXDiagonalLeft = float.Parse(value));
+            adjustXDiagonalLeftInput.text = adjustXDiagonalLeft.ToString();
+        }
+
+        if (toggleFeatureButton != null)
+        {
+            toggleFeatureButton.onClick.AddListener(ToggleFeature);
         }
     }
 
@@ -475,6 +527,7 @@ public class SensorManager : MonoBehaviour
     int _filteringAmount=2;
     private void GenerateDectectedPos()
     {
+        if (!isFeatureActive) return; // ✅ 기능이 비활성화되면 실행하지 않음
 
         //0311 센서 위치 보정 추가
         Sensor_posx = RT_Lidar_object.anchoredPosition.x;
@@ -527,14 +580,20 @@ public class SensorManager : MonoBehaviour
 
             // 0311 감지된 좌표를 그룹화하여 물체 개수 판별
             objectClusters = ClusterPoints(detectedPoints, thresholdDistance);
+
             Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
 
-            ////[수정됨] 각 그룹의 발 방향 분석 추가
-            //foreach (var cluster in objectClusters)
-            //{
-            //    string orientation = DetectFootOrientation(cluster); // [수정됨] 발 방향 감지 함수 호출
-            //    Debug.Log($"발 방향 분석: {orientation}"); // [수정됨] 방향 결과 출력
-            //}
+            foreach (var cluster in objectClusters)
+            {
+                string orientation = DetectFootOrientation(cluster);
+                Debug.Log($"발 방향 분석: {orientation}");
+
+                // ✅ 실터치 지점 계산 & 마커 생성 함수 자리 마련
+                Vector2 touchPoint = CalculateTouchPoint(cluster, orientation);
+                //발방향 분석한 부분 시각화 필요
+                CreateTouchMarker(touchPoint);
+            }
+
             m_datachanged = false;
         }
     }
@@ -552,12 +611,33 @@ public class SensorManager : MonoBehaviour
     //#0311 정확도 개선 관련 부분
 
     //inputfield의 경우 오직 메인화면에서 센서 기능 개선 부분에서만 볼 수 있도록 할 것임
-    public InputField thresholdInputField;  // InputField로 threshold 값 조절 가능
-    private float thresholdDistance = 70f;  // 기본값 설정 (조정 가능)
     public Text ThresholdText;
 
-    private List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 좌표 리스트
-    private List<List<Vector2>> objectClusters = new List<List<Vector2>>(); // 그룹화된 물체 리스트
+    public InputField thresholdInputField;
+    public InputField adjustYHorizontalInput;
+    public InputField adjustYVerticalInput;
+    public InputField adjustXDiagonalInput;
+    public InputField adjustYDiagonalInput;
+    public InputField adjustXDiagonalLeftInput;  // ✅ 왼쪽 방향 추가 (X 보정)
+
+
+    private float thresholdDistance = 70f;      //그룹화를 위한 threshold
+    private float adjustYHorizontal = -50f;
+    private float adjustYVertical = -25f;
+    private float adjustXDiagonal = 25f;
+    private float adjustYDiagonal = -25f;
+    private float adjustXDiagonalLeft = -25f;  // ✅ 왼쪽 방향 보정값
+
+
+    public GameObject centerMarkerPrefab;
+    private List<GameObject> centerMarkers = new List<GameObject>();
+
+    private List<Vector2> detectedPoints = new List<Vector2>();
+    private List<Vector2> centerPoints = new List<Vector2>();
+    private List<List<Vector2>> objectClusters = new List<List<Vector2>>();
+
+    public Button toggleFeatureButton;  // ✅ 기능 ON/OFF 버튼 추가
+    private bool isFeatureActive = true; // ✅ 기능 활성화 여부
 
     private void UpdateThreshold(string input)
     {
@@ -568,6 +648,12 @@ public class SensorManager : MonoBehaviour
 
             Debug.Log($"Threshold 값이 {thresholdDistance}로 변경됨");
         }
+    }
+
+    private void ToggleFeature()
+    {
+        isFeatureActive = !isFeatureActive;
+        Debug.Log($"발 방향 감지 기능: {(isFeatureActive ? "ON" : "OFF")}");
     }
 
     /// <summary>
@@ -610,8 +696,9 @@ public class SensorManager : MonoBehaviour
         }
         return clusters;
     }
+
     /// <summary>
-    ///[수정됨] 발의 방향을 판별하는 함수 (세로/가로 구분)
+    /// ✅ 발 방향을 판별하는 함수
     /// </summary>
     private string DetectFootOrientation(List<Vector2> cluster)
     {
@@ -626,12 +713,60 @@ public class SensorManager : MonoBehaviour
             if (point.y > maxY) maxY = point.y;
         }
 
-        float width = maxX - minX;  // 가로 길이
-        float height = maxY - minY; // 세로 길이
+        float width = maxX - minX;
+        float height = maxY - minY;
 
-        if (height > width * 1.2f) return "정면 방향 (Vertical)"; // 세로 방향일 경우
-        else if (width > height * 1.2f) return "측면 방향 (Horizontal)"; // 가로 방향일 경우
-        else return "애매한 방향 (Diagonal or Square)"; // 명확하지 않은 경우
+        if (height > width * 1.2f) return "Vertical";
+        else if (width > height * 1.2f) return "Horizontal";
+        else return "Diagonal";
+    }
+
+    /// <summary>
+    /// ✅ 왼쪽/오른쪽을 구분하여 실터치 지점 계산
+    /// </summary>
+    private Vector2 CalculateTouchPoint(List<Vector2> cluster, string orientation)
+    {
+        Vector2 center = CalculateCenterPoint(cluster);
+        bool isLeftSide = center.x < Sensor_posx; // ✅ 센서 기준 왼쪽인지 확인
+
+        if (orientation == "Horizontal")
+        {
+            return new Vector2(center.x, center.y + adjustYHorizontal);
+        }
+        else if (orientation == "Vertical")
+        {
+            return new Vector2(center.x, center.y + adjustYVertical);
+        }
+        else // Diagonal
+        {
+            if (isLeftSide)
+                return new Vector2(center.x + adjustXDiagonalLeft, center.y + adjustYDiagonal); // ✅ 왼쪽 보정
+            else
+                return new Vector2(center.x + adjustXDiagonal, center.y + adjustYDiagonal); // ✅ 오른쪽 보정
+        }
+    }
+    /// <summary>
+    /// ✅ 중심 좌표 계산 함수
+    /// </summary>
+    private Vector2 CalculateCenterPoint(List<Vector2> cluster)
+    {
+        float sumX = 0f, sumY = 0f;
+        foreach (var point in cluster)
+        {
+            sumX += point.x;
+            sumY += point.y;
+        }
+        return new Vector2(sumX / cluster.Count, sumY / cluster.Count);
+    }
+
+    /// <summary>
+    /// ✅ 마커 생성 (네가 구현할 함수 자리 마련)
+    /// </summary>
+    private void CreateTouchMarker(Vector2 touchPoint)
+    {
+        Sensor_posx = touchPoint.x;
+        Sensor_posy = touchPoint.y;
+        SFSP_realpoint(Sensor_posx, Sensor_posy);
     }
 
     //#0311
