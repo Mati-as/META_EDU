@@ -55,11 +55,13 @@ public class SensorAdjuster : MonoBehaviour
     private const float CANVAS_X_CENTER = 0.0f;   // 캔버스 기준 X 위치
 
 
-    private bool isFeatureActive = true; //기능 활성화 여부
+    public bool isFeatureActive = false; //기능 활성화 여부
 
+    
 
     void Start()
     {
+        
         //Sensor position
         Button_Sensor_Init.onClick.AddListener(Init_sensor);
         Button_Sensor_Stop.onClick.AddListener(Stop_sensor);
@@ -116,13 +118,14 @@ public class SensorAdjuster : MonoBehaviour
         {
             toggleFeatureButton.onClick.AddListener(ToggleFeature);
         }
-
+        
         LoadSensorSettings();
     }
 
     void Init_sensor()
     {
         manager.InitSensor();
+        UpdateCalibrationValue();
     }
 
     void Stop_sensor()
@@ -238,8 +241,15 @@ public class SensorAdjuster : MonoBehaviour
     private void ToggleFeature()
     {
         isFeatureActive = !isFeatureActive;
-        Debug.Log($"발 방향 감지 기능: {(isFeatureActive ? "ON" : "OFF")}");
+        //Debug.Log($"발 방향 감지 기능: {(isFeatureActive ? "ON" : "OFF")}");
         //여기에서 그냥 값을 직접 바꿔주는게 조금 더 나을듯
+        Debug.Log($"터치 버튼 클릭됨");
+
+        if (isFeatureActive)
+            toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = "터치 기능 ON";
+        else
+            toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = "터치 기능 OFF";
+
         manager.isFeatureActive = isFeatureActive;
     }
 }

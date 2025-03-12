@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using System.Linq;
 using Object = UnityEngine.Object;
 
 public class SensorManager : MonoBehaviour
@@ -471,15 +472,11 @@ public class SensorManager : MonoBehaviour
 
 
     private float _timer;
-    private Vector3 lastTouchPos = Vector3.zero; // 마지막 터치 좌표
-    private float lastTouchTime; // 마지막 터치 시간
-    private readonly float moveThreshold = 0.02f; // 2cm 이상 움직여야 터치 인정
-    private readonly float touchCooldown = 0.2f; // 200ms 동안 터치 1회만 허용
 
     //0311 센서 위치 보정 추가
     float Sensor_posx;
     float Sensor_posy;
-    int _filteringAmount=2;
+    int _filteringAmount = 2;
     private void GenerateDectectedPos()
     {
         //0311 센서 위치 보정 추가
@@ -532,28 +529,158 @@ public class SensorManager : MonoBehaviour
             }
 
             // 0311 감지된 좌표를 그룹화하여 물체 개수 판별
-            if (isFeatureActive)
+            objectClusters = ClusterPoints(detectedPoints, thresholdDistance);
+
+            Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
+
+            foreach (var cluster in objectClusters)
             {
-                objectClusters = ClusterPoints(detectedPoints, thresholdDistance);
+                string orientation = DetectFootOrientation(cluster);
+                //Debug.Log($"발 방향 분석: {orientation}");
 
-                Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
+                //실터치 지점 계산 & 마커 생성 
+                Vector2 touchPoint = CalculateTouchPoint(cluster, orientation);
 
-                foreach (var cluster in objectClusters)
+                if (!isFeatureActive)
                 {
-                    string orientation = DetectFootOrientation(cluster);
-                    Debug.Log($"발 방향 분석: {orientation}");
-
-                    // ✅ 실터치 지점 계산 & 마커 생성 함수 자리 마련
-                    Vector2 touchPoint = CalculateTouchPoint(cluster, orientation);
-                    //발방향 분석한 부분 시각화 필요
                     CreateTouchMarker(touchPoint);
                 }
+                else if (isFeatureActive)
+                {
+                    HandleTouchEvents(touchPoint);
+                }
             }
+
 
             m_datachanged = false;
         }
     }
+    // ✅ 터치 영역 관리
+    public List<GameObject> touchZoneObjects = new List<GameObject>(); // ✅ 터치 영역 리스트
+    public Dictionary<Vector2, float> activeTouchZones = new Dictionary<Vector2, float>(); // 터치 위치별 지속 시간
+    public List<Vector2> touchZoneList = new List<Vector2>(); // 현재 존재하는 터치 이미지 리스트
+    private float touchZoneLifetime = 1.0f; // ✅ 터치가 감지되지 않으면 1초 후 삭제
+    private int maxTouchZones = 20; // ✅ 동시에 유지할 수 있는 최대 터치 영역 개수
 
+    public GameObject touchZonePrefab; // ✅ 터치 영역을 시각화할 프리팹
+    public Transform touchZoneParent; // ✅ 터치 영역을 관리할 부모 오브젝트
+
+    public float Touch_range = 35f; // ✅ 터치 비교 범위
+
+    /// <summary>
+    /// ✅ 터치 이벤트 처리
+    /// </summary>
+    private void HandleTouchEvents(Vector2 touchPoint)
+    {
+        GameObject existingZone = FindTouchZoneAtPoint(touchPoint);
+
+        if (existingZone != null)
+        {
+            // ✅ 기존 터치 영역 내에서 터치가 감지되면 타이머 리셋
+            Debug.Log($"🔵 기존 터치 유지 - 터치 영역 내 터치 감지됨: {touchPoint}");
+            existingZone.GetComponent<TouchZone>().ResetTimer(); // ✅ 타이머 리셋
+            return;
+        }
+
+        if (touchZoneObjects.Count >= maxTouchZones)
+        {
+            // ✅ 터치 영역이 20개 이상이면 가장 오래된 터치 영역 삭제
+            RemoveOldestTouchZone();
+        }
+
+        // ✅ 새로운 터치 영역 추가
+        GameObject newZone = CreateTouchZoneVisual(touchPoint);
+        touchZoneObjects.Add(newZone); // ✅ 리스트에 추가
+        CreateTouchMarker(touchPoint); // ✅ 첫 번째 터치 마커 생성
+
+        Debug.Log($"🟢 새로운 터치 등록 - 위치: {touchPoint}");
+    }
+    /// <summary>
+    /// ✅ 특정 터치 위치가 기존 터치 영역 내에 있는지 확인
+    /// </summary>
+    private GameObject FindTouchZoneAtPoint(Vector2 touchPoint)
+    {
+        foreach (GameObject zone in touchZoneObjects) // ✅ 프리팹 UI 좌표 기준으로 비교
+        {
+            Vector2 zonePos = zone.GetComponent<RectTransform>().anchoredPosition;
+
+            // ✅ X, Y 좌표가 ±35px 범위 내에 있는지 확인
+            if (Mathf.Abs(zonePos.x - touchPoint.x) <= Touch_range && Mathf.Abs(zonePos.y - touchPoint.y) <= Touch_range)
+            {
+                return zone; // ✅ 기존 터치 영역 반환
+            }
+        }
+        return null; // ✅ 기존 터치 영역 없음
+    }
+
+    /// <summary>
+    /// ✅ 터치 영역 위에 터치가 있는지 확인
+    /// </summary>
+    private bool IsTouchActive(Vector2 zonePos)
+    {
+        foreach (var kvp in touchZoneObjects)
+        {
+            Vector2 existingPos = kvp.GetComponent<RectTransform>().anchoredPosition;
+
+            // ✅ 해당 터치 영역 위에 새로운 터치가 있는지 확인
+            if (Mathf.Abs(existingPos.x - zonePos.x) <= Touch_range && Mathf.Abs(existingPos.y - zonePos.y) <= Touch_range)
+            {
+                Debug.Log("터치 영역 위에 터치 포인트 있음");
+
+                return true;
+            }
+            Debug.Log($"🟢 터치 영역 위에 터치 포인트 없음! 비교한 데이터: {existingPos} {zonePos}");
+            //이게 나오는 이유가 이미 존재하고 있는 터치포인트가 사라지지 않아서 인 것 같음
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// ✅ 가장 오래된 터치 영역 삭제
+    /// </summary>
+    private void RemoveOldestTouchZone()
+    {
+        if (touchZoneObjects.Count > 0)
+        {
+            GameObject oldestZone = touchZoneObjects[0];
+            touchZoneObjects.RemoveAt(0);
+            Destroy(oldestZone); // ✅ 터치 영역 삭제
+            Debug.Log($"⚠️ 터치 영역 초과 - 가장 오래된 영역 제거");
+        }
+    }
+
+
+    /// <summary>
+    /// ✅ 특정 터치 영역을 삭제
+    /// </summary>
+    private void RemoveTouchZone(GameObject zone)
+    {
+        Debug.Log("터치 영역 삭제함");
+
+        if (touchZoneObjects.Contains(zone))
+        {
+            Destroy(zone);
+            touchZoneObjects.Remove(zone);
+        }
+    }
+
+    /// <summary>
+    /// ✅ 터치 영역을 시각화하는 오브젝트 생성
+    /// </summary>
+    private GameObject CreateTouchZoneVisual(Vector2 position)
+    {
+        if (touchZonePrefab == null) return null;
+
+        GameObject newTouchZone = Instantiate(touchZonePrefab);
+        newTouchZone.transform.SetParent(touchZoneParent.transform, false);
+
+        RectTransform rectTransform = newTouchZone.GetComponent<RectTransform>();
+        rectTransform.localScale = Vector3.one;
+        rectTransform.anchoredPosition = new Vector2(position.x, position.y);
+        rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, rectTransform.localPosition.y, 0f);
+
+        return newTouchZone;
+    }
     // Update is called once per frame
     private void FixedUpdate()
     {
@@ -563,14 +690,13 @@ public class SensorManager : MonoBehaviour
             _timer = 0;
             GenerateDectectedPos();
         }
+
+        
     }
     //#0311 정확도 개선 관련 부분
     //inputfield의 경우 오직 메인화면에서 센서 기능 개선 부분에서만 볼 수 있도록 할 것임
     public GameObject centerMarkerPrefab;
-    private List<GameObject> centerMarkers = new List<GameObject>();
 
-    private List<Vector2> detectedPoints = new List<Vector2>();
-    private List<Vector2> centerPoints = new List<Vector2>();
     private List<List<Vector2>> objectClusters = new List<List<Vector2>>();
 
     public float thresholdDistance;      //그룹화를 위한 threshold
@@ -580,15 +706,11 @@ public class SensorManager : MonoBehaviour
     public float adjustYDiagonal;
     public float adjustXDiagonalLeft;
 
-    public bool isFeatureActive = true; //기능 활성화 여부
+    public bool isFeatureActive = false; //터치 기능 활성화 여부
 
-    //public float thresholdDistance = 70f;      //그룹화를 위한 threshold
-    //public float adjustYHorizontal = -50f;
-    //public float adjustYVertical = -25f;
-    //public float adjustXDiagonal = 25f;
-    //public float adjustYDiagonal = -25f;
-    //public float adjustXDiagonalLeft = -25f;
-
+    private Dictionary<int, Vector2> activeTouches = new Dictionary<int, Vector2>(); // ✅ 발 ID별 터치 위치 추적
+    private int nextTouchID = 0; // ✅ 새로운 터치 ID 할당용
+    public float touchThreshold = 10f; // 터치 변화 감지 임계값
 
     /// Sensor data clustering
     private List<List<Vector2>> ClusterPoints(List<Vector2> points, float distanceThreshold)
