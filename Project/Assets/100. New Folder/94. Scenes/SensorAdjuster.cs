@@ -125,6 +125,7 @@ public class SensorAdjuster : MonoBehaviour
     void Init_sensor()
     {
         manager.InitSensor();
+        manager.ResetTouchZones();
         UpdateCalibrationValue();
     }
 

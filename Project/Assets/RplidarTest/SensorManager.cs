@@ -577,40 +577,39 @@ public class SensorManager : MonoBehaviour
         if (existingZone != null)
         {
             // ✅ 기존 터치 영역 내에서 터치가 감지되면 타이머 리셋
-            Debug.Log($"🔵 기존 터치 유지 - 터치 영역 내 터치 감지됨: {touchPoint}");
-            existingZone.GetComponent<TouchZone>().ResetTimer(); // ✅ 타이머 리셋
+            if (existingZone.GetComponent<TouchZone>() != null)
+            {
+                existingZone.GetComponent<TouchZone>().ResetTimer();
+            }
             return;
         }
 
         if (touchZoneObjects.Count >= maxTouchZones)
         {
-            // ✅ 터치 영역이 20개 이상이면 가장 오래된 터치 영역 삭제
             RemoveOldestTouchZone();
         }
 
-        // ✅ 새로운 터치 영역 추가
         GameObject newZone = CreateTouchZoneVisual(touchPoint);
-        touchZoneObjects.Add(newZone); // ✅ 리스트에 추가
-        CreateTouchMarker(touchPoint); // ✅ 첫 번째 터치 마커 생성
-
-        Debug.Log($"🟢 새로운 터치 등록 - 위치: {touchPoint}");
+        touchZoneObjects.Add(newZone);
+        CreateTouchMarker(touchPoint);
     }
     /// <summary>
     /// ✅ 특정 터치 위치가 기존 터치 영역 내에 있는지 확인
     /// </summary>
     private GameObject FindTouchZoneAtPoint(Vector2 touchPoint)
     {
-        foreach (GameObject zone in touchZoneObjects) // ✅ 프리팹 UI 좌표 기준으로 비교
+        foreach (GameObject zone in touchZoneObjects)
         {
+            if (zone == null) continue; // ✅ 삭제된 오브젝트 무시
+
             Vector2 zonePos = zone.GetComponent<RectTransform>().anchoredPosition;
 
-            // ✅ X, Y 좌표가 ±35px 범위 내에 있는지 확인
             if (Mathf.Abs(zonePos.x - touchPoint.x) <= Touch_range && Mathf.Abs(zonePos.y - touchPoint.y) <= Touch_range)
             {
-                return zone; // ✅ 기존 터치 영역 반환
+                return zone;
             }
         }
-        return null; // ✅ 기존 터치 영역 없음
+        return null;
     }
 
     /// <summary>
@@ -655,13 +654,14 @@ public class SensorManager : MonoBehaviour
     /// </summary>
     private void RemoveTouchZone(GameObject zone)
     {
-        Debug.Log("터치 영역 삭제함");
-
         if (touchZoneObjects.Contains(zone))
         {
-            Destroy(zone);
             touchZoneObjects.Remove(zone);
+            Destroy(zone);
         }
+
+        // ✅ 리스트에서 null 값이 남아 있는 경우 정리
+        touchZoneObjects = touchZoneObjects.Where(z => z != null).ToList();
     }
 
     /// <summary>
@@ -681,6 +681,23 @@ public class SensorManager : MonoBehaviour
 
         return newTouchZone;
     }
+    public void ResetTouchZones()
+    {
+        // ✅ 기존 터치 영역 삭제
+        foreach (GameObject zone in touchZoneObjects)
+        {
+            Destroy(zone);
+        }
+        touchZoneObjects.Clear();
+
+        // ✅ 터치 관련 변수 초기화
+        activeTouchZones.Clear();
+        touchZoneList.Clear();
+        _timer = 0f;
+
+        Debug.Log("🔄 모든 터치 영역 초기화됨");
+    }
+
     // Update is called once per frame
     private void FixedUpdate()
     {
