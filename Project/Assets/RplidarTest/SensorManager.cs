@@ -555,20 +555,20 @@ public class SensorManager : MonoBehaviour
             m_datachanged = false;
         }
     }
-    // ✅ 터치 영역 관리
-    public List<GameObject> touchZoneObjects = new List<GameObject>(); // ✅ 터치 영역 리스트
+
+    //  터치 영역 관리
+    public List<GameObject> touchZoneObjects = new List<GameObject>(); //  터치 영역 리스트
     public Dictionary<Vector2, float> activeTouchZones = new Dictionary<Vector2, float>(); // 터치 위치별 지속 시간
     public List<Vector2> touchZoneList = new List<Vector2>(); // 현재 존재하는 터치 이미지 리스트
-    private float touchZoneLifetime = 1.0f; // ✅ 터치가 감지되지 않으면 1초 후 삭제
-    private int maxTouchZones = 20; // ✅ 동시에 유지할 수 있는 최대 터치 영역 개수
+    public int maxTouchZones = 20; //  동시에 유지할 수 있는 최대 터치 영역 개수
 
-    public GameObject touchZonePrefab; // ✅ 터치 영역을 시각화할 프리팹
-    public Transform touchZoneParent; // ✅ 터치 영역을 관리할 부모 오브젝트
+    public GameObject touchZonePrefab; // 터치 영역을 시각화할 프리팹
+    public Transform touchZoneParent; // 터치 영역을 관리할 부모 오브젝트
 
-    public float Touch_range = 35f; // ✅ 터치 비교 범위
+    public float Touch_range = 35f; // 터치 비교 범위
 
     /// <summary>
-    /// ✅ 터치 이벤트 처리
+    ///  터치 이벤트 처리
     /// </summary>
     private void HandleTouchEvents(Vector2 touchPoint)
     {
@@ -576,7 +576,7 @@ public class SensorManager : MonoBehaviour
 
         if (existingZone != null)
         {
-            // ✅ 기존 터치 영역 내에서 터치가 감지되면 타이머 리셋
+            //기존 터치 영역 내에서 터치가 감지되면 타이머 리셋
             if (existingZone.GetComponent<TouchZone>() != null)
             {
                 existingZone.GetComponent<TouchZone>().ResetTimer();
@@ -594,13 +594,13 @@ public class SensorManager : MonoBehaviour
         CreateTouchMarker(touchPoint);
     }
     /// <summary>
-    /// ✅ 특정 터치 위치가 기존 터치 영역 내에 있는지 확인
+    /// 특정 터치 위치가 기존 터치 영역 내에 있는지 확인
     /// </summary>
     private GameObject FindTouchZoneAtPoint(Vector2 touchPoint)
     {
         foreach (GameObject zone in touchZoneObjects)
         {
-            if (zone == null) continue; // ✅ 삭제된 오브젝트 무시
+            if (zone == null) continue; // 삭제된 오브젝트 무시
 
             Vector2 zonePos = zone.GetComponent<RectTransform>().anchoredPosition;
 
@@ -613,7 +613,7 @@ public class SensorManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ✅ 터치 영역 위에 터치가 있는지 확인
+    /// 터치 영역 위에 터치가 있는지 확인
     /// </summary>
     private bool IsTouchActive(Vector2 zonePos)
     {
@@ -621,21 +621,21 @@ public class SensorManager : MonoBehaviour
         {
             Vector2 existingPos = kvp.GetComponent<RectTransform>().anchoredPosition;
 
-            // ✅ 해당 터치 영역 위에 새로운 터치가 있는지 확인
+            // 해당 터치 영역 위에 새로운 터치가 있는지 확인
             if (Mathf.Abs(existingPos.x - zonePos.x) <= Touch_range && Mathf.Abs(existingPos.y - zonePos.y) <= Touch_range)
             {
-                Debug.Log("터치 영역 위에 터치 포인트 있음");
+                //Debug.Log("터치 영역 위에 터치 포인트 있음");
 
                 return true;
             }
-            Debug.Log($"🟢 터치 영역 위에 터치 포인트 없음! 비교한 데이터: {existingPos} {zonePos}");
-            //이게 나오는 이유가 이미 존재하고 있는 터치포인트가 사라지지 않아서 인 것 같음
+            //Debug.Log($"🟢 터치 영역 위에 터치 포인트 없음! 비교한 데이터: {existingPos} {zonePos}");
         }
         return false;
     }
 
     /// <summary>
-    /// ✅ 가장 오래된 터치 영역 삭제
+    ///  가장 오래된 터치 영역 삭제,
+    ///  (중요) 기능 구현은 완료되었으나 실질적으로 테스트하지 못 햇음
     /// </summary>
     private void RemoveOldestTouchZone()
     {
@@ -643,29 +643,29 @@ public class SensorManager : MonoBehaviour
         {
             GameObject oldestZone = touchZoneObjects[0];
             touchZoneObjects.RemoveAt(0);
-            Destroy(oldestZone); // ✅ 터치 영역 삭제
-            Debug.Log($"⚠️ 터치 영역 초과 - 가장 오래된 영역 제거");
+            Destroy(oldestZone); //  터치 영역 삭제
+                                 // Debug.Log($"⚠️ 터치 영역 초과 - 가장 오래된 영역 제거");
         }
     }
 
 
     /// <summary>
-    /// ✅ 특정 터치 영역을 삭제
+    ///  특정 터치 영역을 삭제
     /// </summary>
-    private void RemoveTouchZone(GameObject zone)
-    {
-        if (touchZoneObjects.Contains(zone))
-        {
-            touchZoneObjects.Remove(zone);
-            Destroy(zone);
-        }
+    //private void RemoveTouchZone(GameObject zone)
+    //{
+    //    if (touchZoneObjects.Contains(zone))
+    //    {
+    //        touchZoneObjects.Remove(zone);
+    //        Destroy(zone);
+    //    }
 
-        // ✅ 리스트에서 null 값이 남아 있는 경우 정리
-        touchZoneObjects = touchZoneObjects.Where(z => z != null).ToList();
-    }
+    //    //  리스트에서 null 값이 남아 있는 경우 정리
+    //    touchZoneObjects = touchZoneObjects.Where(z => z != null).ToList();
+    //}
 
     /// <summary>
-    /// ✅ 터치 영역을 시각화하는 오브젝트 생성
+    ///  터치 영역을 시각화하는 오브젝트 생성
     /// </summary>
     private GameObject CreateTouchZoneVisual(Vector2 position)
     {
@@ -683,19 +683,18 @@ public class SensorManager : MonoBehaviour
     }
     public void ResetTouchZones()
     {
-        // ✅ 기존 터치 영역 삭제
+        // 기존 터치 영역 삭제
         foreach (GameObject zone in touchZoneObjects)
         {
             Destroy(zone);
         }
         touchZoneObjects.Clear();
 
-        // ✅ 터치 관련 변수 초기화
+        //  터치 관련 변수 초기화
         activeTouchZones.Clear();
         touchZoneList.Clear();
         _timer = 0f;
 
-        Debug.Log("🔄 모든 터치 영역 초기화됨");
     }
 
     // Update is called once per frame
@@ -708,7 +707,7 @@ public class SensorManager : MonoBehaviour
             GenerateDectectedPos();
         }
 
-        
+
     }
     //#0311 정확도 개선 관련 부분
     //inputfield의 경우 오직 메인화면에서 센서 기능 개선 부분에서만 볼 수 있도록 할 것임
@@ -724,9 +723,6 @@ public class SensorManager : MonoBehaviour
     public float adjustXDiagonalLeft;
 
     public bool isFeatureActive = false; //터치 기능 활성화 여부
-
-    private Dictionary<int, Vector2> activeTouches = new Dictionary<int, Vector2>(); // ✅ 발 ID별 터치 위치 추적
-    private int nextTouchID = 0; // ✅ 새로운 터치 ID 할당용
     public float touchThreshold = 10f; // 터치 변화 감지 임계값
 
     /// Sensor data clustering
@@ -794,7 +790,7 @@ public class SensorManager : MonoBehaviour
     private Vector2 CalculateTouchPoint(List<Vector2> cluster, string orientation)
     {
         Vector2 center = CalculateCenterPoint(cluster);
-        bool isLeftSide = center.x < Sensor_posx; // ✅ 센서 기준 왼쪽인지 확인
+        bool isLeftSide = center.x < Sensor_posx; // 센서 기준 왼쪽인지 확인
 
         if (orientation == "Horizontal")
         {
@@ -807,9 +803,9 @@ public class SensorManager : MonoBehaviour
         else // Diagonal
         {
             if (isLeftSide)
-                return new Vector2(center.x + adjustXDiagonalLeft, center.y + adjustYDiagonal); // ✅ 왼쪽 보정
+                return new Vector2(center.x + adjustXDiagonalLeft, center.y + adjustYDiagonal); // 왼쪽 보정
             else
-                return new Vector2(center.x + adjustXDiagonal, center.y + adjustYDiagonal); // ✅ 오른쪽 보정
+                return new Vector2(center.x + adjustXDiagonal, center.y + adjustYDiagonal); // 오른쪽 보정
         }
     }
     /// 중심좌표 계산
@@ -833,7 +829,6 @@ public class SensorManager : MonoBehaviour
     }
 
     //#0311
-
 
 
     //public void Instant_Ball(float temp_x, float temp_y)

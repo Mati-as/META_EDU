@@ -1,31 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SensorAdjuster : MonoBehaviour
 {
-
     public SensorManager manager;
 
     public Button Button_Sensor_Init;
     public Button Button_Sensor_Stop;
     public Button saveButton;
     public Button resetButton;
-
     public Image Lider_object;
     public Slider offsetXSlider;
     public Slider offsetYSlider;
 
     public InputField offsetXInput;
     public InputField offsetYInput;
-
     public Text xmlOffsetXText;
     public Text xmlOffsetYText;
-
     public Text Now_xmlOffsetXText;
     public Text Now_xmlOffsetYText;
-
     public Text ThresholdText;
 
     public InputField thresholdInputField;
@@ -35,34 +28,22 @@ public class SensorAdjuster : MonoBehaviour
     public InputField adjustYDiagonalInput;
     public InputField adjustXDiagonalLeftInput;
 
-    public Button toggleFeatureButton;  //보정 기능 onoff 버튼
+    public InputField adjustTLifetimeInput;
+    public InputField adjustMaxTInput;
+    public InputField adjustTRangeInput;
 
+    public Button Tsetting_saveButton;
+    public Button Tsetting_resetButton;
 
-    private float thresholdDistance = 70f;      //그룹화를 위한 threshold
-    private float adjustYHorizontal = -50f;
-    private float adjustYVertical = -25f;
-    private float adjustXDiagonal = 25f;
-    private float adjustYDiagonal = -25f;
-    private float adjustXDiagonalLeft = -25f;
+    public Button toggleFeatureButton;
 
-    private float screenSize;
-    private float offsetX;
-    private float offsetY;
-    private float SensoroffsetX = 0.5f; // 기본값
-    private float SensoroffsetY = 0.5f; // 기본값
+    private const float CANVAS_Y_CENTER = 540.0f;
+    private const float CANVAS_X_CENTER = 0.0f;
 
-    private const float CANVAS_Y_CENTER = 540.0f; // 캔버스 기준 Y 위치
-    private const float CANVAS_X_CENTER = 0.0f;   // 캔버스 기준 X 위치
-
-
-    public bool isFeatureActive = false; //기능 활성화 여부
-
-    
+    private bool isFeatureActive = false;
 
     void Start()
     {
-        
-        //Sensor position
         Button_Sensor_Init.onClick.AddListener(Init_sensor);
         Button_Sensor_Stop.onClick.AddListener(Stop_sensor);
 
@@ -78,47 +59,65 @@ public class SensorAdjuster : MonoBehaviour
         saveButton.onClick.AddListener(SaveSensorSettings);
         resetButton.onClick.AddListener(ResetToDefault);
 
-
-        //Sensor cluster threshold
         if (thresholdInputField != null)
         {
             thresholdInputField.onEndEdit.AddListener(UpdateThreshold);
-            thresholdInputField.text = thresholdDistance.ToString();
+            thresholdInputField.text = XmlManager.Instance.ClusterThreshold.ToString();
         }
 
-        //Sensor touch calibration value
-        //(확인) 
+        if (thresholdInputField != null)
+        {
+            thresholdInputField.onValueChanged.AddListener(value => UpdateLiveSettings());
+        }
+
         if (adjustYHorizontalInput != null)
         {
-            adjustYHorizontalInput.onEndEdit.AddListener(value => { adjustYHorizontal = float.Parse(value); UpdateCalibrationValue(); });
-            adjustYHorizontalInput.text = adjustYHorizontal.ToString();
+            adjustYHorizontalInput.onValueChanged.AddListener(value => UpdateLiveSettings());
         }
         if (adjustYVerticalInput != null)
         {
-            adjustYVerticalInput.onEndEdit.AddListener(value => { adjustYVertical = float.Parse(value); UpdateCalibrationValue(); });
-            adjustYVerticalInput.text = adjustYVertical.ToString();
+            adjustYVerticalInput.onValueChanged.AddListener(value => UpdateLiveSettings());
         }
         if (adjustXDiagonalInput != null)
         {
-            adjustXDiagonalInput.onEndEdit.AddListener(value => { adjustXDiagonal = float.Parse(value); UpdateCalibrationValue(); });
-            adjustXDiagonalInput.text = adjustXDiagonal.ToString();
+            adjustXDiagonalInput.onValueChanged.AddListener(value => UpdateLiveSettings());
         }
         if (adjustYDiagonalInput != null)
         {
-            adjustYDiagonalInput.onEndEdit.AddListener(value => { adjustYDiagonal = float.Parse(value); UpdateCalibrationValue(); });
-            adjustYDiagonalInput.text = adjustYDiagonal.ToString();
+            adjustYDiagonalInput.onValueChanged.AddListener(value => UpdateLiveSettings());
         }
         if (adjustXDiagonalLeftInput != null)
         {
-            adjustXDiagonalLeftInput.onEndEdit.AddListener(value => { adjustXDiagonalLeft = float.Parse(value); UpdateCalibrationValue(); });
-            adjustXDiagonalLeftInput.text = adjustXDiagonalLeft.ToString();
+            adjustXDiagonalLeftInput.onValueChanged.AddListener(value => UpdateLiveSettings());
+        }
+
+        if (adjustTLifetimeInput != null)
+        {
+            adjustTLifetimeInput.onValueChanged.AddListener(value => UpdateLiveSettings());
+        }
+        if (adjustMaxTInput != null)
+        {
+            adjustMaxTInput.onValueChanged.AddListener(value => UpdateLiveSettings());
+        }
+        if (adjustTRangeInput != null)
+        {
+            adjustTRangeInput.onValueChanged.AddListener(value => UpdateLiveSettings());
         }
 
         if (toggleFeatureButton != null)
         {
             toggleFeatureButton.onClick.AddListener(ToggleFeature);
         }
-        
+        if (Tsetting_saveButton != null)
+        {
+            Tsetting_saveButton.onClick.AddListener(Save_Touchsetting);
+        }
+        if (Tsetting_resetButton != null)
+        {
+            Tsetting_resetButton.onClick.AddListener(Reset_Touchsetting);
+        }
+
+        InitTouchSettingsInputs();
         LoadSensorSettings();
     }
 
@@ -126,7 +125,6 @@ public class SensorAdjuster : MonoBehaviour
     {
         manager.InitSensor();
         manager.ResetTouchZones();
-        UpdateCalibrationValue();
     }
 
     void Stop_sensor()
@@ -134,24 +132,79 @@ public class SensorAdjuster : MonoBehaviour
         manager.StopSensor();
     }
 
+    void Save_Touchsetting()
+    {
+        XmlManager.Instance.ClusterThreshold = int.Parse(thresholdInputField.text);
+        XmlManager.Instance.Yhorizontal = float.Parse(adjustYHorizontalInput.text);
+        XmlManager.Instance.Yvertical = float.Parse(adjustYVerticalInput.text);
+        XmlManager.Instance.Xdiagonal = float.Parse(adjustXDiagonalInput.text);
+        XmlManager.Instance.Ydiagonal = float.Parse(adjustYDiagonalInput.text);
+        XmlManager.Instance.XdiagonalLeft = float.Parse(adjustXDiagonalLeftInput.text);
+        XmlManager.Instance.TouchzoneLifetime = float.Parse(adjustTLifetimeInput.text);
+        XmlManager.Instance.MaxTouchzones = int.Parse(adjustMaxTInput.text);
+        XmlManager.Instance.TouchRange = float.Parse(adjustTRangeInput.text);
+
+        XmlManager.Instance.SaveSettings(); // XML 저장
+
+    }
+
+    void Reset_Touchsetting()
+    {
+        XmlManager.Instance.ClusterThreshold = 70;
+        XmlManager.Instance.Yhorizontal = -50f;
+        XmlManager.Instance.Yvertical = -25f;
+        XmlManager.Instance.Xdiagonal = 25f;
+        XmlManager.Instance.Ydiagonal = -25f;
+        XmlManager.Instance.XdiagonalLeft = -25f;
+        XmlManager.Instance.TouchzoneLifetime = 1.0f;
+        XmlManager.Instance.MaxTouchzones = 20;
+        XmlManager.Instance.TouchRange = 35f;
+
+        InitTouchSettingsInputs();
+        XmlManager.Instance.SaveSettings(); // XML 저장
+    }
+
     void UpdateUI()
     {
-        SensoroffsetX = offsetXSlider.value;
-        SensoroffsetY = offsetYSlider.value;
+        float sensorOffsetX = offsetXSlider.value;
+        float sensorOffsetY = offsetYSlider.value;
 
         if (Lider_object != null)
         {
             RectTransform lidarTransform = Lider_object.rectTransform;
-
-            // 캔버스 중심 (0,540) 기준으로 좌표 변환
-            float adjustedX = (SensoroffsetX - 0.5f) * 1920 + CANVAS_X_CENTER;
-            float adjustedY = (SensoroffsetY - 0.5f) * 1080 + CANVAS_Y_CENTER;
-
+            float adjustedX = (sensorOffsetX - 0.5f) * 1920 + CANVAS_X_CENTER;
+            float adjustedY = (sensorOffsetY - 0.5f) * 1080 + CANVAS_Y_CENTER;
             lidarTransform.anchoredPosition = new Vector2(adjustedX, adjustedY);
         }
-
     }
+    void UpdateLiveSettings()
+    {
+        // SensorAdjuster 내부 변수 업데이트
+        float.TryParse(thresholdInputField.text, out float thresholdDistance);
+        float.TryParse(adjustYHorizontalInput.text, out float adjustYHorizontal);
+        float.TryParse(adjustYVerticalInput.text, out float adjustYVertical);
+        float.TryParse(adjustXDiagonalInput.text, out float adjustXDiagonal);
+        float.TryParse(adjustYDiagonalInput.text, out float adjustYDiagonal);
+        float.TryParse(adjustXDiagonalLeftInput.text, out float adjustXDiagonalLeft);
+        float.TryParse(adjustTLifetimeInput.text, out float touchLifetime);
+        int.TryParse(adjustMaxTInput.text, out int maxTouches);
+        float.TryParse(adjustTRangeInput.text, out float touchRange);
 
+        // SensorManager 즉시 반영
+        if (manager != null)
+        {
+            manager.thresholdDistance = thresholdDistance;
+            manager.adjustYHorizontal = adjustYHorizontal;
+            manager.adjustYVertical = adjustYVertical;
+            manager.adjustXDiagonal = adjustXDiagonal;
+            manager.adjustYDiagonal = adjustYDiagonal;
+            manager.adjustXDiagonalLeft = adjustXDiagonalLeft;
+            //manager.touchZoneLifetime = touchLifetime;
+            manager.maxTouchZones = maxTouches;
+            manager.Touch_range = touchRange;
+
+        }
+    }
     void UpdateInputField(InputField input, float value)
     {
         input.text = value.ToString("0.00");
@@ -165,92 +218,101 @@ public class SensorAdjuster : MonoBehaviour
         }
     }
 
-    //XML에서 센서 오프셋 값 로드
+    /// <summary>
+    ///  XML에서 센서 설정 불러오기
+    /// </summary>
     void LoadSensorSettings()
     {
-        float screensize, offsetXOld, offsetYOld, sensorOffsetX, sensorOffsetY;
-        XmlManager.LoadSettings(out screensize, out offsetXOld, out offsetYOld, out sensorOffsetX, out sensorOffsetY);
+        offsetXSlider.value = XmlManager.Instance.SensorOffsetX;
+        offsetYSlider.value = XmlManager.Instance.SensorOffsetY;
 
-        screenSize = screensize;
-        offsetX = offsetXOld;
-        offsetY = offsetYOld;
-
-        SensoroffsetX = sensorOffsetX;
-        SensoroffsetY = sensorOffsetY;
-
-        offsetXSlider.value = SensoroffsetX;
-        offsetYSlider.value = SensoroffsetY;
-
-        xmlOffsetXText.text = SensoroffsetX.ToString("0.00");
-        xmlOffsetYText.text = SensoroffsetY.ToString("0.00");
+        xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
+        xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
     }
 
-    //센서 오프셋 값만 저장 (화면 크기 값은 변경하지 않음)
+    /// <summary>
+    ///  XML에 센서 설정 저장
+    /// </summary>
     void SaveSensorSettings()
     {
-        XmlManager.SaveSettings(screenSize, offsetX, offsetY, offsetXSlider.value, offsetYSlider.value);
+        XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
+        XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
+        XmlManager.Instance.SaveSettings(); //  XML 저장
 
         xmlOffsetXText.text = offsetXSlider.value.ToString("0.00");
         xmlOffsetYText.text = offsetYSlider.value.ToString("0.00");
 
-
-        // UI에 현재 값 표시
-        Now_xmlOffsetXText.text = SensoroffsetX.ToString("0.00");
-        Now_xmlOffsetYText.text = SensoroffsetY.ToString("0.00");
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
     }
 
-    //센서 초기화 버튼 (Reset 버튼) 기능 수정
+    /// <summary>
+    ///  센서 오프셋 기본값으로 초기화 후 XML 저장
+    /// </summary>
     void ResetToDefault()
     {
-        SensoroffsetX = 0.5f;
-        SensoroffsetY = 0.5f;
+        XmlManager.Instance.SensorOffsetX = 0.5f;
+        XmlManager.Instance.SensorOffsetY = 0.5f;
 
-        //슬라이더와 입력 필드 값도 같이 업데이트
-        offsetXSlider.value = SensoroffsetX;
-        offsetYSlider.value = SensoroffsetY;
+        offsetXSlider.value = 0.5f;
+        offsetYSlider.value = 0.5f;
 
-        UpdateUI();  // UI 갱신
-        SaveSensorSettings();  // XML에 저장
+        UpdateUI();
+        SaveSensorSettings();
     }
-
-    //Sensor cluster threshold
 
     private void UpdateThreshold(string input)
     {
         if (float.TryParse(input, out float newThreshold))
         {
-            thresholdDistance = newThreshold;
-            ThresholdText.text = thresholdDistance.ToString("0.00");
-
-            Debug.Log($"Threshold 값이 {thresholdDistance}로 변경됨");
-            //여기에서 그냥 값을 직접 바꿔주는게 조금 더 나을듯
-            manager.thresholdDistance = thresholdDistance;
+            XmlManager.Instance.ClusterThreshold = (int)newThreshold;
+            ThresholdText.text = XmlManager.Instance.ClusterThreshold.ToString("0.00");
+            manager.thresholdDistance = XmlManager.Instance.ClusterThreshold;
         }
     }
-
-    private void UpdateCalibrationValue()
+    void InitTouchSettingsInputs()
     {
-        //데이터가 안 바뀌는 느낌?
-        manager.adjustYHorizontal = adjustYHorizontal;
-        manager.adjustYVertical = adjustYVertical;
-        manager.adjustXDiagonal = adjustXDiagonal;
-        manager.adjustYDiagonal = adjustYDiagonal;
-        manager.adjustXDiagonalLeft = adjustXDiagonalLeft;
+        if (thresholdInputField != null)
+        {
+            thresholdInputField.text = XmlManager.Instance.ClusterThreshold.ToString();
+        }
+        if (adjustYHorizontalInput != null)
+        {
+            adjustYHorizontalInput.text = XmlManager.Instance.Yhorizontal.ToString();
+        }
+        if (adjustYVerticalInput != null)
+        {
+            adjustYVerticalInput.text = XmlManager.Instance.Yvertical.ToString();
+        }
+        if (adjustXDiagonalInput != null)
+        {
+            adjustXDiagonalInput.text = XmlManager.Instance.Xdiagonal.ToString();
+        }
+        if (adjustYDiagonalInput != null)
+        {
+            adjustYDiagonalInput.text = XmlManager.Instance.Ydiagonal.ToString();
+        }
+        if (adjustXDiagonalLeftInput != null)
+        {
+            adjustXDiagonalLeftInput.text = XmlManager.Instance.XdiagonalLeft.ToString();
+        }
+        if (adjustTLifetimeInput != null)
+        {
+            adjustTLifetimeInput.text = XmlManager.Instance.TouchzoneLifetime.ToString();
+        }
+        if (adjustMaxTInput != null)
+        {
+            adjustMaxTInput.text = XmlManager.Instance.MaxTouchzones.ToString();
+        }
+        if (adjustTRangeInput != null)
+        {
+            adjustTRangeInput.text = XmlManager.Instance.TouchRange.ToString();
+        }
     }
-
-    //Assume touch direction
     private void ToggleFeature()
     {
         isFeatureActive = !isFeatureActive;
-        //Debug.Log($"발 방향 감지 기능: {(isFeatureActive ? "ON" : "OFF")}");
-        //여기에서 그냥 값을 직접 바꿔주는게 조금 더 나을듯
-        Debug.Log($"터치 버튼 클릭됨");
-
-        if (isFeatureActive)
-            toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = "터치 기능 ON";
-        else
-            toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = "터치 기능 OFF";
-
+        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 기능 ON" : "터치 기능 OFF";
         manager.isFeatureActive = isFeatureActive;
     }
 }
