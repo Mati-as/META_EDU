@@ -135,7 +135,7 @@ public class SensorAdjuster : MonoBehaviour
 
     void Init_sensor()
     {
-        manager.InitSensor();
+        manager.InitSensorCo();
         manager.ResetTouchZones();
     }
 
@@ -156,7 +156,7 @@ public class SensorAdjuster : MonoBehaviour
         XmlManager.Instance.MaxTouchzones = int.Parse(adjustMaxTInput.text);
         XmlManager.Instance.TouchRange = float.Parse(adjustTRangeInput.text);
 
-        XmlManager.Instance.SaveSettings(); // XML ÀúÀå
+        XmlManager.Instance.SaveSettings(); // XML ì €ì¥
 
     }
 
@@ -173,7 +173,7 @@ public class SensorAdjuster : MonoBehaviour
         XmlManager.Instance.TouchRange = 35f;
 
         InitTouchSettingsInputs();
-        XmlManager.Instance.SaveSettings(); // XML ÀúÀå
+        XmlManager.Instance.SaveSettings(); // XML ì €ì¥
     }
 
     void Show_Guidecenter()
@@ -186,7 +186,7 @@ public class SensorAdjuster : MonoBehaviour
     }
     void Calibration_sensor_position()
     {
-        //¸Å´ÏÀúÀÇ ÇØ´ç ÇÔ¼ö È£Ãâ
+        //ë§¤ë‹ˆì €ì˜ í•´ë‹¹ í•¨ìˆ˜ í˜¸ì¶œ
         manager.isCalibrationActive = true;
     }
 
@@ -205,7 +205,7 @@ public class SensorAdjuster : MonoBehaviour
     }
     void UpdateLiveSettings()
     {
-        // SensorAdjuster ³»ºÎ º¯¼ö ¾÷µ¥ÀÌÆ®
+        // SensorAdjuster ë‚´ë¶€ ë³€ìˆ˜ ì—…ë°ì´íŠ¸
         float.TryParse(thresholdInputField.text, out float thresholdDistance);
         float.TryParse(adjustYHorizontalInput.text, out float adjustYHorizontal);
         float.TryParse(adjustYVerticalInput.text, out float adjustYVertical);
@@ -216,7 +216,7 @@ public class SensorAdjuster : MonoBehaviour
         int.TryParse(adjustMaxTInput.text, out int maxTouches);
         float.TryParse(adjustTRangeInput.text, out float touchRange);
 
-        // SensorManager Áï½Ã ¹İ¿µ
+        // SensorManager ì¦‰ì‹œ ë°˜ì˜
         if (manager != null)
         {
             manager.thresholdDistance = thresholdDistance;
@@ -245,7 +245,7 @@ public class SensorAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    ///  XML¿¡¼­ ¼¾¼­ ¼³Á¤ ºÒ·¯¿À±â
+    ///  XMLì—ì„œ ì„¼ì„œ ì„¤ì • ë¶ˆëŸ¬ì˜¤ê¸°
     /// </summary>
     void LoadSensorSettings()
     {
@@ -257,13 +257,13 @@ public class SensorAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    ///  XML¿¡ ¼¾¼­ ¼³Á¤ ÀúÀå
+    ///  XMLì— ì„¼ì„œ ì„¤ì • ì €ì¥
     /// </summary>
     void SaveSensorSettings()
     {
         XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
         XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
-        XmlManager.Instance.SaveSettings(); //  XML ÀúÀå
+        XmlManager.Instance.SaveSettings(); //  XML ì €ì¥
 
         xmlOffsetXText.text = offsetXSlider.value.ToString("0.00");
         xmlOffsetYText.text = offsetYSlider.value.ToString("0.00");
@@ -273,7 +273,7 @@ public class SensorAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    ///  ¼¾¼­ ¿ÀÇÁ¼Â ±âº»°ªÀ¸·Î ÃÊ±âÈ­ ÈÄ XML ÀúÀå
+    ///  ì„¼ì„œ ì˜¤í”„ì…‹ ê¸°ë³¸ê°’ìœ¼ë¡œ ì´ˆê¸°í™” í›„ XML ì €ì¥
     /// </summary>
     void ResetToDefault()
     {
@@ -338,7 +338,7 @@ public class SensorAdjuster : MonoBehaviour
     private void ToggleFeature()
     {
         isFeatureActive = !isFeatureActive;
-        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "ÅÍÄ¡ ±â´É ON" : "ÅÍÄ¡ ±â´É OFF";
+        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "í„°ì¹˜ ê¸°ëŠ¥ ON" : "í„°ì¹˜ ê¸°ëŠ¥ OFF";
         manager.isFeatureActive = isFeatureActive;
     }
 }
