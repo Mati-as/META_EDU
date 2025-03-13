@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -135,7 +136,7 @@ public class SensorAdjuster : MonoBehaviour
 
     void Init_sensor()
     {
-        manager.InitSensorCo();
+        manager.AsyncInitSensor();
         manager.ResetTouchZones();
     }
 
@@ -340,5 +341,10 @@ public class SensorAdjuster : MonoBehaviour
         isFeatureActive = !isFeatureActive;
         toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 기능 ON" : "터치 기능 OFF";
         manager.isFeatureActive = isFeatureActive;
+    }
+
+    private void OnDestroy()
+    {
+        manager.StopSensor();
     }
 }

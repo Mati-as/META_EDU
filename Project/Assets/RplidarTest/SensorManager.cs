@@ -182,6 +182,7 @@ public class SensorManager : MonoBehaviour
     {
         UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
         Destroy(gameObject);
+        
         StopSensor();
     }
 
@@ -235,24 +236,27 @@ public class SensorManager : MonoBehaviour
     {
         await InitSensorAsync();
     }
-    
 
+    public async void BindSensorPortPath()
+    {
+         bindPortResult =  RplidarBinding.OnConnect(PORT);
+        if (bindPortResult < 0)
+        {
+            bindPortResult =  RplidarBinding.OnConnect(PORT == "COM3" ? "COM4" : "COM3");
+        }
+    }
+ 
+
+    private int bindPortResult;
     private async Task InitSensorAsync()
     {
         await Task.Delay(_refreshWaitTimeSpan);
-
-        var result = await Task.Run(() => RplidarBinding.OnConnect(PORT));
-        if (result < 0)
-        {
-            result = await Task.Run(() => RplidarBinding.OnConnect(PORT == "COM3" ? "COM4" : "COM3"));
-        }
-
-
+        
 
         isMoterStarted = await Task.Run(() => RplidarBinding.StartMotor());
-
         m_onscan = await Task.Run(() => RplidarBinding.StartScan());
-        Debug.Log("Connect on " + PORT + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
+        
+        Debug.Log("Connect on " + PORT + " result:" + bindPortResult + "\nStartMotor:" + isMoterStarted + "StartScan:" +
                   m_onscan);
 
         if (m_onscan)
@@ -267,6 +271,7 @@ public class SensorManager : MonoBehaviour
 
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         UI_Camera = Manager_Sensor.instance.Get_UIcamera();
+        
 
         // guide라인이랑 동기화 기능
         min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x -
@@ -450,6 +455,8 @@ private IEnumerator RunGenerateMesh()
         pool.Push(obj); // Return the particle system to the pool
     }
 
+
+    private Canvas _launcherSettingCanvas;
     private void SetPool<T>(Stack<T> pool, string path, int poolCount = 100) where T : Object
     {
         //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
@@ -541,8 +548,13 @@ private IEnumerator RunGenerateMesh()
         // InitSensor();
         //0311 센서 위치 보정 추가
         RT_Lidar_object = GetComponent<RectTransform>();
-
+        BindSensorPortPath();
     }
+
+    // private Task BIndPortPathAsync()
+    // {
+    //     await BindPortPath();
+    // };
 
 
     private void GenerateMesh()
@@ -985,6 +997,7 @@ private IEnumerator RunGenerateMesh()
         StopSensor();
     }
 
+    
 
     //0311 private -> public
     public void StopSensor()
@@ -997,8 +1010,9 @@ private IEnumerator RunGenerateMesh()
         //StopCoroutine(GenMesh());
 
         m_thread?.Abort();
-
         m_onscan = false;
+        
+        BindSensorPortPath();
     }
 
     public bool UI_Active_ONOFF()
