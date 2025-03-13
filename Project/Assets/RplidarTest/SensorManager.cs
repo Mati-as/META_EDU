@@ -549,6 +549,12 @@ public class SensorManager : MonoBehaviour
                 {
                     HandleTouchEvents(touchPoint);
                 }
+
+                // ✅ 보정 모드가 활성화된 경우, 보정 함수 호출
+                if (isCalibrationActive)
+                {
+                    CalibrateSensor(touchPoint);
+                }
             }
 
 
@@ -566,6 +572,29 @@ public class SensorManager : MonoBehaviour
     public Transform touchZoneParent; // 터치 영역을 관리할 부모 오브젝트
 
     public float Touch_range = 35f; // 터치 비교 범위
+
+
+    public bool isCalibrationActive = false; // ✅ 보정 모드 활성화 여부
+    public Vector2 Center_Point = new Vector2(0, 0); // ✅ 화면 중앙 기준 좌표
+
+
+    /// <summary>
+    /// ✅ 센서 보정 함수: 터치한 좌표를 기준으로 센서의 위치를 이동
+    /// </summary>
+    public void CalibrateSensor(Vector2 touchPoint)
+    {
+        // ✅ 화면 정중앙과 터치 지점의 차이를 계산하여 보정
+        float offsetX = Center_Point.x - touchPoint.x;
+        float offsetY = Center_Point.y - touchPoint.y;
+
+        Debug.Log($"🔧 센서 보정: OffsetX={offsetX}, OffsetY={offsetY}");
+
+        // ✅ 보정된 값으로 센서 위치 이동 (this.transform 사용)
+        this.transform.position += new Vector3(offsetX, offsetY, 0);
+
+        // ✅ 센서 보정 완료 후 보정 모드 비활성화
+        isCalibrationActive = false;
+    }
 
     /// <summary>
     ///  터치 이벤트 처리

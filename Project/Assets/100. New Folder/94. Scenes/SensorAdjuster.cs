@@ -37,6 +37,14 @@ public class SensorAdjuster : MonoBehaviour
 
     public Button toggleFeatureButton;
 
+    public Button Button_Guide_center;
+    public Button Button_Guide_vertex;
+    public Button Button_Calib_pos;
+    public Button Button_Calib_adjust;
+
+    public GameObject Center_Point;
+    public GameObject Vertext_Point;
+
     private const float CANVAS_Y_CENTER = 540.0f;
     private const float CANVAS_X_CENTER = 0.0f;
 
@@ -58,6 +66,10 @@ public class SensorAdjuster : MonoBehaviour
 
         saveButton.onClick.AddListener(SaveSensorSettings);
         resetButton.onClick.AddListener(ResetToDefault);
+
+        Button_Guide_center.onClick.AddListener(Show_Guidecenter);
+        Button_Guide_vertex.onClick.AddListener(Show_Guidevertex);
+        Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
 
         if (thresholdInputField != null)
         {
@@ -162,6 +174,20 @@ public class SensorAdjuster : MonoBehaviour
 
         InitTouchSettingsInputs();
         XmlManager.Instance.SaveSettings(); // XML 저장
+    }
+
+    void Show_Guidecenter()
+    {
+        Center_Point.SetActive(!Center_Point.activeSelf);
+    }
+    void Show_Guidevertex()
+    {
+        Vertext_Point.SetActive(!Vertext_Point.activeSelf);
+    }
+    void Calibration_sensor_position()
+    {
+        //매니저의 해당 함수 호출
+        manager.isCalibrationActive = true;
     }
 
     void UpdateUI()
