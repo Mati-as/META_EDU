@@ -154,8 +154,8 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
     private int _currentRemovedWoodBlockCount;
 
-    private const int COLUMN_COUNT = 13;
-    private const int ROW_COUNT = 7;
+    private const int COLUMN_COUNT = 6;
+    private const int ROW_COUNT = 4;
     private readonly Transform[][] allWoodblocks = new Transform[COLUMN_COUNT][];
 
     private readonly Dictionary<int, Transform> _woodBlockMap = new();
