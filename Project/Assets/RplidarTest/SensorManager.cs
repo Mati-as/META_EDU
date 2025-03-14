@@ -604,47 +604,48 @@ private IEnumerator RunGenerateMesh()
     int _filteringAmount = 2;
     private void GenerateDectectedPos()
     {
-        //0311 센서 위치 보정 추가
+        // ✅ 0311 센서 위치 보정 추가
         Sensor_posx = RT_Lidar_object.anchoredPosition.x;
         Sensor_posy = RT_Lidar_object.anchoredPosition.y;
-        List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
+
+        List<Vector2> detectedPoints = new List<Vector2>(); // ✅ 감지된 포인트 리스트
 
         if (!isMoterStarted) return;
         if (Managers.isGameStopped) return;
         _timer = 0f;
 
-
         if (m_datachanged)
         {
             for (var i = 0; i < 720; i++)
             {
-                //6배
+                // ✅ 6배
                 if (_lidarDatas[i].theta > 90 && _lidarDatas[i].theta < 270) continue;
 
+                // ✅ 기존 좌표 계산
+                Vector2 rawSensorPos = new Vector2(
+                    Sensor_posx - _screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad)),
+                    Sensor_posy - _screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad) - UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET)
+                );
 
-                sensored_X = Sensor_posx - _screenRatio *
-                             (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad));
-                sensored_Y = Sensor_posy - _screenRatio *
-                             (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad) -
-                              UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET);
+                // ✅ Homography 변환이 활성화된 경우, 보정된 좌표 적용
+                Vector2 correctedPos = isCalibrationApplied ? GetCorrectedPosition(rawSensorPos) : rawSensorPos;
 
+                sensored_X = correctedPos.x;
+                sensored_Y = correctedPos.y;
 
                 if (i % _filteringAmount == 0)
                     if (min_x < sensored_X && sensored_X < max_x)
                         if (min_y < sensored_Y && sensored_Y < max_y)
                         {
-                            //0311 추가
-                            detectedPoints.Add(new Vector2(sensored_X, sensored_Y)); //  감지된 좌표 저장
+                            // ✅ 0311 추가
+                            detectedPoints.Add(correctedPos); // ✅ 보정된 좌표 저장
 
                             if (SF_Active)
                             {
-                                // _filteringAmount = 8;
-                                //_filteringAmount = 4;
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                             else
                             {
-                                //_filteringAmount = 3;
                                 ShowFilteredSensorPos(sensored_X, sensored_Y);
                             }
                         }
@@ -653,17 +654,16 @@ private IEnumerator RunGenerateMesh()
 #endif
             }
 
-            // 0311 감지된 좌표를 그룹화하여 물체 개수 판별
+            // ✅ 0311 감지된 좌표를 그룹화하여 물체 개수 판별
             objectClusters = ClusterPoints(detectedPoints, thresholdDistance);
 
-            Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
+            //Debug.Log($"감지된 물체 개수: {objectClusters.Count}");
 
             foreach (var cluster in objectClusters)
             {
                 string orientation = DetectFootOrientation(cluster);
-                //Debug.Log($"발 방향 분석: {orientation}");
 
-                //실터치 지점 계산 & 마커 생성 
+                // ✅ 실터치 지점 계산 & 마커 생성 
                 Vector2 touchPoint = CalculateTouchPoint(cluster, orientation);
 
                 if (!isFeatureActive)
@@ -675,17 +675,115 @@ private IEnumerator RunGenerateMesh()
                     HandleTouchEvents(touchPoint);
                 }
 
-                // ✅ 보정 모드가 활성화된 경우, 보정 함수 호출
-                if (isCalibrationActive)
+                // ✅ 센서 보정 모드가 활성화된 경우, 센서 위치 보정
+                if (isCalibrationActive_SensorPos)
                 {
                     CalibrateSensor(touchPoint);
                 }
-            }
 
+                // ✅ Homography 보정 활성화 시, 터치 좌표 수집 후 보정 수행
+                if (isCalibrationActive)
+                {
+                    CollectCalibrationPoint(touchPoint);
+                }
+            }
 
             m_datachanged = false;
         }
     }
+
+    //센서 실제 화면 보정 관련
+
+
+    public bool isCalibrationActive_SensorPos = false; // ✅ 보정 모드 활성화 여부
+    public bool isCalibrationActive = false; // ✅ 보정 모드 활성화 여부
+    public bool isCalibrationApplied = false;
+    public Vector2 Center_Point = new Vector2(0, 0); // ✅ 화면 중앙 기준 좌표
+    public Vector2 TL_Point = new Vector2(-750, 350); // ✅ 화면 중앙 기준 좌표
+    public Vector2 TR_Point = new Vector2(750, 350); // ✅ 화면 중앙 기준 좌표
+    public Vector2 BL_Point = new Vector2(-750, -350); // ✅ 화면 중앙 기준 좌표
+    public Vector2 BR_Point = new Vector2(750, -350); // ✅ 화면 중앙 기준 좌표
+
+    private Vector2 Measure_TL_Point;
+    private Vector2 Measure_TR_Point;
+    private Vector2 Measure_BL_Point;
+    private Vector2 Measure_BR_Point;
+
+    // ✅ Homography 변환 행렬
+    private Matrix4x4 homographyMatrix;
+
+    private int calibrationStep = 0;
+
+    public Text Calibration_state_indetail;
+
+    private void CollectCalibrationPoint(Vector2 touchPoint)
+    {
+        if (!isCalibrationActive) return;
+
+        switch (calibrationStep)
+        {
+            case 0:
+                Measure_TL_Point = touchPoint;
+                calibrationStep++;
+                Calibration_state_indetail.text = "TL 좌표 저장 완료";
+                isCalibrationActive = false;
+                break;
+            case 1:
+                Measure_TR_Point = touchPoint;
+                calibrationStep++;
+                Calibration_state_indetail.text = "TR 좌표 저장 완료";
+                isCalibrationActive = false;
+                break;
+            case 2:
+                Measure_BL_Point = touchPoint;
+                calibrationStep++;
+                Calibration_state_indetail.text = "BL 좌표 저장 완료";
+                isCalibrationActive = false;
+                break;
+            case 3:
+                Measure_BR_Point = touchPoint;
+                calibrationStep++;
+                Calibration_state_indetail.text = "BR 좌표 저장 완료";
+                isCalibrationActive = false;
+                break;
+        }
+        if (calibrationStep >= 4)
+        {
+            Debug.Log("✅ 모든 좌표가 저장되었습니다. 보정을 적용할 수 있습니다.");
+            isCalibrationActive = false;
+        }
+    }
+
+    public void ApplyCalibration()
+    {
+        if (calibrationStep < 4)
+        {
+            Debug.LogWarning("⚠️ 모든 기준점을 설정해야 보정을 적용할 수 있습니다!");
+            return;
+        }
+
+        homographyMatrix = ComputeHomography(
+            new Vector2[] { Measure_TL_Point, Measure_TR_Point, Measure_BL_Point, Measure_BR_Point },
+            new Vector2[] { TL_Point, TR_Point, BL_Point, BR_Point });
+
+        isCalibrationApplied = true;
+        isCalibrationActive = false;
+
+        Debug.Log("✅ Homography 보정 적용 완료!");
+    }
+
+    private Vector2 GetCorrectedPosition(Vector2 rawPos)
+    {
+        Vector3 transformed = homographyMatrix.MultiplyPoint3x4(new Vector3(rawPos.x, rawPos.y, 1));
+        return new Vector2(transformed.x, transformed.y);
+    }
+
+    private Matrix4x4 ComputeHomography(Vector2[] src, Vector2[] dst)
+    {
+        return Matrix4x4.identity; // Homography 변환 알고리즘 추가 필요
+    }
+
+
 
     //  터치 영역 관리
     public List<GameObject> touchZoneObjects = new List<GameObject>(); //  터치 영역 리스트
@@ -699,26 +797,25 @@ private IEnumerator RunGenerateMesh()
     public float Touch_range = 35f; // 터치 비교 범위
 
 
-    public bool isCalibrationActive = false; // ✅ 보정 모드 활성화 여부
-    public Vector2 Center_Point = new Vector2(0, 0); // ✅ 화면 중앙 기준 좌표
-
-
     /// <summary>
     /// ✅ 센서 보정 함수: 터치한 좌표를 기준으로 센서의 위치를 이동
     /// </summary>
     public void CalibrateSensor(Vector2 touchPoint)
     {
+        Debug.Log("센서 위치 보정함");
+
         // ✅ 화면 정중앙과 터치 지점의 차이를 계산하여 보정
         float offsetX = Center_Point.x - touchPoint.x;
         float offsetY = Center_Point.y - touchPoint.y;
 
         Debug.Log($"🔧 센서 보정: OffsetX={offsetX}, OffsetY={offsetY}");
 
-        // ✅ 보정된 값으로 센서 위치 이동 (this.transform 사용)
-        this.transform.position += new Vector3(offsetX, offsetY, 0);
+        // ✅ 보정된 값으로 센서 위치 이동 (this.transform 사용) 현재의 기준은 0,540인데 
+        RectTransform rectTransform = this.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
 
         // ✅ 센서 보정 완료 후 보정 모드 비활성화
-        isCalibrationActive = false;
+        isCalibrationActive_SensorPos = false;
     }
 
     /// <summary>
