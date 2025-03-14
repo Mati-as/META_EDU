@@ -70,52 +70,67 @@ public class FP_Prefab : RaySynchronizer
 
     private Button _btn;
     private RectTransform _rectTransform;
+    private string excludeMask = "Non_Sensor_Interactable_UIs";
     public override void ShootRay()
     {
-        if (Managers.isGameStopped || _rectTransform==null) return;
-        
+        if (Managers.isGameStopped || _rectTransform == null) return;
+        if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
+        {
+            return;
+        }
+
         screenPosition = _uiCamera.WorldToScreenPoint(_rectTransform.position);
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
+      
+        int layerMask = ~LayerMask.GetMask(excludeMask);
+        
+        if (Physics.Raycast(initialRay, out RaycastHit hit, Mathf.Infinity, layerMask))
+        {
+            Debug.Log($"Hit Object: {hit.collider.gameObject.name}");
+        }
 
-#if UNITY_EDITOR
-#endif
-
+        // 🔹 UI 요소 Raycast (GraphicRaycaster 사용)
         PED.position = screenPosition;
         var results = new List<RaycastResult>();
         GR.Raycast(PED, results);
-        
+
         foreach (RaycastResult result in results)
         {
+            // 🚨 특정 레이어 제외 (Non_Sensor_Interactable_UIs 레이어 감지 안 함)
+            if (result.gameObject.layer == LayerMask.NameToLayer(excludeMask))
+            {
+                //Logger.LogError("센서랑 상호작용안함-----------");
+                continue;
+            }
+
             result.gameObject.TryGetComponent(out _btn);
             _btn?.onClick?.Invoke();
-            
+
             result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
             eventHandler?.OnClickHandler?.Invoke();
-       
         }
 
-        
+        // 🚨 최적화
         if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
         {
-            GameObject.Find("@LauncherRoot").TryGetComponent(out _launcher);
+            if (_launcher == null)
+            {
+                GameObject launcherObj = GameObject.Find("@LauncherRoot");
+                launcherObj?.TryGetComponent(out _launcher);
+            }
 
             if (_launcher != null)
             {
-#if UNITY_EDITOR
-//                Debug.Log($"prefabInput invoke-------------------");
-#endif
                 _launcher.currentPrefabPosition = this._rectTransform.position;
                 onPrefabInput?.Invoke();
             }
             else
             {
-                Logger.Log("laucnher is null");
+                Logger.Log("Launcher is null");
             }
         }
-
-        
+    }
     }
     
 
-}

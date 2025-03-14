@@ -10,7 +10,7 @@ using UnityEngine.PlayerLoop;
 /// <summary>
 /// 게임 플레이 종류, 플레이 시간을 기록합니다.
 /// </summary>
-public class PlayerHistoryManager : MonoBehaviour
+public class PlayerInfoManager : MonoBehaviour
 {
     
     
@@ -18,7 +18,7 @@ public class PlayerHistoryManager : MonoBehaviour
     public DateTime lastestSceneQuitTime;
     private static TimeSpan _playTime;
     
-    public static string currentSceneName;
+    public string CurrentActiveSceneName = "META_LAUNCHER";
 
     private XmlDocument _doc;
     private bool _isInit;
@@ -94,7 +94,7 @@ public class PlayerHistoryManager : MonoBehaviour
             return;
         }
         latestSceneStartTime = dateTime;
-        currentSceneName = sceneName;
+        CurrentActiveSceneName = sceneName;
         Logger.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
     }
     
@@ -102,7 +102,7 @@ public class PlayerHistoryManager : MonoBehaviour
     {
         _playTime = TimeSpan.Zero;
         lastestSceneQuitTime = dateTime;
-        currentSceneName = sceneName;
+        CurrentActiveSceneName = sceneName;
         _playTime = lastestSceneQuitTime - latestSceneStartTime;
         string formattedPlaytime = string.Format("{0:D2}분 {1:D2}초", _playTime.Minutes, _playTime.Seconds);
         Debug.Log($"플레이시간 : {formattedPlaytime}");
@@ -148,7 +148,7 @@ public class PlayerHistoryManager : MonoBehaviour
         newUser.SetAttribute("month",  today.Month.ToString("D"));
         newUser.SetAttribute("day",  today.Day.ToString("D"));
         newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
-        newUser.SetAttribute("sceneid", currentSceneName);
+        newUser.SetAttribute("sceneid", CurrentActiveSceneName);
         newUser.SetAttribute("playtimesec",formattedPlaytime.ToString());
         newUser.SetAttribute("validClick", _validClickCount.ToString());
         newUser.SetAttribute("sensorClick", _sensorClickCount.ToString());

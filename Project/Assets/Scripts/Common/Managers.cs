@@ -18,7 +18,7 @@ public class Managers : MonoBehaviour
     private static ResourceManager s_resourceManager = new ResourceManager();
     private static SoundManager s_soundManager = new SoundManager();
     private static SensorManager s_sensorManager = new SensorManager();
-    private static PlayerHistoryManager s_historyManager = new PlayerHistoryManager();
+    private static PlayerInfoManager _sInfoManager = new PlayerInfoManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
     private static A_SettingManager s_SettingManager = new A_SettingManager();
     
@@ -50,12 +50,12 @@ public class Managers : MonoBehaviour
             return s_cursorImageManager; 
         } 
     }
-    public static PlayerHistoryManager UserHistory 
+    public static PlayerInfoManager UserInfo 
     {  
         get 
         { 
             Init(); 
-            return s_historyManager; 
+            return _sInfoManager; 
         } 
     }
     public static SoundManager Sound 
@@ -124,7 +124,7 @@ public class Managers : MonoBehaviour
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
             
             s_soundManager.Init();
-            s_historyManager.Init();
+            _sInfoManager.Init();
             s_cursorImageManager.Init();
             DontDestroyOnLoad(go);
 //            Debug.Log("Managers Set--------");
