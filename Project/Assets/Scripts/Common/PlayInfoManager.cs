@@ -10,7 +10,7 @@ using UnityEngine.PlayerLoop;
 /// <summary>
 /// 게임 플레이 종류, 플레이 시간을 기록합니다.
 /// </summary>
-public class PlayerInfoManager : MonoBehaviour
+public class PlayInfoManager : MonoBehaviour
 {
     
     
@@ -86,8 +86,22 @@ public class PlayerInfoManager : MonoBehaviour
         Logger.Log("History Checker Active");
     }
     
+    
+    
+    
+    /// <summary>
+    /// XML
+    /// </summary>
+    /// <param name="sceneName"></param>
+    /// <param name="dateTime"></param>
     private void OnSceneLoad(string sceneName, DateTime dateTime)
     {
+        
+        
+        
+        
+        
+        
         if (sceneName.Contains("LAUNCHER"))
         {
             Logger.Log($"Launcher: history checking X -------------");

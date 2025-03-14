@@ -18,7 +18,7 @@ public class Managers : MonoBehaviour
     private static ResourceManager s_resourceManager = new ResourceManager();
     private static SoundManager s_soundManager = new SoundManager();
     private static SensorManager s_sensorManager = new SensorManager();
-    private static PlayerInfoManager _sInfoManager = new PlayerInfoManager();
+    private static PlayInfoManager _sInfoManager = new PlayInfoManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
     private static A_SettingManager s_SettingManager = new A_SettingManager();
     
@@ -50,7 +50,7 @@ public class Managers : MonoBehaviour
             return s_cursorImageManager; 
         } 
     }
-    public static PlayerInfoManager UserInfo 
+    public static PlayInfoManager UserInfo 
     {  
         get 
         { 

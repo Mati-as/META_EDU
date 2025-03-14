@@ -344,37 +344,7 @@ private IEnumerator InitSensorCoroutine()
     OnSenSorInit?.Invoke(isSensorOn);
 }
 
-// 코루틴 기반 연결 메서드
-private IEnumerator ConnectSensorCoroutine(System.Action<int> callback, bool alternatePort = false)
-{
-    string portToUse = alternatePort ? (PORT == "COM3" ? "COM4" : "COM3") : PORT;
-    
-    int result = RplidarBinding.OnConnect(portToUse);
-    
-    yield return null; // 다음 프레임까지 대기 (필요시 제거 가능)
-    
-    callback(result);
-}
 
-private IEnumerator StartMotorCoroutine(System.Action<bool> callback)
-{
-    bool result = RplidarBinding.StartMotor();
-    
-    yield return null; // 다음 프레임까지 대기
-    
-    callback(result);
-}
-
-private IEnumerator StartScanCoroutine(System.Action<bool> callback)
-{
-    bool result = RplidarBinding.StartScan();
-    
-    yield return null;
-    
-    callback(result);
-}
-
-// UI 초기화 메서드 (변경 없음)
 private void InitUI()
 {
     Img_Rect_transform = GetComponent<RectTransform>();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,8 +22,8 @@ public class A_SettingManager : MonoBehaviour
     private string GameSettingData;
     private string DataRoot;
 
-    
-    
+
+      
 
     // Update is called once per frame
     
@@ -31,8 +32,21 @@ public class A_SettingManager : MonoBehaviour
         SetXMLPath();
         CheckAndGenerateXmlFile(nameof(GameSettingData),settingXmlPath);
         LoadSettingParams();
+        
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+        Base_GameManager.OnSceneLoad += OnSceneLoad;
     }
     
+    private void OnDestroy()
+    {
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+    }
+
+    private void OnSceneLoad(string _, DateTime __)
+    {
+        XmlManager.Instance.LoadSettings();
+        Logger.Log("센서관련 XML데이터 로드완료----------------------------------");
+    }
 #region  XML을 통한 세팅 초기화 및 저장
 
     public static XmlDocument xmlDoc_Setting;

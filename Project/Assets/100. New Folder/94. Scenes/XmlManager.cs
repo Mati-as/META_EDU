@@ -20,7 +20,7 @@ public class XmlManager
         }
     }
 
-    // ¼³Á¤ µ¥ÀÌÅÍ
+    // ì„¤ì • ë°ì´í„°
     public float ScreenSize { get;  set; }
     public float ScreenPositionOffsetX { get;  set; }
     public float ScreenPositionOffsetY { get;  set; }
@@ -38,17 +38,17 @@ public class XmlManager
 
     private XmlManager()
     {
-        LoadSettings(); // XML µ¥ÀÌÅÍ¸¦ ÇÑ ¹ø¸¸ ºÒ·¯¿Í¼­ Ä³½Ì
+        LoadSettings(); // XML ë°ì´í„°ë¥¼ í•œ ë²ˆë§Œ ë¶ˆëŸ¬ì™€ì„œ ìºì‹±
     }
 
     /// <summary>
-    /// XML µ¥ÀÌÅÍ ·Îµå
+    /// XML ë°ì´í„° ë¡œë“œ
     /// </summary>
-    private void LoadSettings()
+    public void LoadSettings()
     {
         if (isLoaded) return;
 
-        // ±âº»°ª ¼³Á¤
+        // ê¸°ë³¸ê°’ ì„¤ì •
         ScreenSize = 1.0f;
         ScreenPositionOffsetX = 0.5f;
         ScreenPositionOffsetY = 0.5f;
@@ -90,11 +90,11 @@ public class XmlManager
             TouchRange = float.Parse(settingNode.GetAttribute("TouchRange"));
         }
 
-        isLoaded = true; // µ¥ÀÌÅÍ ·Îµå ¿Ï·á
+        isLoaded = true; // ë°ì´í„° ë¡œë“œ ì™„ë£Œ
     }
 
     /// <summary>
-    /// XML¿¡ ÀúÀå
+    /// XMLì— ì €ì¥
     /// </summary>
     public void SaveSettings()
     {
@@ -119,7 +119,7 @@ public class XmlManager
             root.AppendChild(settingNode);
         }
 
-        // XML ¼Ó¼º ¾÷µ¥ÀÌÆ®
+        // XML ì†ì„± ì—…ë°ì´íŠ¸
         settingNode.SetAttribute("ScreenSize", ScreenSize.ToString("F2"));
         settingNode.SetAttribute("ScreenPositionOffsetX", ScreenPositionOffsetX.ToString("F2"));
         settingNode.SetAttribute("ScreenPositionOffsetY", ScreenPositionOffsetY.ToString("F2"));
@@ -135,7 +135,7 @@ public class XmlManager
         settingNode.SetAttribute("MaxTouchzones", MaxTouchzones.ToString());
         settingNode.SetAttribute("TouchRange", TouchRange.ToString("F2"));
 
-        // XML ÀúÀå
+        // XML ì €ì¥
         xmlDoc.Save(filePath);
     }
 }
