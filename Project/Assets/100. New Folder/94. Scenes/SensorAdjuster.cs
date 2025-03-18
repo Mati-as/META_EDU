@@ -52,6 +52,7 @@ public class SensorAdjuster : MonoBehaviour
 
     //보정값 적용 중인지 아닌지 판단
     public Text Calibration_state;
+    //public Text Calibration_state_indetail;
 
     private const float CANVAS_Y_CENTER = 540.0f;
     private const float CANVAS_X_CENTER = 0.0f;
@@ -60,28 +61,6 @@ public class SensorAdjuster : MonoBehaviour
 
     void Start()
     {
-        Button_Sensor_Init.onClick.AddListener(Init_sensor);
-        Button_Sensor_Stop.onClick.AddListener(Stop_sensor);
-
-        offsetXSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
-        offsetYSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
-
-        offsetXSlider.onValueChanged.AddListener(value => UpdateInputField(offsetXInput, value));
-        offsetYSlider.onValueChanged.AddListener(value => UpdateInputField(offsetYInput, value));
-
-        offsetXInput.onEndEdit.AddListener(value => UpdateSlider(offsetXSlider, value));
-        offsetYInput.onEndEdit.AddListener(value => UpdateSlider(offsetYSlider, value));
-
-        saveButton.onClick.AddListener(SaveSensorSettings);
-        resetButton.onClick.AddListener(ResetToDefault);
-
-        Button_Guide_center.onClick.AddListener(Show_Guidecenter);
-        Button_Guide_vertex.onClick.AddListener(Show_Guidevertex);
-
-        Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
-        Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
-        Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
-        Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
 
         if (thresholdInputField != null)
         {
@@ -140,6 +119,29 @@ public class SensorAdjuster : MonoBehaviour
         {
             Tsetting_resetButton.onClick.AddListener(Reset_Touchsetting);
         }
+
+        Button_Sensor_Init.onClick.AddListener(Init_sensor);
+        Button_Sensor_Stop.onClick.AddListener(Stop_sensor);
+
+        offsetXSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
+        offsetYSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
+
+        offsetXSlider.onValueChanged.AddListener(value => UpdateInputField(offsetXInput, value));
+        offsetYSlider.onValueChanged.AddListener(value => UpdateInputField(offsetYInput, value));
+
+        offsetXInput.onEndEdit.AddListener(value => UpdateSlider(offsetXSlider, value));
+        offsetYInput.onEndEdit.AddListener(value => UpdateSlider(offsetYSlider, value));
+
+        saveButton.onClick.AddListener(SaveSensorSettings);
+        resetButton.onClick.AddListener(ResetToDefault);
+
+        Button_Guide_center.onClick.AddListener(Show_Guidecenter);
+        Button_Guide_vertex.onClick.AddListener(Show_Guidevertex);
+
+        Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
+        Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
+        Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
+        Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
 
         InitTouchSettingsInputs();
         LoadSensorSettings();

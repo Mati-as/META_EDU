@@ -604,11 +604,15 @@ private IEnumerator RunGenerateMesh()
     int _filteringAmount = 2;
     private void GenerateDectectedPos()
     {
-        // ✅ 0311 센서 위치 보정 추가
+        //실시간 상황을 캐치할 수는 없음
+        State_rotation.text = isMoterStarted ? "Motor ON" : "Motor OFF";
+        State_scan.text = m_onscan ? "Scan ON" : "Scan OFF";
+
+        //0311 센서 위치 보정 추가
         Sensor_posx = RT_Lidar_object.anchoredPosition.x;
         Sensor_posy = RT_Lidar_object.anchoredPosition.y;
 
-        List<Vector2> detectedPoints = new List<Vector2>(); // ✅ 감지된 포인트 리스트
+        List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
 
         if (!isMoterStarted) return;
         if (Managers.isGameStopped) return;
@@ -715,6 +719,9 @@ private IEnumerator RunGenerateMesh()
     private int calibrationStep = 0;
 
     public Text Calibration_state_indetail;
+    public Text Calibration_state;
+    public Text State_rotation;
+    public Text State_scan;
 
     private void CollectCalibrationPoint(Vector2 touchPoint)
     {
@@ -769,7 +776,9 @@ private IEnumerator RunGenerateMesh()
         isCalibrationApplied = true;
         isCalibrationActive = false;
 
+        //텍스트 변경 필요
         Debug.Log("✅ Homography 보정 적용 완료!");
+        Calibration_state.text = "보정 값 적용 중";
     }
 
     private Vector2 GetCorrectedPosition(Vector2 rawPos)
@@ -951,6 +960,7 @@ private IEnumerator RunGenerateMesh()
     // Update is called once per frame
     private void FixedUpdate()
     {
+
         _timer += Time.deltaTime;
         if (_timer > sensorSensitivity)
         {
