@@ -61,10 +61,10 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private const int FALL_IMAGE_COUNT = 5;
     private SpriteRenderer spriteRenderer;
 
-    private const int ROUND_COUNT = (int)Fruits.Persimmon; // 총Max개 ; 
+    private const int ROUND_COUNT =(int)Fruits.Persimmon; // 총Max개 ; 
     private int _currentRoundCount =-1; //flag
 
-    private int currentRoundCount
+    public int currentRoundCount
     {
         get => _currentRoundCount;
         set
@@ -154,8 +154,8 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
     private int _currentRemovedWoodBlockCount;
 
-    private const int COLUMN_COUNT = 13;
-    private const int ROW_COUNT = 7;
+    private const int COLUMN_COUNT = 7;
+    private const int ROW_COUNT = 4;
     private readonly Transform[][] allWoodblocks = new Transform[COLUMN_COUNT][];
 
     private readonly Dictionary<int, Transform> _woodBlockMap = new();
@@ -175,16 +175,25 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
 
     private readonly Dictionary<int, Animator> _fruitAnimatorMap = new();
 
+    private void InitForSequenceChange()
+    {
+        currentCountFruitsDropped = 0;
+        _isAlreadyClickedMap = new();
+    }
+
     public int currentSeqNum
     {
         get => _currentSeqNum;
         set
         {
 
-         
             _currentSeqNum = value;
 
+            InitForSequenceChange();
             SetSeqNumAnim(value);
+            
+            
+            
             Logger.Log($"Default Message Invoke{(SeqName)value}");
             switch ((SeqName)value)
             {
@@ -275,7 +284,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             GameObject.Find(nameof(Fruits.Persimmon)).GetComponent<Animator>());
 
         InitFruitOnTrees();
-        currentSeqNum = 0;
+        //currentSeqNum = (int)SeqName.OnTreeScene_A;
 
         Logger.Log("Init--------------------------------");
     }
@@ -317,7 +326,10 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         currentRoundCount = (int)Fruits.Chestnut;
     }
 
-    private void OnRaysyncOnPuzzeGame()
+    
+
+    #region PuzzleGamePart
+private void OnRaysyncOnPuzzeGame()
     {
         foreach (var hit in GameManager_Hits)
         {
@@ -408,9 +420,6 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             }
         }
     }
-
-    #region PuzzleGamePart
-
     private void OnWoodBlockClicked(int id)
     {
         var randomChar = (char)Random.Range('A', 'D');
@@ -459,8 +468,13 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     }
 
 
+    private bool _isResettingForNextRound;
     private void ResetForNextRound()
     {
+
+        if (_isResettingForNextRound) return;
+        _isResettingForNextRound = true;
+        
         foreach (var key in _woodBlockMap.Keys.ToArray())
         {
             KillWoodScaleSeq(key);
@@ -497,6 +511,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(3f, () =>
         {
             _isWoodBlockClickable = true;
+            _isResettingForNextRound = false;
             foreach (var key in _woodBlockMap.Keys.ToArray()) KillWoodScaleSeq(key);
         });
     }
@@ -525,83 +540,123 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     #endregion
 
     #region TreeSelectionpart
+    
+    private bool _isFruitOnTreeAlreadyClicked = false;
+    private int COUNT_FRUIT_TO_DROP = 5;
+    private int _currentCountFruitsDropped = 0;
 
-    private void OnTreeSelectionStart()
+    private int currentCountFruitsDropped
     {
-        _isWoodBlockClickable = true;
+        get { return _currentCountFruitsDropped; }
+        set
+        {
+            _currentCountFruitsDropped = value;
+        }
     }
 
-
-    private bool _isFruitOnTreeAlreadyClicked = false;
+    private Dictionary<int, bool> _isAlreadyClickedMap = new Dictionary<int, bool>();
     private void OnRaySyncOnFruitOnTree()
     {
         
-        if(_isFruitOnTreeAlreadyClicked) return;
+        
         
         
         foreach (var hit in GameManager_Hits)
         {
             var NarrDealy = 1f;
             var nextSeqDelay = 3f;
+            var clickedFruitID = hit.transform.GetInstanceID();
+            if(!_isAlreadyClickedMap.ContainsKey(clickedFruitID)) _isAlreadyClickedMap.TryAdd(hit.transform.GetInstanceID(),false);
+            if (_isAlreadyClickedMap[clickedFruitID]) return;
+            _isAlreadyClickedMap[clickedFruitID] = true;
+
+            if ((!_fruitAnimatorMap.ContainsKey(clickedFruitID)&&_fruitAnimatorMap.TryAdd(clickedFruitID, hit.transform.TryGetComponent(out Animator animator) ? animator : null)))
+            
             
             Logger.Log($"hit.transform.name : {hit.transform.name}");
+            
             if (currentSeqNum == (int)SeqName.OnTreeScene_A && hit.transform.name.Contains(nameof(Fruits.Chestnut)))
             {
-                DropFruitOnTrees(Fruits.Chestnut);
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Chestnut));});
+                DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Chestnut));
-                DOVirtual.DelayedCall(nextSeqDelay, () =>
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Chestnut));});
+                currentCountFruitsDropped++;
+                
+                if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
-                    currentSeqNum = (int)SeqName.OnTreeScene_B;
-                });
+                    DOVirtual.DelayedCall(nextSeqDelay, () =>
+                    {
+                        currentSeqNum = (int)SeqName.OnTreeScene_B;
+                    });
+                }
+                
                 return;
             }
 
             if (currentSeqNum == (int)SeqName.OnTreeScene_B && hit.transform.name.Contains(nameof(Fruits.Acorn)))
             {
-                DropFruitOnTrees(Fruits.Acorn);
+                DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Acorn));
                 DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Acorn));});
-                DOVirtual.DelayedCall(nextSeqDelay, () =>
+                currentCountFruitsDropped++;
+                if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
-                    currentSeqNum = (int)SeqName.OnTreeScene_C;
-                });
+                    DOVirtual.DelayedCall(nextSeqDelay, () =>
+                    {
+                        currentSeqNum =  (int)SeqName.OnTreeScene_C;
+                    });
+                }
                 return;
             }
 
             if (currentSeqNum == (int)SeqName.OnTreeScene_C && hit.transform.name.Contains(nameof(Fruits.Apple)))
             {
-                DropFruitOnTrees(Fruits.Apple);
+                DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Apple));
                 DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Apple));});
-                DOVirtual.DelayedCall(nextSeqDelay, () =>
+
+                currentCountFruitsDropped++;
+                if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
-                    currentSeqNum = (int)SeqName.OnTreeScene_D;
-                });
+                    DOVirtual.DelayedCall(nextSeqDelay, () =>
+                    {
+                        currentSeqNum = (int)SeqName.OnTreeScene_D;
+                    });
+                }
                 return;
             }
 
             if (currentSeqNum == (int)SeqName.OnTreeScene_D && hit.transform.name.Contains(nameof(Fruits.Ginkgo)))
             {
-                DropFruitOnTrees(Fruits.Ginkgo);
+                DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Ginkgo));
                 DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Ginkgo));});
-                DOVirtual.DelayedCall(nextSeqDelay, () =>
+
+                currentCountFruitsDropped++;
+                if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
-                    currentSeqNum = (int)SeqName.OnTreeScene_E;
-                });
+                    DOVirtual.DelayedCall(nextSeqDelay, () =>
+                    {
+                        currentSeqNum = (int)SeqName.OnTreeScene_E;
+                    });
+                }
                 return;
             }
 
             if (currentSeqNum == (int)SeqName.OnTreeScene_E && hit.transform.name.Contains(nameof(Fruits.Persimmon)))
             {
-                DropFruitOnTrees(Fruits.Persimmon);
+                DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Persimmon));
                 DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Persimmon));});
-                DOVirtual.DelayedCall(nextSeqDelay, () =>
+
+                currentCountFruitsDropped++;
+                if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
-                    currentSeqNum = (int)SeqName.OnFinish;
-                });
+                    DOVirtual.DelayedCall(nextSeqDelay, () =>
+                    {
+                        currentSeqNum = (int)SeqName.OnFinish;
+                    });
+                }
                 return;
             }
         }
@@ -612,10 +667,10 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         foreach (var key in _fruitAnimatorMap.Keys.ToArray()) _fruitAnimatorMap[key].SetBool(DROP, false);
     }
 
-    private void DropFruitOnTrees(Fruits fruit)
+    private void DropFruitOnTrees(int id)
     {
         _isFruitOnTreeAlreadyClicked =true;
-        _fruitAnimatorMap[(int)fruit].SetBool(DROP, true);
+        _fruitAnimatorMap[(int)id].SetBool(DROP, true);
     }
 
     #endregion
