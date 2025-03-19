@@ -11,6 +11,8 @@ public class SensorAdjuster : MonoBehaviour
     public Button saveButton;
     public Button resetButton;
     public Image Lider_object;
+
+    [Header("[ Sensor position ]")]
     public Slider offsetXSlider;
     public Slider offsetYSlider;
 
@@ -20,6 +22,8 @@ public class SensorAdjuster : MonoBehaviour
     public Text xmlOffsetYText;
     public Text Now_xmlOffsetXText;
     public Text Now_xmlOffsetYText;
+
+    [Header("[ Sensor adjust ]")]
     public Text ThresholdText;
 
     public InputField thresholdInputField;
@@ -38,6 +42,7 @@ public class SensorAdjuster : MonoBehaviour
 
     public Button toggleFeatureButton;
 
+    [Header("[ Sensor calibration ]")]
     public Button Button_Guide_center;
     public Button Button_Guide_vertex;
     public Button Button_Guide_Screenratio;
@@ -53,12 +58,17 @@ public class SensorAdjuster : MonoBehaviour
     public GameObject Vertext_Point;
     public GameObject End_Points;
 
+    public Slider screenratioSlider;
+    public InputField ScreenratioInput;
+    public Text ScreenratioText;
+
     //보정값 적용 중인지 아닌지 판단
     public Text Calibration_state;
     //public Text Calibration_state_indetail;
 
     private const float CANVAS_Y_CENTER = 540.0f;
     private const float CANVAS_X_CENTER = 0.0f;
+
 
     private bool isFeatureActive = false;
 
@@ -148,16 +158,21 @@ public class SensorAdjuster : MonoBehaviour
         Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
         Button_Save_Calib_Screenratio.onClick.AddListener(Calibration_screenratio);
 
+        //screen ratio 부분
+        screenratioSlider.onValueChanged.AddListener(value => UpdateSRInputField(ScreenratioInput, value));
+        ScreenratioInput.onEndEdit.AddListener(value => UpdateSRSlider(screenratioSlider, value));
+
+
         InitTouchSettingsInputs();
         LoadSensorSettings();
     }
-
     void Init_sensor()
     {
         manager.AsyncInitSensor();
         manager.ResetTouchZones();
         if (manager.isCalibrationApplied)
             Calibration_state.text = "보정 값 적용 중";
+        
     }
 
     void Stop_sensor()
@@ -272,8 +287,9 @@ public class SensorAdjuster : MonoBehaviour
             //manager.touchZoneLifetime = touchLifetime;
             manager.maxTouchZones = maxTouches;
             manager.Touch_range = touchRange;
-
         }
+       
+
     }
     void UpdateInputField(InputField input, float value)
     {
@@ -287,6 +303,24 @@ public class SensorAdjuster : MonoBehaviour
             slider.value = result;
         }
     }
+    //여기에서 일방적으로 바꾸는건 있는데 최초에 그 값을 가져오는건 없는 것 같음
+    //여기에서 인풋 값으로 슬라이더 값 바꾸나?
+    void UpdateSRInputField(InputField input, float value)
+    {
+        input.text = value.ToString("0.00");
+        manager._screenRatio = value;
+    }
+
+    void UpdateSRSlider(Slider slider, string value)
+    {
+        if (float.TryParse(value, out float result))
+        {
+            slider.value = result;
+            manager._screenRatio = result;
+            ScreenratioText.text = slider.value.ToString("0.00");
+        }
+    }
+
 
     /// <summary>
     ///  XML에서 센서 설정 불러오기
@@ -298,6 +332,13 @@ public class SensorAdjuster : MonoBehaviour
 
         xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
         xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
+
+
+        offsetXInput.text = offsetXSlider.value.ToString("0.00");
+        offsetYInput.text = offsetYSlider.value.ToString("0.00");
+
+        screenratioSlider.value = manager._screenRatio;
+        ScreenratioText.text = screenratioSlider.value.ToString("0.00");
     }
 
     /// <summary>
