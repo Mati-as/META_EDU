@@ -40,15 +40,18 @@ public class SensorAdjuster : MonoBehaviour
 
     public Button Button_Guide_center;
     public Button Button_Guide_vertex;
+    public Button Button_Guide_Screenratio;
     public Button Button_Calib_pos;
     public Button Button_Calib_adjust;
 
     public Button Button_Save_Calib_Touchpoint;
     public Button Button_Apply_Calib_Touchpoint;
     public Button Button_Cancel_Calib_Touchpoint;
+    public Button Button_Save_Calib_Screenratio;
 
     public GameObject Center_Point;
     public GameObject Vertext_Point;
+    public GameObject End_Points;
 
     //보정값 적용 중인지 아닌지 판단
     public Text Calibration_state;
@@ -137,11 +140,13 @@ public class SensorAdjuster : MonoBehaviour
 
         Button_Guide_center.onClick.AddListener(Show_Guidecenter);
         Button_Guide_vertex.onClick.AddListener(Show_Guidevertex);
+        Button_Guide_Screenratio.onClick.AddListener(Show_GuideEndpoints);
 
         Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
         Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
         Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
         Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
+        Button_Save_Calib_Screenratio.onClick.AddListener(Calibration_screenratio);
 
         InitTouchSettingsInputs();
         LoadSensorSettings();
@@ -200,6 +205,10 @@ public class SensorAdjuster : MonoBehaviour
     {
         Vertext_Point.SetActive(!Vertext_Point.activeSelf);
     }
+    void Show_GuideEndpoints()
+    {
+        End_Points.SetActive(!End_Points.activeSelf);
+    }
     void Calibration_sensor_position()
     {
         //매니저의 해당 함수 호출
@@ -210,6 +219,10 @@ public class SensorAdjuster : MonoBehaviour
         //매니저의 해당 함수 호출
         //여기는 조금 민감한 부분이니 안전장치 구현 필요?
         manager.isCalibrationActive = true;
+    }
+    void Calibration_screenratio()
+    {
+
     }
     void Apply_calibration()
     {
