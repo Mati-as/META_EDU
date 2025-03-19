@@ -145,7 +145,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             }
 
 
-            Logger.LogError($"해당하는 과일없음.{value}");
+            if(currentSeqNum == (int)SeqName.OnPuzzleClick) Logger.Log($"해당하는 과일없음.{value}");
         }
     }
 
@@ -508,7 +508,7 @@ private void OnRaysyncOnPuzzeGame()
                 _ease).OnStart(() => { block.gameObject.SetActive(true); }) .SetDelay(Random.Range(0.01f,0.25f));
 
 
-        DOVirtual.DelayedCall(3f, () =>
+        DOVirtual.DelayedCall(6f, () =>
         {
             _isWoodBlockClickable = true;
             _isResettingForNextRound = false;
