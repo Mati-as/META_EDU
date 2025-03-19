@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class ScreenAdjuster : MonoBehaviour
 {
+    public SensorManager manager;
+
     public Camera mainCamera;
     public Camera UICamera;
 
@@ -202,5 +204,7 @@ public class ScreenAdjuster : MonoBehaviour
         screenOffsetY = 0.5f;
         ApplySettings();
         SaveSettings();
+
+        manager.Set_Screenscale(1.0f);
     }
 }

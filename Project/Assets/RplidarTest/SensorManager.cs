@@ -156,7 +156,7 @@ public class SensorManager : MonoBehaviour
     public float sensorDistanceFromProjection { get; set; } = 280;
 
     // private float screen_ratio;// 화면비 // 유니티 height 1080 : 실제 프로젝션 height (mm)를 비교하여 비례를 조정 
-    private float _screenRatio = 0.782f;
+    public float _screenRatio = 0.782f;
 
     ////////////////// 0719- 센서 테스트용 멤버 새로 추가한 부분///////////////////////////////
 
@@ -522,6 +522,10 @@ private IEnumerator RunGenerateMesh()
         
         //0319 게임 내 플레이가능하도록 널체크 추가 
         if(Calibration_state_Screenratio!=null)Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
+        Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
+
+        //해당 하는 값이 있으면 해당 값으로 로드할 수 있도록 함
+        Set_Screenscale(XmlManager.Instance.ScreenSize);
     }
 
 
@@ -538,7 +542,12 @@ private IEnumerator RunGenerateMesh()
         }
     }
     
-    
+    public void Set_Screenscale(float num)
+    {
+        Screen_Scale = num;
+    }
+
+
 
     private float _timer;
 
@@ -546,6 +555,9 @@ private IEnumerator RunGenerateMesh()
     float Sensor_posx;
     float Sensor_posy;
     int _filteringAmount = 2;
+
+
+    public float Screen_Scale = 1f;
     private void GenerateDectectedPos()
     {
         //실시간 상황을 캐치할 수는 없음
@@ -571,8 +583,8 @@ private IEnumerator RunGenerateMesh()
 
                 // ✅ 기존 좌표 계산
                 Vector2 rawSensorPos = new Vector2(
-                    Sensor_posx - _screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad)),
-                    Sensor_posy - _screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad) - UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET)
+                    Screen_Scale * (Sensor_posx - _screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad))),
+                    Screen_Scale * (Sensor_posy - _screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad)))
                 );
 
                 // ✅ Homography 변환이 활성화된 경우, 보정된 좌표 적용
