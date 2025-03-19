@@ -521,11 +521,6 @@ private IEnumerator RunGenerateMesh()
         BindSensorPortPath();
     }
 
-    // private Task BIndPortPathAsync()
-    // {
-    //     await BindPortPath();
-    // };
-
 
     private void GenerateMesh()
     {
@@ -540,31 +535,7 @@ private IEnumerator RunGenerateMesh()
         }
     }
     
-
-
-    private void PlayGenrateMeshCo()
-    {
-        StartCoroutine(GenerateMeshCo());
-    }
-
-    private readonly WaitForSeconds _waitForSensorGetMesh = new(0.005f);
-
-    private IEnumerator GenerateMeshCo()
-    {
-        while (true)
-        {
-            var datacount = RplidarBinding.GetData(ref _lidarDatas);
-
-            if (datacount == 0)
-                yield return null;// 기존 로직 유지
-            else
-            {
-                m_datachanged = true;
-                yield return null;  // 다음 프레임까지 기다림 (무한 루프 방지)
-            }
-        }
-    }
-
+    
 
     private float _timer;
 
@@ -575,8 +546,8 @@ private IEnumerator RunGenerateMesh()
     private void GenerateDectectedPos()
     {
         //실시간 상황을 캐치할 수는 없음
-        State_rotation.text = isMoterStarted ? "Motor ON" : "Motor OFF";
-        State_scan.text = m_onscan ? "Scan ON" : "Scan OFF";
+        if(State_rotation!=null)State_rotation.text = isMoterStarted ? "Motor ON" : "Motor OFF";
+        if(State_scan!=null)State_scan.text = m_onscan ? "Scan ON" : "Scan OFF";
 
         //0311 센서 위치 보정 추가
         Sensor_posx = RT_Lidar_object.anchoredPosition.x;
