@@ -21,6 +21,8 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     private BubbleImage[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
+    
+    private Stack<ParticleSystem> _particlPool =new();
    
     
     private EA008_BubbleShower_UIManager _UIManager;
@@ -150,8 +152,11 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             }
         }
 
-      
+     
+        
     }
+    
+    
 
     private TextMeshProUGUI _red;
     private TextMeshProUGUI _vs;
@@ -209,25 +214,6 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         
         int count=0;
 
-      
-        
-        // foreach(var item in _meshRendererMap)
-        // {
-        //     MeshRenderer meshRenderer = item.Value;
-        //     meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
-        //     _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
-        //     count++;
-        // }
-        //
-        // foreach(var item in _childMeshRendererMap)
-        // {
-        //     MeshRenderer meshRenderer = item.Value;
-        //     meshRenderer.material.DOColor(CurrentColorPair[ count % (int)ColorSide.ColorCount],1f);
-        //     _PrintMap[item.Key].currentColor = CurrentColorPair[ count % (int)ColorSide.ColorCount];
-        //     count++;
-        // }
-        
-      
         
         yield return DOVirtual.Float(0, 0, 5f, _ => { }).WaitForCompletion();
         
@@ -305,7 +291,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
         PRINTS_COUNT = printsParent.transform.childCount;
 
-        //반드시 게임 오브젝트의 갯수는 홀수..
+        //반드시 게임 오브젝트의 갯수는 홀수
 #if UNITY_EDITOR
         Debug.Assert(PRINTS_COUNT % 2 == 1);
 #endif
@@ -322,12 +308,10 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                 defaultVector = printsParent.transform.GetChild(i).rotation.eulerAngles,
                 currentColor = CurrentColorPair[i % (int)ColorSide.ColorCount],
                 defaultSize = printsParent.transform.GetChild(i).gameObject.transform.localScale
+                
             };
+            _originalEulerMap.TryAdd(_prints[i].printObj.GetInstanceID(), _prints[i].printObj.gameObject.transform.localRotation);
 
-
-#if UNITY_EDITOR
-            //Debug.Log($"colorname: {printsParent.transform.GetChild(i).gameObject.name.Substring(5)}");
-#endif
 
 
             //Print 캐싱, Flip에서는 InstaceID를 기반으로 Prints를 참조 및 제어한다.
@@ -341,7 +325,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             var meshRenderer = currentTransform.GetComponent<MeshRenderer>();
             _meshRendererMap.TryAdd(currentInstanceID, meshRenderer);
 
-            _originalEulerMap.TryAdd(currentInstanceID, printsParent.transform.rotation);
+        
             meshRenderer.material.color = CurrentColorPair[i % (int)ColorSide.ColorCount];
 
 
@@ -424,6 +408,14 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         if (Physics.Raycast(ray, out hit))
         {
             
+            var currentPS = GetFromPool();
+            currentPS.transform.position = hit.point;
+            currentPS.Play();
+            StartCoroutine(ReturnToPoolAfterDelay(currentPS));
+            
+            
+            
+            
             if (hit.transform.gameObject.name.ToLower().Contains("black")) return;
             ShakeCam();
 
@@ -438,10 +430,12 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             }
 
             // Ensure the sequence is initialized.
+            bubbleOrGermData.seq?.Kill();
             bubbleOrGermData.seq = DOTween.Sequence();
+            Quaternion targetRotation = Quaternion.Euler(_rotateVector) * bubbleOrGermData.printObj.transform.localRotation;
 
             bubbleOrGermData.seq.Append(hit.transform
-                .DOLocalRotate(_rotateVector + bubbleOrGermData.printObj.transform.rotation.eulerAngles, 0.38f)
+                .DOLocalRotateQuaternion(targetRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
@@ -485,25 +479,27 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                 return;
 
             var isGermSide = false;
-            var eulerToFlip = Vector3.zero;
+            Quaternion eulerToFlip = Quaternion.Euler(Vector3.zero);
+            
             if (count % 2 == 0)
             {
                 isGermSide = false;
-                eulerToFlip = _originalEulerMap[currentInstanceID].eulerAngles +_rotateVector;
+                eulerToFlip = _originalEulerMap[currentInstanceID] * Quaternion.Euler(_rotateVector);
                 printData.seq = DOTween.Sequence();
                
             }
             else
             {
                 isGermSide = true;
-                eulerToFlip = _originalEulerMap[currentInstanceID].eulerAngles;
+                eulerToFlip = _originalEulerMap[currentInstanceID];
                 printData.seq = DOTween.Sequence();
                
             }
 
-
+Logger.Log($"Default Original Euler : {_originalEulerMap[currentInstanceID]}");
+            
             printData.seq.Append(print.printObj.transform
-                .DOLocalRotate(eulerToFlip, 0.38f)
+                .DOLocalRotateQuaternion(eulerToFlip, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
@@ -532,13 +528,6 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         var count = 0;
         foreach (var print in _prints)
         {
-            // if (count %2== 0)
-            // {
-            //     count++; continue;
-            // }
-            
-          //  count++;
-    
             var currentInstanceID = print.printObj.GetInstanceID();
     
             // Check if the object is already flipping or the sequence is active.
@@ -553,7 +542,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
           
     
             printData.seq.Append(print.printObj.transform
-                .DOLocalRotate(_rotateVector + printData.printObj.transform.rotation.eulerAngles, 0.38f)
+                .DOLocalRotateQuaternion(Quaternion.Euler(_rotateVector) * printData.printObj.transform.localRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
@@ -568,14 +557,58 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                 })
                 .OnComplete(() => printData.isCurrentlyFlipping = false)
                 .SetDelay(Random.Range(1.0f, 1.5f)));
-    
-    
             printData.seq.Play();
         }
-    
-       // Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
+        
     }
+
+     private void SetPool()
+     {
+    
+         var particlePrefab = Resources.Load<GameObject>("Runtime/EA008/ClickEffect");
+
+         for (int i = 0; i < 100; i++)
+         {       
+             ParticleSystem ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+             _particlPool.Push(ps);
+         }
+
+
+     }
+
+     private ParticleSystem GetFromPool()
+     {
+        
+         if (_particlPool.Count > 0)
+         {
+             ParticleSystem ps =  _particlPool.Pop();;
+             ps.gameObject.SetActive(true);
+             return ps;
+         }
+
+         SetPool();
+         ParticleSystem newPs =  _particlPool.Pop();;
+         newPs.gameObject.SetActive(true);
+         return newPs;
+     }
+     
+     private WaitForSeconds _poolReturnWait;
+     protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
+     {
+         if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
+
+         yield return _poolReturnWait;
+
+         
+         ps.Stop();
+         ps.Clear();
+         ps.gameObject.SetActive(false);
+         _particlPool.Push(ps); // Return the particle system to the pool
+     }
+     
 }
+
+
 
 
 public class BubbleImage

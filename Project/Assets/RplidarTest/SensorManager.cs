@@ -519,7 +519,9 @@ private IEnumerator RunGenerateMesh()
         //0311 센서 위치 보정 추가
         RT_Lidar_object = GetComponent<RectTransform>();
         BindSensorPortPath();
-        Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
+        
+        //0319 게임 내 플레이가능하도록 널체크 추가 
+        if(Calibration_state_Screenratio!=null)Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
     }
 
 
