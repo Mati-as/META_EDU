@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class ScreenAdjuster : MonoBehaviour
 {
     public Camera mainCamera;
+    public Camera UICamera;
+
     public Slider screenSizeSlider;
     public Slider offsetXSlider;
     public Slider offsetYSlider;
@@ -28,6 +30,11 @@ public class ScreenAdjuster : MonoBehaviour
     private float screenOffsetX;
     private float screenOffsetY;
 
+
+    void Awake()
+    {
+        //ApplySettings();
+    }
     void Start()
     {
         LoadSettings();
@@ -47,6 +54,12 @@ public class ScreenAdjuster : MonoBehaviour
 
         saveButton.onClick.AddListener(SaveSettings);
         resetButton.onClick.AddListener(ResetToDefault);
+
+        //if (mainCamera.targetTexture == null)
+        //{
+        //    RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
+        //    mainCamera.targetTexture = rt;
+        //}
     }
 
     /// <summary>
@@ -83,15 +96,16 @@ public class ScreenAdjuster : MonoBehaviour
     /// <summary>
     /// XML 값을 UI에 적용
     /// </summary>
-    void ApplySettings()
+    public void ApplySettings()
     {
+        Debug.Log("카메라 설정함");
         screenSizeSlider.value = screenSize;
         offsetXSlider.value = screenOffsetX;
         offsetYSlider.value = screenOffsetY;
         UpdateUI();
         ApplyScreenSettings();
     }
-
+    //50000000 +
     /// <summary>
     /// UI 업데이트 (가이드라인 크기 및 위치 조정)
     /// </summary>
@@ -146,6 +160,16 @@ public class ScreenAdjuster : MonoBehaviour
                 screenSize
             );
         }
+
+        //if (UICamera != null)
+        //{
+        //    UICamera.rect = new Rect(
+        //        0.5f - screenSize / 2f + (screenOffsetX - 0.5f),
+        //        0.5f - screenSize / 2f + (screenOffsetY - 0.5f),
+        //        screenSize,
+        //        screenSize
+        //    );
+        //}
 
         screenSizeSlider.value = screenSize;
         offsetXSlider.value = screenOffsetX;
