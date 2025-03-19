@@ -519,6 +519,7 @@ private IEnumerator RunGenerateMesh()
         //0311 센서 위치 보정 추가
         RT_Lidar_object = GetComponent<RectTransform>();
         BindSensorPortPath();
+        Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
     }
 
 
@@ -620,10 +621,17 @@ private IEnumerator RunGenerateMesh()
                     HandleTouchEvents(touchPoint);
                 }
 
-                // ✅ 센서 보정 모드가 활성화된 경우, 센서 위치 보정
+                // 센서 위치 보정
                 if (isCalibrationActive_SensorPos)
                 {
                     CalibrateSensor(touchPoint);
+                }
+
+                // 화면 비율 보정
+                if (isCalibrationActive_Screenratio)
+                {
+
+                    SaveSensorPoint(touchPoint);
                 }
 
                 // ✅ Homography 보정 활성화 시, 터치 좌표 수집 후 보정 수행
@@ -641,6 +649,7 @@ private IEnumerator RunGenerateMesh()
 
 
     public bool isCalibrationActive_SensorPos = false; // ✅ 보정 모드 활성화 여부
+    public bool isCalibrationActive_Screenratio = false; // ✅ 보정 모드 활성화 여부
     public bool isCalibrationActive = false; // ✅ 보정 모드 활성화 여부
     public bool isCalibrationApplied = false;
     public Vector2 Center_Point = new Vector2(0, 0); // ✅ 화면 중앙 기준 좌표
@@ -661,6 +670,7 @@ private IEnumerator RunGenerateMesh()
 
     public Text Calibration_state_indetail;
     public Text Calibration_state;
+
     public Text State_rotation;
     public Text State_scan;
 
@@ -896,6 +906,52 @@ private IEnumerator RunGenerateMesh()
         touchZoneList.Clear();
         _timer = 0f;
 
+    }
+
+    //0319, 화면 비율 캘리브레이션
+    Vector2 Left_Guide = new Vector2(-900, -490);  // 왼쪽 끝점
+    Vector2 Right_Guide = new Vector2(900, -490);  // 오른쪽 끝점
+                                                   // ✅ 센서에서 측정한 실제 좌표
+    Vector2 Left_Sensor;
+    Vector2 Right_Sensor;
+
+
+    public Text Calibration_state_Screenratio_indetail;
+    public Text Calibration_state_Screenratio;
+
+    // ✅ 사용자가 왼쪽/오른쪽 발을 놓을 때 센서 좌표를 저장하는 함수
+    private void SaveSensorPoint(Vector2 touchPoint)
+    {
+        if (!isCalibrationActive_Screenratio) return;
+
+        switch (calibrationStep)
+        {
+            case 0:
+                Left_Sensor = touchPoint;
+                calibrationStep++;
+                Calibration_state_Screenratio_indetail.text = "왼쪽 좌표 저장 완료";
+                isCalibrationActive_Screenratio = false;
+                break;
+            case 1:
+                Right_Sensor = touchPoint;
+                calibrationStep++;
+                Calibration_state_Screenratio_indetail.text = "오른쪽 좌표 저장 완료";
+                isCalibrationActive_Screenratio = false;
+                break;
+        }
+
+        if (calibrationStep >= 2)
+        {
+            Debug.Log("✅ 모든 센서 좌표가 저장되었습니다. 보정을 적용할 수 있습니다.");
+
+            // ✅ 보정 비율 계산 (X축 비율)
+            float screenRatio_X = (Right_Guide.x - Left_Guide.x) / (Right_Sensor.x - Left_Sensor.x);
+            float screenRatio_Y = (Right_Guide.y - Left_Guide.y) / (Right_Sensor.y - Left_Sensor.y);
+
+            _screenRatio = (screenRatio_X + screenRatio_Y) / 2f; // 평균 비율 사용
+
+            isCalibrationActive_Screenratio = false;
+        }
     }
 
     // Update is called once per frame
