@@ -442,6 +442,10 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                     bubbleOrGermData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
+                    
+                   
+                    Managers.Sound.Play(SoundManager.Sound.Effect, $"EA008/WaterBubbleEffectSound",
+                        0.8f);
                     Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
