@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public class Manager_anim_5 : MonoBehaviour
-{//[common, EDIT] Manager
+{
+    //[common, EDIT] Manager
     public int Content_Seq = 0;
-
     private Manager_Text Manager_Text;
     private Manager_SEQ_4 Manager_Seq;
     private Manager_obj_4 Manager_Obj;

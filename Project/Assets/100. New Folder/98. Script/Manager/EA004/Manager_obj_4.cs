@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,11 +36,6 @@ public class Manager_obj_4 : MonoBehaviour
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
     public GameObject Btn_Next;
-
-    //[EDIT]
-    public Sprite[] Animal_text;
-    public Sprite[] Animal_textsprite;
-    public AudioClip[] Animal_effect;
 
     private int MaxEmoji = 5;
 

@@ -33,16 +33,15 @@ public class Manager_SEQ_4 : Base_GameManager
     public AudioClip Effect_Success;
     public AudioClip [] Effect_Emotion;
 
-    [Header("[ COMPONENT CHECK ]")]
 
+    //[Common] Seq,timer
+    [Header("[ COMPONENT CHECK ]")]
     public int Content_Seq = 0;
     public float Sequence_timer = 0f;
 
-    // Start is called before the first frame update
+    //[Common] Start, Update
     void Start()
     {
-        //Debug.Assert(isInitialized);
-
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_4>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();

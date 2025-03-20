@@ -36,11 +36,6 @@ public class Manager_obj_5 : MonoBehaviour
     private Manager_Narr Manager_Narr;
     public GameObject Btn_Next;
 
-    //[EDIT]
-    public Sprite[] Animal_text;
-    public Sprite[] Animal_textsprite;
-    public AudioClip[] Animal_effect;
-
     private int MaxEmoji = 5;
 
     [Header("[ COMPONENT CHECK ]")]
@@ -79,8 +74,8 @@ public class Manager_obj_5 : MonoBehaviour
         UI_Panel = GameObject.Find("UI_Panel");
         Game_effect = GameObject.Find("Game_effect");
 
-        Manager_Anim = this.gameObject.GetComponent<Manager_anim_4>();
-        Manager_Seq = this.gameObject.GetComponent<Manager_SEQ_4>();
+        Manager_Anim = this.gameObject.GetComponent<Manager_anim_5>();
+        Manager_Seq = this.gameObject.GetComponent<Manager_SEQ_5>();
 
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
@@ -101,8 +96,8 @@ public class Manager_obj_5 : MonoBehaviour
         AudioClip[] Temp_Seq_narration;
         AudioClip[] Temp_Msg_narration;
 
-        Msg_narration = Resources.LoadAll<AudioClip>("EA004/audio_message");
-        Seq_narration = Resources.LoadAll<AudioClip>("EA004/audio_seq");
+        Msg_narration = Resources.LoadAll<AudioClip>("EA005/audio_message");
+        Seq_narration = Resources.LoadAll<AudioClip>("EA005/audio_seq");
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
