@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 {
@@ -18,12 +20,21 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       HealthyFoodGroup, Hamburger, Cookie, Icecream, Pizza, Chocolate, Cake, Donut,
    }
 
+   private Dictionary<Food, int> clickCountMap = new(); // 사라지는 애니메이션, 흔들리는 애니메이션구분
+   private const int CLICK_COUNT_TO_GET_RID_OF_BAD_FOOD =3;
+   
+   
+   private Dictionary<int, Food> transformID = new();
+   
+   
    private Dictionary<Food, Transform> _goodFoodGroup = new();
    private Dictionary<Food, Transform> _badFoodGroup = new();
    private Dictionary<Food, Vector3> _originalScaleMap = new();
    private Ease _disappearAnimEase = Ease.InOutSine;
    private Ease _appearAnimEase = Ease.InOutSine;
    private Animator _mainCameraAnimator;
+
+   private bool _isFoodClickable;
 
    protected override void Init()
    {
@@ -58,16 +69,52 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
    protected override void OnGameStartStartButtonClicked()
    {
       base.OnGameStartStartButtonClicked();
-
-      foreach (var key in _badFoodGroup.Keys.ToArray())
+       
+      
+      DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length, () =>
       {
-         _badFoodGroup[key].gameObject.SetActive(true);
-         _badFoodGroup[key].gameObject.transform.DOScale(_originalScaleMap[key],Random.Range(0.5f,1.5f)).SetEase(_appearAnimEase).SetDelay(Random.Range(0.5f,1.5f));
-         Logger.Log($"doscale : {_originalScaleMap[key]}");
-      }
+         DOVirtual.DelayedCall(0.5f, () =>
+         {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByGames/EA009/Hungry");
+            
+            DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 2f, () =>
+            {
+               Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByGames/EA009/ChangeToGoodFood");
+               
+               DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length , () =>
+               {
+                  _isFoodClickable = true;
+               });
+            });
+         });
+         
+         foreach (var key in _badFoodGroup.Keys.ToArray())
+         {
+            _badFoodGroup[key].gameObject.SetActive(true);
+            _badFoodGroup[key].gameObject.transform.DOScale(_originalScaleMap[key],Random.Range(0.5f,1.5f)).SetEase(_appearAnimEase).SetDelay(Random.Range(0.5f,1.5f));
+            Logger.Log($"doscale : {_originalScaleMap[key]}");
+         }
+
+      });
 
    }
 
+   public sealed override void OnRaySynced()
+   {
+      if (!PreCheckOnRaySync()) return;
+      if (!_isFoodClickable) return;
 
- 
+      foreach (var hit in GameManager_Hits)
+      {
+         ShakeTransform(hit.transform);
+      }
+      
+      
+      
+   }
+
+   private void ShakeTransform(Transform target)
+   {
+      target.DOShakePosition(1f, 10f, 10, 90f, false);
+   }
 }
