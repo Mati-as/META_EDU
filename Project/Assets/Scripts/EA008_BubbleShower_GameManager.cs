@@ -18,7 +18,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     private int _currentRound;
     private Color _currentUnifiedColor = Color.red;
     private Color _previousUniColor = Color.black;
-    private BubbleImage[] _prints;
+    private BubbleGermObj[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
     
@@ -29,7 +29,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
 
     //쌍이되는 컬러를  String으로 할당하여, 색상이름(string)에 따라 제어.
-    private Dictionary<int, BubbleImage> _PrintMap;
+    private Dictionary<int, BubbleGermObj> _PrintMap;
 
     private Dictionary<int, Quaternion> _originalEulerMap;
     private Dictionary<string, Color> _colorPair;
@@ -69,7 +69,26 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     {
         
         onStart?.Invoke();
-        
+
+        foreach (var bubbleGermObj in _prints)
+        {
+
+            bubbleGermObj.printObj.transform.position = bubbleGermObj.defaultPosition;
+            bubbleGermObj.printObj.transform.rotation = bubbleGermObj.defaultRotation;
+            
+            
+            bubbleGermObj.seq.Append(bubbleGermObj.printObj.transform.
+                DOShakePosition(3f, 0.2f, 2, 120, false).SetLoops(-1,LoopType.Yoyo));
+            
+            
+            
+            bubbleGermObj.seq.Append(bubbleGermObj.printObj.transform.
+                DORotateQuaternion(bubbleGermObj.printObj.transform.rotation
+                                   *Quaternion.Euler(bubbleGermObj.printObj.transform.rotation.x,
+                                       bubbleGermObj.printObj.transform.rotation.y+Random.Range(-60,60), bubbleGermObj.printObj.transform.rotation.z), 3f).
+                SetLoops(-1, LoopType.Yoyo).SetEase(Ease.Linear));
+                
+        }
     }
 
     private float _elapsedToCount;
@@ -240,6 +259,21 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _bubbleCount = 0;
         _elapsedToCount = 0f;
         _isCountNarrationPlaying = false;
+        foreach (var bubbleGermObj in _prints)
+        {
+            bubbleGermObj.seq.Kill();
+            bubbleGermObj.seq = DOTween.Sequence();
+        }
+    }
+
+    private void ShakeBubble()
+    {
+        
+    }
+
+    private void OnBubbleOrGermClicked()
+    {
+        
     }
 
 
@@ -265,7 +299,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _defaultPosition = Camera.main.transform.position;
 
         _originalEulerMap = new Dictionary<int, Quaternion>();
-        _PrintMap = new Dictionary<int, BubbleImage>();
+        _PrintMap = new Dictionary<int, BubbleGermObj>();
         _colorPair = new Dictionary<string, Color>();
         _meshRendererMap = new Dictionary<int, MeshRenderer>();
         _childMeshRendererMap = new Dictionary<int, MeshRenderer>();
@@ -297,18 +331,20 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 #endif
       
         
-        _prints = new BubbleImage[PRINTS_COUNT];
+        _prints = new BubbleGermObj[PRINTS_COUNT];
 
 
         for (var i = 0; i < PRINTS_COUNT; i++)
         {
-            _prints[i] = new BubbleImage
+            _prints[i] = new BubbleGermObj
             {
                 printObj = printsParent.transform.GetChild(i).gameObject,
                 defaultVector = printsParent.transform.GetChild(i).rotation.eulerAngles,
                 currentColor = CurrentColorPair[i % (int)ColorSide.ColorCount],
-                defaultSize = printsParent.transform.GetChild(i).gameObject.transform.localScale
-                
+                defaultSize = printsParent.transform.GetChild(i).gameObject.transform.localScale,
+                defaultPosition =printsParent.transform.GetChild(i).gameObject.transform.position,
+                defaultRotation =  printsParent.transform.GetChild(i).gameObject.transform.rotation,
+                seq = DOTween.Sequence()
             };
             _originalEulerMap.TryAdd(_prints[i].printObj.GetInstanceID(), _prints[i].printObj.gameObject.transform.localRotation);
 
@@ -434,6 +470,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             bubbleOrGermData.seq = DOTween.Sequence();
             Quaternion targetRotation = Quaternion.Euler(_rotateVector) * bubbleOrGermData.printObj.transform.localRotation;
 
+           
             bubbleOrGermData.seq.Append(hit.transform
                 .DOLocalRotateQuaternion(targetRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
@@ -443,10 +480,9 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
                     
-                   
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"EA008/WaterBubbleEffectSound",
-                        0.8f);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
+                   //세균방향인 경우 버블 소리, 반대의 경우 일반 지정소리를 냅니다.
+                    if(!bubbleOrGermData.isGermSide)Managers.Sound.Play(SoundManager.Sound.Effect, $"EA008/WaterBubbleEffectSound",0.8f);
+                    else Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
                     bubbleOrGermData.isGermSide = !bubbleOrGermData.isGermSide; 
@@ -454,7 +490,33 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                   
                 })
                 .OnComplete(() => bubbleOrGermData.isCurrentlyFlipping = false));
+            
+            
+// 1️1 Scale 애니메이션 (크기 변화)
+            Sequence _scaleSeq = DOTween.Sequence();
+            _scaleSeq.Join(hit.transform
+                    .DOScale(bubbleOrGermData.defaultSize * 1.4f, 0.38f)
+                    .SetEase(Ease.InOutQuint))
+                .Append(hit.transform
+                    .DOScale(bubbleOrGermData.defaultSize, 0.28f)
+                    .SetEase(Ease.InOutQuint));
 
+// 2️ Shake 애니메이션 (위치 흔들기)
+            Sequence _shakeSeq = DOTween.Sequence();
+            _shakeSeq.Append(bubbleOrGermData.printObj.transform
+                .DOShakePosition(3f, 0.2f, 2, 120, false)
+                .SetLoops(-1, LoopType.Yoyo));
+
+// 3️ Rotate 애니메이션 (랜덤 회전)
+            Sequence _rotateSeq = DOTween.Sequence();
+            _rotateSeq.Append(bubbleOrGermData.printObj.transform
+                .DORotateQuaternion(
+                    bubbleOrGermData.printObj.transform.rotation * Quaternion.Euler(
+                        0, Random.Range(-60, 60), 0), 3f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.Linear));
+            
+            
             bubbleOrGermData.seq.Play();
         }
         else
@@ -615,11 +677,13 @@ Logger.Log($"Default Original Euler : {_originalEulerMap[currentInstanceID]}");
 
 
 
-public class BubbleImage
+public class BubbleGermObj
 {
     public GameObject printObj;
     public bool isGermSide;
     public bool isCurrentlyFlipping;
+    public Quaternion defaultRotation;
+    public Vector3 defaultPosition;
     public Vector3 defaultVector;
     public Vector3 defaultSize;
     public Sequence seq;

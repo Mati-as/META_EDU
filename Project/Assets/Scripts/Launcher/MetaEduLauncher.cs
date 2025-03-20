@@ -36,10 +36,10 @@ public class MetaEduLauncher : UI_PopUp
         BGMVolume,
         EffectVolume,
         //센서보정관련
-        T0_Sensor_Settings,
-        T1_Screen_Setting,
-        T2_Sensor_Setting,
-        T3_Calibration_Setting,
+        // T0_Sensor_Settings,
+        // T1_Screen_Setting,
+        // T2_Sensor_Setting,
+        // T3_Calibration_Setting,
    
         
 
@@ -104,7 +104,7 @@ public class MetaEduLauncher : UI_PopUp
     }
 
 
-    private void OnT1T2SettingCloseBtnClicked() =>ShowTab(UIType.T0_Sensor_Settings);
+  //  private void OnT1T2SettingCloseBtnClicked() =>ShowTab(UIType.T0_Sensor_Settings);
     
     private void OnBackBtnClicked()
     {
@@ -128,11 +128,11 @@ public class MetaEduLauncher : UI_PopUp
         }
         
         else if (currentUITab == UIType.UI_Confirm) Logger.Log($"not valid click : {currentUITab}");
-        else if (currentUITab == UIType.T1_Screen_Setting || currentUITab == UIType.T2_Sensor_Setting)
-        {
-            ShowTab(UIType.T0_Sensor_Settings);
-        }
-        else if(currentUITab == UIType.T0_Sensor_Settings) ShowTab(UIType.Home);
+        // else if (currentUITab == UIType.T1_Screen_Setting || currentUITab == UIType.T2_Sensor_Setting)
+        // {
+        //     ShowTab(UIType.T0_Sensor_Settings);
+        // }
+        // else if(currentUITab == UIType.T0_Sensor_Settings) ShowTab(UIType.Home);
     }
 
  
@@ -162,11 +162,11 @@ public class MetaEduLauncher : UI_PopUp
 
         GetButton((int)UIButtons.Btn_Home).gameObject.BindEvent(() => ShowTab(UIType.Home));
         
-        GetButton((int)UIButtons.Btn_SensorSettings).gameObject.BindEvent(() => ShowTab(UIType.T0_Sensor_Settings));
-        GetButton((int)UIButtons.Btn_SensorScreenSetting).gameObject.BindEvent(() => ShowTab(UIType.T1_Screen_Setting));
-        GetButton((int)UIButtons.Btn_SensorParamSetting).gameObject.BindEvent(() => ShowTab(UIType.T2_Sensor_Setting));
-        GetButton((int)UIButtons.T1SettingCloseButton).gameObject.BindEvent(OnT1T2SettingCloseBtnClicked);
-        GetButton((int)UIButtons.T2SettingCloseButton).gameObject.BindEvent (OnT1T2SettingCloseBtnClicked);
+        // GetButton((int)UIButtons.Btn_SensorSettings).gameObject.BindEvent(() => ShowTab(UIType.T0_Sensor_Settings));
+        // GetButton((int)UIButtons.Btn_SensorScreenSetting).gameObject.BindEvent(() => ShowTab(UIType.T1_Screen_Setting));
+//        GetButton((int)UIButtons.Btn_SensorParamSetting).gameObject.BindEvent(() => ShowTab(UIType.T2_Sensor_Setting));
+//        GetButton((int)UIButtons.T1SettingCloseButton).gameObject.BindEvent(OnT1T2SettingCloseBtnClicked);
+  //      GetButton((int)UIButtons.T2SettingCloseButton).gameObject.BindEvent (OnT1T2SettingCloseBtnClicked);
         
         
         
@@ -404,9 +404,9 @@ public class MetaEduLauncher : UI_PopUp
         GetObject((int)UIType.ContentC_Music).gameObject.SetActive(false);
         GetObject((int)UIType.ContentD_Video).gameObject.SetActive(false);
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
-        GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
-        GetObject((int)UIType.T1_Screen_Setting).gameObject.SetActive(false);
-        GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(false);
+        // GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
+        // GetObject((int)UIType.T1_Screen_Setting).gameObject.SetActive(false);
+        // GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(false);
         
         
         if (currentUITab == UIType.Home)
@@ -488,22 +488,22 @@ public class MetaEduLauncher : UI_PopUp
                 break;
 
             
-            case UIType.T0_Sensor_Settings:
-                Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(true);
-                break;
-                
-            case UIType.T1_Screen_Setting:
-                Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
-                GetObject((int)UIType.T1_Screen_Setting).gameObject.SetActive(true);
-                break;
-
-            case UIType.T2_Sensor_Setting:
-                Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-                GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
-                GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(true);
-                break;
+            // case UIType.T0_Sensor_Settings:
+            //     Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+            //     GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(true);
+            //     break;
+            //     
+            // case UIType.T1_Screen_Setting:
+            //     Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+            //     GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
+            //     GetObject((int)UIType.T1_Screen_Setting).gameObject.SetActive(true);
+            //     break;
+            //
+            // case UIType.T2_Sensor_Setting:
+            //     Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
+            //     GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
+            //     GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(true);
+            //     break;
             // case UIType.Login:
             // 	Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
             // 	GetObject((int)UIType.Login).gameObject.SetActive(true);
