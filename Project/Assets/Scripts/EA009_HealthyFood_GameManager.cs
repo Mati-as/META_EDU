@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class EA009_HealthyFood_GameManager : Base_GameManager
+public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 {
+
+   private enum SequenceName
+   {
+      
+   }
    private enum FoodType
    {
       BadFoodGroup,
@@ -28,6 +33,8 @@ public class EA009_HealthyFood_GameManager : Base_GameManager
       Donut,
       
    }
+   
+   
 
    private Ease _disappearAnimEase = Ease.InOutSine;
    private Ease _appearAnimEase = Ease.InOutSine;
