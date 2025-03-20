@@ -522,7 +522,7 @@ private IEnumerator RunGenerateMesh()
         
         //0319 게임 내 플레이가능하도록 널체크 추가 
         if(Calibration_state_Screenratio!=null)Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
-        Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
+     
 
         //해당 하는 값이 있으면 해당 값으로 로드할 수 있도록 함
         Set_Screenscale(XmlManager.Instance.ScreenSize);
