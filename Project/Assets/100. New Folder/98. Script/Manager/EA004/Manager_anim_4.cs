@@ -35,15 +35,9 @@ public class Manager_anim_4 : MonoBehaviour
     private GameObject Icon_buttion_position;
 
 
-    private GameObject Selected_fruit;
-    private int fruit_number;
     private int round_number;
-    private int Box_number;
 
     //[EDIT] object position transform
-    private Transform[] B_p0;
-    private Transform B_p1;
-    private Transform B_p2;
 
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Camera_pos_array;
@@ -187,6 +181,17 @@ public class Manager_anim_4 : MonoBehaviour
             Emoji.SetActive(false);
         }
     }
+    public void Active_Seq_Icon_1()
+    {
+        GameObject Emoji;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Emoji = Main_Icon_1_array[i];
+            Emoji.transform.DOScale(1, 1f).SetEase(Ease.OutElastic);
+            Emoji.SetActive(true);
+        }
+    }
     int Max_emoji = 24;
     int Round_number_emoji = 0;
     public void Setting_Seq_Icon_2()
@@ -198,6 +203,7 @@ public class Manager_anim_4 : MonoBehaviour
         StartCoroutine(Setting_icon_2());
     }
 
+    //여기에서 전체를 세팅하는거 같음
     IEnumerator Setting_icon_2(float time = 0.2f)
     {
         if (Round_number_emoji == Max_emoji)
@@ -219,7 +225,7 @@ public class Manager_anim_4 : MonoBehaviour
             //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
 
             //클릭 할 수 있도록 기능 활성화
-            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+            //Manager_Seq.Active_emoji_clickable(Selected_emoji);
 
             Round_number_emoji += 1;
 
@@ -229,12 +235,20 @@ public class Manager_anim_4 : MonoBehaviour
     //패널, 제시 활성화
     public void Setting_Seq_Eachgame(int round)
     {
-        Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
+        //Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
 
-        Main_Icon_3_array[round].SetActive(true);
-        Main_Icon_3_array[round].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
-        this.transform.DOShakeScale(5f, 1, 10, 90, true).SetEase(Ease.OutQuad)
-            .OnComplete(() => Main_Icon_3_array[round].SetActive(false));
+        //Main_Icon_3_array[round].SetActive(true);
+        //Main_Icon_3_array[round].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+        //this.transform.DOShakeScale(5f, 1, 10, 90, true).SetEase(Ease.OutQuad)
+        //    .OnComplete(() => Main_Icon_3_array[round].SetActive(false));
+
+        //그 이전꺼 비활성화 해야하는데
+        //화나요 부터 활성화 되어있을 거고 화나요 시작에는 호출 필요가 없음
+        if(round>=1)
+        {
+            //여기에 그냥 애니메이션으로 구현
+            Manager_obj_4.instance.Main_Icon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+        }
 
         for (int i = 0; i < Main_Icon_2_array.Length; i++)
         {
@@ -246,8 +260,11 @@ public class Manager_anim_4 : MonoBehaviour
                 Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
                 Activate_emoji_forgame(Main_Icon_2_array[i]);
                 Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
+
+                Manager_Seq.Active_emoji_clickable(Main_Icon_2_array[i]);
             }
         }
+
     }
 
     public void Read_Seq_Emoji()
@@ -261,12 +278,14 @@ public class Manager_anim_4 : MonoBehaviour
         if (round_number == 5)
         {
             //5, Active next button
-            Manager_obj_4.instance.Btn_Next.SetActive(true);
+            if(Content_Seq ==1)
+                Manager_obj_4.instance.Btn_Next.SetActive(true);
 
             Sequence seq = DOTween.Sequence();
             seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
 
             StopCoroutine(Temp_Message(time));
+            round_number = 0;
         }
         else
         {

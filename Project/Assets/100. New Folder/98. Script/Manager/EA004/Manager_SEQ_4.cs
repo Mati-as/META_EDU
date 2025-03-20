@@ -31,6 +31,7 @@ public class Manager_SEQ_4 : Base_GameManager
     public int Number_Maxemoji_game;
 
     public AudioClip Effect_Success;
+    public AudioClip [] Effect_Emotion;
 
     [Header("[ COMPONENT CHECK ]")]
 
@@ -99,12 +100,21 @@ public class Manager_SEQ_4 : Base_GameManager
         }
         else if (Content_Seq == 3 || Content_Seq == 5 || Content_Seq == 7 || Content_Seq == 9 || Content_Seq == 11)
         {
-            //11������ ���Ⱑ ������ �ȵȵ�
-            Debug.Log("Content_Seq" + Content_Seq + "setting");
             Init_EachGame_emoji(Game_round);
         }
-        else
+        else if (Content_Seq == 13 )
         {
+            Manager_obj_4.instance.Main_Icon_2.SetActive(false);
+            Manager_obj_4.instance.Main_Icon_3_array[4].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+
+            //액티베이트 했을 때 이모지 애니메이션 활성화
+            Manager_Anim.Active_Seq_Icon_1();
+            Read_Emoji();
+
+            Onclick = true;
+        }
+        else
+        {   //여기에서 중간중간 큰 이모지 활성화 하는 기능 추가
             Content_Seq += 1;
             toggle = true;
             Timer_set();
@@ -133,16 +143,19 @@ public class Manager_SEQ_4 : Base_GameManager
         Manager_Anim.Setting_Seq_Icon_2();
     }
 
+    //해당 소리가 안 남 전부 수정이 필요함
+    //한글 경로로 되어있는거 깨져서
     void Init_EachGame_emoji(int round)
     {
         var path = "Audio/�⺻������/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-        //�г� Ȱ��ȭ, �г� ����� ��Ȱ��ȭ
         Manager_Anim.Setting_Seq_Eachgame(round);
         Number_Maxemoji_game = Manager_obj_4.instance.Number_of_Eachemoji[round];
 
         Onclick = true;
+
+        //여기에서 해당하는 이모지들만 clickable로
     }
 
     void End_Game_emoji()
@@ -156,7 +169,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
         Debug.Log("EMOJI CLICKED!");
 
-        if (Content_Seq == 1)
+        if (Content_Seq == 1 || Content_Seq == 13)
         {
             Inactive_emoji_clickable(Emoji);
 
@@ -185,15 +198,20 @@ public class Manager_SEQ_4 : Base_GameManager
                 //End
                 if (Number_Maxemoji_game == 0)
                 {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+
+                    Manager_obj_4.instance.Main_Icon_3_array[Game_round].SetActive(true);
+                    Manager_obj_4.instance.Main_Icon_3_array[Game_round].transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
+
+                    Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Emotion[Game_round], 1f);
+
                     Content_Seq += 1;
                     toggle = true;
                     Game_round += 1;
-
-                    Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+                    Timer_set();
 
                     Debug.Log("ALL EMOJI FOUND!");
 
-                    //3d ������Ʈ���� �ش� �ǹǷ� ���� �ʿ�
                     Onclick = false;
                 }
             }
@@ -226,7 +244,6 @@ public class Manager_SEQ_4 : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
     }
 
     private bool _isRoundFinished;
@@ -243,7 +260,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
-        if (_raycastHits.Length == 0) Logger.Log("Ŭ���� ���� �ƹ��͵� �����ϴ�. ------------------");
+        if (_raycastHits.Length == 0) 
 
         foreach (var hit in _raycastHits)
         {
@@ -273,8 +290,6 @@ public class Manager_SEQ_4 : Base_GameManager
         Sequence seq = DOTween.Sequence();
         seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
 
-        //�������� �����ϴ� ȿ����?
-        //Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
 
@@ -291,6 +306,5 @@ public class Manager_SEQ_4 : Base_GameManager
         else
             Debug.LogError("Main camera does not have UniversalAdditionalCameraData component.");
     }
-
 }
 
