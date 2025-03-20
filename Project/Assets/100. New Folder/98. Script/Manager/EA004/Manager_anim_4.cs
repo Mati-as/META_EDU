@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,22 +9,20 @@ public class Manager_anim_4 : MonoBehaviour
     //[common, EDIT] Manager
     public int Content_Seq = 0;
 
-    private Manager_Text Manager_Text;
+    //private Manager_Text Manager_Text;
     private Manager_SEQ_4 Manager_Seq;
-    private Manager_obj_4 Manager_Obj;
-    private bool Eng_mode;
+    //private Manager_obj_4 Manager_Obj;
+    //private bool Eng_mode;
 
     //[common] Camera
-    private GameObject Main_Camera;
-    private GameObject Camera_position;
+    //private GameObject Main_Camera;
+    //private GameObject Camera_position;
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
 
 
     //[EDIT]
     private Tween[] Emoji_seq_loop;
-
-    private GameObject Fruit_position;
 
     private GameObject Main_Icon_1;
     private GameObject[] Main_Icon_1_array;
@@ -46,53 +44,19 @@ public class Manager_anim_4 : MonoBehaviour
 
     void Start()
     {
-        //Camera_position = Manager_obj_4.instance.Camera_position;
-        //Main_Camera = Manager_obj_4.instance.Main_Camera;
-
         Manager_Seq = Manager_obj_4.instance.Get_managerseq();
-        Manager_Text = this.gameObject.GetComponent<Manager_Text>();
-
-        //Init_Seq_camera();
     }
 
-    //[common] Camera
-    //void Init_Seq_camera()
-    //{
-    //    Camera_pos_array = new GameObject[Camera_position.transform.childCount];
-    //    Camera_seq = new Sequence[Camera_position.transform.childCount];
-    //    Number_Camera_seq = 0;
-
-    //    for (int i = 0; i < Camera_position.transform.childCount; i++)
-    //    {
-    //        Camera_pos_array[i] = Camera_position.transform.GetChild(i).gameObject;
-
-    //        Camera_seq[i] = DOTween.Sequence();
-
-    //        Transform pos = Camera_position.transform.GetChild(i).transform;
-    //        Camera_seq[i].Append(Main_Camera.transform.DORotate(pos.transform.rotation.eulerAngles, 1f));
-    //        Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
-    //        Camera_seq[i].Pause();
-
-
-    //        //Debug.Log("length " + Camera_seq.Length);
-    //    }
-    //}
     public void Move_Seq_camera()
     {
         Camera_seq[Number_Camera_seq].Play();
         Number_Camera_seq++;
-        //Debug.Log("C_SEQ = " + Number_Camera_seq);
     }
 
     //[EDIT] Contents camera sequence
     public void Change_Animation(int Number_seq)
     {
         Content_Seq = Number_seq;
-        //if (Content_Seq == 11 || Content_Seq == 12 || Content_Seq == 17)
-        //{
-        //    Move_Seq_camera();
-        //    //Debug.Log("SEQ = " + Content_Seq);
-        //}
     }
 
     public void Init_Icon_array()
@@ -169,7 +133,6 @@ public class Manager_anim_4 : MonoBehaviour
         seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
     }
 
-
     public void Inactive_Seq_Icon_1()
     { 
         GameObject Emoji;
@@ -202,8 +165,6 @@ public class Manager_anim_4 : MonoBehaviour
 
         StartCoroutine(Setting_icon_2());
     }
-
-    //여기에서 전체를 세팅하는거 같음
     IEnumerator Setting_icon_2(float time = 0.2f)
     {
         if (Round_number_emoji == Max_emoji)
@@ -224,9 +185,6 @@ public class Manager_anim_4 : MonoBehaviour
             //나중에 효과음 추가한다면 여기에 추가 필요
             //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
 
-            //클릭 할 수 있도록 기능 활성화
-            //Manager_Seq.Active_emoji_clickable(Selected_emoji);
-
             Round_number_emoji += 1;
 
             StartCoroutine(Setting_icon_2(time));
@@ -235,18 +193,8 @@ public class Manager_anim_4 : MonoBehaviour
     //패널, 제시 활성화
     public void Setting_Seq_Eachgame(int round)
     {
-        //Main_Icon_3_array = Manager_obj_4.instance.Main_Icon_3_array;
-
-        //Main_Icon_3_array[round].SetActive(true);
-        //Main_Icon_3_array[round].transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
-        //this.transform.DOShakeScale(5f, 1, 10, 90, true).SetEase(Ease.OutQuad)
-        //    .OnComplete(() => Main_Icon_3_array[round].SetActive(false));
-
-        //그 이전꺼 비활성화 해야하는데
-        //화나요 부터 활성화 되어있을 거고 화나요 시작에는 호출 필요가 없음
         if(round>=1)
         {
-            //여기에 그냥 애니메이션으로 구현
             Manager_obj_4.instance.Main_Icon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
         }
 

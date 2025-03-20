@@ -24,7 +24,7 @@ public class Clicked_emoji : MonoBehaviour
     //   // Manager_Seq_3.instance.Click(this.gameObject, Number_fruit, Number_table);
     //}
 
-    //[common] 3d 일 경우 raysync 안에, 2d 일경우 버튼 컴포넌트 이벤트 안에
+    //[common] 3d game => SEQ : OnRaySynced() , 2d game => SEQ : Click()
     public void Click()
     {
         //Debug.Log("Clicked");

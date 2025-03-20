@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,9 +26,9 @@ public class Manager_obj_4 : MonoBehaviour
     public Sprite Yellow;
 
 
-    //icon_1ÀÇ °æ¿ì Å¬¸¯ÇØ¼­ ÅØ½ºÆ® ³ª·¹ÀÌ¼Ç, È¿°úÀ½ Àç»ı
-    //icon_2ÀÇ °æ¿ì Å¬¸¯ X
-    //icon_3ÀÇ °æ¿ì Å¬¸¯ ÇÊ¿ä
+    //icon_1ì˜ ê²½ìš° í´ë¦­í•´ì„œ í…ìŠ¤íŠ¸ ë‚˜ë ˆì´ì…˜, íš¨ê³¼ìŒ ì¬ìƒ
+    //icon_2ì˜ ê²½ìš° í´ë¦­ X
+    //icon_3ì˜ ê²½ìš° í´ë¦­ í•„ìš”
 
     //[common, EDIT] Manager
     private Manager_anim_4 Manager_Anim;
@@ -123,7 +123,7 @@ public class Manager_obj_4 : MonoBehaviour
         Number_of_Eachemoji = new int[5] { 0, 0, 0, 0, 0 };
         for (int i = 0; i < 5; i++)
         {
-            //°¢ ¼ıÀÚ¸¦ 1¹ø¾¿ ·£´ıÀ¸·Î ¹«Á¶°Ç ³ÖÀ½
+            //ê° ìˆ«ìë¥¼ 1ë²ˆì”© ëœë¤ìœ¼ë¡œ ë¬´ì¡°ê±´ ë„£ìŒ
             Number_of_Eachemoji[i] += 1;
             Generate_emoji(i, i);
         }
@@ -152,8 +152,8 @@ public class Manager_obj_4 : MonoBehaviour
     }
     void Generate_emoji(int num_emoji, int num_table)
     {
-        //±×³É 0 ~ ¸¶Áö¸· ¹øÈ£±îÁö for¹®µ¹¸®°í
-        //°¢ Å×ÀÌºí À§Ä¡¿¡ ·£´ıÀ¸·Î Ç¥Á¤ ÇÁ¸®ÆÕÀ» ¹èÄ¡½ÃÅ´
+        //ê·¸ëƒ¥ 0 ~ ë§ˆì§€ë§‰ ë²ˆí˜¸ê¹Œì§€ forë¬¸ëŒë¦¬ê³ 
+        //ê° í…Œì´ë¸” ìœ„ì¹˜ì— ëœë¤ìœ¼ë¡œ í‘œì • í”„ë¦¬íŒ¹ì„ ë°°ì¹˜ì‹œí‚´
         GameObject emoji = Instantiate(Manager_obj_4.instance.Emoji_prefabs[num_emoji]);
         RectTransform pos = Icon_buttion_position.transform.GetChild(num_table).GetComponent<RectTransform>();
 
