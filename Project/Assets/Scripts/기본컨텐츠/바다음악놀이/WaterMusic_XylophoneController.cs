@@ -44,7 +44,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private Dictionary<int, Color> _defaultColorMap;
     //바뀔 컬러 캐싱용
     private Dictionary<int, Color> _colorChangeMap;
-    private readonly string AUDIO_XYLOPHONE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/Piano/";
+    private readonly string AUDIO_XYLOPHONE_PATH = "SortedbyGame/BasicContents/SkyMusic/Audio/Piano/";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
 
     private MeshRenderer[] _xylophoneMeshRenderers;
@@ -185,7 +185,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
                 .OnStart(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect,
-                        "Audio/기본컨텐츠/WaterMusic/" + _soundProducingXylophones[i1].transform.gameObject.name, 0.35f);
+                        "Audio/BasicContents/WaterMusic/" + _soundProducingXylophones[i1].transform.gameObject.name, 0.35f);
                 });
             
        
@@ -232,7 +232,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
             ResetClickabeWithDelay(id);
             
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterMusic/"+RayHitForXylophone.transform.gameObject.name,0.3f);
    
             
             MeshRenderer meshRenderer = null;
@@ -333,14 +333,14 @@ public class WaterMusic_XylophoneController : MonoBehaviour
 
 
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/WaterMusic/" + RayHitForXylophone.transform.gameObject.name, 0.3f);
+            "Audio/BasicContents/WaterMusic/" + RayHitForXylophone.transform.gameObject.name, 0.3f);
         trans.DORotateQuaternion(_defaultRotationMap[currentID] * Quaternion.Euler(40, 0, 0), 1f);
 
         var defaultPos = trans.position;
         trans.DOMove(trans.position + Vector3.down * 3.8f, 1f).SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterMusic/Deeper",
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterMusic/Deeper",
                     0.5f);
             })
             .OnComplete(() =>

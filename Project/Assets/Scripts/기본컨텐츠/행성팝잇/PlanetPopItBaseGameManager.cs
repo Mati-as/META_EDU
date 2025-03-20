@@ -70,18 +70,18 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         base.Init();
         _effectContainer = new Stack<ParticleSystem>();
-        SetPool(_effectContainer, "게임별분류/기본컨텐츠/PlanetPopIt/CFX2_PickupStar");
+        SetPool(_effectContainer, "SortedbyGame/BasicContents/PlanetPopIt/CFX2_PickupStar");
         
         
         var sunCount = 2;
         _sunMeshRenderers = new MeshRenderer[sunCount];
 
         _sunExpressionMat = new Material[(int)SunExpression.Count];
-        var idleMat = Resources.Load<Material>("게임별분류/기본컨텐츠/PlanetPopIt/M_Sun_Idle");
+        var idleMat = Resources.Load<Material>("SortedbyGame/BasicContents/PlanetPopIt/M_Sun_Idle");
         var matIdle = Instantiate(idleMat);
         _sunExpressionMat[(int)SunExpression.Idle] = matIdle;
 
-        var excitedMat = Resources.Load<Material>("게임별분류/기본컨텐츠/PlanetPopIt/M_Sun_Excited");
+        var excitedMat = Resources.Load<Material>("SortedbyGame/BasicContents/PlanetPopIt/M_Sun_Excited");
         var mat = Instantiate(excitedMat);
         _sunExpressionMat[(int)SunExpression.Excited] = mat;
 
@@ -175,7 +175,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
                 
                 //sound--------------------
                 var randomChar = (char)Random.Range('A', 'F' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
                     0.3f);
                 
                 //particle------------------
@@ -276,7 +276,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
         if (_isSquished[id]) BloatBack(id);
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
 
             sun.DOLocalRotateQuaternion(_sunDefaultRotation *
                                         quaternion.Euler(Random.Range(-45, 45), Random.Range(-45, 45),

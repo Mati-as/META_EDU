@@ -230,37 +230,37 @@ public class ShapePathfindingBaseGameManager : Base_GameManager
 
     private void LoadResource()
     {
-        var psPrefab = Resources.Load<ParticleSystem>("게임별분류/기본컨텐츠/ShapePathFinder/CFX_Correct");
+        var psPrefab = Resources.Load<ParticleSystem>("SortedbyGame/BasicContents/ShapePathFinder/CFX_Correct");
         _correctPs = Instantiate(psPrefab);
 
         _colorMat = new Material[(int)ColorMat.MaxCount];
         _shapeMat = new Material[(int)ShapeMat.MaxCount];
 
         // 컬러머터리얼 리소스 로딩 ----------------------------------------------
-        var matRed = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Red");
+        var matRed = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Red");
         _colorMat[(int)ColorMat.Red] = matRed;
 
-        var matBlue = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Blue");
+        var matBlue = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Blue");
         _colorMat[(int)ColorMat.Blue] = matBlue;
 
-        var matGreen = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Green");
+        var matGreen = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Green");
         _colorMat[(int)ColorMat.Green] = matGreen;
 
-        var matViolet = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Violet");
+        var matViolet = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Violet");
         _colorMat[(int)ColorMat.Violet] = matViolet;
 
 
         // 도형머터리얼 리소스 로딩 ----------------------------------------------
-        var matCircle = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Circle");
+        var matCircle = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Circle");
         _shapeMat[(int)ShapeMat.Circle] = matCircle;
 
-        var matSquare = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Square");
+        var matSquare = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Square");
         _shapeMat[(int)ShapeMat.Square] = matSquare;
 
-        var matTriangle = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Triangle");
+        var matTriangle = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Triangle");
         _shapeMat[(int)ShapeMat.Triangle] = matTriangle;
 
-        var matHeart = Resources.Load<Material>("게임별분류/기본컨텐츠/ShapePathFinder/Material/RuntimeMaterial/M_Heart");
+        var matHeart = Resources.Load<Material>("SortedbyGame/BasicContents/ShapePathFinder/Material/RuntimeMaterial/M_Heart");
         _shapeMat[(int)ShapeMat.Heart] = matHeart;
     }
 

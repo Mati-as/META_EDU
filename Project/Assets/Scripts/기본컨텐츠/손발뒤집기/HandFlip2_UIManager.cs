@@ -113,7 +113,7 @@ public class HandFlip2_UIManager : UI_PopUp
        
         yield return DOVirtual.Float(0, 0, 1, _ => { }).WaitForCompletion();
         _ready.gameObject.SetActive(true);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",1.0f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",1.0f);
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
         yield return DOVirtual.Float(0, 1f, 1f, _ => { }).WaitForCompletion();
         yield return DOVirtual.Float(1, 0, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();

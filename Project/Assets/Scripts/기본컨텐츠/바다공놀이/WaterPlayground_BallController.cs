@@ -76,7 +76,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         {
             
             var randomChar = (char)Random.Range('A', 'C' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/Hole" + randomChar,0.5f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/Hole" + randomChar,0.5f);
             
             
              _dolphinController.currentBallInTheHoleColor = _color;
@@ -230,7 +230,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     {
         psQueue = new Queue<ParticleSystem>();
         var index = 0;
-        var ps = Resources.Load<GameObject>("게임별분류/기본컨텐츠/WaterPlayGround/BallHitEffect").GetComponent<ParticleSystem>();
+        var ps = Resources.Load<GameObject>("SortedbyGame/BasicContents/WaterPlayGround/BallHitEffect").GetComponent<ParticleSystem>();
 
 
         psQueue.Enqueue(ps);

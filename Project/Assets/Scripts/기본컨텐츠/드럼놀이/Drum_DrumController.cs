@@ -29,7 +29,7 @@ public class Drum_DrumController : MonoBehaviour,IMusicInstrumentsIOnClick
    
         var randomChar = (char)Random.Range('A', 'B' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Drum" ,
+            "Audio/BasicContents/MusicInstruments/Drum" ,
             0.3f,pitch:pitch);
     }
     

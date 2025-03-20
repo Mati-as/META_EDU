@@ -21,7 +21,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private ParticleSystem _inducingParticle;
     private ParticleSystem _successParticle;
-    private readonly string PATH = "게임별분류/기본컨텐츠/Hopscotch/";
+    private readonly string PATH = "SortedbyGame/BasicContents/Hopscotch/";
 
     public float successParticleDuration;
     private bool _isSuccesssParticlePlaying;

@@ -49,7 +49,7 @@ public class Drum_AnimalController : MonoBehaviour
 
     private IEnumerator AnimalMoveCoroutine()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Drum/Herd", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Drum/Herd", 0.3f);
         
         var delayBeforeCameraShaking = 1.5f;
         yield return DOVirtual.Float(0, 0, delayBeforeCameraShaking,_  => { }).WaitForCompletion();
@@ -60,7 +60,7 @@ public class Drum_AnimalController : MonoBehaviour
         var delayBeforeAnimalsAppear = 1f;
         yield return DOVirtual.Float(0, 0, delayBeforeAnimalsAppear,_  => { }).WaitForCompletion();
         
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Drum/Elephant", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Drum/Elephant", 0.3f);
         transform.DOMove(_animalMoveArrivalPoint, 5f).OnComplete(() =>
         {
             Managers.Sound.Stop(SoundManager.Sound.Effect);

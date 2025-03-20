@@ -114,7 +114,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
         if (_animalMoveCurrentTime > raycasterMoveInterval)
         {
             _isAnimalMoving = true;
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert");
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Alert");
 
             DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() => { RayCasterMovePlay(); });
             _animalMoveCurrentTime = 0;
@@ -200,7 +200,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
                         {
                             var randomChar = (char)Random.Range('A', 'F' + 1);
                             Managers.Sound.Play(SoundManager.Sound.Effect,
-                                "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
+                                "Audio/BasicContents/HandFootFlip/Click_" + randomChar);
 
                             _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -280,7 +280,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
                     .OnStart(() =>
                     {
                         var randomChar = (char)Random.Range('A', 'F' + 1);
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Click_" + randomChar);
 
                         _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -387,18 +387,18 @@ public class HandFootFlipBaseGameManager : Base_GameManager
             .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
             .OnStart(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Herd");
 
                 DOVirtual.Float(0, 1, 0.35f, _ => { })
                     .OnStart(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A");
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Giggle_A");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Giggle_B");
                     })
                     .OnComplete(() =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Elephant");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Elephant_B");
                     });
 
 

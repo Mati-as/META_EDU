@@ -81,7 +81,7 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
             if (!_isCountNarrationPlaying)
             {
                 Managers.Sound.Play
-                    (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)_remainTime}", 0.8f);
+                    (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count" + $"{(int)_remainTime}", 0.8f);
                 _isCountNarrationPlaying = true;
                 _elapsedToCount = 0;
             }

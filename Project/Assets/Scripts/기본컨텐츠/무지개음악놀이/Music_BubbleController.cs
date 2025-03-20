@@ -67,12 +67,12 @@ public class Music_BubbleController : MonoBehaviour
     private readonly int _audioClipCount = 5;
 
 
-    private readonly string AUDIO_SMALL_BUBBLE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/bubble_explode_small";
-    private readonly string AUDIO_BIG_BUBBLE_PATH = "게임별분류/기본컨텐츠/SkyMusic/Audio/bubble_explode_big";
-    private readonly string AUDIO_CLEAR_BUBBLE = "게임별분류/기본컨텐츠/SkyMusic/Audio/clear_bubble";
+    private readonly string AUDIO_SMALL_BUBBLE_PATH = "SortedbyGame/BasicContents/SkyMusic/Audio/bubble_explode_small";
+    private readonly string AUDIO_BIG_BUBBLE_PATH = "SortedbyGame/BasicContents/SkyMusic/Audio/bubble_explode_big";
+    private readonly string AUDIO_CLEAR_BUBBLE = "SortedbyGame/BasicContents/SkyMusic/Audio/clear_bubble";
 
-    private readonly string PREFAB_EFFECT_PARTICLE_PATH_SMALL = "게임별분류/기본컨텐츠/SkyMusic/Prefab/bubble_explode_small";
-    private readonly string PREFAB_EFFECT_PARTICLE_PATH_BIG = "게임별분류/기본컨텐츠/SkyMusic/Prefab/bubble_explode_big";
+    private readonly string PREFAB_EFFECT_PARTICLE_PATH_SMALL = "SortedbyGame/BasicContents/SkyMusic/Prefab/bubble_explode_small";
+    private readonly string PREFAB_EFFECT_PARTICLE_PATH_BIG = "SortedbyGame/BasicContents/SkyMusic/Prefab/bubble_explode_big";
 
     private RaycastHit rayCastHitForBubble;
     private Ray ray;

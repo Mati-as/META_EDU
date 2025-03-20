@@ -35,7 +35,7 @@ public class BeadsDrumBaseGameManager : Base_GameManager
                 if (hit.transform.gameObject.name.Contains("DrumLeft"))
                 {
                     var randomChar = (char)Random.Range('A', 'B' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/Drum"+randomChar);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/비즈드럼/Drum"+randomChar);
                     OnLeftDrumClicked?.Invoke();
                     return;
                 }

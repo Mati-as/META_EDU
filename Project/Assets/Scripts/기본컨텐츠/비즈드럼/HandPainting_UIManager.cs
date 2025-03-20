@@ -112,7 +112,7 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",0.8f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, _scaleAnimationDurationTime, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();

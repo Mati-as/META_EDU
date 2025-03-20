@@ -57,7 +57,7 @@ public class OwlVideoBaseGameManager : InteractableVideoBaseGameManager
     private void UI_Init()
     {
         // XML 파일 로드 (Resources 폴더 안에 있어야 함)
-        _xmlAsset = Resources.Load<TextAsset>("게임별분류/비디오컨텐츠/Owl/Video_UI_text_Data");
+        _xmlAsset = Resources.Load<TextAsset>("SortedbyGame/VideoContents/Owl/Video_UI_text_Data");
         _xmlDoc = new XmlDocument();
         _xmlDoc.LoadXml(_xmlAsset.text);
 
@@ -374,7 +374,7 @@ public class OwlVideoBaseGameManager : InteractableVideoBaseGameManager
 
     private void LoadPrefabs()
     {
-        rewindPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnRewind";
+        rewindPsPrefabPath = "SortedbyGame/VideoContents/Owl/CFX/CFX_OnRewind";
         rewindParticleAudioPath = "Audio/비디오 컨텐츠/Owl/Leaves";
 
 
@@ -391,7 +391,7 @@ public class OwlVideoBaseGameManager : InteractableVideoBaseGameManager
                 rewindPsPosition.transform.rotation).GetComponent<ParticleSystem>();
         }
 
-        var replayPsPrefabPath = "게임별분류/비디오컨텐츠/Owl/CFX/CFX_OnReplayAfterPaused";
+        var replayPsPrefabPath = "SortedbyGame/VideoContents/Owl/CFX/CFX_OnReplayAfterPaused";
         var prefabReplayPs = Resources.Load<GameObject>(replayPsPrefabPath);
 
         if (prefabReplayPs == null)

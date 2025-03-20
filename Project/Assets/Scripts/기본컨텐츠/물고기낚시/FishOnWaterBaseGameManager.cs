@@ -108,14 +108,14 @@ public class FishOnWaterBaseGameManager : Base_GameManager
                 _pathPoints[row, column] = pathParent.GetChild(column).position;
         }
 
-        var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_FishA");
+        var prefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/FishOnWater_FishA");
         for (var i = 0; i < FISH_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
 
             _defaultSize = fish.localScale;
             var randomChar = Random.Range('A', 'E' + 1);
-            var path = "게임별분류/기본컨텐츠/FishOnWater/Fishes/M_Fish" + (char)randomChar;
+            var path = "SortedbyGame/BasicContents/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
             fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =
@@ -139,7 +139,7 @@ public class FishOnWaterBaseGameManager : Base_GameManager
         for (var i = 0; i < pathInBucketBParent.childCount; i++)
             _pathInBucketB[i] = pathInBucketBParent.GetChild(i).position;
 
-        var vfxPrefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/CFX_WaterSplash");
+        var vfxPrefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/CFX_WaterSplash");
 
         var PARTICLE_COUNT = 15;
         for (var i = 0; i < PARTICLE_COUNT; i++)

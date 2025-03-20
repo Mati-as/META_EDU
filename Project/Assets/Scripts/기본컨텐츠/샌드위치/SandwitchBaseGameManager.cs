@@ -188,7 +188,7 @@ public class SandwitchBaseGameManager : Base_GameManager
             }
 
             var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar,
                 0.3f);
 
             var clickedObj = _ingredientsOnBigPlate.FirstOrDefault(x =>
@@ -237,7 +237,7 @@ public class SandwitchBaseGameManager : Base_GameManager
                 obj.transform.position = _ingredientGenerationPosition;
 
 
-                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+                var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
                 Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
                 Logger.Log($"fallingsound : path : {path}");
@@ -403,7 +403,7 @@ public class SandwitchBaseGameManager : Base_GameManager
                 .OnStart(() =>
                 {
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar,
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar,
                         0.3f);
                 })
                 .OnComplete(() =>
@@ -473,7 +473,7 @@ public class SandwitchBaseGameManager : Base_GameManager
                     {
                         Logger.Log("popup sound");
 
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_A", 0.3f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_A", 0.3f);
                     })
                     .SetEase(Ease.InOutBounce)
                     .SetDelay(delay + Random.Range(0, 0.5f))
@@ -542,11 +542,11 @@ public class SandwitchBaseGameManager : Base_GameManager
 
 
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/Sandwich/Complete", 1f);
+            "Audio/BasicContents/Sandwich/Complete", 1f);
 
 
         Managers.Sound.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/Sandwich/OnSandwichMakingFinish0" + Random.Range(1, 5), 0.5f);
+            "Audio/BasicContents/Sandwich/OnSandwichMakingFinish0" + Random.Range(1, 5), 0.5f);
 
         PlayParticle(0.89f);
 
@@ -564,7 +564,7 @@ public class SandwitchBaseGameManager : Base_GameManager
                 .OnStart(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect,
-                        "Audio/기본컨텐츠/Sandwich/Sandwich_Ing_Popup");
+                        "Audio/BasicContents/Sandwich/Sandwich_Ing_Popup");
                 })
                 .SetEase(Ease.InOutBounce);
     }

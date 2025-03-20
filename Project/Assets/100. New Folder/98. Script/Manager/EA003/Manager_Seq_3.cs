@@ -227,7 +227,7 @@ public class Manager_Seq_3 : Base_GameManager
     public void Click(GameObject plate_Fruit, int num_fruit, int num_table)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
         if (Content_Seq >= 12)
         {
@@ -270,7 +270,7 @@ public class Manager_Seq_3 : Base_GameManager
             else
             {
                 //틀린 과일 눌렀을 때
-                var path = "Audio/기본컨텐츠/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+                var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
                 Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
                 Manager_Anim.Inactive_Seq_fruit(plate_Fruit, 0f);

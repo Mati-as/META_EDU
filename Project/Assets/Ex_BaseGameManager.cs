@@ -8,7 +8,8 @@ using Object = UnityEngine.Object;
 
 
 /// <summary>
-/// 오브젝트 바인딩 기능이 추가됨. 
+/// 오브젝트 바인딩 기능이 추가.
+/// 기본적으로 카메라 무빙, 애니메이션을 총괄할 수 있는 메인 애니메이션 컨트롤러 추가 
 /// </summary>
 public abstract class Ex_BaseGameManager : Base_GameManager
     
@@ -16,7 +17,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<Type, Object[]> _objects = new();
 
     protected bool _init;
-
+    protected Animator animator;
 
     protected new virtual void Awake()
     {
@@ -25,6 +26,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected new virtual void Init()
     {
         base.Init();
+        var isAnimatorAttached= TryGetComponent(out animator);
+        if(!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
     }
 
     

@@ -197,7 +197,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
         if (!_isCountNarrationPlaying)
         {
             Managers.Sound.Play
-                (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}", 0.8f);
+                (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count" + $"{(int)remainTime}", 0.8f);
             _isCountNarrationPlaying = true;
             _elapsedToCount = 0;
         }
@@ -333,7 +333,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
 // #endif
 
         _onFishCatchPsPool = new Stack<ParticleSystem>();
-        var prefab = Resources.Load("게임별분류/BB008_U/CFX_OnFishCatch");
+        var prefab = Resources.Load("SortedbyGame/BB008_U/CFX_OnFishCatch");
 
         for (var i = 0; i < 10; i++)
         {
@@ -357,9 +357,9 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
             var characterString = character.ToString();
 
 
-            var sprite = Resources.Load<Sprite>("게임별분류/BB008_U/Character" + characterString);
+            var sprite = Resources.Load<Sprite>("SortedbyGame/BB008_U/Character" + characterString);
             if (sprite != null)
-                //                Debug.Log($"{"게임별분류/BB008_U/Character" + characterString} : image loaded");
+                //                Debug.Log($"{"SortedbyGame/BB008_U/Character" + characterString} : image loaded");
                 // var newGameObject = new GameObject("Character" + characterString);
                 // var image = newGameObject.AddComponent<Image>();
                 // image.sprite = sprite;
@@ -401,14 +401,14 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
 
     private void LoadAsset()
     {
-        var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_FishA");
+        var prefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/FishOnWater_FishA");
         for (var i = 0; i < FISH_POOL_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
             var fishId = fish.GetInstanceID();
             _defaultSize = fish.localScale;
             var randomChar = Random.Range('A', 'E' + 1);
-            var path = "게임별분류/기본컨텐츠/FishOnWater/Fishes/M_Fish" + (char)randomChar;
+            var path = "SortedbyGame/BasicContents/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
             fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =
@@ -440,7 +440,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
         for (var i = 0; i < pathInBucketBParent.childCount; i++)
             _pathInBucketB[i] = pathInBucketBParent.GetChild(i).position;
 
-        var vfxPrefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/CFX_WaterSplash");
+        var vfxPrefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/CFX_WaterSplash");
 
         var PARTICLE_COUNT = 50;
         for (var i = 0; i < PARTICLE_COUNT; i++)

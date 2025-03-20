@@ -265,7 +265,7 @@ public class AnimalShaderController : MonoBehaviour
         MaterialPropertyBlock block = new MaterialPropertyBlock();
 
 // Load the material from the Resources folder as before
-        var tempMat = Resources.Load<Material>("게임별분류/가을소풍/" + _animalData.englishName);
+        var tempMat = Resources.Load<Material>("SortedbyGame/가을소풍/" + _animalData.englishName);
 
         var thisMat = tempMat;
         _bodyMat = thisMat;

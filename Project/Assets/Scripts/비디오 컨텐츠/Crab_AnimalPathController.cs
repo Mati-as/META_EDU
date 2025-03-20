@@ -61,7 +61,7 @@ public class Crab_AnimalPathController : MonoBehaviour
 
     private Vector3 _pivotPoint;
 
-    private readonly string _crabPrefabPath = "게임별분류/비디오컨텐츠/Crab/";
+    private readonly string _crabPrefabPath = "SortedbyGame/VideoContents/Crab/";
 
 
     private Stack<Crab> _inactiveCrabPool;
