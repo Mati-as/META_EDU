@@ -9,7 +9,13 @@ using Random = UnityEngine.Random;
 public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 {
 
-   private enum SequenceName { Default, SeqA, SeqB, OnFinish }
+    private enum SequenceName
+    {
+        Default,
+        BadFoodSelection,
+        GoodFoodAppear,
+        OnFinish
+    }
 
    private enum Food
    {
@@ -19,8 +25,12 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       // 나쁜 음식
       HealthyFoodGroup, Hamburger, Cookie, Icecream, Pizza, Chocolate, Cake, Donut,
    }
+   
+   private SequenceName _currentSequence = SequenceName.Default;
 
+   private Dictionary<int, Food> _idToFoodMap =new();
    private Dictionary<Food, int> clickCountMap = new(); // 사라지는 애니메이션, 흔들리는 애니메이션구분
+   private Dictionary<Food, bool> isClickedMap = new(); // 사라지는 애니메이션, 흔들리는 애니메이션구분
    private const int CLICK_COUNT_TO_GET_RID_OF_BAD_FOOD =3;
    
    
@@ -48,7 +58,15 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
          _originalScaleMap[food] = GetObject((int)food).transform.localScale;
 
+      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
+          clickCountMap.Add(food, 0);
+      
+      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
+          isClickedMap.Add(food, false);
 
+      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
+          _idToFoodMap.Add(_goodFoodGroup[food].transform.GetInstanceID(),food);
+      
       HideFoods(_goodFoodGroup);
       HideFoods(_badFoodGroup);
    }
@@ -75,15 +93,16 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       {
          DOVirtual.DelayedCall(0.5f, () =>
          {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByGames/EA009/Hungry");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScenes/EA009/Hungry");
             
             DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 2f, () =>
             {
-               Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByGames/EA009/ChangeToGoodFood");
+               Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScenes/EA009/ChangeToGoodFood");
                
                DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length , () =>
                {
                   _isFoodClickable = true;
+                  _currentSequence = SequenceName.BadFoodSelection;
                });
             });
          });
@@ -102,19 +121,35 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
    public sealed override void OnRaySynced()
    {
       if (!PreCheckOnRaySync()) return;
-      if (!_isFoodClickable) return;
+
 
       foreach (var hit in GameManager_Hits)
       {
-         ShakeTransform(hit.transform);
+          int id = hit.transform.GetInstanceID();
+          _idToFoodMap.TryGetValue(id, out Food clickedFood);
+          
+          if (_currentSequence == SequenceName.BadFoodSelection)
+          {
+              if (!isClickedMap[clickedFood])
+              {
+                  return;
+                  Logger.Log("너무 빨리 클릭중");
+              }
+              isClickedMap[clickedFood] = true;
+              clickCountMap[clickedFood]++;
+              ShakeTransform(hit.transform,clickedFood);
+          }
       }
       
       
       
    }
 
-   private void ShakeTransform(Transform target)
+   private void ShakeTransform(Transform target,Food clickedFood)
    {
-      target.DOShakePosition(1f, 10f, 10, 90f, false);
+      target.DOShakePosition(Random.Range(1.0f,2.0f), 10f, 10, 90f, false).OnComplete(() =>
+      {
+          isClickedMap[clickedFood] = true;
+      });
    }
 }

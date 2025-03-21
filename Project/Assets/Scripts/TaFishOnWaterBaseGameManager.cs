@@ -333,7 +333,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
 // #endif
 
         _onFishCatchPsPool = new Stack<ParticleSystem>();
-        var prefab = Resources.Load("SortedbyGame/BB008_U/CFX_OnFishCatch");
+        var prefab = Resources.Load("SortedByScene/BB008_U/CFX_OnFishCatch");
 
         for (var i = 0; i < 10; i++)
         {
@@ -357,9 +357,9 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
             var characterString = character.ToString();
 
 
-            var sprite = Resources.Load<Sprite>("SortedbyGame/BB008_U/Character" + characterString);
+            var sprite = Resources.Load<Sprite>("SortedByScene/BB008_U/Character" + characterString);
             if (sprite != null)
-                //                Debug.Log($"{"SortedbyGame/BB008_U/Character" + characterString} : image loaded");
+                //                Debug.Log($"{"SortedByScene/BB008_U/Character" + characterString} : image loaded");
                 // var newGameObject = new GameObject("Character" + characterString);
                 // var image = newGameObject.AddComponent<Image>();
                 // image.sprite = sprite;
@@ -401,14 +401,14 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
 
     private void LoadAsset()
     {
-        var prefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/FishOnWater_FishA");
+        var prefab = Resources.Load<GameObject>("SortedByScene/BasicContents/FishOnWater/Prefabs/FishOnWater_FishA");
         for (var i = 0; i < FISH_POOL_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
             var fishId = fish.GetInstanceID();
             _defaultSize = fish.localScale;
             var randomChar = Random.Range('A', 'E' + 1);
-            var path = "SortedbyGame/BasicContents/FishOnWater/Fishes/M_Fish" + (char)randomChar;
+            var path = "SortedByScene/BasicContents/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
             fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =
@@ -440,7 +440,7 @@ public class TaFishOnWaterBaseGameManager : Base_GameManager
         for (var i = 0; i < pathInBucketBParent.childCount; i++)
             _pathInBucketB[i] = pathInBucketBParent.GetChild(i).position;
 
-        var vfxPrefab = Resources.Load<GameObject>("SortedbyGame/BasicContents/FishOnWater/Prefabs/CFX_WaterSplash");
+        var vfxPrefab = Resources.Load<GameObject>("SortedByScene/BasicContents/FishOnWater/Prefabs/CFX_WaterSplash");
 
         var PARTICLE_COUNT = 50;
         for (var i = 0; i < PARTICLE_COUNT; i++)

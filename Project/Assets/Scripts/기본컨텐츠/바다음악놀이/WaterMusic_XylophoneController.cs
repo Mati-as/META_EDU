@@ -44,7 +44,7 @@ public class WaterMusic_XylophoneController : MonoBehaviour
     private Dictionary<int, Color> _defaultColorMap;
     //바뀔 컬러 캐싱용
     private Dictionary<int, Color> _colorChangeMap;
-    private readonly string AUDIO_XYLOPHONE_PATH = "SortedbyGame/BasicContents/SkyMusic/Audio/Piano/";
+    private readonly string AUDIO_XYLOPHONE_PATH = "SortedByScene/BasicContents/SkyMusic/Audio/Piano/";
     private readonly int BASE_MAP = Shader.PropertyToID("_BaseColor");
 
     private MeshRenderer[] _xylophoneMeshRenderers;

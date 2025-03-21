@@ -21,7 +21,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
         
         _effectContainer = new Stack<ParticleSystem>();
     
-        SetPool(_effectContainer,"SortedbyGame/BasicContents/MusicInstruments/MusicInstruments_CFX_Click");
+        SetPool(_effectContainer,"SortedByScene/BasicContents/MusicInstruments/MusicInstruments_CFX_Click");
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
      
         var images = _parrotSlider.GetComponentsInChildren<Image>();

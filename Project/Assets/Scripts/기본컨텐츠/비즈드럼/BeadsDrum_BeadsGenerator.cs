@@ -13,7 +13,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
 
     private void Init()
     {
-        SetPool(_beadsContainer, "SortedbyGame/BasicContents/BeadsDrum/Prefabs/Bead", beadsCount);
+        SetPool(_beadsContainer, "SortedByScene/BasicContents/BeadsDrum/Prefabs/Bead", beadsCount);
 
         _spawnPosA = transform.GetChild(0).transform.Find("GeneratePositionRight").position;
         _spawnPosB = transform.GetChild(0).transform.Find("GeneratePositionLeft").position;

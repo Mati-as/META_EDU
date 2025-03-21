@@ -106,7 +106,7 @@ if (!_isRaySet)
     
         for (char audioName = 'A'; ; audioName++)
         {
-            var audioResource = Resources.Load<AudioClip>($"audio/SortedbyGame/{currentSceneName}/{currentSceneName}_" + audioName);
+            var audioResource = Resources.Load<AudioClip>($"audio/SortedByScene/{currentSceneName}/{currentSceneName}_" + audioName);
             if (audioResource == null)
             {
                 break;
@@ -119,7 +119,7 @@ if (!_isRaySet)
         // populate _audioPath with resource paths if needed
         for (int i = 0; i < audioList.Count; i++)
         {
-            _audioPath[i] = $"audio/SortedbyGame/{currentSceneName}/{currentSceneName}_" + (char)('A' + i);
+            _audioPath[i] = $"audio/SortedByScene/{currentSceneName}/{currentSceneName}_" + (char)('A' + i);
         }
         
         SetPool(ref particlePool);
@@ -160,7 +160,7 @@ if (!_isRaySet)
     
         for (char psName = 'A'; ; psName++)
         {
-            var ps = Resources.Load<GameObject>($"audio/SortedbyGame/{currentSceneName}/{currentSceneName}_" + psName).GetComponent<ParticleSystem>();
+            var ps = Resources.Load<GameObject>($"audio/SortedByScene/{currentSceneName}/{currentSceneName}_" + psName).GetComponent<ParticleSystem>();
             if (ps == null)
             {
                 break;

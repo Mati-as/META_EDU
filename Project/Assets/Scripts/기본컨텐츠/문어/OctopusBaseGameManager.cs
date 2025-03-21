@@ -101,8 +101,8 @@ public class OctopusBaseGameManager : Base_GameManager
         _defaultLocationMap.Add(_octopusBody.GetInstanceID(),_octopusBody.position);
         
         _octopusMeshRenderer = _octopusBody.GetComponent<MeshRenderer>();
-        _idleTexture = Resources.Load<Texture>("SortedbyGame/BasicContents/OctopusBall/Texture/T_Octopus");
-        _excitedTexture = Resources.Load<Texture>("SortedbyGame/BasicContents/OctopusBall/Texture/T_OctopusBody_Excited");
+        _idleTexture = Resources.Load<Texture>("SortedByScene/BasicContents/OctopusBall/Texture/T_Octopus");
+        _excitedTexture = Resources.Load<Texture>("SortedByScene/BasicContents/OctopusBall/Texture/T_OctopusBody_Excited");
 
         Debug.Log($"{_octopusBody.transform.name}");
 

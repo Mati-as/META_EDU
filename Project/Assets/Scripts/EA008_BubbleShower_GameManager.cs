@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class EA008_BubbleShower_GameManager : Base_GameManager
 {
-  private enum ColorSide
+    private enum ColorSide
     {
         ColorA,
         ColorB,
@@ -21,10 +21,35 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     private BubbleGermObj[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
-    
-    private Stack<ParticleSystem> _particlPool =new();
-   
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private readonly Stack<ParticleSystem> _particlPool = new();
+
+
     private EA008_BubbleShower_UIManager _UIManager;
 
 
@@ -44,52 +69,85 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
     [SerializeField] private Color[] colorOptions; //색상조합목록
 
-    public Color[] CurrentColorPair { get; private set; } //현재라운드의 색상 조합 (빨강-파랑, 오렌지-초록...)
-    public Color ColorA {get; private set; }
-    public Color ColorB {get; private set; }
+    public Color[] CurrentColorPair
+    {
+        get;
+        private set;
+    } //현재라운드의 색상 조합 (빨강-파랑, 오렌지-초록...)
+
+    public Color ColorA
+    {
+        get;
+        private set;
+    }
+
+    public Color ColorB
+    {
+        get;
+        private set;
+    }
 
     public static event Action onStart;
     public static event Action onRoundFinished;
     public static event Action onRoundFinishedForUI;
     public static event Action restart;
     public static event Action roundInit;
-  
-    public bool isATeamWin { get; private set; }
-    public bool _isRoundFinished { get; private set; }
+
+    public bool isATeamWin
+    {
+        get;
+        private set;
+    }
+
+    public bool _isRoundFinished
+    {
+        get;
+        private set;
+    }
+
     private float _remainTime;
     private float _elapsed;
-    [SerializeField]
-    private  float TIME_LIMIT = 30f;
+    [SerializeField] private float TIME_LIMIT = 30f;
 
     private int _germCount;
     private int _bubbleCount;
 
 
-    public void OnStart()
+public void OnStart()
+{
+    onStart?.Invoke();
+
+    foreach (var bubbleGermObj in _prints)
     {
-        
-        onStart?.Invoke();
+        // ✅ 기존 Shake 애니메이션 완전히 중지 후 제거
+        bubbleGermObj.shakeSeq?.Kill();
+        bubbleGermObj.shakeSeq = DOTween.Sequence();
 
-        foreach (var bubbleGermObj in _prints)
-        {
+        // ✅ 새로운 Shake 애니메이션을 처음부터 재설정
+        bubbleGermObj.shakeSeq.Append(bubbleGermObj.printObj.transform
+                .DOShakePosition(3f, 0.2f, 2, 120)
+                .SetLoops(-1, LoopType.Yoyo))
+            .SetAutoKill(false);
+            //.Pause();
 
-            bubbleGermObj.printObj.transform.position = bubbleGermObj.defaultPosition;
-            bubbleGermObj.printObj.transform.rotation = bubbleGermObj.defaultRotation;
-            
-            
-            bubbleGermObj.seq.Append(bubbleGermObj.printObj.transform.
-                DOShakePosition(3f, 0.2f, 2, 120, false).SetLoops(-1,LoopType.Yoyo));
-            
-            
-            
-            bubbleGermObj.seq.Append(bubbleGermObj.printObj.transform.
-                DORotateQuaternion(bubbleGermObj.printObj.transform.rotation
-                                   *Quaternion.Euler(bubbleGermObj.printObj.transform.rotation.x,
-                                       bubbleGermObj.printObj.transform.rotation.y+Random.Range(-60,60), bubbleGermObj.printObj.transform.rotation.z), 3f).
-                SetLoops(-1, LoopType.Yoyo).SetEase(Ease.Linear));
-                
-        }
+        // ✅ 기존 ShakeRotation 중지 후 재설정
+        bubbleGermObj.shakeRotationSeq?.Kill();
+        bubbleGermObj.shakeRotationSeq = DOTween.Sequence();
+
+        // ✅ 현재 회전 값 저장 (중복 실행 방지)
+        Quaternion initialRotation = bubbleGermObj.printObj.transform.localRotation;
+
+        // ✅ 새로운 Rotate Shake 애니메이션 적용 (현재 회전 값 기준으로 랜덤 회전)
+        bubbleGermObj.shakeRotationSeq.Append(bubbleGermObj.printObj.transform
+                .DORotateQuaternion(
+                    initialRotation * Quaternion.Euler(0, Random.Range(-60, 60), 0), 3f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.Linear))
+            .SetAutoKill(false);
+        // .Pause();
     }
+}
+
 
     private float _elapsedToCount;
     private bool _isCountNarrationPlaying;
@@ -99,43 +157,36 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         if (_isRoundFinished) return;
         if (!isStartButtonClicked) return;
         if (!_UIManager.isStart) return;
-        
-      
-        _remainTime = TIME_LIMIT - _elapsed;
-        _elapsed += Time.deltaTime *0.9f;
 
-   
-    
-        _tmp.text = _remainTime > 60? $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초" : $"{(int)_remainTime % 60}초";
-        
-     
-        
-        
+
+        _remainTime = TIME_LIMIT - _elapsed;
+        _elapsed += Time.deltaTime * 0.9f;
+
+
+        _tmp.text = _remainTime > 60
+            ? $"{(int)_remainTime / 60}분 {(int)_remainTime % 60}초"
+            : $"{(int)_remainTime % 60}초";
+
 
         if (_remainTime <= 6f && _remainTime >= 1)
         {
-           
-            
             if (!_isCountNarrationPlaying)
             {
                 Managers.Sound.Play
-                    (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count"+$"{(int)_remainTime}",0.8f);
+                    (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count" + $"{(int)_remainTime}", 0.8f);
                 _isCountNarrationPlaying = true;
                 _elapsedToCount = 0;
             }
-            
-            if (_elapsedToCount > 1f) _isCountNarrationPlaying = false;
-            _elapsedToCount += Time.deltaTime *0.9f;
 
-          
+            if (_elapsedToCount > 1f) _isCountNarrationPlaying = false;
+            _elapsedToCount += Time.deltaTime * 0.9f;
         }
-        
+
         if (_remainTime < 0)
         {
             onRoundFinished?.Invoke();
-            _tmp.text = $"";
+            _tmp.text = "";
             _isRoundFinished = true;
-           
         }
 
         if (!_UIManager.isStart) _remainTime = TIME_LIMIT;
@@ -143,44 +194,36 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
     private void OnRoundFinished()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.5f);
-        
-        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle", 0.5f);
+
+
         //그만! 이후 이긴팀 판정까지 걸리는 시간.
-        DOVirtual.Float(0, 0, 5f, _ => { }).OnComplete(() =>
+        DOVirtual.Float(0, 0, 5f, _ =>
+        {
+        }).OnComplete(() =>
         {
             CountPrintsColor();
             CheckWinner();
             onRoundFinishedForUI?.Invoke();
         });
-
     }
 
     private void CountPrintsColor()
     {
         foreach (var print in _prints)
-        {
-           // if (print.printObj.GetComponent<MeshRenderer>().material.color == ColorA)
-           if (print.isGermSide)
-            {
+            // if (print.printObj.GetComponent<MeshRenderer>().material.color == ColorA)
+            if (print.isGermSide)
                 _germCount++;
-            }
             else
-            {
                 _bubbleCount++;
-            }
-        }
-
-     
-        
     }
-    
-    
+
 
     private TextMeshProUGUI _red;
     private TextMeshProUGUI _vs;
     private TextMeshProUGUI _blue;
-    private void UpdateResultTMP(string red ="",string blue="",string vs ="vs")
+
+    private void UpdateResultTMP(string red = "", string blue = "", string vs = "vs")
     {
         _red.text = red;
         _blue.text = blue;
@@ -196,9 +239,10 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _vs = GameObject.Find("Vs").GetComponent<TextMeshProUGUI>();
         _vs.text = string.Empty;
     }
+
     private void CheckWinner()
     {
-        UpdateResultTMP(_germCount.ToString(),_bubbleCount.ToString());
+        UpdateResultTMP(_germCount.ToString(), _bubbleCount.ToString());
         isATeamWin = _germCount > _bubbleCount;
 
         StartCoroutine(Initialize());
@@ -209,49 +253,52 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         base.OnDestroy();
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
-        EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -=  FlipAll;
+        EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
     }
-    
+
     private WaitForSeconds _wait;
-    private float _waitTIme= 4.5f;
+    private float _waitTIme = 4.5f;
+
     private IEnumerator Initialize()
     {
-
-        yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
-        UpdateResultTMP(String.Empty,String.Empty,String.Empty);
+        yield return DOVirtual.Float(0, 0, 10f, _ =>
+        {
+        }).WaitForCompletion();
+        UpdateResultTMP(string.Empty, string.Empty, string.Empty);
         _tmp.text = "놀이를 다시 준비하고 있어요";
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/OnReady",0.8f);
-      
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/OnReady", 0.8f);
+
         InitFlip();
-        yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
-       
+        yield return DOVirtual.Float(0, 0, 3f, _ =>
+        {
+        }).WaitForCompletion();
+
         _tmp.text = "";
-      
+
         InitializeParams();
         SetColor(_currentRound);
-        
-        int count=0;
 
-        
-        yield return DOVirtual.Float(0, 0, 5f, _ => { }).WaitForCompletion();
-        
-       
+        int count = 0;
+
+
+        yield return DOVirtual.Float(0, 0, 5f, _ =>
+        {
+        }).WaitForCompletion();
+
+
         _isRoundFinished = false;
         restart?.Invoke();
     }
 
-    
-    
 
     private void InitializeParams()
     {
-        
 #if UNITY_EDITOR
         Debug.Log("GM ReInit..");
 #endif
         roundInit?.Invoke();
-        
+
         _elapsed = 0;
         _remainTime = TIME_LIMIT;
         _currentRound++;
@@ -259,21 +306,19 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         _bubbleCount = 0;
         _elapsedToCount = 0f;
         _isCountNarrationPlaying = false;
+
         foreach (var bubbleGermObj in _prints)
         {
-            bubbleGermObj.seq.Kill();
-            bubbleGermObj.seq = DOTween.Sequence();
+            // ✅ 모든 DOTween 애니메이션 중지 후 초기화
+            bubbleGermObj.flipSeq?.Kill();
+            bubbleGermObj.flipSeq = DOTween.Sequence();
+
+            bubbleGermObj.shakeSeq?.Kill();
+            bubbleGermObj.shakeSeq = DOTween.Sequence();
+
+            bubbleGermObj.shakeRotationSeq?.Kill();
+            bubbleGermObj.shakeRotationSeq = DOTween.Sequence();
         }
-    }
-
-    private void ShakeBubble()
-    {
-        
-    }
-
-    private void OnBubbleOrGermClicked()
-    {
-        
     }
 
 
@@ -281,7 +326,6 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
     protected override void Init()
     {
-        
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
@@ -326,34 +370,30 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
         PRINTS_COUNT = printsParent.transform.childCount;
 
         //반드시 게임 오브젝트의 갯수는 홀수
-#if UNITY_EDITOR
         Debug.Assert(PRINTS_COUNT % 2 == 1);
-#endif
-      
-        
+
+
         _prints = new BubbleGermObj[PRINTS_COUNT];
 
 
-        for (var i = 0; i < PRINTS_COUNT; i++)
+        for (int i = 0; i < PRINTS_COUNT; i++)
         {
-            _prints[i] = new BubbleGermObj
-            {
+            _prints[i] = new BubbleGermObj {
                 printObj = printsParent.transform.GetChild(i).gameObject,
                 defaultVector = printsParent.transform.GetChild(i).rotation.eulerAngles,
                 currentColor = CurrentColorPair[i % (int)ColorSide.ColorCount],
                 defaultSize = printsParent.transform.GetChild(i).gameObject.transform.localScale,
-                defaultPosition =printsParent.transform.GetChild(i).gameObject.transform.position,
-                defaultRotation =  printsParent.transform.GetChild(i).gameObject.transform.rotation,
-                seq = DOTween.Sequence()
+               
+                flipSeq = DOTween.Sequence()
             };
-            _originalEulerMap.TryAdd(_prints[i].printObj.GetInstanceID(), _prints[i].printObj.gameObject.transform.localRotation);
-
+            _originalEulerMap.TryAdd(_prints[i].printObj.GetInstanceID(),
+                _prints[i].printObj.gameObject.transform.localRotation);
 
 
             //Print 캐싱, Flip에서는 InstaceID를 기반으로 Prints를 참조 및 제어한다.
             var currentTransform = printsParent.transform.GetChild(i);
             //Transform Instance ID가 아닌 GameObject의 Instance ID를 참조할것에 주의합니다
-            var currentInstanceID = currentTransform.gameObject.GetInstanceID();
+            int currentInstanceID = currentTransform.gameObject.GetInstanceID();
 
             _PrintMap.TryAdd(currentInstanceID, _prints[i]);
 
@@ -361,7 +401,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
             var meshRenderer = currentTransform.GetComponent<MeshRenderer>();
             _meshRendererMap.TryAdd(currentInstanceID, meshRenderer);
 
-        
+
             meshRenderer.material.color = CurrentColorPair[i % (int)ColorSide.ColorCount];
 
 
@@ -373,52 +413,51 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
 
             printsParent.transform.GetChild(i).gameObject.transform.localScale = Vector3.zero;
         }
-        
-        InitFlip();
 
-    
+        InitFlip();
+        Logger.Log("GM Initialized..-----------------------------");
     }
 
 
     private void SetColor(int round)
     {
-        CurrentColorPair[(int)ColorSide.ColorA] = colorOptions[2 * round % 6 ];
+        CurrentColorPair[(int)ColorSide.ColorA] = colorOptions[2 * round % 6];
         CurrentColorPair[(int)ColorSide.ColorB] = colorOptions[2 * round % 6 + 1];
 
         ColorA = CurrentColorPair[(int)ColorSide.ColorA];
         ColorB = CurrentColorPair[(int)ColorSide.ColorB];
-        
     }
 
-    private Vector3 _defaultPosition; 
+    private Vector3 _defaultPosition;
 
     public override void OnRaySynced()
     {
-      if (!PreCheckOnRaySync()) return;
+        if (!PreCheckOnRaySync()) return;
 
         /* 클릭되면 안되는 경우 상세설명
          1. UI의 시작버튼 애니메이션이 끝나지 않은 경우
          2. 처음시작 시, Button 클릭 안 한 경우
          3. 라운드 끝난경우
-         
+
          */
         if (!_UIManager.isStart) return;
         if (_isRoundFinished) return;
 
 
-       
         FlipAndChangeColor(GameManager_Ray);
         //  ChangeColor(GameManager_Ray);
     }
-    
-    private void ShakeCam()=> Camera.main.transform.DOShakePosition(0.3f, 0.035f, 2).OnComplete(() =>
+
+    private void ShakeCam()
     {
-        Camera.main.transform.DOMove(_defaultPosition, 0.3f);
-    });
+        Camera.main.transform.DOShakePosition(0.3f, 0.035f, 2).OnComplete(() =>
+        {
+            Camera.main.transform.DOMove(_defaultPosition, 0.3f);
+        });
+    }
 
     private void OnGameStartButtonClicked()
     {
-        
         PrintsAppear();
     }
 
@@ -429,13 +468,11 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
                 .DOScale(print.defaultSize, 0.4f)
                 .OnStart(() =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_A",
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Click_A",
                         0.25f);
-
                 })
                 .SetEase(Ease.InBounce)
                 .SetDelay(Random.Range(1, 1.8f));
-
     }
 
 
@@ -443,135 +480,147 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     {
         if (Physics.Raycast(ray, out hit))
         {
-            
             var currentPS = GetFromPool();
             currentPS.transform.position = hit.point;
             currentPS.Play();
             StartCoroutine(ReturnToPoolAfterDelay(currentPS));
-            
-            
-            
-            
+
+
             if (hit.transform.gameObject.name.ToLower().Contains("black")) return;
             ShakeCam();
 
-            var currentInstanceID = hit.transform.gameObject.GetInstanceID();
+            int currentInstanceID = hit.transform.gameObject.GetInstanceID();
 
             // Check if the object is already flipping or the sequence is active.
             if (_PrintMap.TryGetValue(currentInstanceID, out var bubbleOrGermData) &&
-                (bubbleOrGermData.seq.IsActive() || bubbleOrGermData.isCurrentlyFlipping))
-            {
-               // Debug.Log("The seq is currently Active! Click later..");
+                (bubbleOrGermData.flipSeq.IsActive() || bubbleOrGermData.isCurrentlyFlipping))
+                // Debug.Log("The seq is currently Active! Click later..");
                 return;
-            }
 
-            // Ensure the sequence is initialized.
-            bubbleOrGermData.seq?.Kill();
-            bubbleOrGermData.seq = DOTween.Sequence();
-            Quaternion targetRotation = Quaternion.Euler(_rotateVector) * bubbleOrGermData.printObj.transform.localRotation;
+            
 
-           
-            bubbleOrGermData.seq.Append(hit.transform
+            
+            // 기존 실행 중인 Sequence Kill (중복 실행 방지)
+            bubbleOrGermData.flipSeq?.Kill();
+            bubbleOrGermData.shakeRotationSeq?.Kill();
+            bubbleOrGermData.shakeSeq?.Kill();
+            bubbleOrGermData.scaleSeq?.Kill();
+// 새로운 Sequence 생성
+            bubbleOrGermData.shakeSeq = DOTween.Sequence();
+            bubbleOrGermData.scaleSeq = DOTween.Sequence();
+            bubbleOrGermData.flipSeq = DOTween.Sequence();
+            bubbleOrGermData.shakeRotationSeq = DOTween.Sequence();
+
+// 목표 회전값 계산 (Local 기준)
+            Quaternion targetRotation =
+                Quaternion.Euler(_rotateVector) * bubbleOrGermData.printObj.transform.localRotation;
+
+// 회전 애니메이션 중지 (간섭 방지)
+            bubbleOrGermData.shakeRotationSeq.Pause();
+
+// Flip 애니메이션 실행
+            bubbleOrGermData.flipSeq.Append(bubbleOrGermData.printObj.transform
                 .DOLocalRotateQuaternion(targetRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
                     bubbleOrGermData.isCurrentlyFlipping = true;
 
-                    var randomChar = (char)Random.Range('A', 'F' + 1);
-                    
-                   //세균방향인 경우 버블 소리, 반대의 경우 일반 지정소리를 냅니다.
-                    if(!bubbleOrGermData.isGermSide)Managers.Sound.Play(SoundManager.Sound.Effect, $"EA008/WaterBubbleEffectSound",0.8f);
-                    else Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
-                        0.3f);
+                    char randomChar = (char)Random.Range('A', 'F' + 1);
 
-                    bubbleOrGermData.isGermSide = !bubbleOrGermData.isGermSide; 
-                
-                  
+                    if (!bubbleOrGermData.isGermSide)
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA008/WaterBubbleEffectSound", 0.8f);
+                    else
+                        Managers.Sound.Play(SoundManager.Sound.Effect,
+                            $"Audio/BasicContents/HandFootFlip/Click_{randomChar}", 0.3f);
+
+                    bubbleOrGermData.isGermSide = !bubbleOrGermData.isGermSide;
                 })
-                .OnComplete(() => bubbleOrGermData.isCurrentlyFlipping = false));
-            
-            
-// 1️1 Scale 애니메이션 (크기 변화)
-            Sequence _scaleSeq = DOTween.Sequence();
-            _scaleSeq.Join(hit.transform
+                .OnComplete(() =>
+                {
+                    bubbleOrGermData.isCurrentlyFlipping = false;
+
+                    // Flip이 완료된 후 현재 회전 값을 가져옴 (Shake 반영을 위해)
+                    Quaternion finalRotation = bubbleOrGermData.printObj.transform.localRotation;
+
+                    // Shake 애니메이션 (Local 기준으로 흔들기)
+                    bubbleOrGermData.shakeSeq.Append(bubbleOrGermData.printObj.transform
+                        .DOLocalMove(bubbleOrGermData.printObj.transform.localPosition + new Vector3(0.2f, 0, 0),
+                            0.1f) // 오른쪽 이동
+                        .SetLoops(2, LoopType.Yoyo) // 흔들림 효과
+                        .SetEase(Ease.InOutQuint));
+
+                    // Rotate 애니메이션 (Shake 이후 실행, Flip 완료된 상태를 기반으로 적용)
+                    bubbleOrGermData.shakeRotationSeq.Append(bubbleOrGermData.printObj.transform
+                        .DORotateQuaternion(
+                            finalRotation * Quaternion.Euler(0, Random.Range(-60, 60), 0), 3f)
+                        .SetLoops(-1, LoopType.Yoyo)
+                        .SetEase(Ease.Linear));
+
+                    // 애니메이션 실행
+                    bubbleOrGermData.shakeSeq.Play();
+                    bubbleOrGermData.shakeRotationSeq.Play();
+                }));
+
+// Scale 애니메이션 실행
+            bubbleOrGermData.scaleSeq.Join(hit.transform
                     .DOScale(bubbleOrGermData.defaultSize * 1.4f, 0.38f)
                     .SetEase(Ease.InOutQuint))
                 .Append(hit.transform
                     .DOScale(bubbleOrGermData.defaultSize, 0.28f)
                     .SetEase(Ease.InOutQuint));
-
-// 2️ Shake 애니메이션 (위치 흔들기)
-            Sequence _shakeSeq = DOTween.Sequence();
-            _shakeSeq.Append(bubbleOrGermData.printObj.transform
-                .DOShakePosition(3f, 0.2f, 2, 120, false)
-                .SetLoops(-1, LoopType.Yoyo));
-
-// 3️ Rotate 애니메이션 (랜덤 회전)
-            Sequence _rotateSeq = DOTween.Sequence();
-            _rotateSeq.Append(bubbleOrGermData.printObj.transform
-                .DORotateQuaternion(
-                    bubbleOrGermData.printObj.transform.rotation * Quaternion.Euler(
-                        0, Random.Range(-60, 60), 0), 3f)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.Linear));
-            
-            
-            bubbleOrGermData.seq.Play();
-        }
-        else
-        {
-#if UNITY_EDITOR
-            Debug.Log("Flipping Failed");
-#endif
         }
     }
 
 
     private void InitFlip()
     {
-
-
-        var count = 0;
+        foreach (var print in _prints)
+        {
+            print.flipSeq?.Kill();
+            print.shakeRotationSeq?.Kill();
+            print.shakeSeq?.Kill();
+            print.scaleSeq?.Kill();
+        }
+        
+        int count = 0;
 
         foreach (var print in _prints)
         {
-            var currentInstanceID = print.printObj.GetInstanceID();
+            int currentInstanceID = print.printObj.GetInstanceID();
 
             // Check if the object is already flipping or the sequence is active.
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
-                (printData.seq.IsActive() || printData.isCurrentlyFlipping))
+                (printData.flipSeq.IsActive() || printData.isCurrentlyFlipping))
                 // Debug.Log("The seq is currently Active! Click later..");
                 return;
 
-            var isGermSide = false;
-            Quaternion eulerToFlip = Quaternion.Euler(Vector3.zero);
-            
+            bool isGermSide = false;
+            var eulerToFlip = Quaternion.Euler(Vector3.zero);
+
             if (count % 2 == 0)
             {
                 isGermSide = false;
                 eulerToFlip = _originalEulerMap[currentInstanceID] * Quaternion.Euler(_rotateVector);
-                printData.seq = DOTween.Sequence();
-               
+                printData.flipSeq = DOTween.Sequence();
             }
             else
             {
                 isGermSide = true;
                 eulerToFlip = _originalEulerMap[currentInstanceID];
-                printData.seq = DOTween.Sequence();
-               
+                printData.flipSeq = DOTween.Sequence();
             }
 
-Logger.Log($"Default Original Euler : {_originalEulerMap[currentInstanceID]}");
-            
-            printData.seq.Append(print.printObj.transform
+            Logger.Log($"Default Original Euler : {_originalEulerMap[currentInstanceID]}");
+
+            printData.flipSeq.Append(print.printObj.transform
                 .DOLocalRotateQuaternion(eulerToFlip, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
                     printData.isCurrentlyFlipping = true;
                     printData.isGermSide = isGermSide;
-                    var randomChar = (char)Random.Range('A', 'F' + 1);
+                    char randomChar = (char)Random.Range('A', 'F' + 1);
                     Managers.Sound.Play(SoundManager.Sound.Effect,
                         $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
                         0.3f);
@@ -580,101 +629,107 @@ Logger.Log($"Default Original Euler : {_originalEulerMap[currentInstanceID]}");
                 .SetDelay(Random.Range(1.0f, 1.5f)));
 
 
-            printData.seq.Play();
+            printData.flipSeq.Play();
+            
+        
             count++;
         }
 
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/OnAllFlip", 0.65f);
     }
-    
-     private void FlipAll()
+
+    private void FlipAll()
     {
-    
-    
-        var count = 0;
         foreach (var print in _prints)
         {
-            var currentInstanceID = print.printObj.GetInstanceID();
-    
-            // Check if the object is already flipping or the sequence is active.
+            int currentInstanceID = print.printObj.GetInstanceID();
+
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
-                (printData.seq.IsActive() || printData.isCurrentlyFlipping))
-            {
+                (printData.flipSeq.IsActive() || printData.isCurrentlyFlipping))
                 return;
-            }
-    
-            // Ensure the sequence is initialized.
-            printData.seq = DOTween.Sequence();
-          
-    
-            printData.seq.Append(print.printObj.transform
+
+            printData.flipSeq.Kill();
+            printData.flipSeq = DOTween.Sequence();
+
+            printData.flipSeq.Append(print.printObj.transform
                 .DOLocalRotateQuaternion(Quaternion.Euler(_rotateVector) * printData.printObj.transform.localRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
                 .OnStart(() =>
                 {
                     printData.isCurrentlyFlipping = true;
-    
                     printData.isGermSide = !printData.isGermSide;
-                    var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
-                        0.3f);
-                    
-                  
-                })
-                .OnComplete(() => printData.isCurrentlyFlipping = false)
-                .SetDelay(Random.Range(1.0f, 1.5f)));
-            printData.seq.Play();
+                    char randomChar = (char)Random.Range('A', 'F' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                        $"Audio/BasicContents/HandFootFlip/Click_{randomChar}", 0.3f);
+                }));
+
+            // ✅ Flip 이후에 Shake를 실행하도록 변경
+            printData.flipSeq.OnComplete(() =>
+            {
+                Quaternion finalRotation = printData.printObj.transform.localRotation;
+
+                printData.shakeSeq.Rewind();
+                printData.shakeSeq.Play();
+
+                printData.shakeRotationSeq.Kill();
+                printData.shakeRotationSeq = DOTween.Sequence();
+
+                printData.shakeRotationSeq.Append(printData.printObj.transform
+                        .DORotateQuaternion(
+                            finalRotation * Quaternion.Euler(0, Random.Range(-60, 60), 0), 3f)
+                        .SetLoops(-1, LoopType.Yoyo)
+                        .SetEase(Ease.Linear))
+                    .SetAutoKill(false)
+                    .Play();
+            });
+
+            printData.flipSeq.Play();
         }
-        
     }
 
-     private void SetPool()
-     {
-    
-         var particlePrefab = Resources.Load<GameObject>("Runtime/EA008/ClickEffect");
+    private void SetPool()
+    {
+        var particlePrefab = Resources.Load<GameObject>("Runtime/EA008/ClickEffect");
 
-         for (int i = 0; i < 100; i++)
-         {       
-             ParticleSystem ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
-             _particlPool.Push(ps);
-         }
+        for (int i = 0; i < 100; i++)
+        {
+            var ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+            _particlPool.Push(ps);
+        }
+    }
+
+    private ParticleSystem GetFromPool()
+    {
+        if (_particlPool.Count > 0)
+        {
+            var ps = _particlPool.Pop();
+            ;
+            ps.gameObject.SetActive(true);
+            return ps;
+        }
+
+        SetPool();
+        var newPs = _particlPool.Pop();
+        ;
+        newPs.gameObject.SetActive(true);
+        return newPs;
+    }
+
+    private WaitForSeconds _poolReturnWait;
+
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
+    {
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
+
+        yield return _poolReturnWait;
 
 
-     }
-
-     private ParticleSystem GetFromPool()
-     {
-        
-         if (_particlPool.Count > 0)
-         {
-             ParticleSystem ps =  _particlPool.Pop();;
-             ps.gameObject.SetActive(true);
-             return ps;
-         }
-
-         SetPool();
-         ParticleSystem newPs =  _particlPool.Pop();;
-         newPs.gameObject.SetActive(true);
-         return newPs;
-     }
-     
-     private WaitForSeconds _poolReturnWait;
-     protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
-     {
-         if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
-
-         yield return _poolReturnWait;
-
-         
-         ps.Stop();
-         ps.Clear();
-         ps.gameObject.SetActive(false);
-         _particlPool.Push(ps); // Return the particle system to the pool
-     }
-     
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(false);
+        _particlPool.Push(ps); // Return the particle system to the pool
+    }
 }
-
-
 
 
 public class BubbleGermObj
@@ -682,12 +737,13 @@ public class BubbleGermObj
     public GameObject printObj;
     public bool isGermSide;
     public bool isCurrentlyFlipping;
-    public Quaternion defaultRotation;
-    public Vector3 defaultPosition;
+    // public Quaternion defaultRotation;
+    // public Vector3 defaultPosition;
     public Vector3 defaultVector;
     public Vector3 defaultSize;
-    public Sequence seq;
+    public Sequence flipSeq;
+    public Sequence shakeRotationSeq;
+    public Sequence shakeSeq;
+    public Sequence scaleSeq;
     public Color currentColor;
-
-
 }

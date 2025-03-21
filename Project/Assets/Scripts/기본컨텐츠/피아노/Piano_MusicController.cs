@@ -114,7 +114,7 @@ public class Piano_MusicController : Base_GameManager
     protected override void Init()
     {
         base.Init();
-        var psPrefab = Resources.Load<ParticleSystem>("SortedbyGame/BasicContents/Piano/CFX_PianoClick");
+        var psPrefab = Resources.Load<ParticleSystem>("SortedByScene/BasicContents/Piano/CFX_PianoClick");
         _clickPs = Instantiate(psPrefab);
         _clickPs.Stop();
         

@@ -70,18 +70,18 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         base.Init();
         _effectContainer = new Stack<ParticleSystem>();
-        SetPool(_effectContainer, "SortedbyGame/BasicContents/PlanetPopIt/CFX2_PickupStar");
+        SetPool(_effectContainer, "SortedByScene/BasicContents/PlanetPopIt/CFX2_PickupStar");
         
         
         var sunCount = 2;
         _sunMeshRenderers = new MeshRenderer[sunCount];
 
         _sunExpressionMat = new Material[(int)SunExpression.Count];
-        var idleMat = Resources.Load<Material>("SortedbyGame/BasicContents/PlanetPopIt/M_Sun_Idle");
+        var idleMat = Resources.Load<Material>("SortedByScene/BasicContents/PlanetPopIt/M_Sun_Idle");
         var matIdle = Instantiate(idleMat);
         _sunExpressionMat[(int)SunExpression.Idle] = matIdle;
 
-        var excitedMat = Resources.Load<Material>("SortedbyGame/BasicContents/PlanetPopIt/M_Sun_Excited");
+        var excitedMat = Resources.Load<Material>("SortedByScene/BasicContents/PlanetPopIt/M_Sun_Excited");
         var mat = Instantiate(excitedMat);
         _sunExpressionMat[(int)SunExpression.Excited] = mat;
 

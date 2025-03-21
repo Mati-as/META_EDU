@@ -71,7 +71,7 @@ public class MondrianBaseGameManager : Base_GameManager
         mondrianBigFlowerController =
             GameObject.Find("Mondrian_Big_Controller").GetComponent<Mondrian_BigFlowerController>();
 
-        var particle = Resources.Load<GameObject>("SortedbyGame/BasicContents/Mondrian/" + "CFX_explosionPs");
+        var particle = Resources.Load<GameObject>("SortedByScene/BasicContents/Mondrian/" + "CFX_explosionPs");
         _explosionParticle = Instantiate(particle).GetComponent<ParticleSystem>();
         _explosionParticle.Stop();
 

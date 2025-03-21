@@ -14,7 +14,7 @@ public class Crab_UIController : MonoBehaviour
     
     private Image _up;
     private Image _great;
-    private readonly string _crabPrefabPath = "SortedbyGame/VideoContents/Crab/";
+    private readonly string _crabPrefabPath = "SortedByScene/VideoContents/Crab/";
 
 
     private void Start()

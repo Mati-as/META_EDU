@@ -230,7 +230,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     {
         psQueue = new Queue<ParticleSystem>();
         var index = 0;
-        var ps = Resources.Load<GameObject>("SortedbyGame/BasicContents/WaterPlayGround/BallHitEffect").GetComponent<ParticleSystem>();
+        var ps = Resources.Load<GameObject>("SortedByScene/BasicContents/WaterPlayGround/BallHitEffect").GetComponent<ParticleSystem>();
 
 
         psQueue.Enqueue(ps);

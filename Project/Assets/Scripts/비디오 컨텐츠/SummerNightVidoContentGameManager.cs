@@ -5,7 +5,7 @@
 // public class SummerNightVidoContentGameManager : VidoContentGameManager
 // {
 //
-//     private readonly string AUDIO_PATH_EFFECT_A = "SortedbyGame/VideoContents/SummerNight/Video_SummerNight_effectClipA";
+//     private readonly string AUDIO_PATH_EFFECT_A = "SortedByScene/VideoContents/SummerNight/Video_SummerNight_effectClipA";
 //     protected override void OnGmRaySyncedByOnGm()
 //     {
 //         hits = Physics.RaycastAll(ray_EffectManager);

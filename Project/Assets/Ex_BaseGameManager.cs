@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -18,14 +19,23 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator animator;
+    
+    
+    private readonly Stack<ParticleSystem> _particlePool = new();
+
+    protected string psResourcePath = string.Empty;
+
 
     protected new virtual void Awake()
     {
         Init();
+        
     }
     protected new virtual void Init()
     {
         base.Init();
+        
+        SetPool();
         var isAnimatorAttached= TryGetComponent(out animator);
         if(!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
     }
@@ -130,5 +140,60 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                 evt.OnPointerUpHandler += action;
                 break;
         }
+    }
+    
+    protected void SetPool()
+    {
+        if (psResourcePath == string.Empty)
+        {
+            Logger.ContentTestLog("effect 미사용");
+            return;
+        }
+        var particlePrefab = Resources.Load<GameObject>(psResourcePath);
+
+        for (int i = 0; i < 100; i++)
+        {
+            var ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+            ps.gameObject.SetActive(false);
+            _particlePool.Push(ps);
+        }
+    }
+
+    protected ParticleSystem GetFromPool()
+    {
+        if (_particlePool.Count > 0)
+        {
+            var ps = _particlePool.Pop();
+            
+            ps.gameObject.SetActive(true);
+            return ps;
+        }
+
+        SetPool();
+        var newPs = _particlePool.Pop();
+        
+        newPs.gameObject.SetActive(true);
+        return newPs;
+    }
+
+    protected WaitForSeconds _poolReturnWait;
+
+    protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
+    {
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
+
+        yield return _poolReturnWait;
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(false);
+        _particlePool.Push(ps); // Return the particle system to the pool
+    }
+
+    protected void PlayParticleEffect(Vector3 pos)
+    {
+        var currentPS = GetFromPool();
+        currentPS.transform.position = pos;
+        currentPS.Play();
+        StartCoroutine(ReturnToPoolAfterDelay(currentPS));
     }
 }

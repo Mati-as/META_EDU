@@ -31,4 +31,12 @@ public static class Logger
     {
         UnityEngine.Debug.LogFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
     }
+    
+    
+    
+    [Conditional("ContentTest")]
+    public static void ContentTestLog(string msg)
+    {
+        UnityEngine.Debug.LogFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
+    }
 }
