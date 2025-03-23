@@ -14154,7 +14154,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 645650526}
   m_LocalRotation: {x: -0, y: -0.19815499, z: -0, w: 0.9801707}
-  m_LocalPosition: {x: -0.20231009, y: -0.21661657, z: 1.0805647}
+  m_LocalPosition: {x: -0.20231009, y: -0.18, z: 1.0805647}
   m_LocalScale: {x: 0.33672732, y: 0.33672732, z: 0.33672732}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19868,7 +19868,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 971422311}
   m_LocalRotation: {x: -0, y: -0, z: 4.656613e-10, w: 1}
-  m_LocalPosition: {x: -0.10031009, y: -0.19201857, z: 0.5808387}
+  m_LocalPosition: {x: -0.10031009, y: -0.155402, z: 0.5808387}
   m_LocalScale: {x: 0.33672732, y: 0.33672735, z: 0.3367273}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -43655,6 +43655,7 @@ GameObject:
   - component: {fileID: 33789654069083421}
   - component: {fileID: 23001871766741567}
   - component: {fileID: 64202871020076329}
+  - component: {fileID: 64202871020076330}
   m_Layer: 0
   m_Name: Cookie
   m_TagString: Untagged
@@ -43896,6 +43897,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 18e651e9430dc49f8aba22d0b7b80602, type: 3}
+--- !u!65 &64202871020076330
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686175402181471}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.29, y: 0.024284126, z: 0.43}
+  m_Center: {x: 1.13845496e-10, y: 0.01222399, z: 0.11}
 --- !u!64 &64947845010274830
 MeshCollider:
   m_ObjectHideFlags: 0

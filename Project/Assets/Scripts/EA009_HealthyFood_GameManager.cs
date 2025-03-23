@@ -25,7 +25,32 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       // 나쁜 음식
       HealthyFoodGroup, Hamburger, Cookie, Icecream, Pizza, Chocolate, Cake, Donut,
    }
-   
+
+   private readonly int COUNT_OF_FOOD_TO_CHANGE = 7;
+   private int _currentCountOfFoodChanged = 0;
+
+   private int currentCountOfFoodChanged
+   {
+       get
+       {
+           return _currentCountOfFoodChanged;
+       }
+       set
+       {
+           _currentCountOfFoodChanged = value;
+           Logger.ContentTestLog($"현재 바뀐 음식 수 {value}");
+           if (_currentCountOfFoodChanged >= COUNT_OF_FOOD_TO_CHANGE)
+           {
+               _currentCountOfFoodChanged = 0;
+               OnAllFoodChanged();
+           }
+       }
+   }
+
+   private void OnAllFoodChanged()
+   {
+       Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/Delicious");
+   }
    private SequenceName _currentSequence = SequenceName.Default;
 
    private Dictionary<int, Food> _idToFoodMap =new();
@@ -49,6 +74,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
    protected override void Init()
    {
+       psResourcePath = "Runtime/EA009/Fx_Click";
        base.Init();
        BindObject(typeof(Food));
 
@@ -102,29 +128,32 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
       
       DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length, () =>
       {
-         DOVirtual.DelayedCall(0.5f, () =>
-         {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScenes/EA009/Hungry");
-            
-            DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 2f, () =>
-            {
-               Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScenes/EA009/ChangeToGoodFood");
-               
-               DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length , () =>
-               {
-                  _isFoodClickable = true;
-                  _currentSequence = SequenceName.BadFoodSelection;
-               });
-            });
-         });
-         
-         foreach (var key in _badFoodGroup.Keys.ToArray())
-         {
-            _badFoodGroup[key].gameObject.SetActive(true);
-            _badFoodGroup[key].gameObject.transform.DOScale(_originalScaleMap[key],Random.Range(0.5f,1.5f)).SetEase(_appearAnimEase).SetDelay(Random.Range(0.5f,1.5f));
-            Logger.Log($"doscale : {_originalScaleMap[key]}");
-         }
+          DOVirtual.DelayedCall(0.5f, () =>
+          {
+              Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/Hungry");
 
+              DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 1,
+                  () =>
+                  {
+                      foreach (var key in _badFoodGroup.Keys.ToArray())
+                      {
+                          _badFoodGroup[key].gameObject.SetActive(true);
+                          _badFoodGroup[key].gameObject.transform
+                              .DOScale(_originalScaleMap[key], Random.Range(0.5f, 1.5f)).SetEase(_appearAnimEase)
+                              .SetDelay(Random.Range(0.5f, 1.5f));
+                          Logger.Log($"doscale : {_originalScaleMap[key]}");
+                      }
+
+                      Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/ChangeToGoodFood");
+
+                      DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length,
+                          () =>
+                          {
+                              _isFoodClickable = true;
+                              _currentSequence = SequenceName.BadFoodSelection;
+                          });
+                  });
+          });
       });
 
    }
@@ -136,6 +165,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
       foreach (var hit in GameManager_Hits)
       {
+          PlayParticleEffect(hit.point);
           Logger.Log($"clickedName {hit.transform.name}, clickedID {hit.transform.GetInstanceID()}");
           int id = hit.transform.GetInstanceID();
           bool isFood = _idToFoodMap.TryGetValue(id, out Food clickedFood);
@@ -156,6 +186,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
               DOVirtual.DelayedCall(1f, () => { isClickedMap[clickedFood] = false; });
               
               clickCountMap[clickedFood]++;
+              Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA009/fxA");
               ShakeTransform(hit.transform,clickedFood);
               return;
           }
@@ -169,20 +200,24 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
    {
       target.DOShakePosition(Random.Range(1.0f,2.0f), 0.1f, 10, 90f, false).OnComplete(() =>
       {
-          if (clickCountMap[clickedFood] > 3)
+          if (clickCountMap[clickedFood] > 2)
           {
               clickCountMap[clickedFood] = 0; // 중복실행 방지용
-              target.DOScale(Vector3.zero, 1f).OnComplete(() =>
+              currentCountOfFoodChanged++;
+              Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA009/fxB");
+              
+              target.DOScale(Vector3.zero, 0.5f).OnComplete(() =>
               {
                   target.gameObject.SetActive(false);
                   
                   // 🎉 나쁜 음식이 사라졌다면 → 좋은 음식 등장
+                  Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA009/fxC");
                   Food goodFood = GetPairedGoodFood(clickedFood);
                   if (_goodFoodGroup.TryGetValue(goodFood, out var goodTransform))
                   {
                       goodTransform.gameObject.SetActive(true);
                       goodTransform.localScale = Vector3.zero;
-                      goodTransform.DOScale(_originalScaleMap[goodFood], 0.7f)
+                      goodTransform.DOScale(_originalScaleMap[goodFood], 0.3f)
                           .SetEase(_appearAnimEase);
 
                       Logger.Log($"[PairSwap] {clickedFood} 사라짐 → {goodFood} 등장");
