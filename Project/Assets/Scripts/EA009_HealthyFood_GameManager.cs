@@ -39,6 +39,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
    
    private Dictionary<Food, Transform> _goodFoodGroup = new();
    private Dictionary<Food, Transform> _badFoodGroup = new();
+   private Dictionary<Food, Transform> _allFoodGroup = new();
    private Dictionary<Food, Vector3> _originalScaleMap = new();
    private Ease _disappearAnimEase = Ease.InOutSine;
    private Ease _appearAnimEase = Ease.InOutSine;
@@ -48,34 +49,44 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
    protected override void Init()
    {
-      base.Init();
-      BindObject(typeof(Food));
+       base.Init();
+       BindObject(typeof(Food));
 
- 
-      InitializeFoodGroup(new List<Food> { Food.Fish, Food.Meat, Food.Chicken, Food.Apple, Food.Egg, Food.Milk, Food.Carrot }, _goodFoodGroup);
-      InitializeFoodGroup(new List<Food> { Food.Hamburger, Food.Cookie, Food.Icecream, Food.Pizza, Food.Chocolate, Food.Cake, Food.Donut }, _badFoodGroup);
+       var goodFoods = new List<Food> { Food.Fish, Food.Meat, Food.Chicken, Food.Apple, Food.Egg, Food.Milk, Food.Carrot };
+       var badFoods  = new List<Food> { Food.Hamburger, Food.Cookie, Food.Icecream, Food.Pizza, Food.Chocolate, Food.Cake, Food.Donut };
+    
+       InitializeFoodGroup(goodFoods, _goodFoodGroup);
+       InitializeFoodGroup(badFoods, _badFoodGroup);
 
-      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
-         _originalScaleMap[food] = GetObject((int)food).transform.localScale;
-
-      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
-          clickCountMap.Add(food, 0);
-      
-      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
-          isClickedMap.Add(food, false);
-
-      foreach (var food in _goodFoodGroup.Keys.Concat(_badFoodGroup.Keys))
-          _idToFoodMap.Add(_goodFoodGroup[food].transform.GetInstanceID(),food);
-      
-      HideFoods(_goodFoodGroup);
-      HideFoods(_badFoodGroup);
+       HideFoods(_goodFoodGroup);
+       HideFoods(_badFoodGroup);
    }
-   private void InitializeFoodGroup(List<Food> foods, Dictionary<Food, Transform> foodGroup)
+
+   private void InitializeFoodGroup(List<Food> foods, Dictionary<Food, Transform> targetGroup)
    {
-      foreach (var food in foods)
-         foodGroup[food] = GetObject((int)food).transform;
-   }
+       foreach (var food in foods)
+       {
+           var obj = GetObject((int)food).transform;
 
+           // 그룹별로 등록
+           targetGroup[food] = obj;
+
+           // 전체 음식 목록에도 등록
+           _allFoodGroup[food] = obj;
+
+           // ID 매핑
+           _idToFoodMap[obj.GetInstanceID()] = food;
+
+           // 오리지널 스케일
+           _originalScaleMap[food] = obj.localScale;
+
+           // 클릭 관련 초기화
+           clickCountMap[food] = 0;
+           isClickedMap[food] = false;
+
+           Logger.Log($"[Init] Added Food: {food}, ID: {obj.GetInstanceID()}");
+       }
+   }
    private void HideFoods(Dictionary<Food, Transform> foodGroup)
    {
       foreach (var food in foodGroup.Values)
@@ -118,26 +129,35 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
    }
 
-   public sealed override void OnRaySynced()
+   public override void OnRaySynced()
    {
       if (!PreCheckOnRaySync()) return;
 
 
       foreach (var hit in GameManager_Hits)
       {
+          Logger.Log($"clickedName {hit.transform.name}, clickedID {hit.transform.GetInstanceID()}");
           int id = hit.transform.GetInstanceID();
-          _idToFoodMap.TryGetValue(id, out Food clickedFood);
+          bool isFood = _idToFoodMap.TryGetValue(id, out Food clickedFood);
+          if (!isFood)
+          {
+              Logger.Log($"ID에 해당하는 음식이 없습니다.{id}");
+              return;
+          }
           
           if (_currentSequence == SequenceName.BadFoodSelection)
           {
-              if (!isClickedMap[clickedFood])
+              if (isClickedMap[clickedFood])
               {
+                  Logger.Log("이미 클릭된 음식입니다.");
                   return;
-                  Logger.Log("너무 빨리 클릭중");
               }
               isClickedMap[clickedFood] = true;
+              DOVirtual.DelayedCall(1f, () => { isClickedMap[clickedFood] = false; });
+              
               clickCountMap[clickedFood]++;
               ShakeTransform(hit.transform,clickedFood);
+              return;
           }
       }
       
@@ -147,9 +167,35 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
    private void ShakeTransform(Transform target,Food clickedFood)
    {
-      target.DOShakePosition(Random.Range(1.0f,2.0f), 10f, 10, 90f, false).OnComplete(() =>
+      target.DOShakePosition(Random.Range(1.0f,2.0f), 0.1f, 10, 90f, false).OnComplete(() =>
       {
-          isClickedMap[clickedFood] = true;
+          if (clickCountMap[clickedFood] > 3)
+          {
+              clickCountMap[clickedFood] = 0; // 중복실행 방지용
+              target.DOScale(Vector3.zero, 1f).OnComplete(() =>
+              {
+                  target.gameObject.SetActive(false);
+                  
+                  // 🎉 나쁜 음식이 사라졌다면 → 좋은 음식 등장
+                  Food goodFood = GetPairedGoodFood(clickedFood);
+                  if (_goodFoodGroup.TryGetValue(goodFood, out var goodTransform))
+                  {
+                      goodTransform.gameObject.SetActive(true);
+                      goodTransform.localScale = Vector3.zero;
+                      goodTransform.DOScale(_originalScaleMap[goodFood], 0.7f)
+                          .SetEase(_appearAnimEase);
+
+                      Logger.Log($"[PairSwap] {clickedFood} 사라짐 → {goodFood} 등장");
+                  }
+              });
+          }
       });
+   }
+   
+   private Food GetPairedGoodFood(Food badFood)
+   {
+       // 나쁜 음식 enum 값에서 7을 빼면 대응되는 좋은 음식이 나옴
+       // (enum 순서상 Fish = 1, Hamburger = 8 → 8 - 7 = 1)
+       return (Food)((int)badFood - 8);
    }
 }

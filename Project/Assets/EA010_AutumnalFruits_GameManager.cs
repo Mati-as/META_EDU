@@ -69,7 +69,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private const int FALL_IMAGE_COUNT = 5;
     private SpriteRenderer spriteRenderer;
 
-    private const int ROUND_COUNT =(int)Fruits.Persimmon; // 총Max개 ; 
+    [Range(0, 5)] public int ROUND_COUNT;//총Max개 ; 
     private int _currentRoundCount =-1; //flag
 
     public int currentRoundCount
@@ -166,9 +166,10 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private const int ROW_COUNT = 3;
     private readonly Transform[][] allWoodblocks = new Transform[COLUMN_COUNT][];
 
-    private readonly Dictionary<int, Transform> _woodBlockMap = new();
-    private readonly Dictionary<int, Sequence> _woodBlockSeqMap = new(); //
-    private readonly Dictionary<int, bool> _isWoodBlockClickedMap = new(); //
+    private  Dictionary<int, Transform> _woodBlockMap = new();
+    private  Dictionary<int, Sequence> _woodBlockSeqMap = new(); //
+    private  Dictionary<int, bool> _isWoodBlockClickedMap = new(); //
+    private Dictionary<int,bool> _isDroppingMap= new();
     private bool _isWoodBlockClickable = true;
     private bool _isRoundFinished =true;
     private Vector3 _defaultScale = Vector3.zero;
@@ -721,21 +722,41 @@ private void OnRaysyncOnPuzzeGame()
     
     private void DropFruitOnTreesWithReset(Fruits id)
     {
-       // Logger.Log($"{}");
-        _isFruitOnTreeAlreadyClicked =true;
-        foreach (var key in _fruitAnimatorMap.Keys.ToArray())
-        {
-            if (_fruitAnimatorMap[key].gameObject.name.Contains(nameof(id.ToString)))
-            {
-                _fruitAnimatorMap[(int)id].SetBool(DROP, true);
-                DOVirtual.DelayedCall(3f,()=>
-                {
-                    _fruitAnimatorMap[(int)id].SetBool(DROP, false);
-                });
-            }
-        }
+      //  _isFruitOnTreeAlreadyClicked = true;
+
+      foreach (var key in _fruitAnimatorMap.Keys.ToArray())
+      {
+          _isDroppingMap.TryAdd(key, false);
+
+      }
+
+      foreach (var key in _fruitAnimatorMap.Keys.ToArray())
+      {
+          var animator = _fruitAnimatorMap[key];
+          if (animator == null){ continue; // ✅ null 방어
+}
+
+          if (animator.gameObject != null && animator.gameObject.name.Contains(id.ToString()))
+          {
+              if (_isDroppingMap[key] == false)
+              {
+                  _isDroppingMap[key] = true;
+                  animator.SetBool(DROP, true);
+
+                  int capturedKey = key;
+
+                  DOVirtual.DelayedCall(3f, () =>
+                  {_isDroppingMap[capturedKey] = false;
+                      _fruitAnimatorMap[capturedKey]?.SetBool(DROP, false);
+                  });
+
+                  return;
+              }
+          }
+      }
 
     }
+
 
     #endregion
 
