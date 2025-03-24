@@ -124,38 +124,40 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
    protected override void OnGameStartStartButtonClicked()
    {
       base.OnGameStartStartButtonClicked();
-       
-      
-      DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length, () =>
+
+
+      DOVirtual.DelayedCall(1.5f, () =>
       {
-          DOVirtual.DelayedCall(0.5f, () =>
-          {
-              Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/Hungry");
+          Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/Hungry");
 
-              DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 1,
-                  () =>
+          DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length,
+              () =>
+              {
+                  foreach (var key in _badFoodGroup.Keys.ToArray())
                   {
-                      foreach (var key in _badFoodGroup.Keys.ToArray())
+                      _badFoodGroup[key].gameObject.SetActive(true);
+                      _badFoodGroup[key].gameObject.transform
+                          .DOScale(_originalScaleMap[key], Random.Range(0.5f, 1.5f)).SetEase(_appearAnimEase)
+                          .SetDelay(Random.Range(0.5f, 1.5f));
+                      Logger.Log($"doscale : {_originalScaleMap[key]}");
+                  }
+
+                  DOVirtual.DelayedCall(
+                      Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length - 1.5f,
+                      () =>
                       {
-                          _badFoodGroup[key].gameObject.SetActive(true);
-                          _badFoodGroup[key].gameObject.transform
-                              .DOScale(_originalScaleMap[key], Random.Range(0.5f, 1.5f)).SetEase(_appearAnimEase)
-                              .SetDelay(Random.Range(0.5f, 1.5f));
-                          Logger.Log($"doscale : {_originalScaleMap[key]}");
-                      }
+                          Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/ChangeToGoodFood");
+                      });
 
-                      Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA009/ChangeToGoodFood");
 
-                      DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length,
-                          () =>
-                          {
-                              _isFoodClickable = true;
-                              _currentSequence = SequenceName.BadFoodSelection;
-                          });
-                  });
-          });
+                  DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length,
+                      () =>
+                      {
+                          _isFoodClickable = true;
+                          _currentSequence = SequenceName.BadFoodSelection;
+                      });
+              });
       });
-
    }
 
    public override void OnRaySynced()

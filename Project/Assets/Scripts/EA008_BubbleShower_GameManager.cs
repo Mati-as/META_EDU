@@ -146,6 +146,11 @@ public void OnStart()
             .SetAutoKill(false);
         // .Pause();
     }
+    
+    DOVirtual.DelayedCall(0.6f, () =>
+    {
+        _isClickable = true;
+    });
 }
 
 
@@ -187,6 +192,7 @@ public void OnStart()
             onRoundFinished?.Invoke();
             _tmp.text = "";
             _isRoundFinished = true;
+            _isClickable = false;
         }
 
         if (!_UIManager.isStart) _remainTime = TIME_LIMIT;
@@ -430,6 +436,7 @@ public void OnStart()
 
     private Vector3 _defaultPosition;
 
+    private bool _isClickable;
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
@@ -442,6 +449,7 @@ public void OnStart()
          */
         if (!_UIManager.isStart) return;
         if (_isRoundFinished) return;
+        if (!_isClickable) return;
 
 
         FlipAndChangeColor(GameManager_Ray);
@@ -681,6 +689,9 @@ public void OnStart()
                         .SetEase(Ease.Linear))
                     .SetAutoKill(false)
                     .Play();
+                
+                
+                printData.isCurrentlyFlipping = false;
             });
 
             printData.flipSeq.Play();
