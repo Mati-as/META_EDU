@@ -72,7 +72,6 @@ public class SensorManager : MonoBehaviour
     public bool Test_check;
 
     public GameObject Guideline;
-    public GameObject TESTUI;
     //
 
     //1015
@@ -283,7 +282,7 @@ public class SensorManager : MonoBehaviour
         max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y +
                 Guideline.GetComponent<RectTransform>().rect.height / 2;
 
-        TESTUI.SetActive(false);
+        Guideline.SetActive(false);
 
         _sensitivitySlider.onValueChanged.AddListener(_ =>
         {
@@ -358,7 +357,7 @@ private void InitUI()
     max_x = guidelineRect.anchoredPosition.x + guidelineRect.rect.width / 2;
     max_y = guidelineRect.anchoredPosition.y + guidelineRect.rect.height / 2;
 
-    TESTUI.SetActive(false);
+        Guideline.SetActive(false);
 
     _sensitivitySlider.onValueChanged.AddListener(_ =>
     {
@@ -641,18 +640,25 @@ private IEnumerator RunGenerateMesh()
                     CalibrateSensor(touchPoint);
                 }
 
-                // 화면 비율 보정
-                if (isCalibrationActive_Screenratio)
+                if (isCalibration_SR_Active)
                 {
-
-                    SaveSensorPoint(touchPoint);
+                    //가이드라인 원상 복구
+                    CalibrateScreenRatio(touchPoint);
                 }
 
-                // ✅ Homography 보정 활성화 시, 터치 좌표 수집 후 보정 수행
-                if (isCalibrationActive)
-                {
-                    CollectCalibrationPoint(touchPoint);
-                }
+                //// 화면 비율 보정
+                //if (isCalibrationActive_Screenratio)
+                //{
+
+                //    SaveSensorPoint(touchPoint);
+                //}
+
+
+                //// ✅ Homography 보정 활성화 시, 터치 좌표 수집 후 보정 수행
+                //if (isCalibrationActive)
+                //{
+                //    CollectCalibrationPoint(touchPoint);
+                //}
             }
 
             m_datachanged = false;
@@ -1100,16 +1106,37 @@ private IEnumerator RunGenerateMesh()
         SFSP_realpoint(Sensor_posx, Sensor_posy);
     }
 
+    //0324
+    // 기준 좌표 (유니티 캔버스 기준, 사용자가 실제 터치를 유도한 위치)
+    public Vector2 screenRatioCalibrationTarget = new Vector2(-500f, 0f);
+
+    // 보정 활성화용 변수 (외부 버튼에서 true로 설정)
+    public bool isCalibration_SR_Active = false;
+
+
+    // ✅ 비율 기반 screenRatio 보정 함수
+    private void CalibrateScreenRatio(Vector2 touchPoint)
+    {
+        float measuredX = touchPoint.x;
+        float expectedX = screenRatioCalibrationTarget.x;
+
+        float denom = Sensor_posx - measuredX;
+        if (Mathf.Abs(denom) < 10f) return; // 안정성 보호
+
+        float newRatio = (Sensor_posx - expectedX) / denom;
+
+        if (newRatio < 0.2f || newRatio > 2.0f) return; // 비정상 보정 방지
+
+        _screenRatio *= newRatio;
+        Debug.Log($"✅ 보정 완료: newRatio={newRatio:F3}, 최종 _screenRatio={_screenRatio:F3}");
+
+        isCalibration_SR_Active = false;
+
+        //가이드라인 원상 복구
+        Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1920, 1080);
+    }
     //#0311
 
-
-    //public void Instant_Ball(float temp_x, float temp_y)
-    //{
-    //    var Prefab_pos = Instantiate(BALLPrefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0),
-    //        UI_Canvas.transform);
-    //    Prefab_pos.GetComponent<RectTransform>().anchoredPosition = new Vector3(temp_x, temp_y, 0);
-    //    Prefab_pos.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 0);
-    //}
     private void OnApplicationQuit()
     {
         StopSensor();
@@ -1138,8 +1165,8 @@ private IEnumerator RunGenerateMesh()
         UI_Active = !UI_Active;
 
         if (UI_Active)
-            TESTUI.SetActive(true);
-        else if (UI_Active == false) TESTUI.SetActive(false);
+            Guideline.SetActive(true);
+        else if (UI_Active == false) Guideline.SetActive(false);
         return UI_Active;
     }
 
