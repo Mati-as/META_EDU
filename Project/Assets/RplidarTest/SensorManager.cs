@@ -292,13 +292,14 @@ public class SensorManager : MonoBehaviour
 
         _projectorLookUpTable = new Dictionary<int, Vector2>();
 
-        UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-            sensorDistanceFromProjection + _height * 10 / 2; // height의 절반을 mm로 단위로 계산
+        //[삭제]
+        //UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
+        //    sensorDistanceFromProjection + _height * 10 / 2; // height의 절반을 mm로 단위로 계산
 
-        height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-        _screenRatio = Resolution_Y / (height * 10);
-        Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
-        Debug.Log($"Ratio:{_screenRatio}");
+        //height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+        //_screenRatio = Resolution_Y / (height * 10);
+        //Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
+        //Debug.Log($"Ratio:{_screenRatio}");
 
         _sensorDetectedPositionPool = new Stack<RectTransform>();
         SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
@@ -368,14 +369,15 @@ private void InitUI()
 
     _projectorLookUpTable = new Dictionary<int, Vector2>();
 
-    UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-        sensorDistanceFromProjection + _height * 10 / 2;
+        //[삭제]
+    //UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
+    //    sensorDistanceFromProjection + _height * 10 / 2;
 
-    height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-    _screenRatio = Resolution_Y / (height * 10);
+    //height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+    //_screenRatio = Resolution_Y / (height * 10);
 
-    Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
-    Debug.Log($"Ratio:{_screenRatio}");
+    //Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
+    //Debug.Log($"Ratio:{_screenRatio}");
 
     _sensorDetectedPositionPool = new Stack<RectTransform>();
     SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
