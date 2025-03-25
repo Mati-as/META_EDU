@@ -55,7 +55,8 @@ public class SensorAdjuster : MonoBehaviour
     public Button Button_Save_Calib_Touchpoint;
     public Button Button_Apply_Calib_Touchpoint;
     public Button Button_Cancel_Calib_Touchpoint;
-    public Button Button_Save_Calib_Screenratio_Left;
+    public Button Button_Calib_Screenratio_Left;
+    public Button Button_Save_Screenratio;
 
     public GameObject Center_Point;
     public GameObject Vertext_Point;
@@ -166,7 +167,8 @@ public class SensorAdjuster : MonoBehaviour
         //Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
         //Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
         //Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
-        Button_Save_Calib_Screenratio_Left.onClick.AddListener(Calibration_screenratio);
+        Button_Calib_Screenratio_Left.onClick.AddListener(Calibration_screenratio);
+        Button_Save_Screenratio.onClick.AddListener(Save_screenratio);
 
         //screen ratio 부분
         screenratioSlider.onValueChanged.AddListener(value => UpdateSRInputField(ScreenratioInput, value));
@@ -180,8 +182,8 @@ public class SensorAdjuster : MonoBehaviour
     {
         manager.AsyncInitSensor();
         manager.ResetTouchZones();
-        if (manager.isCalibrationApplied)
-            Calibration_state.text = "보정 값 적용 중";
+        //if (manager.isCalibrationApplied)
+        //    Calibration_state.text = "보정 값 적용 중";
         
     }
 
@@ -208,6 +210,7 @@ public class SensorAdjuster : MonoBehaviour
 
     void Reset_Touchsetting()
     {
+        //여기도 어떻게 연동이 필요할지도
         XmlManager.Instance.ClusterThreshold = 70;
         XmlManager.Instance.Yhorizontal = -50f;
         XmlManager.Instance.Yvertical = -25f;
@@ -242,25 +245,30 @@ public class SensorAdjuster : MonoBehaviour
         //매니저의 해당 함수 호출
         manager.isCalibrationActive_SensorPos = true;
     }
-    void Calibration_sensor()
-    {
-        //매니저의 해당 함수 호출
-        //여기는 조금 민감한 부분이니 안전장치 구현 필요?
-        manager.isCalibrationActive = true;
-    }
+    //void Calibration_sensor()
+    //{
+    //    //매니저의 해당 함수 호출
+    //    //여기는 조금 민감한 부분이니 안전장치 구현 필요?
+    //    manager.isCalibrationActive = true;
+    //}
     void Calibration_screenratio()
     {
         //SR 계산
         manager.isCalibration_SR_Active = true;
     }
-    void Apply_calibration()
+    void Save_screenratio()
     {
-        manager.ApplyCalibration();
+        XmlManager.Instance.ScreenRatio = manager._screenRatio;
+        XmlManager.Instance.SaveSettings(); //  XML 저장
     }
-    void Cancel_calibration()
-    {
-        manager.isCalibrationApplied = false;
-    }
+    //void Apply_calibration()
+    //{
+    //    manager.ApplyCalibration();
+    //}
+    //void Cancel_calibration()
+    //{
+    //    manager.isCalibrationApplied = false;
+    //}
 
 
     void UpdateUI_Sensor()
@@ -369,6 +377,9 @@ public class SensorAdjuster : MonoBehaviour
         xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
 
 
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
+
         offsetXInput.text = offsetXSlider.value.ToString("0.00");
         offsetYInput.text = offsetYSlider.value.ToString("0.00");
 
@@ -383,13 +394,19 @@ public class SensorAdjuster : MonoBehaviour
     {
         XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
         XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
-        XmlManager.Instance.SaveSettings(); //  XML 저장
+
+        //현재 lidar object의 위치로 저장
+        XmlManager.Instance.SensorPosX = Lider_object.rectTransform.anchoredPosition.x;
+        XmlManager.Instance.SensorPosY = Lider_object.rectTransform.anchoredPosition.y;
+
 
         xmlOffsetXText.text = offsetXSlider.value.ToString("0.00");
         xmlOffsetYText.text = offsetYSlider.value.ToString("0.00");
 
-        Now_xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
-        Now_xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
+
+        XmlManager.Instance.SaveSettings(); //  XML 저장
     }
 
     /// <summary>
@@ -399,6 +416,9 @@ public class SensorAdjuster : MonoBehaviour
     {
         XmlManager.Instance.SensorOffsetX = 0.5f;
         XmlManager.Instance.SensorOffsetY = 0.5f;
+
+        XmlManager.Instance.SensorPosX = 0;
+        XmlManager.Instance.SensorPosY = 540;
 
         offsetXSlider.value = 0.5f;
         offsetYSlider.value = 0.5f;
@@ -458,7 +478,7 @@ public class SensorAdjuster : MonoBehaviour
     private void ToggleFeature()
     {
         isFeatureActive = !isFeatureActive;
-        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 기능 ON" : "터치 기능 OFF";
+        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 이벤트 확인" : "실제 터치 좌표 확인";
         manager.isFeatureActive = isFeatureActive;
     }
 

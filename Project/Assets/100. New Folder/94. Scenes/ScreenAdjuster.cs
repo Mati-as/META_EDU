@@ -65,7 +65,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// XML¿¡¼­ µ¥ÀÌÅÍ ·Îµå
+    /// XMLì—ì„œ ë°ì´í„° ë¡œë“œ
     /// </summary>
     void LoadSettings()
     {
@@ -79,7 +79,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// XML¿¡ ¼³Á¤ ÀúÀå
+    /// XMLì— ì„¤ì • ì €ì¥
     /// </summary>
     void SaveSettings()
     {
@@ -87,20 +87,20 @@ public class ScreenAdjuster : MonoBehaviour
         XmlManager.Instance.ScreenPositionOffsetX = offsetXSlider.value;
         XmlManager.Instance.ScreenPositionOffsetY = offsetYSlider.value;
 
-        XmlManager.Instance.SaveSettings(); // XML¿¡ ÀúÀå
+        XmlManager.Instance.SaveSettings(); // XMLì— ì €ì¥
 
-        // ÇöÀç ÀúÀåµÈ XML °ªÀ» UI¿¡ ¹İ¿µ
+        // í˜„ì¬ ì €ì¥ëœ XML ê°’ì„ UIì— ë°˜ì˜
         Now_xmlScreenSizeText.text = $"{screenSize}";
         Now_xmlOffsetXText.text = $"{screenOffsetX}";
         Now_xmlOffsetYText.text = $"{screenOffsetY}";
     }
 
     /// <summary>
-    /// XML °ªÀ» UI¿¡ Àû¿ë
+    /// XML ê°’ì„ UIì— ì ìš©
     /// </summary>
     public void ApplySettings()
     {
-        Debug.Log("Ä«¸Ş¶ó ¼³Á¤ÇÔ");
+        Debug.Log("ì¹´ë©”ë¼ ì„¤ì •í•¨");
         screenSizeSlider.value = screenSize;
         offsetXSlider.value = screenOffsetX;
         offsetYSlider.value = screenOffsetY;
@@ -109,7 +109,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
     //50000000 +
     /// <summary>
-    /// UI ¾÷µ¥ÀÌÆ® (°¡ÀÌµå¶óÀÎ Å©±â ¹× À§Ä¡ Á¶Á¤)
+    /// UI ì—…ë°ì´íŠ¸ (ê°€ì´ë“œë¼ì¸ í¬ê¸° ë° ìœ„ì¹˜ ì¡°ì •)
     /// </summary>
     void UpdateUI()
     {
@@ -130,7 +130,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÔ·Â ÇÊµå ¾÷µ¥ÀÌÆ®
+    /// ì…ë ¥ í•„ë“œ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateInputField(InputField input, float value)
     {
@@ -138,7 +138,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀÔ·Â ÇÊµå °ª º¯°æ ½Ã ½½¶óÀÌ´õ ¾÷µ¥ÀÌÆ®
+    /// ì…ë ¥ í•„ë“œ ê°’ ë³€ê²½ ì‹œ ìŠ¬ë¼ì´ë” ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateSlider(Slider slider, string value)
     {
@@ -149,7 +149,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó È­¸é ¼³Á¤ ¹İ¿µ
+    /// ì¹´ë©”ë¼ í™”ë©´ ì„¤ì • ë°˜ì˜
     /// </summary>
     void ApplyScreenSettings()
     {
@@ -185,7 +185,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// XML UI ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+    /// XML UI í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateXMLText()
     {
@@ -195,7 +195,7 @@ public class ScreenAdjuster : MonoBehaviour
     }
 
     /// <summary>
-    /// ±âº»°ªÀ¸·Î ¸®¼Â ÈÄ XML ÀúÀå
+    /// ê¸°ë³¸ê°’ìœ¼ë¡œ ë¦¬ì…‹ í›„ XML ì €ì¥
     /// </summary>
     void ResetToDefault()
     {
@@ -205,6 +205,7 @@ public class ScreenAdjuster : MonoBehaviour
         ApplySettings();
         SaveSettings();
 
+        //ì—¬ê¸° ì–´ë–»ê²Œ ì²˜ë¦¬í•´ì£¼ë©´ ì¢‹ã…‡ë¥´ì§€?
         manager.Set_Screenscale(1.0f);
     }
 }
