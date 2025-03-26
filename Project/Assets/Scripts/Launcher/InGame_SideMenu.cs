@@ -15,7 +15,8 @@ public class InGame_SideMenu : UI_PopUp
         Btn_Home,
         //Btn_SensorRefresh,
         Btn_Quit,
-        SettingCloseButton
+        SettingCloseButton,
+        Btn_SensorShowGuide
     }
     
     private enum UIType
@@ -37,6 +38,8 @@ public class InGame_SideMenu : UI_PopUp
     
     private bool _isXMLSavable = true;
 
+    DevelopmentUIManager _devUIManager;
+    
     private const int REFRESH_INTERIM_MIN = 10;
     private readonly WaitForSeconds _wait = new(REFRESH_INTERIM_MIN);
     private Button[] _btns;
@@ -59,11 +62,19 @@ public class InGame_SideMenu : UI_PopUp
         {
             GetObject((int)UIType.Setting).gameObject.SetActive(false);
         });
-        
+
+
+     
+        _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
+        Debug.Assert(_devUIManager!=null);
+        GetButton((int)Btn_Type.Btn_SensorShowGuide).gameObject.BindEvent(() =>
+        {
+            _devUIManager.DisableAllImages();
+        });
         
         
         GetObject((int)UIType.Setting).gameObject.SetActive(false);
-
+        
         SetSlider();
     }
 

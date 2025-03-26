@@ -187,7 +187,11 @@ public class Music_BubbleController : MonoBehaviour
     /// <returns></returns>
     private ParticleSystem GetFromPool(Stack<ParticleSystem> effectPool, string path)
     {
-        if (effectPool.Count < 0) GrowPool(effectPool, path);
+        if (effectPool.Count <= 0)
+        {
+            GrowPool(effectPool, path);
+            
+        }
 
         var currentEffect = effectPool.Pop();
         return currentEffect;
