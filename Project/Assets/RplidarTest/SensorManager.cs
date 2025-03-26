@@ -268,19 +268,13 @@ public class SensorManager : MonoBehaviour
 
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
         UI_Camera = Manager_Sensor.instance.Get_UIcamera();
-        
 
-        // guide라인이랑 동기화 기능
-        min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x -
-                Guideline.GetComponent<RectTransform>().rect.width / 2;
-        min_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y -
-                Guideline.GetComponent<RectTransform>().rect.height / 2;
-        max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x +
-                Guideline.GetComponent<RectTransform>().rect.width / 2;
-        max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y +
-                Guideline.GetComponent<RectTransform>().rect.height / 2;
 
-        Guideline.SetActive(false);
+        // guide라인이랑 동기화 기능, 이 부분이 최초에 한번 실행되게끔 되는데 그 외에 다른 부분에서도 적용이 되었음 하는데
+        Set_GuideLine();
+
+        //[삭제]
+        //Guideline.SetActive(false);
 
         _sensitivitySlider.onValueChanged.AddListener(_ =>
         {
@@ -309,6 +303,17 @@ public class SensorManager : MonoBehaviour
         SetPool(_SDPP_realpoint, "Rplidar/FP_REAL");
 
         OnSenSorInit?.Invoke(isSensorOn);
+    }
+    public void Set_GuideLine()
+    {
+        min_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x -
+            Guideline.GetComponent<RectTransform>().rect.width / 2;
+        min_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y -
+                Guideline.GetComponent<RectTransform>().rect.height / 2;
+        max_x = Guideline.GetComponent<RectTransform>().anchoredPosition.x +
+                Guideline.GetComponent<RectTransform>().rect.width / 2;
+        max_y = Guideline.GetComponent<RectTransform>().anchoredPosition.y +
+                Guideline.GetComponent<RectTransform>().rect.height / 2;
     }
 
 
@@ -674,6 +679,7 @@ private IEnumerator RunGenerateMesh()
                 else if (isFeatureActive)
                 {
                     //터치 이벤트 기능 확인용, 기존 createtouchmarker도 내부에 있으므로 터치도 마찬가지 발생
+                    //여기서도 보고 싶을 것 같은데 그럼 parent설정을 해주는걸로
                     HandleTouchEvents(touchPoint);
                 }
 
@@ -1095,19 +1101,21 @@ private IEnumerator RunGenerateMesh()
     
     public bool UI_Active_ONOFF()
     {
-        UI_Active = !UI_Active;
+        //[삭제]
+        //UI_Active = !UI_Active;
 
-        if (UI_Active)
-            Guideline.SetActive(true);
-        else if (UI_Active == false) Guideline.SetActive(false);
+        //if (UI_Active)
+        //    Guideline.SetActive(true);
+        //else if (UI_Active == false) Guideline.SetActive(false);
         return UI_Active;
     }
 
     public bool Ball_Active_ONOFF()
     {
-        BallActive = !BallActive;
+        //[삭제]
+        //BallActive = !BallActive;
 
-        Logger.Log("Ball Image Active");
+        //Logger.Log("Ball Image Active");
         return BallActive;
     }
 

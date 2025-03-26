@@ -21,7 +21,6 @@ public class Manager_obj_4 : MonoBehaviour
     public GameObject Main_Icon_2;
     public GameObject Main_Icon_3;
     public GameObject Icon_buttion_position;
-    public GameObject BG;
     public Sprite White;
     public Sprite Yellow;
 

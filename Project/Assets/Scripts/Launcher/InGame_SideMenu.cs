@@ -16,7 +16,6 @@ public class InGame_SideMenu : UI_PopUp
         Btn_SensorRefresh,
         Btn_Quit,
         SettingCloseButton
-     
     }
     
     private enum UIType
