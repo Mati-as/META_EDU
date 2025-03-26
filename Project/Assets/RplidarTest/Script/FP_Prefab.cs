@@ -48,7 +48,8 @@ public class FP_Prefab : RaySynchronizer
 
         //[수정] BallActive 상관없이 구동될 수 있도록 
         //_image.enabled = SensorManager.BallActive;
-        _image.enabled = true;
+        //런처에서는 자동 꺼지되 콘텐츠에서는 자동으로 켜지므로 비활성화함
+        //_image.enabled = true;
 
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();

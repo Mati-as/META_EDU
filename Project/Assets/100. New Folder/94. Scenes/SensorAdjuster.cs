@@ -255,7 +255,7 @@ public class SensorAdjuster : MonoBehaviour
     void Show_SRGuidepoints()
     {
         SR_Guide_Points.SetActive(!SR_Guide_Points.activeSelf);
-        //여기에 가이드라인 값 변경 및 해당하는 input 값도 바꿔주기, (확인 필요) 실질적으로 동작하는지는 모르겠음
+        
         manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, 0);
         manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 800);
         manager.Set_GuideLine();
