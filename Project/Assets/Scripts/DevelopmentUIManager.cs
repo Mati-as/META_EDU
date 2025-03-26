@@ -52,10 +52,25 @@ public class DevelopmentUIManager : MonoBehaviour
 
     //뭔가 콘텐츠 안에서 계속해서 키게 만드는 무언가가 있음
     //0326 private -> public
+    private bool _isClickable = true;
     public void DisableAllImages()
     {
-        Debug.Log("DAI Clicked");
+        Debug.Log($"DAI Clicked {_currentStatus}");
+      
+
+        if (!_isClickable) return;
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            _isClickable = true;
+        });
+        _isClickable = false;
+        
+        
+        
         _currentStatus = !_currentStatus;
+        
+        SensorManager.BallActive = _currentStatus;
+        
         
         foreach (var image in _imagesPool)
         {

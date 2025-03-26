@@ -1,21 +1,37 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TouchZone : MonoBehaviour
 {
-    private float lifetime = 1.0f; // 1ÃÊ ÈÄ ÀÚµ¿ »èÁ¦
+    private float lifetime = 1.0f; // 1ï¿½ï¿½ ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     public float timer = 0f;
-    public bool isTouched = false; // ÅÍÄ¡ °¨Áö ¿©ºÎ
+    public bool isTouched = false; // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private Image _image;
 
     /// <summary>
-    /// ÅÍÄ¡°¡ °¨ÁöµÇ¸é Å¸ÀÌ¸Ó ¸®¼Â
+    /// ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     /// </summary>
+    private void Awake()
+    {
+        _image = GetComponent<Image>();
+    }
+
     public void ResetTimer()
     {
         isTouched = true;
         timer = 0f;
+      
     }
+    
+    protected void OnEnable()
+    {
+        
+        _image.enabled = SensorManager.BallActive;
+    }
+
 
     private void Update()
     {
@@ -25,15 +41,15 @@ public class TouchZone : MonoBehaviour
 
             if (timer > lifetime)
             {
-                Debug.Log($"?? ÅÍÄ¡ ¿µ¿ª »èÁ¦µÊ: {gameObject.name}");
+                Debug.Log($"?? ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: {gameObject.name}");
                 Destroy(gameObject);
             }
         }
         else
         {
-            // ? ÅÍÄ¡°¡ °¨ÁöµÇ¸é Å¸ÀÌ¸Ó ¸®¼Â
+            // ? ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
             timer = 0f;
-            isTouched = false; // ? ´ÙÀ½ ÇÁ·¹ÀÓ¿¡¼­ ´Ù½Ã °¨ÁöµÇµµ·Ï ¼³Á¤
+            isTouched = false; // ? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 }

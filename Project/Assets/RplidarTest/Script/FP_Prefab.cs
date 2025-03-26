@@ -13,7 +13,7 @@ public class FP_Prefab : RaySynchronizer
 {
     private VideoContentBaseGameManager _videoContentBaseGameManager;
     private readonly string GAME_MANAGER = "GameManager";
-    private Image _image;
+    private Image _imageComponent;
 
     public FP_controller FPC;
     private float Timer = 0f;
@@ -26,28 +26,37 @@ public class FP_Prefab : RaySynchronizer
     public static event Action onPrefabInput; 
     private MetaEduLauncher _launcher;
 
+    private void Awake()
+    {
+        _imageComponent = GetComponent<Image>();
+        _rectTransform = GetComponent<RectTransform>();
+    }
+
     public override void Init()
     {
          
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         
          _rectTransform = GetComponent<RectTransform>();
-         _image = GetComponent<Image>();
+         _imageComponent = GetComponent<Image>();
+       
     }
 
 
     protected override void OnEnable()
     {
         base.OnEnable();
-        
-        if(_image==null) _image = GetComponent<Image>();
-        if (_rectTransform == null) _rectTransform = GetComponent<RectTransform>();
+       
+
+        _imageComponent.enabled = SensorManager.BallActive;
+        if (!_imageComponent.enabled) return;
         
         //모드설정에따라 이미지 활성화 비활성화
-        Debug.Assert(_image != null);
+        Debug.Assert(_imageComponent != null);
 
+      
         //[수정] BallActive 상관없이 구동될 수 있도록 
-        //_image.enabled = SensorManager.BallActive;
+  
         //런처에서는 자동 꺼지되 콘텐츠에서는 자동으로 켜지므로 비활성화함
         //_image.enabled = true;
 
