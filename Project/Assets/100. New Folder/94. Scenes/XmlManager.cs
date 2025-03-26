@@ -8,48 +8,13 @@ public class XmlManager
     private static bool isLoaded = false;
     private static string filePath = Path.Combine(Application.streamingAssetsPath, "GameSettingData.xml");
 
-    public static XmlManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = new XmlManager();
-            }
-            return instance;
-        }
-    }
 
-    // 설정 데이터
-    public float ScreenSize { get;  set; }
-    public float ScreenPositionOffsetX { get;  set; }
-    public float ScreenPositionOffsetY { get;  set; }
-    public float SensorOffsetX { get;  set; }
-    public float SensorOffsetY { get;  set; }
-    public int ClusterThreshold { get;  set; }
-    public float Yhorizontal { get;  set; }
-    public float Yvertical { get;  set; }
-    public float Xdiagonal { get;  set; }
-    public float Ydiagonal { get;  set; }
-    public float XdiagonalLeft { get;  set; }
-    public float TouchzoneLifetime { get;  set; }
-    public int MaxTouchzones { get;  set; }
-    public float TouchRange { get;  set; }
-
-    private XmlManager()
-    {
-        LoadSettings(); // XML 데이터를 한 번만 불러와서 캐싱
-    }
-
-    /// <summary>
-    /// XML 데이터 로드
-    /// </summary>
-    public void LoadSettings()
-    {
-        if (isLoaded) return;
-
-        // 기본값 설정
-        ScreenSize = 1.0f;
+    //xml 파일 기본값 설정 (0325)
+    /*
+    ScreenSize = 1.0f;
+        ScreenRatio = 0.782f;
+        SensorPosX = 0
+        SensorPosX = 540
         ScreenPositionOffsetX = 0.5f;
         ScreenPositionOffsetY = 0.5f;
         SensorOffsetX = 0.5f;
@@ -63,6 +28,103 @@ public class XmlManager
         TouchzoneLifetime = 1.0f;
         MaxTouchzones = 20;
         TouchRange = 35f;
+    */
+
+    public static XmlManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new XmlManager();
+            }
+            return instance;
+        }
+    }
+
+    // 설정 데이터
+    public float ScreenSize
+    {
+        get; set;
+    }
+    public float ScreenRatio
+    {
+        get; set;
+    }
+    public float SensorPosX
+    {
+        get; set;
+    }
+    public float SensorPosY
+    {
+        get; set;
+    }
+    public float ScreenPositionOffsetX
+    {
+        get; set;
+    }
+    public float ScreenPositionOffsetY
+    {
+        get; set;
+    }
+    //Slider 조작용
+    public float SensorOffsetX
+    {
+        get; set;
+    }
+    public float SensorOffsetY
+    {
+        get; set;
+    }
+    public int ClusterThreshold
+    {
+        get; set;
+    }
+    public float Yhorizontal
+    {
+        get; set;
+    }
+    public float Yvertical
+    {
+        get; set;
+    }
+    public float Xdiagonal
+    {
+        get; set;
+    }
+    public float Ydiagonal
+    {
+        get; set;
+    }
+    public float XdiagonalLeft
+    {
+        get; set;
+    }
+    public float TouchzoneLifetime
+    {
+        get; set;
+    }
+    public int MaxTouchzones
+    {
+        get; set;
+    }
+    public float TouchRange
+    {
+        get; set;
+    }
+
+    private XmlManager()
+    {
+        LoadSettings(); // XML 데이터를 한 번만 불러와서 캐싱
+    }
+
+    /// <summary>
+    /// XML 데이터 로드
+    /// </summary>
+    public void LoadSettings()
+    {
+        if (isLoaded) return;
+
 
         if (!File.Exists(filePath))
             return;
@@ -75,6 +137,9 @@ public class XmlManager
         if (settingNode != null)
         {
             ScreenSize = float.Parse(settingNode.GetAttribute("ScreenSize"));
+            ScreenRatio = float.Parse(settingNode.GetAttribute("ScreenRatio"));
+            SensorPosX = float.Parse(settingNode.GetAttribute("SensorPosX"));
+            SensorPosY = float.Parse(settingNode.GetAttribute("SensorPosY"));
             ScreenPositionOffsetX = float.Parse(settingNode.GetAttribute("ScreenPositionOffsetX"));
             ScreenPositionOffsetY = float.Parse(settingNode.GetAttribute("ScreenPositionOffsetY"));
             SensorOffsetX = float.Parse(settingNode.GetAttribute("SensorOffsetX"));
@@ -121,6 +186,9 @@ public class XmlManager
 
         // XML 속성 업데이트
         settingNode.SetAttribute("ScreenSize", ScreenSize.ToString("F2"));
+        settingNode.SetAttribute("ScreenRatio", ScreenRatio.ToString("F3"));
+        settingNode.SetAttribute("SensorPosX", SensorPosX.ToString("F1"));
+        settingNode.SetAttribute("SensorPosY", SensorPosY.ToString("F1"));
         settingNode.SetAttribute("ScreenPositionOffsetX", ScreenPositionOffsetX.ToString("F2"));
         settingNode.SetAttribute("ScreenPositionOffsetY", ScreenPositionOffsetY.ToString("F2"));
         settingNode.SetAttribute("SensorOffsetX", SensorOffsetX.ToString("F2"));

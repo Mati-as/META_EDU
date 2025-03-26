@@ -23,6 +23,9 @@ public class SensorAdjuster : MonoBehaviour
     public Text Now_xmlOffsetXText;
     public Text Now_xmlOffsetYText;
 
+    public InputField GuideLine_WInputField;
+    public InputField GuideLine_HInputField;
+
     [Header("[ Sensor adjust ]")]
     public Text ThresholdText;
 
@@ -52,7 +55,8 @@ public class SensorAdjuster : MonoBehaviour
     public Button Button_Save_Calib_Touchpoint;
     public Button Button_Apply_Calib_Touchpoint;
     public Button Button_Cancel_Calib_Touchpoint;
-    public Button Button_Save_Calib_Screenratio;
+    public Button Button_Calib_Screenratio_Left;
+    public Button Button_Save_Screenratio;
 
     public GameObject Center_Point;
     public GameObject Vertext_Point;
@@ -136,14 +140,21 @@ public class SensorAdjuster : MonoBehaviour
         Button_Sensor_Init.onClick.AddListener(Init_sensor);
         Button_Sensor_Stop.onClick.AddListener(Stop_sensor);
 
-        offsetXSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
-        offsetYSlider.onValueChanged.AddListener(delegate { UpdateUI(); });
+        offsetXSlider.onValueChanged.AddListener(delegate { UpdateUI_Sensor(); });
+        offsetYSlider.onValueChanged.AddListener(delegate { UpdateUI_Sensor(); });
 
         offsetXSlider.onValueChanged.AddListener(value => UpdateInputField(offsetXInput, value));
         offsetYSlider.onValueChanged.AddListener(value => UpdateInputField(offsetYInput, value));
 
         offsetXInput.onEndEdit.AddListener(value => UpdateSlider(offsetXSlider, value));
         offsetYInput.onEndEdit.AddListener(value => UpdateSlider(offsetYSlider, value));
+
+        // 현재 사이즈를 InputField에 표시
+        GuideLine_WInputField.text = manager.Guideline.GetComponent<RectTransform>().sizeDelta.x.ToString("F0");
+        GuideLine_HInputField.text = manager.Guideline.GetComponent<RectTransform>().sizeDelta.y.ToString("F0");
+
+        GuideLine_WInputField.onEndEdit.AddListener(OnWidthChanged);
+        GuideLine_HInputField.onEndEdit.AddListener(OnHeightChanged);
 
         saveButton.onClick.AddListener(SaveSensorSettings);
         resetButton.onClick.AddListener(ResetToDefault);
@@ -153,10 +164,11 @@ public class SensorAdjuster : MonoBehaviour
         Button_Guide_Screenratio.onClick.AddListener(Show_GuideEndpoints);
 
         Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
-        Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
-        Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
-        Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
-        Button_Save_Calib_Screenratio.onClick.AddListener(Calibration_screenratio);
+        //Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
+        //Button_Apply_Calib_Touchpoint.onClick.AddListener(Apply_calibration);
+        //Button_Cancel_Calib_Touchpoint.onClick.AddListener(Cancel_calibration);
+        Button_Calib_Screenratio_Left.onClick.AddListener(Calibration_screenratio);
+        Button_Save_Screenratio.onClick.AddListener(Save_screenratio);
 
         //screen ratio 부분
         screenratioSlider.onValueChanged.AddListener(value => UpdateSRInputField(ScreenratioInput, value));
@@ -170,8 +182,8 @@ public class SensorAdjuster : MonoBehaviour
     {
         manager.AsyncInitSensor();
         manager.ResetTouchZones();
-        if (manager.isCalibrationApplied)
-            Calibration_state.text = "보정 값 적용 중";
+        //if (manager.isCalibrationApplied)
+        //    Calibration_state.text = "보정 값 적용 중";
         
     }
 
@@ -198,6 +210,7 @@ public class SensorAdjuster : MonoBehaviour
 
     void Reset_Touchsetting()
     {
+        //여기도 어떻게 연동이 필요할지도
         XmlManager.Instance.ClusterThreshold = 70;
         XmlManager.Instance.Yhorizontal = -50f;
         XmlManager.Instance.Yvertical = -25f;
@@ -223,33 +236,42 @@ public class SensorAdjuster : MonoBehaviour
     void Show_GuideEndpoints()
     {
         End_Points.SetActive(!End_Points.activeSelf);
+        //여기에 가이드라인 값 변경 및 해당하는 input 값도 바꿔주기
+        manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1400, 700);
+
     }
     void Calibration_sensor_position()
     {
         //매니저의 해당 함수 호출
         manager.isCalibrationActive_SensorPos = true;
     }
-    void Calibration_sensor()
-    {
-        //매니저의 해당 함수 호출
-        //여기는 조금 민감한 부분이니 안전장치 구현 필요?
-        manager.isCalibrationActive = true;
-    }
+    //void Calibration_sensor()
+    //{
+    //    //매니저의 해당 함수 호출
+    //    //여기는 조금 민감한 부분이니 안전장치 구현 필요?
+    //    manager.isCalibrationActive = true;
+    //}
     void Calibration_screenratio()
     {
-
+        //SR 계산
+        manager.isCalibration_SR_Active = true;
     }
-    void Apply_calibration()
+    void Save_screenratio()
     {
-        manager.ApplyCalibration();
+        XmlManager.Instance.ScreenRatio = manager._screenRatio;
+        XmlManager.Instance.SaveSettings(); //  XML 저장
     }
-    void Cancel_calibration()
-    {
-        manager.isCalibrationApplied = false;
-    }
+    //void Apply_calibration()
+    //{
+    //    manager.ApplyCalibration();
+    //}
+    //void Cancel_calibration()
+    //{
+    //    manager.isCalibrationApplied = false;
+    //}
 
 
-    void UpdateUI()
+    void UpdateUI_Sensor()
     {
         float sensorOffsetX = offsetXSlider.value;
         float sensorOffsetY = offsetYSlider.value;
@@ -260,6 +282,27 @@ public class SensorAdjuster : MonoBehaviour
             float adjustedX = (sensorOffsetX - 0.5f) * 1920 + CANVAS_X_CENTER;
             float adjustedY = (sensorOffsetY - 0.5f) * 1080 + CANVAS_Y_CENTER;
             lidarTransform.anchoredPosition = new Vector2(adjustedX, adjustedY);
+        }
+    }
+    void OnWidthChanged(string widthStr)
+    {
+        RectTransform guideRect = manager.Guideline.GetComponent<RectTransform>();
+
+        if (float.TryParse(widthStr, out float width))
+        {
+            Vector2 currentSize = guideRect.sizeDelta;
+            guideRect.sizeDelta = new Vector2(width, currentSize.y);
+        }
+    }
+
+    void OnHeightChanged(string heightStr)
+    {
+        RectTransform guideRect = manager.Guideline.GetComponent<RectTransform>();
+
+        if (float.TryParse(heightStr, out float height))
+        {
+            Vector2 currentSize = guideRect.sizeDelta;
+            guideRect.sizeDelta = new Vector2(currentSize.x, height);
         }
     }
     void UpdateLiveSettings()
@@ -334,6 +377,9 @@ public class SensorAdjuster : MonoBehaviour
         xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
 
 
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
+
         offsetXInput.text = offsetXSlider.value.ToString("0.00");
         offsetYInput.text = offsetYSlider.value.ToString("0.00");
 
@@ -348,13 +394,19 @@ public class SensorAdjuster : MonoBehaviour
     {
         XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
         XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
-        XmlManager.Instance.SaveSettings(); //  XML 저장
+
+        //현재 lidar object의 위치로 저장
+        XmlManager.Instance.SensorPosX = Lider_object.rectTransform.anchoredPosition.x;
+        XmlManager.Instance.SensorPosY = Lider_object.rectTransform.anchoredPosition.y;
+
 
         xmlOffsetXText.text = offsetXSlider.value.ToString("0.00");
         xmlOffsetYText.text = offsetYSlider.value.ToString("0.00");
 
-        Now_xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
-        Now_xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
+
+        XmlManager.Instance.SaveSettings(); //  XML 저장
     }
 
     /// <summary>
@@ -365,10 +417,13 @@ public class SensorAdjuster : MonoBehaviour
         XmlManager.Instance.SensorOffsetX = 0.5f;
         XmlManager.Instance.SensorOffsetY = 0.5f;
 
+        XmlManager.Instance.SensorPosX = 0;
+        XmlManager.Instance.SensorPosY = 540;
+
         offsetXSlider.value = 0.5f;
         offsetYSlider.value = 0.5f;
 
-        UpdateUI();
+        UpdateUI_Sensor();
         SaveSensorSettings();
     }
 
@@ -423,7 +478,7 @@ public class SensorAdjuster : MonoBehaviour
     private void ToggleFeature()
     {
         isFeatureActive = !isFeatureActive;
-        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 기능 ON" : "터치 기능 OFF";
+        toggleFeatureButton.transform.GetChild(1).gameObject.GetComponent<Text>().text = isFeatureActive ? "터치 이벤트 확인" : "실제 터치 좌표 확인";
         manager.isFeatureActive = isFeatureActive;
     }
 

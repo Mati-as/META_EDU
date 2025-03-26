@@ -39,7 +39,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 465}
+  m_AnchoredPosition: {x: 0, y: 540}
   m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9180807691250136019
@@ -95,26 +95,22 @@ MonoBehaviour:
   m_onscan: 0
   Test_check: 0
   Guideline: {fileID: 9180807691420710634}
-  TESTUI: {fileID: 9180807691420710634}
   min_x: 0
   min_y: 0
   max_x: 0
   max_y: 0
-  Test_degree: 0
-  Test_distance: 0
   temp_pos: {fileID: 0}
-  isCalibrationActive_SensorPos: 0
-  isCalibrationActive: 0
-  isCalibrationApplied: 0
-  Center_Point: {x: 0, y: 0}
-  TL_Point: {x: -850, y: 450}
-  TR_Point: {x: 850, y: 450}
-  BL_Point: {x: -850, y: -450}
-  BR_Point: {x: 850, y: -450}
+  _screenRatio: 0.782
   Calibration_state_indetail: {fileID: 0}
   Calibration_state: {fileID: 0}
+  Calibration_state_Screenratio: {fileID: 0}
   State_rotation: {fileID: 0}
   State_scan: {fileID: 0}
+  isCalibrationActive_SensorPos: 0
+  isCalibration_SR_Active: 0
+  Screen_Scale: 1
+  Center_Point: {x: 0, y: 0}
+  screenRatioCalibrationTarget: {x: -500, y: 0}
   touchZoneObjects: []
   touchZoneList: []
   maxTouchZones: 20
