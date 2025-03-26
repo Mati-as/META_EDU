@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,10 +19,18 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<Type, Object[]> _objects = new();
 
     protected bool _init;
-    protected Animator animator;
+    protected Animator mainAnimator;
+    protected int currentSequence;
+    protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
     
     
     private readonly Stack<ParticleSystem> _particlePool = new();
+    
+    
+    protected Dictionary<int,Transform> _IdTotransformMap = new();
+    protected Dictionary<int,int> _IdToEnumMap = new();
+    protected Dictionary<Type,Animator> _animators = new();
+    protected Dictionary<Type,Sequence> _sequences = new();
 
     protected string psResourcePath = string.Empty;
 
@@ -36,7 +45,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         base.Init();
         
         SetPool();
-        var isAnimatorAttached= TryGetComponent(out animator);
+        var isAnimatorAttached= TryGetComponent(out mainAnimator);
         if(!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
     }
 
@@ -50,9 +59,21 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         for (var i = 0; i < names.Length; i++)
         {
             if (typeof(T) == typeof(GameObject))
-                objects[i] = Utils.FindChild(gameObject, names[i], true);
+            {
+                var obj = Utils.FindChild(gameObject, names[i], true);
+                objects[i] = obj;
+
+                if (obj != null)
+                {
+                    var transform = obj.transform;
+                    _IdTotransformMap[transform.GetInstanceID()] = transform;
+                    _IdToEnumMap[transform.GetInstanceID()] = i;
+                }
+            }
             else
+            {
                 objects[i] = Utils.FindChild<T>(gameObject, names[i], true);
+            }
 
             if (objects[i] == null)
                 Debug.Log($"Failed to bind({names[i]})");
@@ -195,5 +216,11 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         currentPS.transform.position = pos;
         currentPS.Play();
         StartCoroutine(ReturnToPoolAfterDelay(currentPS));
+    }
+
+    protected void ChangeSeqAnim(int seqNum = 0)
+    {
+        currentSequence = seqNum;
+        mainAnimator.SetInteger(SEQ_NUM, seqNum);
     }
 }
