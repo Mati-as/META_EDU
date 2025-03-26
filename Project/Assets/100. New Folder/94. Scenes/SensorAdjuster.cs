@@ -59,8 +59,8 @@ public class SensorAdjuster : MonoBehaviour
     public Button Button_Save_Screenratio;
 
     public GameObject Center_Point;
-    public GameObject Vertext_Point;
-    public GameObject End_Points;
+    public GameObject Vertex_Point;
+    public GameObject SR_Guide_Points;
 
     public Slider screenratioSlider;
     public InputField ScreenratioInput;
@@ -75,6 +75,8 @@ public class SensorAdjuster : MonoBehaviour
 
 
     private bool isFeatureActive = false;
+
+    private bool sensor_button_Clicked = false;
 
     void Start()
     {
@@ -161,7 +163,7 @@ public class SensorAdjuster : MonoBehaviour
 
         Button_Guide_center.onClick.AddListener(Show_Guidecenter);
         Button_Guide_vertex.onClick.AddListener(Show_Guidevertex);
-        Button_Guide_Screenratio.onClick.AddListener(Show_GuideEndpoints);
+        Button_Guide_Screenratio.onClick.AddListener(Show_SRGuidepoints);
 
         Button_Calib_pos.onClick.AddListener(Calibration_sensor_position);
         //Button_Save_Calib_Touchpoint.onClick.AddListener(Calibration_sensor);
@@ -180,16 +182,30 @@ public class SensorAdjuster : MonoBehaviour
     }
     void Init_sensor()
     {
-        manager.AsyncInitSensor();
-        manager.ResetTouchZones();
+        if (!sensor_button_Clicked)
+        {
+            manager.AsyncInitSensor();
+            manager.ResetTouchZones();
+            sensor_button_Clicked = true;
+            //나중에 화면상에 메시지도 출력되도록 구현 필요
+        }
+        else
+            Debug.Log("센서 정지 상태 아님");
         //if (manager.isCalibrationApplied)
         //    Calibration_state.text = "보정 값 적용 중";
-        
+
     }
 
     void Stop_sensor()
     {
-        manager.StopSensor();
+        if (sensor_button_Clicked)
+        {
+            manager.StopSensor();
+            sensor_button_Clicked = false;
+        }
+        else
+            Debug.Log("센서 스캔 상태 아님");
+
     }
 
     void Save_Touchsetting()
@@ -228,17 +244,21 @@ public class SensorAdjuster : MonoBehaviour
     void Show_Guidecenter()
     {
         Center_Point.SetActive(!Center_Point.activeSelf);
+        manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(500, 1080);
+        manager.Set_GuideLine();
     }
     void Show_Guidevertex()
     {
-        Vertext_Point.SetActive(!Vertext_Point.activeSelf);
+        Vertex_Point.SetActive(!Vertex_Point.activeSelf);
     }
-    void Show_GuideEndpoints()
+    void Show_SRGuidepoints()
     {
-        End_Points.SetActive(!End_Points.activeSelf);
-        //여기에 가이드라인 값 변경 및 해당하는 input 값도 바꿔주기
-        manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1400, 700);
-
+        SR_Guide_Points.SetActive(!SR_Guide_Points.activeSelf);
+        //여기에 가이드라인 값 변경 및 해당하는 input 값도 바꿔주기, (확인 필요) 실질적으로 동작하는지는 모르겠음
+        manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, 0);
+        manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 800);
+        manager.Set_GuideLine();
     }
     void Calibration_sensor_position()
     {
@@ -292,6 +312,7 @@ public class SensorAdjuster : MonoBehaviour
         {
             Vector2 currentSize = guideRect.sizeDelta;
             guideRect.sizeDelta = new Vector2(width, currentSize.y);
+            manager.Set_GuideLine();
         }
     }
 
@@ -303,6 +324,7 @@ public class SensorAdjuster : MonoBehaviour
         {
             Vector2 currentSize = guideRect.sizeDelta;
             guideRect.sizeDelta = new Vector2(currentSize.x, height);
+            manager.Set_GuideLine();
         }
     }
     void UpdateLiveSettings()
@@ -331,7 +353,7 @@ public class SensorAdjuster : MonoBehaviour
             manager.maxTouchZones = maxTouches;
             manager.Touch_range = touchRange;
         }
-       
+
 
     }
     void UpdateInputField(InputField input, float value)
@@ -370,8 +392,12 @@ public class SensorAdjuster : MonoBehaviour
     /// </summary>
     void LoadSensorSettings()
     {
-        offsetXSlider.value = XmlManager.Instance.SensorOffsetX;
-        offsetYSlider.value = XmlManager.Instance.SensorOffsetY;
+        //[수정]굳이 슬라이더의 값은 저장, 로드하지 않음
+        //offsetXSlider.value = XmlManager.Instance.SensorOffsetX;
+        //offsetYSlider.value = XmlManager.Instance.SensorOffsetY;
+        offsetXSlider.value = 0.5f;
+        offsetYSlider.value = 0.5f;
+
 
         xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
         xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
@@ -383,8 +409,12 @@ public class SensorAdjuster : MonoBehaviour
         offsetXInput.text = offsetXSlider.value.ToString("0.00");
         offsetYInput.text = offsetYSlider.value.ToString("0.00");
 
+
+
         screenratioSlider.value = manager._screenRatio;
         ScreenratioText.text = screenratioSlider.value.ToString("0.00");
+
+        Lider_object.rectTransform.anchoredPosition= new Vector2(XmlManager.Instance.SensorPosX, XmlManager.Instance.SensorPosY);
     }
 
     /// <summary>
@@ -392,8 +422,9 @@ public class SensorAdjuster : MonoBehaviour
     /// </summary>
     void SaveSensorSettings()
     {
-        XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
-        XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
+        //[수정]굳이 슬라이더의 값은 저장, 로드하지 않음
+        //XmlManager.Instance.SensorOffsetX = offsetXSlider.value;
+        //XmlManager.Instance.SensorOffsetY = offsetYSlider.value;
 
         //현재 lidar object의 위치로 저장
         XmlManager.Instance.SensorPosX = Lider_object.rectTransform.anchoredPosition.x;
@@ -484,6 +515,20 @@ public class SensorAdjuster : MonoBehaviour
 
     private void OnDestroy()
     {
-        manager.StopSensor();
+        //[수정] 센서 중지 직접 호출하지 않고 스캔 상태일때만 실행
+        //manager.StopSensor();
+        Stop_sensor();
+    }
+    public void Button_close()
+    {
+        //가이드 표출 전부 비활성화
+        Center_Point.SetActive(false);
+        Vertex_Point.SetActive(false);
+        SR_Guide_Points.SetActive(false);
+
+        manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1800, 1000);
+
+        Stop_sensor();
     }
 }

@@ -45,9 +45,11 @@ public class FP_Prefab : RaySynchronizer
         
         //모드설정에따라 이미지 활성화 비활성화
         Debug.Assert(_image != null);
-        
-        _image.enabled = SensorManager.BallActive;
-        
+
+        //[수정] BallActive 상관없이 구동될 수 있도록 
+        //_image.enabled = SensorManager.BallActive;
+        _image.enabled = true;
+
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
         //Image = this.transform.GetChild(0).gameObject;

@@ -13,7 +13,6 @@ public class DevelopmentUIManager : MonoBehaviour
     
     private TextMeshProUGUI _fpsCounter;
     private bool _currentStatus = true;
-    private GameObject _developerMenu;
 
     private void Start()
     {
@@ -40,15 +39,19 @@ public class DevelopmentUIManager : MonoBehaviour
         {
             _textPool.Push(text);
         }
+        //각 콘텐츠 별로 처음에 안보이게 하기위해 남김
         DisableAllImages();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
-    }
+    //[삭제]
+    //private void Update()
+    //{
+    //    //버튼으로 대체만하면 이건 해결
+    //    //if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
+    //}
 
-    private void DisableAllImages()
+    //0326 private -> public
+    public void DisableAllImages()
     {
         _currentStatus = !_currentStatus;
         
