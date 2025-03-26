@@ -13,7 +13,7 @@ public class InGame_SideMenu : UI_PopUp
     {
         Btn_Setting,
         Btn_Home,
-        Btn_SensorRefresh,
+        //Btn_SensorRefresh,
         Btn_Quit,
         SettingCloseButton
     }

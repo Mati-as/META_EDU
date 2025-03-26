@@ -49,7 +49,7 @@ public class FP_Prefab : RaySynchronizer
        
 
         _imageComponent.enabled = SensorManager.BallActive;
-        if (!_imageComponent.enabled) return;
+
         
         //모드설정에따라 이미지 활성화 비활성화
         Debug.Assert(_imageComponent != null);
