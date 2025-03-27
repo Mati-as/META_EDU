@@ -26,6 +26,8 @@ public class FP_Prefab : RaySynchronizer
     public static event Action onPrefabInput; 
     private MetaEduLauncher _launcher;
 
+    public bool isRayEnabled = true;
+
     private void Awake()
     {
         _imageComponent = GetComponent<Image>();
@@ -85,6 +87,8 @@ public class FP_Prefab : RaySynchronizer
     private string excludeMask = "Non_Sensor_Interactable_UIs";
     public override void ShootRay()
     {
+        if (!isRayEnabled) return; //Raycast 작동 여부 제어
+
         if (Managers.isGameStopped || _rectTransform == null) return;
         if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
         {
@@ -116,6 +120,7 @@ public class FP_Prefab : RaySynchronizer
                 continue;
             }
 
+            //마우스 클릭시 두번이 발생하는 부분은 아래 때문
             result.gameObject.TryGetComponent(out _btn);
             _btn?.onClick?.Invoke();
 

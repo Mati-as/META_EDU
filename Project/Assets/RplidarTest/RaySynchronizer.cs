@@ -31,7 +31,9 @@ public class RaySynchronizer : MonoBehaviour
     public List<RaycastResult> raycastResults { get; protected set; }
     public Vector3 screenPosition;
     public Button btn;
-    
+
+
+    public bool isRayEnabled = true;
 
     public static event Action OnGetInputFromUser;
 
@@ -122,7 +124,9 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
-        
+
+        //if (!isRayEnabled) return; //Raycast 작동 여부 제어
+
         if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
         {
             Logger.Log($"런처에서는 센서동작하지 않음 ------------------{Managers.UserInfo.CurrentActiveSceneName}");

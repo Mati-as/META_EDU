@@ -27,7 +27,7 @@ public class Manager_SEQ_5 : Base_GameManager
     [Header("[ COMPONENT CHECK ]")]
     public int Content_Seq = 0;
     public float Sequence_timer = 0f;
-
+    public int Emoji_game = 0;
 
     public GameObject Bigsize_emotion;
     public Transform wheel; // 원판의 Transform
@@ -37,6 +37,7 @@ public class Manager_SEQ_5 : Base_GameManager
 
     private bool isSpinning = false;
     private bool isSpinResult = false;
+
 
     private string selectedEmotion; // 선택된 감정
 
@@ -144,7 +145,7 @@ public class Manager_SEQ_5 : Base_GameManager
 
         Manager_Anim.Inactive_Seq_Icon_1();
 
-        //아래 부분은 스핀으로 연결
+        //아래 부분은 각각 1P, 2P 별로 블록 그룹 세팅할 수 있도록함
         Manager_Anim.Setting_Seq_Icon_2();
     }
 
@@ -156,7 +157,7 @@ public class Manager_SEQ_5 : Base_GameManager
         Manager_Anim.Anim_Inactive(Button_Spin);
         isSpinning = true;
 
-        int randomTargetIndex = Random.Range(0, emotionList.Count); // 0~7
+        int randomTargetIndex = Manager_obj_5.instance.preSelectedEmotions[Emoji_game];
         float targetAngle = randomTargetIndex * sliceAngle;
         float extraSpins = 5f * 360f;
         float finalRotation = extraSpins + targetAngle;
@@ -166,6 +167,7 @@ public class Manager_SEQ_5 : Base_GameManager
             .OnComplete(() =>
             {
                 isSpinning = false;
+                Emoji_game += 1;
 
                 selectedEmotion = emotionList[randomTargetIndex];
                 Debug.Log("선택된 감정: " + selectedEmotion);
