@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -20,18 +21,23 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    protected int currentSequence;
+    protected int _currentSequence;
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
     
     
     private readonly Stack<ParticleSystem> _particlePool = new();
     
-    
-    protected Dictionary<int,Transform> _IdTotransformMap = new();
-    protected Dictionary<int,int> _IdToEnumMap = new();
+    protected Dictionary<int,bool> _isClickableMap = new();
+    protected Dictionary<int,Transform> _tfidTotransformMap = new();
+    protected Dictionary<int,int> enumToTfIdMap = new();
+    protected Dictionary<int,int> _tfIdToEnumMap = new();
     protected Dictionary<Type,Animator> _animators = new();
-    protected Dictionary<Type,Sequence> _sequences = new();
-
+    //protected Dictionary<Type,Sequence> _sequences = new();
+    protected Dictionary<int,Vector3> _defaultSizeMap = new(); 
+    protected Dictionary<int,Quaternion> _defaultRotationQuatMap = new(); 
+    protected Dictionary<int,Sequence> _sequenceMap = new(); 
+    protected Dictionary<int,Animator> _animatorMap = new(); 
+    
     protected string psResourcePath = string.Empty;
 
 
@@ -66,8 +72,18 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                 if (obj != null)
                 {
                     var transform = obj.transform;
-                    _IdTotransformMap[transform.GetInstanceID()] = transform;
-                    _IdToEnumMap[transform.GetInstanceID()] = i;
+                    _tfidTotransformMap.Add(transform.GetInstanceID(),transform);
+                    _tfIdToEnumMap.Add(transform.GetInstanceID(),i);
+                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
+                    _isClickableMap.Add(transform.GetInstanceID(),false);
+                    
+                    _defaultSizeMap.Add(i,transform.localScale);
+                    _defaultRotationQuatMap.Add(i,transform.rotation);
+                    
+                    _sequenceMap.Add(i,DOTween.Sequence());
+                    
+                    obj.transform.TryGetComponent(out Animator animator);
+                    if(animator!=null)_animatorMap.Add(i,animator);
                 }
             }
             else
@@ -77,6 +93,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
             if (objects[i] == null)
                 Debug.Log($"Failed to bind({names[i]})");
+        }
+    }
+
+    protected void ResetClickable()
+    {
+        foreach (var key in _isClickableMap.Keys.ToArray())
+        {
+            _isClickableMap[key] = true;
         }
     }
 
@@ -220,7 +244,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected void ChangeSeqAnim(int seqNum = 0)
     {
-        currentSequence = seqNum;
+        _currentSequence = seqNum;
         mainAnimator.SetInteger(SEQ_NUM, seqNum);
     }
 }
