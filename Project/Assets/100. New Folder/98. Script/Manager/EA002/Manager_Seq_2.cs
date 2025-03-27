@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -185,7 +185,7 @@ public class Manager_Seq_2 : Base_GameManager
     public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
         if (Content_Seq == 2)
         {

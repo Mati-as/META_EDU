@@ -83,6 +83,19 @@ public class Manager_anim_5 : MonoBehaviour
         //Debug.Log("C_SEQ = " + Number_Camera_seq);
     }
 
+    //[common]
+    public void Anim_Active(GameObject obj)
+    {
+        //Sequence seq = DOTween.Sequence();
+        //seq.Append(obj.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => obj.SetActive(true))).SetDelay(2f);
+        obj.transform.DOScale(1, 1f).SetEase(Ease.OutElastic).OnComplete(() => obj.SetActive(true));
+    }
+
+    public void Anim_Inactive(GameObject obj)
+    {
+        obj.transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => obj.SetActive(false));
+    }
+
     //[EDIT] Contents camera sequence
     public void Change_Animation(int Number_seq)
     {
@@ -271,6 +284,8 @@ public class Manager_anim_5 : MonoBehaviour
         round_number = 0;
         StartCoroutine(Temp_Message());
     }
+
+
 
     IEnumerator Temp_Message(float time = 2f)
     {

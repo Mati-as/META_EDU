@@ -16,8 +16,9 @@ public class Manager_obj_5 : MonoBehaviour
     public GameObject Game_effect;
 
     //Emoji icon
-    public GameObject Main_Icon_1;
-    public GameObject Main_Icon_2;
+    public GameObject Main_Icon_1;  //이모지 보여주기
+    public GameObject Bigsize_emotion;
+    public GameObject Main_Icon_2;  //클릭 게임 그룹, 각 개별적으로 클릭
     public GameObject Main_Icon_3;
     public GameObject Icon_buttion_position;
     public GameObject BG;
@@ -43,6 +44,8 @@ public class Manager_obj_5 : MonoBehaviour
 
     public GameObject[] Emoji_prefabs;
     public GameObject[] Main_Icon_1_array;
+    public GameObject[] Bigsize_emotion_array;
+
     public GameObject[] Main_Icon_2_array;
     public GameObject[] Main_Icon_3_array;
     public AudioClip[] Seq_narration;
@@ -113,28 +116,28 @@ public class Manager_obj_5 : MonoBehaviour
             Main_Icon_1_array[i] = Main_Icon_1.transform.GetChild(i).gameObject;
         }
 
-        Main_Icon_2_array = new GameObject[Icon_buttion_position.transform.childCount];
-        Number_of_Eachemoji = new int[5] { 0, 0, 0, 0, 0 };
-        for (int i = 0; i < 5; i++)
-        {
-            //각 숫자를 1번씩 랜덤으로 무조건 넣음
-            Number_of_Eachemoji[i] += 1;
-            Generate_emoji(i, i);
-        }
+        //Main_Icon_2_array = new GameObject[Icon_buttion_position.transform.childCount];
+        //Number_of_Eachemoji = new int[5] { 0, 0, 0, 0, 0 };
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    //각 숫자를 1번씩 랜덤으로 무조건 넣음
+        //    Number_of_Eachemoji[i] += 1;
+        //    Generate_emoji(i, i);
+        //}
 
-        for (int i = 5; i < Icon_buttion_position.transform.childCount; i++)
-        {
-            int Random_number = UnityEngine.Random.Range(0, MaxEmoji);
-            Number_of_Eachemoji[Random_number] += 1;
-            Generate_emoji(Random_number, i);
-        }
+        //for (int i = 5; i < Icon_buttion_position.transform.childCount; i++)
+        //{
+        //    int Random_number = UnityEngine.Random.Range(0, MaxEmoji);
+        //    Number_of_Eachemoji[Random_number] += 1;
+        //    Generate_emoji(Random_number, i);
+        //}
 
-        Main_Icon_3_array = new GameObject[Main_Icon_3.transform.childCount];
+        Bigsize_emotion_array = new GameObject[Bigsize_emotion.transform.childCount];
 
-        for (int i = 0; i < Main_Icon_3.transform.childCount; i++)
+        for (int i = 0; i < Bigsize_emotion.transform.childCount; i++)
         {
-            Main_Icon_3_array[i] = Main_Icon_3.transform.GetChild(i).gameObject;
-            Main_Icon_3_array[i].SetActive(false);
+            Bigsize_emotion_array[i] = Bigsize_emotion.transform.GetChild(i).gameObject;
+            Bigsize_emotion_array[i].SetActive(false);
         }
 
         Manager_Anim.Init_Icon_array();
@@ -142,7 +145,7 @@ public class Manager_obj_5 : MonoBehaviour
 
     void init_Prefab()
     {
-        Emoji_prefabs = Resources.LoadAll<GameObject>("EA004/prefab");
+        Emoji_prefabs = Resources.LoadAll<GameObject>("EA005/prefab");
     }
     void Generate_emoji(int num_emoji, int num_table)
     {

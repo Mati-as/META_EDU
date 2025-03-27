@@ -28,6 +28,20 @@ public class Manager_SEQ_5 : Base_GameManager
     public int Content_Seq = 0;
     public float Sequence_timer = 0f;
 
+
+    public GameObject Bigsize_emotion;
+    public Transform wheel; // 원판의 Transform
+
+    public GameObject Button_Spin;
+    private List<string> emotionList = new List<string> { "Happy", "Sad", "Empty", "Angry", "Sleep", "Empty", "Good", "Laugh" };
+
+    private bool isSpinning = false;
+    private bool isSpinResult = false;
+
+    private string selectedEmotion; // 선택된 감정
+
+    private float sliceAngle; // 45도 (8조각 기준)
+
     //[Common] Start, Update
     void Start()
     {
@@ -37,6 +51,9 @@ public class Manager_SEQ_5 : Base_GameManager
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_5>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
+        sliceAngle = 360f / emotionList.Count; // 8조각 = 45도
+
+        Button_Spin.GetComponent<Button>().onClick.AddListener(SpinWheel);
         //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
     }
 
@@ -121,14 +138,67 @@ public class Manager_SEQ_5 : Base_GameManager
     }
     void Init_Game_emoji()
     {
-        var path = "Audio/�⺻������/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-        //1�� ������ ��Ȱ��ȭ
+
         Manager_Anim.Inactive_Seq_Icon_1();
 
-        //2�� ������ Ȱ��ȭ
+        //아래 부분은 스핀으로 연결
         Manager_Anim.Setting_Seq_Icon_2();
+    }
+
+
+    public void SpinWheel()
+    {
+        if (isSpinning) return;
+
+        Manager_Anim.Anim_Inactive(Button_Spin);
+        isSpinning = true;
+
+        int randomTargetIndex = Random.Range(0, emotionList.Count); // 0~7
+        float targetAngle = randomTargetIndex * sliceAngle;
+        float extraSpins = 5f * 360f;
+        float finalRotation = extraSpins + targetAngle;
+
+        wheel.DORotate(new Vector3(0, 0, -finalRotation), 5f, RotateMode.FastBeyond360)
+            .SetEase(Ease.OutQuart)
+            .OnComplete(() =>
+            {
+                isSpinning = false;
+
+                selectedEmotion = emotionList[randomTargetIndex];
+                Debug.Log("선택된 감정: " + selectedEmotion);
+
+                //결과 처리 함수 호출
+                Show_Emotion(randomTargetIndex);
+            });
+
+        wheel.DOScale(1.05f, 0.2f).SetLoops(2, LoopType.Yoyo);
+    }
+
+    //(구현) 점프 버튼 클릭하면 바로 없어짐
+    //결과 나오고 재반복이 필요하면 버튼 활성화
+    //그렇지 않을 경우 스핀 비활성화 및 다음 시퀀스 진행
+
+    void Show_Emotion(int selectedEmotion)
+    {
+        //여기는 공통으로 해당하는 이모션 활성화
+        //애니메이션, 효과음도 필요
+        Manager_obj_5.instance.Bigsize_emotion_array[selectedEmotion].SetActive(true);
+
+
+        //여기에서 애니메이션 전부 끝나면 
+        if (selectedEmotion == 2 || selectedEmotion == 5)
+        {
+            //isSpinResult = false;
+            Manager_Anim.Anim_Active(Button_Spin);
+            //다음 진행 불가 스핀 반복
+        }
+        else
+        {
+            //다음 진행
+        }
     }
 
     //[common] rplidar scanning
@@ -197,6 +267,7 @@ public class Manager_SEQ_5 : Base_GameManager
         Content_Seq += 1;
         toggle = true;
     }
+
 
     private void StackCamera()
     {

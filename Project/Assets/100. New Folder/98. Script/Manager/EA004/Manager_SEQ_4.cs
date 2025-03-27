@@ -132,7 +132,7 @@ public class Manager_SEQ_4 : Base_GameManager
 
     void Init_Game_emoji()
     {
-        var path = "Audio/�⺻������/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
         //1�� ������ ��Ȱ��ȭ
@@ -146,7 +146,7 @@ public class Manager_SEQ_4 : Base_GameManager
     //한글 경로로 되어있는거 깨져서
     void Init_EachGame_emoji(int round)
     {
-        var path = "Audio/�⺻������/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+        var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
         Manager_Anim.Setting_Seq_Eachgame(round);
@@ -164,7 +164,7 @@ public class Manager_SEQ_4 : Base_GameManager
     public void Click(GameObject Emoji, int num_emoji, int num_table)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/�⺻������/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
         Debug.Log("EMOJI CLICKED!");
 
