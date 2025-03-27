@@ -25,6 +25,7 @@ public class FP_Prefab : RaySynchronizer
     
     public static event Action onPrefabInput; 
     private MetaEduLauncher _launcher;
+    private string name =string.Empty;
 
     private void Awake()
     {
@@ -34,7 +35,7 @@ public class FP_Prefab : RaySynchronizer
 
     public override void Init()
     {
-         
+        name = gameObject.name;
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         
          _rectTransform = GetComponent<RectTransform>();
@@ -46,10 +47,18 @@ public class FP_Prefab : RaySynchronizer
     protected override void OnEnable()
     {
         base.OnEnable();
-       
-
-        _imageComponent.enabled = SensorManager.BallActive;
-
+        
+        if (name.Contains("Real"))
+        {
+            if (!SensorManager.isRealRayActive) return;
+            _imageComponent.enabled = SensorManager.isRealImageActive;
+        }
+        
+        if(name.Contains("Normal"))
+        {
+            if (!SensorManager.isNormalRayActive) return;
+            _imageComponent.enabled = SensorManager.isNormalImageActive;
+        }
         
         //모드설정에따라 이미지 활성화 비활성화
         Debug.Assert(_imageComponent != null);

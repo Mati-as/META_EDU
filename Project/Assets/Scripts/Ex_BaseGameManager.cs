@@ -21,7 +21,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    protected int _currentSequence;
+    protected int _currentThemeSequence;
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
     
     
@@ -29,7 +29,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     
     protected Dictionary<int,bool> _isClickableMap = new();
     protected Dictionary<int,Transform> _tfidTotransformMap = new();
-    protected Dictionary<int,int> enumToTfIdMap = new();
+    protected Dictionary<int,int> _enumToTfIdMap = new();
     protected Dictionary<int,int> _tfIdToEnumMap = new();
     protected Dictionary<Type,Animator> _animators = new();
     //protected Dictionary<Type,Sequence> _sequences = new();
@@ -76,7 +76,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     _tfIdToEnumMap.Add(transform.GetInstanceID(),i);
                     Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
                     _isClickableMap.Add(transform.GetInstanceID(),false);
-                    
+                    _enumToTfIdMap.Add(i,transform.GetInstanceID());
                     _defaultSizeMap.Add(i,transform.localScale);
                     _defaultRotationQuatMap.Add(i,transform.rotation);
                     
@@ -96,11 +96,12 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         }
     }
 
-    protected void ResetClickable()
+    protected void ResetClickable(bool isClickable =true)
     {
         foreach (var key in _isClickableMap.Keys.ToArray())
         {
-            _isClickableMap[key] = true;
+            Logger.ContentTestLog($"{key} : {isClickable}");
+            _isClickableMap[key] = isClickable;
         }
     }
 
@@ -242,9 +243,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         StartCoroutine(ReturnToPoolAfterDelay(currentPS));
     }
 
-    protected void ChangeSeqAnim(int seqNum = 0)
+    protected void ChangeThemeSeqAnim(int seqNum = 0)
     {
-        _currentSequence = seqNum;
         mainAnimator.SetInteger(SEQ_NUM, seqNum);
     }
 }

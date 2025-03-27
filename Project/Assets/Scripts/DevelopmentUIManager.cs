@@ -69,7 +69,7 @@ public class DevelopmentUIManager : MonoBehaviour
         
         _currentStatus = !_currentStatus;
         
-        SensorManager.BallActive = _currentStatus;
+        SensorManager.isNormalRayActive = _currentStatus;
         
         
         foreach (var image in _imagesPool)

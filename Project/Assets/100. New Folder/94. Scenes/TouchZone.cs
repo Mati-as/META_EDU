@@ -29,7 +29,7 @@ public class TouchZone : MonoBehaviour
     protected void OnEnable()
     {
         
-        _image.enabled = SensorManager.BallActive;
+        _image.enabled = SensorManager.isTouchZoneImageActive;
     }
 
 

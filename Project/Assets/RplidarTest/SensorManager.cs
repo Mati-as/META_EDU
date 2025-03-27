@@ -21,6 +21,16 @@ public class SensorManager : MonoBehaviour
     }
 
 
+    //Image On-OFF 관련
+    public static bool isTouchZoneImageActive = true;
+    public static bool isNormalImageActive = true;
+    public static bool isRealImageActive = true;
+    
+    //Ray 생성 관련 
+    public static bool isNormalRayActive = true;
+    public static bool isRealRayActive = true;
+    
+    
     public static readonly string PORT = "COM3";
     public static bool isMoterStarted { get; private set; }
     public static bool sensorImageView; //Test용 빌드에서 사용
@@ -121,7 +131,7 @@ public class SensorManager : MonoBehaviour
     private float sensored_Y;
 
     private bool UI_Active;
-    public static bool BallActive { get; set; }
+   
     private bool SF_Active = true;
     private readonly int LIDAR_DATA_SIZE = 720;
 
@@ -296,11 +306,11 @@ public class SensorManager : MonoBehaviour
         //Debug.Log($"Ratio:{_screenRatio}");
 
         _sensorDetectedPositionPool = new Stack<RectTransform>();
-        SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
+        SetPool(_sensorDetectedPositionPool, "Rplidar/FP_Normal");
 
         //0311 각각 가로,세로,대각선 별로 풀 준비함
         _SDPP_realpoint = new Stack<RectTransform>();
-        SetPool(_SDPP_realpoint, "Rplidar/FP_REAL");
+        SetPool(_SDPP_realpoint, "Rplidar/FP_Real");
 
         OnSenSorInit?.Invoke(isSensorOn);
     }
@@ -1116,7 +1126,7 @@ private IEnumerator RunGenerateMesh()
         //BallActive = !BallActive;
 
         //Logger.Log("Ball Image Active");
-        return BallActive;
+        return isNormalRayActive;
     }
 
     public bool SF_Active_ONOFF()
