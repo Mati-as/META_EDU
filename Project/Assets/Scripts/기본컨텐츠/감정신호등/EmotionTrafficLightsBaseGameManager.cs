@@ -189,7 +189,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
 
             if (hit.transform.gameObject.name.Contains("Balloon"))
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
                 // fistStage 제외 나머지  플레이상황인경우
                 if (_isFirstStageFinished)
                 {
@@ -207,9 +207,9 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
         }
     }
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
         PlayBalloonAppearAnim();
     }
 
@@ -257,7 +257,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
             .SetEase(Ease.InOutBack)
             .OnStart(() =>
             {
-                Managers.soundManager.Play(
+                Managers.Sound.Play(
                     SoundManager.Sound
                         .Effect,
                     "Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/sci-fi_device_item_power_up_flash_01");
@@ -268,7 +268,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
 
     private IEnumerator FlyAwayCo(float delay)
     {
-        Managers.soundManager.Play(SoundManager.Sound.Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/chime_tinkle_wood_bell_positive_01");
+        Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/chime_tinkle_wood_bell_positive_01");
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();
         foreach (var balloon in _balloons)
         {
@@ -347,7 +347,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
             }
 
 
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Click_B", 0.2f);
             yield return balloon.DOScale(_balloonDefalutScale, Random.Range(0.02f, 0.15f))
                 .SetDelay(Random.Range(delay, delay + 0.3f)).WaitForCompletion();
         }
@@ -391,14 +391,14 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
             .SetEase(Ease.InOutBounce)
             .OnStart(() =>
             {
-                Managers.soundManager.Play(
+                Managers.Sound.Play(
                     SoundManager.Sound
                         .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_01");
             })
             .OnComplete(() =>
             {
                 ChangeTrafficLight();
-                Managers.soundManager.Play(
+                Managers.Sound.Play(
                     SoundManager.Sound
                         .Effect,"Audio/Gamemaster Audio - Fun Casual Sounds/Ω_150_Bonus_Sounds/door_lock_close_02");
                 _trafficLight.DORotateQuaternion(_tlDefalutRotation, 1.5f).SetEase(Ease.OutBounce).SetDelay(1f);
@@ -462,7 +462,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
     private void OnCorrectBallon(Transform ball, int hitBalloonID)
     {
         var randomNum = UnityEngine.Random.Range(3, 4+1);
-        Managers.soundManager.Play(
+        Managers.Sound.Play(
             SoundManager.Sound
                 .Effect,
             $"Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_0{randomNum}");
@@ -501,7 +501,7 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
         var popCount = _currentBalloonPopCount;
         if (_collectedBalloon >= _countToCollect && _isFirstStageFinished)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Effect,
+            Managers.Sound.Play(SoundManager.Sound.Effect,
                 "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04", 0.3f);
         }
         yield return DOVirtual.Float(0, 0, 2.5f, _ => { }).WaitForCompletion();

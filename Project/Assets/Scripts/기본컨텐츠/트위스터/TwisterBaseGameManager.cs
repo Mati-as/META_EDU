@@ -26,7 +26,7 @@ public class TwisterBaseGameManager : Base_GameManager
 
     private int _stepRowCount;
     private int _stepColumnCount;
-    private readonly string SPRITE_PATH = "게임별분류/기본컨텐츠/Twister/T_Twister";
+    private readonly string SPRITE_PATH = "SortedByScene/BasicContents/Twister/T_Twister";
 
     private int _currentSpotGroupIndex;
     private int _currentSpotElementIndex;

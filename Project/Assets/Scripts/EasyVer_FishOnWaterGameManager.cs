@@ -196,8 +196,8 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
 
         if (!_isCountNarrationPlaying)
         {
-            Managers.soundManager.Play
-                (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)remainTime}");
+            Managers.Sound.Play
+                (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count" + $"{(int)remainTime}");
             _isCountNarrationPlaying = true;
             _elapsedToCount = 0;
         }
@@ -328,7 +328,7 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
         Read(ref xmlDoc_Setting, _xmlPathSetting);
 
         _onFishCatchPsPool = new Stack<ParticleSystem>();
-        var prefab = Resources.Load("게임별분류/BB008_U/CFX_OnFishCatch");
+        var prefab = Resources.Load("SortedByScene/BB008_U/CFX_OnFishCatch");
 
         for (var i = 0; i < 10; i++)
         {
@@ -352,9 +352,9 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
             var characterString = character.ToString();
 
 
-            var sprite = Resources.Load<Sprite>("게임별분류/BB008_U/Character" + characterString);
+            var sprite = Resources.Load<Sprite>("SortedByScene/BB008_U/Character" + characterString);
             if (sprite != null)
-                //                Debug.Log($"{"게임별분류/BB008_U/Character" + characterString} : image loaded");
+                //                Debug.Log($"{"SortedByScene/BB008_U/Character" + characterString} : image loaded");
                 // var newGameObject = new GameObject("Character" + characterString);
                 // var image = newGameObject.AddComponent<Image>();
                 // image.sprite = sprite;
@@ -396,14 +396,14 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
 
     private void LoadAsset()
     {
-        var prefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/FishOnWater_FishA");
+        var prefab = Resources.Load<GameObject>("SortedByScene/BasicContents/FishOnWater/Prefabs/FishOnWater_FishA");
         for (var i = 0; i < FISH_POOL_COUNT; i++)
         {
             var fish = Instantiate(prefab, transform).GetComponent<Transform>();
             var fishId = fish.GetInstanceID();
             _defaultSize = fish.localScale;
             var randomChar = Random.Range('A', 'E' + 1);
-            var path = "게임별분류/기본컨텐츠/FishOnWater/Fishes/M_Fish" + (char)randomChar;
+            var path = "SortedByScene/BasicContents/FishOnWater/Fishes/M_Fish" + (char)randomChar;
             var mat = Resources.Load<Material>(path);
             if (mat == null) Debug.LogError($"Mat is Null{path}");
             fish.GetChild(1).GetComponent<SkinnedMeshRenderer>().material =
@@ -435,7 +435,7 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
         for (var i = 0; i < pathInBucketBParent.childCount; i++)
             _pathInBucketB[i] = pathInBucketBParent.GetChild(i).position;
 
-        var vfxPrefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/FishOnWater/Prefabs/CFX_WaterSplash");
+        var vfxPrefab = Resources.Load<GameObject>("SortedByScene/BasicContents/FishOnWater/Prefabs/CFX_WaterSplash");
 
         var PARTICLE_COUNT = 50;
         for (var i = 0; i < PARTICLE_COUNT; i++)
@@ -539,7 +539,7 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
             moveAnimSeq.OnStart(() =>
             {
                 _psMap[id].Play();
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008/OnFishAppear", 0.10f);
             });
             moveAnimSeq.AppendCallback(()=>{ _colliderMap[id].enabled = true; });
             moveAnimSeq.AppendInterval(Random.Range(1,2f));
@@ -635,7 +635,7 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
                 ps.Play();
 
 
-                Managers.soundManager.Play(SoundManager.Sound.Effect,
+                Managers.Sound.Play(SoundManager.Sound.Effect,
                     "Audio/BB008/OnWaterClick" + (char)Random.Range('A', 'D' + 1));
                 DOVirtual.Float(0, 1, ps.main.startLifetime.constant + 0.5f, _ => { }).OnComplete(() =>
                 {
@@ -739,9 +739,9 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
         OnFishCaught?.Invoke();
 
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB008_U/Click_" + (char)Random.Range('A', 'F' + 1),
             0.8f);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
             "Audio/BB008/OnFishCaught" + (char)Random.Range('A', 'F' + 1),
             0.4f);
 

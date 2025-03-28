@@ -94,9 +94,9 @@ public class Piano_MusicController : Base_GameManager
         OnSongFinished += PlayNextSong;
     }
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
 
         var cameraLookAt = GameObject.Find("CameraLookAt").transform.position;
        
@@ -114,7 +114,7 @@ public class Piano_MusicController : Base_GameManager
     protected override void Init()
     {
         base.Init();
-        var psPrefab = Resources.Load<ParticleSystem>("게임별분류/기본컨텐츠/Piano/CFX_PianoClick");
+        var psPrefab = Resources.Load<ParticleSystem>("SortedByScene/BasicContents/Piano/CFX_PianoClick");
         _clickPs = Instantiate(psPrefab);
         _clickPs.Stop();
         
@@ -175,7 +175,7 @@ public class Piano_MusicController : Base_GameManager
                 PlayKeyAnimByUser(hit.transform, _defaultPosMap[hit.transform.gameObject.name]);
                 if (SceneManager.GetActiveScene().name == "BD005_UserPlay")
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/"+clickedName,0.05f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Piano/"+clickedName,0.05f);
                 }
             }
               
@@ -249,7 +249,7 @@ public class Piano_MusicController : Base_GameManager
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
                 PlayKeyAnim(_transformMap["Piano" + scoreString[i]], _defaultPosMap["Piano" + scoreString[i]]);
                 yield return DOVirtual.Float(0, 0, 0.01f, _ => { }).WaitForCompletion();
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Piano/Piano" + scoreString[i]);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Piano/Piano" + scoreString[i]);
                 _clickPs.transform.position = arrival;
                 _clickPs.Play();
 

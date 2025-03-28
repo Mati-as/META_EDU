@@ -14,7 +14,7 @@ public class PlaygroundVer3_Ball : Playground_Ball_Base
         _collisionPs = new Stack<ParticleSystem>();
         _rb = GetComponent<Rigidbody>();
 
-        _loadedPrefab = Resources.Load<GameObject>("게임별분류/기본컨텐츠/PlayGroundEX1/CFX_OnBallCollision");
+        _loadedPrefab = Resources.Load<GameObject>("SortedByScene/BasicContents/PlayGroundEX1/CFX_OnBallCollision");
 
 
         for (var i = 0; i < DEFAULT_POOL_SIZE; i++)

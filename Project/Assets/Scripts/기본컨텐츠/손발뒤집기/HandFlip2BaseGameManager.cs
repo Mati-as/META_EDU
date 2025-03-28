@@ -95,7 +95,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
             
             if (!_isCountNarrationPlaying)
             {
-                Managers.soundManager.Play
+                Managers.Sound.Play
                     (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count"+$"{(int)_remainTime}",0.8f);
                 _isCountNarrationPlaying = true;
                 _elapsedToCount = 0;
@@ -120,7 +120,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
 
     private void OnRoundFinished()
     {
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
         
         
         //그만! 이후 이긴팀 판정까지 걸리는 시간.
@@ -180,7 +180,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         HandFlip2_UIManager.onStartUIFinished -= OnStart;
         HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -194,7 +194,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
         yield return DOVirtual.Float(0, 0, 10f, _ => { }).WaitForCompletion();
         UpdateResultTMP(String.Empty,String.Empty,String.Empty);
         _tmp.text = "놀이를 다시 준비하고 있어요";
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady",0.8f);
         yield return DOVirtual.Float(0, 0, 3f, _ => { }).WaitForCompletion();
        
         _tmp.text = "";
@@ -257,8 +257,8 @@ public class HandFlip2BaseGameManager : Base_GameManager
     protected override void Init()
     {
         
-        UI_Scene_StartBtn.onBtnShut -= OnButtonClicked;
-        UI_Scene_StartBtn.onBtnShut += OnButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
         HandFlip2_UIManager.onStartUIFinished -= OnStart;
         HandFlip2_UIManager.onStartUIFinished += OnStart;
@@ -387,7 +387,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
         Camera.main.transform.DOMove(_defaultPosition, 0.3f);
     });
 
-    private void OnButtonClicked()
+    private void OnGameStartButtonClicked()
     {
         
         PrintsAppear();
@@ -400,7 +400,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
                 .DOScale(print.defaultSize, 0.4f)
                 .OnStart(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
+                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_A",
                         0.25f);
 
                 })
@@ -439,7 +439,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
                     printData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
                     // Toggle 
@@ -495,7 +495,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
                     printData.isCurrentlyFlipping = true;
 
                     var randomChar = (char)Random.Range('A', 'F' + 1);
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                    Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                         0.3f);
 
                     // Toggle 
@@ -516,7 +516,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
             printData.seq.Play();
         }
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnAllFlip",0.65f);
     }
 }
 

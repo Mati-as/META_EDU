@@ -284,7 +284,7 @@ public class UndergroundUIManager : MonoBehaviour
                         //calculate index..
                         $"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2}']");
                     string soundPath = soundNode.Attributes["path"].Value;
-                   Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+                   Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
 
                     //PlayAudio(etcAudioClips[(int)EtcAudioClips.WhoIsNext]);
                 }
@@ -296,7 +296,7 @@ public class UndergroundUIManager : MonoBehaviour
     private void OnAnimalFind()
     {
         //팝업UI에는 버튼밖에 이벤트가 없으므로, 여기서 PopUpUI image 업데이트를 진행합니다. 
-        ChangeImageSource("게임별분류/땅속탐험/image/" + _footstepManager.currentlyClickedObjectName);
+        ChangeImageSource("SortedByScene/땅속탐험/image/" + _footstepManager.currentlyClickedObjectName);
         
         _onAnimalFindAudioCoroutine = StartCoroutine(PlayOnFindAudios());
     }
@@ -311,7 +311,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder * 2 - 1}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
             
         }
           
@@ -327,7 +327,7 @@ public class UndergroundUIManager : MonoBehaviour
             soundNode = soundPathXml
                 .SelectSingleNode($"//SoundData[@ID='{FootstepManager.currentFootstepGroupOrder + 24}']");
             string soundPath = soundNode.Attributes["path"].Value;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, soundPath);
+            Managers.Sound.Play(SoundManager.Sound.Effect, soundPath);
         }
 
         // 마지막 동물인 여우가 아닐 때만...

@@ -52,7 +52,7 @@ public class PlaygroundBaseGameManager : Base_GameManager
             {
                 var ballId = hit.transform.GetInstanceID();
                 
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Playground/Ball", 0.3f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Playground/Ball", 0.3f);
                 var rb = hit.collider.GetComponent<Rigidbody>();
 
                 if (rb != null)

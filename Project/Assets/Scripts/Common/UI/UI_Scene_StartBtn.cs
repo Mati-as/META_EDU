@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -22,7 +24,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
      * 2.사용자가 버튼을 클릭하여 event를 수행하는지, 혹은 10초(대기시간 제한)이 지나서 이벤트가 수행되는지에 대한 구분만 되어있음.
      * 3.중복실행 방지하기위해 bool연산자 사용.
      */
-    public static event Action onBtnShut;
+    public static event Action onGameStartBtnShut;
 
     private void Awake()
     {
@@ -39,11 +41,11 @@ public class UI_Scene_StartBtn : MonoBehaviour
 
         Message_anim_controller.onIntroUIOff -= OnAnimOff;
         Message_anim_controller.onIntroUIOff += OnAnimOff;
-        onBtnShut -= OnButtonShut;
-        onBtnShut += OnButtonShut;
+        onGameStartBtnShut -= OnGameStartBtnShut;
+        onGameStartBtnShut += OnGameStartBtnShut;
         
-        onBtnShut -= OnInvoke;
-        onBtnShut += OnInvoke;
+        onGameStartBtnShut -= OnGameStartInvoke;
+        onGameStartBtnShut += OnGameStartInvoke;
 
 
         _btnImage.DOFade(0, 0.01f);
@@ -65,12 +67,35 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _tmp_Time.DOFade(1, 0.5f)
             .OnStart(() => { _isClickable = true; })
             .SetDelay(3f);
+
+        _isSensorRefreshable = true;
     }
+    
+    public static event Action OnSensorRefreshEvent;
+    private bool _isSensorRefreshable = true;
+    private const int REFRESH_INTERIM_MIN = 10;
+    private readonly WaitForSeconds _wait = new(REFRESH_INTERIM_MIN);
+    private void RefreshSensor()
+    {
+        if (!_isSensorRefreshable) return;
+        _isSensorRefreshable = false;
+        
+        StartCoroutine(ResetSensorRefreshable());
+        OnSensorRefreshEvent?.Invoke();
+    }
+
+    private IEnumerator ResetSensorRefreshable()
+    {
+        _isSensorRefreshable = false;
+        yield return _wait;
+        _isSensorRefreshable = true;
+    }
+
 
     private void OnDestroy()
     {
-        onBtnShut -= OnButtonShut;
-        onBtnShut -= OnInvoke;
+        onGameStartBtnShut -= OnGameStartBtnShut;
+        onGameStartBtnShut -= OnGameStartInvoke;
         Message_anim_controller.onIntroUIOff -= OnAnimOff;
     }
 
@@ -102,7 +127,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
         {
             Logger.Log("10초 지나 인트로 자동 닫힘.");
             _isInvoked = true;
-            onBtnShut?.Invoke();
+            onGameStartBtnShut?.Invoke();
         }
     }
 
@@ -120,13 +145,13 @@ public class UI_Scene_StartBtn : MonoBehaviour
             {
                 _isBtnEventInvoked = true;
 
-                onBtnShut?.Invoke();
+                onGameStartBtnShut?.Invoke();
                 FadeOutBtn();
             }
         }
         else
         {
-            onBtnShut?.Invoke();
+            onGameStartBtnShut?.Invoke();
             FadeOutBtn();
 #if UNITY_EDITOR
             Debug.Log("AnimationController is null");
@@ -140,20 +165,20 @@ public class UI_Scene_StartBtn : MonoBehaviour
         {
             _isBtnEventInvoked = true;
 
-            onBtnShut?.Invoke();
+            onGameStartBtnShut?.Invoke();
             FadeOutBtn();
         }
     }
 
 
-    private void OnInvoke()
+    private void OnGameStartInvoke()
     {
         Logger.Log("StartBtn event Invoke");
     }
 
-    private void OnButtonShut()
+    private void OnGameStartBtnShut()
     {
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
 
         _isBtnEventInvoked = true;
         _isClickable = false;
@@ -161,6 +186,8 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _btnImage.DOFade(0, 0.5f);
         _tmp_Time.DOFade(0, 0.5f);
         _tmp_Start.DOFade(0, 0.5f);
+
+        RefreshSensor();
     }
 
     private void FadeOutBtn()

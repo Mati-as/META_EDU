@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,8 +22,8 @@ public class A_SettingManager : MonoBehaviour
     private string GameSettingData;
     private string DataRoot;
 
-    
-    
+
+      
 
     // Update is called once per frame
     
@@ -31,8 +32,21 @@ public class A_SettingManager : MonoBehaviour
         SetXMLPath();
         CheckAndGenerateXmlFile(nameof(GameSettingData),settingXmlPath);
         LoadSettingParams();
+        
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+        Base_GameManager.OnSceneLoad += OnSceneLoad;
     }
     
+    private void OnDestroy()
+    {
+        Base_GameManager.OnSceneLoad -= OnSceneLoad;
+    }
+
+    private void OnSceneLoad(string _, DateTime __)
+    {
+        XmlManager.Instance.LoadSettings();
+        Logger.Log("센서관련 XML데이터 로드완료----------------------------------");
+    }
 #region  XML을 통한 세팅 초기화 및 저장
 
     public static XmlDocument xmlDoc_Setting;
@@ -55,13 +69,13 @@ public class A_SettingManager : MonoBehaviour
             Debug.Assert(count!=1);
             
             var projectorScreenHeight = node.Attributes["projectorscreenheight"].Value;
-            Debug.Log($"Value From Xml Height: {projectorScreenHeight}(cm)");
+            Logger.SensorRelatedLog($"Value From Xml Height: {projectorScreenHeight}(cm)");
 
             float xmlHeight = 0;
             xmlHeight = float.Parse(projectorScreenHeight);
             SensorManager.height = xmlHeight;
             SCREEN_PROJECTOER_HEIGHT_FROM_XML = xmlHeight;
-            Debug.Log($"load projecotr Xmlhegiht ({xmlHeight}) preset suceess. height: {SCREEN_PROJECTOER_HEIGHT_FROM_XML} (cm)");
+            Logger.SensorRelatedLog($"load projecotr Xmlhegiht ({xmlHeight}) preset suceess. height: {SCREEN_PROJECTOER_HEIGHT_FROM_XML} (cm)");
            
             var mainVol = node.Attributes["mainvolume"].Value;
             MAIN_VOLIUME = float.Parse(mainVol);
@@ -80,7 +94,7 @@ public class A_SettingManager : MonoBehaviour
         }
         Debug.Assert(count !=0,$"setting Failed there's no {nameof(GameSettingData)}" );
         
-        Debug.Log($"initioal setting completed:  {SensorManager.height} (cm) MainVol: {MAIN_VOLIUME}" );
+        Logger.SensorRelatedLog($"initioal setting completed:  {SensorManager.height} (cm) MainVol: {MAIN_VOLIUME}" );
     }
 
     public static void SaveCurrentSetting(float projectorScreenHeight, float mainVolume, float effectVol, float bgmVol, float narrationVol)
@@ -90,10 +104,10 @@ public class A_SettingManager : MonoBehaviour
 
         var setting = xmlDoc_Setting.CreateElement(nameof(GameSettingData));
         setting.SetAttribute("projectorscreenheight", projectorScreenHeight.ToString("F2"));
-        setting.SetAttribute("mainvolume", Managers.soundManager.volumes[(int)SoundManager.Sound.Main].ToString("F2"));
-        setting.SetAttribute("bgmvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Bgm].ToString("F2"));
-        setting.SetAttribute("effectvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Effect].ToString("F2"));
-        setting.SetAttribute("narrationvol", Managers.soundManager.volumes[(int)SoundManager.Sound.Narration].ToString("F2"));
+        setting.SetAttribute("mainvolume", Managers.Sound.volumes[(int)SoundManager.Sound.Main].ToString("F2"));
+        setting.SetAttribute("bgmvol", Managers.Sound.volumes[(int)SoundManager.Sound.Bgm].ToString("F2"));
+        setting.SetAttribute("effectvol", Managers.Sound.volumes[(int)SoundManager.Sound.Effect].ToString("F2"));
+        setting.SetAttribute("narrationvol", Managers.Sound.volumes[(int)SoundManager.Sound.Narration].ToString("F2"));
 
 
         tempRootSetting.AppendChild(setting);
@@ -106,7 +120,7 @@ public class A_SettingManager : MonoBehaviour
 
         if (File.Exists(path))
         {
-            Debug.Log(fileName + "XML FILE EXIST");
+            Logger.SensorRelatedLog(fileName + "XML FILE EXIST");
             Utils.ReadXML(ref xmlDoc_Setting,settingXmlPath);
         }
         else
@@ -130,11 +144,11 @@ public class A_SettingManager : MonoBehaviour
             root.AppendChild(initSetting); // Append initSetting to the root element
 
             newXml.Save(path);
-            Debug.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
+            Logger.SensorRelatedLog(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
 
           
         }
-        Debug.Log("History Checker Active");
+        Logger.SensorRelatedLog("History Checker Active");
     }
     
     public static void WriteXML(XmlDocument document, string path)

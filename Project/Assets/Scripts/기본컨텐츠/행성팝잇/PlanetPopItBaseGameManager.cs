@@ -32,6 +32,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     private Dictionary<int, bool> _isAnimating;
 
     private Dictionary<int, bool> _isSquished;
+    private Dictionary<int, bool> _isclickable =new Dictionary<int, bool>();
 
     private Quaternion _sunDefaultRotation;
     private Material[] _sunExpressionMat;
@@ -69,18 +70,18 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         base.Init();
         _effectContainer = new Stack<ParticleSystem>();
-        SetPool(_effectContainer, "게임별분류/기본컨텐츠/PlanetPopIt/CFX2_PickupStar");
+        SetPool(_effectContainer, "SortedByScene/BasicContents/PlanetPopIt/CFX2_PickupStar");
         
         
         var sunCount = 2;
         _sunMeshRenderers = new MeshRenderer[sunCount];
 
         _sunExpressionMat = new Material[(int)SunExpression.Count];
-        var idleMat = Resources.Load<Material>("게임별분류/기본컨텐츠/PlanetPopIt/M_Sun_Idle");
+        var idleMat = Resources.Load<Material>("SortedByScene/BasicContents/PlanetPopIt/M_Sun_Idle");
         var matIdle = Instantiate(idleMat);
         _sunExpressionMat[(int)SunExpression.Idle] = matIdle;
 
-        var excitedMat = Resources.Load<Material>("게임별분류/기본컨텐츠/PlanetPopIt/M_Sun_Excited");
+        var excitedMat = Resources.Load<Material>("SortedByScene/BasicContents/PlanetPopIt/M_Sun_Excited");
         var mat = Instantiate(excitedMat);
         _sunExpressionMat[(int)SunExpression.Excited] = mat;
 
@@ -121,6 +122,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
             var transformID = planet.GetInstanceID();
             _transformMap.Add(transformID, planet);
             _isSquished.Add(transformID, false);
+            _isclickable.Add(transformID, true);
             _isAnimating.Add(transformID, false);
             _defaultSizeMap.Add(transformID, planet.localScale);
             _groupMap.Add(transformID, IS_LEFT_GROUP);
@@ -173,12 +175,12 @@ public class PlanetPopItBaseGameManager : Base_GameManager
                 
                 //sound--------------------
                 var randomChar = (char)Random.Range('A', 'F' + 1);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BasicContents/HandFootFlip/Click_{randomChar}",
                     0.3f);
                 
                 //particle------------------
                 
-             
+                DEV_OnValidClick();
                 return;
             }
         }
@@ -190,7 +192,9 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         var id = planet.GetInstanceID();
         if (_isAnimating[id]) return;
-
+        
+        
+        
         if (!_isSquished[id])
         {
             Squish(id);
@@ -272,14 +276,14 @@ public class PlanetPopItBaseGameManager : Base_GameManager
         if (_isSquished[id]) BloatBack(id);
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/PlanetPopIt/OnSunRotate" + randomChar, 0.2f);
 
             sun.DOLocalRotateQuaternion(_sunDefaultRotation *
                                         quaternion.Euler(Random.Range(-45, 45), Random.Range(-45, 45),
                                             Random.Range(-45, 45)), 0.3f).SetEase(Ease.InOutBounce)
                 .OnComplete(() => { sun.DORotateQuaternion(_sunDefaultRotation, 0.3f).SetEase(Ease.InOutBack); });
 
-            StartCoroutine(SetAnimatingBool(id, 1.0f));
+            StartCoroutine(SetAnimatingBool(id, 1.5f));
         }
     }
 
@@ -294,7 +298,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     /// <param name="id"></param>
     /// <param name="delay"></param>
     /// <returns></returns>
-    private IEnumerator SetAnimatingBool(int id, float delay = 0.11f)
+    private IEnumerator SetAnimatingBool(int id, float delay = 0.75f)
     {
         _isAnimating[id] = true;
         yield return DOVirtual.Float(0, 0, delay, _ => { }).WaitForCompletion();

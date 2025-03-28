@@ -104,7 +104,7 @@ public class ParticleEventController : Base_GameManager, IOnClicked
 #endif
 
       var randomChar = (char)Random.Range('A', 'C' + 1);
-      Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
+      Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
                
             
 
@@ -114,7 +114,7 @@ public class ParticleEventController : Base_GameManager, IOnClicked
             
             _hit.transform.gameObject.TryGetComponent(out _iOnClicked);
             _iOnClicked?.OnClicked();
-
+            DEV_OnValidClick();
             Debug.Log("Ray _hit: " + _hit.transform.name);
             ClickEventApplyRadialForce(_hit.point, particleSystemA);
             ClickEventApplyRadialForce(_hit.point, particleSystemB);
@@ -137,9 +137,9 @@ public class ParticleEventController : Base_GameManager, IOnClicked
 #if UNITY_EDITOR
             Debug.Log("바람소리 재생");
 #endif
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/RollingLeaves");
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/낙엽/RollingLeaves");
          
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/낙엽/Wind Blowing Sound");
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/낙엽/Wind Blowing Sound");
             randomDirection = new Vector3(Random.Range(-2, 2), 0, Random.Range(-2, 2));
 
 

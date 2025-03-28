@@ -26,8 +26,8 @@ public class MusicIntruments_XyloController : MonoBehaviour,IMusicInstrumentsIOn
     public void OnClicked()
     {
         var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Xylophone" + randomChar ,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/BasicContents/MusicInstruments/Xylophone" + randomChar ,
             0.3f,pitch:Random.Range(0.9f,1.1f));
         PlayRotation(_parentTransform,Random.Range(-5f,5f),_defaultQuat);
     }

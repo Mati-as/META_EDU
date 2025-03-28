@@ -21,7 +21,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private ParticleSystem _inducingParticle;
     private ParticleSystem _successParticle;
-    private readonly string PATH = "게임별분류/기본컨텐츠/Hopscotch/";
+    private readonly string PATH = "SortedByScene/BasicContents/Hopscotch/";
 
     public float successParticleDuration;
     private bool _isSuccesssParticlePlaying;
@@ -90,14 +90,14 @@ public class HopscotchBaseGameManager : Base_GameManager
         onStageClear -= OnStageClear;
         onStageClear += OnStageClear;
 
-        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
-        UI_Scene_StartBtn.onBtnShut += DoIntroMove;
+        UI_Scene_StartBtn.onGameStartBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onGameStartBtnShut += DoIntroMove;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onBtnShut -= DoIntroMove;
+        UI_Scene_StartBtn.onGameStartBtnShut -= DoIntroMove;
         onStageClear -= OnStageClear;
     }
 
@@ -334,14 +334,14 @@ public class HopscotchBaseGameManager : Base_GameManager
         if (currentIndex == 10)
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Narration,
+            Managers.Sound.Play(SoundManager.Sound.Narration,
                 "Hopscotch/Narration/10_NextFriend" + randomChar, 0.7f);
             return;
         }
         
         if( currentIndex ==5)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Hopscotch/Narration/GoodJobNext6");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Hopscotch/Narration/GoodJobNext6");
             return;
         }
 
@@ -351,18 +351,18 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         if (chance < 20)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Next_"+(currentIndex+1).ToString());
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Next_"+(currentIndex+1).ToString());
         }
         else if(chance > 20 && chance < 40 )
         {
         
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/GoodJobAndNext".ToString());
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/GoodJobAndNext".ToString());
         }
         else if(chance > 40 && chance < 60 )
         {
 
             if (currentIndex == 1) return;
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Number"+currentIndex.ToString());
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Number"+currentIndex.ToString());
         }
     }
 
@@ -395,9 +395,9 @@ public class HopscotchBaseGameManager : Base_GameManager
         _successParticle.gameObject.SetActive(true);
         _successParticle.Play();
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMoveB", 0.10f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroMoveB", 0.10f);
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
             "Audio/Hopscotch/Click_" + $"{randomChar}", 0.6f);
 
         DOVirtual
@@ -442,7 +442,7 @@ public class HopscotchBaseGameManager : Base_GameManager
         DOVirtual.Float(0, 0, 5.9f, _ =>{})
         .OnComplete(() =>
         {
-            Managers.soundManager.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Intro",
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/Hopscotch/Narration/Intro",
                 1f);
             
             DOVirtual.Float(0, 0, 3.5f, _ =>{})
@@ -474,7 +474,7 @@ public class HopscotchBaseGameManager : Base_GameManager
                                             if (isStageClearUIOn)
                                             {
                                                 isStageClearUIOn = false;
-                                                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish",
+                                                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/IntroFinish",
                                                     0.05f);
                                             }
                                         }
@@ -505,7 +505,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void OnStageClear()
     {
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Hopscotch/Effect_onStageClear", 0.3f);
         
         _currentStep = 0;
         _numCvGrup.DOFade(0, 0.4f);

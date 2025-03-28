@@ -63,11 +63,11 @@ public class EvaArmisen_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
-        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
-        EvaArmisenBaseGameManager.onRoundRestart += OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnGameStartStart;
+        EvaArmisenBaseGameManager.onRoundRestart += OnGameStartStart;
 
         EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
         EvaArmisenBaseGameManager.OnStampingFinished += PopUpStopUI;
@@ -78,11 +78,11 @@ public class EvaArmisen_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        EvaArmisenBaseGameManager.onRoundRestart -= OnStart;
+        EvaArmisenBaseGameManager.onRoundRestart -= OnGameStartStart;
         EvaArmisenBaseGameManager.OnStampingFinished -= PopUpStopUI;
     }
 
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");
@@ -121,7 +121,7 @@ public class EvaArmisen_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",0.8f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -132,8 +132,8 @@ public class EvaArmisen_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",0.8f);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Start",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.4f);
                 onStartUI?.Invoke();
             }).WaitForCompletion();
         yield return _waitInterval;
@@ -156,8 +156,8 @@ public class EvaArmisen_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Stop",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.4f);
             }).WaitForCompletion();
         yield return _waitInterval; 
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,7 +53,7 @@ public class Manager_Seq_2 : Base_GameManager
         waitForClickableInGameRay = 0.6f;
         Onclick = false;
 
-        Managers.soundManager.Play(SoundManager.Sound.Bgm, BGM, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Bgm, BGM, 0.3f);
     }
 
     // Update is called once per frame
@@ -88,7 +88,7 @@ public class Manager_Seq_2 : Base_GameManager
         else if (Content_Seq == 3)
         {
             //이전 사운드 종료 용
-            Managers.soundManager.Stop(SoundManager.Sound.Main);
+            Managers.Sound.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
 
             Content_Seq += 1;
@@ -102,7 +102,7 @@ public class Manager_Seq_2 : Base_GameManager
         }
         else if (Content_Seq == 5)
         {
-            Managers.soundManager.Stop(SoundManager.Sound.Main);
+            Managers.Sound.Stop(SoundManager.Sound.Main);
             Manager_Text.Inactiveall_UI_message();
             Init_Game_read();
 
@@ -162,7 +162,7 @@ public class Manager_Seq_2 : Base_GameManager
     void Game_read()
     {
         Manager_Anim.Read_Seq_animal(On_game);
-        Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[On_game], 1f);
+        Managers.Sound.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[On_game], 1f);
         //동물 울음소리도 마찬가지로 재생 필요
         On_game += 1;
         toggle = true;
@@ -185,7 +185,7 @@ public class Manager_Seq_2 : Base_GameManager
     public void animal_click(int Num_button)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
         if (Content_Seq == 2)
         {
@@ -194,11 +194,11 @@ public class Manager_Seq_2 : Base_GameManager
             Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
 
             //해당 동물 효과음 재생, play로 그때그때 대체될 수 있도록 구현함
-            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
             //BGM 소리 줄이는 기능 필요
 
             //메시지 나레이션, 정상 작동 확인
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
 
             On_game += 1;
         }
@@ -210,15 +210,15 @@ public class Manager_Seq_2 : Base_GameManager
             if (Number_animal < 3)
             {
                 Selected_animal.GetComponent<Clicked_animal>().Set_Clickednumber();
-                Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+                Managers.Sound.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
                 //BGM 소리 줄이는 기능 필요
             }
             else if(Number_animal == 3)
             {
 
-                Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
-                Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
-                Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+                Managers.Sound.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+                Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
                 //BGM 소리 줄이는 기능 필요
 
                 //애니메이션 재생하는 동안 잠시 다른 동물 클릭할 수 없도록 해야함
@@ -235,14 +235,14 @@ public class Manager_Seq_2 : Base_GameManager
             Manager_Text.Active_UI_message(Num_button + 7);
             Manager_Anim.Final_Click_Seq_animal(Num_button);
             Manager_obj_2.instance.Effect_array[Num_button].SetActive(true);
-            Managers.soundManager.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Main, Manager_obj_2.instance.Animal_effect[Num_button], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_2.instance.Msg_narration[Num_button], 1f);
             //BGM 소리 줄이는 기능 필요
         }
 
         if (On_game == 7)
         {
-            Managers.soundManager.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
             //여기에서 정상적으로 작동하지 않음
             Debug.Log("동물 7마리 채움");
             Onclick = false;
@@ -309,11 +309,11 @@ public class Manager_Seq_2 : Base_GameManager
 
         }
     }
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
         //to start update
         toggle = true;
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
     }
 
     public void ButtonClicked()

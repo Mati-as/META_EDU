@@ -48,12 +48,12 @@ public class WaterPlaygroundBaseGameManager : Base_GameManager
                 Vector3 forceDirection =  rb.transform.position - hit.point + Vector3.up*upOffset;
                 
                 var randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, 
-                    "Audio/기본컨텐츠/WaterPlayground/Click" + randomChar,0.35f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                    "Audio/BasicContents/WaterPlayground/Click" + randomChar,0.35f);
                 rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
-            }
 
-            
+                DEV_OnValidClick();
+            }
             
         }
         
@@ -75,7 +75,7 @@ public class WaterPlaygroundBaseGameManager : Base_GameManager
     {
         psQueue = new Queue<ParticleSystem>();
         var index = 0;
-        var ps = Resources.Load<GameObject>("게임별분류/기본컨텐츠/WaterPlayGround/Click").GetComponent<ParticleSystem>();
+        var ps = Resources.Load<GameObject>("SortedByScene/BasicContents/WaterPlayGround/Click").GetComponent<ParticleSystem>();
 
 
         psQueue.Enqueue(ps);

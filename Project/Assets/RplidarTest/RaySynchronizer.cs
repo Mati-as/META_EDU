@@ -32,6 +32,9 @@ public class RaySynchronizer : MonoBehaviour
     public Vector3 screenPosition;
     public Button btn;
 
+
+    public bool isRayEnabled = true;
+
     public static event Action OnGetInputFromUser;
 
     //ball Position 미사옹으로 legacy 1/22
@@ -44,7 +47,6 @@ public class RaySynchronizer : MonoBehaviour
     public virtual void Init()
     { 
         //각 씬의 Overlay-UICamera Tag 할당 필요
-      
        
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
       
@@ -61,11 +63,14 @@ public class RaySynchronizer : MonoBehaviour
 
     private void OnDestroy()
     {
-       
-            _mouseAction.performed -= OnKeyPressed;
-            _mouseAction?.Disable(); // 액션 비활성화
+     
+      
+        _mouseAction.performed -= OnKeyPressed;
+        _mouseAction?.Disable(); // 액션 비활성화
     
     }
+    
+
 
     public void Start()
     {
@@ -86,7 +91,8 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     protected virtual void OnEnable()
     {
-    
+       
+
         Debug.Assert(_mouseAction != null);
         _mouseAction.Enable();
     }
@@ -118,12 +124,22 @@ public class RaySynchronizer : MonoBehaviour
     /// </summary>
     public virtual void ShootRay()
     {
+
+        //if (!isRayEnabled) return; //Raycast 작동 여부 제어
+
+        if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
+        {
+            Logger.Log($"런처에서는 센서동작하지 않음 ------------------{Managers.UserInfo.CurrentActiveSceneName}");
+            return;
+        }
+        
         
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
         // check if the pointer is over any ui elements
      
-        Logger.Log("클릭 From Raysynchronizer");
+        
+        Logger.SensorRelatedLog("클릭 From Raysynchronizer");
         //spacebar 및 공 위치를 기반으로 하고싶은 경우.
         //screenPosition = _uiCamera.WorldToScreenPoint(transform.position);
         

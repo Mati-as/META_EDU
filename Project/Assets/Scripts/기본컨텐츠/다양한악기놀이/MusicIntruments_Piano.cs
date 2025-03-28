@@ -17,8 +17,8 @@ namespace 기본컨텐츠.다양한악기놀이
         {
             PlayBeadsDrumAnimation(transform);
             
-            Managers.soundManager.Play(SoundManager.Sound.Effect,
-                "Audio/기본컨텐츠/MusicInstruments/" + gameObject.name ,
+            Managers.Sound.Play(SoundManager.Sound.Effect,
+                "Audio/BasicContents/MusicInstruments/" + gameObject.name ,
                 0.1f,pitch:Random.Range(1.4f,1.4f));
         }
     

@@ -140,12 +140,12 @@ public class Manager_Text : MonoBehaviour
         if (Eng_mode)
         {
             Message_table.transform.GetChild(1).GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite_eng[Fruit_num];
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration_eng[Fruit_num], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration_eng[Fruit_num], 1f);
         }
         else
         {
             Message_table.transform.GetChild(1).GetComponent<Image>().sprite = Manager_obj_3.instance.Msg_textsprite[Fruit_num];
-            Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration[Fruit_num], 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_3.instance.Msg_narration[Fruit_num], 1f);
 
         }
         UI_Message_array[Number].SetActive(true);

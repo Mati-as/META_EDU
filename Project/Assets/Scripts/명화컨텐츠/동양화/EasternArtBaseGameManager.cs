@@ -102,12 +102,12 @@ public class EasternArtBaseGameManager : Base_GameManager
          
         if (_sceneName == "AB002FromBA001") //BA001 (명화그리기) 컨텐츠와 연계되어 실행된 경우
         {
-            OnBtnShut();
+            OnGameStartBtnShut();
         }
         else
         {
-            UI_Scene_StartBtn.onBtnShut -= OnBtnShut;
-            UI_Scene_StartBtn.onBtnShut += OnBtnShut;
+            UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnShut;
+            UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnShut;
         }
 
     }
@@ -144,7 +144,7 @@ public class EasternArtBaseGameManager : Base_GameManager
         camera.DOLookAt(lookAtA.position, 0.01f);
     }
 
-    private void OnBtnShut()
+    private void OnGameStartBtnShut()
     {
 #if UNITY_EDITOR
 //        Debug.Log($"{SceneManager.GetActiveScene().name}'s started");
@@ -322,7 +322,7 @@ public class EasternArtBaseGameManager : Base_GameManager
                     _growlingCount++;
                     var RandomChar = (char)Random.Range('A', 'C' + 1);
                     
-                    Managers.soundManager.Play(SoundManager.Sound.Effect,
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
                         "Audio/명화컨텐츠/TigerGrow" + RandomChar,0.35f);
                     //호랑이 울음횟수 제한을 위한 _roraCount
                     DOVirtual.Float(0, 0, 3.35f, _ => { })

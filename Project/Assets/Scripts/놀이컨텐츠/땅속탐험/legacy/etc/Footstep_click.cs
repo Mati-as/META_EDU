@@ -13,6 +13,7 @@ public class Footstep_click : MonoBehaviour, IPointerClickHandler
 
     private GameObject Gamemanager;
 
+    //25.02.21 S1_controller 에러로 전부 주석처리함
     public void OnPointerClick(PointerEventData eventData)
     {
        //Debug.Log("CLICK");
@@ -20,18 +21,18 @@ public class Footstep_click : MonoBehaviour, IPointerClickHandler
        if(Last_footstep)
         {
             //다음 동물
-            Gamemanager.GetComponent<S1_Controller>().ActNextchapter();
+            //Gamemanager.GetComponent<S1_Controller>().ActNextchapter();
         }
         else
         {
             //다음 스탭
-            Gamemanager.GetComponent<S1_Controller>().ActNextstep();
+            //Gamemanager.GetComponent<S1_Controller>().ActNextstep();
         }
 
         //UI 제어 파트
         if (Last_chapfootstep)
         {
-            Gamemanager.GetComponent<S1_Controller>().ActNextlevel();
+           // Gamemanager.GetComponent<S1_Controller>().ActNextlevel();
         }
 
     }

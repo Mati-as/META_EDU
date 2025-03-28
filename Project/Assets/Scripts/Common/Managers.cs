@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
@@ -19,10 +18,10 @@ public class Managers : MonoBehaviour
     private static ResourceManager s_resourceManager = new ResourceManager();
     private static SoundManager s_soundManager = new SoundManager();
     private static SensorManager s_sensorManager = new SensorManager();
-    private static PlayerHistoryManager s_historyManager = new PlayerHistoryManager();
+    private static PlayInfoManager _sInfoManager = new PlayInfoManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
     private static A_SettingManager s_SettingManager = new A_SettingManager();
-
+    
     public static float PROJECTOR_SCREEN_HEIGHT; 
     public static bool isGameStopped { get; set; }
 
@@ -35,7 +34,7 @@ public class Managers : MonoBehaviour
     //     } 
     // }
     
-    public static A_SettingManager settingManager
+    public static A_SettingManager Setting
     {  
         get 
         { 
@@ -43,7 +42,7 @@ public class Managers : MonoBehaviour
             return s_SettingManager; 
         } 
     }
-    public static CursorImageManager cursorImageManager
+    public static CursorImageManager CursorImage
     {  
         get 
         { 
@@ -51,15 +50,15 @@ public class Managers : MonoBehaviour
             return s_cursorImageManager; 
         } 
     }
-    public static PlayerHistoryManager historyManager 
+    public static PlayInfoManager UserInfo 
     {  
         get 
         { 
             Init(); 
-            return s_historyManager; 
+            return _sInfoManager; 
         } 
     }
-    public static SoundManager soundManager 
+    public static SoundManager Sound 
     {  
         get 
         { 
@@ -86,7 +85,7 @@ public class Managers : MonoBehaviour
         } 
     }
 
-    public static SensorManager sensorManager
+    public static SensorManager Sensor
     {
         get 
         { 
@@ -120,15 +119,15 @@ public class Managers : MonoBehaviour
             GameObject launcher = GameObject.Find("@LauncherRoot");
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             s_SettingManager.Init();
-            PROJECTOR_SCREEN_HEIGHT = settingManager.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            PROJECTOR_SCREEN_HEIGHT = Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
             
             s_soundManager.Init();
-            s_historyManager.Init();
+            _sInfoManager.Init();
             s_cursorImageManager.Init();
             DontDestroyOnLoad(go);
-            Debug.Log("Managers Set--------");
+//            Debug.Log("Managers Set--------");
         }
     }
     

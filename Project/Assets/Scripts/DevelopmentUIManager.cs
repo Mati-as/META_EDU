@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Mime;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 public class DevelopmentUIManager : MonoBehaviour
 {
@@ -13,7 +15,6 @@ public class DevelopmentUIManager : MonoBehaviour
     
     private TextMeshProUGUI _fpsCounter;
     private bool _currentStatus = true;
-    private GameObject _developerMenu;
 
     private void Start()
     {
@@ -40,16 +41,47 @@ public class DevelopmentUIManager : MonoBehaviour
         {
             _textPool.Push(text);
         }
+        //각 콘텐츠 별로 처음에 안보이게 하기위해 남김
         DisableAllImages();
     }
 
-    private void Update()
+    //[삭제]
+    [Conditional("DevOnly")]
+    private void DisableImageWithSpaceKey()
     {
+        //버튼으로 대체만하면 이건 해결
         if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
     }
-
-    private void DisableAllImages()
+    private void Update()
     {
+        DisableImageWithSpaceKey();
+    }
+
+    //뭔가 콘텐츠 안에서 계속해서 키게 만드는 무언가가 있음
+    //0326 private -> public
+    
+    private bool _isClickable = true;
+    
+    /// <summary>
+    /// 03/28/25
+    /// 개발자 관련 전체이미지를 키거나 끄는 용도로만 활용 중
+    /// 실제로 개별 FP_real,New이미지를 컨트롤 하는변수는 SensorImage에 있음
+    /// SensorRelatedDevMenu.cs 참고
+    /// </summary>
+    public void DisableAllImages()
+    {
+        Debug.Log($"DAI Clicked {_currentStatus}");
+      
+
+        if (!_isClickable) return;
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            _isClickable = true;
+        });
+        _isClickable = false;
+        
+        
+        
         _currentStatus = !_currentStatus;
         
         foreach (var image in _imagesPool)

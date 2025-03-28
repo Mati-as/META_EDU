@@ -64,7 +64,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
         {
             _isSoundPlaying = true;
             var soundPath = currentVal < 0.32f ? "Audio/BD004/OnParrotSliderFirst" : "Audio/BD004/OnParrotSliderSecond";
-            Managers.soundManager.Play(SoundManager.Sound.Narration, soundPath, 1f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, soundPath, 1f);
         }
 
       
@@ -78,7 +78,7 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
             if (!_isSoundPlaying)
             {
                 _isSoundPlaying = true;
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Run", 0.3f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/MusicInstruments/Run", 0.3f);
             }
         }
 
@@ -111,10 +111,10 @@ public class MusicInstruments_ParrotUIController : MonoBehaviour
                     _isSoundPlaying = true;
 
                   
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/MusicInstruments/Spin", 0.2f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/MusicInstruments/Spin", 0.2f);
                     
                     var randomChar = (char)Random.Range('A', 'C' + 1);
-                    Managers.soundManager.Play(SoundManager.Sound.Narration, $"Audio/BD004/OnParrotSliderMax"+ randomChar,
+                    Managers.Sound.Play(SoundManager.Sound.Narration, $"Audio/BD004/OnParrotSliderMax"+ randomChar,
                         1f);
                 }
             }

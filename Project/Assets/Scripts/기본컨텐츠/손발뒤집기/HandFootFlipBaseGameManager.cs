@@ -61,13 +61,17 @@ public class HandFootFlipBaseGameManager : Base_GameManager
 
     public override void OnRaySynced()
     {
-        if (!PreCheckOnRaySync()) return;
         
         if (_isAnimalMoving) return;
         if (!PreCheckOnRaySync()) return;
         if (SceneManager.GetActiveScene().name != "BB003") return;
         
-        FlipAndChangeColor(HandFootFlipBaseGameManager.GameManager_Ray);
+        
+        
+        FlipAndChangeColor(GameManager_Ray);
+        DEV_OnValidClick();
+        
+        
         //  ChangeColor(GameManager_Ray);
     }
 
@@ -110,7 +114,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
         if (_animalMoveCurrentTime > raycasterMoveInterval)
         {
             _isAnimalMoving = true;
-            Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Alert");
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Alert");
 
             DOVirtual.Float(0, 0, 0.8f, _ => { }).OnComplete(() => { RayCasterMovePlay(); });
             _animalMoveCurrentTime = 0;
@@ -195,8 +199,8 @@ public class HandFootFlipBaseGameManager : Base_GameManager
                         .OnStart(() =>
                         {
                             var randomChar = (char)Random.Range('A', 'F' + 1);
-                            Managers.soundManager.Play(SoundManager.Sound.Effect,
-                                "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
+                            Managers.Sound.Play(SoundManager.Sound.Effect,
+                                "Audio/BasicContents/HandFootFlip/Click_" + randomChar);
 
                             _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -276,7 +280,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
                     .OnStart(() =>
                     {
                         var randomChar = (char)Random.Range('A', 'F' + 1);
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Click_" + randomChar);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Click_" + randomChar);
 
                         _printMap[currentInstanceID].isNowFlipping = true;
 
@@ -383,18 +387,18 @@ public class HandFootFlipBaseGameManager : Base_GameManager
             .DOMove(_pathPos[(int)RayCasterMovePosition.Arrival], _animalMoveDuration)
             .OnStart(() =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Herd");
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Herd");
 
                 DOVirtual.Float(0, 1, 0.35f, _ => { })
                     .OnStart(() =>
                     {
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_A");
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Giggle_B");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Giggle_A");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Giggle_B");
                     })
                     .OnComplete(() =>
                     {
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant");
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFootFlip/Elephant_B");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Elephant");
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFootFlip/Elephant_B");
                     });
 
 
@@ -408,7 +412,7 @@ public class HandFootFlipBaseGameManager : Base_GameManager
                     {
                         onRaycasterMoveFinish?.Invoke();
                         _isAnimalMoving = false;
-                        Managers.soundManager.FadeOut(SoundManager.Sound.Effect);
+                        Managers.Sound.FadeOut(SoundManager.Sound.Effect);
                     });
             })
             .OnUpdate(() => { _animalMoveCurrentTime = 0; });

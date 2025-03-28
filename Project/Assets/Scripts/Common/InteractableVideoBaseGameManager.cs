@@ -200,7 +200,7 @@ public abstract class InteractableVideoBaseGameManager : VideoContentBaseGameMan
         _currentClickCount = 0;
         _isReplayAfterPausing = true;
     
-        Managers.soundManager.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, rewindParticleAudioPath, 0.1f);
       
     }
 }

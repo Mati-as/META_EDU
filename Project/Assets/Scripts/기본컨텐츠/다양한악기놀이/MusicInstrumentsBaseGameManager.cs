@@ -21,7 +21,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
         
         _effectContainer = new Stack<ParticleSystem>();
     
-        SetPool(_effectContainer,"게임별분류/기본컨텐츠/MusicInstruments/MusicInstruments_CFX_Click");
+        SetPool(_effectContainer,"SortedByScene/BasicContents/MusicInstruments/MusicInstruments_CFX_Click");
         _parrotSlider = GameObject.Find("ParrotSlider").GetComponent<Slider>();
      
         var images = _parrotSlider.GetComponentsInChildren<Image>();
@@ -41,9 +41,9 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     
     
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
         var images = _parrotSlider.GetComponentsInChildren<Image>();
         foreach (var image in images)
         {

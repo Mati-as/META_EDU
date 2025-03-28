@@ -77,10 +77,10 @@ public class SoundManager : MonoBehaviour
                 volumes = new float[(int)Sound.Max];
                 for (var i = 0; i < (int)Sound.Max; i++)
                 {
-                    volumes[(int)Sound.Main] = Managers.settingManager.MAIN_VOLIUME;
-                    volumes[(int)Sound.Bgm] = Managers.settingManager.EFFECT_VOLUME;
-                    volumes[(int)Sound.Effect] = Managers.settingManager.BGM_VOLUME;
-                    volumes[(int)Sound.Narration] = Managers.settingManager.NARRATION_VOLUME;
+                    volumes[(int)Sound.Main] = Managers.Setting.MAIN_VOLIUME;
+                    volumes[(int)Sound.Bgm] = Managers.Setting.EFFECT_VOLUME;
+                    volumes[(int)Sound.Effect] = Managers.Setting.BGM_VOLUME;
+                    volumes[(int)Sound.Narration] = Managers.Setting.NARRATION_VOLUME;
                 }
 
                 for (var i = 0; i < (int)Sound.Max; i++)
@@ -97,7 +97,9 @@ public class SoundManager : MonoBehaviour
     public void Clear()
     {
         foreach (var audioSource in audioSources)
-            audioSource.Stop();
+        {
+            if(audioSource!=null) audioSource.Stop();
+        }
         _audioClips.Clear();
     }
 

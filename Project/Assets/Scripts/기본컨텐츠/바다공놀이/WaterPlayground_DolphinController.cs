@@ -161,10 +161,10 @@ Debug.Log("idle path");
 
                 if (gameObject.name != "IdleDolphin")
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinA" );
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinA" );
                 
                     var randomChar = (char)Random.Range('A', 'B' + 1);
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinLaugh" + randomChar,0.5f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinLaugh" + randomChar,0.5f);
                 }
            
               
@@ -178,7 +178,7 @@ Debug.Log("idle path");
 #endif
                         
                       
-                        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinB" ,1.0f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/DolphinB" ,1.0f);
                         DOVirtual.Float(0, 0, 1f, _ => { })
                             .OnComplete(() => { transform.DOLookAt(path[(int)PathOrder.Arrival], 1.45f); });
                     })

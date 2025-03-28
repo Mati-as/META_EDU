@@ -27,8 +27,8 @@ public class Drum_CymbalController : MonoBehaviour,IMusicInstrumentsIOnClick
     {
         PlayBeadsDrumAnimation(transform,Random.Range(-15f,15f),_defaultQuat);
         // var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Cymbal" ,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/BasicContents/MusicInstruments/Cymbal" ,
             0.3f,pitch:pitch);
     }
 

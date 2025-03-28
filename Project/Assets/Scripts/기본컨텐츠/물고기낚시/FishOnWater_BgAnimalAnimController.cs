@@ -27,12 +27,12 @@ public class FishOnWater_BgAnimalAnimController : UI_Base
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnShut;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnShut;
     }
     private void BindEvent()
     {
-        UI_Scene_StartBtn.onBtnShut -= OnStartBtnShut;
-        UI_Scene_StartBtn.onBtnShut += OnStartBtnShut;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnShut;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnShut;
     }
 
     private void Start()
@@ -76,7 +76,7 @@ public class FishOnWater_BgAnimalAnimController : UI_Base
 
     }
 
-    private void OnStartBtnShut()
+    private void OnGameStartStartBtnShut()
     {
         for (int i = 0; i < _mrAnimals.Length; i++)
         {

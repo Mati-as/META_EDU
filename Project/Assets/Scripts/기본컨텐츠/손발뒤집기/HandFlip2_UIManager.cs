@@ -74,8 +74,8 @@ public class HandFlip2_UIManager : UI_PopUp
         _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
-        UI_Scene_StartBtn.onBtnShut += OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinishedForUI += OnRoundFinish;
@@ -85,21 +85,21 @@ public class HandFlip2_UIManager : UI_PopUp
         HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
         HandFlip2BaseGameManager.onRoundFinished += PopStopUI;
         
-        HandFlip2BaseGameManager.restart -= OnStart;
-        HandFlip2BaseGameManager.restart += OnStart;
+        HandFlip2BaseGameManager.restart -= OnGameStartStart;
+        HandFlip2BaseGameManager.restart += OnGameStartStart;
         return true;
         
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onBtnShut -= OnStart;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
         HandFlip2BaseGameManager.onRoundFinishedForUI -= OnRoundFinish;
         HandFlip2BaseGameManager.onRoundFinished -= PopStopUI;
-        HandFlip2BaseGameManager.restart -= OnStart;
+        HandFlip2BaseGameManager.restart -= OnGameStartStart;
     
     }
-    public void OnStart()
+    public void OnGameStartStart()
     {
 #if UNITY_EDITOR
         Debug.Log("Button Click: UI event binding successful and event execution");
@@ -113,7 +113,7 @@ public class HandFlip2_UIManager : UI_PopUp
        
         yield return DOVirtual.Float(0, 0, 1, _ => { }).WaitForCompletion();
         _ready.gameObject.SetActive(true);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Ready",1.0f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",1.0f);
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
         yield return DOVirtual.Float(0, 1f, 1f, _ => { }).WaitForCompletion();
         yield return DOVirtual.Float(1, 0, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -123,8 +123,8 @@ public class HandFlip2_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
             }).WaitForCompletion();
         isStart = true;
        
@@ -169,8 +169,8 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectRedWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Red_Win");
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/RedWin",0.8f);
+                    Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/BB004/Red_Win");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/RedWin",0.8f);
                 })
                 .WaitForCompletion();
           
@@ -184,8 +184,8 @@ public class HandFlip2_UIManager : UI_PopUp
             yield return DOVirtual.Float(0, 1, 1, scale => { _rectBlueWin.localScale = Vector3.one * scale; })
                 .OnComplete(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Narration,"Audio/BB004/Blue_Win");
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/BlueWin",0.8f);
+                    Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/BB004/Blue_Win");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나레이션/Narrations/BlueWin",0.8f);
                 }).WaitForCompletion();
           
             yield return _wait;
@@ -210,7 +210,7 @@ public class HandFlip2_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
             }).WaitForCompletion();
         yield return _waitForStop;
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();

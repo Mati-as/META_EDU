@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Manager_obj_2 : MonoBehaviour
@@ -7,17 +5,12 @@ public class Manager_obj_2 : MonoBehaviour
     public static Manager_obj_2 instance = null;
     // Start is called before the first frame update
 
-    //Camera, ����� �Ƹ� ����
+    //[common] Camera
     public GameObject Main_Camera;
     public GameObject Camera_position;
-
-    //Eventsystem, ������� �Ƹ� ����
-
-    //UI Text,Msg, ���⵵ ����
     public GameObject UI_Text;
     public GameObject UI_Message;
-    public GameObject Panel;
-
+    public GameObject UI_Panel;
 
     //Animal
     public GameObject Main_Animal;
@@ -25,17 +18,14 @@ public class Manager_obj_2 : MonoBehaviour
     public GameObject Game_effect;
 
 
-    //������ ����Ǿ���ϴ� �κ�
+    //[common, EDIT] Manager
     private Manager_Anim_2 Manager_Anim;
     public Manager_Seq_2 manager_seq;
-
-    //���⵵ ����
     private Manager_Text Manager_Text;
     private Manager_Narr Manager_Narr;
 
 
-    //�ؽ�Ʈ �̹���, �����̼��� ��ġ�� �����������Ƿ� ���� �������� ����
-    //ȿ������ ���� ����
+    //[EDIT]
     public Sprite[] Animal_text;
     public Sprite[] Animal_textsprite;
     public AudioClip[] Animal_effect;
@@ -64,6 +54,11 @@ public class Manager_obj_2 : MonoBehaviour
     }
     void Start()
     {
+        UI_Text = GameObject.Find("UI_Text");
+        UI_Message = GameObject.Find("UI_Message");
+        Main_Camera = GameObject.Find("Main Camera");
+        Camera_position = GameObject.Find("Camera_position");
+        UI_Panel = GameObject.Find("UI_Panel");
 
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_2>();
         manager_seq = this.gameObject.GetComponent<Manager_Seq_2>();
@@ -83,7 +78,7 @@ public class Manager_obj_2 : MonoBehaviour
         //������ ��� �װ� �־��� �ʿ䰡 �־���?
 
         //��ü �Ҵ� �޾ƿ��� �������� �ش��ϴ� ��ũ��Ʈ�� ������
-        Manager_Text.Init_UI_text(UI_Text, UI_Message, Panel);
+        Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
     {

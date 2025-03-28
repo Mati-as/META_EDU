@@ -80,8 +80,8 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
         {
             if (!_isCountNarrationPlaying)
             {
-                Managers.soundManager.Play
-                    (SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Count" + $"{(int)_remainTime}", 0.8f);
+                Managers.Sound.Play
+                    (SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Count" + $"{(int)_remainTime}", 0.8f);
                 _isCountNarrationPlaying = true;
                 _elapsedToCount = 0;
             }
@@ -104,9 +104,9 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
     }
 
 
-    protected override void OnStartButtonClicked()
+    protected override void OnGameStartStartButtonClicked()
     {
-        base.OnStartButtonClicked();
+        base.OnGameStartStartButtonClicked();
 
 
         _glowSeq = DOTween.Sequence();
@@ -161,10 +161,10 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
                 FadeInBg();
                 //"그만" UI 팝업? 
 
-                Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandPainting/OnRoundFinish", 0.8f);
                 DOVirtual.Float(0, 0, 3, _ => { }).OnComplete(() =>
                 {
-                    Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/OnReady", 0.8f);
                     _tmp.text = "놀이를 다시 준비하고 있어요";
                 });
 
@@ -195,7 +195,7 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
         {
             GetFromPool(hit.point);
             var randomChar = (char)Random.Range('A', 'F' + 1);
-            Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
+            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/기본컨텐츠/HandFootFlip/Click_{randomChar}",
                 0.3f);
 
             break;

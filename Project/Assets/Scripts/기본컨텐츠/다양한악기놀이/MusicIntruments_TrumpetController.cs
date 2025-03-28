@@ -10,8 +10,8 @@ public class MusicIntruments_TrumpetController : MonoBehaviour,IMusicInstruments
     {
         PlayRotation(transform,Random.Range(-40f,-60f),_defaultQuat);
         var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Trumpet" ,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/BasicContents/MusicInstruments/Trumpet" ,
             0.3f,pitch:Random.Range(0.9f,1.1f));
     }
 
@@ -26,8 +26,8 @@ public class MusicIntruments_TrumpetController : MonoBehaviour,IMusicInstruments
         _defaultQuat = transform.rotation;
 
         //var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect,
-            "Audio/기본컨텐츠/MusicInstruments/Trumpet" ,
+        Managers.Sound.Play(SoundManager.Sound.Effect,
+            "Audio/BasicContents/MusicInstruments/Trumpet" ,
             0.3f,pitch:Random.Range(0.9f,1.1f));
         PlayAutomatic(transform,Random.Range(-12f,12f),_defaultQuat);
     }

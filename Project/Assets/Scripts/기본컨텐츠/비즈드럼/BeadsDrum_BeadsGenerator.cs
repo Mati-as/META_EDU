@@ -13,7 +13,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
 
     private void Init()
     {
-        SetPool(_beadsContainer, "게임별분류/기본컨텐츠/BeadsDrum/Prefabs/Bead", beadsCount);
+        SetPool(_beadsContainer, "SortedByScene/BasicContents/BeadsDrum/Prefabs/Bead", beadsCount);
 
         _spawnPosA = transform.GetChild(0).transform.Find("GeneratePositionRight").position;
         _spawnPosB = transform.GetChild(0).transform.Find("GeneratePositionLeft").position;
@@ -27,15 +27,15 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
     {
         _beadsContainer = new Queue<GameObject>();
 
-        UI_Scene_StartBtn.onBtnShut -= OnStartButtonClicked;
-        UI_Scene_StartBtn.onBtnShut += OnStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
 
         Init();
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onBtnShut -= OnStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
     }
 
     private void SetPool(Queue<GameObject> pool, string path, int poolCount = 50)
@@ -60,7 +60,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
         }
     }
 
-    private void OnStartButtonClicked()
+    private void OnGameStartStartButtonClicked()
     {
         GenerateBeads();
     }
@@ -77,7 +77,7 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
     {
         var i = 0;
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/비즈드럼/FallingBeads");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/비즈드럼/FallingBeads");
         while (_beadsContainer.Count > 0)
         {
             var bead = GetFromPool(_beadsContainer);

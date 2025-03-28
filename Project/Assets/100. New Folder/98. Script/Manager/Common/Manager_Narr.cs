@@ -28,13 +28,13 @@ public class Manager_Narr : MonoBehaviour
 
         //}
 
-        //0110 ±âÁ¸ ±â´É ºñÈ°¼ºÈ­
+        //0110 ê¸°ì¡´ ê¸°ëŠ¥ ë¹„í™œì„±í™”
         //Audio.clip = Audio_seq_narration[Content_Seq];
         //Audio.Play();
-        //µ¿ÀÛÇÏ´Â°Å È®ÀÎÇÔ
-        //Áö±İÀº Sound ÇÔ¼ö¸¦ ¿À¹ö¶óÀÌµùÇØ¼­ ³»²¨ Àü¿ëÀ¸·Î ÇÏ³ª ´õ ¸¸µé¾ú°í ¾À³»ÀÇ ½ºÅ©¸³Æ®¿¡¼­ ·ÎµùÇÑ ÆÄÀÏµéÀ» Á¦°øÇÏ°í ±×°É Àü´ŞÇØ¼­ ½ÇÇà½ÃÅ°´Â ¹æ½ÄÀÓ
-        //±Ùµ¥ È¿°úÀ½, BGMÀº ±âÁ¸¿¡ ÀÖ´Â ½Ã½ºÅÛ È°¿ëÇØµµ µÉ °Í °°Àºµ¥
-        Managers.soundManager.Play(SoundManager.Sound.Narration, Audio_seq_narration[Content_Seq],1f);
+        //ë™ì‘í•˜ëŠ”ê±° í™•ì¸í•¨
+        //ì§€ê¸ˆì€ Sound í•¨ìˆ˜ë¥¼ ì˜¤ë²„ë¼ì´ë”©í•´ì„œ ë‚´êº¼ ì „ìš©ìœ¼ë¡œ í•˜ë‚˜ ë” ë§Œë“¤ì—ˆê³  ì”¬ë‚´ì˜ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ë¡œë”©í•œ íŒŒì¼ë“¤ì„ ì œê³µí•˜ê³  ê·¸ê±¸ ì „ë‹¬í•´ì„œ ì‹¤í–‰ì‹œí‚¤ëŠ” ë°©ì‹ì„
+        //ê·¼ë° íš¨ê³¼ìŒ, BGMì€ ê¸°ì¡´ì— ìˆëŠ” ì‹œìŠ¤í…œ í™œìš©í•´ë„ ë  ê²ƒ ê°™ì€ë°
+        Managers.Sound.Play(SoundManager.Sound.Narration, Audio_seq_narration[Content_Seq],1f);
     }
 
     public void Set_Audio_seq_narration(AudioClip[] audio)

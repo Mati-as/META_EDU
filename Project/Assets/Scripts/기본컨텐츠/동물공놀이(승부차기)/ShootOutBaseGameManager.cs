@@ -80,7 +80,7 @@ public class ShootOutBaseGameManager : Base_GameManager
         if (_isOnGoalAnimPlaying) return;
         _isOnGoalAnimPlaying = true;
 
-        Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Gamemaster Audio - Fun Casual Sounds/Collectibles_Items_Powerup/collect_item_jingle_04");
     }
 
     private bool _isFirstPointSet;
@@ -248,7 +248,7 @@ public class ShootOutBaseGameManager : Base_GameManager
         _ballRb.AddForce(forceDirection * power * kickPower,ForceMode.Impulse);
 
         var randomChar = (char)Random.Range('A', 'B' + 1);
-        Managers.soundManager.Play(SoundManager.Sound.Effect, $"Audio/BB007/OnKick{randomChar}");
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/BB007/OnKick{randomChar}");
         _isBallLaunched = true;
         _isSoccerBallClicked = false;
         _clickedpoints = new Vector3[(int)HitPointName.Max]
