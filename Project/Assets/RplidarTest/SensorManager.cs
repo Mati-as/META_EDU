@@ -20,6 +20,9 @@ public class SensorManager : MonoBehaviour
         Screen
     }
 
+    private static bool _isSensorStoppedByDestroy;
+
+    #region Sensor Calibration시, 각 프리팹 이미지, Ray On-Off 관련 변수 // SesnorRelatedDevMenu.cs에서 제어 중
 
     //Image On-OFF 관련
     public static bool isTouchZoneImageActive = true;
@@ -27,8 +30,11 @@ public class SensorManager : MonoBehaviour
     public static bool isRealImageActive = true;
     
     //Ray 생성 관련 
-    public static bool isNormalRayActive = true;
+    public static bool isNormalRayActive = false;
     public static bool isRealRayActive = true;
+
+    #endregion
+
     
     
     public static readonly string PORT = "COM3";
@@ -188,53 +194,18 @@ public class SensorManager : MonoBehaviour
     {
         UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
         Destroy(gameObject);
-        
-        StopSensor();
-    }
 
-
-    private void RefreshSensor()
-    {
-        if (GameObject.FindWithTag("Launcher") == null) StartCoroutine(RefreshSensorCo());
-        else
-            Logger.Log("게임 런쳐에서는 센서를 사용할 수 없습니다. 동작 시 태그 반드시 확인");
-    }
-
-    private readonly WaitForSeconds _refreshWait = new(0.5f);
-
-    private IEnumerator RefreshSensorCo()
-    {
-        Debug.Log("Sensor Refresh");
-        RplidarBinding.EndScan();
-        RplidarBinding.EndMotor();
-        RplidarBinding.OnDisconnect();
-        RplidarBinding.ReleaseDrive();
-
-        m_thread?.Abort();
-        m_onscan = false;
-
-        yield return _refreshWait;
-
-        var result = RplidarBinding.OnConnect(PORT);
-        Debug.Log("Connect on " + PORT + " result:" + result);
-
-        isMoterStarted = RplidarBinding.StartMotor();
-        Debug.Log("StartMotor:" + isMoterStarted);
-
-        m_onscan = RplidarBinding.StartScan();
-        Debug.Log("StartScan:" + m_onscan);
-
-        var isSensorOn = isMoterStarted || m_onscan;
-
-
-        if (m_onscan)
+         
+        // 중복 호출로 인한 시스템 에러 발생 의심 중. 03/28/25
+        // 반드시 1회만 호출되도록 수정. 
+        if (!_isSensorStoppedByDestroy)
         {
-            m_thread = new Thread(GenerateMesh);
-            m_thread.Start();
+            _isSensorStoppedByDestroy = true;
+            StopSensor();
         }
-
-        OnSenSorInit?.Invoke(isSensorOn);
     }
+
+
     private TimeSpan _refreshWaitTimeSpan = TimeSpan.FromSeconds(0.5f);
     //0311 private -> public
     //0311 런처로 센서 기능 정상 테스트가 불가능하므로 수정
@@ -258,6 +229,7 @@ public class SensorManager : MonoBehaviour
     {
         await Task.Delay(_refreshWaitTimeSpan);
         
+        _isSensorStoppedByDestroy = false;
 
         isMoterStarted = await Task.Run(() => RplidarBinding.StartMotor());
         m_onscan = await Task.Run(() => RplidarBinding.StartScan());
@@ -327,89 +299,6 @@ public class SensorManager : MonoBehaviour
     }
 
 
-    #region 코루틴 센서연결 파트
-
-    public void InitSensorCo()
-    {
-        StartCoroutine(InitSensorCoroutine());
-    }
-
-private IEnumerator InitSensorCoroutine()
-{
-    yield return _refreshWait;
-
-    var result = RplidarBinding.OnConnect(PORT);
-    isMoterStarted = RplidarBinding.StartMotor();
-
-    m_onscan = RplidarBinding.StartScan();
-    Debug.Log("Connect on " + PORT + " result:" + result + "\nStartMotor:" + isMoterStarted + "StartScan:" +
-              m_onscan);
-
-    if (m_onscan)
-    {
-        m_thread = new Thread(GenerateMesh);
-        m_thread.Start();
-    }
-
-    var isSensorOn = isMoterStarted || m_onscan;
-    
-    InitUI();
-    OnSenSorInit?.Invoke(isSensorOn);
-}
-
-
-private void InitUI()
-{
-    //[삭제]
-    //Img_Rect_transform = GetComponent<RectTransform>();
-
-    UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-    UI_Camera = Manager_Sensor.instance.Get_UIcamera();
-
-    var guidelineRect = Guideline.GetComponent<RectTransform>();
-    min_x = guidelineRect.anchoredPosition.x - guidelineRect.rect.width / 2;
-    min_y = guidelineRect.anchoredPosition.y - guidelineRect.rect.height / 2;
-    max_x = guidelineRect.anchoredPosition.x + guidelineRect.rect.width / 2;
-    max_y = guidelineRect.anchoredPosition.y + guidelineRect.rect.height / 2;
-
-        Guideline.SetActive(false);
-
-    _sensitivitySlider.onValueChanged.AddListener(_ =>
-    {
-        _sensorSensitivity = _sensitivitySlider.value;
-        _poolReturnWait = new WaitForSeconds(_sensorSensitivity);
-
-        Logger.Log($"prefab limit time is {_sensitivitySlider.value}");
-    });
-
-    _projectorLookUpTable = new Dictionary<int, Vector2>();
-
-        //[삭제]
-    //UNITY_RECT_ZERO_COMMA_ZERO_POINT_OFFSET =
-    //    sensorDistanceFromProjection + _height * 10 / 2;
-
-    //height = Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
-    //_screenRatio = Resolution_Y / (height * 10);
-
-    //Debug.Log($"Height Set FROM XML:{Managers.Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML}");
-    //Debug.Log($"Ratio:{_screenRatio}");
-
-    _sensorDetectedPositionPool = new Stack<RectTransform>();
-    SetPool(_sensorDetectedPositionPool, "Rplidar/FP_New");
-
-    _SDPP_realpoint = new Stack<RectTransform>();
-    SetPool(_SDPP_realpoint, "Rplidar/FP_REAL");
-}
-
-// 별도 쓰레드를 돌리던 GenerateMesh()를 코루틴으로 실행
-private IEnumerator RunGenerateMesh()
-{
-    GenerateMesh();
-    yield return null;
-}
-
-    #endregion
-    
     
     
     

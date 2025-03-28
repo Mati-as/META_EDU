@@ -67,6 +67,8 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _tmp_Time.DOFade(1, 0.5f)
             .OnStart(() => { _isClickable = true; })
             .SetDelay(3f);
+
+        _isSensorRefreshable = true;
     }
     
     public static event Action OnSensorRefreshEvent;
@@ -76,7 +78,8 @@ public class UI_Scene_StartBtn : MonoBehaviour
     private void RefreshSensor()
     {
         if (!_isSensorRefreshable) return;
-
+        _isSensorRefreshable = false;
+        
         StartCoroutine(ResetSensorRefreshable());
         OnSensorRefreshEvent?.Invoke();
     }

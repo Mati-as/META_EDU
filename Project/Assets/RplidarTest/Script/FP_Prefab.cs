@@ -31,13 +31,14 @@ public class FP_Prefab : RaySynchronizer
 
     private void Awake()
     {
+        name = gameObject.name;
         _imageComponent = GetComponent<Image>();
         _rectTransform = GetComponent<RectTransform>();
     }
 
     public override void Init()
     {
-        name = gameObject.name;
+        
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
         
          _rectTransform = GetComponent<RectTransform>();
@@ -48,26 +49,35 @@ public class FP_Prefab : RaySynchronizer
 
     protected override void OnEnable()
     {
-        base.OnEnable();
         
         if (name.Contains("Real"))
         {
-            if (!SensorManager.isRealRayActive) return;
             _imageComponent.enabled = SensorManager.isRealImageActive;
+            if (!SensorManager.isRealRayActive)
+            {
+                return;
+            }
         }
         
-        if(name.Contains("Normal"))
+        if (name.Contains("Normal"))
         {
-            if (!SensorManager.isNormalRayActive) return;
             _imageComponent.enabled = SensorManager.isNormalImageActive;
+            if (!SensorManager.isNormalRayActive)
+            {
+                return;
+            }
         }
         
+        
+        base.OnEnable();
+        
+
+        Logger.SensorRelatedLog($"FP_Prefab OnEnable{gameObject.name}");
         //모드설정에따라 이미지 활성화 비활성화
         Debug.Assert(_imageComponent != null);
 
       
-        //[수정] BallActive 상관없이 구동될 수 있도록 
-  
+        //[수정] BallActive 상관없이 구동될 수 있도록
         //런처에서는 자동 꺼지되 콘텐츠에서는 자동으로 켜지므로 비활성화함
         //_image.enabled = true;
 

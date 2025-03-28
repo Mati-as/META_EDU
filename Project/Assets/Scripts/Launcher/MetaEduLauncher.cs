@@ -72,13 +72,14 @@ public class MetaEduLauncher : UI_PopUp
 
         Btn_SensorSettings,
         Btn_SensorScreenSetting,
-        Btn_SensorParamSetting
+        Btn_SensorParamSetting,
+        Btn_ShowGuideline
 
         //Btn_Result, //사용시 주석해제
         //LoginButton,
         //SurveyButton
     }
-
+    private DevelopmentUIManager _devUIManager;
     private const int NONE = -1;
     private int _UItab = NONE;
 
@@ -93,6 +94,8 @@ public class MetaEduLauncher : UI_PopUp
     public Camera _uiCamera;
     public TextMeshProUGUI tmpConfirm;
 
+    
+    
     public static bool isBackButton
     {
         get;
@@ -182,6 +185,14 @@ public class MetaEduLauncher : UI_PopUp
         {
             Application.Quit();
         });
+        
+        GetButton((int)UIButtons.Btn_ShowGuideline).gameObject.BindEvent
+            (() =>
+            {
+                if(_devUIManager ==null) _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
+                _devUIManager.DisableAllImages();
+            });
+        
 
 
         GetButton((int)UIButtons.Btn_ConfirmToStart).gameObject.BindEvent(() =>
@@ -520,8 +531,14 @@ public class MetaEduLauncher : UI_PopUp
             // 	break;
         }
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+        if (isInitialSoundBlocked)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+            isInitialSoundBlocked = true;
+        }
     }
+
+    private bool isInitialSoundBlocked = false;
 
     private void OnBackBtnOnConfirmMessageClicked()
     {

@@ -517,6 +517,7 @@ public class SensorAdjuster : MonoBehaviour
     {
         //[수정] 센서 중지 직접 호출하지 않고 스캔 상태일때만 실행
         //manager.StopSensor();
+        Logger.SensorRelatedLog("센서 모터 종료 -----------------");
         Stop_sensor();
     }
     public void Button_close()

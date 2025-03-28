@@ -5,13 +5,13 @@ using UnityEngine;
 
 public static class Logger 
 {
-    [Conditional("Dev")]
+    [Conditional("DevOnly")]
     public static void Log(string msg)
     {
         UnityEngine.Debug.LogFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
     }
     
-    [Conditional("Dev")]
+    [Conditional("DevOnly")]
     public static void LogWarning(string msg)
     {
         UnityEngine.Debug.LogWarningFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
@@ -26,8 +26,8 @@ public static class Logger
     
     
     
-    [Conditional("RaycastDebug")]
-    public static void SensorClickLog(string msg)
+    [Conditional("SensorTest")]
+    public static void SensorRelatedLog(string msg)
     {
         UnityEngine.Debug.LogFormat("[{0}] {1}",System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),msg);
     }

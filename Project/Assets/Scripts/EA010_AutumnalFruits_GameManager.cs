@@ -600,7 +600,8 @@ private void OnRaysyncOnPuzzeGame()
     private Dictionary<int, bool> _isAlreadyClickedMap = new Dictionary<int, bool>();
     private void OnRaySyncOnFruitOnTree()
     {
-        
+        if (!_clickable) return;
+        _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
         
         Logger.ContentTestLog("OnRaySyncOnFruitOnTree");
         
@@ -762,12 +763,13 @@ private void OnRaysyncOnPuzzeGame()
 
     #region OnRaysyncOnFinishPart
 
-    
+    private bool _clickable =true;
     private void OnRaySyncOnFinish()
     {
         
         
-        
+        if (!_clickable) return;
+        _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
         
         foreach (var hit in GameManager_Hits)
         {

@@ -21,11 +21,9 @@ public class SensorRelatedDevMenu : UI_PopUp
         TMP_NormalRay,
         TMP_RealRay
     }
-
-    private DevelopmentUIManager _devUIManager;
-
     private Animator _animator;
     private bool isOpen =false;
+    private bool _isAllPrefabImageActive = false;
     private readonly int _isOpen = Animator.StringToHash("isOn");
 
     private bool _clickable =true;
@@ -38,7 +36,7 @@ public class SensorRelatedDevMenu : UI_PopUp
     }
     public override bool Init()
     {
-        _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
+        
         _animator = GetComponent<Animator>();
         BindObject(typeof(Btn));
 
@@ -61,10 +59,11 @@ public class SensorRelatedDevMenu : UI_PopUp
             if (!_clickable) return;
             _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
             
+            _isAllPrefabImageActive = !_isAllPrefabImageActive;
             Logger.Log("이미지 전체 끄기");
-            SensorManager.isRealImageActive = false;
-            SensorManager.isNormalImageActive = false;
-            SensorManager.isTouchZoneImageActive = false;
+            SensorManager.isRealImageActive = _isAllPrefabImageActive;
+            SensorManager.isNormalImageActive = _isAllPrefabImageActive;
+            SensorManager.isTouchZoneImageActive = _isAllPrefabImageActive;
 
             UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
             UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
@@ -119,7 +118,22 @@ public class SensorRelatedDevMenu : UI_PopUp
             UpdateButtonVisual(Btn.Btn_NormalRay, SensorManager.isNormalRayActive);
         });
 
+        
+        
+        
+        
+        
         // 👉 초기 상태 반영
+
+        _isAllPrefabImageActive = false;       
+        SensorManager.isRealImageActive = _isAllPrefabImageActive;
+        SensorManager.isNormalImageActive = _isAllPrefabImageActive;
+        SensorManager.isTouchZoneImageActive = _isAllPrefabImageActive;
+ 
+        UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
+        UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
+        UpdateButtonVisual(Btn.Btn_TouchZone, SensorManager.isTouchZoneImageActive);
+        
         UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
         UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
         UpdateButtonVisual(Btn.Btn_TouchZone, SensorManager.isTouchZoneImageActive);

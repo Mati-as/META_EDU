@@ -97,7 +97,9 @@ public class SoundManager : MonoBehaviour
     public void Clear()
     {
         foreach (var audioSource in audioSources)
-            audioSource.Stop();
+        {
+            if(audioSource!=null) audioSource.Stop();
+        }
         _audioClips.Clear();
     }
 
