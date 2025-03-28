@@ -27,7 +27,7 @@ public class FP_Prefab : RaySynchronizer
     private MetaEduLauncher _launcher;
     private string name =string.Empty;
 
-    public bool isRayEnabled = true;
+    //public bool isRayEnabled = true;
 
     private void Awake()
     {

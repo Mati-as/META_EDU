@@ -52,7 +52,15 @@ public class DevelopmentUIManager : MonoBehaviour
 
     //뭔가 콘텐츠 안에서 계속해서 키게 만드는 무언가가 있음
     //0326 private -> public
+    
     private bool _isClickable = true;
+    
+    /// <summary>
+    /// 03/28/25
+    /// 개발자 관련 전체이미지를 키거나 끄는 용도로만 활용 중
+    /// 실제로 개별 FP_real,New이미지를 컨트롤 하는변수는 SensorImage에 있음
+    /// SensorRelatedDevMenu.cs 참고
+    /// </summary>
     public void DisableAllImages()
     {
         Debug.Log($"DAI Clicked {_currentStatus}");
@@ -68,9 +76,6 @@ public class DevelopmentUIManager : MonoBehaviour
         
         
         _currentStatus = !_currentStatus;
-        
-        SensorManager.isNormalRayActive = _currentStatus;
-        
         
         foreach (var image in _imagesPool)
         {

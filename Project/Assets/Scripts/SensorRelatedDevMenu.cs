@@ -125,6 +125,8 @@ public class SensorRelatedDevMenu : UI_PopUp
         UpdateButtonVisual(Btn.Btn_TouchZone, SensorManager.isTouchZoneImageActive);
         UpdateButtonVisual(Btn.Btn_RealRay, SensorManager.isRealRayActive);
         UpdateButtonVisual(Btn.Btn_NormalRay, SensorManager.isNormalRayActive);
+        
+        Logger.Log($"센서 메뉴 초기화 완료 NormalRay:{SensorManager.isNormalRayActive} : RealRay:{SensorManager.isRealRayActive}");
 
         return true;
     }

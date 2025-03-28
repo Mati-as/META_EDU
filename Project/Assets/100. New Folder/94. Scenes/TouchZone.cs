@@ -51,5 +51,7 @@ public class TouchZone : MonoBehaviour
             timer = 0f;
             isTouched = false; // ? ���� �����ӿ��� �ٽ� �����ǵ��� ����
         }
+        
+        _image.enabled = SensorManager.isTouchZoneImageActive;
     }
 }
