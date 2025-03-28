@@ -582,7 +582,7 @@ private void OnRaysyncOnPuzzeGame()
 
     #endregion
 
-    #region TreeSelectionpart
+    #region FruitOnTreeSelectionpart
     
     private bool _isFruitOnTreeAlreadyClicked = false;
     private int COUNT_FRUIT_TO_DROP = 5;
