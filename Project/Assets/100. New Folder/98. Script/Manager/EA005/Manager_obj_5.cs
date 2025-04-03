@@ -18,6 +18,8 @@ public class Manager_obj_5 : MonoBehaviour
     //Emoji icon
     public GameObject Main_Icon_1;  //이모지 보여주기
     public GameObject Bigsize_emotion;
+    public Transform wheel; // 원판의 Transform
+    public GameObject Button_Spin;
     public GameObject Main_Icon_2_1P;  //클릭 게임 그룹, 각 개별적으로 클릭
     public GameObject Main_Icon_2_2P;  //클릭 게임 그룹, 각 개별적으로 클릭
     public GameObject Main_Icon_3;      //다 클릭하고 난 다음 큰 이모지 보여주는 부분

@@ -317,9 +317,9 @@ public class EA006_GameManager : Ex_BaseGameManager
 
 
     #region 허수아비 찾기 파트----------------------------------------------------
-    
-    [Range()]
-    private int timeLimit
+
+    //[Range()]
+    private int timeLimit;
 
     private void OnScareCrowFindStart()
     {

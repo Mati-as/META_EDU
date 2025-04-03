@@ -9,8 +9,8 @@ public class Manager_anim_5 : MonoBehaviour
     //[common, EDIT] Manager
     public int Content_Seq = 0;
     private Manager_Text Manager_Text;
-    private Manager_SEQ_4 Manager_Seq;
-    private Manager_obj_4 Manager_Obj;
+    private Manager_SEQ_5 Manager_Seq;
+    private Manager_obj_5 Manager_Obj;
     private bool Eng_mode;
 
     //[common] Camera
@@ -48,7 +48,7 @@ public class Manager_anim_5 : MonoBehaviour
         //Camera_position = Manager_obj_4.instance.Camera_position;
         //Main_Camera = Manager_obj_4.instance.Main_Camera;
 
-        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Manager_Seq = Manager_obj_5.instance.Get_managerseq();
         Manager_Text = this.gameObject.GetComponent<Manager_Text>();
 
         //Init_Seq_camera();
@@ -109,15 +109,15 @@ public class Manager_anim_5 : MonoBehaviour
 
     public void Init_Icon_array()
     {
-        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
-        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
+        Main_Icon_1_array = Manager_obj_5.instance.Main_Icon_1_array;
+        //Main_Icon_2_array = Manager_obj_5.instance.Main_Icon_2_array;
 
-        Icon_buttion_position = Manager_obj_4.instance.Icon_buttion_position;
+        Icon_buttion_position = Manager_obj_5.instance.Icon_buttion_position;
     }
     public void Activate_all_emoji1()
     {
         GameObject emoji;
-        Main_Icon_1_array = Manager_obj_4.instance.Main_Icon_1_array;
+        Main_Icon_1_array = Manager_obj_5.instance.Main_Icon_1_array;
         for (int i = 0; i < Main_Icon_1_array.Length; i++)
         {
             emoji = Main_Icon_1_array[i].transform.GetChild(0).gameObject;
@@ -145,7 +145,7 @@ public class Manager_anim_5 : MonoBehaviour
         emoji.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
          emoji.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
          );
-        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Manager_Seq = Manager_obj_5.instance.Get_managerseq();
         Animator animator = emoji.GetComponent<Animator>();
 
         animator.SetBool("ON", true);
@@ -154,7 +154,7 @@ public class Manager_anim_5 : MonoBehaviour
     {
         GameObject emoji;
         emoji = Emoji.transform.GetChild(0).gameObject;
-        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Manager_Seq = Manager_obj_5.instance.Get_managerseq();
         Animator animator = emoji.GetComponent<Animator>();
 
         animator.SetBool("ON", true);
@@ -163,7 +163,7 @@ public class Manager_anim_5 : MonoBehaviour
     {
         GameObject emoji;
         emoji = Emoji.transform.GetChild(0).gameObject;
-        Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+        Manager_Seq = Manager_obj_5.instance.Get_managerseq();
         Animator animator = emoji.GetComponent<Animator>();
 
         animator.SetBool("ON", false);
@@ -175,7 +175,7 @@ public class Manager_anim_5 : MonoBehaviour
         Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
         emoji_number = Emoji.GetComponent<Clicked_emoji>().Number_emoji;
 
-        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_5.instance.Msg_narration[emoji_number], 1f);
 
         Sequence seq_read = DOTween.Sequence();
         seq_read.Append(Selected_emoji_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
@@ -273,7 +273,7 @@ public class Manager_anim_5 : MonoBehaviour
                 Activate_emoji_forgame(Main_Icon_2_array[i]);
                 Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
 
-                Manager_Seq.Active_emoji_clickable(Main_Icon_2_array[i]);
+                //Manager_Seq.Active_emoji_clickable(Main_Icon_2_array[i]);
             }
         }
 
@@ -289,14 +289,14 @@ public class Manager_anim_5 : MonoBehaviour
 
     IEnumerator Temp_Message(float time = 2f)
     {
-        if (round_number == 5)
+        if (round_number == 6)
         {
             //5, Active next button
             if (Content_Seq == 1)
-                Manager_obj_4.instance.Btn_Next.SetActive(true);
+                Manager_obj_5.instance.Btn_Next.SetActive(true);
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
+            seq.Append(Manager_obj_5.instance.Btn_Next.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic));
 
             StopCoroutine(Temp_Message(time));
             round_number = 0;
@@ -318,8 +318,8 @@ public class Manager_anim_5 : MonoBehaviour
             this.transform.DOShakeScale(2f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Inactivate_emoji(Selected_emoji));
 
 
-            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
-            Manager_Seq.Active_emoji_clickable(Selected_emoji);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_5.instance.Msg_narration[emoji_number], 1f);
+            //Manager_Seq.Active_emoji_clickable(Selected_emoji);
 
             round_number += 1;
 
