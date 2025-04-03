@@ -153,8 +153,10 @@ public class ScreenAdjuster : MonoBehaviour
     /// </summary>
     void ApplyScreenSettings()
     {
+       
         if (mainCamera != null)
         {
+            
             mainCamera.rect = new Rect(
                 0.5f - screenSize / 2f + (screenOffsetX - 0.5f),
                 0.5f - screenSize / 2f + (screenOffsetY - 0.5f),

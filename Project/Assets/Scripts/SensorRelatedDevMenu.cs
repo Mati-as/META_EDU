@@ -82,7 +82,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         });
 
         GetObject((int)Btn.Btn_Real).gameObject.BindEvent(() =>
-        {
+        { 
              if (!_clickable) return;
             _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
             
