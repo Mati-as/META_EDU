@@ -19,7 +19,8 @@ public class SensorRelatedDevMenu : UI_PopUp
     private enum TMP
     {
         TMP_NormalRay,
-        TMP_RealRay
+        TMP_RealRay,
+        TMP_Log
     }
     private Animator _animator;
     private bool isOpen =false;
@@ -39,7 +40,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         
         _animator = GetComponent<Animator>();
         BindObject(typeof(Btn));
-
+        BindText(typeof(TMP));
 
 
         GetObject((int)Btn.Btn_Open).gameObject.BindEvent(() =>
@@ -142,11 +143,25 @@ public class SensorRelatedDevMenu : UI_PopUp
         
         Logger.Log($"센서 메뉴 초기화 완료 NormalRay:{SensorManager.isNormalRayActive} : RealRay:{SensorManager.isRealRayActive}");
 
+        RefreshSensorParameterText();
+      
+        
         return true;
     }
 
-    private void DelayClickable()
+    private void RefreshSensorParameterText()
     {
+
+        var logText = $"<b>[XML 설정값]</b>\n" +
+                      $"ScreenSize:{XmlManager.Instance.ScreenSize}, Ratio:{XmlManager.Instance.ScreenRatio}, TouchRange:{XmlManager.Instance.TouchRange}\n" +
+                      $"SensorPos({XmlManager.Instance.SensorPosX},{XmlManager.Instance.SensorPosY}), " +
+                      $"Offset({XmlManager.Instance.ScreenPositionOffsetX},{XmlManager.Instance.ScreenPositionOffsetY}), " +
+                      $"SensorOffset({XmlManager.Instance.SensorOffsetX},{XmlManager.Instance.SensorOffsetY})\n" +
+                      $"Threshold:{XmlManager.Instance.ClusterThreshold}, MaxZones:{XmlManager.Instance.MaxTouchzones}, " +
+                      $"Lifetime:{XmlManager.Instance.TouchzoneLifetime}";
+
+        GetText((int)TMP.TMP_Log).text = logText;
         
+
     }
 }

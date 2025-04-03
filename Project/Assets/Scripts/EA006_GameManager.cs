@@ -31,6 +31,11 @@ public class EA006_GameManager : Ex_BaseGameManager
         ScareCrowD,
         ScareCrowE,
         ScareCrowF,
+        ScareCrowG,
+        ScareCrowH,
+        ScareCrowI,
+        ScareCrowJ,
+        
         SparrowA,
         SparrowB,
         SparrowC,
@@ -170,7 +175,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         }
 
 
-        for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowF; i++)
+        for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
         {
             GetObject(i).transform.localScale = Vector3.zero;
             GetObject(i).SetActive(false);
@@ -312,6 +317,9 @@ public class EA006_GameManager : Ex_BaseGameManager
 
 
     #region 허수아비 찾기 파트----------------------------------------------------
+    
+    [Range()]
+    private int timeLimit
 
     private void OnScareCrowFindStart()
     {
@@ -326,10 +334,10 @@ public class EA006_GameManager : Ex_BaseGameManager
         int SelectedScarecrow = -1; //sentinel val
         for (int i = 0; i < Count; i++)
         {
-            int randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowF);
+            int randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowJ);
 
             while (SelectedScarecrow == randoScareCrow)
-                randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowF);
+                randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowJ);
             SelectedScarecrow = randoScareCrow;
             
             GetObject(randoScareCrow).SetActive(true);
@@ -398,7 +406,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             DOVirtual.DelayedCall(1.5f, () =>
             {
           
-                for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowF; i++)
+                for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
                 {
                     GetObject(i).transform.DOScale(Vector3.zero, 1f).OnComplete(() =>
                     {
@@ -433,7 +441,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         {
             int tfId = _enumToTfIdMap[i];
 
-            // 클릭 가능 상태(false) + 이전과 다른 참새만 추가
+            // 클릭 가능 상태(false)
             if (!_isClickableMap[tfId])
             {
                 Logger.Log($"{(Obj)i} 참새 Active 가능 상태 : {_isClickableMap[tfId]}");
