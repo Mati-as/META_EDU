@@ -66,28 +66,6 @@ public class Manager_anim_4 : MonoBehaviour
         //        XmlManager.Instance.ScreenSize
         //    );
         //}
-        SetClippingArea();
-    }
-
-    public RectTransform clippingPanel; // UI 클리핑할 패널
-
-    void SetClippingArea()
-    {
-        Rect rect = mainCamera.rect;
-
-        float screenWidth = Screen.width;
-        float screenHeight = Screen.height;
-
-        float width = rect.width * screenWidth;
-        float height = rect.height * screenHeight;
-        float posX = rect.x * screenWidth;
-        float posY = rect.y * screenHeight;
-
-        clippingPanel.sizeDelta = new Vector2(width, height);
-        clippingPanel.anchoredPosition = new Vector2(
-            posX + width / 2f - screenWidth / 2f,
-            posY + height / 2f - screenHeight / 2f
-        );
     }
 
     public void Move_Seq_camera()

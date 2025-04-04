@@ -6,29 +6,30 @@ using DG.Tweening;
 public class Manager_Anim_2 : MonoBehaviour
 {
 
-    //Camera, ¿©±â´Â ¾Æ¸¶ °øÅë
+    //Camera, ì—¬ê¸°ëŠ” ì•„ë§ˆ ê³µí†µ
     private GameObject Main_Camera;
     private GameObject Camera_position;
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
+    public Camera mainCamera;
 
 
     //Animal
     private GameObject Animal_position;
     private GameObject[] Main_Animal_array;
 
-    //µ¿¹°, Hide, Reveal ¹è¿­·Î °ü¸®
-    //0~6¹ø
+    //ë™ë¬¼, Hide, Reveal ë°°ì—´ë¡œ ê´€ë¦¬
+    //0~6ë²ˆ
     private Sequence[] Hide_a_seq;
     private Sequence[] Reveal_a_seq;
     private Sequence[] Reset_a_seq;
 
-    //µ¿¹° ¾Ö´Ï¸ŞÀÌÅÍ
+    //ë™ë¬¼ ì• ë‹ˆë©”ì´í„°
     private Animator Animalanim;
     private Manager_Seq_2 Manager_Seq;
 
     [Header("[ COMPONENT CHECK ]")]
-    //ÀÔ·Â °ª È®ÀÎ¿ë
+    //ì…ë ¥ ê°’ í™•ì¸ìš©
     public int Content_Seq = 0;
 
     public GameObject[] Camera_pos_array;
@@ -37,13 +38,23 @@ public class Manager_Anim_2 : MonoBehaviour
     void Start()
     {
 
-        //obj µ¿±âÈ­
+        //obj ë™ê¸°í™”
         Camera_position = Manager_obj_2.instance.Camera_position;
         Main_Camera = Manager_obj_2.instance.Main_Camera;
 
         Init_Seq_camera();
+
+        if (mainCamera != null)
+        {
+            mainCamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
     }
-    //°øÅëÀ¸·Î È°¿ëÇÒ ºÎºĞ
+    //ê³µí†µìœ¼ë¡œ í™œìš©í•  ë¶€ë¶„
     void Init_Seq_camera()
     {
         Camera_pos_array = new GameObject[Camera_position.transform.childCount];
@@ -73,8 +84,8 @@ public class Manager_Anim_2 : MonoBehaviour
         Reveal_a_seq = new Sequence[Animal_position.transform.childCount];
         Reset_a_seq = new Sequence[Animal_position.transform.childCount];
 
-        //hide, reveal ½ÃÄö½º °¢°¢ ÇÑ¹ø¾¿ ÃÊ±âÈ­
-        //¸ŞÀÎ ÀÌµ¿ µ¿¹° ÇÒ´ç
+        //hide, reveal ì‹œí€€ìŠ¤ ê°ê° í•œë²ˆì”© ì´ˆê¸°í™”
+        //ë©”ì¸ ì´ë™ ë™ë¬¼ í• ë‹¹
         for (int i = 0; i < Animal_position.transform.childCount; i++)
         {
             Animal_pos_array[i] = Animal_position.transform.GetChild(i).gameObject;
@@ -88,14 +99,14 @@ public class Manager_Anim_2 : MonoBehaviour
             Transform p2 = Animal_pos_array[i].transform.GetChild(2).transform;
             Transform p3 = Animal_pos_array[i].transform.GetChild(3).transform;
 
-            //µé¾î°¡¸é ÁÁÀºµ¥ ±×·¸°Ô ¾ÈµÇ´Ï ±×³É »ĞÇÏ°í ³ªÅ¸³ª´Â°É·Î?
-            //Hide_a_seq[i].OnStart(()=>StartRunning(Main_Animal_array[i])); , ÀÌ°Å ÀüºÎ µ¿ÀÛÇÏÁö ¾ÊÀ½
-            //ÇØ´ç ÇÏ´Â ÀÚ¸®¿¡ ÀÌÆåÆ®°¡ ÆãÇÏ°í »ı±â¸é¼­ µ¿¹°ÀÌ ºü¸£°Ô ÀÚ¸®·Î ÀÌµ¿ÇÏµµ·Ï ¼öÁ¤
+            //ë“¤ì–´ê°€ë©´ ì¢‹ì€ë° ê·¸ë ‡ê²Œ ì•ˆë˜ë‹ˆ ê·¸ëƒ¥ ë¿…í•˜ê³  ë‚˜íƒ€ë‚˜ëŠ”ê±¸ë¡œ?
+            //Hide_a_seq[i].OnStart(()=>StartRunning(Main_Animal_array[i])); , ì´ê±° ì „ë¶€ ë™ì‘í•˜ì§€ ì•ŠìŒ
+            //í•´ë‹¹ í•˜ëŠ” ìë¦¬ì— ì´í™íŠ¸ê°€ í‘í•˜ê³  ìƒê¸°ë©´ì„œ ë™ë¬¼ì´ ë¹ ë¥´ê²Œ ìë¦¬ë¡œ ì´ë™í•˜ë„ë¡ ìˆ˜ì •
             Hide_a_seq[i].Append(Main_Animal_array[i].transform.DOMove(p1.position, 0f));
             Hide_a_seq[i].Join(Main_Animal_array[i].transform.DORotate(p1.rotation.eulerAngles, 0f));
 
 
-            //½ÃÀÛÇÒ ¶§ ¶Ù´Â ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ıÇÏ°í, µµÂøÇÏ¸é attackÀ¸·Î »óÅÂ¸¦ ¹Ù²Ş
+            //ì‹œì‘í•  ë•Œ ë›°ëŠ” ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒí•˜ê³ , ë„ì°©í•˜ë©´ attackìœ¼ë¡œ ìƒíƒœë¥¼ ë°”ê¿ˆ
 
             Reveal_a_seq[i].Append(Main_Animal_array[i].transform.DOMove(p2.position, 1f).SetEase(Ease.InOutQuad));
             Reveal_a_seq[i].Join(Main_Animal_array[i].transform.DORotate(p2.rotation.eulerAngles, 1f));
@@ -114,15 +125,15 @@ public class Manager_Anim_2 : MonoBehaviour
 
             //Debug.Log("length " + Camera_seq.Length);
 
-            //¼û´Â À§Ä¡°¡ ´Ş¶óÁü
+            //ìˆ¨ëŠ” ìœ„ì¹˜ê°€ ë‹¬ë¼ì§
         }
     }
 
 
     void Move_Seq_camera()
     {
-        //ÇÔ¼ö·Î ÀüºÎ °ü¸®ÇÏ´Â°Ô ¸ÂÀ½
-        //Å¬¸¯ÀÌ µÇ¸é ÇØ´çÇÏ´Â Æë±ÏÀ» ¿òÁ÷ÀÏ °Å¿´À¸´Ï±ñ
+        //í•¨ìˆ˜ë¡œ ì „ë¶€ ê´€ë¦¬í•˜ëŠ”ê²Œ ë§ìŒ
+        //í´ë¦­ì´ ë˜ë©´ í•´ë‹¹í•˜ëŠ” í­ê·„ì„ ì›€ì§ì¼ ê±°ì˜€ìœ¼ë‹ˆê¹
         Camera_seq[Number_Camera_seq].Play();
         Number_Camera_seq++;
         //Debug.Log("C_SEQ = " + Number_Camera_seq);
@@ -131,7 +142,7 @@ public class Manager_Anim_2 : MonoBehaviour
     public void Hide_Seq_animal(int Num)
     {
         Hide_a_seq[Num].Play();
-        //(ÀÓ½Ã) ÇØ´ç µ¿¹° Å¬¸¯ ½ºÅ©¸³Æ® ºñÈ°¼ºÈ­
+        //(ì„ì‹œ) í•´ë‹¹ ë™ë¬¼ í´ë¦­ ìŠ¤í¬ë¦½íŠ¸ ë¹„í™œì„±í™”
         //Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = false;
         //Main_Animal_array[Num].GetComponent<BoxCollider>().enabled = false;
 
@@ -168,16 +179,16 @@ public class Manager_Anim_2 : MonoBehaviour
     public void Reset_Seq_animal(int Num)
     {
         Reveal_a_seq[Num].Pause();
-        //ÇöÀçÇÏ°í ÀÖ´Â ½ÃÄö½º ½ºÅ¾ÇÏ°í ´Ù½Ã Àç»ıÇÏ´Â °É·Î?
+        //í˜„ì¬í•˜ê³  ìˆëŠ” ì‹œí€€ìŠ¤ ìŠ¤íƒ‘í•˜ê³  ë‹¤ì‹œ ì¬ìƒí•˜ëŠ” ê±¸ë¡œ?
         Reset_a_seq[Num].Play();
 
-        //(ÀÓ½Ã) ÇØ´ç µ¿¹° Å¬¸¯ ½ºÅ©¸³Æ® È°¼ºÈ­
+        //(ì„ì‹œ) í•´ë‹¹ ë™ë¬¼ í´ë¦­ ìŠ¤í¬ë¦½íŠ¸ í™œì„±í™”
         Main_Animal_array[Num].GetComponent<Clicked_animal>().enabled = true;
 
         DOVirtual.Float(0, 0, 0f, _ => { }).OnComplete(() => ReturnToIdle(Main_Animal_array[Num]));
     }
 
-    //(ÀÓ½Ã) µ¿¹° Å¬¸¯ ½ºÅ©¸³Æ® È°¼ºÈ­
+    //(ì„ì‹œ) ë™ë¬¼ í´ë¦­ ìŠ¤í¬ë¦½íŠ¸ í™œì„±í™”
     public void Active_click_animal()
     {
         for(int i = 0; i < 7; i++)
@@ -225,7 +236,7 @@ public class Manager_Anim_2 : MonoBehaviour
         Manager_Seq.Onclick = true;
         Animator animator = Animal.GetComponent<Animator>();
 
-        //ÃÊ±âÈ­ ºÎºĞ
+        //ì´ˆê¸°í™” ë¶€ë¶„
         animator.SetBool("isRunning", false);
         animator.SetBool("isWalking", false);
         animator.SetBool("isAttacking", false);
@@ -238,7 +249,7 @@ public class Manager_Anim_2 : MonoBehaviour
     {
         Animator animator = Animal.GetComponent<Animator>();
 
-        //ÃÊ±âÈ­ ºÎºĞ
+        //ì´ˆê¸°í™” ë¶€ë¶„
         animator.SetBool("isRunning", false);
         animator.SetBool("isWalking", false);
         animator.SetBool("isAttacking", false);
@@ -250,7 +261,7 @@ public class Manager_Anim_2 : MonoBehaviour
     public void StartWalking(GameObject Animal)
     {
         Animator animator = Animal.GetComponent<Animator>();
-        //ÃÊ±âÈ­ ºÎºĞ
+        //ì´ˆê¸°í™” ë¶€ë¶„
         animator.SetBool("isRunning", false);
         animator.SetBool("isWalking", false);
         animator.SetBool("isAttacking", false);
@@ -261,7 +272,7 @@ public class Manager_Anim_2 : MonoBehaviour
     public void ReturnToIdle(GameObject Animal)
     {
         Animator animator = Animal.GetComponent<Animator>();
-        //ÃÊ±âÈ­ ºÎºĞ
+        //ì´ˆê¸°í™” ë¶€ë¶„
         animator.SetBool("isRunning", false);
         animator.SetBool("isWalking", false);
         animator.SetBool("isAttacking", false);
