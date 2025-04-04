@@ -12,6 +12,7 @@ public class Manager_Anim_2 : MonoBehaviour
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
     public Camera mainCamera;
+    public Camera UICamera;
 
 
     //Animal
@@ -47,6 +48,16 @@ public class Manager_Anim_2 : MonoBehaviour
         if (mainCamera != null)
         {
             mainCamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+
+        if (UICamera != null)
+        {
+            UICamera.rect = new Rect(
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
                 XmlManager.Instance.ScreenSize,

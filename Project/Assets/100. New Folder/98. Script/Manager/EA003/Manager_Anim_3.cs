@@ -19,6 +19,8 @@ public class Manager_Anim_3 : MonoBehaviour
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
 
+    public Camera mainCamera;
+    public Camera UICamera;
 
     //fruit
     private GameObject Fruit_position;
@@ -75,6 +77,27 @@ public class Manager_Anim_3 : MonoBehaviour
         Init_Seq_box();
 
         Eng_mode = Manager_Seq.Eng_MODE;
+
+
+        if (mainCamera != null)
+        {
+            mainCamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+
+        if (UICamera != null)
+        {
+            UICamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
     }
     //�������� Ȱ���� �κ�
     void Init_M_obj()

@@ -57,15 +57,15 @@ public class Manager_anim_4 : MonoBehaviour
             );
         }
 
-        //if (UICamera != null)
-        //{
-        //    UICamera.rect = new Rect(
-        //        0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
-        //        0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
-        //        XmlManager.Instance.ScreenSize,
-        //        XmlManager.Instance.ScreenSize
-        //    );
-        //}
+        if (UICamera != null)
+        {
+            UICamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
     }
 
     public void Move_Seq_camera()

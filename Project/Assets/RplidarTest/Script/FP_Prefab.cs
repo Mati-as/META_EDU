@@ -27,6 +27,7 @@ public class FP_Prefab : RaySynchronizer
     private MetaEduLauncher _launcher;
     private string name =string.Empty;
 
+    //public Camera maincamera;
     //public bool isRayEnabled = true;
 
     private void Awake()
@@ -38,12 +39,11 @@ public class FP_Prefab : RaySynchronizer
 
     public override void Init()
     {
-        
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-        
-         _rectTransform = GetComponent<RectTransform>();
+        //GameObject.FindWithTag("MainCamera").TryGetComponent(out maincamera);
+
+        _rectTransform = GetComponent<RectTransform>();
          _imageComponent = GetComponent<Image>();
-       
     }
 
 

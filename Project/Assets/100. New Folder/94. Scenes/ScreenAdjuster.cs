@@ -6,7 +6,7 @@ public class ScreenAdjuster : MonoBehaviour
     public SensorManager manager;
 
     public Camera mainCamera;
-    //public Camera UICamera;
+    public Camera UICamera;
 
     public Slider screenSizeSlider;
     public Slider offsetXSlider;
@@ -57,11 +57,27 @@ public class ScreenAdjuster : MonoBehaviour
         saveButton.onClick.AddListener(SaveSettings);
         resetButton.onClick.AddListener(ResetToDefault);
 
-        //if (mainCamera.targetTexture == null)
-        //{
-        //    RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
-        //    mainCamera.targetTexture = rt;
-        //}
+        if (mainCamera != null)
+        {
+
+            mainCamera.rect = new Rect(
+                0.5f - screenSize / 2f + (screenOffsetX - 0.5f),
+                0.5f - screenSize / 2f + (screenOffsetY - 0.5f),
+                screenSize,
+                screenSize
+            );
+        }
+
+        if (UICamera != null)
+        {
+
+            UICamera.rect = new Rect(
+                0.5f - screenSize / 2f + (screenOffsetX - 0.5f),
+                0.5f - screenSize / 2f + (screenOffsetY - 0.5f),
+                screenSize,
+                screenSize
+            );
+        }
     }
 
     /// <summary>

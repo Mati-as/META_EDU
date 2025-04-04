@@ -16,7 +16,7 @@ public class RaySynchronizer : MonoBehaviour
     public static Ray initialRay { get; set; }
 
   
-    private GameObject uiCamera;
+    //private GameObject uiCamera;
 
 
     private readonly string GAME_MANAGER = "GameManager";
