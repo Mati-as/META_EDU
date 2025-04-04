@@ -99,6 +99,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     ChangeThemeSeqAnim((int)SequenceName.FindScarecrow);
                     ResetClickable();
                     OnScareCrowFindStart();
+                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA008");
                     break;
 
                 case (int)SequenceName.SparrowAppear:
@@ -106,11 +107,12 @@ public class EA006_GameManager : Ex_BaseGameManager
                     AppearSparrow(2);
                     ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
                     Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)_currentThemeSequence} : {value}");
-                
+                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006");
 
                     break;
                 
                 case (int)SequenceName.OnFinish:
+                    ChangeThemeSeqAnim((int)SequenceName.OnFinish);
                     break;
                 
                 case (int)SequenceName.Default:
@@ -214,6 +216,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
                 case (int)SequenceName.FindScarecrow:
                    
+                    
                     OnRaySyncedOnScareCrowFind(hit);
                 
                     break;
@@ -420,9 +423,6 @@ public class EA006_GameManager : Ex_BaseGameManager
             }));
         
         _currentScarecrowCount++;
-
-
-       
         
 
     }

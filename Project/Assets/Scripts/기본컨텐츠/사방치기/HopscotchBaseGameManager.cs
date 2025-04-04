@@ -384,11 +384,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _currentScaleSequence.Kill();
         _stepCurrentScaleSequence.Kill();
-
-#if UNITY_EDITOR
-
-#endif
-
+        
         _inducingParticle.Stop();
         _successParticle.Stop();
         _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);

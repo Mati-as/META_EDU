@@ -652,12 +652,12 @@ public class FavoriteOneBaseGameManager : Base_GameManager
 
         if (_currentStage == (int)Stage.Color)
         {
-            _TMPs[0].text = "빨강";
-            _TMPs[1].text = "노랑";
-            _TMPs[2].text = "주황";
-            _TMPs[3].text = "초록";
-            _TMPs[4].text = "파랑";
-            _TMPs[5].text = "보라";
+            _TMPs[0].text = "빨강색";
+            _TMPs[1].text = "노랑색";
+            _TMPs[2].text = "주황색";
+            _TMPs[3].text = "초록색";
+            _TMPs[4].text = "파랑색";
+            _TMPs[5].text = "보라색";
         }
 
         for (var i = 0; i < _btns.Length; i++) _btns[i].DOMove(_btnsDefaultPositions[i], 1).SetEase(Ease.InOutExpo);

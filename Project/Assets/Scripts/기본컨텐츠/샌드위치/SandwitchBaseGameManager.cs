@@ -67,7 +67,7 @@ public class SandwitchBaseGameManager : Base_GameManager
     //중복클릭방지
     private bool _isClickable = true;
     private bool _isScalingUp;
-    private readonly float _clickableDelay = 3.0f;
+    private readonly float _clickableDelay = 1.0f;
 
     private readonly float RESTART_DELAY = 1.5f;
 

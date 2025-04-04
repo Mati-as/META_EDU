@@ -736,7 +736,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
             .WaitForCompletion();
     }
 
-    private WaitForSeconds _waitIntervalBeforeRestart =  new WaitForSeconds(5f);
+    private WaitForSeconds _waitIntervalBeforeRestart =  new WaitForSeconds(10f);
     private IEnumerator ShowStopUICo()
     {
         if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
