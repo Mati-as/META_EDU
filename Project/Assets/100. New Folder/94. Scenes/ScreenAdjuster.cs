@@ -6,7 +6,7 @@ public class ScreenAdjuster : MonoBehaviour
     public SensorManager manager;
 
     public Camera mainCamera;
-    public Camera UICamera;
+    //public Camera UICamera;
 
     public Slider screenSizeSlider;
     public Slider offsetXSlider;
@@ -151,6 +151,9 @@ public class ScreenAdjuster : MonoBehaviour
     /// <summary>
     /// 카메라 화면 설정 반영
     /// </summary>
+    /// 
+
+
     void ApplyScreenSettings()
     {
        
@@ -164,16 +167,6 @@ public class ScreenAdjuster : MonoBehaviour
                 screenSize
             );
         }
-
-        //if (UICamera != null)
-        //{
-        //    UICamera.rect = new Rect(
-        //        0.5f - screenSize / 2f + (screenOffsetX - 0.5f),
-        //        0.5f - screenSize / 2f + (screenOffsetY - 0.5f),
-        //        screenSize,
-        //        screenSize
-        //    );
-        //}
 
         screenSizeSlider.value = screenSize;
         offsetXSlider.value = screenOffsetX;

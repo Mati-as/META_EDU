@@ -19,7 +19,8 @@ public class Manager_anim_4 : MonoBehaviour
     //private GameObject Camera_position;
     private Sequence[] Camera_seq;
     private int Number_Camera_seq;
-
+    public Camera mainCamera;
+    public Camera UICamera;
 
     //[EDIT]
     private Tween[] Emoji_seq_loop;
@@ -45,6 +46,26 @@ public class Manager_anim_4 : MonoBehaviour
     void Start()
     {
         Manager_Seq = Manager_obj_4.instance.Get_managerseq();
+
+        if (mainCamera != null)
+        {
+            mainCamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+
+        //if (UICamera != null)
+        //{
+        //    UICamera.rect = new Rect(
+        //        0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+        //        0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+        //        XmlManager.Instance.ScreenSize,
+        //        XmlManager.Instance.ScreenSize
+        //    );
+        //}
     }
 
     public void Move_Seq_camera()

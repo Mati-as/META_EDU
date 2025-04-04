@@ -29,10 +29,11 @@ public class Manager_SEQ_5 : Base_GameManager
     public float Sequence_timer = 0f;
     public int Emoji_game = 0;
 
-    public GameObject Bigsize_emotion;
-    public Transform wheel; // 원판의 Transform
+    public GameObject Lucky_Spin_common;
 
-    public GameObject Button_Spin;
+    private GameObject Bigsize_emotion;
+    private Transform wheel; // 원판의 Transform
+    private GameObject Button_Spin;
     private List<string> emotionList = new List<string> { "Happy", "Sad", "Empty", "Angry", "Sleep", "Empty", "Good", "Laugh" };
 
     private bool isSpinning = false;
@@ -52,9 +53,6 @@ public class Manager_SEQ_5 : Base_GameManager
         Manager_Anim = this.gameObject.GetComponent<Manager_anim_5>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
-        sliceAngle = 360f / emotionList.Count; // 8조각 = 45도
-
-        Button_Spin.GetComponent<Button>().onClick.AddListener(SpinWheel);
         //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
     }
 
@@ -99,6 +97,7 @@ public class Manager_SEQ_5 : Base_GameManager
         else if (Content_Seq == 2)
         {
             Init_Game_emoji();
+            Init_wheel();
 
             Content_Seq += 1;
             toggle = true;
@@ -147,6 +146,19 @@ public class Manager_SEQ_5 : Base_GameManager
 
         //아래 부분은 각각 1P, 2P 별로 블록 그룹 세팅할 수 있도록함
         Manager_Anim.Setting_Seq_Icon_2();
+    }
+
+    void Init_wheel()
+    {
+
+        Bigsize_emotion = Manager_obj_5.instance.Bigsize_emotion;
+        wheel = Manager_obj_5.instance.wheel;
+        Button_Spin = Manager_obj_5.instance.Button_Spin;
+        sliceAngle = 360f / emotionList.Count; // 8조각 = 45도
+
+        Button_Spin.GetComponent<Button>().onClick.AddListener(SpinWheel);
+
+        Lucky_Spin_common.SetActive(true);
     }
 
 
