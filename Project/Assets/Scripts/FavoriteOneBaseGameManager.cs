@@ -365,6 +365,8 @@ public class FavoriteOneBaseGameManager : Base_GameManager
 #if UNITY_EDITOR
         Debug.Log($"OBJ NAME : {Obj_BtnCombined.name}");
 #endif
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/OnSelect");
+        
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/나를알고표현해요/" + Obj_BtnCombined.name);
         
         DOVirtual.Float(0,0,_narrationPlayDelay,_=>{}).OnComplete(()=>
