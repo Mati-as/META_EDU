@@ -50,9 +50,10 @@ public class FP_Prefab : RaySynchronizer
     protected override void OnEnable()
     {
         
-        if (name.Contains("Real"))
+        if (name.Contains("REAL"))//
         {
             _imageComponent.enabled = SensorManager.isRealImageActive;
+            Debug.Log($"isRealImageActive : {SensorManager.isRealImageActive}");
             if (!SensorManager.isRealRayActive)
             {
                 return;
@@ -62,6 +63,7 @@ public class FP_Prefab : RaySynchronizer
         if (name.Contains("Normal"))
         {
             _imageComponent.enabled = SensorManager.isNormalImageActive;
+          //  Debug.Log($"isNormalImageActive : {SensorManager.isNormalImageActive}");
             if (!SensorManager.isNormalRayActive)
             {
                 return;
@@ -84,11 +86,11 @@ public class FP_Prefab : RaySynchronizer
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
         //Image = this.transform.GetChild(0).gameObject;
-        Image = gameObject;
+       // Image = gameObject;
         //Debug.Log(FP.anchoredPosition.x + "," + FP.anchoredPosition.y);
         if (FPC.Check_FPposition(FP))
         {
-            Image.SetActive(true);
+           // Image.SetActive(true);
             base.Start();
             base.InvokeRayEvent();
         }
