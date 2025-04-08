@@ -246,7 +246,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                 case SeqName.OnTreeScene_E:
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
-                        SeqMessageEvent?.Invoke("OnTreeScene_A");
+                        SeqMessageEvent?.Invoke("OnTreeScenfe_A");
                         _isFruitOnTreeAlreadyClicked = false;
                     });
                     break;
@@ -600,8 +600,8 @@ private void OnRaysyncOnPuzzeGame()
     private Dictionary<int, bool> _isAlreadyClickedMap = new Dictionary<int, bool>();
     private void OnRaySyncOnFruitOnTree()
     {
-        if (!_clickable) return;
-        _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+        // if (!_clickable) return;
+        // _clickable = false; DOVirtual.DelayedCall(0.25f, () => _clickable = true);
         
         Logger.ContentTestLog("OnRaySyncOnFruitOnTree");
         

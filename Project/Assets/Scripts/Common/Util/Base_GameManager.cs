@@ -164,6 +164,36 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// 카메라 Rect Xml설정값대로 조정
+    /// </summary>
+    ///
+    private Camera UICamera;    
+    private void InitCameraRect()
+    {
+        if (Camera.main != null)
+        {
+            Camera.main.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+        
+        UICamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+        if (UICamera != null)
+        {
+            UICamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+    }
+
+
     protected virtual void Init()
     {
         if (isInitialized)
@@ -188,10 +218,11 @@ public abstract class Base_GameManager : MonoBehaviour
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         LoadUIManager();
-
-
+        
         InitValidClickCount();
         isInitialized = true;
+
+        InitCameraRect();
     }
 
 
