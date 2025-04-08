@@ -164,7 +164,7 @@ public class HopscotchBaseGameManager : Base_GameManager
         if (inducingPs != null)
         {
             _inducingParticle = Instantiate(inducingPs, transform).GetComponent<ParticleSystem>();
-            ;
+            
             _inducingParticle.Stop();
         }
         else
@@ -316,7 +316,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private Vector3 AddOffset(Vector3 position)
     {
-        return position + Vector3.forward * offset;
+        return position + Vector3.down * offset;
     }
 
 
@@ -330,7 +330,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void PlayNarration(int currentIndex)
     {
-        
+        Managers.Sound.Stop(SoundManager.Sound.Narration);
         if (currentIndex == 10)
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
