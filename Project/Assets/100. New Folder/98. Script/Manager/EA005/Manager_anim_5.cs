@@ -173,7 +173,7 @@ public class Manager_anim_5 : MonoBehaviour
         GameObject Selected_emoji_text;
         int emoji_number;
         Selected_emoji_text = Emoji.transform.GetChild(1).gameObject;
-        emoji_number = Emoji.GetComponent<Clicked_emoji>().Number_emoji;
+        emoji_number = Emoji.GetComponent<Clicked_EMOJI>().Number_emoji;
 
         Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_5.instance.Msg_narration[emoji_number], 1f);
 
@@ -208,9 +208,9 @@ public class Manager_anim_5 : MonoBehaviour
     int Round_number_emoji = 0;
     public void Setting_Seq_Icon_2()
     {
-        Main_Icon_2_array = Manager_obj_4.instance.Main_Icon_2_array;
+        //Main_Icon_2_array = Manager_obj_5.instance.Main_Icon_2_array;
 
-        Manager_obj_4.instance.Main_Icon_2.SetActive(true);
+        //Manager_obj_5.instance.Main_Icon_2.SetActive(true);
 
         StartCoroutine(Setting_icon_2());
     }
@@ -264,14 +264,14 @@ public class Manager_anim_5 : MonoBehaviour
 
         for (int i = 0; i < Main_Icon_2_array.Length; i++)
         {
-            int num = Main_Icon_2_array[i].GetComponent<Clicked_emoji>().Number_emoji;
+            int num = Main_Icon_2_array[i].GetComponent<Clicked_EMOJI>().Number_emoji;
             Inactivate_emoji(Main_Icon_2_array[i]);
 
             if (round == num)
             {
                 Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
                 Activate_emoji_forgame(Main_Icon_2_array[i]);
-                Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_4.instance.Yellow;
+                Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_obj_5.instance.Yellow;
 
                 //Manager_Seq.Active_emoji_clickable(Main_Icon_2_array[i]);
             }
@@ -309,7 +309,7 @@ public class Manager_anim_5 : MonoBehaviour
             int emoji_number;
 
             Selected_emoji = Main_Icon_1_array[round_number].transform.gameObject;
-            emoji_number = Selected_emoji.GetComponent<Clicked_emoji>().Number_emoji;
+            emoji_number = Selected_emoji.GetComponent<Clicked_EMOJI>().Number_emoji;
 
             //Shake dotween, Active emoji animation
             Activate_emoji(Selected_emoji);
@@ -319,7 +319,7 @@ public class Manager_anim_5 : MonoBehaviour
 
 
             Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_5.instance.Msg_narration[emoji_number], 1f);
-            //Manager_Seq.Active_emoji_clickable(Selected_emoji);
+            Manager_Seq.Active_emoji_clickable(Selected_emoji);
 
             round_number += 1;
 
