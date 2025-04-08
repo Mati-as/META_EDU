@@ -535,6 +535,8 @@ public class SandwitchBaseGameManager : Base_GameManager
 
     private void OnSandwichMakingFinish()
     {
+        if (_isRoundFinished) return; 
+        
         _isRoundFinished = true;
         isGameStart = false;
 

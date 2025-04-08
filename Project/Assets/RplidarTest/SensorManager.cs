@@ -24,10 +24,10 @@ public class SensorManager : MonoBehaviour
 
     #region Sensor Calibration시, 각 프리팹 이미지, Ray On-Off 관련 변수 // SesnorRelatedDevMenu.cs에서 제어 중
 
-    //Image On-OFF 관련
-    public static bool isTouchZoneImageActive = true;
-    public static bool isNormalImageActive = true;
-    public static bool isRealImageActive = true;
+    //Image On-OFF 관련 Default는 RealRay이외에 false로 설정중 20250408
+    public static bool isTouchZoneImageActive = false;
+    public static bool isNormalImageActive = false;
+    public static bool isRealImageActive = false;
     
     //Ray 생성 관련 
     public static bool isNormalRayActive = false;

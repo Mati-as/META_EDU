@@ -112,7 +112,7 @@ public class Manager_Text : MonoBehaviour
             //일단은 나레이션 읽어주는 
             //UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
             //나레이션, BGM, 이펙트 만약에 이펙트가 다수면?
-            //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/Sandwich/Click_" + randomChar, 0.3f);
+            //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
             //나레이션에 넣으면 안될 것 같은데
             //이펙트도 여러개여야할 것 같은데
 

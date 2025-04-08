@@ -97,7 +97,6 @@ public class FP_Prefab : RaySynchronizer
 
     private void OnDestroy()
     {
-        
         Destroy(this.gameObject);
     }
 

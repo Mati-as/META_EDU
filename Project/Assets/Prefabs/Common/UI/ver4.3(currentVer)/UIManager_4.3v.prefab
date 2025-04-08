@@ -240,14 +240,13 @@ GameObject:
   m_Component:
   - component: {fileID: 2141850300170965587}
   - component: {fileID: 178275897674707103}
-  - component: {fileID: 6200923855958755452}
   - component: {fileID: 7637258383674004833}
   m_Layer: 0
   m_Name: BgCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2141850300170965587
 Transform:
@@ -307,14 +306,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &6200923855958755452
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4982964998792771025}
-  m_Enabled: 1
 --- !u!114 &7637258383674004833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,7 +318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
+  m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0

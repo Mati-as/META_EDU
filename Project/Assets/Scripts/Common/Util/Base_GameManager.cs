@@ -320,15 +320,7 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
 
-        {
-            // if (!isClikableInGameRay)
-            // {
-            //     Logger.Log("Clicking Too Fast, Can't be clicked");
-            //
-            //     return false;
-            //     
-            // }
-            
+        
 
             Logger.SensorRelatedLog($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
             SetClickableWithDelay(waitForClickableInGameRay);
@@ -336,7 +328,7 @@ public abstract class Base_GameManager : MonoBehaviour
             
             DEV_sensorClick++;
             return true;
-        }
+        
         
     }
     

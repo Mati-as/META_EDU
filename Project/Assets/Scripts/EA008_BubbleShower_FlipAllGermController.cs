@@ -112,7 +112,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
             .OnStart(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect,
-                    "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
+                    "Audio/BasicContents/HandFlip2/BlackAppear", 0.3f);
             })
             .OnComplete(() =>
             {
@@ -138,7 +138,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
             .OnStart(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect,
-                    "Audio/기본컨텐츠/HandFlip2/BlackAppear", 0.3f);
+                    "Audio/BasicContents/HandFlip2/BlackAppear", 0.3f);
             })
             .WaitForCompletion();
 
@@ -190,7 +190,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
                     Debug.Log($"clicked ID{_firstClickedID}");
 
                     //검정색을 클릭하도록 유도하는 급박한 느낌의 사운드 추가 
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/BlackPrint",0.5f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/BlackPrint",0.5f);
                 }
                 else
                 {

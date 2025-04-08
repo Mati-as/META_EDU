@@ -76,7 +76,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
             if (_iOnClicked != null)
             {
-                DOVirtual.Float(0, 0.009f, 0.2f, val =>
+                DOVirtual.Float(0, 0.004f, 0.2f, val =>
                 {
                     _parrotSlider.value += val;
                 }).SetEase(Ease.InSine);

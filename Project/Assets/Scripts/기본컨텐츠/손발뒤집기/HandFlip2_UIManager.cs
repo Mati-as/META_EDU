@@ -123,8 +123,8 @@ public class HandFlip2_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectStart.localScale = Vector3.one * scale; }).SetDelay(_intervalBtwStartAndReady).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.5f);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",1.0f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.5f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Start",1.0f);
             }).WaitForCompletion();
         isStart = true;
        
@@ -210,7 +210,7 @@ public class HandFlip2_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Stop",0.8f);
             }).WaitForCompletion();
         yield return _waitForStop;
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();
