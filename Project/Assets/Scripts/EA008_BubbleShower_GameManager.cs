@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EA008_BubbleShower_GameManager : Base_GameManager
+public class EA008_BubbleShower_GameManager : Ex_BaseGameManager
 {
     private enum ColorSide
     {

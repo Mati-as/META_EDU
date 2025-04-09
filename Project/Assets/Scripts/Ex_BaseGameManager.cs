@@ -5,17 +5,17 @@ using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-
-
 /// <summary>
-/// 오브젝트 바인딩 기능이 추가.
-/// 기본적으로 카메라 무빙, 애니메이션을 총괄할 수 있는 메인 애니메이션 컨트롤러 추가 
+///     오브젝트 바인딩 기능이 추가.
+///     기본적으로 카메라 무빙, 애니메이션을 총괄할 수 있는 메인 애니메이션 컨트롤러 추가
 /// </summary>
 public abstract class Ex_BaseGameManager : Base_GameManager
-    
+
 {
     protected Dictionary<Type, Object[]> _objects = new();
 
@@ -23,46 +23,85 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Animator mainAnimator;
     protected int _currentThemeSequence;
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
-    
-    
+
+
     private readonly Stack<ParticleSystem> _particlePool = new();
-    
-    protected Dictionary<int,bool> _isClickableMap = new();
-    protected Dictionary<int,Transform> _tfidTotransformMap = new();
-    protected Dictionary<int,int> _enumToTfIdMap = new();
-    protected Dictionary<int,int> _tfIdToEnumMap = new();
-    protected Dictionary<Type,Animator> _animators = new();
+
+    protected Dictionary<int, bool> _isClickableMap = new();
+    protected Dictionary<int, Transform> _tfidTotransformMap = new();
+    protected Dictionary<int, int> _enumToTfIdMap = new();
+    protected Dictionary<int, int> _tfIdToEnumMap = new();
+
+    protected Dictionary<Type, Animator> _animators = new();
+
     //protected Dictionary<Type,Sequence> _sequences = new();
-    protected Dictionary<int,Vector3> _defaultSizeMap = new(); 
-    protected Dictionary<int,Quaternion> _defaultRotationQuatMap = new(); 
-    protected Dictionary<int,Sequence> _sequenceMap = new(); 
-    protected Dictionary<int,Animator> _animatorMap = new(); 
-    
+    protected Dictionary<int, Vector3> _defaultSizeMap = new();
+    protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
+    protected Dictionary<int, Sequence> _sequenceMap = new();
+    protected Dictionary<int, Animator> _animatorMap = new();
+
     protected string psResourcePath = string.Empty;
 
 
-    protected new virtual void Awake()
+    protected virtual new void Awake()
     {
         Init();
-        
-    }
-    protected new virtual void Init()
-    {
-        base.Init();
-        
-        SetPool();
-        var isAnimatorAttached= TryGetComponent(out mainAnimator);
-        if(!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
     }
 
-    
+    protected virtual new void Init()
+    {
+        SetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
+        
+        base.Init();
+
+        SetPool();
+        bool isAnimatorAttached = TryGetComponent(out mainAnimator);
+        if (!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
+
+
+    }
+
+    private void SetUIManager()
+    {
+        var isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(SceneManager.GetActiveScene().name);
+
+        if (!isUIManagerLoadedOnRuntime) return; 
+        
+        
+        // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
+        var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
+        if (uiCameraObj != null)
+        {
+            var uiCamera = uiCameraObj.GetComponent<Camera>();
+            if (uiCamera != null)
+            {
+                var mainCamera = Camera.main;
+                if (mainCamera != null && mainCamera.cameraType == CameraType.Game)
+                {
+                    if (!mainCamera.GetUniversalAdditionalCameraData().cameraStack.Contains(uiCamera))
+                    {
+                        mainCamera.GetUniversalAdditionalCameraData().cameraStack.Add(uiCamera);
+                        Logger.ContentTestLog("UICamera가 MainCamera의 Stack에 추가됨.");
+                    }
+                }
+                else
+                    Logger.ContentTestLog("MainCamera가 없거나 올바르지 않은 타입입니다.");
+            }
+            else
+                Logger.ContentTestLog("UICamera 오브젝트에 Camera 컴포넌트가 없습니다.");
+        }
+        else
+            Logger.ContentTestLog("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
+    }
+
+
     protected void Bind<T>(Type type) where T : Object
     {
-        var names = Enum.GetNames(type);
+        string[] names = Enum.GetNames(type);
         var objects = new Object[names.Length];
         _objects.Add(typeof(T), objects);
 
-        for (var i = 0; i < names.Length; i++)
+        for (int i = 0; i < names.Length; i++)
         {
             if (typeof(T) == typeof(GameObject))
             {
@@ -72,33 +111,31 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                 if (obj != null)
                 {
                     var transform = obj.transform;
-                    _tfidTotransformMap.Add(transform.GetInstanceID(),transform);
-                    _tfIdToEnumMap.Add(transform.GetInstanceID(),i);
+                    _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
+                    _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
                     Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
-                    _isClickableMap.Add(transform.GetInstanceID(),false);
-                    _enumToTfIdMap.Add(i,transform.GetInstanceID());
-                    _defaultSizeMap.Add(i,transform.localScale);
-                    _defaultRotationQuatMap.Add(i,transform.rotation);
-                    
-                    _sequenceMap.Add(i,DOTween.Sequence());
-                    
+                    _isClickableMap.Add(transform.GetInstanceID(), false);
+                    _enumToTfIdMap.Add(i, transform.GetInstanceID());
+                    _defaultSizeMap.Add(i, transform.localScale);
+                    _defaultRotationQuatMap.Add(i, transform.rotation);
+
+                    _sequenceMap.Add(i, DOTween.Sequence());
+
                     obj.transform.TryGetComponent(out Animator animator);
-                    if(animator!=null)_animatorMap.Add(i,animator);
+                    if (animator != null) _animatorMap.Add(i, animator);
                 }
             }
             else
-            {
                 objects[i] = Utils.FindChild<T>(gameObject, names[i], true);
-            }
 
             if (objects[i] == null)
                 Debug.Log($"Failed to bind({names[i]})");
         }
     }
 
-    protected void ResetClickable(bool isClickable =true)
+    protected void ResetClickable(bool isClickable = true)
     {
-        foreach (var key in _isClickableMap.Keys.ToArray())
+        foreach (int key in _isClickableMap.Keys.ToArray())
         {
             Logger.ContentTestLog($"{key} : {isClickable}");
             _isClickableMap[key] = isClickable;
@@ -108,7 +145,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        _objects= new();
+        _objects = new Dictionary<Type, Object[]>();
     }
 
     protected void BindObject(Type type)
@@ -130,7 +167,6 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     {
         Bind<Button>(type);
     }
-
 
 
     protected T Get<T>(int idx) where T : Object
@@ -161,7 +197,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     {
         return Get<Image>(idx);
     }
-    
+
 
     public static void BindEvent(GameObject go, Action action, Define.UIEvent type = Define.UIEvent.Click)
     {
@@ -187,7 +223,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                 break;
         }
     }
-    
+
     protected void SetPool()
     {
         if (psResourcePath == string.Empty)
@@ -195,6 +231,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
             Logger.ContentTestLog("effect 미사용");
             return;
         }
+
         var particlePrefab = Resources.Load<GameObject>(psResourcePath);
 
         for (int i = 0; i < 100; i++)
@@ -210,14 +247,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         if (_particlePool.Count > 0)
         {
             var ps = _particlePool.Pop();
-            
+
             ps.gameObject.SetActive(true);
             return ps;
         }
 
         SetPool();
         var newPs = _particlePool.Pop();
-        
+
         newPs.gameObject.SetActive(true);
         return newPs;
     }

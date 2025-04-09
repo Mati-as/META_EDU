@@ -98,6 +98,34 @@ public class UIManager
         return popup;
     }
     
+    public bool ShowCurrentSceneUIManager<T>(string sceneName = null, Transform parent = null) 
+    {
+        if (string.IsNullOrEmpty(sceneName))
+            sceneName = typeof(T).Name;
+
+        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
+
+        if (prefab == null)
+        {
+            Logger.ContentTestLog("UIManager prefab is null");
+            return false;
+        }
+
+        var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
+
+        if (parent != null)
+            go.transform.SetParent(parent);
+        else if (SceneUI != null)
+            go.transform.SetParent(SceneUI.transform);
+        else
+            go.transform.SetParent(Root.transform);
+
+        go.transform.localScale = Vector3.one;
+        go.transform.localPosition = prefab.transform.position;
+
+        return true;
+    }
+    
 
   
     public void ShowPopupUI(string className)
