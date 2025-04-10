@@ -11,7 +11,7 @@ using UnityEngine;
 /// <summary>
 /// 스크립트 우선실행 필수
 /// </summary>
-public class A_SettingManager : MonoBehaviour
+public class SettingManager : MonoBehaviour
 {
     public  float SCREEN_PROJECTOER_HEIGHT_FROM_XML{get;private set;}
     public  float MAIN_VOLIUME{get;private set;}
