@@ -71,20 +71,20 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
         var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
 
-        Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
-
-        if (canvas != null && uiCameraObj != null)
-        {
-            // Set the render mode and assign the camera
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = uiCameraObj.GetComponent<Camera>();
-
-            Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
-        }
-        else
-        {
-            Logger.CoreClassLog("Canvas or Camera not found on UICamera object.");
-        }
+        // Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
+        //
+        // if (canvas != null && uiCameraObj != null)
+        // {
+        //     // Set the render mode and assign the camera
+        //     canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        //     canvas.worldCamera = uiCameraObj.GetComponent<Camera>();
+        //
+        //     Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
+        // }
+        // else
+        // {
+        //     Logger.CoreClassLog("Canvas or Camera not found on UICamera object.");
+        // }
         if (uiCameraObj != null)
         {
             var uiCamera = uiCameraObj.GetComponent<Camera>();

@@ -27,21 +27,21 @@ public class EA012_UIManager : Base_UIManager
 
         switch (payload.Narration)
         {
-            case nameof(EA012_GameManager.Sequence.Default):
+            case nameof(EA012_GameManager.Seq.Default):
             break;
             
-            case nameof(EA012_GameManager.Sequence.SeqA_WheelStopGame):
+            case nameof(EA012_GameManager.Seq.SeqA_WheelStopGame):
                 GetText((int)TMPs.TMP_Instruction).text = "먼저 친구들 각자 표시된 자리에 앉아주세요!";
             break;
-            case nameof(EA012_GameManager.Sequence.SeqB_Ambulance):
+            case nameof(EA012_GameManager.Seq.SeqB_Ambulance):
             break;
-            case nameof(EA012_GameManager.Sequence.SeqC_PoliceCar):
+            case nameof(EA012_GameManager.Seq.SeqC_PoliceCar):
             break;
-            case nameof(EA012_GameManager.Sequence.SeqD_FireTruck):
+            case nameof(EA012_GameManager.Seq.SeqD_FireTruck):
             break;
-            case nameof(EA012_GameManager.Sequence.SeqE_Airplane):
+            case nameof(EA012_GameManager.Seq.SeqE_Airplane):
             break;
-            case nameof(EA012_GameManager.Sequence.SeqF_Train):
+            case nameof(EA012_GameManager.Seq.SeqF_Train):
                 break;
            
         }

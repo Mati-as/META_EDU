@@ -19,7 +19,7 @@ public class SettingManager : MonoBehaviour
     public  float BGM_VOLUME{get;private set;}
     public  float NARRATION_VOLUME{get;private set;}
 
-    private string SettingData;
+    private string BgmSettingData;
     private string DataRoot;
 
 
@@ -30,7 +30,7 @@ public class SettingManager : MonoBehaviour
     public void Init()
     {
         SetXMLPath();
-        CheckAndGenerateXmlFile(nameof(SettingData),settingXmlPath);
+        CheckAndGenerateXmlFile(nameof(BgmSettingData),settingXmlPath);
         LoadSettingParams();
         
         Base_GameManager.OnSceneLoad -= OnSceneLoad;
@@ -55,13 +55,13 @@ public class SettingManager : MonoBehaviour
 
     private void SetXMLPath()
     {
-        settingXmlPath = System.IO.Path.Combine(Application.persistentDataPath, nameof(SettingData) + ".xml");
+        settingXmlPath = System.IO.Path.Combine(Application.persistentDataPath, nameof(BgmSettingData) + ".xml");
     }
     private void LoadSettingParams()
     {
         Utils.ReadXML(ref xmlDoc_Setting,settingXmlPath);
         XmlNode root =xmlDoc_Setting.DocumentElement;
-        var nodes = root.SelectNodes(nameof(SettingData));
+        var nodes = root.SelectNodes(nameof(BgmSettingData));
 
         var count = 0;
         foreach (XmlNode node in nodes)
@@ -92,7 +92,8 @@ public class SettingManager : MonoBehaviour
             
             count++;
         }
-        Debug.Assert(count !=0,$"setting Failed there's no {nameof(SettingData)}" );
+        
+        Debug.Assert(count !=0,$"setting Failed there's no {nameof(BgmSettingData)}" );
         
         Logger.SensorRelatedLog($"initioal setting completed:  {SensorManager.height} (cm) MainVol: {MAIN_VOLIUME}" );
     }
@@ -102,7 +103,7 @@ public class SettingManager : MonoBehaviour
         var tempRootSetting = xmlDoc_Setting.DocumentElement;
         tempRootSetting.RemoveAllAttributes();
 
-        var setting = xmlDoc_Setting.CreateElement(nameof(SettingData));
+        var setting = xmlDoc_Setting.CreateElement(nameof(BgmSettingData));
         setting.SetAttribute("projectorscreenheight", projectorScreenHeight.ToString("F2"));
         setting.SetAttribute("mainvolume", Managers.Sound.volumes[(int)SoundManager.Sound.Main].ToString("F2"));
         setting.SetAttribute("bgmvol", Managers.Sound.volumes[(int)SoundManager.Sound.Bgm].ToString("F2"));
@@ -133,7 +134,7 @@ public class SettingManager : MonoBehaviour
             XmlElement root = newXml.CreateElement("Settings");
             newXml.AppendChild(root);
 
-            XmlElement initSetting = newXml.CreateElement(nameof(SettingData));
+            XmlElement initSetting = newXml.CreateElement(nameof(BgmSettingData));
 
             initSetting.SetAttribute("projectorscreenheight", SensorManager.height.ToString("F2"));
             initSetting.SetAttribute("mainvolume", "0.50");
