@@ -26,9 +26,11 @@ public class FP_Prefab : RaySynchronizer
     public static event Action onPrefabInput; 
     private MetaEduLauncher _launcher;
     private string name =string.Empty;
+    private bool isInitOnEnable =true;
 
     //public Camera maincamera;
     //public bool isRayEnabled = true;
+    
 
     private void Awake()
     {
@@ -49,11 +51,13 @@ public class FP_Prefab : RaySynchronizer
 
     protected override void OnEnable()
     {
-        
+        if (isInitOnEnable) return;
+        isInitOnEnable = false;
+                    
         if (name.Contains("REAL"))//
         {
             _imageComponent.enabled = SensorManager.isRealImageActive;
-            Debug.Log($"isRealImageActive : {SensorManager.isRealImageActive}");
+          //  Debug.Log($"isRealImageActive : {SensorManager.isRealImageActive}");
             if (!SensorManager.isRealRayActive)
             {
                 return;

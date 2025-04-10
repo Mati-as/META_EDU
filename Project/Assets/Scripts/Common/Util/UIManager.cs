@@ -113,15 +113,15 @@ public class UIManager
 
         var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
 
-        if (parent != null)
-            go.transform.SetParent(parent);
-        else if (SceneUI != null)
-            go.transform.SetParent(SceneUI.transform);
-        else
-            go.transform.SetParent(Root.transform);
+        // if (parent != null)
+        //     go.transform.SetParent(parent);
+        // else if (SceneUI != null)
+        //     go.transform.SetParent(SceneUI.transform);
+        // else
+        //     go.transform.SetParent(Root.transform);
 
-        go.transform.localScale = Vector3.one;
-        go.transform.localPosition = prefab.transform.position;
+        // go.transform.localScale = Vector3.one;
+        // go.transform.localPosition = prefab.transform.position;
 
         return true;
     }
