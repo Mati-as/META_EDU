@@ -173,6 +173,7 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (Camera.main != null)
         {
+            Logger.CoreClassLog($"camera_rect{Camera.main.rect.width} {Camera.main.rect.height}");
             Camera.main.rect = new Rect(
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),

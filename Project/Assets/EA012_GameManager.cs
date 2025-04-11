@@ -24,6 +24,11 @@ public class EA012_GameManager : Ex_BaseGameManager
         Car_FireTruck,
         Car_Airplane,
         Car_Train,
+        Building_Ambulance,
+        Buidling_PoliceCar,
+        Building_FireTruck,
+        Building_Airplane,
+        Building_Train,
         PosGroup,
         PosA,
         PosB,
@@ -34,6 +39,10 @@ public class EA012_GameManager : Ex_BaseGameManager
         PosG,
         PosH,
         PosI,
+        PosJ,
+        PosK,
+        PosL,
+        PosM,
         OutA,
         OutB,
         OutC,
@@ -45,10 +54,17 @@ public class EA012_GameManager : Ex_BaseGameManager
         Default,
         SeqA_WheelStopGame,
         SeqB_Ambulance,
+        SeqB_Ambulance_Finished,
         SeqC_PoliceCar,
+        //SeqC_PoliceCar_Finished,
         SeqD_FireTruck,
+      //  SeqD_FireTruck_Finished,
         SeqE_Airplane,
+    //SeqE_Airplane_Finished,
         SeqF_Train,
+       // SeqF_Train_Finished,
+       WheelSelectFinished=100
+        
     }
 
     public enum TireNum
@@ -59,21 +75,44 @@ public class EA012_GameManager : Ex_BaseGameManager
         Bus,   
         Taxi
     }
-    
+
+    [SerializeField]
+    [Range(0,20)]
+    private float TirePathDurationMin = 4f;
+    [SerializeField]
+    [Range(0,20)]
+    private float TirePathDurationMax = 8f;
     
     private const int SEAT_COUNT = 7;
     private const int CAR_COUNT = 5;
-    private const int totalWheelCount = 20;
+    private const int WHEEL_COUNT_TO_REMOVE = 20;
+    private int currentRemovedTireCount;
 
     private int _currentSelectedSeatCount;
     private int _currentCarSeqCount;
     
     private Dictionary<int,Material> _materialMap = new();
     private Dictionary<int,bool> isSeatClickedMap = new();
-    private Dictionary<int, Dictionary<int,Transform>> tireGroupDictionary = new();
-    
-    
-    
+    private Dictionary<int, Dictionary<int,Transform>> tireGroupMap = new();
+    private Dictionary<int, Dictionary<int,Sequence>> tireSeqMap = new();
+
+    private void ActivateBuilding(int buldingindex)
+    {
+        DOVirtual.DelayedCall(1f,() =>
+        {
+            GetObject((int)GameObj.Building_Ambulance).SetActive(false);
+            GetObject((int)GameObj.Buidling_PoliceCar).SetActive(false);
+            GetObject((int)GameObj.Building_FireTruck).SetActive(false);
+            GetObject((int)GameObj.Building_Airplane).SetActive(false);
+            GetObject((int)GameObj.Building_Train).SetActive(false);
+        });
+;
+        
+        GetObject(buldingindex).SetActive(true);
+        GetObject(buldingindex).transform.DOScale(0, 0.1f);
+        GetObject(buldingindex).transform.DOScale(0, 0.1f);
+
+    }
     public  Seq CurrentSeq
     {
         get => _currentSeq;
@@ -85,6 +124,10 @@ public class EA012_GameManager : Ex_BaseGameManager
             Logger.ContentTestLog($"Current Sequence: {CurrentSeq.ToString()}");
 
 
+
+            // commin Init Part.
+            currentRemovedTireCount = 0;
+            
             switch (value)
             {
                 case Seq.Default:
@@ -94,18 +137,23 @@ public class EA012_GameManager : Ex_BaseGameManager
                     break;
                 case Seq.SeqB_Ambulance:
                     RollTire((int)TireNum.Ambulance);
+                    ActivateBuilding((int)GameObj.Building_Ambulance);
                     break;
                 case Seq.SeqC_PoliceCar:
                     RollTire((int)TireNum.PoliceCar);
+                    ActivateBuilding((int)GameObj.Building_Ambulance);
                     break;
                 case Seq.SeqD_FireTruck:
                     RollTire((int)TireNum.FireTruck);
+                    ActivateBuilding((int)GameObj.Building_Ambulance);
                     break;
                 case Seq.SeqE_Airplane:
                     RollTire((int)TireNum.Bus);
+                    ActivateBuilding((int)GameObj.Building_Ambulance);
                     break;
                 case Seq.SeqF_Train:
                     RollTire((int)TireNum.Taxi);
+                    ActivateBuilding((int)GameObj.Building_Ambulance);
                     break;
             }
         }
@@ -119,7 +167,7 @@ public class EA012_GameManager : Ex_BaseGameManager
         BindObject(typeof(GameObj));
         Messenger.Default.Publish(new EA012Payload(nameof(Seq.Default)));
         
-        for (int i = (int)GameObj.Seat_A; i < SEAT_COUNT; i++)
+        for (int i = (int)GameObj.Seat_A; i < (int)GameObj.Seat_A + SEAT_COUNT; i++)
         {
             isSeatClickedMap.Add(i, false);
         }
@@ -143,19 +191,19 @@ public class EA012_GameManager : Ex_BaseGameManager
         }
         else if (CurrentSeq == Seq.SeqB_Ambulance)
         {
-            CurrentSeq = Seq.SeqC_PoliceCar;
+            OnRaySyncedOnTireSelection((int)TireNum.Ambulance);
         }
         else if (CurrentSeq == Seq.SeqC_PoliceCar)
         {
-            CurrentSeq = Seq.SeqD_FireTruck;
+            
         }
         else if (CurrentSeq == Seq.SeqD_FireTruck)
         {
-            CurrentSeq = Seq.SeqE_Airplane;
+          
         }
         else if (CurrentSeq == Seq.SeqE_Airplane)
         {
-            CurrentSeq = Seq.SeqF_Train;
+            
         }
         base.OnRaySynced();
     }
@@ -169,14 +217,19 @@ public class EA012_GameManager : Ex_BaseGameManager
         for (int i = 0; i < TIRE_GROUPCOUNT; i++)
         {
             var newDict = new Dictionary<int, Transform>();
-            tireGroupDictionary.Add(i, newDict);
+            var newSeqMap = new Dictionary<int, Sequence>();
+            
+            tireGroupMap.Add(i, newDict);
+            tireSeqMap.Add(i, newSeqMap);
             var prefab = Resources.Load<GameObject>("Runtime/SortedByScene/EA012/Wheel_" + tireGroupName);
 
-            int TIRE_COUNT = 20;
-            for (int tire = 0; tire < TIRE_COUNT; tire++)
+          
+            for (int tire = 0; tire < WHEEL_COUNT_TO_REMOVE; tire++)
             {
                 var tirePrefab = Instantiate(prefab).transform;
-                tireGroupDictionary[i].Add(tire, tirePrefab);
+                _isClickedMap.Add(tirePrefab.transform.GetInstanceID(), false);
+                tireGroupMap[i].Add(tire, tirePrefab);
+                tireSeqMap[i].Add(tirePrefab.gameObject.transform.GetInstanceID(),DOTween.Sequence());
             }
 
             tireGroupName++;
@@ -185,47 +238,60 @@ public class EA012_GameManager : Ex_BaseGameManager
     
     private void RollTire(int currentTireGroup)
     {
-        for (int i = 0; i < tireGroupDictionary[currentTireGroup].Count; i++)
-        {
-            var tire = tireGroupDictionary[currentTireGroup][i];
+        if (!tireSeqMap.ContainsKey(currentTireGroup))
+            tireSeqMap[currentTireGroup] = new Dictionary<int, Sequence>();
 
-            // 1. 랜덤 시작점 (OutA~OutC)
+        for (int i = 0; i < tireGroupMap[currentTireGroup].Count; i++)
+        {
+            var tire = tireGroupMap[currentTireGroup][i];
+
+            // 기존 시퀀스가 있다면 정리
+            if (tireSeqMap[currentTireGroup].ContainsKey(i))
+            {
+                tireSeqMap[currentTireGroup][i]?.Kill();
+                tireSeqMap[currentTireGroup].Remove(i);
+            }
+
+            // 위치 초기화
             int startIndex = Random.Range((int)GameObj.OutA, (int)GameObj.OutC + 1);
             Transform startTransform = GetObject(startIndex).transform;
             tire.position = startTransform.position;
             tire.rotation = startTransform.rotation;
 
-            // 2. 랜덤 도착지점 (PosA~PosI)
-            int destinationIndex = Random.Range((int)GameObj.PosA, (int)GameObj.PosI + 1);
+            int destinationIndex = Random.Range((int)GameObj.PosA, (int)GameObj.PosM + 1);
             Transform destinationTransform = GetObject(destinationIndex).transform;
 
-            // 3. 도착 후 좌우 loop용 위치 계산
-            List<Vector3> loopPoints = new List<Vector3>();
-            loopPoints.Add(destinationTransform.position);
-
-            // 좌우 인덱스 체크
+            List<Vector3> loopPoints = new() { destinationTransform.position };
             if (destinationIndex > (int)GameObj.PosA)
                 loopPoints.Add(GetObject(destinationIndex - 1).transform.position);
-            if (destinationIndex < (int)GameObj.PosI)
+            if (destinationIndex < (int)GameObj.PosM)
                 loopPoints.Add(GetObject(destinationIndex + 1).transform.position);
-
-            // loop 순서를 좀 섞어주기
             loopPoints = loopPoints.OrderBy(_ => Random.value).ToList();
 
-            // 4. 타이어 이동 경로 설정
+            // 시퀀스 생성
             Sequence seq = DOTween.Sequence();
-            seq.Append(tire.DOMove(destinationTransform.position, 1f).SetEase(Ease.InOutSine));
-
-            // 5. loop 애니메이션 추가
-            seq.Append(tire.DOPath(loopPoints.ToArray(), 2f, PathType.Linear)
+            seq.Append(tire.DOMove(destinationTransform.position, Random.Range(1.2f,1.8f)).SetEase(Ease.InOutSine));
+            seq.Append(tire.DOPath(loopPoints.ToArray(), Random.Range(TirePathDurationMin,TirePathDurationMax), PathType.CatmullRom)
+                .SetDelay(Random.Range(0.2f, 0.5f))
                 .SetEase(Ease.InOutSine)
+                .SetLookAt(0.05f)
                 .SetLoops(-1, LoopType.Yoyo));
+
+            tire.DOLocalRotate(new Vector3(0, 0, 360f), Random.Range(1.2f,2f), RotateMode.LocalAxisAdd)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Incremental);
+
+            // 시퀀스 저장
+            tireSeqMap[currentTireGroup][i] = seq;
         }
     }
+
     #endregion
 
     private void OnRaySyncedOnSeatSelection()
-    {
+    { 
+        
+        bool isAllSeatClicked = true;
         foreach (var hit in GameManager_Hits)
         {
             int hitTransformID = hit.transform.GetInstanceID();
@@ -235,18 +301,16 @@ public class EA012_GameManager : Ex_BaseGameManager
 
                 _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
                 
-                bool isAllSeatClicked = true;
+               
                 foreach (var key in isSeatClickedMap.Keys)
                 {
-                    if (!isSeatClickedMap[key])
-                    {
-                        isAllSeatClicked = false;
-                    }
+                    if (!isSeatClickedMap[key]) isAllSeatClicked = false;
                 }
                 
                 if(isAllSeatClicked) 
                 {
                     Logger.ContentTestLog("모두클릭됨");
+                    CurrentSeq = Seq.SeqB_Ambulance;
                     break;
                 }
              
@@ -256,8 +320,73 @@ public class EA012_GameManager : Ex_BaseGameManager
             }
         }
     }
+    
+    #region 타이어 등장파트
 
-    #region 타이어 등장파트 
+    private void OnRaySyncedOnTireSelection(int currentTireGroup)
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            if (!hit.transform.gameObject.name.Contains("Wheel")) continue;
+
+            Logger.ContentTestLog($"Tire clicked: {hit.transform.name}");
+
+            var clickedTire = hit.transform;
+            int clickedTransformID = hit.transform.GetInstanceID();
+
+            foreach (var _ in tireGroupMap[currentTireGroup])
+            {
+                if(_isClickedMap[clickedTransformID])continue;
+                
+                if (tireSeqMap[currentTireGroup].ContainsKey(clickedTransformID))
+                {
+                    tireSeqMap[currentTireGroup][clickedTransformID]?.Kill();
+                    tireSeqMap[currentTireGroup].Remove(clickedTransformID);
+                }
+                  
+                else
+                    Logger.ContentTestLog($"tire관련 key 없음 현재 키 :{currentTireGroup} 클릭한 키 : {clickedTransformID}");
+
+
+                //중복실행방지
+                if (!_isClickedMap[clickedTransformID])
+                {
+                    currentRemovedTireCount++;
+                    _isClickedMap[clickedTransformID] = true;
+                }
+
+                // 사라지는 애니메이션
+                
+                clickedTire.DOScale(Vector3.zero, 0.35f)
+                    .SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        clickedTire.gameObject.SetActive(false);
+                    });
+
+                Logger.ContentTestLog($"타이어 제거됨: 그룹 {(TireNum)currentTireGroup}, 인덱스 {clickedTransformID}");
+                return; // 하나만 처리하고 종료
+                // }
+            }
+            
+        }
+
+        if (currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE)
+        {
+            Logger.ContentTestLog("모든 타이어 제거됨");
+            currentRemovedTireCount = 0;
+            CurrentSeq = Seq.WheelSelectFinished;
+            DOVirtual.DelayedCall(10f, () =>
+            {
+                CurrentSeq = Seq.SeqC_PoliceCar;
+            });
+        }
+        else
+        {
+            Logger.ContentTestLog($"남은타이어 개수 {currentRemovedTireCount}/ {WHEEL_COUNT_TO_REMOVE}");
+        }
+    }
+
     #endregion
   
     private void AnimateAllSeats()

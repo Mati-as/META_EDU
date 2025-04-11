@@ -28,9 +28,13 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     private readonly Stack<ParticleSystem> _particlePool = new();
 
     protected Dictionary<int, bool> _isClickableMap = new();
+    protected Dictionary<int,bool> _isClickedMap = new();
+    
+    
     protected Dictionary<int, Transform> _tfidTotransformMap = new();
     protected Dictionary<int, int> _enumToTfIdMap = new();
     protected Dictionary<int, int> _tfIdToEnumMap = new();
+    
 
     protected Dictionary<Type, Animator> _animators = new();
 
@@ -66,32 +70,32 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         var isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(SceneManager.GetActiveScene().name);
 
         if (!isUIManagerLoadedOnRuntime) return; 
-        
+        var mainCamera = Camera.main;
         
         // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
         var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
 
-        // Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
-        //
-        // if (canvas != null && uiCameraObj != null)
-        // {
-        //     // Set the render mode and assign the camera
-        //     canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        //     canvas.worldCamera = uiCameraObj.GetComponent<Camera>();
-        //
-        //     Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
-        // }
-        // else
-        // {
-        //     Logger.CoreClassLog("Canvas or Camera not found on UICamera object.");
-        // }
+        Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
+
+        if (canvas != null && uiCameraObj != null)
+        {
+            // Set the render mode and assign the camera
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = uiCameraObj.GetComponent<Camera>();
+
+            Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
+        }
+        else
+        {
+            Logger.CoreClassLog("Canvas or Camera not found on UICamera object.");
+        }
         if (uiCameraObj != null)
         {
             var uiCamera = uiCameraObj.GetComponent<Camera>();
             if (uiCamera != null)
             {
-                uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
-                var mainCamera = Camera.main;
+              //  uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
+            
                 if (mainCamera != null && mainCamera.cameraType == CameraType.Game)
                 {
                     if (!mainCamera.GetUniversalAdditionalCameraData().cameraStack.Contains(uiCamera))
@@ -131,6 +135,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
                     Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
                     _isClickableMap.Add(transform.GetInstanceID(), false);
+                    _isClickedMap.Add(transform.GetInstanceID(), false);
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
                     _defaultSizeMap.Add(i, transform.localScale);
                     _defaultRotationQuatMap.Add(i, transform.rotation);

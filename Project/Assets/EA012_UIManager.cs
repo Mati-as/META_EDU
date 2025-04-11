@@ -34,6 +34,7 @@ public class EA012_UIManager : Base_UIManager
                 GetText((int)TMPs.TMP_Instruction).text = "먼저 친구들 각자 표시된 자리에 앉아주세요!";
             break;
             case nameof(EA012_GameManager.Seq.SeqB_Ambulance):
+                GetText((int)TMPs.TMP_Instruction).text = "(구급차)바퀴가 굴러다녀요";
             break;
             case nameof(EA012_GameManager.Seq.SeqC_PoliceCar):
             break;
@@ -42,6 +43,8 @@ public class EA012_UIManager : Base_UIManager
             case nameof(EA012_GameManager.Seq.SeqE_Airplane):
             break;
             case nameof(EA012_GameManager.Seq.SeqF_Train):
+            case nameof(EA012_GameManager.Seq.WheelSelectFinished):
+                GetText((int)TMPs.TMP_Instruction).text = "바퀴를 다 멈췄어요!";
                 break;
            
         }
