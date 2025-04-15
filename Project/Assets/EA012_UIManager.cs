@@ -34,9 +34,10 @@ public class EA012_UIManager : Base_UIManager
                 GetText((int)TMPs.TMP_Instruction).text = "먼저 친구들 각자 표시된 자리에 앉아주세요!";
             break;
             case nameof(EA012_GameManager.MainSeq.SeqB_Ambulance):
-                GetText((int)TMPs.TMP_Instruction).text = "(구급차)바퀴가 굴러다녀요";
+                GetText((int)TMPs.TMP_Instruction).text = "바퀴가 굴러다녀요. 바퀴를 눌러 멈춰주세요!";
             break;
             case nameof(EA012_GameManager.MainSeq.SeqC_PoliceCar):
+                GetText((int)TMPs.TMP_Instruction).text = "바퀴가 굴러다녀요. 바퀴를 눌러 멈춰주세요!";
             break;
             case nameof(EA012_GameManager.MainSeq.SeqD_FireTruck):
             break;
@@ -44,7 +45,7 @@ public class EA012_UIManager : Base_UIManager
             break;
             case nameof(EA012_GameManager.MainSeq.SeqF_Bus):
             case nameof(EA012_GameManager.MainSeq.CarMoveHelpFinished):
-                GetText((int)TMPs.TMP_Instruction).text = "바퀴를 다 멈췄어요!";
+                GetText((int)TMPs.TMP_Instruction).text = "구급차가 움직일 수 있게 도와줬어요!";
                 break;
             
             case nameof(EA012_GameManager.MainSeq.SeqB_Ambulance_Move):

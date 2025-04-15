@@ -80,14 +80,15 @@ public class EA012_GameManager : Ex_BaseGameManager
 
     public enum CarAnimSeq
     {
-        Ambulance=1,
+        Ambulance_Appear=1,
         Ambulance_Leave,
-        PoliceCar,
+        PoliceCar_Appear,
         PoliceCar_Leave,
-        FireTruck,
+        FireTruck_Appear,
         FireTruck_Leave,
-        Bus,   
-        Bus_Leave, 
+        Bus_Appear,   
+        Bus_Leave,
+        Taxi_Appear,
         Taxi_Leave
     }
 
@@ -110,8 +111,11 @@ public class EA012_GameManager : Ex_BaseGameManager
     
     private const int SEAT_COUNT = 7;
     private const int CAR_COUNT = 5;
-    private const int WHEEL_COUNT_TO_REMOVE = 20;
+    [SerializeField]
+    [Range(0,20)]
+    private int WHEEL_COUNT_TO_REMOVE = 20;
     private int currentRemovedTireCount;
+    private int None_CAR_ANIM = 100;
 
     private int _currentSelectedSeatCount;
     private int _currentCarSeqCount;
@@ -183,34 +187,33 @@ public class EA012_GameManager : Ex_BaseGameManager
                 
                 
                 case MainSeq.SeqB_Ambulance_Move:
-                    
                     _isCarMoveFinished = false;
-                    currentCarAnimSeq = CarAnimSeq.Ambulance;
-                    ShowHelpBtns();
+                    currentCarAnimSeq = CarAnimSeq.Ambulance_Appear;
+                    SetHelpCarMoveBtnStatus();
                     AnimateAllCarMoveHelpBtns();
                     break;
                 case MainSeq.SeqC_PoliceCar_Move:
                     _isCarMoveFinished = false;
-                    currentCarAnimSeq = CarAnimSeq.PoliceCar;
-                    ShowHelpBtns();
+                    currentCarAnimSeq = CarAnimSeq.PoliceCar_Appear;
+                    SetHelpCarMoveBtnStatus();
                     AnimateAllCarMoveHelpBtns();
                     break;
                 case MainSeq.SeqD_FireTruck_Move:
                     _isCarMoveFinished = false;
-                    currentCarAnimSeq = CarAnimSeq.FireTruck;
-                    ShowHelpBtns();
+                    currentCarAnimSeq = CarAnimSeq.FireTruck_Appear;
+                    SetHelpCarMoveBtnStatus();
                     AnimateAllCarMoveHelpBtns();
                     break;
                 case MainSeq.SeqE_Taxi_Move:
                     _isCarMoveFinished = false;
-                    currentCarAnimSeq = CarAnimSeq.Taxi_Leave;
-                    ShowHelpBtns();
+                    currentCarAnimSeq = CarAnimSeq.Taxi_Appear;
+                    SetHelpCarMoveBtnStatus();
                     AnimateAllCarMoveHelpBtns();
                     break;
                 case MainSeq.SeqF_Bus_Move:
                     _isCarMoveFinished = false;
-                    currentCarAnimSeq = CarAnimSeq.Bus;
-                    ShowHelpBtns();
+                    currentCarAnimSeq = CarAnimSeq.Bus_Appear;
+                    SetHelpCarMoveBtnStatus();
                     AnimateAllCarMoveHelpBtns();
                     break;
             }
@@ -465,15 +468,14 @@ public class EA012_GameManager : Ex_BaseGameManager
 
         if (currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE)
         {
-          
             currentRemovedTireCount = 0;
            // CurrentSeq = Seq.WheelSelectFinished;
            //group*2는단순 수적관계임 주의 ---------------------------------
             _carAnimator.SetInteger(CAR_NUM ,currentTireGroup*2 + 1);
             Logger.ContentTestLog($"모든 타이어 제거됨-----------------------{(CarAnimSeq)(currentTireGroup*2)+1}------");
-            DOVirtual.DelayedCall(6f, () =>
+            DOVirtual.DelayedCall(0.76f, () =>
             {
-                CurrentMainSeq++;
+               // CurrentMainSeq++;
             });
         }
         else
@@ -493,20 +495,38 @@ public class EA012_GameManager : Ex_BaseGameManager
         }
     }
 
-    private void ShowHelpBtns()
+    private void SetHelpCarMoveBtnStatus(bool isActive=true)
     {
-        for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
-        {
-            Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
-            GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.25f);
-        }
+       
 
-        _carAnimator.enabled=false;
+        if (isActive)
+        {
+            for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
+            {
+                Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
+                GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.25f);
+            }
+        }
+        else
+        {
+            for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
+            {
+                
+                Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
+                var i1 = i;
+                GetObject(i).transform.DOScale(0, 0.25f).OnComplete(() =>
+                {
+                    GetObject(i1).SetActive(false);
+                });
+            }      //  _carAnimator.enabled=false;
+            KillHelpBtns();
+        }
+           
+        
     }
     
     private void KillHelpBtns()
     {
-        
         for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
         {
             Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
@@ -515,11 +535,13 @@ public class EA012_GameManager : Ex_BaseGameManager
             _sequenceMap[(int)i] = DOTween.Sequence();
             GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.25f);
         }
-
-        _carAnimator.enabled=false;
     }
     private void AnimateAllCarMoveHelpBtns()
     {
+        //차가 버튼으로움직일땐 비활성화 -----------------
+
+        _carAnimator.enabled = false;
+        //GetObject((int)GameObj.Car_Ambulance).
         for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
         {
             Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
@@ -599,7 +621,10 @@ public class EA012_GameManager : Ex_BaseGameManager
                               //  CurrentMainSeq = Finish-------------------
                                 break;
                         }
-                        
+                        DOVirtual.DelayedCall(2f,()=>
+                        {
+                            CurrentMainSeq++;
+                        });
                         Logger.ContentTestLog($"currentMainSeq : {(MainSeq)CurrentMainSeq}");
                     });
                 });
@@ -620,8 +645,8 @@ public class EA012_GameManager : Ex_BaseGameManager
         int nextIdx = currentIdx + 1;
 
         Transform car = GetObject((int)currentCar).transform;
-        Vector3 start = GetObject(currentIdx).transform.position;
-        Vector3 end = GetObject(nextIdx).transform.position;
+        Vector3 start = clickedBtn == GameObj.BtnA?  GetObject((int)currentCar).transform.position:GetObject(currentIdx).transform.position;
+        Vector3 end = clickedBtn == GameObj.BtnA? GetObject((int)GameObj.BtnA).transform.position:GetObject(nextIdx).transform.position;
         Vector3 mid = Vector3.Lerp(start, end, 0.5f) + Vector3.up * 0.5f;
 
         Vector3[] path = { start, mid, end };

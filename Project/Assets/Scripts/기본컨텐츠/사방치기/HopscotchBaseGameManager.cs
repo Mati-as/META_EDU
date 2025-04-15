@@ -213,14 +213,6 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _scaleBackSequence = DOTween.Sequence();
 
-#if UNITY_EDITOR
-
-#endif
-        // step.DORotate(step.transform.rotation.eulerAngles + new Vector3(-20,0,0), 0.2f)
-        //     .OnComplete(() =>
-        //     {
-        //         step.DORotate(step.transform.rotation.eulerAngles + new Vector3(40,0,0), 0.2f);
-        //     });
 
 
         _scaleBackSequence.Append(number.DOScale(_uiDefaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
