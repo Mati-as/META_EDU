@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3141058764901922784}
   - component: {fileID: 2033537790810273861}
   - component: {fileID: 4313433118398008463}
+  - component: {fileID: 7492887849575750181}
+  - component: {fileID: 9082982926813737648}
   m_Layer: 0
   m_Name: Wheel_A
   m_TagString: Untagged
@@ -27,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2367935597939223898}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -274.82864, y: 1.9132004, z: 37.37}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8098220117070559950}
@@ -84,6 +86,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &7492887849575750181
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367935597939223898}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2502433882197017929, guid: ed3bcee5bc30b8b469bb7c90d976059b, type: 3}
+--- !u!65 &9082982926813737648
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2367935597939223898}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2, z: 1}
+  m_Center: {x: -0.0023563802, y: -0.00026154518, z: -0.0044265464}
 --- !u!1 &5727666890139832865
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +124,6 @@ GameObject:
   - component: {fileID: 8098220117070559950}
   - component: {fileID: 7433640752723755583}
   - component: {fileID: 4661892138551649057}
-  - component: {fileID: 6317429883901135570}
   m_Layer: 0
   m_Name: Wheel_A
   m_TagString: Untagged
@@ -112,7 +140,7 @@ Transform:
   m_GameObject: {fileID: 5727666890139832865}
   m_LocalRotation: {x: 0.08682413, y: -0.08682413, z: 0.0075961305, w: 0.99240386}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3141058764901922784}
@@ -168,17 +196,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6317429883901135570
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5727666890139832865}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2502433882197017929, guid: ed3bcee5bc30b8b469bb7c90d976059b, type: 3}
