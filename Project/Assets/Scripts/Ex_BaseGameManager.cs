@@ -133,7 +133,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     var transform = obj.transform;
                     _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
                     _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
-                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
+//                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
                     _isClickableMap.Add(transform.GetInstanceID(), false);
                     _isClickedMap.Add(transform.GetInstanceID(), false);
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
