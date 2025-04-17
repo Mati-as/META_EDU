@@ -27,7 +27,7 @@ public class EA012_UIManager : Base_UIManager
     }
 
     private float waitTimeBeforeTouch = 2f;
-    private float carInfoNarrationDuration = 5f;
+    private float carInfoNarrationDuration = 5.5f;
     private float delayOffset = 5f;
     private void OnNarrationReceived(EA012Payload payload)
     {
@@ -48,12 +48,12 @@ public class EA012_UIManager : Base_UIManager
                 break;
 
             case nameof(EA012_GameManager.MainSeq.SeatSelection):
-                GetText((int)TMPs.TMP_Instruction).text = "먼저 친구들 각자 표시된 자리에 앉아주세요!";
+                GetText((int)TMPs.TMP_Instruction).text = "먼저 친구들,\n각자 표시된 자리에 앉아주세요!";
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/OnSeatSelection");
                 break;
 
             case "OnSeatSelectFinished":
-                GetText((int)TMPs.TMP_Instruction).text = "다 앉았구나! 이제 자동차를 만나러 가볼까?";
+                GetText((int)TMPs.TMP_Instruction).text = "다 앉았구나!\n이제 자동차를 만나러 가볼까?";
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/OnSeatSelectFinished");
                 break;
 
@@ -82,8 +82,12 @@ public class EA012_UIManager : Base_UIManager
             case nameof(EA012_GameManager.MainSeq.CarMoveHelpFinished):
                 DOVirtual.DelayedCall(4f, () =>
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/NextCar");
-                    GetText((int)TMPs.TMP_Instruction).text = "이제 다음 자동차를 만나러 가볼까요?";
+                    if (!_gm.isLastCar)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/NextCar");
+                        GetText((int)TMPs.TMP_Instruction).text = "이제 다음 자동차를 만나러 가볼까요?";
+                    }
+                    
                 });
                 break;
 
@@ -105,11 +109,11 @@ public class EA012_UIManager : Base_UIManager
                 {
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Ambulance");
-                    GetText((int)TMPs.TMP_Instruction).text = "구급차";
+                    GetText((int)TMPs.TMP_Instruction).text = "구급차!";
                     DOVirtual.DelayedCall(waitTimeBeforeTouch, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Ambulance_TouchInduce");
-                        GetText((int)TMPs.TMP_Instruction).text = "앰뷸런스를 움직일 수 있게 도와주세요!\n길을 터치해주세요!";
+                        GetText((int)TMPs.TMP_Instruction).text = "구급차를 움직일 수 있게 도와주세요!\n길을 터치해주세요!";
                     });
 
                 });
@@ -118,12 +122,12 @@ public class EA012_UIManager : Base_UIManager
                
                 _gm.SetClickableWithDelayOfNar(carInfoNarrationDuration +delayOffset+ waitTimeBeforeTouch);
 
-                GetText((int)TMPs.TMP_Instruction).text = "파란 자동차는 나쁜 사람들을 잡아주고 애앵애앵 소리가 나요";
+                GetText((int)TMPs.TMP_Instruction).text = "파란 자동차는 나쁜 사람들을 잡아주고\n 애앵애앵 소리가 나요";
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_PoliceCar");
                
                 DOVirtual.DelayedCall(carInfoNarrationDuration, () =>
                 {
-                    GetText((int)TMPs.TMP_Instruction).text = "경찰차";
+                    GetText((int)TMPs.TMP_Instruction).text = "경찰차!";
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
                     DOVirtual.DelayedCall(waitTimeBeforeTouch, () =>
                     {
@@ -138,17 +142,17 @@ public class EA012_UIManager : Base_UIManager
                
                     _gm.SetClickableWithDelayOfNar(carInfoNarrationDuration +delayOffset+ waitTimeBeforeTouch);
 
-                GetText((int)TMPs.TMP_Instruction).text = "빨간색 자동차는 불을 끄러 가고 이용이용 소리가 나요";
+                GetText((int)TMPs.TMP_Instruction).text = "빨간색 자동차는 불을 끄러 가고\n이용이용 소리가 나요";
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_FireTruck");
                 
                 DOVirtual.DelayedCall(carInfoNarrationDuration, () =>
                 {
-                    GetText((int)TMPs.TMP_Instruction).text = "소방차";
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
+                    GetText((int)TMPs.TMP_Instruction).text = "소방차!";
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_FireTruck");
                     DOVirtual.DelayedCall(waitTimeBeforeTouch, () =>
                     {
                         GetText((int)TMPs.TMP_Instruction).text = "소방차를 움직일 수 있게 도와주세요!\n길을 터치해주세요!";
-                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/PoliceCar_TouchInduce");
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/FireTruck_TouchInduce");
                     });
                 });
                 break;
@@ -162,12 +166,12 @@ public class EA012_UIManager : Base_UIManager
                 
                 DOVirtual.DelayedCall(carInfoNarrationDuration, () =>
                 {
-                    GetText((int)TMPs.TMP_Instruction).text = "택시";
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
+                    GetText((int)TMPs.TMP_Instruction).text = "택시!";
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Taxi");
                     DOVirtual.DelayedCall(waitTimeBeforeTouch, () =>
                     {
                         GetText((int)TMPs.TMP_Instruction).text = "택시를 움직일 수 있게 도와주세요!\n길을 터치해주세요!";
-                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/PoliceCar_TouchInduce");
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Taxi_TouchInduce");
                     });
                 });
                 break;
@@ -175,16 +179,16 @@ public class EA012_UIManager : Base_UIManager
                 
                     _gm.SetClickableWithDelayOfNar(carInfoNarrationDuration +delayOffset+ waitTimeBeforeTouch);
                 GetText((int)TMPs.TMP_Instruction).text = "길다란 자동차는 ";
-                Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_FireTruck");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_Bus");
                 
                 DOVirtual.DelayedCall(carInfoNarrationDuration, () =>
                 {
-                    GetText((int)TMPs.TMP_Instruction).text = "버스";
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
+                    GetText((int)TMPs.TMP_Instruction).text = "버스!";
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Bus");
                     DOVirtual.DelayedCall(3, () =>
                     {
                         GetText((int)TMPs.TMP_Instruction).text = "버스를 움직일 수 있게 도와주세요!\n길을 터치해주세요!";
-                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/PoliceCar_TouchInduce");
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Bus_TouchInduce");
                     });
                 });
                 break;

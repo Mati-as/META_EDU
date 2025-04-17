@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
+using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
 public class EA012_GameManager : Ex_BaseGameManager
@@ -91,8 +92,9 @@ public class EA012_GameManager : Ex_BaseGameManager
         FireTruck_Leave,
         Taxi_Appear,
         Taxi_Leave,
-        Bus_Appear,   
+        Bus_Appear,
         Bus_Leave,
+        Finished =-123
     }
 
     public enum TireNum
@@ -193,6 +195,14 @@ public class EA012_GameManager : Ex_BaseGameManager
                     break;
                 case MainSeq.Finished:
                     ChangeThemeSeqAnim((int)value);
+
+                    //Default로 인해 파라미터 조절 실패하는경우 주의. 현재 딜레이로 해결중 
+                    DOVirtual.DelayedCall(1.5f, () =>
+                    {
+                        _carAnimator.enabled = true;
+                        _carAnimator.SetInteger(CAR_NUM ,(int)CarAnimSeq.Finished);
+                    });
+        
                     break;
                 case MainSeq.SeatSelection:
                     AnimateAllSeats();
@@ -307,8 +317,9 @@ public class EA012_GameManager : Ex_BaseGameManager
 
     protected override void Init()
     {
+        SHADOW_MAX_DISTANCE = 60;
         psResourcePath = "Runtime/SortedByScene/EA012/Fx_Click";
-        DOTween.SetTweensCapacity(500,1000);
+        DOTween.SetTweensCapacity(500,1300);
         base.Init();
         BindObject(typeof(GameObj));
         Messenger.Default.Publish(new EA012Payload(nameof(MainSeq.Default)));
@@ -410,7 +421,8 @@ public class EA012_GameManager : Ex_BaseGameManager
                 
                 _isClickedMap.Add(tirePrefab.transform.GetInstanceID(), false);
                 tireGroupMap[i].Add(tire, tirePrefab);
-                tireSeqMap[i].Add(tirePrefab.gameObject.transform.GetInstanceID(),DOTween.Sequence());
+                tireSeqMap[i].Add(tirePrefab.transform.GetInstanceID(),DOTween.Sequence());
+                tirePrefab.gameObject.SetActive(false);
             }
 
             tireGroupName++;
@@ -457,19 +469,21 @@ public class EA012_GameManager : Ex_BaseGameManager
 
             // 시퀀스 생성
 
-            seq.Append(tire.DOMove(destinationTransform.position, Random.Range(1.2f,1.8f)).SetEase(Ease.InOutSine));
+            seq.Append(tire.DOMove(destinationTransform.position, Random.Range(1.2f,1.9f)).SetEase(Ease.InOutSine));
             seq.Append(tire.DOPath(loopPoints.ToArray(), Random.Range(TirePathDurationMin,TirePathDurationMax), PathType.CatmullRom)
                 .SetDelay(Random.Range(0.2f, 0.5f))
                 .SetEase(Ease.InOutSine)
                 .SetLookAt(0.05f)
-                .SetLoops(Int32.MaxValue, LoopType.Yoyo));
+                .SetLoops(100, LoopType.Yoyo));
 
             tire.DOLocalRotate(new Vector3(0, 0, 360f), Random.Range(1.2f,2f), RotateMode.LocalAxisAdd)
                 .SetEase(Ease.Linear)
-                .SetLoops(Int32.MaxValue, LoopType.Incremental);
+                .SetLoops(100, LoopType.Incremental);
 
+            tire.transform.gameObject.SetActive(true);
+            tire.transform.localScale = 2 * Vector3.one;
             // 시퀀스 저장
-            
+
         }
     }
 
@@ -487,11 +501,9 @@ public class EA012_GameManager : Ex_BaseGameManager
             {
                 if (isSeatClickedMap[_tfIdToEnumMap[hitTransformID]]) return;
                 isSeatClickedMap[_tfIdToEnumMap[hitTransformID]] = true;
-                _seatClickedCount++;
-
-
+                
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
-
+                _seatClickedCount++;
 
                 _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
@@ -513,7 +525,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 }
 
 
-                PlayParticleEffect(hit.transform.position);
+                PlayParticleEffect(hit.point);
             }
         }
     }
@@ -527,42 +539,41 @@ public class EA012_GameManager : Ex_BaseGameManager
         //Logger.ContentTestLog($"{(TireNum)currentTireGroup} : 현재 타이어 그룹 ");
         foreach (var hit in GameManager_Hits)
         {
-            
             if (!hit.transform.gameObject.name.Contains("Wheel")) continue;
-
-            PlayParticleEffect(hit.transform.position);
-            Logger.ContentTestLog($"Tire clicked: {hit.transform.name}");
-
-            var clickedTire = hit.transform;
-            int clickedTransformID = hit.transform.GetInstanceID();
-
-            foreach (var _ in tireGroupMap[currentTireGroup])
+            else
             {
-                if(_isClickedMap.ContainsKey(clickedTransformID) && _isClickedMap[clickedTransformID])continue;
-            
-                //중복실행방지
-                if (!_isClickedMap[clickedTransformID])
+                PlayParticleEffect(hit.point);
+                Logger.ContentTestLog($"Tire clicked: {hit.transform.name}");
+
+                var clickedTire = hit.transform;
+                int clickedTransformID = clickedTire.GetInstanceID();
+
+                // 🔐 Prevent duplicate clicks
+                if (!_isClickedMap.TryGetValue(clickedTransformID, out bool wasClicked) || wasClicked)
                 {
-                    _isClickedMap[clickedTransformID] = true;
-                    currentRemovedTireCount++;
+                    Logger.ContentTestLog($"이미 클릭된 타이어이거나 ID가 존재하지 않음: clicked? {wasClicked} :{clickedTransformID}");
+                    continue;
                 }
-                
-                
-                if (tireSeqMap[currentTireGroup].ContainsKey(clickedTransformID))
+
+                _isClickedMap[clickedTransformID] = true;
+                currentRemovedTireCount++;
+
+                // 🔥 Kill and remove existing sequence
+                if (tireSeqMap[currentTireGroup].TryGetValue(clickedTransformID, out Sequence existingSeq))
                 {
-                    tireSeqMap[currentTireGroup][clickedTransformID]?.Kill();
+                    existingSeq.Kill();
                     tireSeqMap[currentTireGroup].Remove(clickedTransformID);
                 }
-                  
                 else
-                    Logger.ContentTestLog($"tire관련 key 없음 현재 키 :{currentTireGroup} 클릭한 키 : {clickedTransformID}");
+                {
+                    Logger.ContentTestLog($"tire관련 key 없음: 그룹 {currentTireGroup}, 키 {clickedTransformID}");
+                }
 
-
+                // 🎵 Play sound
                 char randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Click" + randomChar.ToString());
+                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Click" + randomChar);
 
-                // 사라지는 애니메이션
-                
+                // 🌀 Animate disappearance
                 clickedTire.DOScale(Vector3.zero, 0.35f)
                     .SetEase(Ease.InBack)
                     .OnComplete(() =>
@@ -570,31 +581,39 @@ public class EA012_GameManager : Ex_BaseGameManager
                         clickedTire.gameObject.SetActive(false);
                     });
 
-//                Logger.ContentTestLog($"타이어 제거됨: 그룹 {(TireNum)currentTireGroup}, 인덱스 {clickedTransformID}");
-                return; // 하나만 처리하고 종료
-                // }
+              
             }
+
             
         }
 
-        if (!_isTireRemovalFinished && currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE)
+        if (!_isTireRemovalFinished && currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE )
         {
             _isTireRemovalFinished = true;
-            currentRemovedTireCount = 0;
+         
            // CurrentSeq = Seq.WheelSelectFinished;
            //group*2는단순 수적관계임 주의 ---------------------------------
             Logger.ContentTestLog($"모든 타이어 제거됨--------------------Caranim:{(currentTireGroup*2)+1}{(CarAnimSeq)(currentTireGroup*2)+1}------");
             Messenger.Default.Publish(new EA012Payload("AllTiresRemoved"));
             _carAnimator.SetInteger(CAR_NUM ,currentTireGroup*2 + 1);
+          
+            
+            
+           
             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/OnCarAppear");
+          
+            DOVirtual.DelayedCall(0.5f,()=>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarArrival");
+            });
             
             DOVirtual.DelayedCall(3.5f, () =>
             {
                 currentMainSeq++;
                 Logger.ContentTestLog($"current seq -> {currentMainSeq} -------------------");
                 OnTireSelectionFinished();
-               
             });
+            currentRemovedTireCount = 0;
         }
         else
         {
@@ -718,6 +737,11 @@ public class EA012_GameManager : Ex_BaseGameManager
     }
 
     private CarAnimSeq currentCarAnimSeq;
+    public bool isLastCar
+    {
+        get;
+        private set;
+    }
    // private MainSeq currentMainSeq;
     private bool _isCarMoveFinished;
     
@@ -772,22 +796,23 @@ public class EA012_GameManager : Ex_BaseGameManager
                         
                         case CarAnimSeq.PoliceCar_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","경찰차"));
-                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/PoliceCar_Arrival");
                             break;
                         
                         case CarAnimSeq.FireTruck_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","소방차"));
-                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/FireTruck_Arrival");
                              break;
                       
                         case CarAnimSeq.Taxi_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","택시"));
-                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Taxi_Arrival");
                              break;
                         
                         case CarAnimSeq.Bus_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","버스"));
-                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             isLastCar = true;
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Bus_Arrival");
                              break;
                     }
 
@@ -822,6 +847,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                         
                         case CarAnimSeq.Bus_Leave:
                             _isCarMoveFinished = false;
+                            
                             currentMainSeq = MainSeq.Finished;
                             break;
                     }
@@ -840,61 +866,59 @@ private void OnHelpMoveFinisehd()
 }
 
 
-private void OnHelpBtnClicked(GameObj clickedBtn,GameObj currentCar)
-    {
-        // BtnG일 경우 종료
-        if (clickedBtn > GameObj.BtnG)
+private void OnHelpBtnClicked(GameObj clickedBtn, GameObj currentCar)
+{
+    // BtnG일 경우 종료
+    if (clickedBtn > GameObj.BtnG)
+        // Logger.ContentTestLog("[HelpBtn] BtnG 도달 → CarAnim Seq 2 설정됨");
+        return;
+
+    PlayParticleEffect(GetObject((int)clickedBtn).transform.position);
+
+    //C인경우 재생안되도록 설계됨. NextHelpMOveBtnC 파일 넣지 않은상태가 정상동작
+    char randomCharAB = (char)Random.Range('A', 'F' + 1);
+    Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/NextHelpMoveBtn" + randomCharAB);
+
+    char randomChar = (char)Random.Range('A', 'D' + 1);
+    Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Click" + randomChar);
+
+    Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarMove");
+
+    _sequenceMap[(int)clickedBtn]?.Kill();
+    _sequenceMap[(int)clickedBtn] = DOTween.Sequence();
+    AnimateSeatLoopSelectively(clickedBtn + 1);
+
+
+    //     _carAnimator.SetTrigger(CAR_ANIM_OFF);
+    if (_helpMoveBtnColliderMap.ContainsKey((int)clickedBtn)) _helpMoveBtnColliderMap[(int)clickedBtn].enabled = false;
+    if (_helpMoveBtnColliderMap.ContainsKey((int)clickedBtn + 1))
+        _helpMoveBtnColliderMap[(int)clickedBtn + 1].enabled = true;
+
+    int currentIdx = (int)clickedBtn - 1;
+    int nextIdx = currentIdx + 1;
+
+
+    var car = GetObject((int)currentCar).transform;
+    var start = clickedBtn == GameObj.BtnA
+        ? GetObject((int)currentCar).transform.position
+        : GetObject(currentIdx).transform.position;
+    var end = clickedBtn == GameObj.BtnA
+        ? GetObject((int)GameObj.BtnA).transform.position
+        : GetObject(nextIdx).transform.position;
+    var mid = Vector3.Lerp(start, end, 0.5f) + Vector3.up * 0.5f;
+
+    Vector3[] path = { start, mid, end };
+
+    car.DOPath(path, 1.5f, PathType.CatmullRom)
+        .SetEase(Ease.InOutSine)
+        .SetLookAt(0.1f, Vector3.forward)
+        .OnComplete(() =>
         {
-          
-           // Logger.ContentTestLog("[HelpBtn] BtnG 도달 → CarAnim Seq 2 설정됨");
-          
-           
-            return;
-        }
-        
-        //C인경우 재생안되도록 설계됨. NextHelpMOveBtnC 파일 넣지 않은상태가 정상동작
-        char randomCharAB = (char)Random.Range('A', 'F' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/NextHelpMoveBtn" + randomCharAB);
-        
-        char randomChar = (char)Random.Range('A', 'D' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Click" + randomChar.ToString());
+            Logger.ContentTestLog($"[HelpBtn] 차량 이동 완료: {clickedBtn} → {(GameObj)nextIdx}");
+        });
+}
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarMove");
-        
-        _sequenceMap[(int)clickedBtn]?.Kill();
-        _sequenceMap[(int)clickedBtn] = DOTween.Sequence();
-        AnimateSeatLoopSelectively(clickedBtn+1);
-        
-        
-   //     _carAnimator.SetTrigger(CAR_ANIM_OFF);
-        if(_helpMoveBtnColliderMap.ContainsKey((int)clickedBtn))_helpMoveBtnColliderMap[(int)clickedBtn].enabled = false;
-        if(_helpMoveBtnColliderMap.ContainsKey((int)clickedBtn+1))_helpMoveBtnColliderMap[(int)clickedBtn + 1].enabled = true;
-
-        int currentIdx = (int)clickedBtn-1;
-        int nextIdx = currentIdx + 1;
-
-
-        var car = GetObject((int)currentCar).transform;
-        var start = clickedBtn == GameObj.BtnA
-            ? GetObject((int)currentCar).transform.position
-            : GetObject(currentIdx).transform.position;
-        var end = clickedBtn == GameObj.BtnA
-            ? GetObject((int)GameObj.BtnA).transform.position
-            : GetObject(nextIdx).transform.position;
-        var mid = Vector3.Lerp(start, end, 0.5f) + Vector3.up * 0.5f;
-
-        Vector3[] path = { start, mid, end };
-
-        car.DOPath(path, 1.5f, PathType.CatmullRom)
-            .SetEase(Ease.InOutSine)
-            .SetLookAt(0.1f, Vector3.forward)
-            .OnComplete(() =>
-            {
-                Logger.ContentTestLog($"[HelpBtn] 차량 이동 완료: {clickedBtn} → {(GameObj)nextIdx}");
-
-            });
-    }
-    #endregion
+#endregion
 }
 
 
