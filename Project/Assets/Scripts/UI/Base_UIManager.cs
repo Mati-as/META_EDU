@@ -17,6 +17,8 @@ public class Base_UIManager : UI_PopUp
         TMP_Instruction
     }
     
+    
+    
     public override bool Init()
     {
         //base.Init();

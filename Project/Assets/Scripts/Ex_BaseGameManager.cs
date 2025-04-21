@@ -87,14 +87,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         }
         else
         {
-            Logger.CoreClassLog("Canvas or Camera not found on UICamera object.");
+            Logger.LogError("Canvas or Camera not found on UICamera object.");
         }
         if (uiCameraObj != null)
         {
             var uiCamera = uiCameraObj.GetComponent<Camera>();
             if (uiCamera != null)
             {
-              //  uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
+               uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
             
                 if (mainCamera != null && mainCamera.cameraType == CameraType.Game)
                 {
@@ -105,13 +105,13 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     }
                 }
                 else
-                    Logger.ContentTestLog("MainCamera가 없거나 올바르지 않은 타입입니다.");
+                    Logger.LogError("MainCamera가 없거나 올바르지 않은 타입입니다.");
             }
             else
-                Logger.ContentTestLog("UICamera 오브젝트에 Camera 컴포넌트가 없습니다.");
+                Logger.LogError("UICamera 오브젝트에 Camera 컴포넌트가 없습니다.");
         }
         else
-            Logger.ContentTestLog("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
+            Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
     }
 
 

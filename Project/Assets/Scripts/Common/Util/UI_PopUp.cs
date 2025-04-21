@@ -7,7 +7,7 @@ namespace MyCustomizedEditor.Common.Util
             if (base.Init() == false)
                 return false;
 
-            Managers.UI.SetCanvas(gameObject, true);
+            //Managers.UI.SetCanvas(gameObject, true);
             return true;
         }
 
