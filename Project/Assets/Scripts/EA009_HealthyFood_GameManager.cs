@@ -99,7 +99,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
 
     private MainSeq _currentMainSeq = MainSeq.Default;
-
+    private Sequence _currentMasterSequence;
     private MainSeq currentMainSeq
     {
         get
@@ -210,6 +210,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         SetFoodPool();
 
         currentMainSeq = MainSeq.Default;
+        _currentMasterSequence = DOTween.Sequence();
     }
 
     protected override void OnGameStartStartButtonClicked()
@@ -254,10 +255,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private float introDuration=2.5f;
     private void OnAllFoodIntroduce()
     {
-        Sequence masterInitSequence = DOTween.Sequence();
-        Sequence masterSequence = DOTween.Sequence();
-        masterSequence.Pause(); // 먼저 멈춰놓고 대기
-
+        _currentMasterSequence?.Kill();
+        _currentMasterSequence = DOTween.Sequence();
 // 🔹 masterInitSequence 내부 구성
         for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutB; i++)
         {
@@ -265,16 +264,16 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             var obj = GetObject(localIndex).transform;
             obj.localScale = Vector3.zero;
 
-            masterInitSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.1f, 0.2f).SetEase(Ease.OutBack));
-            masterInitSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.1f));
-            masterInitSequence.AppendInterval(0.1f);
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.1f, 0.2f).SetEase(Ease.OutBack));
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.1f));
+            _currentMasterSequence.AppendInterval(0.1f);
         }
 
 // 🔹 Init 끝나고 → masterSequence 실행
-        masterInitSequence.OnComplete(() =>
+        _currentMasterSequence.OnComplete(() =>
         {
             Logger.ContentTestLog("Init 애니메이션 완료, 다음 단계 실행");
-            masterSequence.Play();
+            _currentMasterSequence.Play();
         });
 
 // 🔹 masterSequence 구성 (차례대로 메시지 + 애니메이션)
@@ -283,15 +282,15 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             int localIndex = i;
             var obj = GetObject(localIndex).transform;
 
-            masterSequence.AppendCallback(() =>
+            _currentMasterSequence.AppendCallback(() =>
             {
                 Messenger.Default.Publish(new EA009_Payload(obj.name));
                 Logger.ContentTestLog($"Messenger: {obj.name}");
             });
 
-            masterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, 0.15f).SetEase(Ease.InOutBack));
-            masterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.15f).SetEase(Ease.InOutBack));
-            masterSequence.AppendInterval(0.2f);
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, 0.15f).SetEase(Ease.InOutBack));
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.15f).SetEase(Ease.InOutBack));
+            _currentMasterSequence.AppendInterval(0.3f);
         }
         
         for (int i = (int)GameObj.ColaA; i <= (int)GameObj.DonutA; i++)
@@ -299,16 +298,25 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             int localIndex = i;
             var obj = GetObject(localIndex).transform;
 
-            masterSequence.AppendCallback(() =>
+            _currentMasterSequence.AppendCallback(() =>
             {
                 Messenger.Default.Publish(new EA009_Payload(obj.name));
                 Logger.ContentTestLog($"Messenger: {obj.name}");
             });
 
-            masterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, 0.15f).SetEase(Ease.InOutBack));
-            masterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.15f).SetEase(Ease.InOutBack));
-            masterSequence.AppendInterval(0.2f);
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, 0.15f).SetEase(Ease.InOutBack));
+            _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], 0.15f).SetEase(Ease.InOutBack));
+            _currentMasterSequence.AppendInterval(0.3f);
         }
+        
+        
+        _currentMasterSequence.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new EA009_Payload(MainSeq.OnFinish.ToString()));
+            Logger.ContentTestLog($"Messenger: {MainSeq.OnFinish.ToString()}");
+
+            currentMainSeq = MainSeq.GoodFoodChangeToBadFood;
+        });
     }
 
     #endregion
@@ -318,6 +326,82 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
     private void OnGoodFoodChangeToBadFood()
     {
+           _currentMasterSequence?.Kill();
+    _currentMasterSequence = DOTween.Sequence();
+
+    // 좋은 음식과 대응하는 나쁜 음식 인덱스 (1:1 대응, 순서대로)
+    var goodFoodList = new List<GameObj>
+    {
+        GameObj.FishA, GameObj.MeatA, GameObj.ChickenA, GameObj.AppleA,
+        GameObj.EggA, GameObj.MilkA, GameObj.CarrotA,
+        GameObj.FishB, GameObj.MeatB, GameObj.ChickenB, GameObj.AppleB,
+        GameObj.EggB, GameObj.MilkB, GameObj.CarrotB
+    };
+
+    var badFoodList = new List<GameObj>
+    {
+        GameObj.ColaA, GameObj.CookieA, GameObj.IceCreamA, GameObj.PizzaA,
+        GameObj.ChocolateA, GameObj.CakeA, GameObj.DonutA,
+        GameObj.ColaB, GameObj.CookieB, GameObj.IceCreamB, GameObj.PizzaB,
+        GameObj.ChocolateB, GameObj.CakeB, GameObj.DonutB
+    };
+
+    for (int i = 0; i < goodFoodList.Count; i++)
+    {
+        int goodIndex = (int)goodFoodList[i];
+        int badIndex = (int)badFoodList[i];
+
+        var goodObj = GetObject(goodIndex).transform;
+        var badPrefab = GetObject(badIndex); // Prefab or sample
+        var badParent = PoolRoot.transform;
+
+        _currentMasterSequence.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new EA009_Payload("좋은음식이 나쁜음식으로 바뀌는 중.."));
+        });
+
+        // 1. 좋은 음식 작아지기
+        _currentMasterSequence.Append(goodObj.DOScale(Vector3.zero, 0.3f).SetEase(_disappearAnimEase));
+
+        // 2. 같은 위치에 나쁜 음식 생성
+        _currentMasterSequence.AppendCallback(() =>
+        {
+            GameObject badClone = null;
+
+            // Stack에서 복제 오브젝트 꺼내기 (중복 방지)
+            if (_foodClonePool.ContainsKey(goodIndex) && _foodClonePool[goodIndex].Count > 0)
+            {
+                badClone = _foodClonePool[goodIndex].Pop();
+                badClone.SetActive(true);
+            }
+            else
+            {
+                // 복제본 부족 시 새로 생성
+                badClone = Instantiate(badPrefab, badParent);
+            }
+
+            badClone.transform.position = goodObj.position;
+            badClone.transform.localScale = Vector3.zero;
+            badClone.name = $"BadClone_{badIndex}_{i}";
+        });
+
+        // 3. 나쁜 음식 커지기
+        _currentMasterSequence.AppendCallback(() =>
+        {
+            Transform badCloneTransform = badParent.GetChild(badParent.childCount - 1).transform;
+
+            badCloneTransform.DOScale(_defaultSizeMap[badIndex], 0.3f).SetEase(_appearAnimEase);
+        });
+
+        _currentMasterSequence.AppendInterval(0.15f);
+    }
+
+    // 완료 후 다음 단계로
+    _currentMasterSequence.AppendCallback(() =>
+    {
+        Logger.ContentTestLog("모든 음식이 나쁜 음식으로 변신 완료!");
+        currentMainSeq = MainSeq.BadFoodEatIntro;
+    });
     }
 
     #endregion
