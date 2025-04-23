@@ -5,12 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class UI_EventHandler : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
+public class UI_EventHandler : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler,IPointerExitHandler,IPointerEnterHandler
 {
     public Action OnClickHandler = null;
     public Action OnPressedHandler = null;
     public Action OnPointerDownHandler = null;
     public Action OnPointerUpHandler = null;
+    public Action OnPointerEnterHandler = null;
+    public Action OnPointerExitHandler = null;
 
     bool _pressed = false;
 
@@ -36,5 +38,10 @@ public class UI_EventHandler : MonoBehaviour, IPointerClickHandler, IPointerDown
         _pressed = false;
         OnPointerUpHandler?.Invoke();
     }
+    
+    public void OnPointerEnter(PointerEventData eventData) => OnPointerEnterHandler?.Invoke();
+    public void OnPointerExit(PointerEventData eventData) => OnPointerExitHandler?.Invoke();
+    
+    
 }
 

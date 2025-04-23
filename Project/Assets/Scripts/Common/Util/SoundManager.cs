@@ -170,6 +170,7 @@ public class SoundManager : MonoBehaviour
             audioSource.volume = volumes[(int)Sound.Narration];
             audioSource.clip = audioClip;
 
+            audioSource.Stop();
             audioSource.PlayOneShot(audioClip);
             return true;
         }
