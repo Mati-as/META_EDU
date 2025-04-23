@@ -17,8 +17,8 @@ public class UI_Confirmation : UI_PopUp
         BindObject(typeof(UI));
         GetObject((int)UI.Button_Yes).BindEvent(() =>
         {
-            Debug.Assert(UI_MetaeduMaster.GamenNameWaitingForConfirmation!=null);
-            LoadScene(UI_MetaeduMaster.GamenNameWaitingForConfirmation);
+            Debug.Assert(UI_MetaEduLauncherMaster.GamenNameWaitingForConfirmation!=null);
+            LoadScene(UI_MetaEduLauncherMaster.GamenNameWaitingForConfirmation);
         });
         GetObject((int)UI.Button_No).BindEvent(() =>
         {

@@ -35,7 +35,7 @@ public class MetaEduLauncher : UI_PopUp
         MainVolume,
         BGMVolume,
         EffectVolume,
-
+        NarrationVolume,
         //센서보정관련
         T0_Sensor_Settings,
         T1_Screen_Setting,
@@ -43,7 +43,7 @@ public class MetaEduLauncher : UI_PopUp
         T3_Calibration_Setting,
 
 
-        NarrationVolume
+      
         //Login,
         //Survey
     }
@@ -148,8 +148,8 @@ public class MetaEduLauncher : UI_PopUp
         _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
 
 
-        LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
-        LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
 
 
         FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
@@ -369,7 +369,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnDestroy()
     {
-        LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
 
@@ -519,17 +519,7 @@ public class MetaEduLauncher : UI_PopUp
                 GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
                 GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(true);
                 break;
-            //  case UIType.Login:
-            //  	Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-            //  	GetObject((int)UIType.Login).gameObject.SetActive(true);
-            //  	GetObject((int)UIType.Login).GetComponent<ScrollRect>().ResetHorizontal();
-            //  	break;
-            //
-            // case UIType.Survey:
-            // 	Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-            // 	GetObject((int)UIType.Survey).gameObject.SetActive(true);
-            // 	GetObject((int)UIType.Survey).GetComponent<ScrollRect>().ResetHorizontal();
-            // 	break;
+
         }
 
         if (isInitialSoundBlocked)
@@ -647,13 +637,13 @@ public class MetaEduLauncher : UI_PopUp
         //테스트 후 삭제 필요
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-
-        float radius = 50f;
-        Gizmos.DrawSphere(currentPrefabPosition, radius);
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.red;
+    //
+    //     float radius = 50f;
+    //     Gizmos.DrawSphere(currentPrefabPosition, radius);
+    // }
 
 
     private string _gameNameWaitingForConfirmation;

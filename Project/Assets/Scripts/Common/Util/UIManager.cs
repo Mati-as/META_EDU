@@ -60,19 +60,19 @@ public class UIManager
         return Utils.GetOrAddComponent<T>(go);
     }
 
-    public T ShowSceneUI<T>(string name = null) where T : UI_Scene
-    {
-        if (string.IsNullOrEmpty(name))
-            name = typeof(T).Name;
+	public T ShowSceneUI<T>(string name = null) where T : UI_Scene
+	{
+		if (string.IsNullOrEmpty(name))
+			name = typeof(T).Name;
 
-        var go = Managers.Resource.Instantiate($"UI/Scene/{name}");
-        var sceneUI = Utils.GetOrAddComponent<T>(go);
-        SceneUI = sceneUI;
+		GameObject go = Managers.Resource.Instantiate($"UI/Scene/{name}");
+		T sceneUI = Utils.GetOrAddComponent<T>(go);
+		SceneUI = sceneUI;
 
-        go.transform.SetParent(Root.transform);
+		go.transform.SetParent(Root.transform);
 
-        return sceneUI;
-    }
+		return sceneUI;
+	}
 
     public T ShowPopupUI<T>(string name = null, Transform parent = null) where T : UI_PopUp
     {
@@ -95,9 +95,18 @@ public class UIManager
         go.transform.localScale = Vector3.one;
         go.transform.localPosition = prefab.transform.position;
 
+        if (SceneUI != null)
+        {
+            
+        }
         return popup;
     }
     
+    
+    /// <summary>
+    /// ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
+    /// </summary>
+    /// <returns></returns>
     public bool ShowCurrentSceneUIManager<T>(string sceneName = null, Transform parent = null) 
     {
         if (string.IsNullOrEmpty(sceneName))

@@ -1,3 +1,5 @@
+using UnityEngine.SceneManagement;
+
 namespace MyCustomizedEditor.Common.Util
 {
     public class UI_PopUp : UI_Base
@@ -7,7 +9,11 @@ namespace MyCustomizedEditor.Common.Util
             if (base.Init() == false)
                 return false;
 
-            //Managers.UI.SetCanvas(gameObject, true);
+            if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
+            {
+                Logger.CoreClassLog("Popup UIs on Launcher Canvas Set");
+                Managers.UI.SetCanvas(gameObject, true);
+            }
             return true;
         }
 

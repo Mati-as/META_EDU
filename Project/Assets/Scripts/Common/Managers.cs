@@ -25,15 +25,7 @@ public class Managers : MonoBehaviour
     public static float PROJECTOR_SCREEN_HEIGHT; 
     public static bool isGameStopped { get; set; }
 
-    // public static MetaEduLauncher launcher 
-    // {  
-    //     get 
-    //     { 
-    //         Init(); 
-    //         return s_launcher; 
-    //     } 
-    // }
-    
+
     public static SettingManager Setting
     {  
         get 
