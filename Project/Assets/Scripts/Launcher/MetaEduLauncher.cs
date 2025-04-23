@@ -228,6 +228,7 @@ public class MetaEduLauncher : UI_PopUp
                         CheckAndSetClickable();
 
                         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+                      
                         //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
                         _gameNameWaitingForConfirmation = button.gameObject.name;
                         GetObject((int)UIType.UI_Confirm).SetActive(true);

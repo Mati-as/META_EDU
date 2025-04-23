@@ -28,45 +28,45 @@ public class LoadInitialScene : MonoBehaviour
         nextScene = 0;
     }
 
-    IEnumerator LoadScene()
-    {
-        //yield return null;
-
-        AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
-        op.allowSceneActivation = false;
-
-        float timer = 0.0f;
-        //while (!op.isDone)
-        while(true)
-        {
-            //yield return null;
-
-            timer += Time.deltaTime;
-
-            if (op.progress >= 0.9f)
-            {
-                progressBar.value = Mathf.Lerp(progressBar.value, 1f, timer);
-                loadingPercent.text = "progressBar.value";
-
-                if (progressBar.value == 1.0f)
-                    op.allowSceneActivation = true;
-            }
-            else
-            {
-                progressBar.value = Mathf.Lerp(progressBar.value, op.progress, timer);
-                if (progressBar.value >= op.progress)
-                {
-                    timer = 0f;
-
-                    //End of scene index
-                    if (nextScene == 2 && loadingCompleted)
-                    {
-                        StopAllCoroutines();
-                    }
-                }
-            }
-        }
-    }
+    // IEnumerator LoadScene()
+    // {
+    //     //yield return null;
+    //
+    //     AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
+    //     op.allowSceneActivation = false;
+    //
+    //     float timer = 0.0f;
+    //     //while (!op.isDone)
+    //     while(true)
+    //     {
+    //         //yield return null;
+    //
+    //         timer += Time.deltaTime;
+    //
+    //         if (op.progress >= 0.9f)
+    //         {
+    //             progressBar.value = Mathf.Lerp(progressBar.value, 1f, timer);
+    //             loadingPercent.text = "progressBar.value";
+    //
+    //             if (progressBar.value == 1.0f)
+    //                 op.allowSceneActivation = true;
+    //         }
+    //         else
+    //         {
+    //             progressBar.value = Mathf.Lerp(progressBar.value, op.progress, timer);
+    //             if (progressBar.value >= op.progress)
+    //             {
+    //                 timer = 0f;
+    //
+    //                 //End of scene index
+    //                 if (nextScene == 2 && loadingCompleted)
+    //                 {
+    //                     StopAllCoroutines();
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     IEnumerator RotateIcon()
     {
@@ -86,7 +86,7 @@ public class LoadInitialScene : MonoBehaviour
             else
             {
                 onInitialLoadComplete?.Invoke();
-            //    Debug.Log("Initial Scene loadComplete------------------------");
+                Managers.UI.ShowPopupUI<UI_MetaeduMaster>();
                 gameObject.SetActive(false);
                 StopAllCoroutines();
               

@@ -10,6 +10,7 @@ public class Base_UIManager : UI_PopUp
   
     protected enum UI
     {
+        
     }
 
     protected enum TMPs
