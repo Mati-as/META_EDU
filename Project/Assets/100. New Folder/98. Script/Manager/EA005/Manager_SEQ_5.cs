@@ -214,6 +214,76 @@ public class Manager_SEQ_5 : Base_GameManager
             //다음 진행
         }
     }
+    public void Click(GameObject Emoji, int num_emoji, int num_table)
+    {
+        var randomChar = (char)Random.Range('A', 'F' + 1);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
+
+        Debug.Log("EMOJI CLICKED!");
+
+        //처음 이모지 클릭, 마지막 이모지 클릭 기능
+        if (Content_Seq == 1 || Content_Seq == 13)
+        {
+            Inactive_emoji_clickable(Emoji);
+
+            //Activate selected emoji, text animation
+            Manager_Anim.Activate_emoji(Emoji);
+            Manager_Anim.Activate_emojitext_popup(Emoji);
+
+            Emoji.transform.DOShakeScale(1.0f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_emoji_clickable(Emoji));
+
+        }
+        //else if (Content_Seq == 3 || Content_Seq == 5 || Content_Seq == 7 || Content_Seq == 9 || Content_Seq == 11)
+        //{
+        //    //Clicked this round emoji
+        //    if (Game_round == num_emoji)
+        //    {
+        //        Debug.Log("RIGHT EMOJI!");
+        //        Emoji.transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
+        //        Manager_obj_4.instance.Effect_array[num_table].SetActive(true);
+
+        //        Number_Maxemoji_game -= 1;
+        //        Manager_Anim.Inactivate_emoji(Emoji);
+        //        Inactive_emoji_clickable(Emoji);
+        //        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[num_emoji], 1f);
+        //        Emoji.GetComponent<Image>().sprite = Manager_obj_4.instance.White;
+
+        //        //End
+        //        if (Number_Maxemoji_game == 0)
+        //        {
+        //            Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Success, 1f);
+
+        //            Manager_obj_4.instance.Main_Icon_3_array[Game_round].SetActive(true);
+        //            Manager_obj_4.instance.Main_Icon_3_array[Game_round].transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
+
+        //            Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Emotion[Game_round], 1f);
+
+        //            Content_Seq += 1;
+        //            toggle = true;
+        //            Game_round += 1;
+        //            Timer_set();
+
+        //            Debug.Log("ALL EMOJI FOUND!");
+
+        //            Onclick = false;
+        //        }
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //}
+    }
+
+    public void Inactive_emoji_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_EMOJI>().Inactive_Clickable();
+    }
+
+    public void Active_emoji_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_EMOJI>().Active_Clickable();
+    }
 
     //[common] rplidar scanning
     protected override void Init()

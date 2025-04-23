@@ -18,7 +18,7 @@ public class Clicked_EMOJI : MonoBehaviour
         if (Clickable)
         {
             Manager_Seq = Manager_obj_5.instance.Get_managerseq();
-            //Manager_Seq.Click(this.gameObject, Number_emoji, Number_table);
+            Manager_Seq.Click(this.gameObject, Number_emoji, Number_table);
         }
     }
 

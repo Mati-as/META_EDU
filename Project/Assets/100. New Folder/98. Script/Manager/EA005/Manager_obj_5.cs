@@ -62,6 +62,11 @@ public class Manager_obj_5 : MonoBehaviour
     public Sprite[] Msg_textsprite_eng;
     public GameObject[] Effect_array;
 
+    //[New] 게임내 무작위성이 맞나? 선생님들도 예상을 할 수 없을 텐데?, 이거 다음번에 물어보는 걸로  일단은 무작위로 맞춰서 가게끔 수정함
+
+    public AudioClip[] NULL_narration;
+    public AudioClip[] EMOJI_narration;
+
     void Awake()
     {
         if (instance == null)
@@ -108,6 +113,8 @@ public class Manager_obj_5 : MonoBehaviour
 
         Msg_narration = Resources.LoadAll<AudioClip>("EA005/audio_message");
         Seq_narration = Resources.LoadAll<AudioClip>("EA005/audio_seq");
+        NULL_narration = Resources.LoadAll<AudioClip>("EA005/audio_null");
+        EMOJI_narration = Resources.LoadAll<AudioClip>("EA005/audio_emoji");
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);
