@@ -30,6 +30,11 @@ public class UIManager_EA009 : Base_UIManager
 
     private void OnGetMessageEventFromGm(EA009_Payload payload)
     {
+        if (payload.Checksum)
+        {
+            ChangeText($"{payload.Narration}");
+            return;
+        }
         Logger.ContentTestLog($"Get Message ---- {payload.Narration}");
         switch (payload.Narration)
         {
