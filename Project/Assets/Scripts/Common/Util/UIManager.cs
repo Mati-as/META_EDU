@@ -10,7 +10,22 @@ public class UIManager
     private int _order = -20;
 
      Stack<UI_PopUp> _popupStack = new Stack<UI_PopUp>();
-    
+     
+     public UI_PopUp currentPopupClass
+     {
+         get;
+         private set;
+     }
+     public string CurrentPopup
+     {
+         get;
+         private set;
+     }
+     public string PreviousPopup
+     {
+         get;
+         private set;
+     }
      public UI_Scene SceneUI { get; private set; }
 
     public GameObject Root
@@ -43,6 +58,10 @@ public class UIManager
     }
 
 
+    public int GetUICounts()
+    {
+        return _popupStack.Count;
+    }
     public T MakeSubItem<T>(Transform parent = null, string name = null) where T : UI_Base
     {
         if (string.IsNullOrEmpty(name))
@@ -79,11 +98,22 @@ public class UIManager
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
+        // 🔒 중복 팝업 검사
+        foreach (var popup in _popupStack)
+        {
+            if (popup != null && popup.GetType() == typeof(T))
+            {
+                Debug.LogWarning($"[UI] Popup '{name}' is already open. Duplicate not allowed.");
+                return popup as T;
+            }
+        }
 
+        // 프리팹 로드 및 인스턴스화
+        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
         var go = Managers.Resource.Instantiate($"UI/Popup/{name}");
-        var popup = Utils.GetOrAddComponent<T>(go);
-        _popupStack.Push(popup);
+
+        var popupInstance = Utils.GetOrAddComponent<T>(go);
+        _popupStack.Push(popupInstance);
 
         if (parent != null)
             go.transform.SetParent(parent);
@@ -95,11 +125,13 @@ public class UIManager
         go.transform.localScale = Vector3.one;
         go.transform.localPosition = prefab.transform.position;
 
-        if (SceneUI != null)
-        {
-            
-        }
-        return popup;
+        Managers.UI.SceneUI.OnPopupUI();
+
+        PreviousPopup = CurrentPopup;
+        CurrentPopup = name;
+        currentPopupClass = popupInstance;
+
+        return popupInstance;
     }
     
     
@@ -137,21 +169,59 @@ public class UIManager
     
 
   
-    public void ShowPopupUI(string className)
+    public UI_PopUp ShowPopupUI(string className, Transform parent = null)
     {
-        // 클래스 타입 가져오기
-        // Type uiType = Type.GetType(className);
-        //
-        // if (uiType == null)
-        // {
-        //     Debug.LogError($"UI 클래스 {className}를 찾을 수 없습니다.");
-        //     return;
-        // }
-        //
-        // // Managers.UI.ShowPopupUI<T>() 호출
-        // MethodInfo method = typeof(UI_PopUp).GetMethod("ShowPopupUI");
-        // MethodInfo genericMethod = method?.MakeGenericMethod(uiType);
-        // genericMethod.Invoke(Managers.UI, null);
+        if (string.IsNullOrEmpty(className))
+        {
+            Debug.LogError("className is null or empty.");
+            return null;
+        }
+
+        // 프리팹 로드
+        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{className}");
+        if (prefab == null)
+        {
+            Debug.LogError($"Prefab for {className} not found.");
+            return null;
+        }
+
+        var go = Managers.Resource.Instantiate($"UI/Popup/{className}");
+
+        // 문자열로 타입 가져오기
+        Type popupType = Type.GetType(className);
+        if (popupType == null)
+        {
+            Debug.LogError($"Type {className} could not be found.");
+            return null;
+        }
+
+        // Component 붙이기
+        UI_PopUp popup = go.AddComponent(popupType) as UI_PopUp;
+        if (popup == null)
+        {
+            Debug.LogError($"Type {className} is not a UI_PopUp.");
+            return null;
+        }
+
+        _popupStack.Push(popup);
+
+        // 부모 설정
+        if (parent != null)
+            go.transform.SetParent(parent);
+        else if (SceneUI != null)
+            go.transform.SetParent(SceneUI.transform);
+        else
+            go.transform.SetParent(Root.transform);
+
+        go.transform.localScale = Vector3.one;
+        go.transform.localPosition = prefab.transform.position;
+
+        Managers.UI.SceneUI.OnPopupUI();
+
+        PreviousPopup = CurrentPopup;
+        CurrentPopup = className;
+
+        return popup;
     }
 
 

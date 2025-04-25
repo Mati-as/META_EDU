@@ -24,8 +24,8 @@ public class Base_UIManager : UI_PopUp
     {
         //base.Init();
 
-        BindText(typeof(TMPs));
-        GetText((int)TMPs.TMP_Instruction).text = string.Empty;
+        BindTMP(typeof(TMPs));
+        GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;
         return true;
         // Initialize UI elements here
     }

@@ -9,11 +9,11 @@ namespace MyCustomizedEditor.Common.Util
             if (base.Init() == false)
                 return false;
 
-            if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
-            {
-                Logger.CoreClassLog("Popup UIs on Launcher Canvas Set");
-                Managers.UI.SetCanvas(gameObject, true);
-            }
+            // if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
+            // {
+            //     Logger.CoreClassLog("Popup UIs on Launcher Canvas Set");
+            //     Managers.UI.SetCanvas(gameObject, true);
+            // }
             return true;
         }
 

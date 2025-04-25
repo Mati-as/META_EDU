@@ -20,6 +20,8 @@ public class UI_ContentSortedByArea : UI_PopUp
 
     public override bool Init()
     {
+        BindObject(typeof(UI));
+        
         GetObject((int)UI.Btn_PA).BindEvent(() =>
         {
             Managers.UI.ShowPopupUI<UI_ContentSelection_PA>();

@@ -26,8 +26,8 @@ public class RaySynchronizer : MonoBehaviour
     public Camera _uiCamera;
 
     [FormerlySerializedAs("_spaceAction")] public InputAction _mouseAction;
-    public GraphicRaycaster GR;
-    public PointerEventData PED { get; private set; }
+    [FormerlySerializedAs("GR")] public GraphicRaycaster graphicRaycaster;
+    public PointerEventData PointerEventData { get; private set; }
     public List<RaycastResult> raycastResults { get; protected set; }
     public Vector3 screenPosition;
     public Button btn;
@@ -81,8 +81,8 @@ public class RaySynchronizer : MonoBehaviour
     public void SetUIEssentials()
     {
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-        GR = UI_Canvas.GetComponent<GraphicRaycaster>();
-        PED = new PointerEventData(EventSystem.current);
+        graphicRaycaster = UI_Canvas.GetComponent<GraphicRaycaster>();
+        PointerEventData = new PointerEventData(EventSystem.current);
     }
 
 
@@ -115,6 +115,7 @@ public class RaySynchronizer : MonoBehaviour
     public void OnKeyPressed(InputAction.CallbackContext context)
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장
+        OnGetInputFromUser?.Invoke();
         ShootRay();
     }
 
@@ -145,10 +146,10 @@ public class RaySynchronizer : MonoBehaviour
         
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
-        PED.position = screenPosition;
+        PointerEventData.position = screenPosition;
 
         raycastResults = new List<RaycastResult>();
-        GR.Raycast(PED, raycastResults);
+        graphicRaycaster.Raycast(PointerEventData, raycastResults);
         
         foreach (RaycastResult result in raycastResults)
         {

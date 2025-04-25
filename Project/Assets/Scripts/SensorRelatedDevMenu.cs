@@ -40,7 +40,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         
         _animator = GetComponent<Animator>();
         BindObject(typeof(Btn));
-        BindText(typeof(TMP));
+        BindTMP(typeof(TMP));
 
 
         GetObject((int)Btn.Btn_Open).gameObject.BindEvent(() =>
@@ -160,7 +160,7 @@ public class SensorRelatedDevMenu : UI_PopUp
                       $"Threshold:{XmlManager.Instance.ClusterThreshold}, MaxZones:{XmlManager.Instance.MaxTouchzones}, " +
                       $"Lifetime:{XmlManager.Instance.TouchzoneLifetime}";
 
-        GetText((int)TMP.TMP_Log).text = logText;
+        GetTMP((int)TMP.TMP_Log).text = logText;
         
 
     }

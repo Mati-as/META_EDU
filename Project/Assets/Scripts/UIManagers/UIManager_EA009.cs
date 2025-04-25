@@ -24,7 +24,7 @@ public class UIManager_EA009 : Base_UIManager
 
     private void ChangeText(string text)
     {
-        if(GetText((int)TMPs.TMP_Instruction)!=null) GetText((int)TMPs.TMP_Instruction).text = text;
+        if(GetTMP((int)TMPs.TMP_Instruction)!=null) GetTMP((int)TMPs.TMP_Instruction).text = text;
     }
 
 

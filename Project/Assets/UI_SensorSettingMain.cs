@@ -8,20 +8,24 @@ public class UI_SensorSettingMain : UI_PopUp
 
     public enum UI
     {
-        UI_SensorSetting,
-        UI_ScreenSetting
+        Btn_ScreenSetting,
+        Btn_SensorSetting,
     }
 
 
     public override bool Init()
     {
-        GetObject((int)UI.UI_SensorSetting).BindEvent(() =>
+        BindObject(typeof(UI));
+        
+  
+        GetObject((int)UI.Btn_ScreenSetting).BindEvent(() =>
         {
-            
+            Managers.UI.ShowPopupUI<UI_ScreenSetting>();
         });
-        GetObject((int)UI.UI_ScreenSetting).BindEvent(() =>
+        
+        GetObject((int)UI.Btn_SensorSetting).BindEvent(() =>
         {
-          
+            Managers.UI.ShowPopupUI<UI_SensorSetting>();
         });
         return base.Init();
     }

@@ -18,15 +18,18 @@ public class UI_Home : UI_PopUp
  
         GetObject((int)UI.Btn_ContentSortedByArea).BindEvent(() =>
         {
+            Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
         });
         GetObject((int)UI.Btn_ContentSortedByTheme).BindEvent(() =>
         {
+            Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_ContentSortedByTheme>();
         });
         GetObject((int)UI.Btn_SensorSettings).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_SensorSetting>();
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
         });
         
         return true;

@@ -579,8 +579,8 @@ public class MetaEduLauncher : UI_PopUp
 
     private void SetUIEssentials()
     {
-        _launcherGR = _raySynchronizer.GR;
-        _launcherPED = _raySynchronizer.PED;
+        _launcherGR = _raySynchronizer.graphicRaycaster;
+        _launcherPED = _raySynchronizer.PointerEventData;
     }
 
     private RaySynchronizer _raySynchronizer;

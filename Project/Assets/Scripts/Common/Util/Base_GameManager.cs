@@ -181,6 +181,10 @@ public abstract class Base_GameManager : MonoBehaviour
                 XmlManager.Instance.ScreenSize
             );
         }
+        else
+        {
+            Logger.LogError("Main camera not found.");
+        }
         
         UICamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
         if (UICamera != null)
@@ -191,6 +195,10 @@ public abstract class Base_GameManager : MonoBehaviour
                 XmlManager.Instance.ScreenSize,
                 XmlManager.Instance.ScreenSize
             );
+        }
+        else
+        {
+            Logger.LogError("UICamera not found.");
         }
     }
 

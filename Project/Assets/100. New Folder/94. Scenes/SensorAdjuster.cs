@@ -80,7 +80,13 @@ public class SensorAdjuster : MonoBehaviour
 
     void Start()
     {
-
+        
+        // 프리팹분리로 인한 동적로드 25/0425
+        var RaySynchronizer = GameObject.FindWithTag("RaySynchronizer");
+        manager =RaySynchronizer.GetComponent<SensorManager>();
+        Lider_object =RaySynchronizer.GetComponent<Image>();
+        
+        
         if (thresholdInputField != null)
         {
             thresholdInputField.onEndEdit.AddListener(UpdateThreshold);
@@ -179,6 +185,8 @@ public class SensorAdjuster : MonoBehaviour
 
         InitTouchSettingsInputs();
         LoadSensorSettings();
+
+      
     }
     void Init_sensor()
     {

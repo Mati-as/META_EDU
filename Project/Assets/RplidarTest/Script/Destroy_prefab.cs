@@ -38,9 +38,9 @@ public class Destroy_prefab : RaySynchronizer
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
   
         
-        PED.position = screenPosition;
+        PointerEventData.position = screenPosition;
         var results = new List<RaycastResult>();
-        GR.Raycast(PED, results);
+        graphicRaycaster.Raycast(PointerEventData, results);
 
         if (results.Count > 0)
             for (var i = 0; i < results.Count; i++)

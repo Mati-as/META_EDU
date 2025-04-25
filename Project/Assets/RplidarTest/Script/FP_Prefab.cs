@@ -131,9 +131,9 @@ public class FP_Prefab : RaySynchronizer
         }
 
         // 🔹 UI 요소 Raycast (GraphicRaycaster 사용)
-        PED.position = screenPosition;
+        PointerEventData.position = screenPosition;
         var results = new List<RaycastResult>();
-        GR.Raycast(PED, results);
+        graphicRaycaster.Raycast(PointerEventData, results);
 
         foreach (RaycastResult result in results)
         {
