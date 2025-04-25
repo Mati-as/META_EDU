@@ -151,7 +151,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
     public void OnRaySynced()
     {
-        Logger.CoreClassLog("Raysync On Launcher -----------------");
+       // Logger.CoreClassLog("Raysync On Launcher -----------------");
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
         if (_launcherPED != null) _launcherPED.position = screenPosition;
@@ -163,7 +163,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
         if (_results.Count <= 0) return;
         {
-            Logger.CoreClassLog("Raysync On Scene Selection -----------------");
+           // Logger.CoreClassLog("Raysync On Scene Selection -----------------");
             ShowTabOrLoadScene(_results);
         }
     }
@@ -180,7 +180,6 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
     public void ShowTabOrLoadScene(List<RaycastResult> results)
     {
-        Logger.CoreClassLog("load scene click invoke -----------------");
         DOVirtual.Float(0, 0, 0.1f, _ =>
             {
             })

@@ -15,8 +15,7 @@ public class UI_SceneInit : MonoBehaviour
         //2. 로드 씬 생성 및 초기화 
         Managers.UI.ShowPopupUI<UI_LoadInitialScene>();
         //3. 카메라 관련 설정등을 위한 GameManager 로드용 팝업생성
-        
-        DOVirtual.DelayedCall(1.5F,()=>Managers.UI.ShowPopupUI<UI_GameManagerOnLauncher>());
+        Managers.UI.ShowPopupUI<UI_GameManagerOnLauncher>();
     }
 
 
