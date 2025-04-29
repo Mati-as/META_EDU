@@ -6,7 +6,7 @@ public class Manager_Obj_14 : MonoBehaviour
 {
     public static Manager_Obj_14 instance = null;
 
-    //[common] Camera
+    //[common] Camera, UI
     [Header("[COMMON] REQUIRED")]
     public GameObject Main_Camera;
     public GameObject Camera_position;
@@ -15,22 +15,18 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject UI_Panel;
     public GameObject Game_effect;
 
+    public GameObject UI_READY;
+    public GameObject UI_Result;
+
     //Emoji icon
     public GameObject Main_Icon_1;  //이모지 보여주기
     public GameObject Bigsize_emotion;
     public Transform wheel; // 원판의 Transform
     public GameObject Button_Spin;
-    public GameObject Main_Icon_2_1P;  //클릭 게임 그룹, 각 개별적으로 클릭
-    public GameObject Main_Icon_2_2P;  //클릭 게임 그룹, 각 개별적으로 클릭
-    public GameObject Main_Icon_3;      //다 클릭하고 난 다음 큰 이모지 보여주는 부분
     public GameObject Icon_buttion_position;
-    public GameObject BG;
 
-    public List<string> Seq_emoji = new List<string> { "Happy", "Sad", "Empty", "Angry", "Sleep", "Empty", "Good", "Laugh" };
+    public List<string> Seq_shape = new List<string> { "RECTANGLE", "CIRCLE", "TRIANGLE", "STAR", "HEART" };
 
-
-    public Sprite White;
-    public Sprite Yellow;
 
     //[common, EDIT] Manager
     private Manager_Anim_14 Manager_Anim;
@@ -51,15 +47,19 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject[] Shape_array;
 
     public AudioClip[] Seq_narration;
-    public AudioClip[] Msg_narration;
-    public AudioClip[] Msg_narration_eng;
+    public GameObject[] Seq_text;
+    //public AudioClip[] Msg_narration;
+    private AudioClip[] seq_narration;
+    private GameObject[] seq_text;
+
+    public AudioClip[] seq2_narration;
+    public AudioClip[] Result_narration;
+    public AudioClip[] READY_narration;
+    //public AudioClip[] Msg_narration_eng;
     public Sprite[] Msg_textsprite;
     public Sprite[] Msg_textsprite_eng;
     public GameObject[] Effect_array;
 
-    
-    public AudioClip[] Result_narration;
-    public AudioClip[] READY_narration;
 
     void Awake()
     {
@@ -85,26 +85,44 @@ public class Manager_Obj_14 : MonoBehaviour
         init_Audio();
         init_Text();
         init_Prefab();
-        Init_Effectarray();
-        Init_Icon_array();
+        //Init_Effectarray();
+        //Init_Icon_array();
+
+
+        GenerateShapeOrder();
+        GeneratePreSelectedShapes();
+
+        Rearrange_Text();
+        Rearrange_Narration();
     }
 
     void init_Text()
     {
+
+        Seq_text = new GameObject[UI_Text.transform.childCount];
+        seq_text = new GameObject[UI_Text.transform.childCount];
+
+        for (int i = 0; i < UI_Text.transform.childCount; i++)
+        {
+            Seq_text[i] = UI_Text.transform.GetChild(i).gameObject;
+            seq_text[i] = UI_Text.transform.GetChild(i).gameObject;
+        }
+
         Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
     {
-        AudioClip[] Temp_Seq_narration;
-        AudioClip[] Temp_Msg_narration;
+        //Msg_narration = Resources.LoadAll<AudioClip>("EA014/audio_message");
+        Seq_narration = Resources.LoadAll<AudioClip>("EA014/audio_seq_1");
+        seq_narration = Resources.LoadAll<AudioClip>("EA014/audio_seq_1");
+        Result_narration = Resources.LoadAll<AudioClip>("EA014/audio_result");
+        READY_narration = Resources.LoadAll<AudioClip>("EA014/audio_READY");
 
-        Msg_narration = Resources.LoadAll<AudioClip>("EA005/audio_message");
-        Seq_narration = Resources.LoadAll<AudioClip>("EA005/audio_seq");
-        Result_narration = Resources.LoadAll<AudioClip>("EA005/audio_null");
-        READY_narration = Resources.LoadAll<AudioClip>("EA005/audio_emoji");
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
-        Manager_Narr.Set_Audio_seq_narration(Seq_narration);
+        //(구현) 여기에서 사전 세팅한 나레이션 클립 배열로 전달
+        //전체 결과 보고 난 다음에 전체 시퀀스 나레이션 세팅 필요
+        //Manager_Narr.Set_Audio_seq_narration(Seq_narration);
     }
 
     //Emoji icon 1,2,3 init
@@ -116,8 +134,9 @@ public class Manager_Obj_14 : MonoBehaviour
         {
             Shape_array[i] = Main_Icon_1.transform.GetChild(i).gameObject;
         }
-        GenerateShapeOrder();
-        GeneratePreSelectedShapes();
+
+        //GenerateShapeOrder();
+        //GeneratePreSelectedShapes();
 
         //Manager_Anim.Init_Icon_array();
     }
@@ -212,5 +231,37 @@ public class Manager_Obj_14 : MonoBehaviour
     public Manager_Seq_14 Get_managerseq()
     {
         return Manager_Seq;
+    }
+
+    //shape order 5개 생성된것을 가지고 원래 있는 Text 아래의 자식 오브젝트의 순서를 재정렬
+    //순서는 0123 은 유지하고 0: 4-6, 1: 7-9, 2: 10-12, 3: 13-15, 4: 16-18 까지 그룹으로 세팅을 변경함
+    void Rearrange_Text()
+    {
+        int Temp_shapenum;
+
+        for(int i = 0; i < 5; i++)
+        {
+            
+                Temp_shapenum = shapeOrder[i];
+
+            Seq_text[3 * i + 5] = seq_text[3 * Temp_shapenum + 5];
+            Seq_text[3 * i + 6] = seq_text[3 * Temp_shapenum + 6];
+
+        }
+    }
+
+    //아닌데 내가 쓰고 있는 UI_Text와 Seq_Text는 별개인데
+
+    void Rearrange_Narration()
+    {
+        int Temp_shapenum;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Temp_shapenum = shapeOrder[i];
+
+            Seq_narration[3 * i + 5] = seq_narration[3 * Temp_shapenum + 5];
+            Seq_narration[3 * i + 6] = seq_narration[3 * Temp_shapenum + 6];
+        }
     }
 }
