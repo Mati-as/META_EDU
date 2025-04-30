@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class UI_SettingPanel : MonoBehaviour
 {
     private Vector3 _defaultPos;
-    private float _moveAmount = 220f;
+    private float _moveAmount = 265;
     private RectTransform _panel;
     private bool _isPanelOn;
     private Button _button;

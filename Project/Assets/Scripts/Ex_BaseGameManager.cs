@@ -55,12 +55,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected virtual new void Init()
     {
         SetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
-        
-        base.Init();
-
+       
         SetPool();
         bool isAnimatorAttached = TryGetComponent(out mainAnimator);
         if (!isAnimatorAttached) Logger.Log("게임매니저에 애니메이터 없음.");
+        
+        
+         
+        base.Init();
 
 
     }

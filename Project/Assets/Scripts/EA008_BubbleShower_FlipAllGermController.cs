@@ -46,7 +46,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
 
     protected override void Init()
     {
-        base.Init();
+//        base.Init();
         EA008_BubbleShower_GameManager.onStart -= OnStart;
         EA008_BubbleShower_GameManager.onStart += OnStart;
 

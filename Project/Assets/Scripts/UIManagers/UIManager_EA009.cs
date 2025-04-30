@@ -43,6 +43,11 @@ public class UIManager_EA009 : Base_UIManager
                 Managers.Sound.Play(SoundManager.Sound.Narration,"EA009/Narration/Fish");
                 break;
 
+            case nameof(EA009_HealthyFood_GameManager.GameObj.AppleA):
+                ChangeText("사과");
+                Managers.Sound.Play(SoundManager.Sound.Narration,"EA009/Narration/Apple");
+                break;
+            
             case nameof(EA009_HealthyFood_GameManager.GameObj.MeatA):
                 Managers.Sound.Play(SoundManager.Sound.Narration,"EA009/Narration/Fish");
                 ChangeText("고기");
