@@ -114,8 +114,6 @@ public class Manager_Seq_14 : Base_GameManager
 
         Lucky_Spin_common.SetActive(true);
     }
-
-
     public void SpinWheel()
     {
         if (isSpinning) return;
@@ -123,28 +121,22 @@ public class Manager_Seq_14 : Base_GameManager
         Manager_Anim.Anim_Inactive(Button_Spin);
         isSpinning = true;
 
-        //(구현) 여기에서 해당하는 번호가 나오면 그 번호에 맞춰서 회전하고, 그럼 순서대로 나와야하는거 아닌가?
-        //
-        int randomTargetIndex = Manager_Obj_14.instance.preSelectedShapes[Game_round];
+        int randomTargetIndex = Set_Wheel(Manager_Obj_14.instance.preSelectedShapes[Game_round]);
+
         float targetAngle = randomTargetIndex * sliceAngle;
         float extraSpins = 5f * 360f;
         float finalRotation = extraSpins + targetAngle;
 
-        //(확인) 돌린 돌림판의 결과 값이 같은가?
-
-        wheel.DORotate(new Vector3(0, 0, -finalRotation), 5f, RotateMode.FastBeyond360)
+        wheel.DORotate(new Vector3(0, 0, finalRotation), 5f, RotateMode.FastBeyond360)
             .SetEase(Ease.OutQuart)
             .OnComplete(() =>
             {
                 isSpinning = false;
                 Game_round += 1;
 
-                //여기에서 오차가 있군
-                //여기에서 선택된 모양을 찾아가지고 결과값을 리턴해야하는데 엉뚱한게 나옴
                 selectedShape = shapeList[randomTargetIndex];
                 Debug.Log("선택된 감정: " + selectedShape);
 
-                //결과 처리 함수 호출
                 Result_Wheel(randomTargetIndex);
             });
 
@@ -157,9 +149,47 @@ public class Manager_Seq_14 : Base_GameManager
     void Result_Wheel(int selectedEmotion)
     {
         //애니메이션, 성공 효과음도 필요
-        //Manager_Obj_14.instance.Bigsize_emotion_array[selectedEmotion].SetActive(true);
         //결과 화면 표출 또는 다시 진행 필요
+        Ready_Msg_seq();
         Manager_Anim.Anim_Active(Button_Spin);
+    }
+
+    //#돌림판의 순서 값을 리턴하는 부분
+    //(EDIT) 세팅에 맞춰서 return 값, Rand_numbers값 수정 필요
+    int[] Rand_numbers = { 1, 3, 5 };
+    int Set_Wheel(int num)
+    {
+        int Shape_num = num;
+
+        if (Shape_num == -1)
+        {
+            int randomIndex = Random.Range(0, Rand_numbers.Length);
+            return Rand_numbers[randomIndex];
+        }
+        else if (Shape_num == 0)
+        {
+            return 0;
+        }
+        else if (Shape_num == 1)
+        {
+            return 2;
+        }
+        else if (Shape_num == 2)
+        {
+            return 4;
+        }
+        else if (Shape_num == 3)
+        {
+            return 6;
+        }
+        else if (Shape_num == 4)
+        {
+            return 7;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     int Ready_seq;
@@ -170,11 +200,16 @@ public class Manager_Seq_14 : Base_GameManager
     {
         Ready_seq = 0;
         StartCoroutine(Temp_Message());
+        //클릭 비활성화 필요
+        //UI 클릭은?
+        //Onclick = false;
     }
 
-    IEnumerator Temp_Message(float time = 2f)
+    //(구현) 나레이션 정상 작동은 확인하였으며, 다른 기능들 추가 구현이 필요함
+
+    IEnumerator Temp_Message(float time = 1.5f)
     {
-        if (Ready_seq == 4)
+        if (Ready_seq == 5)
         {
             //4, Start game
             //(구현) 3,2,1 하고 게임에서 클릭할 수 있도록 활성화 하는 기능 필요
@@ -186,7 +221,7 @@ public class Manager_Seq_14 : Base_GameManager
             yield return new WaitForSeconds(time);
 
             //(구현) 메시지 텍스트 팝업 필요
-            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Msg_narration[Ready_seq], 1.5f);
+            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.READY_narration[Ready_seq], 1f);
             Ready_seq += 1;
 
             StartCoroutine(Temp_Message(time));

@@ -35,7 +35,7 @@ public class Manager_Obj_14 : MonoBehaviour
 
     private int MaxShape = 5;
 
-    public List<int> shapeOrder = new List<int>();           // 0~4 도형 순서  "RECTANGLE", "CIRCLE", "TRIANGLE", "STAR", "HEART"
+    public List<int> shapeOrder = new List<int>();           // 0~4 도형 순서  "RECTANGLE", "TRIANGLE", "CIRCLE", "STAR", "HEART"
     public List<int> preSelectedShapes = new List<int>();    // 실제 사용할 배열 (꽝 포함)
 
     [Header("[ COMPONENT CHECK ]")]
