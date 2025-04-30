@@ -256,7 +256,6 @@ public class Manager_SEQ_4 : Base_GameManager
     {
         if (!PreCheckOnRaySync()) return;
 
-
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
         if (_raycastHits.Length == 0) 

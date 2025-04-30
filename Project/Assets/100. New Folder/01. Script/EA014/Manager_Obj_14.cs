@@ -18,8 +18,8 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject UI_READY;
     public GameObject UI_Result;
 
-    //Emoji icon
-    public GameObject Main_Icon_1;  //이모지 보여주기
+    //Shape Icon
+    public GameObject Main_Shapeicon_1;  //이모지 보여주기
     public Transform wheel; // 원판의 Transform
     public GameObject Button_Spin;
     public GameObject Icon_buttion_position;
@@ -41,6 +41,7 @@ public class Manager_Obj_14 : MonoBehaviour
     [Header("[ COMPONENT CHECK ]")]
     public GameObject[] Shape_prefabs;
     public GameObject[] Shape_array;
+    public GameObject[] Message_array;
 
     public AudioClip[] Seq_narration;
     public GameObject[] Seq_text;
@@ -56,6 +57,8 @@ public class Manager_Obj_14 : MonoBehaviour
     //public Sprite[] Msg_textsprite_eng;
     public GameObject[] Effect_array;
 
+    //[EDIT] Object array
+    public GameObject[] Main_Shapeicon_1_array;
 
     void Awake()
     {
@@ -82,7 +85,7 @@ public class Manager_Obj_14 : MonoBehaviour
         init_Text();
         init_Prefab();
         //Init_Effectarray();
-        //Init_Icon_array();
+        Init_Shapeicon_array();
 
 
         GenerateShapeOrder();
@@ -104,6 +107,13 @@ public class Manager_Obj_14 : MonoBehaviour
             seq_text[i] = UI_Text.transform.GetChild(i).gameObject;
         }
 
+        Message_array = new GameObject[UI_Message.transform.childCount];
+
+        for (int i = 0; i < UI_Message.transform.childCount; i++)
+        {
+            Message_array[i] = UI_Message.transform.GetChild(i).gameObject;
+        }
+
         Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
@@ -120,20 +130,19 @@ public class Manager_Obj_14 : MonoBehaviour
         //Manager_Narr.Set_Audio_seq_narration(Seq_narration);
     }
 
-    //Emoji icon 1,2,3 init
-    void Init_Icon_array()
+    //Shapeicon 1,2,3 init
+    //Shape icon 1 전반부, 후반부 도형 게임 어레이
+    //Shape icon 2 중반부 게임 위치 어레이
+    void Init_Shapeicon_array()
     {
-        Shape_array = new GameObject[Main_Icon_1.transform.childCount];
+        Main_Shapeicon_1_array = new GameObject[Main_Shapeicon_1.transform.childCount];
 
-        for (int i = 0; i < Main_Icon_1.transform.childCount; i++)
+        for (int i = 0; i < Main_Shapeicon_1.transform.childCount; i++)
         {
-            Shape_array[i] = Main_Icon_1.transform.GetChild(i).gameObject;
+            Main_Shapeicon_1_array[i] = Main_Shapeicon_1.transform.GetChild(i).gameObject;
         }
 
-        //GenerateShapeOrder();
-        //GeneratePreSelectedShapes();
-
-        //Manager_Anim.Init_Icon_array();
+        Manager_Anim.Init_Icon_array();
     }
 
     void init_Prefab()

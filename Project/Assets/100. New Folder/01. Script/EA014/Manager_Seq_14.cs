@@ -19,7 +19,6 @@ public class Manager_Seq_14 : Base_GameManager
     }
 
     private bool _isClickable = true;
-
     public bool Eng_MODE = false;
 
     private Manager_Anim_14 Manager_Anim;
@@ -62,7 +61,6 @@ public class Manager_Seq_14 : Base_GameManager
         Manager_Anim = this.gameObject.GetComponent<Manager_Anim_14>();
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
-        Init_wheel();
         //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
     }
 
@@ -86,7 +84,7 @@ public class Manager_Seq_14 : Base_GameManager
     {
         Manager_Text.Change_UI_text(Content_Seq);
         Manager_Narr.Change_Audio_narr(Content_Seq);
-        //Manager_Anim.Change_Animation(Content_Seq);
+        Manager_Anim.Change_Animation(Content_Seq);
 
         if (Content_Seq == 0)
         {
@@ -96,10 +94,28 @@ public class Manager_Seq_14 : Base_GameManager
             toggle = true;
             Timer_set();
         }
+        else if (Content_Seq == 2)
+        {
+            Onclick = true;
+            Manager_Anim.Read_Seq_Shape();
+            //여기에서 나타나는 각 도형 텍스트는 한 번 나타나고 화면 밖으로 사라지는게 맞는 것 같음
+            //클릭 안됨
+        }
+        else if (Content_Seq == 3)
+        {
+            Onclick = false;
+            //Main icon 1 도형 전부 삭제
+            //그리고 2 게임 세팅
+        }
+        else if (Content_Seq == 4)
+        {
+            Init_wheel();
+        }
         else
-        {   //여기에서 중간중간 큰 이모지 활성화 하는 기능 추가
+        {   
             Content_Seq += 1;
             toggle = true;
+
             Timer_set();
         }
     }
@@ -199,7 +215,7 @@ public class Manager_Seq_14 : Base_GameManager
     public void Ready_Msg_seq()
     {
         Ready_seq = 0;
-        StartCoroutine(Temp_Message());
+        StartCoroutine(Ready_Msg());
         //클릭 비활성화 필요
         //UI 클릭은?
         //Onclick = false;
@@ -207,13 +223,13 @@ public class Manager_Seq_14 : Base_GameManager
 
     //(구현) 나레이션 정상 작동은 확인하였으며, 다른 기능들 추가 구현이 필요함
 
-    IEnumerator Temp_Message(float time = 1.5f)
+    IEnumerator Ready_Msg(float time = 1.5f)
     {
         if (Ready_seq == 5)
         {
             //4, Start game
             //(구현) 3,2,1 하고 게임에서 클릭할 수 있도록 활성화 하는 기능 필요
-            StopCoroutine(Temp_Message(time));
+            StopCoroutine(Ready_Msg(time));
             Ready_seq = 0;
         }
         else
@@ -224,7 +240,34 @@ public class Manager_Seq_14 : Base_GameManager
             Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.READY_narration[Ready_seq], 1f);
             Ready_seq += 1;
 
-            StartCoroutine(Temp_Message(time));
+            StartCoroutine(Ready_Msg(time));
+        }
+    }
+    public void Inactive_shape_clickable(GameObject Shape)
+    {
+        Shape.GetComponent<Clicked_Block_14>().Inactive_Clickable();
+    }
+
+    public void Active_shape_clickable(GameObject Shape)
+    {
+        Shape.GetComponent<Clicked_Block_14>().Active_Clickable();
+    }
+    public void Click(GameObject Shape, int num_emoji, int num_table)
+    {
+        var randomChar = (char)Random.Range('A', 'F' + 1);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
+
+        Debug.Log("Shape CLICKED!");
+
+        if (Content_Seq == 2)
+        {
+            Inactive_shape_clickable(Shape);
+
+            //Activate selected emoji, text animation
+            Manager_Anim.Activate_emoji(Shape);
+            Manager_Anim.Activate_emojitext_popup(Shape);
+
+            Shape.transform.DOShakeScale(1.0f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_shape_clickable(Shape));
         }
     }
 
@@ -253,10 +296,9 @@ public class Manager_Seq_14 : Base_GameManager
     private bool _isRoundFinished;
     private readonly int NO_VALID_OBJECT = -1;
     private RaycastHit[] _raycastHits;
-    private GameObject Selected_fruit;
-    //private Clicked_fruit Selected_fruitCF;
+    private GameObject Selected_shape;
 
-    //[EDIT] Touching main object
+    //[EDIT] Touching main object, Tag, Click script should be revised
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
@@ -268,14 +310,18 @@ public class Manager_Seq_14 : Base_GameManager
 
             foreach (var hit in _raycastHits)
             {
+                Debug.Log(hit.transform.gameObject.tag);
+                Debug.Log(hit.transform.gameObject.name);
+
                 if (hit.transform.gameObject.CompareTag("MainObject"))
                 {
+
                     if (Onclick)
                     {
                         //(구현) 해당 부분 구현 필요
-                        //Debug.Log("Fruit Clicked!");
-                        Selected_fruit = hit.transform.gameObject;
-                        Selected_fruit.GetComponent<Clicked_fruit>().Click();
+                        Debug.Log("Shape Clicked!");
+                        Selected_shape = hit.transform.gameObject;
+                        Selected_shape.GetComponent<Clicked_Block_14>().Click();
                     }
                     return;
                 }
@@ -291,12 +337,11 @@ public class Manager_Seq_14 : Base_GameManager
 
     public void ButtonClicked()
     {
-        //Manager_obj_4.instance.Btn_Next.SetActive(false);
-        //Sequence seq = DOTween.Sequence();
-        //seq.Append(Manager_obj_4.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
+        Manager_Obj_14.instance.Btn_Next.SetActive(false);
+        Sequence seq = DOTween.Sequence();
+        seq.Append(Manager_Obj_14.instance.Btn_Next.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic));
 
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
-
 
         Content_Seq += 1;
         toggle = true;
