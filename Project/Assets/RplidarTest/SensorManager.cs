@@ -420,6 +420,7 @@ public class SensorManager : MonoBehaviour
         //InitSensor();
         //Sensor calibration
         RT_Lidar_object = GetComponent<RectTransform>();
+        touchZoneParent = GameObject.FindWithTag("UIManager").transform;
         Set_Screenscale(XmlManager.Instance.ScreenSize);
         if (Calibration_state_Screenratio != null) Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
 
