@@ -14,6 +14,15 @@ public class UIManager_EA009 : Base_UIManager
         if (_gm == null) _gm = GameObject.FindWithTag("GameManager").GetComponent<EA009_HealthyFood_GameManager>();
 
         Debug.Assert(_gm != null, "GameManager not found");
+        
+    }
+
+    public override bool Init()
+    {
+        base.Init();
+        InitInstructionUI();
+        return true;
+
     }
 
     private void OnDestroy()
@@ -22,94 +31,88 @@ public class UIManager_EA009 : Base_UIManager
         Messenger.Default.Unsubscribe<EA009_Payload>(OnGetMessageEventFromGm);
     }
 
-    private void ChangeText(string text)
-    {
-        if(GetTMP((int)TMPs.TMP_Instruction)!=null) GetTMP((int)TMPs.TMP_Instruction).text = text;
-    }
-
     private string _foodNarPath = "Audio/SortedByScene/EA009/Food/";
 
     private void OnGetMessageEventFromGm(EA009_Payload payload)
     {
         if (payload.Checksum)
         {
-            ChangeText($"{payload.Narration}");
+            PopInstructionUI($"{payload.Narration}");
             return;
         }
         Logger.ContentTestLog($"Get Message ---- {payload.Narration}");
         switch (payload.Narration)
         {
             case nameof(EA009_HealthyFood_GameManager.GameObj.FishA):
-                ChangeText("생선");
+                PopInstructionUI("생선");
                 Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Fish");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.AppleA):
-                ChangeText("사과");
+                PopInstructionUI("사과");
                 Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Apple");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.MeatA):
                 Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Meat");
-                ChangeText("고기");
+                PopInstructionUI("고기");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.ChickenA):
-                ChangeText("닭");
+                PopInstructionUI("닭");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Chicken");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.EggA):
-                ChangeText("계란");
+                PopInstructionUI("계란");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Egg");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.MilkA):
-                ChangeText("우유");
+                PopInstructionUI("우유");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Milk");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.CarrotA):
-                ChangeText("당근");
+                PopInstructionUI("당근");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Carrot");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.ColaA):
-                ChangeText("콜라");
+                PopInstructionUI("콜라");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Cola");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.CookieA):
-                ChangeText("쿠키");
+                PopInstructionUI("쿠키");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Cookie");
                 break;
             case nameof(EA009_HealthyFood_GameManager.GameObj.IceCreamA):
-                ChangeText("아이스크림");
+                PopInstructionUI("아이스크림");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "IceCream");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.PizzaA):
-                ChangeText("피자");
+                PopInstructionUI("피자");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Pizza");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.ChocolateA):
-                ChangeText("초콜릿");
+                PopInstructionUI("초콜릿");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Chocolate");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.CakeA):
-                ChangeText("케이크");
+                PopInstructionUI("케이크");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Cake");
                 break;
             
             case nameof(EA009_HealthyFood_GameManager.GameObj.DonutA):
-                ChangeText("도넛");
+                PopInstructionUI("도넛");
                  Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Donut");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.MainSeq.OnFinish):
-
                 break;
             
             default:

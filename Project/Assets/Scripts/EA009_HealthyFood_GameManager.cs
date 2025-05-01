@@ -163,7 +163,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
             //common Init--------------------------------------
             isBadFoodClickable = false; 
-            
+            mainAnimator.SetInteger(SeqNum, 0 );
             switch (value)
             {
                 case MainSeq.Default:
@@ -182,7 +182,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     });
                     break;
                 case MainSeq.BadFoodEatIntro:
-                    Messenger.Default.Publish(new EA009_Payload("",true));
+                   // Messenger.Default.Publish(new EA009_Payload("",true));
                     OnBadFoodEatIntro();
                     break;
                 case MainSeq.BadFoodEat_RoundA:
@@ -201,6 +201,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 case MainSeq.Stomachache:
                     Messenger.Default.Publish(new EA009_Payload($"나쁜음식을 너무 많이먹어\n배가 아픈 것 같아요",true));
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "HavingStomachache");
+                    mainAnimator.SetInteger(SeqNum, 1 );
                     OnStomachache();
                     break;
                 case MainSeq.GoodFoodChangeIntro:
@@ -457,7 +458,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
             _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, _isDevMode? delayForDevMode :0.15f).SetEase(Ease.InOutBack));
             _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], _isDevMode? delayForDevMode :0.15f).SetEase(Ease.InOutBack));
-            _currentMasterSequence.AppendInterval(0.6f);
+            _currentMasterSequence.AppendInterval(0.75f);
         }
         
         for (int i = (int)GameObj.ColaA; i <= (int)GameObj.DonutA; i++)
@@ -473,7 +474,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
             _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex] * 1.4f, _isDevMode? delayForDevMode :0.15f).SetEase(Ease.InOutBack));
             _currentMasterSequence.Append(obj.DOScale(_defaultSizeMap[localIndex], _isDevMode? delayForDevMode :0.15f).SetEase(Ease.InOutBack));
-            _currentMasterSequence.AppendInterval(0.6f);
+            _currentMasterSequence.AppendInterval(0.75f);
         }
         
         
@@ -973,6 +974,7 @@ private void OnRaySyncOnBadFoodEat()
     }
 private int TARGET_BAD_FOOD_COUNT = 28;
 private int currentRemovedBadFoodCunt = 0;
+private static readonly int SeqNum = Animator.StringToHash("seqNum");
 
 private void OnRaySyncOnBadFoodRemoval()
 {
