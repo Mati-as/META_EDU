@@ -17,12 +17,16 @@ public class Manager_Obj_14 : MonoBehaviour
 
     public GameObject UI_READY;
     public GameObject UI_Result;
+    public GameObject UI_Shapeicon;
 
     //Shape Icon
-    public GameObject Main_Shapeicon_1;  //이모지 보여주기
+    public GameObject Main_Shapeicon_1;  //전반부 게임 도형
+    public GameObject [] Main_Shapeicon_2;  
+    public GameObject Main_Shapeicon_3;  //결과 도형
+    public GameObject Main_Shapeicon_position; //중반부 게임 도형 사전 위치
+
     public Transform wheel; // 원판의 Transform
     public GameObject Button_Spin;
-    public GameObject Icon_buttion_position;
 
     public List<string> Seq_shape = new List<string> { "RECTANGLE", "Empty", "TRIANGLE", "Empty", "CIRCLE", "Empty", "STAR", "HEART" };
 
@@ -39,15 +43,19 @@ public class Manager_Obj_14 : MonoBehaviour
     public List<int> preSelectedShapes = new List<int>();    // 실제 사용할 배열 (꽝 포함)
 
     [Header("[ COMPONENT CHECK ]")]
+    public int[] Number_of_Eachemoji;
+    public int[] Number_Gameshape = { 0,0,0,0,0};
     public GameObject[] Shape_prefabs;
     public GameObject[] Shape_array;
     public GameObject[] Message_array;
+    public GameObject[] Result_array;
 
     public AudioClip[] Seq_narration;
     public GameObject[] Seq_text;
     public AudioClip[] Result_narration;
     public AudioClip[] READY_narration;
     public AudioClip[] Msg_narration;
+    public AudioClip[] Audio_effect_array;
 
     private AudioClip[] seq_narration;
     private GameObject[] seq_text;
@@ -59,7 +67,8 @@ public class Manager_Obj_14 : MonoBehaviour
 
     //[EDIT] Object array
     public GameObject[] Main_Shapeicon_1_array;
-
+    public GameObject[] Main_Shapeicon_3_array;
+    public GameObject[] UI_Shapeicon_array;
     void Awake()
     {
         if (instance == null)
@@ -84,7 +93,7 @@ public class Manager_Obj_14 : MonoBehaviour
         init_Audio();
         init_Text();
         init_Prefab();
-        //Init_Effectarray();
+        Init_Effectarray();
         Init_Shapeicon_array();
 
 
@@ -94,7 +103,10 @@ public class Manager_Obj_14 : MonoBehaviour
         Rearrange_Text();
         Rearrange_Narration();
     }
-
+    void init_Prefab()
+    {
+        Shape_prefabs = Resources.LoadAll<GameObject>("EA014/prefab");
+    }
     void init_Text()
     {
 
@@ -114,6 +126,20 @@ public class Manager_Obj_14 : MonoBehaviour
             Message_array[i] = UI_Message.transform.GetChild(i).gameObject;
         }
 
+        Result_array = new GameObject[UI_Result.transform.childCount];
+
+        for (int i = 0; i < UI_Result.transform.childCount; i++)
+        {
+            Result_array[i] = UI_Result.transform.GetChild(i).gameObject;
+        }
+
+        UI_Shapeicon_array = new GameObject[UI_Shapeicon.transform.childCount];
+
+        for (int i = 0; i < UI_Shapeicon.transform.childCount; i++)
+        {
+            UI_Shapeicon_array[i] = UI_Shapeicon.transform.GetChild(i).gameObject;
+        }
+
         Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
     }
     void init_Audio()
@@ -123,7 +149,8 @@ public class Manager_Obj_14 : MonoBehaviour
         seq_narration = Resources.LoadAll<AudioClip>("EA014/audio_seq_1");
         Result_narration = Resources.LoadAll<AudioClip>("EA014/audio_result");
         READY_narration = Resources.LoadAll<AudioClip>("EA014/audio_READY");
-
+        Audio_effect_array = Resources.LoadAll<AudioClip>("EA014/audio_Effect");
+        //Shape_prefabs = Resources.LoadAll<AudioClip>("EA014/prefab");
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         //나레이션 재설정 이후 전달로 기능 수정
@@ -142,12 +169,81 @@ public class Manager_Obj_14 : MonoBehaviour
             Main_Shapeicon_1_array[i] = Main_Shapeicon_1.transform.GetChild(i).gameObject;
         }
 
+        Main_Shapeicon_3_array = new GameObject[Main_Shapeicon_3.transform.childCount];
+
+        for (int i = 0; i < Main_Shapeicon_3.transform.childCount; i++)
+        {
+            Main_Shapeicon_3_array[i] = Main_Shapeicon_3.transform.GetChild(i).gameObject;
+            Main_Shapeicon_3_array[i].SetActive(false);
+        }
+        //여기에 있는 각 도형 묶음별 어레이를 사전에 좀 저장을 해줌
+
+        for(int j = 0; j < 5; j++)
+        {
+            int index = j;
+            int num = 10 + j * 2;
+            Number_of_Eachemoji = GenerateSimpleRandomArray(5, 30, index, num);
+            for (int i = 0; i < Main_Shapeicon_position.transform.childCount; i++)
+            {
+                int Random_number = UnityEngine.Random.Range(0, MaxShape);
+                Number_of_Eachemoji[Random_number] += 1;
+                Generate_shape(Random_number, i, index);
+            }
+            Number_Gameshape[index] = Number_of_Eachemoji[index];
+        }
+
+        
+
         Manager_Anim.Init_Icon_array();
     }
-
-    void init_Prefab()
+    //순서대로 배열 사이즈, 각 인덱스 총합, 고정할 인덱스 번호, 고정할 인덱스 수
+    int[] GenerateSimpleRandomArray(int size, int total, int fixedIndex, int fixedValue)
     {
-        Shape_prefabs = Resources.LoadAll<GameObject>("EA005/prefab");
+        int[] array = new int[size];
+        array[fixedIndex] = fixedValue;
+
+        int remaining = total - fixedValue;
+        int slots = size - 1;
+
+        // 1. 슬록 구간별 랜덤 분할을 위한 포인트 리스트
+        List<int> points = new List<int> { 0, remaining };
+        for (int i = 0; i < slots - 1; i++)
+        {
+            points.Add(Random.Range(0, remaining + 1));
+        }
+
+        // 2. 정렬해서 간격으로 분할
+        points.Sort();
+
+        List<int> parts = new List<int>();
+        for (int i = 1; i < points.Count; i++)
+        {
+            parts.Add(points[i] - points[i - 1]);
+        }
+
+        // 3. parts 값을 array에 삽입 (고정 인덱스 제외)
+        for (int i = 0, j = 0; i < size; i++)
+        {
+            if (i == fixedIndex) continue;
+            array[i] = parts[j++];
+        }
+
+        return array;
+    }
+    void Generate_shape(int num_emoji, int num_table, int num_Target)
+    {
+        //그냥 0 ~ 마지막 번호까지 for문돌리고
+        //각 테이블 위치에 랜덤으로 표정 프리팹을 배치시킴
+        GameObject emoji = Instantiate(Manager_Obj_14.instance.Shape_prefabs[num_emoji]);
+        Transform pos = Main_Shapeicon_position.transform.GetChild(num_table);
+
+        emoji.transform.SetParent(Main_Shapeicon_2[num_Target].transform);
+        emoji.transform.localScale = Vector3.zero;
+        emoji.transform.localPosition = pos.localPosition;
+        emoji.transform.localRotation = Quaternion.Euler(0f, 90f, -90f);
+
+        emoji.GetComponent<Clicked_Block_14>().Set_Number_emoji(num_emoji);
+        emoji.GetComponent<Clicked_Block_14>().Set_Number_table(num_table);
     }
 
     //#1. 생성되는 리스트 수 조절을 위해 pool에 있는 요소를 수정해야함
@@ -230,6 +326,11 @@ public class Manager_Obj_14 : MonoBehaviour
         {
             Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
         }
+    }
+
+    public int Get_shapenumber(int num)
+    {
+        return Number_Gameshape[num];
     }
 
     public Manager_Seq_14 Get_managerseq()

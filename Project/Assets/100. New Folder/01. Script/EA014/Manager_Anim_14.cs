@@ -122,7 +122,7 @@ public class Manager_Anim_14 : MonoBehaviour
         Shape.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
          Shape.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
          );
-        Manager_Seq = Manager_Obj_14.instance.Get_managerseq();
+        //Manager_Seq = Manager_Obj_14.instance.Get_managerseq();
     }
     public void Activate_emojitext_popup(GameObject Shape)
     {
@@ -136,6 +136,15 @@ public class Manager_Anim_14 : MonoBehaviour
         Selected_shape_text.SetActive(true);
         Sequence seq_read = DOTween.Sequence();
         seq_read.Append(Selected_shape_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+    }
+    public void Inactive_shape_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_Block_14>().Inactive_Clickable();
+    }
+
+    public void Active_shape_clickable(GameObject Emoji)
+    {
+        Emoji.GetComponent<Clicked_Block_14>().Active_Clickable();
     }
 
     //[Animation]
@@ -185,6 +194,31 @@ public class Manager_Anim_14 : MonoBehaviour
             StartCoroutine(Temp_Message(time));
         }
     }
+
+    public void Setting_Seq_Eachgame(int round)
+    {
+        if (round >= 1)
+        {
+            Manager_Obj_14.instance.Main_Shapeicon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+        }
+
+        for (int i = 0; i < Main_Icon_2_array.Length; i++)
+        {
+            int num = Main_Icon_2_array[i].GetComponent<Clicked_Block_14>().Number_shape;
+            //Inactivate_emoji(Main_Icon_2_array[i]);
+
+            if (round == num)
+            {
+                Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
+                //Activate_emoji_forgame(Main_Icon_2_array[i]);
+                //Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_Obj_14.instance.Yellow;
+
+                Manager_Seq.Active_shape_clickable(Main_Icon_2_array[i]);
+            }
+        }
+
+    }
+
 
 
     //[EDIT] Contents camera sequence
