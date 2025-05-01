@@ -21,11 +21,13 @@ public class UI_Home : UI_PopUp
             Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
         });
-        GetObject((int)UI.Btn_ContentSortedByTheme).BindEvent(() =>
-        {
-            Managers.UI.ClosePopupUI();
-            Managers.UI.ShowPopupUI<UI_ContentSortedByTheme>();
-        });
+        
+        //현재 미사용, 추후구현 예정 250501 민석
+        // GetObject((int)UI.Btn_ContentSortedByTheme).BindEvent(() =>
+        // {
+        //     Managers.UI.ClosePopupUI();
+        //     Managers.UI.ShowPopupUI<UI_ContentSortedByTheme>();
+        // });
         GetObject((int)UI.Btn_SensorSettings).BindEvent(() =>
         {
             Managers.UI.ClosePopupUI();
