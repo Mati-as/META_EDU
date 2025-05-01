@@ -22,6 +22,7 @@ public class Base_UIManager : UI_PopUp
     
     private Vector3 _originScale = Vector3.one;
     private RectTransform _bgRectTransform;
+    private float _originalHeight;
 
     private Sequence _uiSeq;
     
@@ -36,6 +37,7 @@ public class Base_UIManager : UI_PopUp
         GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;
         GetObject((int)UI.InstructionUI).SetActive(false);
         _bgRectTransform = GetObject((int)UI.InstructionUI).GetComponent<RectTransform>();
+        _originalHeight = _bgRectTransform.sizeDelta.y;
         _originScale = GetObject((int)UI.InstructionUI).transform.localScale;
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
         return true;
@@ -66,6 +68,7 @@ public class Base_UIManager : UI_PopUp
         GetObject((int)UI.InstructionUI).SetActive(true);
        
         GetTMP((int)TMPs.TMP_Instruction).text = instruction;
+        
         UpdateBgSize();
         
         GetObject((int)UI.InstructionUI).transform.localScale = Vector3.zero;
@@ -106,7 +109,7 @@ public class Base_UIManager : UI_PopUp
         float paddingY = 60f;  // 상하 여백
 
         float finalWidth = textSize.x + paddingX;
-        float finalHeight =  GetTMP((int)TMPs.TMP_Instruction).text.Contains("\n") ? textSize.y + paddingY : _bgRectTransform.sizeDelta.y;
+        float finalHeight =  GetTMP((int)TMPs.TMP_Instruction).text.Contains("\n") ? textSize.y + paddingY : _originalHeight;
 
         _bgRectTransform.sizeDelta = new Vector2(finalWidth, finalHeight);
     }

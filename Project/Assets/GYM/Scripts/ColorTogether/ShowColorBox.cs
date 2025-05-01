@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using UnityEditor.Build;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 public class ShowColorBox : MonoBehaviour
 {

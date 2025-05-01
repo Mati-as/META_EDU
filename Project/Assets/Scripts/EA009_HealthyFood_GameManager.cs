@@ -215,7 +215,13 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 case MainSeq.OnFinish:
                     Messenger.Default.Publish(new EA009_Payload("우리 친구들도 몸에 좋은 음식을 먹고 튼튼해져요!",true));
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatGoodFood");
-                    OnBadFoodEat_Candy_Finished();
+                    int finish = 123;
+                    mainAnimator.SetInteger(SeqNum, finish );
+                    foreach (var key in allObj.Keys.ToArray())
+                    {
+                        allObj[key].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutBack);
+                        allObj[key].SetActive(false);
+                    }
                     break;
             }
         }
@@ -862,7 +868,7 @@ private void OnRaySyncOnBadFoodEat()
        
         
         var animationDurationOnStomachache = 3.0f;
-        DOVirtual.DelayedCall(3.0f, () =>
+        DOVirtual.DelayedCall(6.5f, () =>
         {
             foreach (var key in _badFoodClickRelatedSeq.Keys.ToArray()) _badFoodClickRelatedSeq[key]?.Kill();
             currentMainSeq = MainSeq.GoodFoodChangeIntro;
