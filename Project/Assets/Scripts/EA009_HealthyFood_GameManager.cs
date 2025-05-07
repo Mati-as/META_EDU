@@ -395,13 +395,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 break;
         }
         
-        foreach (var hit in GameManager_Hits)
-        {
-            PlayParticleEffect(hit.point);
-            Logger.Log($"clickedName {hit.transform.name}, clickedID {hit.transform.GetInstanceID()}");
-            int id = hit.transform.GetInstanceID();
- 
-        }
+     
 
         
     }
@@ -519,81 +513,74 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     {
         _currentMasterSequence?.Kill();
         _currentMasterSequence = DOTween.Sequence();
-        
-        
 
-    // 좋은 음식과 대응하는 나쁜 음식 인덱스 (1:1 대응, 순서대로)
 
-    foreach (var index  in goodFoodList)
-    {
-        _isPosEmptyMap[(int)index] = true;
-    }
+        // 좋은 음식과 대응하는 나쁜 음식 인덱스 (1:1 대응, 순서대로)
 
-    for (int i = 0; i < goodFoodList.Count; i++)
-    {
-        int goodIndex = (int)goodFoodList[i];
-        int badIndex = (int)badFoodList[i];
+        foreach (var index in goodFoodList) _isPosEmptyMap[(int)index] = true;
 
-        var goodObj = GetObject(goodIndex).transform;
-        var badPrefab = GetObject(badIndex); // Prefab or sample
-        var badParent = PoolRoot.transform;
+        Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "FoodJump");
 
-       
-        _currentMasterSequence.AppendCallback(() =>
+        for (int i = 0; i < goodFoodList.Count; i++)
         {
-//            Messenger.Default.Publish(new EA009_Payload("좋은음식이 나쁜음식으로 바뀌는 중.."));
-        });
+            int goodIndex = (int)goodFoodList[i];
+            int badIndex = (int)badFoodList[i];
 
-        // 1. 좋은 음식 작아지기
-        _currentMasterSequence.Append(goodObj.
-            DOScale(Vector3.zero, _isDevMode? delayForDevMode :0.15f).SetEase(_disappearAnimEase).OnStart(() =>
+            var goodObj = GetObject(goodIndex).transform;
+            var badPrefab = GetObject(badIndex); // Prefab or sample
+            var badParent = PoolRoot.transform;
+
+
+            _currentMasterSequence.AppendCallback(() =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect,EA009soundPath+"fxA");
+            });
+
+            // 1. 좋은 음식 작아지기
+            _currentMasterSequence.Join(goodObj.DOScale(Vector3.zero, _isDevMode ? delayForDevMode : 0.15f)
+                .SetEase(_disappearAnimEase).OnStart(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "fxA");
+                }));
+
+            // 2. 같은 위치에 나쁜 음식 생성 + 동시에 커지기
+            _currentMasterSequence.Join(DOVirtual.DelayedCall(0f, () =>
+            {
+                GameObject badClone = null;
+
+                if (_foodClonePool.ContainsKey(badIndex) && _foodClonePool[badIndex].Count > 0)
+                {
+                    badClone = _foodClonePool[badIndex].Pop();
+                    badClone.SetActive(true);
+                }
+                else
+                {
+                    Logger.ContentTestLog("복제본 부족, 다시생성 ");
+                    badClone = Instantiate(badPrefab, badParent);
+                }
+
+                badClone.transform.position = goodObj.position;
+                badClone.transform.localScale = Vector3.zero;
+
+                badClone.transform.DOLocalRotate(
+                    new Vector3(badClone.transform.eulerAngles.x, UnityEngine.Random.Range(-360, 360),
+                        badClone.transform.eulerAngles.z),
+                    _isDevMode ? delayForDevMode : 0.15f);
+
+                badClone.transform.DOScale(_defaultSizeMap[badIndex], _isDevMode ? delayForDevMode : 0.15f)
+                    .SetEase(_appearAnimEase);
             }));
 
-        // 2. 같은 위치에 나쁜 음식 생성
+
+            _currentMasterSequence.AppendInterval(0.0f);
+        }
+
+        // 완료 후 다음 단계로
         _currentMasterSequence.AppendCallback(() =>
         {
-            GameObject badClone = null;
-
-            // Stack에서 복제 오브젝트 꺼내기 (중복 방지)
-            if (_foodClonePool.ContainsKey(badIndex) && _foodClonePool[badIndex].Count > 0)
-            {
-                badClone = _foodClonePool[badIndex].Pop();
-                badClone.SetActive(true);
-            }
-            else
-            {
-                // 복제본 부족 시 새로 생성
-                Logger.ContentTestLog("복제본 부족, 다시생성 ");
-                badClone = Instantiate(badPrefab, badParent);
-            }
-
-            badClone.transform.position = goodObj.position;
-            badClone.transform.DOLocalRotate(new Vector3(badClone.transform.eulerAngles.x,UnityEngine.Random.Range(-360,360),badClone.transform.eulerAngles.z),
-                _isDevMode? delayForDevMode :0.15f);
-            badClone.transform.localScale = Vector3.zero;
-          //  badClone.name = $"BadFood_{((GameObj)badIndex).ToString()}_{i}";
-            badClone.transform.DOScale(_defaultSizeMap[badIndex], _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase).OnStart(
-                () =>
-                {
-                    Managers.Sound.Play(SoundManager.Sound.Effect,EA009soundPath+"FoodJump");
-                });
-       //     Logger.ContentTestLog($"나쁜음식: {(GameObj)badIndex} 크기 :{_defaultSizeMap[badIndex]}");
+            Logger.ContentTestLog("모든 음식이 나쁜 음식으로 변신 완료!");
+            Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatAllBadFood");
+            currentMainSeq = MainSeq.BadFoodEatIntro;
         });
-
-        
-
-        _currentMasterSequence.AppendInterval(0.15f);
-    }
-
-    // 완료 후 다음 단계로
-    _currentMasterSequence.AppendCallback(() =>
-    {
-        Logger.ContentTestLog("모든 음식이 나쁜 음식으로 변신 완료!");
-        Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatAllBadFood");
-        currentMainSeq = MainSeq.BadFoodEatIntro;
-    });
     }
 
     #endregion
@@ -653,10 +640,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     _badFoodClickRelatedSeq[thisObjTransID] = DOTween.Sequence();
 
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 1.4f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
-                    _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.25f);
+                        .DOScale(_defaultSizeMap[thisObjTransID] * 1.6f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
+                    _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.20f);
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 0.7f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
+                        .DOScale(_defaultSizeMap[thisObjTransID] * 0.6f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
                     _badFoodClickRelatedSeq[thisObjTransID].SetLoops(150, LoopType.Yoyo);
                 }
                 else
@@ -699,6 +686,10 @@ private void OnRaySyncOnBadFoodEat()
 
     foreach (var hit in GameManager_Hits)
     {
+        
+        PlayParticleEffect(hit.point);
+       // Logger.Log($"clickedName {hit.transform.name}, clickedID {hit.transform.GetInstanceID()}");
+        
         if (!hit.transform.gameObject.name.Contains(currentBadFoodClickGameCategory.ToString()))
         {
             Logger.ContentTestLog($" 해당음식이 아님! --{hit.transform.gameObject.name}");
@@ -1010,7 +1001,7 @@ private void OnRaySyncOnBadFoodRemoval()
             if (_badFoodClickMoveSeqMap.TryGetValue(id, out var moveSeq))
             {
                 moveSeq.Kill();
-
+                PlayParticleEffect(hit.point);
                 var target = _defaultPosMap.Values
                     .Where(p => Vector3.Distance(p, hit.transform.position) > 0.5f)
                     .OrderBy(p => UnityEngine.Random.value)
@@ -1032,7 +1023,7 @@ private void OnRaySyncOnBadFoodRemoval()
             _isClickableMap[id] = false;
             if (_badFoodClickMoveSeqMap.ContainsKey(id))
                 _badFoodClickMoveSeqMap[id]?.Kill();
-
+            PlayParticleEffect(hit.point);
             if (_tfIdToEnumMap.TryGetValue(id, out var foodEnum))
             {
                 int enumIndex = (int)foodEnum;

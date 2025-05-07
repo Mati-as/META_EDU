@@ -41,7 +41,7 @@ public class TouchZone : MonoBehaviour
 
             if (timer > lifetime)
             {
-                Debug.Log($"?? ��ġ ���� ������: {gameObject.name}");
+//                Debug.Log($"?? ��ġ ���� ������: {gameObject.name}");
                 Destroy(gameObject);
             }
         }

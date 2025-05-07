@@ -30,6 +30,15 @@ public class Base_UIManager : UI_PopUp
     public override bool Init()
     {
         //base.Init();
+        var found = GetComponents<Base_UIManager>();
+        foreach (var comp in found)
+        {
+            if (comp != this)
+            {
+                Logger.CoreClassLog("⚠ 이미 Base_UIManager가 존재하므로 Init 생략");
+                return false;
+            }
+        }
 
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));

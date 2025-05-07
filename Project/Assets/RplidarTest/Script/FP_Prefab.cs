@@ -51,8 +51,7 @@ public class FP_Prefab : RaySynchronizer
 
     protected override void OnEnable()
     {
-        if (isInitOnEnable) return;
-        isInitOnEnable = false;
+
                     
         if (name.Contains("REAL"))//
         {

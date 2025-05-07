@@ -24,11 +24,11 @@ Shader "ithappy/WaterURP"
         _AmbientFresnel ("Fresnel", float) = 1
         _ColorAmbient ("Color", color) = (0.9, 0.9, 1)
 
-        [Header(Caustics)]
+      //  [Header(Caustics)]
         [Toggle] _IsCaustics ("Enable", float) = 1
         _MaskCaustics ("Mask", 2D) = "black" {}
 
-        [Header(Foam)]
+      //  [Header(Foam)]
         [Toggle] _IsFoam ("Enable", float) = 1
         _MaskFoam ("Mask", 2D) = "white" {}
         _FoamAmount ("Amount", float) = 0.5
@@ -48,6 +48,7 @@ Shader "ithappy/WaterURP"
             Name "UniversalForward"
 
             HLSLPROGRAM
+
 
             #pragma vertex VertexFunction
             #pragma fragment FragmentFunction

@@ -65,6 +65,8 @@ public class SensorRelatedDevMenu : UI_PopUp
             SensorManager.isRealImageActive = _isAllPrefabImageActive;
             SensorManager.isNormalImageActive = _isAllPrefabImageActive;
             SensorManager.isTouchZoneImageActive = _isAllPrefabImageActive;
+            
+            
 
             UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
             UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
