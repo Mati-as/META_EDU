@@ -34,7 +34,7 @@ public class ColorTogether_Manager : Base_GameManager
     private List<int> selectionOrder = new List<int>();
     [SerializeField] private int currentIndex = 0;
 
-    private DG.Tweening.Sequence msgSeq;
+    private Sequence msgSeq;
 
     public GameObject narrationImgGameObject;
     public Image narrationTextImage;
@@ -424,7 +424,10 @@ public class ColorTogether_Manager : Base_GameManager
         var ImageText = Resources.Load<Sprite>(path);
         narrationTextImage.sprite = ImageText;
         narrationImgGameObject.transform.localScale = Vector3.one;
-        narrationImgGameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f, 10, 1);
+        Sequence seq = DOTween.Sequence();
+        seq.Append(narrationImgGameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f, 10, 1));
+        seq.Append(narrationImgGameObject.transform.DOScale(Vector3.one, 0.5f));
+        //narrationImgGameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f, 10, 1);
     }
 
     public void StartNarrationCoroutine()
