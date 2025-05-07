@@ -65,7 +65,6 @@ public class Manager_Seq_14 : Base_GameManager
 
         //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
 
-        Init_wheel();
     }
 
     // Update is called once per frame
@@ -102,14 +101,21 @@ public class Manager_Seq_14 : Base_GameManager
         {
             Onclick = true;
             Manager_Anim.Read_Seq_Shape();
-            //여기에서 나타나는 각 도형 텍스트는 한 번 나타나고 화면 밖으로 사라지는게 맞는 것 같음
-            //클릭 안됨
+            //(보류) 여기에서 나타나는 각 도형 텍스트는 한 번 나타나고 화면 밖으로 사라지는게 맞는 것 같음
         }
         else if (Content_Seq == 3)
         {
             Onclick = false;
-            //Main icon 1 도형 전부 삭제
-            //그리고 2 게임 세팅
+
+            var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
+            Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
+
+            //아이콘 1 비활성화
+            Manager_Anim.Inactive_Seq_Icon_1();
+
+            Content_Seq += 1;
+            toggle = true;
+            Timer_set();
         }
         else if (Content_Seq == 4)
         {
@@ -118,6 +124,10 @@ public class Manager_Seq_14 : Base_GameManager
         else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
         {
             Init_EachGame_emoji(Game_round);
+        }
+        else if (Content_Seq == 6 || Content_Seq == 9 || Content_Seq == 12 || Content_Seq == 15 || Content_Seq == 18)
+        {
+            //게임 종료 시퀀스
         }
         else
         {   
@@ -128,12 +138,16 @@ public class Manager_Seq_14 : Base_GameManager
         }
     }
 
-
-
     void Init_EachGame_emoji(int round)
     {
+        //여기에서 돌림판, 결과 비활성화 필요
+        Lucky_Spin_common.SetActive(false);
+        Manager_Obj_14.instance.Result_array[Shape_number].SetActive(false);
+
+        //각 게임 회차 상단 이미지,텍스트 숫자 바꾸는 부분
         Number_Shape[round] = Manager_Obj_14.instance.Get_shapenumber(round);
         Text_Number.text = Number_Shape[round].ToString("0.00");
+
         var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
@@ -142,7 +156,6 @@ public class Manager_Seq_14 : Base_GameManager
 
         Onclick = true;
 
-        //여기에서 해당하는 이모지들만 clickable로
     }
 
     public void Flip()
@@ -178,15 +191,19 @@ public class Manager_Seq_14 : Base_GameManager
 
         Lucky_Spin_common.SetActive(true);
     }
-    //(확인) 게임 결과는 정상 작동하는 것을 확인하였으나 비활성화, 버튼 다시 활성화, 텍스트 등은 아직 정상작동하는지 확인하지 못 했음 추가 확인 필요
+    //(수정) 일단은 결과 리셋을 여기에다가 넣었으나 나중에 옮겨야함
     public void SpinWheel()
     {
+        Reset_Wheelresult();
+
         if (isSpinning) return;
 
         Managers.Sound.Play(SoundManager.Sound.Effect, Manager_Obj_14.instance.Audio_effect_array[4], 1f);
         Managers.Sound.Play(SoundManager.Sound.Effect, Manager_Obj_14.instance.Audio_effect_array[2], 1f);
 
+        Manager_Anim.Anim_Inactive(Manager_Obj_14.instance.Seq_text[Content_Seq]);
         Manager_Anim.Anim_Inactive(Button_Spin);
+
         isSpinning = true;
 
         int randomTargetIndex = Set_Wheel(Manager_Obj_14.instance.preSelectedShapes[Game_round]);
@@ -200,8 +217,11 @@ public class Manager_Seq_14 : Base_GameManager
             .SetEase(Ease.OutQuart)
             .OnComplete(() =>
             {
-                Result_Wheel(Manager_Obj_14.instance.preSelectedShapes[Game_round]);
+                Shape_number = Manager_Obj_14.instance.preSelectedShapes[Game_round];
+                Result_Wheel(Shape_number);
+
                 isSpinning = false;
+
                 Game_round += 1;
 
                 selectedShape = shapeList[randomTargetIndex];
@@ -221,7 +241,7 @@ public class Manager_Seq_14 : Base_GameManager
         //Empty exception
         if (num == -1)
         {
-            //(구현) 스핀 버튼 활성화 필요
+            Manager_Anim.Anim_Active(Button_Spin);
             Manager_Obj_14.instance.Result_array[5].SetActive(true);
             Manager_Anim.Activate_emoji(Manager_Obj_14.instance.Result_array[5]);
             Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Result_narration[5], 1f);
@@ -233,12 +253,14 @@ public class Manager_Seq_14 : Base_GameManager
             Manager_Anim.Activate_emoji(Manager_Obj_14.instance.Result_array[num]);
             Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Result_narration[num], 1f);
             Managers.Sound.Play(SoundManager.Sound.Effect, Manager_Obj_14.instance.Audio_effect_array[1], 1f);
+
+
+            Content_Seq += 1;
+            toggle = true;
+            Timer_set();
         }
 
         Prev_result = num;
-        //(구현)
-        //우선은 테스트를 위해 클릭 누르면 전부 없어지는 걸로 구현하고 결과 나오는거까지 명확하게 보자
-        //이미지 활성화 안댐, 그리고 나레이션도 안 맞음
     }
 
     void Reset_Wheelresult()
@@ -254,7 +276,6 @@ public class Manager_Seq_14 : Base_GameManager
         else if (Prev_result == -1)
         {
             Manager_Obj_14.instance.Result_array[5].SetActive(false);
-            Manager_Anim.Anim_Active(Button_Spin);
         }
     }
 
@@ -340,7 +361,7 @@ public class Manager_Seq_14 : Base_GameManager
     {
         Shape.GetComponent<Clicked_Block_14>().Active_Clickable();
     }
-
+    int Shape_number;
     public void Click(GameObject Shape, int num_emoji, int num_table)
     {
         var randomChar = (char)Random.Range('A', 'F' + 1);
@@ -361,14 +382,13 @@ public class Manager_Seq_14 : Base_GameManager
         else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
         {
             //Clicked this round emoji
-            if (Game_round == num_emoji)
+            if (Shape_number == num_emoji)
             {
-                Debug.Log("RIGHT EMOJI!");
+                Debug.Log("RIGHT SHAPE!");
                 Shape.transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
                 //(구현) 나중에 하나하나 클릭할 때 효과음, 이펙트, 애니메이션 추가 필요
                 //Manager_obj_4.instance.Effect_array[num_table].SetActive(true);
 
-                //(구현) 넘버 맥스 이모지게임도 그때그때 달라져야함 이 부분도 확인 필요
                 Number_Maxemoji_game -= 1;
                 Inactive_shape_clickable(Shape);
                 Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Msg_narration[num_emoji], 1f);
@@ -390,7 +410,7 @@ public class Manager_Seq_14 : Base_GameManager
                     Game_round += 1;
                     Timer_set();
 
-                    Debug.Log("ALL EMOJI FOUND!");
+                    Debug.Log("ALL SHAPE FOUND!");
 
                     Onclick = false;
                 }
@@ -435,6 +455,7 @@ public class Manager_Seq_14 : Base_GameManager
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
+
         //if (_raycastHits.Length == 0) Logger.Log("클릭된 것이 아무것도 없습니다. ------------------");
 
 

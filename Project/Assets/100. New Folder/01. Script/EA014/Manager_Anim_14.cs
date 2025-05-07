@@ -129,13 +129,17 @@ public class Manager_Anim_14 : MonoBehaviour
         GameObject Selected_shape_text;
         int shape_number;
 
+        //팝업하기 전에 그 전 메시지 없애는 과정이 필요할듯?
+
         //해당하는 번호의 UI 메시지 팝업
         shape_number = Shape.GetComponent<Clicked_Block_14>().Number_shape;
         Selected_shape_text = Manager_Obj_14.instance.Message_array[shape_number];
 
+        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Msg_narration[shape_number], 1f);
+
+        //여기에서 트루하고 shake하니깐 이걸 다시 돌릴 필요가 있음?
         Selected_shape_text.SetActive(true);
-        Sequence seq_read = DOTween.Sequence();
-        seq_read.Append(Selected_shape_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad));
+        Selected_shape_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad);
     }
     public void Inactive_shape_clickable(GameObject Emoji)
     {
@@ -169,6 +173,9 @@ public class Manager_Anim_14 : MonoBehaviour
 
             StopCoroutine(Temp_Message(time));
             round_number = 0;
+
+            //(구현) 여기에서 전부 다 읽어준 다음에 필요 없는 텍스트 좀 비활성화 하는 애니메이션이 필요함
+            Anim_Inactive(Manager_Obj_14.instance.Seq_text[Content_Seq]);
         }
         else
         {
@@ -194,13 +201,61 @@ public class Manager_Anim_14 : MonoBehaviour
             StartCoroutine(Temp_Message(time));
         }
     }
+    public void Inactive_Seq_Icon_1()
+    {
+        GameObject Emoji;
 
+        for (int i = 0; i < 5; i++)
+        {
+            Emoji = Main_Icon_1_array[i];
+            Emoji.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+            Emoji.SetActive(false);
+            Manager_Obj_14.instance.Message_array[i].SetActive(false);
+            //여기에 텍스트도 같이 비활성화 필요
+        }
+    }
+
+    //여기 기능 수정 필요함
+    int Max_shape = 30;
+    int Round_number_shape = 0;
+    IEnumerator Setting_icon_2(float time = 0.1f)
+    {
+        if (Round_number_shape == Max_shape)
+        {
+            StopCoroutine(Setting_icon_2(time));
+        }
+        else
+        {
+            yield return new WaitForSeconds(time);
+
+            GameObject Selected_emoji;
+
+            Selected_emoji = Main_Icon_2_array[Round_number_shape];
+
+            Selected_emoji.SetActive(true);
+            Selected_emoji.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
+
+            //나중에 효과음 추가한다면 여기에 추가 필요
+            //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
+
+            Round_number_shape += 1;
+
+            StartCoroutine(Setting_icon_2(time));
+        }
+    }
     public void Setting_Seq_Eachgame(int round)
     {
-        if (round >= 1)
-        {
-            Manager_Obj_14.instance.Main_Shapeicon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
-        }
+        Main_Icon_2_array = Manager_Obj_14.instance.Get_GameShapearray(round);
+
+        Manager_Obj_14.instance.Main_Shapeicon_2[round].SetActive(true);
+
+        StartCoroutine(Setting_icon_2());
+
+        //해당 게임에서 클릭해야할 오브젝트들을 활성화 해주는 부분
+        //if (round >= 1)
+        //{
+        //    Manager_Obj_14.instance.Main_Shapeicon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
+        //}
 
         for (int i = 0; i < Main_Icon_2_array.Length; i++)
         {
@@ -209,9 +264,8 @@ public class Manager_Anim_14 : MonoBehaviour
 
             if (round == num)
             {
+                //(확인) 해당 회차 게임의 도형을 키워주는 부분, 추가적으로 애니메이션이나 기타 효과가 필요할 경우 이 부분에 작성 필요함
                 Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
-                //Activate_emoji_forgame(Main_Icon_2_array[i]);
-                //Main_Icon_2_array[i].GetComponent<Image>().sprite = Manager_Obj_14.instance.Yellow;
 
                 Manager_Seq.Active_shape_clickable(Main_Icon_2_array[i]);
             }

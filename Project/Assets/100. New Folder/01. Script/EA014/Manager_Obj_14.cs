@@ -21,7 +21,7 @@ public class Manager_Obj_14 : MonoBehaviour
 
     //Shape Icon
     public GameObject Main_Shapeicon_1;  //전반부 게임 도형
-    public GameObject [] Main_Shapeicon_2;  
+    public GameObject [] Main_Shapeicon_2;  //중반부 각 회차 도형 어레이의 부모 오브젝트
     public GameObject Main_Shapeicon_3;  //결과 도형
     public GameObject Main_Shapeicon_position; //중반부 게임 도형 사전 위치
 
@@ -66,9 +66,9 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject[] Effect_array;
 
     //[EDIT] Object array
-    public GameObject[] Main_Shapeicon_1_array;
-    public GameObject[] Main_Shapeicon_3_array;
-    public GameObject[] UI_Shapeicon_array;
+    public GameObject[] Main_Shapeicon_1_array; //전반부 읽기 게임
+    public GameObject[] Main_Shapeicon_3_array; //중반부 게임 결과
+    public GameObject[] UI_Shapeicon_array;     //중반부 아이콘 갯수
     void Awake()
     {
         if (instance == null)
@@ -95,7 +95,6 @@ public class Manager_Obj_14 : MonoBehaviour
         init_Prefab();
         Init_Effectarray();
         Init_Shapeicon_array();
-
 
         GenerateShapeOrder();
         GeneratePreSelectedShapes();
@@ -133,6 +132,7 @@ public class Manager_Obj_14 : MonoBehaviour
             Result_array[i] = UI_Result.transform.GetChild(i).gameObject;
         }
 
+        
         UI_Shapeicon_array = new GameObject[UI_Shapeicon.transform.childCount];
 
         for (int i = 0; i < UI_Shapeicon.transform.childCount; i++)
@@ -141,6 +141,7 @@ public class Manager_Obj_14 : MonoBehaviour
         }
 
         Manager_Text.Init_UI_text(UI_Text, UI_Message, UI_Panel);
+
     }
     void init_Audio()
     {
@@ -150,7 +151,6 @@ public class Manager_Obj_14 : MonoBehaviour
         Result_narration = Resources.LoadAll<AudioClip>("EA014/audio_result");
         READY_narration = Resources.LoadAll<AudioClip>("EA014/audio_READY");
         Audio_effect_array = Resources.LoadAll<AudioClip>("EA014/audio_Effect");
-        //Shape_prefabs = Resources.LoadAll<AudioClip>("EA014/prefab");
         //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         //나레이션 재설정 이후 전달로 기능 수정
@@ -176,7 +176,6 @@ public class Manager_Obj_14 : MonoBehaviour
             Main_Shapeicon_3_array[i] = Main_Shapeicon_3.transform.GetChild(i).gameObject;
             Main_Shapeicon_3_array[i].SetActive(false);
         }
-        //여기에 있는 각 도형 묶음별 어레이를 사전에 좀 저장을 해줌
 
         for(int j = 0; j < 5; j++)
         {
@@ -189,10 +188,9 @@ public class Manager_Obj_14 : MonoBehaviour
                 Number_of_Eachemoji[Random_number] += 1;
                 Generate_shape(Random_number, i, index);
             }
+            //(확인) 아래는 무슨 역할 하는지 구분 불가능
             Number_Gameshape[index] = Number_of_Eachemoji[index];
         }
-
-        
 
         Manager_Anim.Init_Icon_array();
     }
@@ -333,6 +331,19 @@ public class Manager_Obj_14 : MonoBehaviour
         return Number_Gameshape[num];
     }
 
+    public GameObject[] Get_GameShapearray(int num)
+    {
+
+        GameObject[] Array = new GameObject[Main_Shapeicon_2[num].transform.childCount];
+
+        for (int i = 0; i < Main_Shapeicon_2[num].transform.childCount; i++)
+        {
+            Array[i] = Main_Shapeicon_2[num].transform.GetChild(i).gameObject;
+        }
+
+        return Array;
+    }
+
     public Manager_Seq_14 Get_managerseq()
     {
         return Manager_Seq;
@@ -348,11 +359,13 @@ public class Manager_Obj_14 : MonoBehaviour
         for(int i = 0; i < 5; i++)
         {
             
-                Temp_shapenum = shapeOrder[i];
+            Temp_shapenum = shapeOrder[i];
 
             Seq_text[3 * i + 5] = seq_text[3 * Temp_shapenum + 5];
             Seq_text[3 * i + 6] = seq_text[3 * Temp_shapenum + 6];
         }
+
+        Manager_Text.Init_UI_text_array(Seq_text);
     }
 
     void Rearrange_Narration()

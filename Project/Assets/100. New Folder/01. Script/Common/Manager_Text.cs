@@ -24,15 +24,7 @@ public class Manager_Text : MonoBehaviour
 
     void Start()
     {
-        //여기에서 초기화를 해야하는데
-        //각 씬별로 해당하는 오브젝트 스크립트를 받아와서 obj_3을 할당해줘야함
-        //결국 이 스크립트의 UI_Text를 setting할 수 있도록 해주는건?
-        //그럼 뭔가 순차적으로 진행이 되어야할 수도
-        //그럼 그냥 초기화를 obj에서 한번에 해주는것은?
 
-
-        //Init_UI_text();
-        //Init_UI_Panel(10f);
     }
 
     //텍스트 저장
@@ -41,8 +33,6 @@ public class Manager_Text : MonoBehaviour
         UI_Text = text;
         UI_Message = message;
         UI_Panel = panel;
-
-
 
         if (UI_Text != null)
         {
@@ -63,6 +53,15 @@ public class Manager_Text : MonoBehaviour
             {
                 UI_Message_array[i] = UI_Message.transform.GetChild(i).gameObject;
             }
+        }
+    }
+    //0507 임시 EA014를 위한 배열 저장 함수
+    public void Init_UI_text_array(GameObject[] text)
+    {
+        if (UI_Text != null)
+        {
+            UI_Text_array = text;
+
         }
     }
 
