@@ -331,6 +331,7 @@ public class SensorManager : MonoBehaviour
 
 
     private Canvas _launcherSettingCanvas;
+    private Vector3 _initPos = new Vector3(-54321,-54321,0); //맨처음 생성시 불필요하게 Ray발생 방지용
     private void SetPool<T>(Stack<T> pool, string path, int poolCount = 100) where T : Object
     {
         //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
@@ -348,7 +349,7 @@ public class SensorManager : MonoBehaviour
                 return;
             }
 
-            var obj = Instantiate(prefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+            var obj = Instantiate(prefab, UI_Canvas.transform.localPosition - _initPos, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
 
             var component = obj.GetComponent<T>();
             if (component == null)
