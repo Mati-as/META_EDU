@@ -32,6 +32,8 @@ public class RaySynchronizer : MonoBehaviour
     public Vector3 screenPosition;
     public Button btn;
 
+    [SerializeField]
+    private bool _isUIClickableBySesnor;
 
     public bool isRayEnabled = true;
 
@@ -150,17 +152,20 @@ public class RaySynchronizer : MonoBehaviour
 
         raycastResults = new List<RaycastResult>();
         graphicRaycaster.Raycast(PointerEventData, raycastResults);
-        
-        foreach (RaycastResult result in raycastResults)
-        {
-            result.gameObject.TryGetComponent(out btn);
-            btn?.onClick?.Invoke();
-            
-            result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
-            eventHandler?.OnClickHandler?.Invoke();
-        }
 
-        OnGetInputFromUser?.Invoke();
+
+        if (_isUIClickableBySesnor)
+            foreach (var result in raycastResults)
+            {
+                result.gameObject.TryGetComponent(out btn);
+                btn?.onClick?.Invoke();
+
+                result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+                eventHandler?.OnClickHandler?.Invoke();
+            }
+
+
+        //  OnGetInputFromUser?.Invoke();
 
 #if UNITY_EDITOR
 
