@@ -7,7 +7,12 @@ using Random = UnityEngine.Random;
 
 public class WaterPlayground_BallController : MonoBehaviour
 {
-  [SerializeField] private BallInfo ballInfo;
+
+
+
+    public BallInfo.BallColor ballColor { get; private set; }
+    
+    [SerializeField] private BallInfo ballInfo;
 
     //Size Settings.
     [Range(0, 2)] public int size;
@@ -34,7 +39,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     //클릭 가능 여부 판정을 위해 Collider 할당 및 제어.
     private Collider _collider;
     private Rigidbody _rb;
-    public static event Action OnBallIsInTheHole;
+    public static event Action<int> OnBallIsInTheHole;
 
 
 
@@ -46,12 +51,29 @@ public class WaterPlayground_BallController : MonoBehaviour
     private bool _isRespawning;
     private int currentActivePsCount;
    
+    
 
     private void Start()
     {
         Init();
+        _rb.useGravity = false;
+        ballColor = (BallInfo.BallColor)123; // sentinel value 
+
+
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnClicked;
+    
     }
 
+    private void OnDestroy()
+    {
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
+    }
+
+    private void OnGameStartBtnClicked()
+    {
+        _rb.useGravity = true;
+    }
     private void Init()
     {
         _path = new Vector3[3];
@@ -68,10 +90,6 @@ public class WaterPlayground_BallController : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-      
-       
-
-        
         if (other.transform.gameObject.name == "Hole")
         {
             
@@ -93,8 +111,8 @@ public class WaterPlayground_BallController : MonoBehaviour
             transform.DOPath(_path, ballInfo.durationIntoHole, PathType.CatmullRom)
                 .OnStart(() =>
                 {
-                    OnBallIsInTheHole?.Invoke();
-                    //audio
+                    OnBallIsInTheHole?.Invoke((int)ballColor);
+                
                 })
                 .OnComplete(() => { DOVirtual.Float(0, 1, ballInfo.respawnWaitTime, _ => _++)
                     .OnStart(() =>
@@ -107,10 +125,6 @@ public class WaterPlayground_BallController : MonoBehaviour
                     }); 
                 });
         }
-
-       
-       
-     
         
     }
 
@@ -174,7 +188,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     {
         if (colors == null) colors = new Color[3];
 
-        colors[(int)BallInfo.BallColor.Red] = ballInfo.colorDef[(int)BallInfo.BallColor.Red];
+        colors[(int)BallInfo.BallColor.Pink] = ballInfo.colorDef[(int)BallInfo.BallColor.Pink];
         colors[(int)BallInfo.BallColor.Yellow] = ballInfo.colorDef[(int)BallInfo.BallColor.Yellow];
         colors[(int)BallInfo.BallColor.Blue] = ballInfo.colorDef[(int)BallInfo.BallColor.Blue];
     }
@@ -186,9 +200,11 @@ public class WaterPlayground_BallController : MonoBehaviour
 
         if (this.gameObject.name != "Rainbow")
         {
-            _currentColorIndex = Random.Range((int)BallInfo.BallColor.Red, (int)BallInfo.BallColor.Blue + 1);
+            _currentColorIndex = Random.Range((int)BallInfo.BallColor.Pink, (int)BallInfo.BallColor.Blue + 1);
             _color = colors[_currentColorIndex];
-
+            ballColor = (BallInfo.BallColor)_currentColorIndex;
+            
+            
             _meshRenderer.material.color = _color;
         }
        

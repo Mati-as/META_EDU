@@ -96,7 +96,7 @@ public class WaterPlayground_DolphinController : MonoBehaviour
         }
     }
 
-    private void OnBallIn()
+    private void OnBallIn(int _)
     {
         _currentPathIndex = Random.Range(0, 3);
         _currentPath = _pathes[_currentPathIndex];

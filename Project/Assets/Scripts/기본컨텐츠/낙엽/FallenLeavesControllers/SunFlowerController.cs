@@ -18,9 +18,9 @@ public class SunFlowerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _direction =  ConvertVector3ToVector2(ParticleEventController.randomDirection);
+        _direction =  ConvertVector3ToVector2(BC001_GameManager.randomDirection);
         windDirectionToProperty = ConvertVectorDirectionToMappedAngle(_direction);
-        if (ParticleEventController.isWindBlowing)
+        if (BC001_GameManager.isWindBlowing)
         {
             SetShaderProperty(_meshRenderer);
         }

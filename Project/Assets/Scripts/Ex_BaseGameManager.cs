@@ -10,6 +10,41 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
+
+/// <summary>
+/// 0508/25
+/// UIManager에 텍스트 및 나레이션 전송용 페이로드 입니다.
+/// pub-sub패턴 활용이며 텍스트나 나레이션의 양이 많을경우 활용할 수 있습니다. 
+/// </summary>
+public class UI_Payload : IPayload
+{
+  
+
+    public bool IsCustom // 조건(Checksum)없이 UI를 사용하고 싶은경우
+    {
+        get;
+    }
+    
+    public bool IsPopFromZero // 처음에 size가 제로였다가 커지는 애니메이션을 사용하고 싶은경우활용, false인 경우 original 사이즈에서 애니메이션 재생
+    {
+        get;
+    }
+
+    
+    public string Narration//텍스트 내용
+    {
+        get;
+    }
+    
+
+    public UI_Payload(string sceneName, string narration, bool isCustomOn = false, bool isPopFromZero = true)
+    {
+        IsCustom = isCustomOn;
+        Narration = narration;
+        IsPopFromZero = isPopFromZero;
+    }
+
+}
 /// <summary>
 ///     오브젝트 바인딩 기능이 추가.
 ///     기본적으로 카메라 무빙, 애니메이션을 총괄할 수 있는 메인 애니메이션 컨트롤러 추가
@@ -21,7 +56,10 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    protected int _currentThemeSequence;
+    public int currentMainSequence
+    {
+        get;protected set;
+    }
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
 
 

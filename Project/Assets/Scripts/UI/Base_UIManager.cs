@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Sequence = DG.Tweening.Sequence;
 
+
+
 public class Base_UIManager : UI_PopUp
 {
   
@@ -25,6 +27,7 @@ public class Base_UIManager : UI_PopUp
     private float _originalHeight;
 
     private Sequence _uiSeq;
+    protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
     
     
     public override bool Init()
@@ -67,7 +70,7 @@ public class Base_UIManager : UI_PopUp
     /// 애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    protected void PopInstructionUI(string instruction)
+    protected void PopFromZeroInstructionUI(string instruction)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -88,6 +91,29 @@ public class Base_UIManager : UI_PopUp
         
       
     }
+    
+    protected void PopAndChangeUI(string instruction)
+    {
+        _uiSeq?.Kill();
+        _uiSeq = DOTween.Sequence();
+        
+        Logger.ContentTestLog($"PopInstructionUI ------------ {instruction}");
+     
+        GetObject((int)UI.InstructionUI).SetActive(true);
+       
+        GetTMP((int)TMPs.TMP_Instruction).text = instruction;
+        
+        UpdateBgSize();
+        
+      
+        _uiSeq.Append(GetObject((int)UI.InstructionUI).transform.DOScale(_originScale * 1.35f, 0.6f)
+            .SetEase(Ease.InOutBounce));
+        _uiSeq.Append(GetObject((int)UI.InstructionUI).transform.DOScale(_originScale, 0.15f)
+            .SetEase(Ease.InOutBounce));
+        
+      
+    }
+
     
     protected void ShutInstructionUI(string instruction)
     {
