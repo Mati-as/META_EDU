@@ -4,9 +4,9 @@ namespace MyCustomizedEditor.Common.Util
 {
     public class UI_PopUp : UI_Base
     {
-        public override bool Init()
+        public override bool InitEssentialUI()
         {
-            if (base.Init() == false)
+            if (base.InitEssentialUI() == false)
                 return false;
 
             // if (SceneManager.GetActiveScene().name.Contains("METAEDU"))

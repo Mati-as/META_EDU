@@ -161,10 +161,10 @@ Debug.Log("idle path");
 
                 if (gameObject.name != "IdleDolphin")
                 {
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/DolphinA" );
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/DolphinA" );
                 
                     var randomChar = (char)Random.Range('A', 'B' + 1);
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/DolphinLaugh" + randomChar,0.5f);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/DolphinLaugh" + randomChar,0.5f);
                 }
            
               
@@ -174,11 +174,11 @@ Debug.Log("idle path");
                     .OnStart(() =>
                     {
 #if UNITY_EDITOR
-                        Debug.Log($"pathStart---------------------Name: {(PathName)_currentPathIndex}");
+//                        Debug.Log($"pathStart---------------------Name: {(PathName)_currentPathIndex}");
 #endif
                         
                       
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/DolphinB" ,1.0f);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/DolphinB" ,1.0f);
                         DOVirtual.Float(0, 0, 1f, _ => { })
                             .OnComplete(() => { transform.DOLookAt(path[(int)PathOrder.Arrival], 1.45f); });
                     })

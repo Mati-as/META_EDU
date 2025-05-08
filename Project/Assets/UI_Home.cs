@@ -11,7 +11,7 @@ public class UI_Home : UI_PopUp
         Btn_ContentSortedByTheme
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindObject(typeof(UI));
 

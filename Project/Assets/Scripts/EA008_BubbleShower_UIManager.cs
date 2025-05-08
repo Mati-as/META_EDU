@@ -41,7 +41,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
 
     private float  _intervalBtwStartAndReady =1f;
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
 
         _gm = GameObject.FindWithTag("GameManager").GetComponent<EA008_BubbleShower_GameManager>();

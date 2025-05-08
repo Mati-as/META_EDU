@@ -11,7 +11,7 @@ public class EA006_UIManager : UI_Base
         SparrowCount
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindTMP(typeof(TMP));
 

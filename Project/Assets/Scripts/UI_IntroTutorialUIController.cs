@@ -23,7 +23,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
     
     
     
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindObject(typeof(Intro_UI));
         UI_Scene_StartBtn.onGameStartBtnShut -= FadeOutScreen;

@@ -11,7 +11,7 @@ public abstract class UI_Base : MonoBehaviour
 
     protected bool _init;
 
-    public virtual bool Init()
+    public virtual bool InitEssentialUI()
     {
         if (_init)
             return false;
@@ -21,7 +21,7 @@ public abstract class UI_Base : MonoBehaviour
 
     private void Start()
     {
-        Init();
+        InitEssentialUI();
     }
 
     protected void Bind<T>(Type type) where T : Object

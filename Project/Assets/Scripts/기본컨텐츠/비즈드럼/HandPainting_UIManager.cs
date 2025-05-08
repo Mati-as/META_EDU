@@ -31,7 +31,7 @@ public class HandPainting_UIManager : UI_PopUp
     private float  _intervalBtwStartAndReady =1f;
     public static event Action onStartUI; 
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
 
       //  _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();

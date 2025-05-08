@@ -17,9 +17,9 @@ public class UIManager_EA009 : Base_UIManager
         
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
-        base.Init();
+        base.InitEssentialUI();
         InitInstructionUI();
         return true;
 

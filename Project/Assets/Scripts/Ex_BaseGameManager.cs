@@ -18,8 +18,10 @@ using Object = UnityEngine.Object;
 /// </summary>
 public class UI_Payload : IPayload
 {
-  
-
+    public string Narration//텍스트 내용
+    {
+        get;
+    }
     public bool IsCustom // 조건(Checksum)없이 UI를 사용하고 싶은경우
     {
         get;
@@ -29,19 +31,26 @@ public class UI_Payload : IPayload
     {
         get;
     }
-
     
-    public string Narration//텍스트 내용
+    
+    public float DelayAndAutoShutTime//텍스트 내용
     {
         get;
     }
     
+    public string Checksum//텍스트 내용, 메세지필터링
+    {
+        get;
+    }
 
-    public UI_Payload(string sceneName, string narration, bool isCustomOn = false, bool isPopFromZero = true)
+    
+    public UI_Payload( string narration, bool isCustomOn = false, bool isPopFromZero = true,float delayAndAutoShutTime = 0.0f,string Checksum ="")
     {
         IsCustom = isCustomOn;
         Narration = narration;
         IsPopFromZero = isPopFromZero;
+        DelayAndAutoShutTime = delayAndAutoShutTime;
+        this.Checksum = Checksum;
     }
 
 }
@@ -56,10 +65,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    public int currentMainSequence
-    {
-        get;protected set;
-    }
+    protected int _currentMainSequence;
+
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
 
 
@@ -84,6 +91,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected string psResourcePath = string.Empty;
 
+    protected GameObject UIManager;
+
 
     protected virtual new void Awake()
     {
@@ -107,7 +116,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     private void SetUIManager()
     {
-        var isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(SceneManager.GetActiveScene().name);
+        bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManager,SceneManager.GetActiveScene().name);
 
         if (!isUIManagerLoadedOnRuntime) return; 
         var mainCamera = Camera.main;

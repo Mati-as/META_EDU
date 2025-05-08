@@ -10,7 +10,7 @@ public class WaterPlayground_BallController : MonoBehaviour
 
 
 
-    public BallInfo.BallColor ballColor { get; private set; }
+    public BallInfo.BallColor thisBallColor { get; private set; }
     
     [SerializeField] private BallInfo ballInfo;
 
@@ -57,7 +57,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     {
         Init();
         _rb.useGravity = false;
-        ballColor = (BallInfo.BallColor)123; // sentinel value 
+     
 
 
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
@@ -76,6 +76,8 @@ public class WaterPlayground_BallController : MonoBehaviour
     }
     private void Init()
     {
+        thisBallColor = (BallInfo.BallColor)123; // sentinel value 
+        
         _path = new Vector3[3];
         _dolphinController = GameObject.Find("Dolphin_Model").GetComponent<WaterPlayground_DolphinController>();
         _ballSpawner = GameObject.Find("BallSpawner").GetComponent<WaterPlayground_BallSpawner>();
@@ -94,7 +96,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         {
             
             var randomChar = (char)Random.Range('A', 'C' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/Hole" + randomChar,0.5f);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hole" + randomChar,0.5f);
             
             
              _dolphinController.currentBallInTheHoleColor = _color;
@@ -111,7 +113,7 @@ public class WaterPlayground_BallController : MonoBehaviour
             transform.DOPath(_path, ballInfo.durationIntoHole, PathType.CatmullRom)
                 .OnStart(() =>
                 {
-                    OnBallIsInTheHole?.Invoke((int)ballColor);
+                    OnBallIsInTheHole?.Invoke((int)thisBallColor);
                 
                 })
                 .OnComplete(() => { DOVirtual.Float(0, 1, ballInfo.respawnWaitTime, _ => _++)
@@ -152,7 +154,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         if (other.transform.gameObject.name.Contains("Ball"))
         {
             
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/Ball", 
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Ball", 
                 0.5f );
                
             
@@ -162,7 +164,7 @@ public class WaterPlayground_BallController : MonoBehaviour
 
         if (velproportionalVolume > 0.25f)
         {
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/Ball", 
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Ball", 
                 velproportionalVolume );
         }
         
@@ -202,7 +204,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         {
             _currentColorIndex = Random.Range((int)BallInfo.BallColor.Pink, (int)BallInfo.BallColor.Blue + 1);
             _color = colors[_currentColorIndex];
-            ballColor = (BallInfo.BallColor)_currentColorIndex;
+            thisBallColor = (BallInfo.BallColor)_currentColorIndex;
             
             
             _meshRenderer.material.color = _color;
@@ -272,7 +274,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         currentActivePsCount++;
         
         var randomChar = (char)Random.Range('A', 'C' + 1);
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/WaterPlayground/Hit" + randomChar,0.5f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hit" + randomChar,0.5f);
         _isParticlePlaying = true;
         var ps = particlePool.Dequeue();
         ps.gameObject.SetActive(true);

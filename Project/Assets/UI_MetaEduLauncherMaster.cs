@@ -38,7 +38,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
     private readonly bool _isClikcable = true;
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindObject(typeof(UI));
 
@@ -130,7 +130,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
        
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         RaySynchronizer.OnGetInputFromUser += OnRaySynced;
-        return base.Init();
+        return base.InitEssentialUI();
     }
 
 

@@ -17,9 +17,9 @@ private BC001_GameManager _gm;
         
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
-        base.Init();
+        base.InitEssentialUI();
         InitInstructionUI();
         return true;
 

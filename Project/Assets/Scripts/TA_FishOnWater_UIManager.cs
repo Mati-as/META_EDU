@@ -239,7 +239,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         });
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         TaFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         TaFishOnWaterBaseGameManager.OnReady += OnReadyAndStart;

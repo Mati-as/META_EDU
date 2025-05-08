@@ -225,7 +225,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         });
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         
         

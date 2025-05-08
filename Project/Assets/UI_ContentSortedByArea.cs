@@ -18,7 +18,7 @@ public class UI_ContentSortedByArea : UI_PopUp
         Btn_Social,
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindObject(typeof(UI));
         
@@ -42,6 +42,6 @@ public class UI_ContentSortedByArea : UI_PopUp
         {
             Managers.UI.ShowPopupUI<UI_ContentSelection_Social>();
         });
-        return base.Init();
+        return base.InitEssentialUI();
     }
 }

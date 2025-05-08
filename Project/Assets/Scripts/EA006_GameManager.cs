@@ -70,22 +70,22 @@ public class EA006_GameManager : Ex_BaseGameManager
     {
         get
         {
-            return base.currentMainSequence;
+            return base._currentMainSequence;
         }
         set
         {
         
-            base.currentMainSequence = value;
+            base._currentMainSequence = value;
             
-            Logger.Log($"Sequence Changed--------{(SequenceName)base.currentMainSequence} : {value}");
-            SeqMessageEvent?.Invoke(base.currentMainSequence);
+            Logger.Log($"Sequence Changed--------{(SequenceName)base._currentMainSequence} : {value}");
+            SeqMessageEvent?.Invoke(base._currentMainSequence);
             SetWheatColliderStatus();
 
             //값반영 지연으로 value대신 _currentThemeSequence 사용하면 안됩니다 XXX
             switch (value)
             {
                 case (int)SequenceName.GrassColorChange:
-                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base.currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
                     currentChangedCount = 0;
                     ChangeThemeSeqAnim((int)SequenceName.GrassColorChange);
                     ResetClickable();
@@ -94,7 +94,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                 
                 case (int)SequenceName.FindScarecrow:
                     _elapsedTime = 0;
-                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base.currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
                     SetWheatColliderStatus(false);
                     ChangeThemeSeqAnim((int)SequenceName.FindScarecrow);
                     ResetClickable();
@@ -106,7 +106,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     ResetClickable(false);//순서주의 
                     AppearSparrow(2);
                     ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
-                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base.currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
                     Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006");
 
                     break;

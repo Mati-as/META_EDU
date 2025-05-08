@@ -139,7 +139,8 @@ public class UIManager
     /// ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
     /// </summary>
     /// <returns></returns>
-    public bool ShowCurrentSceneUIManager<T>(string sceneName = null, Transform parent = null) 
+    
+    public bool ShowCurrentSceneUIManager<T>(out GameObject uiGamobj,string sceneName = null, Transform parent = null) 
     {
         if (string.IsNullOrEmpty(sceneName))
             sceneName = typeof(T).Name;
@@ -149,11 +150,13 @@ public class UIManager
         if (prefab == null)
         {
             Logger.ContentTestLog("UIManager prefab is null");
+            uiGamobj = null;
             return false;
         }
 
         var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
 
+        uiGamobj = go;
         // if (parent != null)
         //     go.transform.SetParent(parent);
         // else if (SceneUI != null)

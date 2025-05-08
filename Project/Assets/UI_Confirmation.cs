@@ -17,7 +17,7 @@ public class UI_Confirmation : UI_PopUp
         tmpConfirm
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         Debug.Assert(UI_MetaEduLauncherMaster.GameNameWaitingForConfirmation!=null);
         BindObject(typeof(UI));
@@ -34,7 +34,7 @@ public class UI_Confirmation : UI_PopUp
         {
             Managers.UI.ClosePopupUI(this);
         });
-        return base.Init();
+        return base.InitEssentialUI();
         
     }
     

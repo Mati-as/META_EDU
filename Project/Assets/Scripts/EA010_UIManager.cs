@@ -8,7 +8,7 @@ public class EA010_UIManager : UI_Base
         MessageBox
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindTMP(typeof(TMP));
 

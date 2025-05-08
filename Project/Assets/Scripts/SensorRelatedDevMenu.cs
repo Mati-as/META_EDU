@@ -18,8 +18,8 @@ public class SensorRelatedDevMenu : UI_PopUp
 
     private enum TMP
     {
-        TMP_NormalRay,
-        TMP_RealRay,
+        // TMP_NormalRay,
+        // TMP_RealRay,
         TMP_Log
     }
     private Animator _animator;
@@ -35,7 +35,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         var img = buttonGO.GetComponent<Image>();
         img.color = isActive ? Color.white : new Color(0.3f, 0.3f, 0.3f); // 어두운 회색
     }
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         
         _animator = GetComponent<Animator>();
