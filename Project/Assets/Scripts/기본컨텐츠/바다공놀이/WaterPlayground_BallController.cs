@@ -50,16 +50,19 @@ public class WaterPlayground_BallController : MonoBehaviour
     private float _veggiePositionOffset =0.15f;
     private bool _isRespawning;
     private int currentActivePsCount;
-   
-    
 
+
+    private BB006_GameManager _gm;
+
+    
     private void Start()
     {
         Init();
         _rb.useGravity = false;
-     
 
-
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<BB006_GameManager>();
+        Debug.Assert(_gm != null, "GameManager not found");
+        
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
         UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnClicked;
     
@@ -88,15 +91,18 @@ public class WaterPlayground_BallController : MonoBehaviour
         SetScale();
         SetEffectPool(ref particlePool);
     }
-    
+
+    private Sequence seq;
     
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.gameObject.name == "Hole")
         {
             
-            var randomChar = (char)Random.Range('A', 'C' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hole" + randomChar,0.5f);
+            seq?.Kill();
+            seq = DOTween.Sequence();
+            
+       
             
             
              _dolphinController.currentBallInTheHoleColor = _color;
@@ -108,9 +114,16 @@ public class WaterPlayground_BallController : MonoBehaviour
             _path[1] = other.transform.position - Vector3.down * ballInfo.offset;
             _path[2] = other.transform.position + Vector3.down * ballInfo.depth;
 
+            if (_gm.currentMainSeq == (int)BB006_GameManager.MainSequence.FreePlay
+                || _gm.currentMainSeq == (int)BB006_GameManager.MainSequence.OnFinishFreePlay)
+            {
+                var randomChar = (char)Random.Range('A', 'C' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hole" + randomChar,0.5f);
+            }
+           
             
             
-            transform.DOPath(_path, ballInfo.durationIntoHole, PathType.CatmullRom)
+            seq.Append(transform.DOPath(_path, ballInfo.durationIntoHole, PathType.CatmullRom)
                 .OnStart(() =>
                 {
                     OnBallIsInTheHole?.Invoke((int)thisBallColor);
@@ -125,11 +138,29 @@ public class WaterPlayground_BallController : MonoBehaviour
                     {
                         Respawn();
                     }); 
-                });
+                }));
         }
         
     }
 
+    public void Vanish()
+    {
+        _collider.enabled = false;
+        seq?.Kill();
+        seq = DOTween.Sequence();
+        seq.Append(transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.OutBounce).OnComplete(() =>
+        {
+            DOVirtual.Float(0, 1, ballInfo.respawnWaitTime, _ => _++)
+                .OnStart(() =>
+                {
+                })
+                .OnComplete(() =>
+                {
+                    Respawn();
+                });
+        }));
+
+    }
 
     private bool _isParticlePlaying;
     private float _velOffset = 0.01f; // 일정이상 속도로 충돌했을때만 소리 및 파티클이 재생되도록 하기 위한 오프셋값입니다. 

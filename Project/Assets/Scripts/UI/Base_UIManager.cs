@@ -26,7 +26,7 @@ public class Base_UIManager : UI_PopUp
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
     
-    private Vector3 _originScale = Vector3.one;
+    private Vector3 _UIInstructionOriginalScale = Vector3.one;
     private RectTransform _bgRectTransform;
     private float _originalHeight;
 
@@ -46,10 +46,15 @@ public class Base_UIManager : UI_PopUp
 
         TMP_Instruction.text = string.Empty;
         UI_Instruction.SetActive(false);
+        
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        _originScale = UI_Instruction.transform.localScale;
+        _UIInstructionOriginalScale = UI_Instruction.transform.localScale;
+        
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
+        Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
+        Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
+        
         return true;
         // Initialize UI elements here
     }
@@ -70,7 +75,7 @@ public class Base_UIManager : UI_PopUp
     /// </summary>
     protected void InitInstructionUI()
     {
-        //UI_Instruction.SetActive(true);
+      //  UI_Instruction.SetActive(true);
         TMP_Instruction.text = string.Empty;
     }
     
@@ -92,9 +97,9 @@ public class Base_UIManager : UI_PopUp
         UpdateBgSize();
         
         UI_Instruction.transform.localScale = Vector3.zero;
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_originScale * 1.2f, 0.6f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale * 1.2f, 0.6f)
             .SetEase(Ease.InOutBounce));
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_originScale, 0.15f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale, 0.15f)
             .SetEase(Ease.InOutBounce));
         
         if (delayAndShutTme > 0.5f)
@@ -121,9 +126,9 @@ public class Base_UIManager : UI_PopUp
         UpdateBgSize();
         
       
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_originScale * 1.35f, 0.6f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale * 1.35f, 0.6f)
             .SetEase(Ease.InOutBounce));
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_originScale, 0.15f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale, 0.15f)
             .SetEase(Ease.InOutBounce));
 
         if (delayAndShutTme > 0.5f)
@@ -166,7 +171,7 @@ public class Base_UIManager : UI_PopUp
         float paddingY = 60f;  // 상하 여백
 
         float finalWidth = textSize.x + paddingX;
-        float finalHeight =  TMP_Instruction.text.Contains("\n") ? textSize.y + paddingY : _originalHeight;
+        float finalHeight =  TMP_Instruction.text.Contains("\n") ? _originalHeight * 2 : _originalHeight;
 
         _bgRectTransform.sizeDelta = new Vector2(finalWidth, finalHeight);
     }

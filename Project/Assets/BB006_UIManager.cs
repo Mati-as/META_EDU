@@ -6,12 +6,14 @@ public class BB006_UIManager : Base_UIManager
 {
     private BB006_GameManager _gm;
 
+    private readonly string NARRATION_PATH = "Audio/BB006/Narration/";
 
     protected new enum UI
     {
         Pink,
         Yellow,
         Blue,
+        AllBalls,
         BallImageAndCount
     }
 
@@ -68,25 +70,43 @@ public class BB006_UIManager : Base_UIManager
     {
         GetObject((int)UI.BallImageAndCount).transform.localScale = Vector3.zero;
 
-        GetTMP((int)TMPs.Count).text = _gm.ballCountLeftToPut.ToString();
+      
 
 
         GetObject((int)UI.Pink).SetActive(false);
         GetObject((int)UI.Yellow).SetActive(false);
         GetObject((int)UI.Blue).SetActive(false);
+        GetObject((int)UI.AllBalls).SetActive(false);
 
-        switch (_gm.currentBallColorToPut)
+
+
+        if (_gm.currentMainSeq == (int)BB006_GameManager.MainSequence.ColorMode)
         {
-            case BallInfo.BallColor.Pink:
-                GetObject((int)UI.Pink).SetActive(true);
-                break;
-            case BallInfo.BallColor.Yellow:
-                GetObject((int)UI.Yellow).SetActive(true);
-                break;
-            case BallInfo.BallColor.Blue:
-                GetObject((int)UI.Blue).SetActive(true);
-                break;
+            GetTMP((int)TMPs.Count).text = _gm.ballCountLeftToPut.ToString();
+            switch (_gm.currentBallColorToPut)
+            {
+                case BallInfo.BallColor.Pink:
+                    GetObject((int)UI.Pink).SetActive(true);
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "PutPinkBall");
+                    break;
+                case BallInfo.BallColor.Yellow:
+                  
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "PutYellowBall");
+                    GetObject((int)UI.Yellow).SetActive(true);
+                    break;
+                case BallInfo.BallColor.Blue:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "PutBlueBall");
+                    GetObject((int)UI.Blue).SetActive(true);
+                    break;
+            }
         }
+        else if (_gm.currentMainSeq == (int)BB006_GameManager.MainSequence.CountMode)
+        {
+            GetTMP((int)TMPs.Count).text = _gm.BallCountGoal.ToString();
+            GetObject((int)UI.AllBalls).SetActive(true);
+        }
+
+       
 
         GetObject((int)UI.BallImageAndCount).SetActive(true);
         GetObject((int)UI.BallImageAndCount).transform.DOScale(_originScale, 0.15f).SetEase(Ease.InOutBounce);
@@ -94,12 +114,26 @@ public class BB006_UIManager : Base_UIManager
 
     public void RefreshText()
     {
-        GetTMP((int)TMPs.Count).text = _gm.ballCountLeftToPut.ToString();
+        
+        
+        int cache = _gm.ballCountLeftToPut;
+        if (_gm.currentMainSeq == (int)BB006_GameManager.MainSequence.ColorMode)
+        {
+            GetTMP((int)TMPs.Count).text = Mathf.Clamp(cache,0,50).ToString();
+            GetObject((int)UI.BallImageAndCount).transform.localScale = Vector3.zero;
+            GetObject((int)UI.BallImageAndCount).SetActive(true);
+            GetObject((int)UI.BallImageAndCount).transform.DOScale(_originScale, 0.15f).SetEase(Ease.InOutBounce);
+        }
 
-        GetObject((int)UI.BallImageAndCount).transform.localScale = Vector3.zero;
-        GetObject((int)UI.BallImageAndCount).SetActive(true);
-        GetObject((int)UI.BallImageAndCount).transform.DOScale(_originScale, 0.15f).SetEase(Ease.InOutBounce);
     }
-    
+    public void ShutBallCountUI()
+    {
+      
+        GetObject((int)UI.BallImageAndCount).transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InOutBounce)
+            .OnComplete(()=>
+            {
+             //   GetObject((int)UI.BallImageAndCount).SetActive(false);
+            });
+    }
     
 }

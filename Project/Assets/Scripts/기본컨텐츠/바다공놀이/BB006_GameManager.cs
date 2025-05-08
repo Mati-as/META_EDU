@@ -26,7 +26,7 @@ public class BB006_GameManager : Ex_BaseGameManager
         FreePlay,
         ColorMode,
         CountMode,
-        OnFinish
+        OnFinishFreePlay
     }
 
     
@@ -41,19 +41,36 @@ public class BB006_GameManager : Ex_BaseGameManager
             switch (_currentMainSequence)
             {
                 case (int)MainSequence.ColorMode:
-                    OnRoundSetInColorBallGame(color:BallInfo.BallColor.Pink);
-                    Messenger.Default.Publish(new UI_Payload("돌고래가 원하는 색깔의 공을 넣어주세요!", true, delayAndAutoShutTime: 5f));
+                    RoundSetInColorBallGame(color:BallInfo.BallColor.Pink);
+                    Messenger.Default.Publish(new UI_Payload("돌고래가 원하는 색깔의 공을 넣어주세요!", true, delayAndAutoShutTime: 4f));
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "PutWhatDolphinWants");
                     break;
                 
                 case (int)MainSequence.CountMode:
-                  
-                    OnRoundSetInBallCountGame();
-                    Messenger.Default.Publish(new UI_Payload("이번엔 숫자만큼 놀아보자!", true, delayAndAutoShutTime: 3f,Checksum:MainSequence.CountMode.ToString()));
-                    Messenger.Default.Publish(new UI_Payload("목표 숫자만큼 공을 넣어주세요!!", true, delayAndAutoShutTime: 3f));
+                    
+                    isBallCountable = false;
+                    DOVirtual.DelayedCall(2f, () =>
+                    {
+                        Messenger.Default.Publish(new UI_Payload("이번엔 숫자만큼 놀아보자!", true, delayAndAutoShutTime: 2f,
+                            Checksum: MainSequence.CountMode.ToString()));
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "LetsPlayWithCount");
+                    });
+                   
+                    DOVirtual.DelayedCall(6f, () =>
+                    {
+                        Messenger.Default.Publish(new UI_Payload("목표 숫자만큼 공을 넣어주세요!", true, delayAndAutoShutTime: 3f));
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "CountAndPut");
+                        DOVirtual.DelayedCall(3f, () =>
+                        {
+                            OnRoundSetInBallCountGame();
+                        });
+                    });
+                    
                     break;
-                
-                case (int)MainSequence.OnFinish:
-                    Messenger.Default.Publish(new UI_Payload("잘했어! 이제부턴 돌고래랑 자유롭게 놀 수 있어!", true, delayAndAutoShutTime: 3f));
+                   
+                case (int)MainSequence.OnFinishFreePlay:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "FreePlay"); 
+                    Messenger.Default.Publish(new UI_Payload("잘했어!\n이제부턴 돌고래랑 자유롭게 놀 수 있어!", true, delayAndAutoShutTime: 8f));
                     break;
                     
                     
@@ -69,6 +86,7 @@ public class BB006_GameManager : Ex_BaseGameManager
         SetPool(ref particlePool);
         SensorSensitivity = 0.18f;
         BGM_VOLUME = 0.2f;
+        psResourcePath = "SortedByScene/BasicContents/WaterPlayGround/Fx_Click";
         base.Init();
         ManageProjectSettings(150, 0.15f);
 
@@ -90,29 +108,54 @@ public class BB006_GameManager : Ex_BaseGameManager
     private void OnBallInTheHole(int ballColor)
     {
    
+        
         if(currentMainSeq == (int)MainSequence.FreePlay) return;
         Logger.ContentTestLog($"현재 공 색깔 : {(BallInfo.BallColor)ballColor}");
 
-        if (isBallCountable) return; 
-        
-        if (currentBallColorToPut == (BallInfo.BallColor)ballColor)
+        if (!isBallCountable)
+        {
+            Logger.ContentTestLog($"아직 공 카운팅 준비가 안됬거나 해당 모드 아님 {(MainSequence)currentMainSeq}");
+            return;
+        }
+
+        if (currentMainSeq == (int)MainSequence.ColorMode)
+        {
+            if (currentBallColorToPut == (BallInfo.BallColor)ballColor)
+            {
+                CurrentBallCountAlreadyPut++;
+                var randomChar = (char)Random.Range('A', 'C' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hole" + randomChar,0.5f);
+            }
+        } 
+        else if (currentMainSeq == (int)MainSequence.CountMode)
         {
             CurrentBallCountAlreadyPut++;
+            Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + _currentBallCountAlreadyPut.ToString());
+
         }
+      
     }
 
+    private readonly string NARRATION_PATH = "Audio/BB006/Narration/";
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
         
         currentMainSeq = (int)MainSequence.FreePlay;
-        Messenger.Default.Publish(new UI_Payload("친구들 공을 가지고 돌고래와 놀아볼까요?", true, delayAndAutoShutTime: 2.5f));
-
+        DOVirtual.DelayedCall(1.5f, () =>
+        {
+            Messenger.Default.Publish(new UI_Payload("친구들! 공을 가지고 돌고래와 놀아볼까요?", true, delayAndAutoShutTime: 2.5f));
+            Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "LetsPlayWithBalls");
+        });
+       
         DOVirtual.DelayedCall(5f, () =>
         {
             Messenger.Default.Publish(new UI_Payload("공을 터치해서 구멍에 넣어주세요!", true, delayAndAutoShutTime: 6f));
+            Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "TouchAndPutBalls");
         });
     }
+
+    private Dictionary<int, WaterPlayground_BallController> _ballMap =new();
 
     public override void OnRaySynced()
     {
@@ -123,33 +166,65 @@ public class BB006_GameManager : Ex_BaseGameManager
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {
-            Rigidbody rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
-            
-            if (rb != null)
-            {
-                Vector3 forceDirection =  rb.transform.position - hit.point + Vector3.up*upOffset;
-                
-                var randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, 
-                    "Audio/BB006/Click" + randomChar,0.35f);
-                rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
+            var rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
 
-                DEV_OnValidClick();
+
+            if (currentMainSeq == (int)MainSequence.ColorMode)
+            {
+                if(hit.transform.gameObject.name.Contains("WaterCollider"))
+                {
+                    PlayParticle(hit.point + particleUpOffset);//offset
+                }
+                
+                
+                if (hit.transform.gameObject.name.Contains("Ball"))
+                {
+                    int ballID = hit.transform.GetInstanceID();
+                    _ballMap.TryAdd(ballID, hit.transform.GetComponent<WaterPlayground_BallController>());
+
+                    if (_ballMap[ballID].thisBallColor != currentBallColorToPut)
+                    {
+                        Logger.ContentTestLog($"색깔이 다름 : {hit.transform.gameObject.name}");
+                        _ballMap[ballID].Vanish();
+                        PlayParticleEffect(hit.transform.position + particleUpOffset);
+                        return;
+                    }
+
+                    if (rb != null)
+                    {
+                        var forceDirection = rb.transform.position - hit.point + Vector3.up * upOffset;
+
+                        char randomChar = (char)Random.Range('A', 'D' + 1);
+                        Managers.Sound.Play(SoundManager.Sound.Effect,
+                            "Audio/BB006/Click" + randomChar, 0.35f);
+                        rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
+ 
+                        DEV_OnValidClick();
+                    }
+                }
             }
+            else
+            {
+                if (rb != null)
+                {
+                    var forceDirection = rb.transform.position - hit.point + Vector3.up * upOffset;
+
+                    char randomChar = (char)Random.Range('A', 'D' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect,
+                        "Audio/BB006/Click" + randomChar, 0.35f);
+                    rb.AddForce(forceDirection.normalized * forceAmount, ForceMode.Impulse);
+
+                    DEV_OnValidClick();
+                }
+            }
+            
+          
             
         }
         
    
         
-        foreach (var hit in _hits)
-        {
-            if(hit.transform.gameObject.name.Contains("WaterCollider"))
-            {
-                PlayParticle(hit.point + particleUpOffset);//offset
-                return;
-            }
-            
-        }
+
      
     }
 
@@ -168,7 +243,7 @@ public class BB006_GameManager : Ex_BaseGameManager
 
     private void Update()
     {
-        if (!isStartButtonClicked && _currentMainSequence != (int)MainSequence.FreePlay) return;
+        if (!isStartButtonClicked && currentMainSeq != (int)MainSequence.FreePlay) return;
 
         if (_isFreePlayFinished) return; 
         
@@ -225,15 +300,36 @@ public class BB006_GameManager : Ex_BaseGameManager
 
 
     #region 색깔공넣기 놀이 파트
+    
+    
+#if UNITY_EDITOR
+    [Range(0,20)]
+    public int BALLCOUNT_MIN_COLORMODE;
+    [Range(0,20)]
+    public int BALLCOUNT_MAX_COLORMODE;
+#else
 
-    private void OnRoundSetInColorBallGame(BallInfo.BallColor color)
+    public int BALLCOUNT_MIN_COLORMODE = 7;
+    public int BALLCOUNT_MAX_COLORMODE = 15;
+#endif
+
+
+    private void RoundSetInColorBallGame(BallInfo.BallColor color)
     {
-        BallCountGoal = Random.Range(7, 15);
-        _currentBallCountAlreadyPut = 0;
         currentBallColorToPut = color;
-        BB006_UIManager.ShowBallImageAndCountWithRefresh();
+        BallCountGoal = Random.Range(BALLCOUNT_MIN_COLORMODE, BALLCOUNT_MAX_COLORMODE);
+        _currentBallCountAlreadyPut = 0;
+      
         
-        isBallCountable = true;
+        DOVirtual.DelayedCall(4f, () =>
+        {
+            //Logger.ContentTestLog($"현재 목표 공 색상: {currentBallColorToPut}");
+            BB006_UIManager.ShowBallImageAndCountWithRefresh();
+            isBallCountable = true;
+        });
+     
+        
+     
     }
     public BallInfo.BallColor currentBallColorToPut
     {
@@ -248,6 +344,9 @@ public class BB006_GameManager : Ex_BaseGameManager
     }
 
     private int _currentBallCountAlreadyPut = -123;
+    private int currentCountModeCount = 1;
+    private readonly int COUNT_MODE_MAX = 3;
+
     public int CurrentBallCountAlreadyPut
     {
         get
@@ -260,14 +359,61 @@ public class BB006_GameManager : Ex_BaseGameManager
             BB006_UIManager.RefreshText();
             if (currentMainSeq == (int)MainSequence.ColorMode)
             {
-              
                 if (_currentBallCountAlreadyPut >= BallCountGoal)
                 {
-                    currentMainSeq = (int)MainSequence.OnFinish;
-                    Messenger.Default.Publish(new UI_Payload("성공! 다 넣었다!",true, delayAndAutoShutTime: 5f));
+                    isBallCountable = false;
+                    Messenger.Default.Publish(new UI_Payload("성공! 다 넣었다!", true, delayAndAutoShutTime: 5f));
+                    DOVirtual.DelayedCall(0.5f,()=>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "GoodJob");
+                    });
+                    
+
+                    BB006_UIManager.ShutBallCountUI();
+                    DOVirtual.DelayedCall(3f, () =>
+                    {
+                        if (currentBallColorToPut == BallInfo.BallColor.Pink)
+                            RoundSetInColorBallGame(BallInfo.BallColor.Yellow);
+                        else if (currentBallColorToPut == BallInfo.BallColor.Yellow)
+                            RoundSetInColorBallGame(BallInfo.BallColor.Blue);
+                        else if (currentBallColorToPut == BallInfo.BallColor.Blue)
+                        {
+                            isBallCountable = false;
+                            currentMainSeq = (int)MainSequence.CountMode;
+                        }
+                    });
                 }
             }
-        
+            else if (currentMainSeq == (int)MainSequence.CountMode)
+            {
+                
+                if (_currentBallCountAlreadyPut >= BallCountGoal)
+                {
+                    isBallCountable = false;
+                    Messenger.Default.Publish(new UI_Payload("성공! 다 넣었다!", true, delayAndAutoShutTime: 4f));
+                    DOVirtual.DelayedCall(0.5f,()=>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + "GoodJob");
+                    });
+                    
+                    DOVirtual.DelayedCall(3f, () =>
+                    {
+                        if (currentCountModeCount < COUNT_MODE_MAX)
+                        {
+                          
+                            currentCountModeCount++;
+                            OnRoundSetInBallCountGame();
+                        }
+                        else
+                        {
+                       
+                            BB006_UIManager.ShutBallCountUI();
+                            currentMainSeq = (int)MainSequence.OnFinishFreePlay;
+                        }
+                    });
+                }
+       
+            }
         }
     }
     
@@ -283,10 +429,30 @@ public class BB006_GameManager : Ex_BaseGameManager
 
 
     #region 갯수 놀이 파트
+
+#if UNITY_EDITOR
+    [Range(0,20)]
+    public int BALLCOUNT_MIN_COUNTMODE;
+    [Range(0,20)]
+    public int BALLCOUNT_MAX_COUNTMODE;
+#else
+
+    public int BALLCOUNT_MIN_COUNTMODE = 7;
+    public int BALLCOUNT_MAX_COUNTMODE = 10;
+#endif
     
+ 
+
     private void OnRoundSetInBallCountGame()
     {
-        BallCountGoal = Random.Range(5, 10);
+        
+        BallCountGoal = Random.Range(BALLCOUNT_MIN_COUNTMODE, BALLCOUNT_MAX_COUNTMODE);
+        _currentBallCountAlreadyPut = 0;
+        DOVirtual.DelayedCall(4f, () =>
+        {
+            BB006_UIManager.ShowBallImageAndCountWithRefresh();
+            isBallCountable = true;
+        });
     }
 
     #endregion

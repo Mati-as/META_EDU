@@ -640,10 +640,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     _badFoodClickRelatedSeq[thisObjTransID] = DOTween.Sequence();
 
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 1.6f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
-                    _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.20f);
+                        .DOScale(_defaultSizeMap[thisObjTransID] * 2.2f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
+                    _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.21f);
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 0.6f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
+                        .DOScale(_defaultSizeMap[thisObjTransID] * 0.75f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
                     _badFoodClickRelatedSeq[thisObjTransID].SetLoops(150, LoopType.Yoyo);
                 }
                 else
