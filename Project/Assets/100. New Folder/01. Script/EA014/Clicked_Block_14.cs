@@ -14,7 +14,7 @@ public class Clicked_Block_14 : MonoBehaviour
     //[common] 3d game => SEQ : OnRaySynced() , 2d game => SEQ : Click()
     public void Click()
     {
-        Debug.Log("Clicked");
+        //Debug.Log("Clicked");
         if (Clickable)
         {
             Manager_Seq = Manager_Obj_14.instance.Get_managerseq();

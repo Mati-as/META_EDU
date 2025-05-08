@@ -83,7 +83,6 @@ public class Manager_Anim_14 : MonoBehaviour
             Camera_seq[i].Join(Main_Camera.transform.DOMove(pos.transform.position, 1f).SetEase(Ease.InOutQuad));
             Camera_seq[i].Pause();
 
-
             //Debug.Log("length " + Camera_seq.Length);
         }
     }
@@ -99,8 +98,6 @@ public class Manager_Anim_14 : MonoBehaviour
     {
         Main_Icon_1_array = Manager_Obj_14.instance.Main_Shapeicon_1_array;
         //Main_Icon_2_array = Manager_Obj_14.instance.Main_Icon_2_array;
-
-        //Icon_buttion_position = Manager_obj_4.instance.Icon_buttion_position;
     }
 
     //[common]
@@ -141,14 +138,11 @@ public class Manager_Anim_14 : MonoBehaviour
         Shape.transform.DOScale(1.5f, 1).SetEase(Ease.OutQuad).OnComplete(() =>
          Shape.transform.DOScale(1f, 0.5f).SetEase(Ease.OutQuad)
          );
-        //Manager_Seq = Manager_Obj_14.instance.Get_managerseq();
     }
     public void Activate_emojitext_popup(GameObject Shape)
     {
         GameObject Selected_shape_text;
         int shape_number;
-
-        //팝업하기 전에 그 전 메시지 없애는 과정이 필요할듯?
 
         //해당하는 번호의 UI 메시지 팝업
         shape_number = Shape.GetComponent<Clicked_Block_14>().Number_shape;
@@ -156,7 +150,6 @@ public class Manager_Anim_14 : MonoBehaviour
 
         Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Msg_narration[shape_number], 1f);
 
-        //여기에서 트루하고 shake하니깐 이걸 다시 돌릴 필요가 있음?
         Selected_shape_text.SetActive(true);
         Selected_shape_text.transform.DOShakeScale(1, 1, 10, 90, true).SetEase(Ease.OutQuad);
     }
@@ -173,8 +166,6 @@ public class Manager_Anim_14 : MonoBehaviour
     //[Animation]
     public void Read_Seq_Shape()
     {
-        //여기에서 처음에 하나씩 세팅?
-
         round_number = 0;
         StartCoroutine(Temp_Message());
     }
@@ -193,7 +184,6 @@ public class Manager_Anim_14 : MonoBehaviour
             StopCoroutine(Temp_Message(time));
             round_number = 0;
 
-            //(구현) 여기에서 전부 다 읽어준 다음에 필요 없는 텍스트 좀 비활성화 하는 애니메이션이 필요함
             Anim_Inactive(Manager_Obj_14.instance.Seq_text[Content_Seq]);
         }
         else
@@ -229,7 +219,6 @@ public class Manager_Anim_14 : MonoBehaviour
             Emoji = Main_Icon_1_array[i];
             Anim_Inactive(Emoji);
             Manager_Obj_14.instance.Message_array[i].SetActive(false);
-            //여기에 텍스트도 같이 비활성화 필요
         }
     }
     public void Active_Seq_Icon_1()
@@ -243,7 +232,6 @@ public class Manager_Anim_14 : MonoBehaviour
         }
     }
 
-    //여기 기능 수정 필요함
     int Max_shape = 30;
     int Round_number_shape;
     IEnumerator Setting_icon_2(float time = 0.1f)
@@ -263,7 +251,7 @@ public class Manager_Anim_14 : MonoBehaviour
             Selected_emoji.SetActive(true);
             Selected_emoji.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic);
 
-            //나중에 효과음 추가한다면 여기에 추가 필요
+            //나중에 효과음 추가 위치
             //Managers.soundManager.Play(SoundManager.Sound.Narration, Manager_obj_4.instance.Msg_narration[emoji_number], 1f);
 
             Round_number_shape += 1;
@@ -294,9 +282,6 @@ public class Manager_Anim_14 : MonoBehaviour
         }
 
     }
-
-
-
     //[EDIT] Contents camera sequence
     public void Change_Animation(int Number_seq)
     {

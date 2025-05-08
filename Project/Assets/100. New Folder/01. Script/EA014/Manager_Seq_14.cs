@@ -6,7 +6,7 @@ using System;
 using DG.Tweening;
 using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
-
+using TMPro;
 public class Manager_Seq_14 : Base_GameManager
 {
     private static GameObject s_UIManager;
@@ -37,7 +37,7 @@ public class Manager_Seq_14 : Base_GameManager
 
     //[EDIT] SPINNER
     public GameObject Lucky_Spin_common;
-    public Text Text_Number;
+    public TextMeshProUGUI Text_Number;
 
     private Transform wheel; // 원판의 Transform
     private GameObject Button_Spin;
@@ -65,7 +65,6 @@ public class Manager_Seq_14 : Base_GameManager
         Manager_Narr = this.gameObject.GetComponent<Manager_Narr>();
 
         //Managers.soundManager.Play(SoundManager.Sound.Bgm, "EA003/EA003",0.3f);
-
     }
 
     // Update is called once per frame
@@ -124,6 +123,8 @@ public class Manager_Seq_14 : Base_GameManager
         else if (Content_Seq == 4)
         {
             Manager_Anim.Anim_Active(Button_Spin);
+            //버튼 활성화 하되, 끝나고 난 다음에 게임 시작 시퀀스 돌입하면?
+            //어쩌피 세팅 다 하고 바로 준비할텐데
         }
         else if (Content_Seq == 7 || Content_Seq == 10 || Content_Seq == 13 || Content_Seq == 16)
         {
@@ -135,15 +136,16 @@ public class Manager_Seq_14 : Base_GameManager
             Lucky_Spin_common.SetActive(true);
             Manager_Anim.Anim_Active(Lucky_Spin_common.transform.GetChild(1).gameObject);
             Manager_Anim.Anim_Active(Button_Spin);
+            
+            //StartCoroutine(GameStart_Seq());
         }
         else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
         {
-            Init_EachGame_emoji();
+            Active_status();
         }
         else if (Content_Seq == 6 || Content_Seq == 9 || Content_Seq == 12 || Content_Seq == 15 || Content_Seq == 18)
         {
-            //게임 종료 처리 > 성공 효과음, 이펙트, 그 다음?
-            //도형을 화면 크게 마찬가지로 보여주기? 아니면 어떻게?
+            //게임 종료 처리 추가 필요 > 성공 효과음, 이펙트
             Manager_Anim.Anim_Inactive(Manager_Obj_14.instance.UI_Status);
 
             Manager_Anim.Active_Effect(1);
@@ -174,11 +176,9 @@ public class Manager_Seq_14 : Base_GameManager
         }
     }
 
+
     void Init_EachGame_emoji()
     {
-        Lucky_Spin_common.SetActive(false);
-        Manager_Obj_14.instance.Result_array[Shape_number].SetActive(false);
-
         //각 게임 회차 상단 이미지,텍스트 숫자 바꾸는 부분
         Number_Ofeachgameshape[Game_round] = Manager_Obj_14.instance.Get_numbermaxshape(Shape_number);
 
@@ -188,9 +188,11 @@ public class Manager_Seq_14 : Base_GameManager
         //순차적으로 도형 번호에 맞춰서 게임 세팅
         Manager_Anim.Setting_Seq_Eachgame(Shape_number);
         Number_Maxemoji_game = Number_Ofeachgameshape[Game_round];
-        Active_status();
 
         Onclick = true;
+
+        //준비 시작 하면서 게임 자체는 세팅이 되는게 맞음
+        //지연이 되어야하는 것은 클릭, 텍스트, 나레이션, active status임
     }
 
     public void Flip()
@@ -225,7 +227,7 @@ public class Manager_Seq_14 : Base_GameManager
 
         Button_Spin.GetComponent<Button>().onClick.AddListener(SpinWheel);
     }
-    //(수정) 일단은 결과 리셋을 여기에다가 넣었으나 나중에 옮겨야함
+
     public void SpinWheel()
     {
         Reset_Wheelresult();
@@ -259,7 +261,7 @@ public class Manager_Seq_14 : Base_GameManager
                 Order_number += 1;
 
                 selectedShape = shapeList[randomTargetIndex];
-                Debug.Log("선택된 감정: " + selectedShape);
+                //Debug.Log("선택된 감정: " + selectedShape);
 
             });
 
@@ -269,7 +271,7 @@ public class Manager_Seq_14 : Base_GameManager
     int Prev_result = -2;
     void Result_Wheel(int num)
     {
-        //0번이 결과 화면의 이펙트
+        //0번 결과 화면 이펙트
         Manager_Obj_14.instance.Effect_array[0].SetActive(true);
 
         //Empty exception
@@ -288,9 +290,7 @@ public class Manager_Seq_14 : Base_GameManager
             Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Result_narration[num], 1f);
             Managers.Sound.Play(SoundManager.Sound.Effect, Manager_Obj_14.instance.Audio_effect_array[1], 1f);
 
-
-            Content_Seq += 1;
-            toggle = true;
+            StartCoroutine(GameReady_Seq());
             Timer_set();
         }
 
@@ -299,7 +299,7 @@ public class Manager_Seq_14 : Base_GameManager
 
     void Reset_Wheelresult()
     {
-        Manager_Obj_14.instance.Effect_array[0].SetActive(false);
+        //Manager_Obj_14.instance.Effect_array[0].SetActive(false);
 
         if (Prev_result > -1)
         {
@@ -313,7 +313,7 @@ public class Manager_Seq_14 : Base_GameManager
     }
 
     //#돌림판의 순서 값을 리턴하는 부분
-    //(EDIT) 세팅에 맞춰서 return 값, Rand_numbers값 수정 필요
+    //(EDIT) 세팅에 맞춰서 return 값, Rand_numbers값(꽝 부분) 수정 필요
     int[] Rand_numbers = { 1, 3, 5 };
     int Set_Wheel(int num)
     {
@@ -349,46 +349,50 @@ public class Manager_Seq_14 : Base_GameManager
             return -1;
         }
     }
-
-    int Ready_seq;
-
-    //휠 활성화 되고
-    //휠에서 정상적으로 다음으로 진행하면 Ready Msg 실행되도록 할 필요 있음
-    public void Ready_Msg_seq()
+    IEnumerator GameReady_Seq()
     {
-        Ready_seq = 0;
-        StartCoroutine(Ready_Msg());
-        //클릭 비활성화 필요
-        //UI 클릭은?
-        //Onclick = false;
-    }
+        Onclick = false;
+        Manager_Obj_14.instance.UI_READY.SetActive(true);
+        GameObject Text_Ready = Manager_Obj_14.instance.UI_READY.transform.GetChild(1).gameObject;
+        GameObject Text_Start = Manager_Obj_14.instance.UI_READY.transform.GetChild(2).gameObject;
 
-    //(구현) 나레이션 정상 작동은 확인하였으며, 다른 기능들 추가 구현이 필요함
+        yield return new WaitForSeconds(3f);
 
-    IEnumerator Ready_Msg(float time = 1.5f)
-    {
-        if (Ready_seq == 5)
-        {
-            //4, Start game
-            //(구현) 3,2,1 하고 게임에서 클릭할 수 있도록 활성화 하는 기능 필요
-            StopCoroutine(Ready_Msg(time));
-            Ready_seq = 0;
-        }
-        else
-        {
-            yield return new WaitForSeconds(time);
+        //0. 도형 활성화 시퀀스, 스핀 비활성화
+        Lucky_Spin_common.SetActive(false);
+        Manager_Obj_14.instance.Result_array[Shape_number].SetActive(false);
 
-            //(구현) 메시지 텍스트 팝업 필요
-            Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.READY_narration[Ready_seq], 1f);
-            Ready_seq += 1;
+        Init_EachGame_emoji();
+        yield return new WaitForSeconds(1f);
+        
+        // 1. ready 활성화
+        Manager_Anim.Anim_Active(Text_Ready);
+        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.READY_narration[0], 1f);
 
-            StartCoroutine(Ready_Msg(time));
-        }
+        yield return new WaitForSeconds(3f);
+
+        // 2. ready 비활성화, start 활성화
+        Manager_Anim.Anim_Inactive(Text_Ready);
+        Manager_Anim.Anim_Active(Text_Start); 
+        Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.READY_narration[4], 1f);
+
+        yield return new WaitForSeconds(1f);
+
+        // 3. start 비활성화 및 다음 함수 호출
+        Manager_Anim.Anim_Inactive(Text_Start);
+        Manager_Obj_14.instance.UI_READY.SetActive(false);
+
+        //(확인) 다음 시퀀스로 넘기고, 다음 시퀀스에 돌입하면 바로 게임 시작하는 것으로 구현
+        Content_Seq += 1;
+        toggle = true;
+
+        //Timer_set();
     }
 
     void Active_status()
     {
         Manager_Text.Inactive_UI_Text(3f);
+        //Manager_Text.Inactive_UI_Text(3f);
         Text_Number.text = Number_Maxemoji_game.ToString("0");
 
         for (int i = 0; i < 5; i++)
@@ -400,13 +404,21 @@ public class Manager_Seq_14 : Base_GameManager
         Manager_Anim.Anim_Activestatus(3f);
     }
 
+    void Active_particle(int num)
+    {
+        ParticleSystem particle = Manager_Obj_14.instance.InGame_effect_array[num].GetComponent<ParticleSystem>();
+        particle.Play();
+    }
+
     public void Inactive_shape_clickable(GameObject Shape)
     {
+        Shape.GetComponent<BoxCollider>().enabled = false;
         Shape.GetComponent<Clicked_Block_14>().Inactive_Clickable();
     }
 
     public void Active_shape_clickable(GameObject Shape)
     {
+        Shape.GetComponent<BoxCollider>().enabled = true;
         Shape.GetComponent<Clicked_Block_14>().Active_Clickable();
     }
     int Shape_number;
@@ -415,7 +427,7 @@ public class Manager_Seq_14 : Base_GameManager
         var randomChar = (char)Random.Range('A', 'F' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
-        Debug.Log("Shape CLICKED!");
+        //Debug.Log("Shape CLICKED!");
 
         if (Content_Seq == 2 || Content_Seq == 19)
         {
@@ -432,10 +444,9 @@ public class Manager_Seq_14 : Base_GameManager
             //Clicked this round emoji
             if (Shape_number == num_emoji)
             {
-                Debug.Log("RIGHT SHAPE!");
+                //Debug.Log("RIGHT SHAPE!");
                 Shape.transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
-                //(구현) 나중에 하나하나 클릭할 때 효과음, 이펙트, 애니메이션 추가 필요
-                //Manager_obj_4.instance.Effect_array[num_table].SetActive(true);
+                Active_particle(num_table);
 
                 Number_Maxemoji_game -= 1;
                 Inactive_shape_clickable(Shape);
@@ -443,24 +454,17 @@ public class Manager_Seq_14 : Base_GameManager
                 Manager_Anim.Anim_Inactive(Shape);
 
                 Text_Number.text = Number_Maxemoji_game.ToString("0");
-                //Shape.GetComponent<Image>().sprite = Manager_Obj_14.instance.White;
 
                 //End
                 if (Number_Maxemoji_game == 0)
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect, Manager_Obj_14.instance.Audio_effect_array[3], 1f);
 
-                    //끝나면 나타나는 이모지 큰거
-                    //Manager_Obj_14.instance.Main_Icon_3_array[Game_round].SetActive(true);
-                    //Manager_Obj_14.instance.Main_Icon_3_array[Game_round].transform.DOScale(1f, 1f).From(0).SetEase(Ease.OutElastic);
-
-                    //Managers.Sound.Play(SoundManager.Sound.Effect, Effect_Emotion[Game_round], 1f);
-
                     Content_Seq += 1;
                     toggle = true;
                     Game_round += 1;
 
-                    Debug.Log("ALL SHAPE FOUND!");
+                    //Debug.Log("ALL SHAPE FOUND!");
 
                     Onclick = false;
                 }
@@ -470,8 +474,6 @@ public class Manager_Seq_14 : Base_GameManager
 
             }
         }
-        //(구현)여기에서 정답 처리하기 시작할 때 상단 결과 텍스트도 같이 수정 필요, 이미지 교체 기능도 필요함
-        //Text_Number.text = Number_Shape[round].ToString("0.00");
     }
 
 
@@ -516,7 +518,7 @@ public class Manager_Seq_14 : Base_GameManager
 
                 if (Onclick)
                 {
-                    Debug.Log("Shape Clicked!");
+                    //Debug.Log("Shape Clicked!");
                     Selected_shape = hit.transform.gameObject;
                     Selected_shape.GetComponent<Clicked_Block_14>().Click();
                 }
