@@ -52,7 +52,7 @@ public class WaterPlayground_BallController : MonoBehaviour
     private int currentActivePsCount;
 
 
-    private BB006_GameManager _gm;
+    private EA016_GameManager _gm;
 
     
     private void Start()
@@ -60,7 +60,7 @@ public class WaterPlayground_BallController : MonoBehaviour
         Init();
         _rb.useGravity = false;
 
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<BB006_GameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<EA016_GameManager>();
         Debug.Assert(_gm != null, "GameManager not found");
         
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
@@ -114,8 +114,8 @@ public class WaterPlayground_BallController : MonoBehaviour
             _path[1] = other.transform.position - Vector3.down * ballInfo.offset;
             _path[2] = other.transform.position + Vector3.down * ballInfo.depth;
 
-            if (_gm.currentMainSeq == (int)BB006_GameManager.MainSequence.FreePlay
-                || _gm.currentMainSeq == (int)BB006_GameManager.MainSequence.OnFinishFreePlay)
+            if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.FreePlay
+                || _gm.currentMainSeq == (int)EA016_GameManager.MainSequence.OnFinishFreePlay)
             {
                 var randomChar = (char)Random.Range('A', 'C' + 1);
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/Hole" + randomChar,0.5f);

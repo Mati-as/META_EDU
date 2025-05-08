@@ -18,9 +18,9 @@ public class SunFlowerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _direction =  ConvertVector3ToVector2(BC001_GameManager.randomDirection);
+        _direction =  ConvertVector3ToVector2(EA015_GameManager.randomDirection);
         windDirectionToProperty = ConvertVectorDirectionToMappedAngle(_direction);
-        if (BC001_GameManager.isWindBlowing)
+        if (EA015_GameManager.isWindBlowing)
         {
             SetShaderProperty(_meshRenderer);
         }
