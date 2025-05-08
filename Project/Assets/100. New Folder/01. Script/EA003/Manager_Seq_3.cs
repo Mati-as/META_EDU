@@ -352,7 +352,7 @@ public class Manager_Seq_3 : Base_GameManager
 
         _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
-        if(_raycastHits.Length ==0 )Logger.Log("클릭된 것이 아무것도 없습니다. ------------------");
+        if(_raycastHits.Length ==0 ) Logger.Log("클릭된 것이 아무것도 없습니다. ------------------");
         
         foreach (var hit in _raycastHits)
         {

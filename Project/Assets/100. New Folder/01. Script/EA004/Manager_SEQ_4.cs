@@ -142,8 +142,6 @@ public class Manager_SEQ_4 : Base_GameManager
         Manager_Anim.Setting_Seq_Icon_2();
     }
 
-    //해당 소리가 안 남 전부 수정이 필요함
-    //한글 경로로 되어있는거 깨져서
     void Init_EachGame_emoji(int round)
     {
         var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);

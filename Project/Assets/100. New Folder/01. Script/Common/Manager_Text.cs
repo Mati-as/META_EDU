@@ -24,15 +24,7 @@ public class Manager_Text : MonoBehaviour
 
     void Start()
     {
-        //여기에서 초기화를 해야하는데
-        //각 씬별로 해당하는 오브젝트 스크립트를 받아와서 obj_3을 할당해줘야함
-        //결국 이 스크립트의 UI_Text를 setting할 수 있도록 해주는건?
-        //그럼 뭔가 순차적으로 진행이 되어야할 수도
-        //그럼 그냥 초기화를 obj에서 한번에 해주는것은?
 
-
-        //Init_UI_text();
-        //Init_UI_Panel(10f);
     }
 
     //텍스트 저장
@@ -41,8 +33,6 @@ public class Manager_Text : MonoBehaviour
         UI_Text = text;
         UI_Message = message;
         UI_Panel = panel;
-
-
 
         if (UI_Text != null)
         {
@@ -63,6 +53,15 @@ public class Manager_Text : MonoBehaviour
             {
                 UI_Message_array[i] = UI_Message.transform.GetChild(i).gameObject;
             }
+        }
+    }
+    //0507 임시 EA014를 위한 배열 저장 함수
+    public void Init_UI_text_array(GameObject[] text)
+    {
+        if (UI_Text != null)
+        {
+            UI_Text_array = text;
+
         }
     }
 
@@ -93,9 +92,13 @@ public class Manager_Text : MonoBehaviour
 
     public void Inactive_UI_Text()
     {
-        UI_Text_array[Content_Seq].SetActive(false);
+        UI_Text_array[Content_Seq].transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false));
     }
 
+    public void Inactive_UI_Text(float timer = 0.5f)
+    {
+        UI_Text_array[Content_Seq].transform.DOScale(0, timer).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false));
+    }
     public void Active_UI_message(int Number)
     {
         //메시지 보여주는 기능
@@ -107,14 +110,6 @@ public class Manager_Text : MonoBehaviour
         if (Number_Prev_message != -1)
         {
             UI_Message_array[Number_Prev_message].SetActive(false);
-
-            //해당하는 메시지 오브젝트의 나레이션을 읽어줘야함
-            //일단은 나레이션 읽어주는 
-            //UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
-            //나레이션, BGM, 이펙트 만약에 이펙트가 다수면?
-            //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
-            //나레이션에 넣으면 안될 것 같은데
-            //이펙트도 여러개여야할 것 같은데
 
         }
         UI_Message_array[Number].SetActive(true);
