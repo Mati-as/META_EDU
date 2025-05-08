@@ -18,6 +18,7 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject UI_READY;
     public GameObject UI_Result;
     public GameObject UI_Shapeicon;
+    public GameObject UI_Status;
 
     //Shape Icon
     public GameObject Main_Shapeicon_1;  //전반부 게임 도형
@@ -39,11 +40,11 @@ public class Manager_Obj_14 : MonoBehaviour
 
     private int MaxShape = 5;
 
-    public List<int> shapeOrder = new List<int>();           // 0~4 도형 순서  "RECTANGLE", "TRIANGLE", "CIRCLE", "STAR", "HEART"
+    private List<int> shapeOrder = new List<int>();           // 0~4 도형 순서  "RECTANGLE", "TRIANGLE", "CIRCLE", "STAR", "HEART"
     public List<int> preSelectedShapes = new List<int>();    // 실제 사용할 배열 (꽝 포함)
 
     [Header("[ COMPONENT CHECK ]")]
-    public int[] Number_of_Eachemoji;
+    private int[] Number_of_Eachemoji;
     public int[] Number_Gameshape = { 0,0,0,0,0};
     public GameObject[] Shape_prefabs;
     public GameObject[] Shape_array;
@@ -181,15 +182,18 @@ public class Manager_Obj_14 : MonoBehaviour
         {
             int index = j;
             int num = 10 + j * 2;
+            //각 회차 도형 배열 사전 설정 및 프리팹 생성을 위한 순서 배열 생성
             Number_of_Eachemoji = GenerateSimpleRandomArray(5, 30, index, num);
+            List<int> number = GetRandomizedIndices(Number_of_Eachemoji);
             for (int i = 0; i < Main_Shapeicon_position.transform.childCount; i++)
             {
-                int Random_number = UnityEngine.Random.Range(0, MaxShape);
-                Number_of_Eachemoji[Random_number] += 1;
-                Generate_shape(Random_number, i, index);
+                Generate_shape(number[i], i, index);
             }
-            //(확인) 아래는 무슨 역할 하는지 구분 불가능
+            //각 게임 타겟 도형 갯수 저장해주는 부분
             Number_Gameshape[index] = Number_of_Eachemoji[index];
+
+            //(구현) 근데 마지막으로 확인해야할게 하나 더 있어, 순서를 랜덤으로 했는데 그에 맞춰서 인덱스 번호도 맞춰줘야하는데 그건 어떻게?
+            //네모 부터 순서대로 되는데 마지막으로 활성화하는 순서를 바꾸면 될듯?
         }
 
         Manager_Anim.Init_Icon_array();
@@ -228,6 +232,33 @@ public class Manager_Obj_14 : MonoBehaviour
 
         return array;
     }
+    public List<int> GetRandomizedIndices(int[] counts)
+    {
+        List<int> indexPool = new List<int>();
+
+        // 각 인덱스를 개수만큼 추가
+        for (int i = 0; i < counts.Length; i++)
+        {
+            for (int j = 0; j < counts[i]; j++)
+            {
+                indexPool.Add(i);
+            }
+        }
+
+        // 리스트 섞기 (Fisher-Yates)
+        for (int i = 0; i < indexPool.Count; i++)
+        {
+            int rnd = Random.Range(i, indexPool.Count);
+            int temp = indexPool[i];
+            indexPool[i] = indexPool[rnd];
+            indexPool[rnd] = temp;
+        }
+
+        return indexPool;
+    }
+
+    //각 회차별 게임 도형 배열 세팅
+    //도형 번호, 위치, 배열 오브젝트(부모)
     void Generate_shape(int num_emoji, int num_table, int num_Target)
     {
         //그냥 0 ~ 마지막 번호까지 for문돌리고
@@ -326,7 +357,7 @@ public class Manager_Obj_14 : MonoBehaviour
         }
     }
 
-    public int Get_shapenumber(int num)
+    public int Get_numbermaxshape(int num)
     {
         return Number_Gameshape[num];
     }

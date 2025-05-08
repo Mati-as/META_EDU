@@ -92,9 +92,13 @@ public class Manager_Text : MonoBehaviour
 
     public void Inactive_UI_Text()
     {
-        UI_Text_array[Content_Seq].SetActive(false);
+        UI_Text_array[Content_Seq].transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false));
     }
 
+    public void Inactive_UI_Text(float timer = 0.5f)
+    {
+        UI_Text_array[Content_Seq].transform.DOScale(0, timer).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false));
+    }
     public void Active_UI_message(int Number)
     {
         //메시지 보여주는 기능
@@ -106,14 +110,6 @@ public class Manager_Text : MonoBehaviour
         if (Number_Prev_message != -1)
         {
             UI_Message_array[Number_Prev_message].SetActive(false);
-
-            //해당하는 메시지 오브젝트의 나레이션을 읽어줘야함
-            //일단은 나레이션 읽어주는 
-            //UI_Message_array[Number].GetComponent<AudioSource>().clip = Manager_obj_3.instance.Msg_narration[Target_num];
-            //나레이션, BGM, 이펙트 만약에 이펙트가 다수면?
-            //Managers.soundManager.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
-            //나레이션에 넣으면 안될 것 같은데
-            //이펙트도 여러개여야할 것 같은데
 
         }
         UI_Message_array[Number].SetActive(true);

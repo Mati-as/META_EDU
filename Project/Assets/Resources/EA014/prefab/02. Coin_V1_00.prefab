@@ -62,6 +62,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: 02. Coin_V1_00
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7c9809f9fa43144999b1675b9cf40e11,
+        type: 3}
+      propertyPath: m_TagString
+      value: MainObject
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c9809f9fa43144999b1675b9cf40e11, type: 3}
 --- !u!1 &4906162835904526621 stripped
@@ -70,6 +75,19 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5248761519898018892}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &-5138710346156217718
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4906162835904526621}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.12188489, y: 0.43002734, z: 0.43002734}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-7520832257431585834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,16 +103,3 @@ MonoBehaviour:
   Number_shape: 2
   Number_table: 0
   Clickable: 1
---- !u!65 &-5138710346156217718
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4906162835904526621}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.12188489, y: 0.43002734, z: 0.43002734}
-  m_Center: {x: 0, y: 0, z: 0}

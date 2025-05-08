@@ -106,14 +106,33 @@ public class Manager_Anim_14 : MonoBehaviour
     //[common]
     public void Anim_Active(GameObject obj)
     {
-        Sequence seq = DOTween.Sequence();
-        seq.Append(obj.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => obj.SetActive(true))).SetDelay(2f);
-        obj.transform.DOScale(1, 1f).SetEase(Ease.OutElastic).OnComplete(() => obj.SetActive(true));
+        obj.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => obj.SetActive(true));
     }
 
     public void Anim_Inactive(GameObject obj)
     {
         obj.transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => obj.SetActive(false));
+    }
+    public void Anim_Active_shake(GameObject obj)
+    {
+        Sequence seq = DOTween.Sequence();
+        seq.Append(obj.transform.DOScale(0.9f, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => obj.SetActive(true)));
+        //seq.Append(obj.transform.DOShakeScale(1f, 1, 10, 90, true).SetEase(Ease.OutQuad)).SetDelay(0.2f);
+    }
+
+    public void Active_Effect(int num)
+    {
+        GameObject obj = Manager_Obj_14.instance.Effect_array[num];
+
+        obj.SetActive(true);
+        this.transform.DOShakeScale(4f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => obj.SetActive(false));
+    }
+
+    public void Anim_Activestatus(float timer = 2f)
+    {
+        GameObject obj = Manager_Obj_14.instance.UI_Status;
+
+        obj.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => obj.SetActive(true)).SetDelay(timer);
     }
 
     public void Activate_emoji(GameObject Shape)
@@ -208,16 +227,25 @@ public class Manager_Anim_14 : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             Emoji = Main_Icon_1_array[i];
-            Emoji.transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
-            Emoji.SetActive(false);
+            Anim_Inactive(Emoji);
             Manager_Obj_14.instance.Message_array[i].SetActive(false);
             //여기에 텍스트도 같이 비활성화 필요
+        }
+    }
+    public void Active_Seq_Icon_1()
+    {
+        GameObject Emoji;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Emoji = Main_Icon_1_array[i];
+            Anim_Active(Emoji);
         }
     }
 
     //여기 기능 수정 필요함
     int Max_shape = 30;
-    int Round_number_shape = 0;
+    int Round_number_shape;
     IEnumerator Setting_icon_2(float time = 0.1f)
     {
         if (Round_number_shape == Max_shape)
@@ -249,24 +277,18 @@ public class Manager_Anim_14 : MonoBehaviour
 
         Manager_Obj_14.instance.Main_Shapeicon_2[round].SetActive(true);
 
-        StartCoroutine(Setting_icon_2());
+        Round_number_shape = 0;
 
-        //해당 게임에서 클릭해야할 오브젝트들을 활성화 해주는 부분
-        //if (round >= 1)
-        //{
-        //    Manager_Obj_14.instance.Main_Shapeicon_3_array[round - 1].transform.DOScale(0, 1f).SetEase(Ease.OutElastic);
-        //}
+        //도형 순차 애니메이션
+        StartCoroutine(Setting_icon_2());
 
         for (int i = 0; i < Main_Icon_2_array.Length; i++)
         {
             int num = Main_Icon_2_array[i].GetComponent<Clicked_Block_14>().Number_shape;
-            //Inactivate_emoji(Main_Icon_2_array[i]);
 
             if (round == num)
             {
-                //(확인) 해당 회차 게임의 도형을 키워주는 부분, 추가적으로 애니메이션이나 기타 효과가 필요할 경우 이 부분에 작성 필요함
-                Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
-
+               // Main_Icon_2_array[i].transform.DOScale(1.2f, 1f).From(0).SetEase(Ease.OutElastic);
                 Manager_Seq.Active_shape_clickable(Main_Icon_2_array[i]);
             }
         }

@@ -28,6 +28,7 @@ public class Manager_Seq_14 : Base_GameManager
     public bool toggle = false;
     public bool Onclick = true;
 
+    public int Order_number = 0;
     public int Game_round = 0;
     public int Number_Maxemoji_game;
 
@@ -54,7 +55,7 @@ public class Manager_Seq_14 : Base_GameManager
     [Header("[ COMPONENT CHECK ]")]
     public int Content_Seq = 0;
     public float Sequence_timer = 0f;
-    public int [] Number_Shape = { 0, 0, 0, 0, 0 };
+    public int[] Number_Ofeachgameshape = { 0, 0, 0, 0, 0 };
 
     //[Common] Start, Update
     void Start()
@@ -107,11 +108,14 @@ public class Manager_Seq_14 : Base_GameManager
         {
             Onclick = false;
 
-            var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
-            Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
+            var randomChar = (char)Random.Range('A', 'F' + 1);
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/Sandwich/Click_" + randomChar, 0.3f);
 
             //아이콘 1 비활성화
             Manager_Anim.Inactive_Seq_Icon_1();
+            Lucky_Spin_common.SetActive(true);
+            Manager_Anim.Anim_Active_shake(Lucky_Spin_common.transform.GetChild(1).gameObject);
+            Init_wheel();
 
             Content_Seq += 1;
             toggle = true;
@@ -119,18 +123,50 @@ public class Manager_Seq_14 : Base_GameManager
         }
         else if (Content_Seq == 4)
         {
-            Init_wheel();
+            Manager_Anim.Anim_Active(Button_Spin);
+        }
+        else if (Content_Seq == 7 || Content_Seq == 10 || Content_Seq == 13 || Content_Seq == 16)
+        {
+            //이전 게임 도형 비활성화
+            Manager_Obj_14.instance.Main_Shapeicon_2[Shape_number].SetActive(false);
+            Reset_Wheelresult();
+
+            //앞서 했던 것과 동일한 애니메이션 재생
+            Lucky_Spin_common.SetActive(true);
+            Manager_Anim.Anim_Active(Lucky_Spin_common.transform.GetChild(1).gameObject);
+            Manager_Anim.Anim_Active(Button_Spin);
         }
         else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
         {
-            Init_EachGame_emoji(Game_round);
+            Init_EachGame_emoji();
         }
         else if (Content_Seq == 6 || Content_Seq == 9 || Content_Seq == 12 || Content_Seq == 15 || Content_Seq == 18)
         {
-            //게임 종료 시퀀스
+            //게임 종료 처리 > 성공 효과음, 이펙트, 그 다음?
+            //도형을 화면 크게 마찬가지로 보여주기? 아니면 어떻게?
+            Manager_Anim.Anim_Inactive(Manager_Obj_14.instance.UI_Status);
+
+            Manager_Anim.Active_Effect(1);
+            Manager_Anim.Active_Effect(2);
+
+            Content_Seq += 1;
+            toggle = true;
+
+            Timer_set();
+        }
+        else if (Content_Seq == 19)
+        {
+            //이전 게임 도형 비활성화
+            Manager_Obj_14.instance.Main_Shapeicon_2[Shape_number].SetActive(false);
+            Reset_Wheelresult();
+
+            Manager_Anim.Active_Seq_Icon_1();
+
+            Onclick = true;
+            Manager_Anim.Read_Seq_Shape();
         }
         else
-        {   
+        {
             Content_Seq += 1;
             toggle = true;
 
@@ -138,24 +174,23 @@ public class Manager_Seq_14 : Base_GameManager
         }
     }
 
-    void Init_EachGame_emoji(int round)
+    void Init_EachGame_emoji()
     {
-        //여기에서 돌림판, 결과 비활성화 필요
         Lucky_Spin_common.SetActive(false);
         Manager_Obj_14.instance.Result_array[Shape_number].SetActive(false);
 
         //각 게임 회차 상단 이미지,텍스트 숫자 바꾸는 부분
-        Number_Shape[round] = Manager_Obj_14.instance.Get_shapenumber(round);
-        Text_Number.text = Number_Shape[round].ToString("0.00");
+        Number_Ofeachgameshape[Game_round] = Manager_Obj_14.instance.Get_numbermaxshape(Shape_number);
 
         var path = "Audio/BasicContents/Sandwich/SandwichFalling0" + Random.Range(1, 6);
         Managers.Sound.Play(SoundManager.Sound.Effect, path, 0.25f);
 
-        Manager_Anim.Setting_Seq_Eachgame(round);
-        //Number_Maxemoji_game = Manager_obj_4.instance.Number_of_Eachemoji[round];
+        //순차적으로 도형 번호에 맞춰서 게임 세팅
+        Manager_Anim.Setting_Seq_Eachgame(Shape_number);
+        Number_Maxemoji_game = Number_Ofeachgameshape[Game_round];
+        Active_status();
 
         Onclick = true;
-
     }
 
     public void Flip()
@@ -186,10 +221,9 @@ public class Manager_Seq_14 : Base_GameManager
         wheel = Manager_Obj_14.instance.wheel;
         Button_Spin = Manager_Obj_14.instance.Button_Spin;
         sliceAngle = 360f / shapeList.Count; // 8조각 = 45도
+        Button_Spin.SetActive(false);
 
         Button_Spin.GetComponent<Button>().onClick.AddListener(SpinWheel);
-
-        Lucky_Spin_common.SetActive(true);
     }
     //(수정) 일단은 결과 리셋을 여기에다가 넣었으나 나중에 옮겨야함
     public void SpinWheel()
@@ -206,7 +240,7 @@ public class Manager_Seq_14 : Base_GameManager
 
         isSpinning = true;
 
-        int randomTargetIndex = Set_Wheel(Manager_Obj_14.instance.preSelectedShapes[Game_round]);
+        int randomTargetIndex = Set_Wheel(Manager_Obj_14.instance.preSelectedShapes[Order_number]);
 
         float targetAngle = randomTargetIndex * sliceAngle;
         float extraSpins = 5f * 360f;
@@ -217,12 +251,12 @@ public class Manager_Seq_14 : Base_GameManager
             .SetEase(Ease.OutQuart)
             .OnComplete(() =>
             {
-                Shape_number = Manager_Obj_14.instance.preSelectedShapes[Game_round];
+                Shape_number = Manager_Obj_14.instance.preSelectedShapes[Order_number];
                 Result_Wheel(Shape_number);
 
                 isSpinning = false;
 
-                Game_round += 1;
+                Order_number += 1;
 
                 selectedShape = shapeList[randomTargetIndex];
                 Debug.Log("선택된 감정: " + selectedShape);
@@ -232,7 +266,7 @@ public class Manager_Seq_14 : Base_GameManager
         wheel.DOScale(1.05f, 0.2f).SetLoops(2, LoopType.Yoyo);
     }
 
-    int Prev_result=-2;
+    int Prev_result = -2;
     void Result_Wheel(int num)
     {
         //0번이 결과 화면의 이펙트
@@ -267,11 +301,10 @@ public class Manager_Seq_14 : Base_GameManager
     {
         Manager_Obj_14.instance.Effect_array[0].SetActive(false);
 
-        if (Prev_result >-1)
+        if (Prev_result > -1)
         {
-            Lucky_Spin_common.SetActive(false);
-            Manager_Obj_14.instance.Result_array[Prev_result].SetActive(true);
-
+            //Lucky_Spin_common.SetActive(false);
+            Manager_Obj_14.instance.Result_array[Prev_result].SetActive(false);
         }
         else if (Prev_result == -1)
         {
@@ -352,6 +385,21 @@ public class Manager_Seq_14 : Base_GameManager
             StartCoroutine(Ready_Msg(time));
         }
     }
+
+    void Active_status()
+    {
+        Manager_Text.Inactive_UI_Text(3f);
+        Text_Number.text = Number_Maxemoji_game.ToString("0");
+
+        for (int i = 0; i < 5; i++)
+        {
+            Manager_Obj_14.instance.UI_Shapeicon_array[i].SetActive(false);
+        }
+        Manager_Obj_14.instance.UI_Shapeicon_array[Shape_number].SetActive(true);
+
+        Manager_Anim.Anim_Activestatus(3f);
+    }
+
     public void Inactive_shape_clickable(GameObject Shape)
     {
         Shape.GetComponent<Clicked_Block_14>().Inactive_Clickable();
@@ -369,7 +417,7 @@ public class Manager_Seq_14 : Base_GameManager
 
         Debug.Log("Shape CLICKED!");
 
-        if (Content_Seq == 2)
+        if (Content_Seq == 2 || Content_Seq == 19)
         {
             Inactive_shape_clickable(Shape);
 
@@ -392,6 +440,9 @@ public class Manager_Seq_14 : Base_GameManager
                 Number_Maxemoji_game -= 1;
                 Inactive_shape_clickable(Shape);
                 Managers.Sound.Play(SoundManager.Sound.Narration, Manager_Obj_14.instance.Msg_narration[num_emoji], 1f);
+                Manager_Anim.Anim_Inactive(Shape);
+
+                Text_Number.text = Number_Maxemoji_game.ToString("0");
                 //Shape.GetComponent<Image>().sprite = Manager_Obj_14.instance.White;
 
                 //End
@@ -408,7 +459,6 @@ public class Manager_Seq_14 : Base_GameManager
                     Content_Seq += 1;
                     toggle = true;
                     Game_round += 1;
-                    Timer_set();
 
                     Debug.Log("ALL SHAPE FOUND!");
 
