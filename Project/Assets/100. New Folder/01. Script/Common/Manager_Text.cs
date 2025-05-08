@@ -97,7 +97,7 @@ public class Manager_Text : MonoBehaviour
 
     public void Inactive_UI_Text(float timer = 0.5f)
     {
-        UI_Text_array[Content_Seq].transform.DOScale(0, timer).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false));
+        UI_Text_array[Content_Seq].transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => UI_Text_array[Content_Seq].SetActive(false)).SetDelay(timer);
     }
     public void Active_UI_message(int Number)
     {

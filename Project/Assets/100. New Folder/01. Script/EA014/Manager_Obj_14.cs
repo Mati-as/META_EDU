@@ -14,6 +14,7 @@ public class Manager_Obj_14 : MonoBehaviour
     public GameObject UI_Message;
     public GameObject UI_Panel;
     public GameObject Game_effect;
+    public GameObject InGame_effect;
 
     public GameObject UI_READY;
     public GameObject UI_Result;
@@ -65,6 +66,7 @@ public class Manager_Obj_14 : MonoBehaviour
     //public Sprite[] Msg_textsprite;
     //public Sprite[] Msg_textsprite_eng;
     public GameObject[] Effect_array;
+    public GameObject[] InGame_effect_array;
 
     //[EDIT] Object array
     public GameObject[] Main_Shapeicon_1_array; //전반부 읽기 게임
@@ -152,7 +154,6 @@ public class Manager_Obj_14 : MonoBehaviour
         Result_narration = Resources.LoadAll<AudioClip>("EA014/audio_result");
         READY_narration = Resources.LoadAll<AudioClip>("EA014/audio_READY");
         Audio_effect_array = Resources.LoadAll<AudioClip>("EA014/audio_Effect");
-        //Animal_effect = Resources.LoadAll<AudioClip>("EA004/audio_effect");
 
         //나레이션 재설정 이후 전달로 기능 수정
         //Manager_Narr.Set_Audio_seq_narration(Seq_narration);
@@ -192,8 +193,6 @@ public class Manager_Obj_14 : MonoBehaviour
             //각 게임 타겟 도형 갯수 저장해주는 부분
             Number_Gameshape[index] = Number_of_Eachemoji[index];
 
-            //(구현) 근데 마지막으로 확인해야할게 하나 더 있어, 순서를 랜덤으로 했는데 그에 맞춰서 인덱스 번호도 맞춰줘야하는데 그건 어떻게?
-            //네모 부터 순서대로 되는데 마지막으로 활성화하는 순서를 바꾸면 될듯?
         }
 
         Manager_Anim.Init_Icon_array();
@@ -261,8 +260,6 @@ public class Manager_Obj_14 : MonoBehaviour
     //도형 번호, 위치, 배열 오브젝트(부모)
     void Generate_shape(int num_emoji, int num_table, int num_Target)
     {
-        //그냥 0 ~ 마지막 번호까지 for문돌리고
-        //각 테이블 위치에 랜덤으로 표정 프리팹을 배치시킴
         GameObject emoji = Instantiate(Manager_Obj_14.instance.Shape_prefabs[num_emoji]);
         Transform pos = Main_Shapeicon_position.transform.GetChild(num_table);
 
@@ -354,6 +351,13 @@ public class Manager_Obj_14 : MonoBehaviour
         for (int i = 0; i < Game_effect.transform.childCount; i++)
         {
             Effect_array[i] = Game_effect.transform.GetChild(i).gameObject;
+        }
+
+        InGame_effect_array = new GameObject[InGame_effect.transform.childCount];
+
+        for (int i = 0; i < InGame_effect.transform.childCount; i++)
+        {
+            InGame_effect_array[i] = InGame_effect.transform.GetChild(i).gameObject;
         }
     }
 

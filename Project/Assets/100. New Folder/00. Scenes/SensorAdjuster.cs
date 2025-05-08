@@ -234,7 +234,6 @@ public class SensorAdjuster : MonoBehaviour
 
     void Reset_Touchsetting()
     {
-        //여기도 어떻게 연동이 필요할지도
         XmlManager.Instance.ClusterThreshold = 70;
         XmlManager.Instance.Yhorizontal = -50f;
         XmlManager.Instance.Yvertical = -25f;
@@ -276,7 +275,7 @@ public class SensorAdjuster : MonoBehaviour
     //void Calibration_sensor()
     //{
     //    //매니저의 해당 함수 호출
-    //    //여기는 조금 민감한 부분이니 안전장치 구현 필요?
+    //    //안전장치 구현 필요
     //    manager.isCalibrationActive = true;
     //}
     void Calibration_screenratio()
@@ -307,8 +306,8 @@ public class SensorAdjuster : MonoBehaviour
         if (Lider_object != null)
         {
             RectTransform lidarTransform = Lider_object.rectTransform;
-            float adjustedX = (sensorOffsetX - 0.5f) * 1920 + CANVAS_X_CENTER;
-            float adjustedY = (sensorOffsetY - 0.5f) * 1080 + CANVAS_Y_CENTER;
+            float adjustedX = (sensorOffsetX - 0.5f) * 1920  + CANVAS_X_CENTER;
+            float adjustedY = (sensorOffsetY - 0.5f) * 1080 * 1.5f + CANVAS_Y_CENTER;
             lidarTransform.anchoredPosition = new Vector2(adjustedX, adjustedY);
         }
     }
@@ -376,8 +375,7 @@ public class SensorAdjuster : MonoBehaviour
             slider.value = result;
         }
     }
-    //여기에서 일방적으로 바꾸는건 있는데 최초에 그 값을 가져오는건 없는 것 같음
-    //여기에서 인풋 값으로 슬라이더 값 바꾸나?
+
     void UpdateSRInputField(InputField input, float value)
     {
         input.text = value.ToString("0.00");
