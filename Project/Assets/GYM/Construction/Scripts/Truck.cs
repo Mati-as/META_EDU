@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using SuperMaxim.Messaging;
 using UnityEngine;
 
 public class Truck : MonoBehaviour
@@ -18,9 +19,12 @@ public class Truck : MonoBehaviour
     private bool isDumping = false;
 
     public SoilCount soilCountClass;
+    public Construction_GameManager manager;
 
     private void Start()
     {
+        manager = FindObjectOfType<Construction_GameManager>();
+
         Transform parentTransform = transform.parent;
         foreach (Transform sibling in parentTransform)
         {
@@ -42,52 +46,84 @@ public class Truck : MonoBehaviour
 
     public void StartSoilDumping()
     {
-        if (isDumping == false && soilCountClass.soilCount > 0)
+        if (!manager.truckStageEnd)
         {
-            isDumping = true;
 
-            Sequence seq = DOTween.Sequence();
-
-            seq.AppendCallback(() =>
+            if (isDumping == false && soilCountClass.soilCount > 0)
             {
-                truckAni.SetBool("Move", true);
-                Vector3 targetPos = transform.position + transform.forward * moveDistance;
-                transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
-            });
-            seq.AppendInterval(moveDuration);
-            seq.AppendCallback(() => truckAni.SetBool("Move", false));
+                isDumping = true;
+                soilCountClass.soilCount--;
 
-            seq.AppendInterval(1f);
-            //트럭에 흙 쌓는 사운드나 이펙트 나레이션
-            seq.AppendCallback(() => soil.SetActive(true));
-            seq.AppendCallback(() => soilCountClass.soilCount--);
-            seq.AppendCallback(() => soilCountClass.leftSoilCount());
-            seq.AppendInterval(1f);
+                Sequence seq = DOTween.Sequence();
 
-            seq.AppendCallback(() =>
+                seq.AppendCallback(() =>
+                {
+                    truckAni.SetBool("Move", true);
+                    Vector3 targetPos = transform.position + transform.forward * moveDistance;
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                });
+                seq.AppendInterval(moveDuration);
+                seq.AppendCallback(() => truckAni.SetBool("Move", false));
+
+                seq.AppendInterval(1f);
+                //트럭에 흙 쌓는 사운드나 이펙트 나레이션
+                seq.AppendCallback(() => soil.SetActive(true));
+                //seq.AppendCallback(() => soilCountClass.leftSoilCount());
+                seq.AppendInterval(1f);
+
+                seq.AppendCallback(() =>
+                {
+                    truckAni.SetBool("Move", true);
+                    Vector3 targetPos = transform.position - transform.forward * moveDistance;
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                });
+                seq.AppendInterval(moveDuration);
+                seq.AppendCallback(() => truckAni.SetBool("Move", false));
+
+                seq.AppendInterval(0.5f);
+
+                seq.AppendCallback(() => truckAni.SetBool("LiftUp", true));
+                seq.AppendInterval(LiftUpClip.length - 1);
+                seq.AppendCallback(() => soil.SetActive(false));
+                seq.AppendInterval(1);
+                seq.AppendCallback(() => truckAni.SetBool("LiftUp", false));
+
+                seq.AppendInterval(0.5f);
+
+                seq.AppendCallback(() => truckAni.SetBool("LiftDown", true));
+                seq.AppendInterval(LiftDownClip.length - 1);
+                seq.AppendCallback(() => truckAni.SetBool("LiftDown", false));
+                seq.AppendInterval(1);
+                seq.AppendCallback(() => isDumping = false);
+            }
+            if (soilCountClass.soilCount <= 0)     //포크레인 스테이지 종료 타이밍
             {
-                truckAni.SetBool("Move", true);
-                Vector3 targetPos = transform.position - transform.forward * moveDistance;
-                transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
-            });
-            seq.AppendInterval(moveDuration);
-            seq.AppendCallback(() => truckAni.SetBool("Move", false));
+                //트럭 스테이지로 이동
+                //성공 효과음, 이펙트
+                manager.truckStageEnd = true;
+                //나레이션 재생
+                Sequence seq = DOTween.Sequence();
 
-            seq.AppendInterval(0.5f);
+                seq.AppendCallback(() =>
+                {
+                    Messenger.Default.Publish(new NarrationMessage("우리 친구들이 트럭을 도와줘서 흙을 많이 옮겼어요!", "13_우리_친구들이_트럭을_도와줘서_흙을_많이_옮겼어요_"));
+                    Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
+                    manager.Btn_Truck.SetActive(false);
+                });
+                //seq.AppendInterval(5f);
+                //seq.AppendCallback(() =>
+                //{
+                //    Messenger.Default.Publish(new NarrationMessage("다른 일을 하는 자동차를 만나러 가요", "10_다른_일을_하는_자동차를_만나러_가요_"));
+                //    manager.rmcVirtualCamera.Priority = 22;
+                //    manager.truckVirtualCamera.Priority = 10;
+                //});
+                //seq.AppendInterval(5f);
+                //seq.AppendCallback(() =>
+                //{
+                //    manager.Btn_Rmc.SetActive(true);
 
-            seq.AppendCallback(() => truckAni.SetBool("LiftUp", true));
-            seq.AppendInterval(LiftUpClip.length - 1);
-            seq.AppendCallback(() => soil.SetActive(false));
-            seq.AppendInterval(1);
-            seq.AppendCallback(() => truckAni.SetBool("LiftUp", false));
-
-            seq.AppendInterval(0.5f);
-
-            seq.AppendCallback(() => truckAni.SetBool("LiftDown", true));
-            seq.AppendInterval(LiftDownClip.length - 1);
-            seq.AppendCallback(() => truckAni.SetBool("LiftDown", false));
-            seq.AppendInterval(1);
-            seq.AppendCallback(() => isDumping = false);
+                //});
+            }
         }
     }
 
