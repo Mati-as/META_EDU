@@ -44,13 +44,13 @@ public class WaterPlayground_DolphinController : MonoBehaviour
     //ballController 참조
     private GameObject _dolphinBall;
     public Color currentBallInTheHoleColor { get; set; }
-    private WaterPlayground_BallController _ballController;
+    private EA016_BallController _ballController;
     private int _currentPathIndex;
 
     private void Start()
     {
-        WaterPlayground_BallController.OnBallIsInTheHole -= OnBallIn;
-        WaterPlayground_BallController.OnBallIsInTheHole += OnBallIn;
+        EA016_BallController.OnBallIsInTheHole -= OnBallIn;
+        EA016_BallController.OnBallIsInTheHole += OnBallIn;
 
         _pathes = new Vector3[(int)PathName.Max][];
         _pathA = new Vector3[(int)PathOrder.Max];

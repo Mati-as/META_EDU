@@ -90,8 +90,8 @@ public class EA016_GameManager : Ex_BaseGameManager
         base.Init();
         ManageProjectSettings(150, 0.15f);
 
-        WaterPlayground_BallController.OnBallIsInTheHole -= OnBallInTheHole;
-        WaterPlayground_BallController.OnBallIsInTheHole += OnBallInTheHole;
+        EA016_BallController.OnBallIsInTheHole -= OnBallInTheHole;
+        EA016_BallController.OnBallIsInTheHole += OnBallInTheHole;
 
         _ea016UIManager = UIManager.GetComponent<EA016_UIManager>();
         Debug.Assert(_ea016UIManager != null, "UIManager not found");
@@ -101,7 +101,7 @@ public class EA016_GameManager : Ex_BaseGameManager
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        WaterPlayground_BallController.OnBallIsInTheHole +=OnBallInTheHole;
+        EA016_BallController.OnBallIsInTheHole +=OnBallInTheHole;
     }
 
     protected bool isBallCountable = false;
@@ -155,7 +155,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         });
     }
 
-    private Dictionary<int, WaterPlayground_BallController> _ballMap =new();
+    private Dictionary<int, EA016_BallController> _ballMap =new();
 
     public override void OnRaySynced()
     {
@@ -180,7 +180,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                 if (hit.transform.gameObject.name.Contains("Ball"))
                 {
                     int ballID = hit.transform.GetInstanceID();
-                    _ballMap.TryAdd(ballID, hit.transform.GetComponent<WaterPlayground_BallController>());
+                    _ballMap.TryAdd(ballID, hit.transform.GetComponent<EA016_BallController>());
 
                     if (_ballMap[ballID].thisBallColor != currentBallColorToPut)
                     {

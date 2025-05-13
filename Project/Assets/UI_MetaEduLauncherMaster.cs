@@ -53,6 +53,10 @@ public class UI_MetaEduLauncherMaster : UI_Scene
             _isLoadFinished = true;
         });
 
+        DOVirtual.DelayedCall(3.5f, () =>
+        {
+            Managers.isGameStopped = false;
+        });
         GetObject((int)UI.Btn_Home).BindEvent(()=>{
             Managers.UI.CloseAllPopupUI();
             Managers.UI.ShowPopupUI<UI_Home>();

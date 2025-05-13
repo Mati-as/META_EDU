@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
 
-public class WaterPlayground_BallController : MonoBehaviour
+public class EA016_BallController : MonoBehaviour
 {
 
 
