@@ -48,6 +48,8 @@ public class Construction_GameManager : Base_GameManager
 
     private bool isIntroSceneEnd = false;
 
+    private bool isNextIntro;
+
     public GameObject Btns_ExcavatorIntro;
     public GameObject Btns_TruckIntro;
     public GameObject Btns_RmcIntro;
@@ -63,8 +65,11 @@ public class Construction_GameManager : Base_GameManager
     public AudioClip victoryAuidoClip;
 
     public GameObject ExcavatorStageSoil;
-    private Vector3 originExcavatorStageSoilScale = new Vector3(15, 14, 14);
-    
+    public GameObject TruckStageSoil;
+    public GameObject RmcStageSoil;
+    private Vector3 originExcavatorStageSoilScale = new Vector3(8.37f, 18f, 7.8f);
+
+    private bool Btn_TwiceIssue = true;
 
     protected override void Init()
     {
@@ -75,6 +80,8 @@ public class Construction_GameManager : Base_GameManager
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Construction/Audio/audio_BGM");
 
         ExcavatorStageSoil.transform.localScale = originExcavatorStageSoilScale;
+        TruckStageSoil.transform.localScale = originExcavatorStageSoilScale;
+        RmcStageSoil.transform.localScale = originExcavatorStageSoilScale;
 
         victoryAuidoClip = Resources.Load<AudioClip>("Construction/Audio/audio_Victory");
 
@@ -141,16 +148,76 @@ public class Construction_GameManager : Base_GameManager
             ExcavatorShowCamera.Priority = 20;
             Messenger.Default.Publish(new NarrationMessage("포크레인은 땅 속에 있는 흙을 팔 수 있어요", "2_포크레인은_땅_속에_있는_흙을_팔_수_있어요"));
             excavatorAni.SetBool("Dig", true);
+
             Btns_ExcavatorIntro.SetActive(true);
+            Btns_ExcavatorIntro.transform.DOScale(1f, 0.4f)
+            .From(0.01f) // 원래 자리에서 작게 시작해서 커지도록
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                Btns_ExcavatorIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+            });
+
         });
-        introSeq.AppendInterval(0.1f);
+        introSeq.AppendInterval(1f);
         introSeq.AppendCallback(() =>
         {
+            isNextIntro = true;
             excavatorAni.SetBool("Dig", false);
         });
 
     }
 
+
+    public override void OnRaySynced()
+    {
+        if (!PreCheckOnRaySync() || !isStartButtonClicked) return;
+
+        _hits = Physics.RaycastAll(GameManager_Ray);
+        foreach (var hit in _hits)
+        {
+            string objectName = hit.collider.gameObject.name;
+            //포크레인 -> 트럭 -> 레미콘 순으로 진행하게끔 
+            if (objectName.Contains("Excavator") && !isExcavatorStage && isIntroSceneEnd)
+            {
+                isExcavatorStage = true;
+                introVirtualCamera.Priority = 10;
+                excavatorVirtualCamera.Priority = 20;
+                DOVirtual.DelayedCall(4f, () =>
+                {
+                    Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
+                    Btn_Excavator.SetActive(true);
+                });
+                return;
+            }
+            if (objectName.Contains("Truck") && isExcavatorStage && !isTruckStage && isIntroSceneEnd)
+            {
+                isTruckStage = true;
+                Debug.Log("트럭 스테이지 이동");
+
+                introVirtualCamera.Priority=10;
+                truckVirtualCamera.Priority = 20;
+
+                DOVirtual.DelayedCall(3.4f, () =>
+                {
+                    Messenger.Default.Publish(new NarrationMessage("트럭으로 흙을 옮겨봐요", "12_트럭으로_흙을_옮겨봐요_"));
+                    Btn_Truck.SetActive(true);
+                });
+                
+                return;
+            }
+            if (objectName.Contains("Rmc") && isExcavatorStage && isTruckStage && !isRmcStage && isIntroSceneEnd)
+            {
+                isRmcStage = true; //중복방지용
+                Debug.Log("레미콘 스테이지 이동");
+                //카메라 이동
+                //레미콘 스테이지 시작
+                return;
+            }
+
+        }
+
+    }
     public void ExcavatorNextBtnClicked()
     {
         Sequence introSeq2 = DOTween.Sequence();
@@ -199,79 +266,61 @@ public class Construction_GameManager : Base_GameManager
         {
             Messenger.Default.Publish(new NarrationMessage("먼저 포크레인이 움직일 수 있게 터치해주세요", "7_먼저_포크레인이_움직일_수_있게_터치해주세요"));
         });
-        introSeq4.AppendInterval(3f);
+        introSeq4.AppendInterval(4f);
         introSeq4.AppendCallback(() => isIntroSceneEnd = true);
     }
 
-    public override void OnRaySynced()
+
+    public void Btn_IntroNext() //포크레인 다음 버튼
     {
-        if (!PreCheckOnRaySync() || !isStartButtonClicked) return;
-
-        _hits = Physics.RaycastAll(GameManager_Ray);
-        foreach (var hit in _hits)
+        if (Btn_TwiceIssue)
         {
-            string objectName = hit.collider.gameObject.name;
-            //포크레인 -> 트럭 -> 레미콘 순으로 진행하게끔 
-            if (objectName.Contains("Excavator") && !isExcavatorStage && isIntroSceneEnd)
-            {
-                isExcavatorStage = true;
-                introVirtualCamera.Priority = 10;
-                excavatorVirtualCamera.Priority = 20;
-                DOVirtual.DelayedCall(4f, () =>
-                {
-                    Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
-                    Btn_Excavator.SetActive(true);
-                });
-                return;
-            }
-            if (objectName.Contains("Truck") && isExcavatorStage && !isTruckStage && isIntroSceneEnd)
-            {
-                isTruckStage = true; //중복방지용
-                Debug.Log("트럭 스테이지 이동");
-                //카메라 이동
-                //트럭 스테이지 시작
-                return;
-            }
-            if (objectName.Contains("Rmc") && isExcavatorStage && isTruckStage && !isRmcStage && isIntroSceneEnd)
-            {
-                isRmcStage = true; //중복방지용
-                Debug.Log("레미콘 스테이지 이동");
-                //카메라 이동
-                //레미콘 스테이지 시작
-                return;
-            }
+            Btn_TwiceIssue = false;
+            ExcavatorNextBtnClicked();
+            Btns_ExcavatorIntro.SetActive(false);
 
+            Btns_TruckIntro.SetActive(true);
+            Btns_TruckIntro.transform.DOScale(1f, 0.4f)
+                .From(0.01f)
+                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
+                .OnComplete(() =>
+                {
+                    Btns_TruckIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+                });
+            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true;});
         }
 
     }
 
-
-    public void PlayNarration(int path)
-    {
-        AudioClip clip = Resources.Load<AudioClip>($"Construction/Audio/audio_{path}");
-        Managers.Sound.Play(SoundManager.Sound.Narration, clip);
-        DOVirtual.DelayedCall(clip.length, () => { });
-
-    }
-
-    public void Btn_IntroNext() //포크레인 다음 버튼
-    {
-        ExcavatorNextBtnClicked();
-        Btns_ExcavatorIntro.SetActive(false);
-        Btns_TruckIntro.SetActive(true);
-    }
-
     public void Btn_IntroNext2() //트럭 다음 버튼
     {
-        TruckNextBtnClicked();
-        Btns_TruckIntro.SetActive(false);
-        Btns_RmcIntro.SetActive(true);
+        if (Btn_TwiceIssue)
+        {
+            Btn_TwiceIssue = false;
+            TruckNextBtnClicked();
+            Btns_TruckIntro.SetActive(false);
+
+            Btns_RmcIntro.SetActive(true);
+            Btns_RmcIntro.transform.DOScale(1f, 0.4f)
+                .From(0.01f)
+                .SetEase(Ease.Flash)
+                .OnComplete(() =>
+                {
+                    Btns_RmcIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+                });
+            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true;});
+        }
     }
 
     public void Btn_IntroNext3() //레미콘 다음 버튼
     {
-        RmcNextBtnClicked();
-        Btns_RmcIntro.SetActive(false);
+        if (Btn_TwiceIssue)
+        {
+            Btn_TwiceIssue = false;
+            RmcNextBtnClicked();
+            Btns_RmcIntro.SetActive(false);
+            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true; });
+        }
     }
 
     public void Btn_ExcavatorAni()
@@ -288,6 +337,14 @@ public class Construction_GameManager : Base_GameManager
             truckAni.SetBool("LiftUp", false);
             truckAni.SetBool("LiftDown", true);
         });
+    }
+
+    public void PlayNarration(int path)
+    {
+        AudioClip clip = Resources.Load<AudioClip>($"Construction/Audio/audio_{path}");
+        Managers.Sound.Play(SoundManager.Sound.Narration, clip);
+        DOVirtual.DelayedCall(clip.length, () => { });
+
     }
 
 
