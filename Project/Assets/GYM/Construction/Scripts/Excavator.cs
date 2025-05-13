@@ -38,7 +38,7 @@ public class Excavator : MonoBehaviour
             btnTwiceIssue = true;
             DOVirtual.DelayedCall(0.1f, () => btnTwiceIssue = false);
 
-            if (isDigging == false && !manager.excavatorStageEnd)
+            if (isDigging == false)
             {
                 isDigging = true;
 

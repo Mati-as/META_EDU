@@ -23,6 +23,7 @@ public class Truck : MonoBehaviour
 
     private bool btnTwiceIssue = false;
 
+
     private void Start()
     {
         manager = FindObjectOfType<Construction_GameManager>();
@@ -35,12 +36,13 @@ public class Truck : MonoBehaviour
 
     public void StartSoilDumping()
     {
+        float move = moveDistance + soilCountClass.plusMoveDistance;
         if (!btnTwiceIssue)
         {
             btnTwiceIssue = true;
             DOVirtual.DelayedCall(0.1f, () => btnTwiceIssue = false);
 
-            if (isDumping == false && soilCountClass.soilCount > 0 && !manager.truckStageEnd)
+            if (isDumping == false && soilCountClass.soilCount > 0)
             {
                 isDumping = true;
 
@@ -49,7 +51,7 @@ public class Truck : MonoBehaviour
                 seq.AppendCallback(() =>
                 {
                     truckAni.SetBool("Move", true);
-                    Vector3 targetPos = transform.position + transform.forward * moveDistance;
+                    Vector3 targetPos = transform.position + transform.forward * (move);
                     transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
                 });
                 seq.AppendInterval(moveDuration);
@@ -65,7 +67,7 @@ public class Truck : MonoBehaviour
                 seq.AppendCallback(() =>
                 {
                     truckAni.SetBool("Move", true);
-                    Vector3 targetPos = transform.position - transform.forward * moveDistance;
+                    Vector3 targetPos = transform.position - transform.forward * (move);
                     transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
                 });
                 seq.AppendInterval(moveDuration);

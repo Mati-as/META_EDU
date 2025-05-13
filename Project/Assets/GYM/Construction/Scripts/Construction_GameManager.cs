@@ -28,27 +28,21 @@ public class Construction_GameManager : Base_GameManager
 {
     private RaycastHit[] _hits;
 
-    [SerializeField] private Animator excavatorAni;
-    [SerializeField] private Animator truckAni;
-    [SerializeField] private Animator rmcAni;
-
-    [SerializeField] private bool isExcavatorStage = false;
-    [SerializeField] private bool isTruckStage = false;
-    [SerializeField] private bool isRmcStage = false;
+    public Animator excavatorAni;
+    public Animator truckAni;
+    public Animator rmcAni;
 
     public List<CinemachineVirtualCamera> cameras = new List<CinemachineVirtualCamera>(5);
 
     public CinemachineVirtualCamera startVirtualCamera;
     public CinemachineVirtualCamera introVirtualCamera;
+
     public CinemachineVirtualCamera ExcavatorShowCamera;
     public CinemachineVirtualCamera TruckShowCamera;
+
     public CinemachineVirtualCamera excavatorVirtualCamera;
     public CinemachineVirtualCamera truckVirtualCamera;
     public CinemachineVirtualCamera rmcVirtualCamera;
-
-    private bool isIntroSceneEnd = false;
-
-    private bool isNextIntro;
 
     public GameObject Btns_ExcavatorIntro;
     public GameObject Btns_TruckIntro;
@@ -57,10 +51,6 @@ public class Construction_GameManager : Base_GameManager
     public GameObject Btn_Excavator;
     public GameObject Btn_Truck;
     public GameObject Btn_Rmc;
-
-    public bool excavatorStageEnd = false;
-    public bool truckStageEnd = false;
-    public bool rmcStageEnd = false;
 
     public AudioClip victoryAuidoClip;
 
@@ -162,7 +152,6 @@ public class Construction_GameManager : Base_GameManager
         introSeq.AppendInterval(1f);
         introSeq.AppendCallback(() =>
         {
-            isNextIntro = true;
             excavatorAni.SetBool("Dig", false);
         });
 
@@ -176,151 +165,123 @@ public class Construction_GameManager : Base_GameManager
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {
-            string objectName = hit.collider.gameObject.name;
-            //포크레인 -> 트럭 -> 레미콘 순으로 진행하게끔 
-            if (objectName.Contains("Excavator") && !isExcavatorStage && isIntroSceneEnd)
-            {
-                isExcavatorStage = true;
-                introVirtualCamera.Priority = 10;
-                excavatorVirtualCamera.Priority = 20;
-                DOVirtual.DelayedCall(4f, () =>
-                {
-                    Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
-                    Btn_Excavator.SetActive(true);
-                });
-                return;
-            }
-            if (objectName.Contains("Truck") && isExcavatorStage && !isTruckStage && isIntroSceneEnd)
-            {
-                isTruckStage = true;
-                Debug.Log("트럭 스테이지 이동");
+            //string objectName = hit.collider.gameObject.name;
+            ////포크레인 -> 트럭 -> 레미콘 순으로 진행하게끔 
+            //if (objectName.Contains("Excavator") && !isExcavatorStage && isIntroSceneEnd)
+            //{
+            //    isExcavatorStage = true;
+            //    introVirtualCamera.Priority = 10;
+            //    excavatorVirtualCamera.Priority = 20;
+            //    DOVirtual.DelayedCall(4f, () =>
+            //    {
+            //        Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
+            //        Btn_Excavator.SetActive(true);
+            //    });
+            //    return;
+            //}
+            //if (objectName.Contains("Truck") && isExcavatorStage && !isTruckStage && isIntroSceneEnd)
+            //{
+            //    isTruckStage = true;
+            //    Debug.Log("트럭 스테이지 이동");
 
-                introVirtualCamera.Priority=10;
-                truckVirtualCamera.Priority = 20;
+            //    introVirtualCamera.Priority=10;
+            //    truckVirtualCamera.Priority = 20;
 
-                DOVirtual.DelayedCall(3.4f, () =>
-                {
-                    Messenger.Default.Publish(new NarrationMessage("트럭으로 흙을 옮겨봐요", "12_트럭으로_흙을_옮겨봐요_"));
-                    Btn_Truck.SetActive(true);
-                });
+            //    DOVirtual.DelayedCall(3.4f, () =>
+            //    {
+            //        Messenger.Default.Publish(new NarrationMessage("트럭으로 흙을 옮겨봐요", "12_트럭으로_흙을_옮겨봐요_"));
+            //        Btn_Truck.SetActive(true);
+            //    });
                 
-                return;
-            }
-            if (objectName.Contains("Rmc") && isExcavatorStage && isTruckStage && !isRmcStage && isIntroSceneEnd)
+            //    return;
+            //}
+            //if (objectName.Contains("Rmc") && isExcavatorStage && isTruckStage && !isRmcStage && isIntroSceneEnd)
+            //{
+            //    isRmcStage = true; //중복방지용
+            //    Debug.Log("레미콘 스테이지 이동");
+            //    //카메라 이동
+            //    //레미콘 스테이지 시작
+            //    return;
+            //}
+
+        }
+
+    }
+
+
+    public void Btn_ExcavatorNext() //포크레인 다음 버튼
+    {
+        if (Btn_TwiceIssue)
+        {
+            Btn_TwiceIssue = false;
+            Btns_ExcavatorIntro.transform.DOScale(0.01f, 0.3f)
+            .SetEase(Ease.InBack) // 등장 시 OutBack이면 사라질 때는 InBack이 자연스러움
+            .OnComplete(() =>
             {
-                isRmcStage = true; //중복방지용
-                Debug.Log("레미콘 스테이지 이동");
-                //카메라 이동
-                //레미콘 스테이지 시작
-                return;
-            }
+                Btns_ExcavatorIntro.SetActive(false);
+            });
+            introVirtualCamera.Priority = 10;
+            excavatorVirtualCamera.Priority = 20;
+            DOVirtual.DelayedCall(3f, () =>
+            {
+                Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
+                Btn_Excavator.SetActive(true);
+                Btn_TwiceIssue = true;
+            });
 
         }
 
     }
-    public void ExcavatorNextBtnClicked()
+
+    public void Btn_TruckNext() //트럭 다음 버튼
     {
-        Sequence introSeq2 = DOTween.Sequence();
-
-        introSeq2.AppendCallback(() =>
+        if (Btn_TwiceIssue)
         {
-            ExcavatorShowCamera.Priority = 10;
-            TruckShowCamera.Priority = 20;
-            Messenger.Default.Publish(new NarrationMessage("트럭은 많은 흙을 옮겨 줄 수 있어요", "3_트럭은_많은_흙을_옮겨_줄_수_있어요"));
-            truckAni.SetBool("LiftUp", true);
-        });
-        introSeq2.AppendInterval(1f);
-        introSeq2.AppendCallback(() =>
-        {
-            truckAni.SetBool("LiftUp", false);
-            truckAni.SetBool("LiftDown", true);
-        });
-    }
-
-    public void TruckNextBtnClicked()
-    {
-        Sequence introSeq3 = DOTween.Sequence();
-        introSeq3.AppendCallback(() =>
-        {
-            Messenger.Default.Publish(new NarrationMessage("레미콘은 시멘트를 넣어줄 수 있어요", "4_레미콘은_시멘트를_넣어줄_수_있어요"));
-        });
-    }
-
-    public void RmcNextBtnClicked()
-    {
-        Sequence introSeq4 = DOTween.Sequence();
-
-        introSeq4.AppendCallback(() =>
-        {
+            Btn_TwiceIssue = false;
+            Btns_TruckIntro.transform.DOScale(0.01f, 0.3f)
+            .SetEase(Ease.InBack) // 등장 시 OutBack이면 사라질 때는 InBack이 자연스러움
+            .OnComplete(() =>
+            {
+                Btns_ExcavatorIntro.SetActive(false);
+            });
             TruckShowCamera.Priority = 10;
-            introVirtualCamera.Priority = 20;
-            Messenger.Default.Publish(new NarrationMessage("앗 자동차들이 작동을 멈췄어요", "5_앗__자동차들이_작동을_멈췄어요_"));
-        });
-        introSeq4.AppendInterval(5f);
-        introSeq4.AppendCallback(() =>
-        {
-            Messenger.Default.Publish(new NarrationMessage("우리 다같이 자동차들을 도와줘볼까요", "6_우리_다같이_자동차들을_도와줘볼까요_"));
-        });
-        introSeq4.AppendInterval(5f);
-        introSeq4.AppendCallback(() =>
-        {
-            Messenger.Default.Publish(new NarrationMessage("먼저 포크레인이 움직일 수 있게 터치해주세요", "7_먼저_포크레인이_움직일_수_있게_터치해주세요"));
-        });
-        introSeq4.AppendInterval(4f);
-        introSeq4.AppendCallback(() => isIntroSceneEnd = true);
-    }
+            truckVirtualCamera.Priority = 20;
 
+            DOVirtual.DelayedCall(3f, () =>
+            {
+                Btn_Truck.SetActive(true);
+                Messenger.Default.Publish(new NarrationMessage("트럭으로 흙을 옮겨봐요", "12_트럭으로_흙을_옮겨봐요_"));
 
-    public void Btn_IntroNext() //포크레인 다음 버튼
-    {
-        if (Btn_TwiceIssue)
-        {
-            Btn_TwiceIssue = false;
-            ExcavatorNextBtnClicked();
-            Btns_ExcavatorIntro.SetActive(false);
+                Btn_TwiceIssue = true;
+            }); //아마 여기도 애니메이션 넣으면 좋을것같음
 
-            Btns_TruckIntro.SetActive(true);
-            Btns_TruckIntro.transform.DOScale(1f, 0.4f)
-                .From(0.01f)
-                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
-                .OnComplete(() =>
-                {
-                    Btns_TruckIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
-                });
-            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true;});
         }
 
+        
     }
 
-    public void Btn_IntroNext2() //트럭 다음 버튼
+    public void Btn_RmcNext() //레미콘 다음 버튼
     {
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
-            TruckNextBtnClicked();
-            Btns_TruckIntro.SetActive(false);
-
-            Btns_RmcIntro.SetActive(true);
-            Btns_RmcIntro.transform.DOScale(1f, 0.4f)
-                .From(0.01f)
-                .SetEase(Ease.Flash)
-                .OnComplete(() =>
-                {
-                    Btns_RmcIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
-                });
-            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true;});
-        }
-    }
-
-    public void Btn_IntroNext3() //레미콘 다음 버튼
-    {
-        if (Btn_TwiceIssue)
-        {
-            Btn_TwiceIssue = false;
-            RmcNextBtnClicked();
             Btns_RmcIntro.SetActive(false);
             DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true; });
         }
+
+        Sequence introSeq4 = DOTween.Sequence();
+        Messenger.Default.Publish(new NarrationMessage("레미콘은 시멘트를 넣어줄 수 있어요", "4_레미콘은_시멘트를_넣어줄_수_있어요"));
+
+
+        //Btns_RmcIntro.SetActive(true);
+        //Btns_RmcIntro.transform.DOScale(1f, 0.4f)
+        //    .From(0.01f)
+        //    .SetEase(Ease.Flash)
+        //    .OnComplete(() =>
+        //    {
+        //        Btns_RmcIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+        //    });
+        
     }
 
     public void Btn_ExcavatorAni()
