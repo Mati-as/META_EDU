@@ -79,13 +79,13 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         EggA,
         MilkA,
         CarrotA,
-        FishB,
-        MeatB,
-        ChickenB,
-        AppleB,
-        EggB,
-        MilkB,
-        CarrotB,
+        //FishB,
+        //MeatB,
+        //ChickenB,
+        //AppleB,
+        //EggB,
+        //MilkB,
+        //CarrotB,
 
         // 나쁜 음식
         ColaA,
@@ -95,13 +95,13 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         ChocolateA,
         CakeA,
         DonutA,
-        ColaB,
-        CookieB,
-        IceCreamB,
-        PizzaB,
-        ChocolateB,
-        CakeB,
-        DonutB
+        //ColaB,
+        //CookieB,
+        //IceCreamB,
+        //PizzaB,
+        //ChocolateB,
+        //CakeB,
+        //DonutB
     }
 
     private enum BadFoodClickGameCategory
@@ -227,6 +227,37 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         }
     }
 
+    private bool _isIntroducePossible = false;
+    private Tween _introduceTween;
+
+    private void IntroduceItselfByClick()
+    {
+        
+        if(!_isIntroducePossible) return;
+        
+        
+        foreach (var hit in GameManager_Hits)
+        {
+            int id = hit.transform.gameObject.GetInstanceID();
+
+            if (_tfIdToEnumMap.ContainsKey(id))
+            {
+                Messenger.Default.Publish(new EA009_Payload(hit.transform.gameObject.name));
+                
+                _introduceTween = DOVirtual.DelayedCall(1f, () =>
+                {
+                    _isIntroducePossible = true;
+                });
+
+                _introduceTween.OnKill(() =>
+                {
+                    _isIntroducePossible = false;
+                });
+            }
+           
+        }
+    }
+
     /// <summary>
     /// 안좋은음식 종류 식별 및 재생
     /// </summary>
@@ -307,7 +338,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private void SetFoodPool()
     {
         
-        for (int objEnum = (int)GameObj.FishA; objEnum <= (int)GameObj.DonutB; objEnum++)
+        for (int objEnum = (int)GameObj.FishA; objEnum <= (int)GameObj.DonutA; objEnum++)
         {
             
             allObj.Add(GetObject(objEnum).transform.GetInstanceID(), GetObject(objEnum));
@@ -370,6 +401,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             case MainSeq.Default:
                 break;
             case MainSeq.AllFoodIntroduce:
+                IntroduceItselfByClick();
                 break;
             case MainSeq.GoodFoodChangeToBadFood:
                 break;
@@ -387,6 +419,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             case MainSeq.Stomachache:
                 break;
             case MainSeq.GoodFoodChangeIntro:
+                
                 break;
             case MainSeq.BadFoodRemoval:
                 OnRaySyncOnBadFoodRemoval();
@@ -402,7 +435,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
     private void OnDefault()
     {
-        for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutB; i++)
+        for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
         {
             GetObject(i).transform.localScale = UnityEngine.Vector3.zero;
         }
@@ -419,7 +452,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         _currentMasterSequence?.Kill();
         _currentMasterSequence = DOTween.Sequence();
 // 🔹 masterInitSequence 내부 구성
-        for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutB; i++)
+        for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
         {
             int localIndex = i;
             var obj = GetObject(localIndex).transform;
@@ -491,21 +524,19 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
 
     #region Animation //  GoodFoodChangeToBadFood, 좋은음식-> 나쁜음식으로 바뀌는 파트
-    
-    List<GameObj> goodFoodList = new List<GameObj>
-    {
+
+    private readonly List<GameObj> goodFoodList = new() {
         GameObj.FishA, GameObj.MeatA, GameObj.ChickenA, GameObj.AppleA,
-        GameObj.EggA, GameObj.MilkA, GameObj.CarrotA,
-        GameObj.FishB, GameObj.MeatB, GameObj.ChickenB, GameObj.AppleB,
-        GameObj.EggB, GameObj.MilkB, GameObj.CarrotB
+        GameObj.EggA, GameObj.MilkA, GameObj.CarrotA
+        //  GameObj.FishB, GameObj.MeatB, GameObj.ChickenB, GameObj.AppleB,
+        // GameObj.EggB, GameObj.MilkB, GameObj.CarrotB
     };
 
-    List<GameObj> badFoodList = new List<GameObj>
-    {
+    private readonly List<GameObj> badFoodList = new() {
         GameObj.ColaA, GameObj.CookieA, GameObj.IceCreamA, GameObj.PizzaA,
-        GameObj.ChocolateA, GameObj.CakeA, GameObj.DonutA,
-        GameObj.ColaB, GameObj.CookieB, GameObj.IceCreamB, GameObj.PizzaB,
-        GameObj.ChocolateB, GameObj.CakeB, GameObj.DonutB
+        GameObj.ChocolateA, GameObj.CakeA, GameObj.DonutA
+        // GameObj.ColaB, GameObj.CookieB, GameObj.IceCreamB, GameObj.PizzaB,
+        //  GameObj.ChocolateB, GameObj.CakeB, GameObj.DonutA
     };
 
     
