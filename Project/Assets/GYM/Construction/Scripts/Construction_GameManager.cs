@@ -61,6 +61,8 @@ public class Construction_GameManager : Base_GameManager
 
     private bool Btn_TwiceIssue = true;
 
+    public AudioClip HeavyMachinerySound;
+
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -74,6 +76,7 @@ public class Construction_GameManager : Base_GameManager
         RmcStageSoil.transform.localScale = originExcavatorStageSoilScale;
 
         victoryAuidoClip = Resources.Load<AudioClip>("Construction/Audio/audio_Victory");
+        HeavyMachinerySound = Resources.Load<AudioClip>("Construction/Audio/HeavyMachinerySound");
 
         Btns_ExcavatorIntro.SetActive(false);
         Btns_RmcIntro.SetActive(false);
@@ -284,20 +287,32 @@ public class Construction_GameManager : Base_GameManager
         
     }
 
+    private bool twiceAudioIssue = true;
     public void Btn_ExcavatorAni()
     {
-        excavatorAni.SetBool("Dig", true);
-        DOVirtual.DelayedCall(0.1f, () => excavatorAni.SetBool("Dig", false));
+        float digAnimationLength = 3.1f;
+        if (twiceAudioIssue)
+        {
+            Debug.Log("오디오 재생중");
+            twiceAudioIssue = false;
+            excavatorAni.SetBool("Dig", true);
+            Managers.Sound.Play(SoundManager.Sound.Narration, HeavyMachinerySound);
+            DOVirtual.DelayedCall(0.1f, () => excavatorAni.SetBool("Dig", false));
+            DOVirtual.DelayedCall(digAnimationLength, () => { Managers.Sound.Stop(SoundManager.Sound.Narration); twiceAudioIssue = true; });
+        }
     }
 
     public void Btn_TruckAni()
     {
+        float digAnimationLength = 3.75f;
         truckAni.SetBool("LiftDown", false);
         truckAni.SetBool("LiftUp", true);
+        Managers.Sound.Play(SoundManager.Sound.Narration, HeavyMachinerySound);
         DOVirtual.DelayedCall(0.1f, () => {
             truckAni.SetBool("LiftUp", false);
             truckAni.SetBool("LiftDown", true);
         });
+        DOVirtual.DelayedCall(digAnimationLength, () => Managers.Sound.Stop(SoundManager.Sound.Narration));
     }
 
     public void PlayNarration(int path)

@@ -17,9 +17,9 @@ public class Construction_UIManager : Base_UIManager
         Debug.Assert(manager != null, "GameManager not found");
 
     }
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
-        base.Init();
+        base.InitEssentialUI();
         InitInstructionUI();
         return true;
 
@@ -40,7 +40,7 @@ public class Construction_UIManager : Base_UIManager
         seq?.Kill();
         seq = DOTween.Sequence();
 
-        seq.AppendCallback(() => PopInstructionUI(narrationText));
+        seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
         seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"Construction/Audio/audio_{audioPath}"));
         seq.AppendInterval(audioClip.length + 1);
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
