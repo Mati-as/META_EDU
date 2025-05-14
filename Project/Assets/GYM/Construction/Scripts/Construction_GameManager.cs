@@ -48,9 +48,9 @@ public class Construction_GameManager : Base_GameManager
     public GameObject Btns_TruckIntro;
     public GameObject Btns_RmcIntro;
 
-    public GameObject Btn_Excavator;
-    public GameObject Btn_Truck;
-    public GameObject Btn_Rmc;
+    public GameObject Btn_ExcavatorStage;
+    public GameObject Btn_TruckStage;
+    public GameObject Btn_RmcStage;
 
     public AudioClip victoryAuidoClip;
 
@@ -81,9 +81,9 @@ public class Construction_GameManager : Base_GameManager
         Btns_ExcavatorIntro.SetActive(false);
         Btns_RmcIntro.SetActive(false);
         Btns_TruckIntro.SetActive(false);
-        Btn_Excavator.SetActive(false);
-        Btn_Truck.SetActive(false);
-        Btn_Rmc.SetActive(false);
+        Btn_ExcavatorStage.SetActive(false);
+        Btn_TruckStage.SetActive(false);
+        Btn_RmcStage.SetActive(false);
 
         //if (mainCamera != null)
         //{
@@ -225,12 +225,18 @@ public class Construction_GameManager : Base_GameManager
             });
             introVirtualCamera.Priority = 10;
             excavatorVirtualCamera.Priority = 20;
-            DOVirtual.DelayedCall(3f, () =>
+
+            Sequence seq = DOTween.Sequence();
+            seq.AppendInterval(3f);
+            seq.AppendCallback(() =>
             {
                 Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
-                Btn_Excavator.SetActive(true);
+                Btn_ExcavatorStage.SetActive(true);
+                Btn_ExcavatorStage.transform.localScale = Vector3.zero;
                 Btn_TwiceIssue = true;
             });
+            seq.Append(Btn_ExcavatorStage.transform.DOScale(Vector3.one, 1f));
+            seq.Append(Btn_ExcavatorStage.transform.DOShakeScale(0.3f, 0.1f));
 
         }
 
@@ -250,13 +256,17 @@ public class Construction_GameManager : Base_GameManager
             TruckShowCamera.Priority = 10;
             truckVirtualCamera.Priority = 20;
 
-            DOVirtual.DelayedCall(3f, () =>
+            Sequence seq = DOTween.Sequence();
+            seq.AppendInterval(3f);
+            seq.AppendCallback(() =>
             {
-                Btn_Truck.SetActive(true);
                 Messenger.Default.Publish(new NarrationMessage("트럭으로 흙을 옮겨봐요", "12_트럭으로_흙을_옮겨봐요_"));
-
+                Btn_TruckStage.SetActive(true);
+                Btn_TruckStage.transform.localScale = Vector3.zero;
                 Btn_TwiceIssue = true;
-            }); //아마 여기도 애니메이션 넣으면 좋을것같음
+            });
+            seq.Append(Btn_TruckStage.transform.DOScale(Vector3.one, 1f));
+            seq.Append(Btn_TruckStage.transform.DOShakeScale(0.3f, 0.1f));
 
         }
 

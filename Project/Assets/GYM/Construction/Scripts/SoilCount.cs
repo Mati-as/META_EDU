@@ -99,7 +99,7 @@ public class SoilCount : MonoBehaviour
         {
             Messenger.Default.Publish(new NarrationMessage("우리 친구들이 포크레인을 도와줘서 흙을 많이 팠어요!", "9_우리_친구들이_포크레인을_도와줘서_흙을_많이_팠어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
-            manager.Btn_Excavator.SetActive(false);
+            manager.Btn_ExcavatorStage.SetActive(false);
         });
         seq.AppendInterval(5f);
         seq.AppendCallback(() =>
@@ -147,7 +147,7 @@ public class SoilCount : MonoBehaviour
         {
             Messenger.Default.Publish(new NarrationMessage("우리 친구들이 트럭을 도와줘서 흙을 많이 옮겼어요!", "13_우리_친구들이_트럭을_도와줘서_흙을_많이_옮겼어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
-            manager.Btn_Truck.SetActive(false);
+            manager.Btn_TruckStage.SetActive(false);
         });
         seq.AppendInterval(5f);
         seq.AppendCallback(() =>
