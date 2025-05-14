@@ -875,7 +875,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         _timeSinceLastTouch = 0;
 
         restartSliderFillAmount = _restartSliderImage.fillAmount;
-        yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ => { _restartSliderImage.fillAmount += 0.028f; })
+        yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ => { _restartSliderImage.fillAmount += 0.5f; })
             .WaitForCompletion();
         _isRestartBtnBeingClicked = false;
     }

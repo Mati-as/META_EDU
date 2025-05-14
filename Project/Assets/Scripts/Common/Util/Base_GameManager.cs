@@ -168,10 +168,18 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
     //런타임에서 고정
+    protected float _shadowMaxDistance = 60;
+
     protected float SHADOW_MAX_DISTANCE
     {
-        get;
-        set;
+        get
+        {
+            return _shadowMaxDistance;
+        }
+        set
+        {
+            _shadowMaxDistance = value;
+        }
     } //런타임에서 고정
 
     public LayerMask layerMask;
