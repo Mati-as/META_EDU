@@ -57,6 +57,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     }
     
     private readonly Dictionary<int, Stack<GameObject>> _foodClonePool = new();
+    
+    private readonly Dictionary<int, GameObject> _activatedFoodOnTableMap = new();
     private readonly Dictionary<int, GameObject> allObj = new();
     private readonly Dictionary<int,Vector3> _defaultPosMap = new(); // 재생성관련
     private readonly Dictionary<int,bool> _isPosEmptyMap = new(); // 재생성관련 , true인경우 좋은음식은 여기서 생성
@@ -205,7 +207,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     OnStomachache();
                     break;
                 case MainSeq.GoodFoodChangeIntro:
-                    OnGoodFoodChangeIntro();
+                    OnBadFoodRemovalIntro();
                     break;
                 case MainSeq.BadFoodRemoval:
                     Messenger.Default.Publish(new EA009_Payload("몸에 좋지 않은 음식을 전부 터치해주세요!",true));
@@ -438,6 +440,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
         {
             GetObject(i).transform.localScale = UnityEngine.Vector3.zero;
+            _activatedFoodOnTableMap.Add(GetObject(i).transform.GetInstanceID(),GetObject(i));
         }
     }
     
@@ -570,6 +573,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             _currentMasterSequence.Join(goodObj.DOScale(Vector3.zero, _isDevMode ? delayForDevMode : 0.15f)
                 .SetEase(_disappearAnimEase).OnStart(() =>
                 {
+                    _activatedFoodOnTableMap.Remove(goodObj.GetInstanceID());
+                    
                     Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "fxA");
                 }));
 
@@ -599,6 +604,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
                 badClone.transform.DOScale(_defaultSizeMap[badIndex], _isDevMode ? delayForDevMode : 0.15f)
                     .SetEase(_appearAnimEase);
+                
+                _activatedFoodOnTableMap.Add(badClone.transform.GetInstanceID(), badClone);
             }));
 
 
@@ -651,12 +658,68 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         _badFoodClickGameList.Remove((BadFoodClickGameCategory)badFoodToEat);
         _currentBadFoodToClick = currentBadFoodClickGameCategoryKorean;
 
-        OnBadFoodRoundInit();
+        OnBadFoodEatRoundInit();
     }
 
-    private void OnBadFoodRoundInit()
+    private void OnBadFoodEatRoundInit()
     {
         Logger.ContentTestLog(" 나쁜음식 클릭하기 시작---RoundInit 완료");
+        
+        
+        foreach (var key in allObj.Keys.ToArray())
+        {
+      
+            allObj[key].transform.DOScale(allObj[key].transform.localScale*1.1f, 0.1f).SetEase(Ease.OutBack);
+            allObj[key].transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBack);
+        }
+
+        foreach (var key in _isPosEmptyMap.Keys.ToArray())
+        {
+            _isPosEmptyMap[key] = true;
+        }
+        
+        foreach (var key in _isPosEmptyMap.Keys.ToArray())
+        {
+            if (!_isPosEmptyMap[key]) continue;
+
+            if (!_defaultPosMap.TryGetValue(key, out var spawnPos))
+            {
+                Logger.ContentTestLog($"[ERROR] 위치 정보 없음: {key}");
+                continue;
+            }
+
+            var randomBad = badFoodList[UnityEngine.Random.Range(0, badFoodList.Count)];
+            int badIndex = (int)randomBad;
+            GameObject badClone = null;
+
+            if (_foodClonePool.ContainsKey(badIndex) && _foodClonePool[badIndex].Count > 0)
+            {
+                badClone = _foodClonePool[badIndex].Pop();
+                badClone.SetActive(true);
+            }
+            else
+            {
+                badClone = Instantiate(GetObject(badIndex), PoolRoot.transform, true);
+            }
+
+            badClone.transform.position = spawnPos;
+            badClone.transform.localScale = Vector3.zero;
+
+            //badClone.name = $"BadClone_{badIndex}_{key}";
+            allObj[badClone.transform.GetInstanceID()] = badClone;
+            _tfIdToEnumMap[badClone.transform.GetInstanceID()] = badIndex;
+            _clickedCountMap[badClone.transform.GetInstanceID()] = 0;
+
+            badClone.transform.DOScale(_defaultSizeMap[badClone.transform.GetInstanceID()], 0.25f);
+            _isClickableMap[badClone.transform.GetInstanceID()] = true;
+            _isPosEmptyMap[key] = false;
+
+        }
+        
+        
+        
+        
+        
 
         foreach (int key in allObj.Keys.ToArray())
         {
@@ -671,7 +734,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     _badFoodClickRelatedSeq[thisObjTransID] = DOTween.Sequence();
 
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 2.2f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
+                        .DOScale(_defaultSizeMap[thisObjTransID] * 1.5f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
                     _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.21f);
                     _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
                         .DOScale(_defaultSizeMap[thisObjTransID] * 0.75f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
@@ -820,17 +883,6 @@ private void OnRaySyncOnBadFoodEat()
         }
     }
 }
-
-    private void OnBadFoodSelectFinished()
-    {
-        
-    }
-
-    private void OnBadFoodEat_Candy_Finished()
-    {
-        
-    }
-
     #endregion
 
     #region Game // BadFoodEat_Chocolate, 나쁜음식먹기
@@ -844,15 +896,7 @@ private void OnRaySyncOnBadFoodEat()
       
         _currentBadFoodToClick = currentBadFoodClickGameCategoryKorean.ToString();
 
-        OnBadFoodRoundInit();
-    }
-
-    private void OnRaySyncOnBadFoodEat_Chocolate()
-    {
-    }
-
-    private void OnBadFoodEat_Chocolate_Finished()
-    {
+        OnBadFoodEatRoundInit();
     }
 
     #endregion
@@ -868,17 +912,8 @@ private void OnRaySyncOnBadFoodEat()
       
         _currentBadFoodToClick = currentBadFoodClickGameCategoryKorean.ToString();
 
-        OnBadFoodRoundInit();
+        OnBadFoodEatRoundInit();
     }
-
-    private void OnRaySyncOnBadFoodEat_IceCream()
-    {
-    }
-
-    private void OnBadFoodEat_Chocolate_IceCream()
-    {
-    }
-
     #endregion
 
 
@@ -903,7 +938,7 @@ private void OnRaySyncOnBadFoodEat()
 
     #region Animation // GoodFoodIntro, 좋은음식 
 
-   private void OnGoodFoodChangeIntro()
+   private void OnBadFoodRemovalIntro()
 {
     float animationDuration = 3.0f;
     
