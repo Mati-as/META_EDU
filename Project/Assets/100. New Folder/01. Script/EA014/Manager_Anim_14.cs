@@ -175,7 +175,7 @@ public class Manager_Anim_14 : MonoBehaviour
         if (round_number == 5)
         {
             //5, Active next button
-            if (Content_Seq == 2)
+            if (Content_Seq == 1)
                 Manager_Obj_14.instance.Btn_Next.SetActive(true);
 
             Sequence seq = DOTween.Sequence();
@@ -286,7 +286,7 @@ public class Manager_Anim_14 : MonoBehaviour
     public void Change_Animation(int Number_seq)
     {
         Content_Seq = Number_seq;
-        if (Content_Seq == 2)
+        if (Content_Seq == 1)
         {
             Move_Seq_camera();
             //Debug.Log("SEQ = " + Content_Seq);

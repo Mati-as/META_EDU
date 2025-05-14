@@ -12,6 +12,7 @@ public class Clicked_Block_14 : MonoBehaviour
     public bool Clickable = true;
 
     //[common] 3d game => SEQ : OnRaySynced() , 2d game => SEQ : Click()
+    //[Check] Tag : Mainobject
     public void Click()
     {
         //Debug.Log("Clicked");

@@ -396,8 +396,8 @@ public class Manager_Obj_14 : MonoBehaviour
             
             Temp_shapenum = shapeOrder[i];
 
+            Seq_text[3 * i + 4] = seq_text[3 * Temp_shapenum + 4];
             Seq_text[3 * i + 5] = seq_text[3 * Temp_shapenum + 5];
-            Seq_text[3 * i + 6] = seq_text[3 * Temp_shapenum + 6];
         }
 
         Manager_Text.Init_UI_text_array(Seq_text);
@@ -411,8 +411,8 @@ public class Manager_Obj_14 : MonoBehaviour
         {
             Temp_shapenum = shapeOrder[i];
 
+            Seq_narration[3 * i + 4] = seq_narration[3 * Temp_shapenum + 4];
             Seq_narration[3 * i + 5] = seq_narration[3 * Temp_shapenum + 5];
-            Seq_narration[3 * i + 6] = seq_narration[3 * Temp_shapenum + 6];
         }
 
         Manager_Narr.Set_Audio_seq_narration(Seq_narration);

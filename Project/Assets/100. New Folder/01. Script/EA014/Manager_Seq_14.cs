@@ -97,13 +97,13 @@ public class Manager_Seq_14 : Base_GameManager
             toggle = true;
             Timer_set();
         }
-        else if (Content_Seq == 2)
+        else if (Content_Seq == 1)
         {
             Onclick = true;
             Manager_Anim.Read_Seq_Shape();
             //(보류) 여기에서 나타나는 각 도형 텍스트는 한 번 나타나고 화면 밖으로 사라지는게 맞는 것 같음
         }
-        else if (Content_Seq == 3)
+        else if (Content_Seq == 2)
         {
             Onclick = false;
 
@@ -120,13 +120,13 @@ public class Manager_Seq_14 : Base_GameManager
             toggle = true;
             Timer_set();
         }
-        else if (Content_Seq == 4)
+        else if (Content_Seq == 3)
         {
             Manager_Anim.Anim_Active(Button_Spin);
             //버튼 활성화 하되, 끝나고 난 다음에 게임 시작 시퀀스 돌입하면?
             //어쩌피 세팅 다 하고 바로 준비할텐데
         }
-        else if (Content_Seq == 7 || Content_Seq == 10 || Content_Seq == 13 || Content_Seq == 16)
+        else if (Content_Seq == 6 || Content_Seq == 9 || Content_Seq == 12 || Content_Seq == 15)
         {
             //이전 게임 도형 비활성화
             Manager_Obj_14.instance.Main_Shapeicon_2[Shape_number].SetActive(false);
@@ -139,11 +139,11 @@ public class Manager_Seq_14 : Base_GameManager
             
             //StartCoroutine(GameStart_Seq());
         }
-        else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
+        else if (Content_Seq == 4 || Content_Seq == 7 || Content_Seq == 10 || Content_Seq == 13 || Content_Seq == 16)
         {
             Active_status();
         }
-        else if (Content_Seq == 6 || Content_Seq == 9 || Content_Seq == 12 || Content_Seq == 15 || Content_Seq == 18)
+        else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
         {
             //게임 종료 처리 추가 필요 > 성공 효과음, 이펙트
             Manager_Anim.Anim_Inactive(Manager_Obj_14.instance.UI_Status);
@@ -156,7 +156,7 @@ public class Manager_Seq_14 : Base_GameManager
 
             Timer_set();
         }
-        else if (Content_Seq == 19)
+        else if (Content_Seq == 18)
         {
             //이전 게임 도형 비활성화
             Manager_Obj_14.instance.Main_Shapeicon_2[Shape_number].SetActive(false);
@@ -429,7 +429,7 @@ public class Manager_Seq_14 : Base_GameManager
 
         //Debug.Log("Shape CLICKED!");
 
-        if (Content_Seq == 2 || Content_Seq == 19)
+        if (Content_Seq == 1 || Content_Seq == 18)
         {
             Inactive_shape_clickable(Shape);
 
@@ -439,7 +439,7 @@ public class Manager_Seq_14 : Base_GameManager
 
             Shape.transform.DOShakeScale(1.0f, 1, 10, 90, true).SetEase(Ease.OutQuad).OnComplete(() => Active_shape_clickable(Shape));
         }
-        else if (Content_Seq == 5 || Content_Seq == 8 || Content_Seq == 11 || Content_Seq == 14 || Content_Seq == 17)
+        else if (Content_Seq == 4 || Content_Seq == 7 || Content_Seq == 10 || Content_Seq == 13 || Content_Seq == 16)
         {
             //Clicked this round emoji
             if (Shape_number == num_emoji)
