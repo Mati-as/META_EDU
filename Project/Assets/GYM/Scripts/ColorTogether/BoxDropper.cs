@@ -56,8 +56,8 @@ public class BoxDropper : MonoBehaviour
 
     public void NextDropBoxButton()
     {
-        //if (!onButtonClicked)
-        //{
+        if (!onButtonClicked)
+        {
             onButtonClicked = true;
 
             if (dropIndex >= boxMeshes.Count) //박스 선택 종료 스테이지 이동 타이밍
@@ -119,7 +119,7 @@ public class BoxDropper : MonoBehaviour
 
             dropIndex++;
 
-           // DOVirtual.DelayedCall(0.1f, () => onButtonClicked = false);
-        //}
+            DOVirtual.DelayedCall(0.1f, () => onButtonClicked = false);
+        }
     }
 }
