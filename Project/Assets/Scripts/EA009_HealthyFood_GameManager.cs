@@ -663,109 +663,89 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
     private void OnBadFoodEatRoundInit()
     {
-        Logger.ContentTestLog(" 나쁜음식 클릭하기 시작---RoundInit 완료");
-        
-        
-        foreach (var key in allObj.Keys.ToArray())
+        Logger.ContentTestLog("나쁜음식 클릭하기 시작---RoundInit 시작");
+
+        // 1. 기존 음식들 숨기기
+        foreach (var kvp in allObj) kvp.Value.SetActive(false);
+
+        // 2. 기존 자리 비우기
+        foreach (int key in _isPosEmptyMap.Keys.ToArray()) _isPosEmptyMap[key] = true;
+
+        var spawnablePositions =
+            _defaultPosMap.Where(kvp => _isPosEmptyMap[kvp.Key]).Take(COUNT_OF_FOOD_TO_CHANGE).ToList();
+        var matchingBadFood =
+            badFoodList.FirstOrDefault(f => f.ToString().Contains(currentBadFoodClickGameCategory.ToString()));
+
+        if (matchingBadFood == default)
         {
-      
-            allObj[key].transform.DOScale(allObj[key].transform.localScale*1.1f, 0.1f).SetEase(Ease.OutBack);
-            allObj[key].transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.OutBack);
+            Logger.ContentTestLog($"[ERROR] BadFood 리스트에서 {currentBadFoodClickGameCategory} 매칭 실패");
+            return;
         }
 
-        foreach (var key in _isPosEmptyMap.Keys.ToArray())
+        int badIndex = (int)matchingBadFood;
+
+        List<GameObject> spawnedFoods = new();
+
+        // 3. Pool에서 7개 꺼내서 배치
+        for (int i = 0; i < COUNT_OF_FOOD_TO_CHANGE && i < spawnablePositions.Count; i++)
         {
-            _isPosEmptyMap[key] = true;
-        }
-        
-        foreach (var key in _isPosEmptyMap.Keys.ToArray())
-        {
-            if (!_isPosEmptyMap[key]) continue;
+            int posKey = spawnablePositions[i].Key;
+            var spawnPos = spawnablePositions[i].Value;
 
-            if (!_defaultPosMap.TryGetValue(key, out var spawnPos))
-            {
-                Logger.ContentTestLog($"[ERROR] 위치 정보 없음: {key}");
-                continue;
-            }
-
-            var randomBad = badFoodList[UnityEngine.Random.Range(0, badFoodList.Count)];
-            int badIndex = (int)randomBad;
-            GameObject badClone = null;
-
-            if (_foodClonePool.ContainsKey(badIndex) && _foodClonePool[badIndex].Count > 0)
+            GameObject badClone;
+            if (_foodClonePool[badIndex].Count > 0)
             {
                 badClone = _foodClonePool[badIndex].Pop();
                 badClone.SetActive(true);
             }
             else
-            {
-                badClone = Instantiate(GetObject(badIndex), PoolRoot.transform, true);
-            }
+                badClone = Instantiate(GetObject(badIndex), PoolRoot.transform);
 
             badClone.transform.position = spawnPos;
             badClone.transform.localScale = Vector3.zero;
 
-            //badClone.name = $"BadClone_{badIndex}_{key}";
-            allObj[badClone.transform.GetInstanceID()] = badClone;
-            _tfIdToEnumMap[badClone.transform.GetInstanceID()] = badIndex;
-            _clickedCountMap[badClone.transform.GetInstanceID()] = 0;
+            int transId = badClone.transform.GetInstanceID();
+            allObj[transId] = badClone;
+            _tfIdToEnumMap[transId] = badIndex;
+            _clickedCountMap[transId] = 0;
+            _isClickableMap[transId] = true;
+            _defaultSizeMap.TryAdd(transId, GetObject(badIndex).transform.localScale);
 
-            badClone.transform.DOScale(_defaultSizeMap[badClone.transform.GetInstanceID()], 0.25f);
-            _isClickableMap[badClone.transform.GetInstanceID()] = true;
-            _isPosEmptyMap[key] = false;
+            _isPosEmptyMap[posKey] = false;
 
+            // 스케일 애니메이션용으로 저장
+            spawnedFoods.Add(badClone);
         }
-        
-        
-        
-        
-        
 
-        foreach (int key in allObj.Keys.ToArray())
+        // 4. DOTween 애니메이션: 커졌다 작아졌다 반복
+        foreach (var obj in spawnedFoods)
         {
-            if (allObj[key].name.Contains(currentBadFoodClickGameCategory.ToString()))
-            {
-                int thisObjTransID = allObj[key].transform.GetInstanceID();
+            int id = obj.transform.GetInstanceID();
+            var size = _defaultSizeMap[id];
 
-                if (_defaultSizeMap.TryGetValue(thisObjTransID, out var size))
-                {
-                    _badFoodClickRelatedSeq.TryAdd(thisObjTransID, DOTween.Sequence());
-                    _badFoodClickRelatedSeq[thisObjTransID]?.Kill();
-                    _badFoodClickRelatedSeq[thisObjTransID] = DOTween.Sequence();
+            _badFoodClickRelatedSeq.TryAdd(id, DOTween.Sequence());
+            _badFoodClickRelatedSeq[id]?.Kill();
+            _badFoodClickRelatedSeq[id] = DOTween.Sequence();
 
-                    _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 1.5f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
-                    _badFoodClickRelatedSeq[thisObjTransID].AppendInterval(0.21f);
-                    _badFoodClickRelatedSeq[thisObjTransID].Append(allObj[key].transform
-                        .DOScale(_defaultSizeMap[thisObjTransID] * 0.75f, _isDevMode? delayForDevMode :0.15f).SetEase(_appearAnimEase));
-                    _badFoodClickRelatedSeq[thisObjTransID].SetLoops(150, LoopType.Yoyo);
-                }
-                else
-                {
-                    Logger.ContentTestLog($"[ERROR] _defaultSizeMap에 없는 Transform ID: {allObj[key].name} : {thisObjTransID}");
-                }
-            
-           
-            }
-            
-  
+            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 1.5f, _isDevMode ? delayForDevMode : 0.15f)
+                .SetEase(_appearAnimEase));
+            _badFoodClickRelatedSeq[id].AppendInterval(0.21f);
+            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 0.75f, _isDevMode ? delayForDevMode : 0.15f)
+                .SetEase(_appearAnimEase));
+            _badFoodClickRelatedSeq[id].SetLoops(-1, LoopType.Yoyo);
         }
 
-
-        foreach (var key in _isClickableMap.Keys.ToArray())
-        {
-            currentBadFoodClickedCount = 0;
-            _isClickableMap[key] = true;
-        }
-        Logger.ContentTestLog($" 현재 클릭할 나쁜음식 {currentBadFoodClickGameCategory}");
-
+        // 5. 클릭 가능 설정
+        currentBadFoodClickedCount = 0;
         DOVirtual.DelayedCall(1f, () =>
         {
             isBadFoodClickable = true;
         });
-      
+
+        Logger.ContentTestLog($"[INFO] {currentBadFoodClickGameCategory} 7개 배치 완료 및 애니메이션 시작");
     }
-    private Dictionary<int, Sequence> _badFoodClickRelatedSeq = new Dictionary<int, Sequence>();
+   
+    Dictionary<int, Sequence> _badFoodClickRelatedSeq = new Dictionary<int, Sequence>();
     private Dictionary<int, int> _clickedCountMap = new();
     
 private Dictionary<int, Sequence> _badFoodClickMoveSeqMap = new(); // 도망 애니메이션 전용
