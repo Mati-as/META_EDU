@@ -22,10 +22,16 @@ public class Excavator : MonoBehaviour
     public Construction_GameManager manager;
 
     private bool btnTwiceIssue = false;
+
+    private bool audioTwiceIssue = false;
+
+    public AudioSource audioSource;
+
     private void Start()
     {
         manager = FindObjectOfType<Construction_GameManager>();
 
+        audioSource = GetComponent<AudioSource>();
         excavatorAni = GetComponent<Animator>();
         Digclip = Resources.Load<AnimationClip>("Construction/Animation/digClip_Excavator");
         soil.SetActive(false);
@@ -37,15 +43,17 @@ public class Excavator : MonoBehaviour
         {
             btnTwiceIssue = true;
             DOVirtual.DelayedCall(0.1f, () => btnTwiceIssue = false);
+            audioSource.clip = manager.HeavyMachinerySound;
 
-            if (isDigging == false)
+            if (!isDigging && !audioTwiceIssue)
             {
                 isDigging = true;
-
+                audioTwiceIssue = true;
                 Sequence seq = DOTween.Sequence();
 
                 seq.AppendCallback(() =>
                 {
+                    audioSource.Play();
                     excavatorAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * moveDistance;
                     transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
@@ -69,11 +77,12 @@ public class Excavator : MonoBehaviour
                     transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
                 });
                 seq.AppendInterval(moveDuration);
-                seq.AppendCallback(() => excavatorAni.SetBool("Move", false));
+                seq.AppendCallback(() => { excavatorAni.SetBool("Move", false); audioSource.Stop(); });
 
                 seq.AppendInterval(1.5f);
                 seq.AppendCallback(() => soil.SetActive(false));
-                seq.AppendCallback(() => isDigging = false);
+                seq.AppendCallback(() => { isDigging = false; audioTwiceIssue = false; });
+            
             }
 
         }
