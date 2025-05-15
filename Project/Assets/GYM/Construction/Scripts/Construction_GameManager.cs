@@ -30,38 +30,45 @@ public class Construction_GameManager : Base_GameManager
 
     public Animator excavatorAni;
     public Animator truckAni;
-    public Animator rmcAni;
+    public Animator bulldozerAni;
 
     public List<CinemachineVirtualCamera> cameras = new List<CinemachineVirtualCamera>(5);
 
     public CinemachineVirtualCamera startVirtualCamera;
     public CinemachineVirtualCamera introVirtualCamera;
 
-    public CinemachineVirtualCamera ExcavatorShowCamera;
-    public CinemachineVirtualCamera TruckShowCamera;
+    public CinemachineVirtualCamera excavatorShowCamera;
+    public CinemachineVirtualCamera truckShowCamera;
+    public CinemachineVirtualCamera bulldozerShowCamera;
 
     public CinemachineVirtualCamera excavatorVirtualCamera;
     public CinemachineVirtualCamera truckVirtualCamera;
-    public CinemachineVirtualCamera rmcVirtualCamera;
+    public CinemachineVirtualCamera bulldozerVirtualCamera;
 
     public GameObject Btns_ExcavatorIntro;
     public GameObject Btns_TruckIntro;
-    public GameObject Btns_RmcIntro;
+    public GameObject Btns_BulldozerIntro;
 
     public GameObject Btn_ExcavatorStage;
     public GameObject Btn_TruckStage;
-    public GameObject Btn_RmcStage;
+    public GameObject Btn_BulldozerStage;
 
     public AudioClip victoryAuidoClip;
 
     public GameObject ExcavatorStageSoil;
     public GameObject TruckStageSoil;
-    public GameObject RmcStageSoil;
+    public GameObject BulldozerStageSoil;
+
     private Vector3 originExcavatorStageSoilScale = new Vector3(8.37f, 18f, 7.8f);
 
     private bool Btn_TwiceIssue = true;
 
-    public AudioClip HeavyMachinerySound;
+    public AudioClip audioClipMove1;
+    public AudioClip audioClipMove2;
+    public AudioClip audioClipWork1;
+    public AudioClip audioClipWork2;
+
+    public AudioClip HeavyMachinerySound; //지워야함 오류생겨서 일단 살린것임
 
     protected override void Init()
     {
@@ -71,19 +78,27 @@ public class Construction_GameManager : Base_GameManager
         ManageProjectSettings(150, 0.15f);
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Construction/Audio/audio_BGM");
 
+        //excavatorAni = Resources.Load<Animator>("Construction/Animation/Excavator");
+        //truckAni = Resources.Load<Animator>("Construction/Animation/Truck");
+        //bulldozerAni = Resources.Load<Animator>("Construction/Animation/Bulldozer");
+
         ExcavatorStageSoil.transform.localScale = originExcavatorStageSoilScale;
         TruckStageSoil.transform.localScale = originExcavatorStageSoilScale;
-        RmcStageSoil.transform.localScale = originExcavatorStageSoilScale;
+        BulldozerStageSoil.transform.localScale = originExcavatorStageSoilScale;
 
         victoryAuidoClip = Resources.Load<AudioClip>("Construction/Audio/audio_Victory");
-        HeavyMachinerySound = Resources.Load<AudioClip>("Construction/Audio/HeavyMachinerySound");
+        audioClipMove1 = Resources.Load<AudioClip>("Construction/Audio/audio_move1");
+        audioClipMove2 = Resources.Load<AudioClip>("Construction/Audio/audio_move2");
+        audioClipWork1 = Resources.Load<AudioClip>("Construction/Audio/audio_work1");
+        audioClipWork2 = Resources.Load<AudioClip>("Construction/Audio/audio_work2");
 
         Btns_ExcavatorIntro.SetActive(false);
-        Btns_RmcIntro.SetActive(false);
+        Btns_BulldozerIntro.SetActive(false);
         Btns_TruckIntro.SetActive(false);
+
         Btn_ExcavatorStage.SetActive(false);
         Btn_TruckStage.SetActive(false);
-        Btn_RmcStage.SetActive(false);
+        Btn_BulldozerStage.SetActive(false);
 
         //if (mainCamera != null)
         //{
@@ -111,10 +126,12 @@ public class Construction_GameManager : Base_GameManager
 
         startVirtualCamera = cameras[0];
         introVirtualCamera = cameras[1];
-        ExcavatorShowCamera = cameras[2];
-        TruckShowCamera = cameras[3];
-        excavatorVirtualCamera = cameras[4];
-        truckVirtualCamera = cameras[5];
+        excavatorShowCamera = cameras[2];
+        truckShowCamera = cameras[3];
+        bulldozerShowCamera = cameras[4];
+        excavatorVirtualCamera = cameras[5];
+        truckVirtualCamera = cameras[6];
+        bulldozerVirtualCamera = cameras[7];
 
         UI_Scene_StartBtn.onGameStartBtnShut += StartGame;
     }
@@ -138,7 +155,7 @@ public class Construction_GameManager : Base_GameManager
         introSeq.AppendCallback(() =>
         {
             introVirtualCamera.Priority = 10;
-            ExcavatorShowCamera.Priority = 20;
+            excavatorShowCamera.Priority = 20;
             Messenger.Default.Publish(new NarrationMessage("포크레인은 땅 속에 있는 흙을 팔 수 있어요", "2_포크레인은_땅_속에_있는_흙을_팔_수_있어요"));
             excavatorAni.SetBool("Dig", true);
 
@@ -251,9 +268,9 @@ public class Construction_GameManager : Base_GameManager
             .SetEase(Ease.InBack) // 등장 시 OutBack이면 사라질 때는 InBack이 자연스러움
             .OnComplete(() =>
             {
-                Btns_ExcavatorIntro.SetActive(false);
+                Btns_TruckIntro.SetActive(false);
             });
-            TruckShowCamera.Priority = 10;
+            truckShowCamera.Priority = 10;
             truckVirtualCamera.Priority = 20;
 
             Sequence seq = DOTween.Sequence();
@@ -272,57 +289,74 @@ public class Construction_GameManager : Base_GameManager
 
         
     }
-
-    public void Btn_RmcNext() //레미콘 다음 버튼
+    
+    public void Btn_BulldozerNext() // 다음 버튼
     {
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
-            Btns_RmcIntro.SetActive(false);
-            DOVirtual.DelayedCall(2f, () => { Btn_TwiceIssue = true; });
+            Btns_BulldozerIntro.transform.DOScale(0.01f, 0.3f)
+            .SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                Btns_BulldozerIntro.SetActive(false);
+            });
+            bulldozerShowCamera.Priority = 10;
+            bulldozerVirtualCamera.Priority = 20;
+
+            Sequence seq = DOTween.Sequence();
+            seq.AppendInterval(3f);
+            seq.AppendCallback(() =>
+            {
+                Messenger.Default.Publish(new NarrationMessage("불도저로 흙을 밀어봐요", "22_불도저로_흙을_밀어봐요"));
+                Btn_BulldozerStage.SetActive(true);
+                Btn_BulldozerStage.transform.localScale = Vector3.zero;
+                Btn_TwiceIssue = true;
+            });
+            seq.Append(Btn_BulldozerStage.transform.DOScale(Vector3.one, 1f));
+            seq.Append(Btn_BulldozerStage.transform.DOShakeScale(0.3f, 0.1f));
+
         }
 
-        Sequence introSeq4 = DOTween.Sequence();
-        Messenger.Default.Publish(new NarrationMessage("레미콘은 시멘트를 넣어줄 수 있어요", "4_레미콘은_시멘트를_넣어줄_수_있어요"));
-
-
-        //Btns_RmcIntro.SetActive(true);
-        //Btns_RmcIntro.transform.DOScale(1f, 0.4f)
-        //    .From(0.01f)
-        //    .SetEase(Ease.Flash)
-        //    .OnComplete(() =>
-        //    {
-        //        Btns_RmcIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
-        //    });
-        
     }
 
     private bool twiceAudioIssue = true;
     public void Btn_ExcavatorAni()
     {
-        float digAnimationLength = 3.1f;
+        float AnimationLength = 3.1f;
         if (twiceAudioIssue)
         {
             Debug.Log("오디오 재생중");
             twiceAudioIssue = false;
             excavatorAni.SetBool("Dig", true);
-            Managers.Sound.Play(SoundManager.Sound.Narration, HeavyMachinerySound);
+            Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
             DOVirtual.DelayedCall(0.1f, () => excavatorAni.SetBool("Dig", false));
-            DOVirtual.DelayedCall(digAnimationLength, () => { Managers.Sound.Stop(SoundManager.Sound.Narration); twiceAudioIssue = true; });
+            DOVirtual.DelayedCall(AnimationLength, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); twiceAudioIssue = true; });
         }
     }
 
     public void Btn_TruckAni()
     {
-        float digAnimationLength = 3.75f;
+        float AnimationLength = 3.75f;
         truckAni.SetBool("LiftDown", false);
         truckAni.SetBool("LiftUp", true);
-        Managers.Sound.Play(SoundManager.Sound.Narration, HeavyMachinerySound);
+        Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
         DOVirtual.DelayedCall(0.1f, () => {
             truckAni.SetBool("LiftUp", false);
             truckAni.SetBool("LiftDown", true);
         });
-        DOVirtual.DelayedCall(digAnimationLength, () => Managers.Sound.Stop(SoundManager.Sound.Narration));
+        DOVirtual.DelayedCall(AnimationLength, () => Managers.Sound.Stop(SoundManager.Sound.Effect));
+    }
+
+    public void Btn_BulldozerAni()
+    {
+        float AnimationLength = 3.1f;
+        bulldozerAni.SetBool("Work", true);
+        Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
+        DOVirtual.DelayedCall(0.1f, () => {
+            bulldozerAni.SetBool("Work", false);
+        });
+        DOVirtual.DelayedCall(AnimationLength, () => Managers.Sound.Stop(SoundManager.Sound.Effect));
     }
 
     public void PlayNarration(int path)
