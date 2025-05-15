@@ -144,8 +144,14 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
         _isClickable = true;
 
     }
-    
-    
+
+    protected override void OnGameStartStartButtonClicked()
+    {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "화면을 터치해 송하맹호도를 완성시켜 보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+    }
+
     public float currentRotation;
     void Paint()
     {

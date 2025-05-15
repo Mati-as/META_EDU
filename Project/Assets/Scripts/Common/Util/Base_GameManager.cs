@@ -92,23 +92,33 @@ public abstract class Base_GameManager : MonoBehaviour
 
     protected UIManager_CommonBehaviorController _uiManagerCommonBehaviorController;
 
-    public void LoadUIManager()
+    public void LoadUIManagerAndInit()
     {
-        var uiMangager = GameObject.FindWithTag("UIManager");
-        Debug.Assert(uiMangager != null, "UIManager not found");
-        _uiManagerCommonBehaviorController = uiMangager.GetComponent<UIManager_CommonBehaviorController>();
-        if (_uiManagerCommonBehaviorController != null)
-            _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
-        else
+        DOVirtual.DelayedCall(0.75f, () =>
         {
-            Logger.Log("추가 UI현재 없음");
-        }
+            var uiMangager = GameObject.FindWithTag("UIManager");
+            Debug.Assert(uiMangager != null, "UIManager not found");
+            _uiManagerCommonBehaviorController = uiMangager.GetComponentInChildren<UIManager_CommonBehaviorController>();
+        });
+
+    
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            if (_uiManagerCommonBehaviorController != null)
+            {
+                _uiManagerCommonBehaviorController.ManualInit();
+            }
+            else
+            {
+                Debug.LogError("UIManager_CommonBehaviorController not found");
+            }
+        });
     }
 
 
     protected virtual void Start()
     {
-        LoadUIManager();
+      
      
     }
 
@@ -215,7 +225,7 @@ public abstract class Base_GameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
-
+      
         Debug.Assert(PrecheckOnInit());
     }
 
@@ -287,7 +297,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
         InitCameraRect();
 
-      
+        if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
     }
 
 

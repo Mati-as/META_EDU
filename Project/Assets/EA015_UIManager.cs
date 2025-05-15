@@ -7,8 +7,9 @@ public class EA015_UIManager : Base_UIManager
 {
 private EA015_GameManager _gm;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         // 메시지 구독
         Messenger.Default.Subscribe<EA015_Payload>(OnGetMessageEventFromGm);
         if (_gm == null) _gm = GameObject.FindWithTag("GameManager").GetComponent<EA015_GameManager>();

@@ -110,7 +110,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
     {
         
        
-        yield return DOVirtual.Float(0, 0, 1, _ => { }).WaitForCompletion();
+        yield return DOVirtual.Float(0, 0, 5, _ => { }).WaitForCompletion();
         _ready.gameObject.SetActive(true);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",1.0f);
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();

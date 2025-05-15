@@ -22,8 +22,9 @@ public class EA016_UIManager : Base_UIManager
         Count,
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         // 메시지 구독
         Messenger.Default.Subscribe<UI_Payload>(OnGetMessageEventFromGm);
 

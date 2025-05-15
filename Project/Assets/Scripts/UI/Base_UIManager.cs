@@ -26,9 +26,9 @@ public class Base_UIManager : UI_PopUp
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
     
-    private Vector3 _UIInstructionOriginalScale = Vector3.one;
-    private RectTransform _bgRectTransform;
-    private float _originalHeight;
+    protected Vector3 _UIInstructionOriginalScale = Vector3.one;
+    protected RectTransform _bgRectTransform;
+    protected float _originalHeight;
 
     private Sequence _uiSeq;
    // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수

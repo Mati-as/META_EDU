@@ -55,8 +55,9 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private Vector3 _camDefaultPosition;
 
-    private void Start()
+    protected override void Start()
     {
+        
         var inPlayTexts = GameObject.Find("InPlayTexts");
 
         _numCvGrup = inPlayTexts.GetComponent<CanvasGroup>();
@@ -427,6 +428,10 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void DoIntroMove()
     {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "숫자를 차례대로 밟아 10까지 가볼까요?";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        
         DOVirtual.Float(0, 0, 5.9f, _ =>{})
         .OnComplete(() =>
         {

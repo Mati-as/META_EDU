@@ -6,8 +6,13 @@ using UnityEngine;
 
 public class MusicBaseGameManager : Base_GameManager
 {
+    protected override void OnGameStartStartButtonClicked()
+    {
+        initialMessage= "무지개 건반을 눌러 연주해보세요";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        base.OnGameStartStartButtonClicked();
+    }
 
-    
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;

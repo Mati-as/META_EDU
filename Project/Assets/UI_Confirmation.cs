@@ -32,7 +32,7 @@ public class UI_Confirmation : UI_PopUp
         });
         GetObject((int)UI.Btn_No).BindEvent(() =>
         {
-            Managers.UI.ClosePopupUI(this);
+            Managers.UI.ClosePopupUI();
         });
         return base.InitEssentialUI();
         

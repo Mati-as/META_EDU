@@ -129,7 +129,7 @@ public class UIManager
 
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
-        currentPopupClass = popupInstance;
+      if (popupInstance.GetType() != typeof(UI_Confirmation))currentPopupClass = popupInstance;
 
         return popupInstance;
     }

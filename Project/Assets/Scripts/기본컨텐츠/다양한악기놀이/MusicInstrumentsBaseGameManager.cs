@@ -44,18 +44,25 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        var images = _parrotSlider.GetComponentsInChildren<Image>();
-        foreach (var image in images)
+        DOVirtual.DelayedCall(6.5f, () =>
         {
-            image.enabled = true;
-            image.DOFade(1, 1.2f);
-        }
-        var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
-        foreach (var tmp in tmps)
-        {
-            tmp.DOFade(1, 1f);
-        }
+            var images = _parrotSlider.GetComponentsInChildren<Image>();
+            foreach (var image in images)
+            {
+                image.enabled = true;
+                image.DOFade(1, 1.2f);
+            }
 
+            var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
+            foreach (var tmp in tmps)
+            {
+                tmp.DOFade(1, 1f);
+            }
+
+        });
+
+        initialMessage= "악기를 연주해 앵무새를 춤추게 해보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
     }
 
     private void Update()

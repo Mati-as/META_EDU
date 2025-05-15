@@ -64,8 +64,14 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     private static readonly string PlanetPopIt;
     private static readonly string Planet;
 
-  
-    
+
+    protected override void OnGameStartStartButtonClicked()
+    {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "다양한 행성 팝잇들을 눌러보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+    }
+
     protected override void Init()
     {
         base.Init();

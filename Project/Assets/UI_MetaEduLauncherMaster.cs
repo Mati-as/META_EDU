@@ -71,10 +71,13 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         GetObject((int)UI.Btn_Back).BindEvent(()=>
         {
 
-            Managers.UI.ClosePopupUI();
+     
 
             switch (Managers.UI.currentPopupClass)
             {
+               
+                    
+                
                 case UI_ContentSortedByArea:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
@@ -87,9 +90,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
                     break;
-
                 
-
                 case UI_PA_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
@@ -120,6 +121,10 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                 case UI_ScreenSetting:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
+                    break;
+                
+                default: Managers.UI.ClosePopupUI();
+                    Logger.CoreClassLog("UIConfirmation 아닌경우 주의");
                     break;
             }
 

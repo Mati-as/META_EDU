@@ -10,8 +10,9 @@ public class Construction_UIManager : Base_UIManager
 
     private Sequence seq;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         Messenger.Default.Subscribe<NarrationMessage>(OnNarrationFromGm);
         if (manager == null) manager = GameObject.FindWithTag("GameManager").GetComponent<Construction_GameManager>();
         Debug.Assert(manager != null, "GameManager not found");

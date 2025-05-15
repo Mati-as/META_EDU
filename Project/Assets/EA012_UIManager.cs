@@ -8,8 +8,9 @@ public class EA012_UIManager : Base_UIManager
 {   
     private EA012_GameManager _gm;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         // 메시지 구독
         Messenger.Default.Subscribe<EA012Payload>(OnNarrationReceived);
         if (_gm == null)

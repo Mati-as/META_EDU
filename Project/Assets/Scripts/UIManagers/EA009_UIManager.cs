@@ -25,9 +25,9 @@ public class EA009_UIManager : Base_UIManager
     }
     private EA009_HealthyFood_GameManager _gm;
 
-    private void Awake()
+    protected override void Awake()
     {
-        // 메시지 구독
+        base.Awake();
         Messenger.Default.Subscribe<EA009_Payload>(OnGetMessageEventFromGm);
         if (_gm == null) _gm = GameObject.FindWithTag("GameManager").GetComponent<EA009_HealthyFood_GameManager>();
 
