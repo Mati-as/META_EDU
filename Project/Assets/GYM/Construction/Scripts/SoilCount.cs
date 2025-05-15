@@ -9,7 +9,7 @@ public enum VehicleType
 {
     Excavator,
     Truck,
-    Rmc
+    Bulldozer
 }
 
 public class SoilCount : MonoBehaviour
@@ -70,8 +70,16 @@ public class SoilCount : MonoBehaviour
                     manager.TruckStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack);
                 });
                 break;
-            case VehicleType.Rmc:   //레미콘 미정
-                manager.RmcStageSoil.transform.DOScale(newScale, 0.3f).SetEase(Ease.OutQuad);
+            case VehicleType.Bulldozer:
+                plusMoveDistance += 3f;
+                manager.BulldozerStageSoil.transform.DOScale(newScale, 0.3f).SetEase(Ease.OutQuad);
+                manager.BulldozerStageSoil.transform.DOScale(manager.BulldozerStageSoil.transform.localScale * 1.1f, 0.1f)
+                .SetEase(Ease.OutQuad)
+                .SetLoops(4, LoopType.Yoyo)
+                .OnComplete(() =>
+                {
+                    manager.BulldozerStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack);
+                });
                 break;
         }
         if (inputCount == maxInputs)    //스테이지 종료 호출 타이밍
@@ -84,7 +92,8 @@ public class SoilCount : MonoBehaviour
                 case VehicleType.Truck:
                     EndTruckStage();
                     break;
-                case VehicleType.Rmc:
+                case VehicleType.Bulldozer:
+                    EndBulldozerStage();
                     break;
 
             }
@@ -113,7 +122,7 @@ public class SoilCount : MonoBehaviour
         seq.AppendCallback(() =>
         {
             manager.introVirtualCamera.Priority = 10;
-            manager.TruckShowCamera.Priority = 20;
+            manager.truckShowCamera.Priority = 20;
 
             Messenger.Default.Publish(new NarrationMessage("트럭은 많은 흙을 옮겨 줄 수 있어요", "3_트럭은_많은_흙을_옮겨_줄_수_있어요"));
             //instrcutionUI가 비활성화됨 문제의 원인을 파악하지못햇음
@@ -152,15 +161,56 @@ public class SoilCount : MonoBehaviour
         seq.AppendInterval(5f);
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("다른 일을 하는 자동차를 만나러 가요", "14_다른_일을_하는_자동차를_만나러_가요"));
+            Messenger.Default.Publish(new NarrationMessage("다른 일을 하는 자동차를 만나러 가요", "10_다른_일을_하는_자동차를_만나러_가요_"));
             manager.introVirtualCamera.Priority = 21;
-            manager.truckVirtualCamera.Priority = 10;
+            manager.excavatorVirtualCamera.Priority = 10;
             inputCount = 0;
         });
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("레미콘이 움직일 수 있게 터치해주세요", "15_레미콘이_움직일_수_있게_터치해주세요"));
+            manager.introVirtualCamera.Priority = 10;
+            manager.bulldozerShowCamera.Priority = 20;
+
+            Messenger.Default.Publish(new NarrationMessage("불도저는 많은 흙을 옮겨 줄 수 있어요", "19_불도저는_많은_흙을_옮겨_줄_수_있어요_"));
+            manager.bulldozerAni.SetBool("Work", true);
+
+            manager.Btns_BulldozerIntro.SetActive(true);
+            manager.Btns_BulldozerIntro.transform.DOScale(1f, 0.4f)
+                .From(0.01f)
+                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
+                .OnComplete(() =>
+                {
+                    manager.Btns_BulldozerIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+                });
+
+        });
+        seq.AppendInterval(0.1f);
+        seq.AppendCallback(() =>
+        {
+            manager.bulldozerAni.SetBool("Work", false);
+            plusMoveDistance = 0f;
+        });
+    }
+
+    void EndBulldozerStage()    //불도저 스테이지 종료 메서드 (게임 종료)
+    {
+        Sequence seq = DOTween.Sequence();
+
+        seq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 불도저를 도와줘서 흙을 많이 옮겼어요!", "20_우리_친구들이_불도저를_도와줘서_흙을_많이_옮겼어요_"));
+            Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
+            manager.Btn_BulldozerStage.SetActive(false);
+        });
+        seq.AppendInterval(5f);
+        seq.AppendCallback(() =>
+        {
+            manager.introVirtualCamera.Priority = 21;
+            manager.bulldozerVirtualCamera.Priority = 10;
+            Messenger.Default.Publish(new NarrationMessage("자동차들을 도와서 흙을 옮겨줘서 고마워!", "21_자동차들을_도와서_흙을_옮겨줘서_고마워_"));
+            inputCount = 0;
+            plusMoveDistance = 0f;
         });
     }
 
