@@ -91,8 +91,9 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected string psResourcePath = string.Empty;
 
-    protected GameObject UIManager;
-
+    protected GameObject UIManagerObj;
+  
+    
 
     protected virtual new void Awake()
     {
@@ -116,14 +117,16 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     private void SetUIManager()
     {
-        bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManager,SceneManager.GetActiveScene().name);
+        bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj,SceneManager.GetActiveScene().name);
 
         if (!isUIManagerLoadedOnRuntime) return; 
         var mainCamera = Camera.main;
         
         // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
         var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
-
+      
+        
+        
         Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
 
         if (canvas != null && uiCameraObj != null)

@@ -149,7 +149,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private Sequence _currentMasterSequence;
     private string _currentBadFoodToClick;
     private int currentBadFoodClickedCount;
-    private const int BAD_FOOD_CLICK_TO_COUNT = 4;
+    private const int BAD_FOOD_CLICK_TO_COUNT = 7;
     private MainSeq currentMainSeq
     {
         get
@@ -166,6 +166,9 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             //common Init--------------------------------------
             isBadFoodClickable = false; 
             mainAnimator.SetInteger(SeqNum, 0 );
+           
+            
+            
             switch (value)
             {
                 case MainSeq.Default:
@@ -186,6 +189,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 case MainSeq.BadFoodEatIntro:
                    // Messenger.Default.Publish(new EA009_Payload("",true));
                     OnBadFoodEatIntro();
+                   _uiManager.TurnOffAllFoodSprite();
                     break;
                 case MainSeq.BadFoodEat_RoundA:
                     OnBadFoodEat_RoundA();
@@ -201,6 +205,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     PlayNarrationSound(_currentBadFoodToClick);
                     break;
                 case MainSeq.Stomachache:
+                    _uiManager.TurnOffAllFoodSprite();
                     Messenger.Default.Publish(new EA009_Payload($"나쁜음식을 너무 많이먹어\n배가 아픈 것 같아요",true));
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "HavingStomachache");
                     mainAnimator.SetInteger(SeqNum, 1 );
@@ -219,6 +224,11 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatGoodFood");
                     int finish = 123;
                     mainAnimator.SetInteger(SeqNum, finish );
+                    for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
+                    {
+
+                        GetObject(i).transform.DOScale(_defaultSizeMap[i],0.6f).SetEase(Ease.InOutBack);
+                    }
                     foreach (var key in allObj.Keys.ToArray())
                     {
                         allObj[key].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutBack);
@@ -266,38 +276,65 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     /// <param name="fruitName"></param>
     private void PlayNarrationSound(string fruitName)
     {
-
         switch (fruitName)
         {
             case "콜라":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCola");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요",true));
+
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCola");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요", true));
+                });
+
                 break;
             case "쿠키":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCookie");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCookie");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요", true));
+                });
+
                 break;
             case "아이스크림":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatIceCream");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatIceCream");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요", true));
+                });
+
                 break;
             case "피자":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatPizza");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatPizza");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요", true));
+                });
+
                 break;
             case "초콜릿":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatChocolate");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatChocolate");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요", true));
+                });
+
                 break;
             case "케이크":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCake");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatCake");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}를 전부 터치해주세요", true));
+                });
+
                 break;
             case "도넛":
-                Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatDonut");
-                Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요",true));
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "EatDonut");
+                    Messenger.Default.Publish(new EA009_Payload($"{_currentBadFoodToClick}을 전부 터치해주세요", true));
+                });
+
                 break;
-            
         }
     }
 
@@ -308,7 +345,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private readonly Dictionary<int, GameObj> _idToFoodMap = new();
     private readonly Dictionary<GameObj, int> clickCountMap = new(); // 사라지는 애니메이션, 흔들리는 애니메이션구분
     private readonly Dictionary<GameObj, bool> isClickedMap = new(); // 사라지는 애니메이션, 흔들리는 애니메이션구분
-    private const int CLICK_COUNT_TO_GET_RID_OF_BAD_FOOD = 3;
+ 
 
 
     private Dictionary<int, GameObj> transformID = new();
@@ -351,7 +388,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             _isPosEmptyMap.Add(objEnum, false);
             
             
-            for (int count = 0; count < 10; count++)
+            for (int count = 0; count < 35; count++)
             {
                 var instantiatedFood = Instantiate(GetObject((int)objEnum), PoolRoot.transform, true);
                 instantiatedFood.name = ((GameObj)objEnum).ToString() +$"{objEnum}".ToString();
@@ -378,10 +415,13 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
 
         currentMainSeq = MainSeq.Default;
         _currentMasterSequence = DOTween.Sequence();
+
+        _uiManager = UIManagerObj.GetComponent<EA009_UIManager>();
     }
 
     protected override void OnGameStartStartButtonClicked()
     {
+        
         base.OnGameStartStartButtonClicked();
         currentMainSeq = MainSeq.AllFoodIntroduce;
         DOVirtual.DelayedCall(1.25f, () =>
@@ -439,8 +479,9 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     {
         for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
         {
-            GetObject(i).transform.localScale = UnityEngine.Vector3.zero;
+       
             _activatedFoodOnTableMap.Add(GetObject(i).transform.GetInstanceID(),GetObject(i));
+            GetObject(i).transform.localScale = UnityEngine.Vector3.zero;
         }
     }
     
@@ -650,74 +691,129 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     }
     
     private bool isBadFoodClickable = false;
+
     private void OnBadFoodEat_RoundA()
-    {  
-     
-        var badFoodToEat = UnityEngine.Random.Range(0, _badFoodClickGameList.Count);
-        currentBadFoodClickGameCategory =  _badFoodClickGameList[badFoodToEat];
-        _badFoodClickGameList.Remove((BadFoodClickGameCategory)badFoodToEat);
+    {
+        int badFoodToEat = UnityEngine.Random.Range(0, _badFoodClickGameList.Count);
+        currentBadFoodClickGameCategory = _badFoodClickGameList[badFoodToEat];
+        _badFoodClickGameList.Remove(currentBadFoodClickGameCategory);
         _currentBadFoodToClick = currentBadFoodClickGameCategoryKorean;
 
         OnBadFoodEatRoundInit();
     }
 
+    private Sequence _badFoodEatInitSeq;
+
     private void OnBadFoodEatRoundInit()
     {
-        Logger.ContentTestLog("나쁜음식 클릭하기 시작---RoundInit 시작");
-
-        // 1. 기존 음식들 숨기기
-        foreach (var kvp in allObj) kvp.Value.SetActive(false);
-
-        // 2. 기존 자리 비우기
-        foreach (int key in _isPosEmptyMap.Keys.ToArray()) _isPosEmptyMap[key] = true;
-
-        var spawnablePositions =
-            _defaultPosMap.Where(kvp => _isPosEmptyMap[kvp.Key]).Take(COUNT_OF_FOOD_TO_CHANGE).ToList();
-        var matchingBadFood =
-            badFoodList.FirstOrDefault(f => f.ToString().Contains(currentBadFoodClickGameCategory.ToString()));
-
-        if (matchingBadFood == default)
-        {
-            Logger.ContentTestLog($"[ERROR] BadFood 리스트에서 {currentBadFoodClickGameCategory} 매칭 실패");
-            return;
-        }
-
-        int badIndex = (int)matchingBadFood;
+        _badFoodEatInitSeq?.Kill();
+        _badFoodEatInitSeq = DOTween.Sequence();
 
         List<GameObject> spawnedFoods = new();
+        int badIndex = -1;
 
-        // 3. Pool에서 7개 꺼내서 배치
-        for (int i = 0; i < COUNT_OF_FOOD_TO_CHANGE && i < spawnablePositions.Count; i++)
+        float delay = 0; 
+        // 1. 기존 음식들 숨기기
+        foreach (var kvp in allObj)
         {
-            int posKey = spawnablePositions[i].Key;
-            var spawnPos = spawnablePositions[i].Value;
 
-            GameObject badClone;
-            if (_foodClonePool[badIndex].Count > 0)
-            {
-                badClone = _foodClonePool[badIndex].Pop();
-                badClone.SetActive(true);
-            }
-            else
-                badClone = Instantiate(GetObject(badIndex), PoolRoot.transform);
+            var tween = kvp.Value.transform
+                .DOScale(Vector3.zero * 1.15f, _isDevMode ? delayForDevMode : 1.35f)
+                .SetEase(Ease.InOutBounce);
 
-            badClone.transform.position = spawnPos;
-            badClone.transform.localScale = Vector3.zero;
-
-            int transId = badClone.transform.GetInstanceID();
-            allObj[transId] = badClone;
-            _tfIdToEnumMap[transId] = badIndex;
-            _clickedCountMap[transId] = 0;
-            _isClickableMap[transId] = true;
-            _defaultSizeMap.TryAdd(transId, GetObject(badIndex).transform.localScale);
-
-            _isPosEmptyMap[posKey] = false;
-
-            // 스케일 애니메이션용으로 저장
-            spawnedFoods.Add(badClone);
+            _badFoodEatInitSeq.Join(tween.OnComplete(() => kvp.Value.SetActive(false)));
         }
+        Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "fxB");
 
+        _badFoodEatInitSeq.AppendInterval(1f);
+        // 2. 기존 자리 비우기 및 스폰할 위치 계산
+        _badFoodEatInitSeq.AppendCallback(() =>
+        {
+            foreach (int key in _isPosEmptyMap.Keys.ToArray())
+                _isPosEmptyMap[key] = true;
+        });
+
+        List<KeyValuePair<int, Vector3>> spawnablePositions = new();
+        _badFoodEatInitSeq.AppendCallback(() =>
+        {
+            spawnablePositions = _defaultPosMap
+                .Where(kvp => _isPosEmptyMap[kvp.Key])
+                .Take(COUNT_OF_FOOD_TO_CHANGE)
+                .ToList();
+        });
+
+        _badFoodEatInitSeq.AppendCallback(() =>
+        {
+            var matchingBadFood = badFoodList.FirstOrDefault(f =>
+                f.ToString().Contains(currentBadFoodClickGameCategory.ToString()));
+
+            if (matchingBadFood == default)
+            {
+                Logger.ContentTestLog($"[ERROR] BadFood 리스트에서 {currentBadFoodClickGameCategory} 매칭 실패");
+                _badFoodEatInitSeq.Kill();
+                return;
+            }
+
+            badIndex = (int)matchingBadFood;
+        });
+
+        // 3. Pool에서 꺼내서 배치
+        _badFoodEatInitSeq.AppendCallback(() =>
+        {
+          
+            for (int i = 0; i < COUNT_OF_FOOD_TO_CHANGE && i < spawnablePositions.Count; i++)
+            {
+                int posKey = spawnablePositions[i].Key;
+                var spawnPos = spawnablePositions[i].Value;
+
+                GameObject badClone;
+                if (_foodClonePool[badIndex].Count > 0)
+                {
+                    badClone = _foodClonePool[badIndex].Pop();
+                    badClone.SetActive(true);
+                }
+                else
+                    badClone = Instantiate(GetObject(badIndex), PoolRoot.transform);
+
+                badClone.transform.position = spawnPos;
+                badClone.transform.localScale = Vector3.zero;
+
+                int transId = badClone.transform.GetInstanceID();
+                allObj[transId] = badClone;
+                _tfIdToEnumMap[transId] = badIndex;
+                _clickedCountMap[transId] = 0;
+                _isClickableMap[transId] = true;
+                _defaultSizeMap.TryAdd(transId, GetObject(badIndex).transform.localScale);
+
+                _isPosEmptyMap[posKey] = false;
+
+                spawnedFoods.Add(badClone);
+            }
+        });
+    
         // 4. DOTween 애니메이션: 커졌다 작아졌다 반복
+        _badFoodEatInitSeq.AppendCallback(() =>
+        {
+            foreach (var obj in spawnedFoods)
+            {
+                int id = obj.transform.GetInstanceID();
+                var defaultSize = _defaultSizeMap[id];
+
+                _badFoodClickRelatedSeq.TryAdd(id, DOTween.Sequence());
+                _badFoodClickRelatedSeq[id]?.Kill();
+                _badFoodClickRelatedSeq[id] = DOTween.Sequence();
+
+                _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(defaultSize , _isDevMode ? delayForDevMode : 0.15f)
+                    .SetEase(_appearAnimEase));
+            }
+            Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "FoodJump");
+        });
+        
+    _badFoodEatInitSeq.AppendInterval(0.6f);
+        
+    // 4. DOTween 애니메이션: 커졌다 작아졌다 반복
+    _badFoodEatInitSeq.AppendCallback(() =>
+    {
         foreach (var obj in spawnedFoods)
         {
             int id = obj.transform.GetInstanceID();
@@ -727,29 +823,29 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
             _badFoodClickRelatedSeq[id]?.Kill();
             _badFoodClickRelatedSeq[id] = DOTween.Sequence();
 
-            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 1.5f, _isDevMode ? delayForDevMode : 0.15f)
+            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 1.4f, _isDevMode ? delayForDevMode : 0.15f)
                 .SetEase(_appearAnimEase));
             _badFoodClickRelatedSeq[id].AppendInterval(0.21f);
-            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 0.75f, _isDevMode ? delayForDevMode : 0.15f)
+            _badFoodClickRelatedSeq[id].Append(obj.transform.DOScale(size * 0.9f, _isDevMode ? delayForDevMode : 0.15f)
                 .SetEase(_appearAnimEase));
             _badFoodClickRelatedSeq[id].SetLoops(-1, LoopType.Yoyo);
         }
+    });
 
-        // 5. 클릭 가능 설정
+    // 5. 클릭 가능 설정
+    _badFoodEatInitSeq.AppendInterval(1f);
+    _badFoodEatInitSeq.AppendCallback(() =>
+    {
         currentBadFoodClickedCount = 0;
-        DOVirtual.DelayedCall(1f, () =>
-        {
-            isBadFoodClickable = true;
-        });
-
+        isBadFoodClickable = true;
         Logger.ContentTestLog($"[INFO] {currentBadFoodClickGameCategory} 7개 배치 완료 및 애니메이션 시작");
-    }
-   
+    });
+}
     Dictionary<int, Sequence> _badFoodClickRelatedSeq = new Dictionary<int, Sequence>();
     private Dictionary<int, int> _clickedCountMap = new();
     
 private Dictionary<int, Sequence> _badFoodClickMoveSeqMap = new(); // 도망 애니메이션 전용
-
+private EA009_UIManager _uiManager;
 private void OnRaySyncOnBadFoodEat()
 {
     if (!isBadFoodClickable)
@@ -840,16 +936,17 @@ private void OnRaySyncOnBadFoodEat()
 
         if (currentBadFoodClickedCount >= BAD_FOOD_CLICK_TO_COUNT)
         {
+            currentBadFoodClickedCount = 0;
             Managers.Sound.Play(SoundManager.Sound.Effect, EA009soundPath + "OnFinishEatingBadFood");
+            
             DOVirtual.DelayedCall(2f, () =>
             {
                 currentMainSeq = currentMainSeq != MainSeq.BadFoodEat_RoundC
                     ? currentMainSeq + 1
                     : MainSeq.Stomachache;
-
-                currentBadFoodClickedCount = 0;
             });
 
+            _uiManager.TurnOffAllFoodSprite();
             isBadFoodClickable = false;
             Messenger.Default.Publish(
                 new EA009_Payload($"{currentBadFoodClickGameCategoryKorean} 다 먹었어요!", true));
@@ -857,8 +954,33 @@ private void OnRaySyncOnBadFoodEat()
         }
         else
         {
+            switch (_badFoodToKorean[currentBadFoodClickGameCategory])
+            {
+                case "콜라":
+                    _uiManager.TurnOnSprite((int)EA009_UIManager.EA009_UI.Sprite_Cola);
+                    break;
+                case "쿠키":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Cookie);
+                    break;
+                case "아이스크림":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_IceCream);
+                    break;
+                case "피자":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Pizza);
+                    break;
+                case "초콜릿":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Chocolate);
+                    break;
+                case "케이크":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Cake);
+                    break;
+                case "도넛":
+                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Donut);
+                    break;
+            }
+            
             Messenger.Default.Publish(new EA009_Payload(
-                $"{currentBadFoodClickGameCategoryKorean} X {currentBadFoodClickedCount}", true));
+                $"       X {currentBadFoodClickedCount}", true));
             Logger.ContentTestLog($" 나쁜음식 클릭 카운트 {currentBadFoodClickedCount}");
         }
     }
@@ -929,7 +1051,10 @@ private void OnRaySyncOnBadFoodEat()
     
     
     //재사용주의 
-
+    foreach (var key in _isPosEmptyMap.Keys.ToArray())
+    {
+        _isPosEmptyMap[key] = true;
+    }
 
 
     foreach (var key in _isPosEmptyMap.Keys.ToArray())
@@ -1003,7 +1128,7 @@ private void OnRaySyncOnBadFoodEat()
 
     private void OnBadFoodRemoval()
     {
-        
+        //EA009_UImanager의  enum 과 순서동일 
         _badFoodClickGameList = new List<BadFoodClickGameCategory>
         {
             BadFoodClickGameCategory.Cola,
@@ -1015,7 +1140,7 @@ private void OnRaySyncOnBadFoodEat()
             BadFoodClickGameCategory.Donut
         };
     }
-private int TARGET_BAD_FOOD_COUNT = 28;
+private int TARGET_BAD_FOOD_COUNT = 15;
 private int currentRemovedBadFoodCunt = 0;
 private static readonly int SeqNum = Animator.StringToHash("seqNum");
 
@@ -1034,7 +1159,7 @@ private void OnRaySyncOnBadFoodRemoval()
         bool isBadFood = _badFoodClickGameList.Any(bad => hitName.Contains(bad.ToString()));
         if (!isBadFood)
         {
-            Logger.ContentTestLog($"[SKIP] 클릭된 객체는 badFood가 아님: {hitName}");
+           // Logger.ContentTestLog($"[SKIP] 클릭된 객체는 badFood가 아님: {hitName}");
             continue;
         }
 

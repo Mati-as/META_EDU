@@ -41,9 +41,8 @@ public class Base_UIManager : UI_PopUp
         BindObject(typeof(UI));
         UI_Instruction = GetObject(((int)UI.InstructionUI));
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
-        
         _objects = new();
-
+        
         TMP_Instruction.text = string.Empty;
         UI_Instruction.SetActive(false);
         
@@ -52,6 +51,7 @@ public class Base_UIManager : UI_PopUp
         _UIInstructionOriginalScale = UI_Instruction.transform.localScale;
         
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
+        
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
         Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
         
@@ -83,12 +83,12 @@ public class Base_UIManager : UI_PopUp
     /// 애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    protected void PopFromZeroInstructionUI(string instruction,float delayAndShutTme = 0f)
+    protected void PopFromZeroInstructionUI(string instruction,float duration = 0f,float delay =0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
-        
-        Logger.ContentTestLog($"PopInstructionUI :활성화------------ {instruction}");
+        _uiSeq.AppendInterval(delay);
+//        Logger.ContentTestLog($"PopInstructionUI :활성화------------ {instruction}");
      
         UI_Instruction.SetActive(true);
        
@@ -102,9 +102,9 @@ public class Base_UIManager : UI_PopUp
         _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale, 0.15f)
             .SetEase(Ease.InOutBounce));
         
-        if (delayAndShutTme > 0.5f)
+        if (duration > 0.5f)
         {
-            _uiSeq.AppendInterval(delayAndShutTme);
+            _uiSeq.AppendInterval(duration);
             _uiSeq.Append(UI_Instruction.transform.DOScale(Vector3.zero, 0.15f)
                 .SetEase(Ease.InOutBounce));
         }

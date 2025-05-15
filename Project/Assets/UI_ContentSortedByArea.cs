@@ -24,23 +24,23 @@ public class UI_ContentSortedByArea : UI_PopUp
         
         GetObject((int)UI.Btn_PA).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_ContentSelection_PA>();
+            Managers.UI.ShowPopupUI<UI_PA_ContentSelection>();
         });
         GetObject((int)UI.Btn_Art).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_ContentSelection_Art>();
+            Managers.UI.ShowPopupUI<UI_Art_ContentSelection>();
         });
         GetObject((int)UI.Btn_Communication).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_ContentSelection_Communication>();
+            Managers.UI.ShowPopupUI<UI_Communication_ContentSelection>();
         });
         GetObject((int)UI.Btn_Science).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_ContentSelection_Science>();
+            Managers.UI.ShowPopupUI<UI_Science_ContentSelection>();
         });
         GetObject((int)UI.Btn_Social).BindEvent(() =>
         {
-            Managers.UI.ShowPopupUI<UI_ContentSelection_Social>();
+            Managers.UI.ShowPopupUI<UI_Social_ContentSelection>();
         });
         return base.InitEssentialUI();
     }

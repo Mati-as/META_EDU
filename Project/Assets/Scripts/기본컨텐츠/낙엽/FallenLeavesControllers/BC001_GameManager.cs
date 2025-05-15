@@ -68,16 +68,19 @@ public class BC001_GameManager : Ex_BaseGameManager, IOnClicked
 
     protected override void Init()
     {
+        
+        
         base.Init();
         
-
         _randomTime = Random.Range(randomTimeMin, randomTimeMax);
         Subscribe();
         StopAllParticles();
+    
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         PlayAllParticles();
     }
 
@@ -97,11 +100,8 @@ public class BC001_GameManager : Ex_BaseGameManager, IOnClicked
        
         if (!PreCheckOnRaySync()) return;
 
-        if (SceneManager.GetActiveScene().name != "BC001") return;
-
-#if UNITY_EDITOR
-     
-#endif
+      //  if (SceneManager.GetActiveScene().name != "BC001") return;
+        
 
       var randomChar = (char)Random.Range('A', 'C' + 1);
       Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/낙엽/Click" +randomChar,0.1f);
@@ -126,6 +126,13 @@ public class BC001_GameManager : Ex_BaseGameManager, IOnClicked
 
     public float duration;
 
+    protected override void OnGameStartStartButtonClicked()
+    {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "낙엽을 밟아 움직여보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        
+    }
 
     private void Update()
     {

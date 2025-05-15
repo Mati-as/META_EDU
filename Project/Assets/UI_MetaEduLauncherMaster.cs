@@ -90,24 +90,24 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
                 
 
-                case UI_ContentSelection_PA:
+                case UI_PA_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;
-                case UI_ContentSelection_Art:
+                case UI_Art_ContentSelection:
 
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;
-                case UI_ContentSelection_Communication:
+                case UI_Communication_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;
-                case UI_ContentSelection_Science:
+                case UI_Science_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;
-                case UI_ContentSelection_Social:
+                case UI_Social_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;

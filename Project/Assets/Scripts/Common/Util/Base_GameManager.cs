@@ -90,15 +90,26 @@ public abstract class Base_GameManager : MonoBehaviour
     protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
     protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
+    protected UIManager_CommonBehaviorController _uiManagerCommonBehaviorController;
+
     public void LoadUIManager()
     {
-        var UIManagerCheck = GameObject.FindWithTag("UIManager");
-        //  if (UIManagerCheck == null) Managers.UI.ShowPopupUI("UIManager_"+SceneManager.GetActiveScene().name);
+        var uiMangager = GameObject.FindWithTag("UIManager");
+        Debug.Assert(uiMangager != null, "UIManager not found");
+        _uiManagerCommonBehaviorController = uiMangager.GetComponent<UIManager_CommonBehaviorController>();
+        if (_uiManagerCommonBehaviorController != null)
+            _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        else
+        {
+            Logger.Log("추가 UI현재 없음");
+        }
     }
 
 
     protected virtual void Start()
     {
+        LoadUIManager();
+     
     }
 
     protected float waitForClickableInGameRay
@@ -269,15 +280,18 @@ public abstract class Base_GameManager : MonoBehaviour
 
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
-        LoadUIManager();
+       
 
         InitValidClickCount();
         isInitialized = true;
 
         InitCameraRect();
+
+      
     }
 
 
+    protected string initialMessage = String.Empty;
     protected virtual void SetLayerMask()
     {
         int uiLayer = LayerMask.NameToLayer("UI");

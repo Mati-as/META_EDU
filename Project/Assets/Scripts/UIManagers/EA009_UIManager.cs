@@ -10,6 +10,19 @@ using UnityEngine;
 public class EA009_UIManager : Base_UIManager
 {
 
+    
+    //순서주의
+    public enum EA009_UI
+    {
+        Sprite_Cola,
+        Sprite_Cookie,
+        Sprite_IceCream,
+        Sprite_Pizza,
+        Sprite_Chocolate,
+        Sprite_Cake,
+        Sprite_Donut,
+        
+    }
     private EA009_HealthyFood_GameManager _gm;
 
     private void Awake()
@@ -24,12 +37,33 @@ public class EA009_UIManager : Base_UIManager
 
     public override bool InitEssentialUI()
     {
+      
         base.InitEssentialUI();
         InitInstructionUI();
-        return true;
+        
+        BindObject(typeof(EA009_UI));
 
+Logger.ContentTestLog("EA009 UI Manager Init ------------------------");
+        TurnOffAllFoodSprite();
+        return true;
     }
 
+    public void TurnOffAllFoodSprite()
+    {
+        for(int i = 0; i <= (int)EA009_UI.Sprite_Donut; i++)
+        {
+            GetObject(i).SetActive(false);
+        }
+    }
+    public void TurnOnSprite(int index)
+    {
+        for(int i = 0; i < (int)EA009_UI.Sprite_Chocolate; i++)
+        {
+            GetObject(i).SetActive(false);
+        }
+        
+        GetObject(index).SetActive(true);
+    }
     private void OnDestroy()
     {
         // 구독 해제

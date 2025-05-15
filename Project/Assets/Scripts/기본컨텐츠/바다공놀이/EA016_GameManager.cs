@@ -93,7 +93,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         EA016_BallController.OnBallIsInTheHole -= OnBallInTheHole;
         EA016_BallController.OnBallIsInTheHole += OnBallInTheHole;
 
-        _ea016UIManager = UIManager.GetComponent<EA016_UIManager>();
+        _ea016UIManager = UIManagerObj.GetComponent<EA016_UIManager>();
         Debug.Assert(_ea016UIManager != null, "UIManager not found");
     }
 
