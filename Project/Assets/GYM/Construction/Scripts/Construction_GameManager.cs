@@ -63,8 +63,12 @@ public class Construction_GameManager : Base_GameManager
 
     private bool Btn_TwiceIssue = true;
 
-    public AudioClip HeavyMachinerySound;
+    public AudioClip audioClipMove1;
+    public AudioClip audioClipMove2;
+    public AudioClip audioClipWork1;
+    public AudioClip audioClipWork2;
 
+    public AudioClip HeavyMachinerySound; //지워야함 오류생겨서 일단 살린것임
 
     protected override void Init()
     {
@@ -83,7 +87,10 @@ public class Construction_GameManager : Base_GameManager
         BulldozerStageSoil.transform.localScale = originExcavatorStageSoilScale;
 
         victoryAuidoClip = Resources.Load<AudioClip>("Construction/Audio/audio_Victory");
-        HeavyMachinerySound = Resources.Load<AudioClip>("Construction/Audio/HeavyMachinerySound");
+        audioClipMove1 = Resources.Load<AudioClip>("Construction/Audio/audio_move1");
+        audioClipMove2 = Resources.Load<AudioClip>("Construction/Audio/audio_move2");
+        audioClipWork1 = Resources.Load<AudioClip>("Construction/Audio/audio_work1");
+        audioClipWork2 = Resources.Load<AudioClip>("Construction/Audio/audio_work2");
 
         Btns_ExcavatorIntro.SetActive(false);
         Btns_BulldozerIntro.SetActive(false);
