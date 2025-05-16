@@ -1,9 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class WaterPlayground_DolphinController : MonoBehaviour
+public class BB006_DolphinController : MonoBehaviour
 {
-    private enum PathOrder
+   private enum PathOrder
     {
         Start,
         Mid,
@@ -49,8 +51,8 @@ public class WaterPlayground_DolphinController : MonoBehaviour
 
     private void Start()
     {
-        EA016_BallController.OnBallIsInTheHole -= OnBallIn;
-        EA016_BallController.OnBallIsInTheHole += OnBallIn;
+        BB006_BallController.OnBallIsInTheHole -= OnBallIn;
+        BB006_BallController.OnBallIsInTheHole += OnBallIn;
 
         _pathes = new Vector3[(int)PathName.Max][];
         _pathA = new Vector3[(int)PathOrder.Max];
@@ -96,7 +98,7 @@ public class WaterPlayground_DolphinController : MonoBehaviour
         }
     }
 
-    private void OnBallIn(int _)
+    private void OnBallIn()
     {
         _currentPathIndex = Random.Range(0, 3);
         _currentPath = _pathes[_currentPathIndex];

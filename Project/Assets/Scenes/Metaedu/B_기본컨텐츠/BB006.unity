@@ -15891,7 +15891,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2049582498}
   - component: {fileID: 2049582497}
-  - component: {fileID: 2049582496}
+  - component: {fileID: 2049582499}
   m_Layer: 0
   m_Name: IdleDolphin
   m_TagString: Untagged
@@ -15899,19 +15899,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2049582496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049582495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed5b93308dbeb043ae6edfadc007204, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dolphinIdleInterval: 4
 --- !u!95 &2049582497
 Animator:
   serializedVersion: 5
@@ -15951,6 +15938,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: -83.881, y: -39.922, z: -144.771}
+--- !u!114 &2049582499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049582495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 576342f308b10b94ab7a06fd17f326f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dolphinIdleInterval: 3
 --- !u!4 &2050212273 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 06ba7d55b3cf2a848a989f8547fb33ae,
@@ -18318,7 +18318,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5206078949771987776}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed5b93308dbeb043ae6edfadc007204, type: 3}
+  m_Script: {fileID: 11500000, guid: 576342f308b10b94ab7a06fd17f326f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _dolphinIdleInterval: 0.5
