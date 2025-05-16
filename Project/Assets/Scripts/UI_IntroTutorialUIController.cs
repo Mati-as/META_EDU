@@ -15,10 +15,18 @@ public class UI_IntroTutorialUIController : UI_PopUp
     private enum Intro_UI
     {
         IntroText_Top,
-        IntroText_Bottom, 
-        Tutorial_Image,
-        Tutorial_Animation,
-        ScreenDim
+        //   IntroText_Bottom,
+        //    Tutorial_Animation,
+        ScreenDim,
+        
+        TutorialImageA,
+        TutorialImageB,
+    }
+
+    private enum TMPs
+    {
+        TutorialTextA,
+        TutorialTextB
     }
     
     
@@ -26,6 +34,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
     public override bool InitEssentialUI()
     {
         BindObject(typeof(Intro_UI));
+        BindTMP(typeof(TMPs));
         UI_Scene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
         UI_Scene_StartBtn.onGameStartBtnShut += FadeOutScreen;
         
@@ -39,8 +48,11 @@ public class UI_IntroTutorialUIController : UI_PopUp
         
         #region Loading Image and Prefab(Animation Part)
 
-        var tutorialBgSprite = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name);
-        GetObject((int)Intro_UI.Tutorial_Image).GetComponent<Image>().sprite = tutorialBgSprite;
+        var imageA = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name+"_1");
+        GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = imageA;
+        
+        var imageB = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name +"_2");
+        GetObject((int)Intro_UI.TutorialImageB).GetComponent<Image>().sprite = imageB;
 
         #endregion
 
@@ -124,9 +136,20 @@ public class UI_IntroTutorialUIController : UI_PopUp
         foreach (XmlNode node in nodes)
         {
       
-            if (node.Attributes["sceneid"].Value == _currentSceneName +"_B")
+            if (node.Attributes["sceneid"].Value == _currentSceneName +"_1")
             {
-                GetObject((int)Intro_UI.IntroText_Bottom).GetComponent<TextMeshProUGUI>().text = node.Attributes["text"].Value;
+                GetTMP((int)TMPs.TutorialTextA).text = node.Attributes["text"].Value;
+                isUiInfoOnText = 1;
+                break;
+            }
+        }
+        
+        foreach (XmlNode node in nodes)
+        {
+      
+            if (node.Attributes["sceneid"].Value == _currentSceneName +"_2")
+            {
+                GetTMP((int)TMPs.TutorialTextB).text = node.Attributes["text"].Value;
                 isUiInfoOnText = 1;
                 break;
             }

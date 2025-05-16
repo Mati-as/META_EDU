@@ -242,4 +242,14 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     }
     
     
+    public void UIOff()
+    {
+       GetObject((int)UI.Btn_Home).SetActive(false);
+            GetObject((int)UI.Btn_Setting).SetActive(false);
+            GetObject((int)UI.Btn_Quit).SetActive(false);
+            GetObject((int)UI.Btn_Back).SetActive(false);
+
+    }
+    
+    
 }
