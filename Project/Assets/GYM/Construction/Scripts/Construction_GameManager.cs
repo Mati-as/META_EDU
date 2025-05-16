@@ -78,15 +78,12 @@ public class Construction_GameManager : Base_GameManager
         ManageProjectSettings(150, 0.15f);
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Construction/Audio/audio_BGM");
 
-        //excavatorAni = Resources.Load<Animator>("Construction/Animation/Excavator");
-        //truckAni = Resources.Load<Animator>("Construction/Animation/Truck");
-        //bulldozerAni = Resources.Load<Animator>("Construction/Animation/Bulldozer");
-
         ExcavatorStageSoil.transform.localScale = originExcavatorStageSoilScale;
         TruckStageSoil.transform.localScale = originExcavatorStageSoilScale;
         BulldozerStageSoil.transform.localScale = originExcavatorStageSoilScale;
 
         victoryAuidoClip = Resources.Load<AudioClip>("Construction/Audio/audio_Victory");
+
         audioClipMove1 = Resources.Load<AudioClip>("Construction/Audio/audio_move1");
         audioClipMove2 = Resources.Load<AudioClip>("Construction/Audio/audio_move2");
         audioClipWork1 = Resources.Load<AudioClip>("Construction/Audio/audio_work1");
@@ -326,7 +323,6 @@ public class Construction_GameManager : Base_GameManager
         float AnimationLength = 3.1f;
         if (twiceAudioIssue)
         {
-            Debug.Log("오디오 재생중");
             twiceAudioIssue = false;
             excavatorAni.SetBool("Dig", true);
             Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
