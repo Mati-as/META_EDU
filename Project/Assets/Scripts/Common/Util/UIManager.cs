@@ -14,7 +14,7 @@ public class UIManager
      public UI_PopUp currentPopupClass
      {
          get;
-         private set;
+         set;
      }
      public string CurrentPopup
      {
@@ -134,6 +134,12 @@ public class UIManager
         return popupInstance;
     }
     
+    public void InitOnLauncherLoad(){
+        _popupStack.Clear();
+        CurrentPopup = null;
+        PreviousPopup = null;
+        currentPopupClass = null;
+    }
     
     /// <summary>
     /// ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
