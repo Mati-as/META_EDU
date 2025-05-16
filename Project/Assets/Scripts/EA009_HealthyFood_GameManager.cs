@@ -224,15 +224,18 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatGoodFood");
                     int finish = 123;
                     mainAnimator.SetInteger(SeqNum, finish );
-                    for (int i = (int)GameObj.FishA; i <= (int)GameObj.DonutA; i++)
-                    {
-
-                        GetObject(i).transform.DOScale(_defaultSizeMap[i],0.6f).SetEase(Ease.InOutBack);
-                    }
+                   
                     foreach (var key in allObj.Keys.ToArray())
                     {
-                        allObj[key].transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutBack);
+                        allObj[key].transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.OutBack);
                         allObj[key].SetActive(false);
+                    }
+                    
+                    
+                    for (int i = (int)GameObj.FishA; i <= (int)GameObj.CarrotA; i++)
+                    {
+                        GetObject(i).gameObject.SetActive(true);
+                        GetObject(i).transform.DOScale(_defaultSizeMap[i],0.6f).SetEase(Ease.InOutBack);
                     }
                     break;
             }
@@ -980,7 +983,7 @@ private void OnRaySyncOnBadFoodEat()
             }
             
             Messenger.Default.Publish(new EA009_Payload(
-                $"       X {currentBadFoodClickedCount}", true));
+                $"       X {BAD_FOOD_CLICK_TO_COUNT - currentBadFoodClickedCount}", true));
             Logger.ContentTestLog($" 나쁜음식 클릭 카운트 {currentBadFoodClickedCount}");
         }
     }
