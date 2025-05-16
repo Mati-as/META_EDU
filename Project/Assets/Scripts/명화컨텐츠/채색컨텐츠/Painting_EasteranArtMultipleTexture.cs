@@ -88,6 +88,7 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
     public float timeLimitForSceneChange;
     private void Update()
     {
+        if (!isStartButtonClicked) return; 
         _elapsed += Time.deltaTime;
         if (_elapsed > timeLimitForSceneChange)
         {
