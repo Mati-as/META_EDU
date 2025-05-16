@@ -15,13 +15,17 @@ public class SensorAdjuster : MonoBehaviour
     [Header("[ Sensor position ]")]
     public Slider offsetXSlider;
     public Slider offsetYSlider;
+    public Slider offsetAngleSlider;
 
     public InputField offsetXInput;
     public InputField offsetYInput;
+    public InputField offsetAngleInput;
     public Text xmlOffsetXText;
     public Text xmlOffsetYText;
+    public Text xmlOffsetAngleText;
     public Text Now_xmlOffsetXText;
     public Text Now_xmlOffsetYText;
+    public Text Now_xmlOffsetAngleText;
 
     public InputField GuideLine_WInputField;
     public InputField GuideLine_HInputField;
@@ -150,12 +154,15 @@ public class SensorAdjuster : MonoBehaviour
 
         offsetXSlider.onValueChanged.AddListener(delegate { UpdateUI_Sensor(); });
         offsetYSlider.onValueChanged.AddListener(delegate { UpdateUI_Sensor(); });
+        offsetAngleSlider.onValueChanged.AddListener(delegate { UpdateUI_Sensor(); });
 
         offsetXSlider.onValueChanged.AddListener(value => UpdateInputField(offsetXInput, value));
         offsetYSlider.onValueChanged.AddListener(value => UpdateInputField(offsetYInput, value));
+        offsetAngleSlider.onValueChanged.AddListener(value => UpdateInputField(offsetAngleInput, value));
 
         offsetXInput.onEndEdit.AddListener(value => UpdateSlider(offsetXSlider, value));
         offsetYInput.onEndEdit.AddListener(value => UpdateSlider(offsetYSlider, value));
+        offsetAngleInput.onEndEdit.AddListener(value => UpdateSlider(offsetAngleSlider, value));
 
         // 현재 사이즈를 InputField에 표시
         GuideLine_WInputField.text = manager.Guideline.GetComponent<RectTransform>().sizeDelta.x.ToString("F0");
@@ -302,13 +309,19 @@ public class SensorAdjuster : MonoBehaviour
     {
         float sensorOffsetX = offsetXSlider.value;
         float sensorOffsetY = offsetYSlider.value;
+        float sensorOffsetAngle = offsetAngleSlider.value;
 
         if (Lider_object != null)
         {
             RectTransform lidarTransform = Lider_object.rectTransform;
             float adjustedX = (sensorOffsetX - 0.5f) * 1920  + CANVAS_X_CENTER;
             float adjustedY = (sensorOffsetY - 0.5f) * 1080 * 1.5f + CANVAS_Y_CENTER;
+
+            //offset 포지션 반영
             lidarTransform.anchoredPosition = new Vector2(adjustedX, adjustedY);
+
+            //각도 반영
+            lidarTransform.localRotation = Quaternion.Euler(0f, 0f, sensorOffsetAngle);
         }
     }
     void OnWidthChanged(string widthStr)
@@ -401,26 +414,30 @@ public class SensorAdjuster : MonoBehaviour
         //[수정]굳이 슬라이더의 값은 저장, 로드하지 않음
         //offsetXSlider.value = XmlManager.Instance.SensorOffsetX;
         //offsetYSlider.value = XmlManager.Instance.SensorOffsetY;
+
         offsetXSlider.value = 0.5f;
         offsetYSlider.value = 0.5f;
+        offsetAngleSlider.value = 0.5f;
 
 
         xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
         xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
+        xmlOffsetAngleText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
 
 
         Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
         Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
+        xmlOffsetAngleText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
 
         offsetXInput.text = offsetXSlider.value.ToString("0.00");
         offsetYInput.text = offsetYSlider.value.ToString("0.00");
-
-
+        offsetAngleInput.text = offsetAngleSlider.value.ToString("0.00");
 
         screenratioSlider.value = manager._screenRatio;
         ScreenratioText.text = screenratioSlider.value.ToString("0.00");
 
         Lider_object.rectTransform.anchoredPosition= new Vector2(XmlManager.Instance.SensorPosX, XmlManager.Instance.SensorPosY);
+        Lider_object.rectTransform.localRotation = Quaternion.Euler(0f, 0f, XmlManager.Instance.SensorAngle);
     }
 
     /// <summary>
@@ -435,6 +452,7 @@ public class SensorAdjuster : MonoBehaviour
         //현재 lidar object의 위치로 저장
         XmlManager.Instance.SensorPosX = Lider_object.rectTransform.anchoredPosition.x;
         XmlManager.Instance.SensorPosY = Lider_object.rectTransform.anchoredPosition.y;
+        XmlManager.Instance.SensorAngle = Lider_object.rectTransform.localRotation.eulerAngles.z;
 
 
         xmlOffsetXText.text = offsetXSlider.value.ToString("0.00");
@@ -453,12 +471,14 @@ public class SensorAdjuster : MonoBehaviour
     {
         XmlManager.Instance.SensorOffsetX = 0.5f;
         XmlManager.Instance.SensorOffsetY = 0.5f;
+        XmlManager.Instance.SensorAngle = 0f;
 
         XmlManager.Instance.SensorPosX = 0;
         XmlManager.Instance.SensorPosY = 540;
 
         offsetXSlider.value = 0.5f;
         offsetYSlider.value = 0.5f;
+        offsetAngleSlider.value = 0.5f;
 
         UpdateUI_Sensor();
         SaveSensorSettings();

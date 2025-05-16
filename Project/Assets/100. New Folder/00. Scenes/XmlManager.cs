@@ -12,9 +12,11 @@ public class XmlManager
     //xml 파일 기본값 설정 (0325)
     /*
     ScreenSize = 1.0f;
+
         ScreenRatio = 0.782f;
         SensorPosX = 0
         SensorPosX = 540
+        SensorAngle = 0f;
         ScreenPositionOffsetX = 0.5f;
         ScreenPositionOffsetY = 0.5f;
         SensorOffsetX = 0.5f;
@@ -56,6 +58,10 @@ public class XmlManager
         get; set;
     }
     public float SensorPosY
+    {
+        get; set;
+    }
+    public float SensorAngle
     {
         get; set;
     }
@@ -140,6 +146,7 @@ public class XmlManager
             ScreenRatio = float.Parse(settingNode.GetAttribute("ScreenRatio"));
             SensorPosX = float.Parse(settingNode.GetAttribute("SensorPosX"));
             SensorPosY = float.Parse(settingNode.GetAttribute("SensorPosY"));
+            SensorAngle = float.Parse(settingNode.GetAttribute("SensorAngle"));
             ScreenPositionOffsetX = float.Parse(settingNode.GetAttribute("ScreenPositionOffsetX"));
             ScreenPositionOffsetY = float.Parse(settingNode.GetAttribute("ScreenPositionOffsetY"));
             SensorOffsetX = float.Parse(settingNode.GetAttribute("SensorOffsetX"));
@@ -189,6 +196,7 @@ public class XmlManager
         settingNode.SetAttribute("ScreenRatio", ScreenRatio.ToString("F3"));
         settingNode.SetAttribute("SensorPosX", SensorPosX.ToString("F1"));
         settingNode.SetAttribute("SensorPosY", SensorPosY.ToString("F1"));
+        settingNode.SetAttribute("SensorAngle", SensorAngle.ToString("F1"));
         settingNode.SetAttribute("ScreenPositionOffsetX", ScreenPositionOffsetX.ToString("F2"));
         settingNode.SetAttribute("ScreenPositionOffsetY", ScreenPositionOffsetY.ToString("F2"));
         settingNode.SetAttribute("SensorOffsetX", SensorOffsetX.ToString("F2"));
