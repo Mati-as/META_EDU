@@ -25,19 +25,44 @@ public class SoilCount : MonoBehaviour
 
     public float plusMoveDistance = 0;
 
+    [SerializeField] private int decreaseindex = 0;
+    [SerializeField] private List<AudioClip> decreasingSound = new List<AudioClip>(3);
+
+    [SerializeField] private bool twiceissue = false;
+
     private void Start()
     {
         manager = FindObjectOfType<Construction_GameManager>();
+        decreasingSound.Add(Resources.Load<AudioClip>("Construction/Audio/Game Decrease 1"));
+        decreasingSound.Add(Resources.Load<AudioClip>("Construction/Audio/Game Decrease 2"));
+        decreasingSound.Add(Resources.Load<AudioClip>("Construction/Audio/Game Decrease 3"));
 
     }
 
     public void SoilDecreaseStep(VehicleType selected)
     {
-        if (inputCount > maxInputs)
-            return;
-
         inputCount++;
 
+        if (inputCount >= maxInputs && !twiceissue)    //스테이지 종료 호출 타이밍
+        {
+            twiceissue = true;
+            switch (selected)
+            {
+                case VehicleType.Excavator:
+                    EndExcavatorStage();
+                    decreaseindex = 0;
+                    break;
+                case VehicleType.Truck:
+                    EndTruckStage();
+                    decreaseindex = 0;
+                    break;
+                case VehicleType.Bulldozer:
+                    EndBulldozerStage();
+                    decreaseindex = 0;
+                    break;
+            }
+        }
+        
         int stepSize = 7; // 7번 모이면 1단계 스케일 감소
         if (inputCount % stepSize != 0) // 7로나눠서 딱떨어지지않으면 줄어들지 않게끔
             return;
@@ -51,53 +76,44 @@ public class SoilCount : MonoBehaviour
         {
             case VehicleType.Excavator:
                 manager.ExcavatorStageSoil.transform.DOScale(newScale, 0.3f).SetEase(Ease.OutQuad);
+                Managers.Sound.Play(SoundManager.Sound.Effect, decreasingSound[decreaseindex]);
                 manager.ExcavatorStageSoil.transform.DOScale(manager.ExcavatorStageSoil.transform.localScale * 1.1f, 0.1f)
                 .SetEase(Ease.OutQuad)
                 .SetLoops(4, LoopType.Yoyo) // 커졌다 작아졌다 반복
                 .OnComplete(() =>
                 {
-                    manager.ExcavatorStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack); 
+                    manager.ExcavatorStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack);
+                    decreaseindex++;
                 });
                 break;
             case VehicleType.Truck:
                 plusMoveDistance += 3f;
                 manager.TruckStageSoil.transform.DOScale(newScale, 0.3f).SetEase(Ease.OutQuad);
+                Managers.Sound.Play(SoundManager.Sound.Effect, decreasingSound[decreaseindex]);
                 manager.TruckStageSoil.transform.DOScale(manager.TruckStageSoil.transform.localScale * 1.1f, 0.1f)
                 .SetEase(Ease.OutQuad)
                 .SetLoops(4, LoopType.Yoyo)
                 .OnComplete(() =>
                 {
                     manager.TruckStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack);
+                    decreaseindex++;
                 });
                 break;
             case VehicleType.Bulldozer:
                 plusMoveDistance += 3f;
                 manager.BulldozerStageSoil.transform.DOScale(newScale, 0.3f).SetEase(Ease.OutQuad);
+                Managers.Sound.Play(SoundManager.Sound.Effect, decreasingSound[decreaseindex]);
                 manager.BulldozerStageSoil.transform.DOScale(manager.BulldozerStageSoil.transform.localScale * 1.1f, 0.1f)
                 .SetEase(Ease.OutQuad)
                 .SetLoops(4, LoopType.Yoyo)
                 .OnComplete(() =>
                 {
                     manager.BulldozerStageSoil.transform.DOScale(newScale, 0.15f).SetEase(Ease.OutBack);
+                    decreaseindex++;
                 });
                 break;
         }
-        if (inputCount == maxInputs)    //스테이지 종료 호출 타이밍
-        {
-            switch (selected)
-            {
-                case VehicleType.Excavator:
-                    EndExcavatorStage();
-                    break;
-                case VehicleType.Truck:
-                    EndTruckStage();
-                    break;
-                case VehicleType.Bulldozer:
-                    EndBulldozerStage();
-                    break;
-
-            }
-        }
+        
     }
 
     void EndExcavatorStage()    //포크레인 스테이지 종료 메서드
@@ -143,9 +159,9 @@ public class SoilCount : MonoBehaviour
         {
             manager.truckAni.SetBool("LiftUp", false);
             manager.truckAni.SetBool("LiftDown", true);
-            
+            twiceissue = false;
         });
-        
+
     }
 
     void EndTruckStage()    //트럭 스테이지 종료 메서드
@@ -190,6 +206,7 @@ public class SoilCount : MonoBehaviour
         {
             manager.bulldozerAni.SetBool("Work", false);
             plusMoveDistance = 0f;
+            twiceissue = false;
         });
     }
 
@@ -211,6 +228,7 @@ public class SoilCount : MonoBehaviour
             Messenger.Default.Publish(new NarrationMessage("자동차들을 도와서 흙을 옮겨줘서 고마워!", "21_자동차들을_도와서_흙을_옮겨줘서_고마워_"));
             inputCount = 0;
             plusMoveDistance = 0f;
+            twiceissue = false;
         });
     }
 
