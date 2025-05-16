@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class UI_IntroTutorialUIController : UI_PopUp
 {
     private XmlDocument _doc;
-    private TextAsset _xmlAsset;
+   // private TextAsset _xmlAsset;
     private string _currentSceneName;
     private enum Intro_UI
     {
@@ -81,7 +81,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
             return false; // early return if font asset is not found
         }
 
-        GetObject((int)Intro_UI.IntroText_Top).GetComponent<TextMeshProUGUI>().font = asset;
+      //  GetObject((int)Intro_UI.IntroText_Top).GetComponent<TextMeshProUGUI>().font = asset;
     
         // load the xml file
         var path =  Path.Combine(Application.streamingAssetsPath, "IntroTexts.xml");

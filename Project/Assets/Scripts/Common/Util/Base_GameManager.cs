@@ -110,7 +110,7 @@ public abstract class Base_GameManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("UIManager_CommonBehaviorController not found");
+                Debug.LogWarning("UIManager_CommonBehaviorController not found");
             }
         });
     }
@@ -250,7 +250,8 @@ public abstract class Base_GameManager : MonoBehaviour
         else
             Logger.LogError("Main camera not found.");
 
-        UICamera = GameObject.FindWithTag("UICamera").GetComponent<Camera>();
+        //송하맹호도 같은 경우 현재 UIcamera가 없어도 동작 할 수 있기때문에 TryGetcomponent으로 처리
+        GameObject.FindWithTag("UICamera").TryGetComponent(out UICamera);
         if (UICamera != null)
         {
             UICamera.rect = new Rect(
