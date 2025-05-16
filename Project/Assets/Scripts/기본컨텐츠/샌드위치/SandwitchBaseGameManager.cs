@@ -215,7 +215,14 @@ public class SandwitchBaseGameManager : Base_GameManager
     {
         base.OnGameStartStartButtonClicked();
 
-        MoveOutSandwich();
+    
+        initialMessage= "재료를 골라 샌드위치를 완성시켜보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+
+        DOVirtual.DelayedCall(6f, () =>
+        {
+            MoveOutSandwich();
+        });
     }
 
 

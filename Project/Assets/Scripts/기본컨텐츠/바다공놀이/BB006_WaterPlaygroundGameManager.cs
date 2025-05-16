@@ -33,7 +33,7 @@ public class BB006_WaterPlaygroundGameManager : Base_GameManager
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        initialMessage= "공을 구멍에 넣어 돌고래를 불러보세요!";
+        initialMessage= "공을 구멍에 넣어 돌고래를 불러볼까요?";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
     }
 

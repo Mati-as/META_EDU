@@ -25,6 +25,7 @@ public class UI_Confirmation : UI_PopUp
 
         GetTMP((int)TMP.tmpConfirm).text = $"해당 놀이를 시작 할까요?\n<color=#FDF06D>- {UI_MetaEduLauncherMaster.GameKoreanName} -</color>";
 
+        Logger.CoreClassLog($"로드할 게임이름 : {UI_MetaEduLauncherMaster.GameNameWaitingForConfirmation}");
         
         GetObject((int)UI.Btn_Yes).BindEvent(() =>
         {

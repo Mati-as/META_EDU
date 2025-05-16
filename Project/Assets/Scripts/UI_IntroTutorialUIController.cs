@@ -72,7 +72,8 @@ public class UI_IntroTutorialUIController : UI_PopUp
     /// </summary>
     private bool LoadUITextInfo()
     {
-        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/IntroTexts");
+    
+        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/Archive/UI_Heading_Dynamic");
         if (asset == null)
         {
             Debug.LogWarning("Failed to load TMP_FontAsset for scene: " + _currentSceneName +"\n Loadaed Dynamic Asset");
@@ -81,7 +82,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
             return false; // early return if font asset is not found
         }
 
-      //  GetObject((int)Intro_UI.IntroText_Top).GetComponent<TextMeshProUGUI>().font = asset;
+        GetObject((int)Intro_UI.IntroText_Top).GetComponent<TextMeshProUGUI>().font = asset;
     
         // load the xml file
         var path =  Path.Combine(Application.streamingAssetsPath, "IntroTexts.xml");

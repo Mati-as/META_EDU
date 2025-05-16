@@ -39,7 +39,7 @@ public class UIManager_CommonBehaviorController : Base_UIManager
 
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        _UIInstructionOriginalScale = UI_Instruction.transform.localScale;
+        //DEFAULT_SIZE = UI_Instruction.transform.localScale;
 
         isInited = true;
     }

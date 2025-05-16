@@ -26,7 +26,7 @@ public class Base_UIManager : UI_PopUp
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
     
-    protected Vector3 _UIInstructionOriginalScale = Vector3.one;
+    protected readonly Vector3 DEFAULT_SIZE = Vector3.one;
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
@@ -48,7 +48,7 @@ public class Base_UIManager : UI_PopUp
         
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        _UIInstructionOriginalScale = UI_Instruction.transform.localScale;
+        //_UIInstructionOriginalScale = UI_Instruction.transform.localScale;
         
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
         
@@ -97,9 +97,9 @@ public class Base_UIManager : UI_PopUp
         UpdateBgSize();
         
         UI_Instruction.transform.localScale = Vector3.zero;
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale * 1.2f, 0.6f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(DEFAULT_SIZE * 1.2f, 0.6f)
             .SetEase(Ease.InOutBounce));
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale, 0.15f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(DEFAULT_SIZE, 0.15f)
             .SetEase(Ease.InOutBounce));
         
         if (duration > 0.5f)
@@ -126,9 +126,9 @@ public class Base_UIManager : UI_PopUp
         UpdateBgSize();
         
       
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale * 1.35f, 0.6f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(DEFAULT_SIZE * 1.35f, 0.6f)
             .SetEase(Ease.InOutBounce));
-        _uiSeq.Append(UI_Instruction.transform.DOScale(_UIInstructionOriginalScale, 0.15f)
+        _uiSeq.Append(UI_Instruction.transform.DOScale(DEFAULT_SIZE, 0.15f)
             .SetEase(Ease.InOutBounce));
 
         if (delayAndShutTme > 0.5f)

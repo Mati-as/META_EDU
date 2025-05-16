@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AA004_VideoGameManager : MonoBehaviour
+public class AA004_VideoGameManager : VideoContentBaseGameManager
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override void OnGameStartStartButtonClicked()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "밤하늘을 터치하면 반딧불이가 나타나요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
     }
 }
