@@ -163,18 +163,19 @@ public class EA016_GameManager : Ex_BaseGameManager
 
         if (!isStartButtonClicked) return;
         
-        _hits = Physics.RaycastAll(GameManager_Ray);
-        foreach (var hit in _hits)
+        
+        
+        foreach (var hit in GameManager_Hits)
         {
             var rb = hit.collider.GetComponent<Rigidbody>(); // 부딪힌 물체에 Rigidbody 컴포넌트가 있는지 확인합니다.
-
+            if(hit.transform.gameObject.name.Contains("WaterCollider"))
+            {
+                PlayParticle(hit.point + particleUpOffset);//offset
+            }
 
             if (currentMainSeq == (int)MainSequence.ColorMode)
             {
-                if(hit.transform.gameObject.name.Contains("WaterCollider"))
-                {
-                    PlayParticle(hit.point + particleUpOffset);//offset
-                }
+              
                 
                 
                 if (hit.transform.gameObject.name.Contains("Ball"))

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using 기본컨텐츠.다양한악기놀이;
 
@@ -63,6 +64,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
         initialMessage= "악기를 연주해 앵무새를 춤추게 해보세요!";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 
     private void Update()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class BB006_WaterPlaygroundGameManager : Base_GameManager
@@ -35,6 +36,7 @@ public class BB006_WaterPlaygroundGameManager : Base_GameManager
         base.OnGameStartStartButtonClicked();
         initialMessage= "공을 구멍에 넣어 돌고래를 불러볼까요?";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 
     public override void OnRaySynced()

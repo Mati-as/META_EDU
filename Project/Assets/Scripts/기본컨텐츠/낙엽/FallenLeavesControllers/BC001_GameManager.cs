@@ -131,6 +131,7 @@ public class BC001_GameManager : Ex_BaseGameManager, IOnClicked
         base.OnGameStartStartButtonClicked();
         initialMessage= "낙엽을 밟아 움직여보세요!";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
         
     }
 

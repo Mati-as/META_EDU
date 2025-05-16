@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class EA008_BubbleShower_GameManager : Ex_BaseGameManager
@@ -447,6 +448,7 @@ public void OnStart()
       
         initialMessage= "세균팀과 거품팀으로 나눠, 놀이 해볼까요?";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
         
         DOVirtual.DelayedCall(4f, () =>
         {

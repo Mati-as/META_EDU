@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WaterMusicBaseGameManager : Base_GameManager
 {
@@ -10,5 +11,6 @@ public class WaterMusicBaseGameManager : Base_GameManager
         base.OnGameStartStartButtonClicked();
         initialMessage= "바다위 색깔 블럭을 눌러 연주 해볼까요?";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 }

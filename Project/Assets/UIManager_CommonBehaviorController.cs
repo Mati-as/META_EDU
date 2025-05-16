@@ -51,7 +51,7 @@ public class UIManager_CommonBehaviorController : Base_UIManager
         // Initialize UI elements here
     }
 
-    public void ShowInitialMessage(string message, float duration = 5f, float delay = 1.5f)
+    public void ShowInitialMessage(string message, float duration = 5f, float delay = 0.85f)
     {
         if (!isInited)
         {

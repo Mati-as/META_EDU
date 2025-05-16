@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MusicBaseGameManager : Base_GameManager
 {
@@ -10,6 +11,7 @@ public class MusicBaseGameManager : Base_GameManager
     {
         initialMessage= "무지개 건반을 눌러 연주해보세요";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
         base.OnGameStartStartButtonClicked();
     }
 

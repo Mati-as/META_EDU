@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class SandwitchBaseGameManager : Base_GameManager
@@ -218,6 +219,7 @@ public class SandwitchBaseGameManager : Base_GameManager
     
         initialMessage= "재료를 골라 샌드위치를 완성시켜보세요!";
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
         DOVirtual.DelayedCall(6f, () =>
         {
