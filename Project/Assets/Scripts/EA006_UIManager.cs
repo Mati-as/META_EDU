@@ -36,7 +36,7 @@ public class EA006_UIManager : UI_Base
                 
                 break;
             case (int)EA006_GameManager.SequenceName.GrassColorChange:
-                GetTMP((int)TMP.MessageBox).text = "벼가 아직 안 익었어요 변신시켜줄까요?";
+                GetTMP((int)TMP.MessageBox).text = "벼가 아직 안 익었어요 벼를 변신시켜줄까요?";
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/RipenIt");
                 break;
             
