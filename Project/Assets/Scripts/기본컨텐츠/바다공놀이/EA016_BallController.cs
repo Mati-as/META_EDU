@@ -32,7 +32,7 @@ public class EA016_BallController : MonoBehaviour
     private WaterPlayground_BallSpawner _ballSpawner;
 
 
-    private WaterPlayground_DolphinController _dolphinController;
+    private EA016_WaterPlayground_DolphinController _dolphinController;
     
     
    
@@ -82,7 +82,7 @@ public class EA016_BallController : MonoBehaviour
         thisBallColor = (BallInfo.BallColor)123; // sentinel value 
         
         _path = new Vector3[3];
-        _dolphinController = GameObject.Find("Dolphin_Model").GetComponent<WaterPlayground_DolphinController>();
+        _dolphinController = GameObject.Find("Dolphin_Model").GetComponent<EA016_WaterPlayground_DolphinController>();
         _ballSpawner = GameObject.Find("BallSpawner").GetComponent<WaterPlayground_BallSpawner>();
         //material은 static이기 때문에, 직접적으로 수정하지 않기 위한 tempMat 설정  .
         GetComponents();

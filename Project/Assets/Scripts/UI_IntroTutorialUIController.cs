@@ -51,8 +51,9 @@ public class UI_IntroTutorialUIController : UI_PopUp
         var imageA = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name+"_1");
         GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = imageA;
         
-        var imageB = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name +"_2");
-        GetObject((int)Intro_UI.TutorialImageB).GetComponent<Image>().sprite = imageB;
+        //2025.05.16 이미지 분할방식으로 업데이트 주석해제 필요. 현재는 통합형 이미지 사용중 입니다.
+ //       var imageB = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name +"_2");
+//        GetObject((int)Intro_UI.TutorialImageB).GetComponent<Image>().sprite = imageB;
 
         #endregion
 
