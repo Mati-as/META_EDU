@@ -150,8 +150,8 @@ public class SensorManager : MonoBehaviour
     private readonly float SENSEOR_OFFSET_MAX_VALUE = 1000;
 
 
-    private readonly float SCREEN_RATIO_MIN = 0.5f;
-    private readonly float SCREEN_RATIO_MAX = 10;
+    //private readonly float SCREEN_RATIO_MIN = 0.5f;
+    //private readonly float SCREEN_RATIO_MAX = 10;
 
 
     public int heightCm { get; set; } = 2;

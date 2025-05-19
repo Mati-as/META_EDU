@@ -68,7 +68,8 @@ public class InGame_SideMenu : UI_PopUp
         GetButton((int)Btn_Type.Btn_Setting).gameObject.BindEvent(OnSettingBtnClicked,Define.UIEvent.PointerUp);
         GetButton((int)Btn_Type.SettingCloseButton).gameObject.BindEvent(() =>
         {
-            GetObject((int)UI.Setting).gameObject.SetActive(false);
+            isSettingActive = false;
+            GetObject((int)UI.Setting).gameObject.SetActive(isSettingActive);
         });
 
         _animator = GetComponent<Animator>();
@@ -159,7 +160,7 @@ public class InGame_SideMenu : UI_PopUp
     public void OnSettingBtnClicked()
     {
         isSettingActive = !isSettingActive;
-        GetObject((int)UI.Setting).gameObject.SetActive(!isSettingActive);
+        GetObject((int)UI.Setting).gameObject.SetActive(isSettingActive);
     }
     
     

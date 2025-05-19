@@ -62,9 +62,9 @@ public class SensorAdjuster : MonoBehaviour
     public Button Button_Calib_Screenratio_Left;
     public Button Button_Save_Screenratio;
 
-    public GameObject Center_Point;
-    public GameObject Vertex_Point;
-    public GameObject SR_Guide_Points;
+    //public GameObject Center_Point;
+    //public GameObject Vertex_Point;
+   // public GameObject SR_Guide_Points;
 
     public Slider screenratioSlider;
     public InputField ScreenratioInput;
@@ -257,18 +257,18 @@ public class SensorAdjuster : MonoBehaviour
 
     void Show_Guidecenter()
     {
-        Center_Point.SetActive(!Center_Point.activeSelf);
+      //  Center_Point.SetActive(!Center_Point.activeSelf);
         manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
         manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(500, 1080);
         manager.Set_GuideLine();
     }
     void Show_Guidevertex()
     {
-        Vertex_Point.SetActive(!Vertex_Point.activeSelf);
+     //   Vertex_Point.SetActive(!Vertex_Point.activeSelf);
     }
     void Show_SRGuidepoints()
     {
-        SR_Guide_Points.SetActive(!SR_Guide_Points.activeSelf);
+      //  SR_Guide_Points.SetActive(!SR_Guide_Points.activeSelf);
         
         manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(-500, 0);
         manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 800);
@@ -314,11 +314,8 @@ public class SensorAdjuster : MonoBehaviour
         if (Lider_object != null)
         {
             RectTransform lidarTransform = Lider_object.rectTransform;
-            float adjustedX = (sensorOffsetX - 0.5f) * 1920  + CANVAS_X_CENTER;
-            float adjustedY = (sensorOffsetY - 0.5f) * 1080 * 1.5f + CANVAS_Y_CENTER;
-
             //offset 포지션 반영
-            lidarTransform.anchoredPosition = new Vector2(adjustedX, adjustedY);
+            lidarTransform.anchoredPosition = new Vector2(sensorOffsetX, sensorOffsetY);
 
             //각도 반영
             lidarTransform.localRotation = Quaternion.Euler(0f, 0f, sensorOffsetAngle);
@@ -379,6 +376,7 @@ public class SensorAdjuster : MonoBehaviour
     void UpdateInputField(InputField input, float value)
     {
         input.text = value.ToString("0.00");
+        //value값이 없음?
     }
 
     void UpdateSlider(Slider slider, string value)
@@ -386,6 +384,7 @@ public class SensorAdjuster : MonoBehaviour
         if (float.TryParse(value, out float result))
         {
             slider.value = result;
+            //여기도 전부 그게 없음?
         }
     }
 
@@ -411,26 +410,23 @@ public class SensorAdjuster : MonoBehaviour
     /// </summary>
     void LoadSensorSettings()
     {
-        //[수정]굳이 슬라이더의 값은 저장, 로드하지 않음
-        //offsetXSlider.value = XmlManager.Instance.SensorOffsetX;
-        //offsetYSlider.value = XmlManager.Instance.SensorOffsetY;
+        offsetXSlider.value = XmlManager.Instance.SensorPosX;
+        offsetYSlider.value = XmlManager.Instance.SensorPosY;
 
-        offsetXSlider.value = 0.5f;
-        offsetYSlider.value = 0.5f;
-        offsetAngleSlider.value = 0.5f;
+        float Sensor_angle =  XmlManager.Instance.SensorAngle;
+        if (Sensor_angle > 180f) Sensor_angle -= 360f;
+        offsetAngleSlider.value = Sensor_angle;
 
+        xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0");
+        xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0");
+        xmlOffsetAngleText.text = XmlManager.Instance.SensorAngle.ToString("0.00");
 
-        xmlOffsetXText.text = XmlManager.Instance.SensorOffsetX.ToString("0.00");
-        xmlOffsetYText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
-        xmlOffsetAngleText.text = XmlManager.Instance.SensorOffsetY.ToString("0.00");
+        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0");
+        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0");
+        xmlOffsetAngleText.text = XmlManager.Instance.SensorAngle.ToString("0.0");
 
-
-        Now_xmlOffsetXText.text = XmlManager.Instance.SensorPosX.ToString("0.0");
-        Now_xmlOffsetYText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
-        xmlOffsetAngleText.text = XmlManager.Instance.SensorPosY.ToString("0.0");
-
-        offsetXInput.text = offsetXSlider.value.ToString("0.00");
-        offsetYInput.text = offsetYSlider.value.ToString("0.00");
+        offsetXInput.text = offsetXSlider.value.ToString("0");
+        offsetYInput.text = offsetYSlider.value.ToString("0");
         offsetAngleInput.text = offsetAngleSlider.value.ToString("0.00");
 
         screenratioSlider.value = manager._screenRatio;
@@ -469,16 +465,16 @@ public class SensorAdjuster : MonoBehaviour
     /// </summary>
     void ResetToDefault()
     {
-        XmlManager.Instance.SensorOffsetX = 0.5f;
-        XmlManager.Instance.SensorOffsetY = 0.5f;
-        XmlManager.Instance.SensorAngle = 0f;
+        //XmlManager.Instance.SensorOffsetX = 0.5f;
+        //XmlManager.Instance.SensorOffsetY = 0.5f;
 
         XmlManager.Instance.SensorPosX = 0;
         XmlManager.Instance.SensorPosY = 540;
+        XmlManager.Instance.SensorAngle = 0f;
 
-        offsetXSlider.value = 0.5f;
-        offsetYSlider.value = 0.5f;
-        offsetAngleSlider.value = 0.5f;
+        offsetXSlider.value = 0;
+        offsetYSlider.value = 540;
+        offsetAngleSlider.value = 0;
 
         UpdateUI_Sensor();
         SaveSensorSettings();
@@ -549,9 +545,9 @@ public class SensorAdjuster : MonoBehaviour
     public void Button_close()
     {
         //가이드 표출 전부 비활성화
-        Center_Point.SetActive(false);
-        Vertex_Point.SetActive(false);
-        SR_Guide_Points.SetActive(false);
+        // Center_Point.SetActive(false);
+        // Vertex_Point.SetActive(false);
+        // SR_Guide_Points.SetActive(false);
 
         manager.Guideline.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
         manager.Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1800, 1000);
