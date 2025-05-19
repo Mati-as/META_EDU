@@ -220,7 +220,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     OnBadFoodRemoval();
                     break;
                 case MainSeq.OnFinish:
-                    Messenger.Default.Publish(new EA009_Payload("우리 친구들도 몸에 좋은 음식을 먹고 튼튼해져요!",true));
+                    Messenger.Default.Publish(new EA009_Payload("친구들! 몸에 좋은 음식을 먹고 튼튼해져요!",true));
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatGoodFood");
                     int finish = 123;
                     mainAnimator.SetInteger(SeqNum, finish );
