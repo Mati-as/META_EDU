@@ -494,8 +494,8 @@ public abstract class Base_GameManager : MonoBehaviour
     private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
-        QualitySettings.vSyncCount = 1;
-        Application.targetFrameRate = TARGET_FRAME;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = targetFrame;
 
 #if UNITY_EDITOR
         Debug.Log(
