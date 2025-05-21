@@ -70,19 +70,31 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         });
         GetObject((int)UI.Btn_Back).BindEvent(()=>
         {
-
-     
-
             switch (Managers.UI.currentPopupClass)
             {
-               
-                    
-                
-                case UI_ContentSortedByArea:
+                #region To 주제별
+
+                case UI_ChuseokAndVehicles_ContentSortedByTheme:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_FirstSemester_ContentSortedByTheme>();
+                    break;
+
+                case UI_FirstSemester_ContentSortedByTheme:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_SemesterSelection>();
+                    break;
+
+                #endregion
+
+
+                #region To Home
+
+                case UI_SemesterSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
                     break;
-                case UI_ContentSortedByTheme:
+
+                case UI_ContentSortedByArea:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
                     break;
@@ -90,7 +102,12 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
                     break;
-                
+
+                #endregion
+
+
+                #region To 영역별
+
                 case UI_PA_ContentSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
@@ -113,6 +130,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
                     break;
 
+                #endregion
 
                 case UI_SensorSetting:
                     Managers.UI.ClosePopupUI();
@@ -122,13 +140,12 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
                     break;
-                
-                default: Managers.UI.ClosePopupUI();
+
+                default:
+                    Managers.UI.ClosePopupUI();
                     Logger.CoreClassLog("UIConfirmation 아닌경우 주의");
                     break;
             }
-
-
         });
         
         GetObject((int)UI.Btn_Home).SetActive(false);

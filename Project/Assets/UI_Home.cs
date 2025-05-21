@@ -26,7 +26,7 @@ public class UI_Home : UI_PopUp
         GetObject((int)UI.Btn_ContentSortedByTheme).BindEvent(() =>
         {
             Managers.UI.ClosePopupUI();
-            Managers.UI.ShowPopupUI<UI_ContentSortedByTheme>();
+            Managers.UI.ShowPopupUI<UI_SemesterSelection>();
         });
         GetObject((int)UI.Btn_SensorSettings).BindEvent(() =>
         {
