@@ -8,13 +8,13 @@ public class EA010_UIManager : UI_Base
         MessageBox
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
-        BindText(typeof(TMP));
+        BindTMP(typeof(TMP));
 
         EA010_AutumnalFruits_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
         EA010_AutumnalFruits_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
-        GetText((int)TMP.MessageBox).text = string.Empty;
+        GetTMP((int)TMP.MessageBox).text = string.Empty;
         return true;
     }
 
@@ -26,36 +26,36 @@ public class EA010_UIManager : UI_Base
         switch (message)
         {
             case nameof(EA010_AutumnalFruits_GameManager.SeqName.Default):
-                GetText((int)TMP.MessageBox).text = string.Empty;
+                GetTMP((int)TMP.MessageBox).text = string.Empty;
                 break;
             
-             case "Q" : GetText((int)TMP.MessageBox).text ="어떤 열매 일까요?";
+             case "Q" : GetTMP((int)TMP.MessageBox).text ="어떤 열매 일까요?";
                  break;
              
             case nameof(EA010_AutumnalFruits_GameManager.MessageSequence.Intro):
-                GetText((int)TMP.MessageBox).text = "가을에는 주렁주렁열매가 매달려요\n어떤 열매가 있을까요?";
+                GetTMP((int)TMP.MessageBox).text = "가을에는 주렁주렁열매가 매달려요\n어떤 열매가 있을까요?";
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Chestnut):
-                DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "밤"; });
+                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "밤"; });
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Acorn):
-                DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "도토리"; });
+                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "도토리"; });
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Apple):
-                DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "사과"; });
+                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "사과"; });
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Ginkgo):
-                DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "은행"; });
+                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "은행"; });
           
                 break;
 
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Persimmon):
 
-                DOVirtual.DelayedCall(1f, () => { GetText((int)TMP.MessageBox).text = "감"; });
+                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "감"; });
                 
                 break;
         }

@@ -55,8 +55,9 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private Vector3 _camDefaultPosition;
 
-    private void Start()
+    protected override void Start()
     {
+        
         var inPlayTexts = GameObject.Find("InPlayTexts");
 
         _numCvGrup = inPlayTexts.GetComponent<CanvasGroup>();
@@ -164,7 +165,7 @@ public class HopscotchBaseGameManager : Base_GameManager
         if (inducingPs != null)
         {
             _inducingParticle = Instantiate(inducingPs, transform).GetComponent<ParticleSystem>();
-            ;
+            
             _inducingParticle.Stop();
         }
         else
@@ -213,14 +214,6 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _scaleBackSequence = DOTween.Sequence();
 
-#if UNITY_EDITOR
-
-#endif
-        // step.DORotate(step.transform.rotation.eulerAngles + new Vector3(-20,0,0), 0.2f)
-        //     .OnComplete(() =>
-        //     {
-        //         step.DORotate(step.transform.rotation.eulerAngles + new Vector3(40,0,0), 0.2f);
-        //     });
 
 
         _scaleBackSequence.Append(number.DOScale(_uiDefaultSizeMap[number], 0.8f).SetEase(Ease.Linear));
@@ -316,7 +309,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private Vector3 AddOffset(Vector3 position)
     {
-        return position + Vector3.forward * offset;
+        return position + Vector3.down * offset;
     }
 
 
@@ -330,7 +323,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void PlayNarration(int currentIndex)
     {
-        
+        Managers.Sound.Stop(SoundManager.Sound.Narration);
         if (currentIndex == 10)
         {
             var randomChar = (char)Random.Range('A', 'B' + 1);
@@ -384,11 +377,7 @@ public class HopscotchBaseGameManager : Base_GameManager
 
         _currentScaleSequence.Kill();
         _stepCurrentScaleSequence.Kill();
-
-#if UNITY_EDITOR
-
-#endif
-
+        
         _inducingParticle.Stop();
         _successParticle.Stop();
         _successParticle.gameObject.transform.position = AddOffset(_steps[currentPosition].position);
@@ -439,6 +428,14 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void DoIntroMove()
     {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "숫자를 차례대로 밟아 10까지 가볼까요?";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
+
+        
+        
+        
         DOVirtual.Float(0, 0, 5.9f, _ =>{})
         .OnComplete(() =>
         {

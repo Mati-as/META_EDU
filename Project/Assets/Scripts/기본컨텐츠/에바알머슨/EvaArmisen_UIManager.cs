@@ -36,7 +36,7 @@ public class EvaArmisen_UIManager : UI_PopUp
     private WaitForSeconds _waitForReady;
     private float _waitTIme= 4.5f;
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
 
       //  _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();

@@ -24,7 +24,7 @@ public class VideoContents_UIManager : UI_Base
 
     void Start()
     {
-        Init();
+        InitEssentialUI();
         _canvasGroup = GetComponentInChildren<CanvasGroup>();
         _canvasGroup.DOFade(0, 1f).SetDelay(fadeOutDelay)
             .OnComplete(() =>
@@ -33,21 +33,21 @@ public class VideoContents_UIManager : UI_Base
         });
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
-        if (base.Init() == false)
+        if (base.InitEssentialUI() == false)
             return false;
         
-        BindText(typeof(UI_Type));
+        BindTMP(typeof(UI_Type));
         
         Utils.LoadXML(ref _xmlAsset,ref _xmlDoc, _path,ref _path);
         var headNode = _xmlDoc.SelectSingleNode($"//StringData[@ID='{SceneManager.GetActiveScene().name + "_Head"}']");
         var headMessage = headNode.Attributes["string"].Value;
-        GetText((int)UI_Type.Head).text = headMessage;
+        GetTMP((int)UI_Type.Head).text = headMessage;
         
         var bodyNode = _xmlDoc.SelectSingleNode($"//StringData[@ID='{SceneManager.GetActiveScene().name + "_Body"}']");
         var bodyMessage = bodyNode.Attributes["string"].Value;
-        GetText((int)UI_Type.Body).text = bodyMessage;
+        GetTMP((int)UI_Type.Body).text = bodyMessage;
 
 
         return true;

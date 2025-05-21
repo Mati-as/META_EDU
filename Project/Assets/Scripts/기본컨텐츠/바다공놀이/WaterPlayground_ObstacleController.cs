@@ -52,7 +52,7 @@ public class WaterPlayground_ObstacleController : MonoBehaviour
     {
 
         isRunning = true;
-        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/PropellerAppear",0.5f);
+        Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/PropellerAppear",0.5f);
         for (var i = 0; i < CHILD_COUNT; i++)
         {
             var i1 = i;
@@ -72,7 +72,7 @@ public class WaterPlayground_ObstacleController : MonoBehaviour
                         .SetEase(Ease.InOutSine)
                         .OnComplete(() =>
                         {
-                            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/WaterPlayground/PropellerAppear",0.5f);
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BB006/PropellerAppear",0.5f);
                             _propellers[i1].DOScale(Vector3.zero, 0.8f).SetDelay(Random.Range(0.8f,1.2f));
                             isRunning = false;
                         });

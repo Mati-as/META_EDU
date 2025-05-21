@@ -10,22 +10,31 @@ using UnityEngine.UI;
 public class UI_IntroTutorialUIController : UI_PopUp
 {
     private XmlDocument _doc;
-    private TextAsset _xmlAsset;
+   // private TextAsset _xmlAsset;
     private string _currentSceneName;
     private enum Intro_UI
     {
         IntroText_Top,
-        IntroText_Bottom, 
-        Tutorial_Image,
-        Tutorial_Animation,
-        ScreenDim
+        //   IntroText_Bottom,
+        //    Tutorial_Animation,
+        ScreenDim,
+        
+        TutorialImageA,
+        TutorialImageB,
+    }
+
+    private enum TMPs
+    {
+        TutorialTextA,
+        TutorialTextB
     }
     
     
     
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         BindObject(typeof(Intro_UI));
+        BindTMP(typeof(TMPs));
         UI_Scene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
         UI_Scene_StartBtn.onGameStartBtnShut += FadeOutScreen;
         
@@ -39,8 +48,12 @@ public class UI_IntroTutorialUIController : UI_PopUp
         
         #region Loading Image and Prefab(Animation Part)
 
-        var tutorialBgSprite = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name);
-        GetObject((int)Intro_UI.Tutorial_Image).GetComponent<Image>().sprite = tutorialBgSprite;
+        var imageA = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name+"_1");
+        GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = imageA;
+        
+        //2025.05.16 이미지 분할방식으로 업데이트 주석해제 필요. 현재는 통합형 이미지 사용중 입니다.
+ //       var imageB = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name +"_2");
+//        GetObject((int)Intro_UI.TutorialImageB).GetComponent<Image>().sprite = imageB;
 
         #endregion
 
@@ -72,7 +85,8 @@ public class UI_IntroTutorialUIController : UI_PopUp
     /// </summary>
     private bool LoadUITextInfo()
     {
-        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/IntroTexts");
+    
+        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/Archive/UI_Heading_Dynamic");
         if (asset == null)
         {
             Debug.LogWarning("Failed to load TMP_FontAsset for scene: " + _currentSceneName +"\n Loadaed Dynamic Asset");
@@ -123,9 +137,20 @@ public class UI_IntroTutorialUIController : UI_PopUp
         foreach (XmlNode node in nodes)
         {
       
-            if (node.Attributes["sceneid"].Value == _currentSceneName +"_B")
+            if (node.Attributes["sceneid"].Value == _currentSceneName +"_1")
             {
-                GetObject((int)Intro_UI.IntroText_Bottom).GetComponent<TextMeshProUGUI>().text = node.Attributes["text"].Value;
+                GetTMP((int)TMPs.TutorialTextA).text = node.Attributes["text"].Value;
+                isUiInfoOnText = 1;
+                break;
+            }
+        }
+        
+        foreach (XmlNode node in nodes)
+        {
+      
+            if (node.Attributes["sceneid"].Value == _currentSceneName +"_2")
+            {
+                GetTMP((int)TMPs.TutorialTextB).text = node.Attributes["text"].Value;
                 isUiInfoOnText = 1;
                 break;
             }

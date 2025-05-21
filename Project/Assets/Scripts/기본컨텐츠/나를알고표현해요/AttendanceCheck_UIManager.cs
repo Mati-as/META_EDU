@@ -33,7 +33,7 @@ public class AttendanceCheck_UIManager : UI_Base
         Btn_Complete
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         _gm = GameObject.FindWithTag("GameManager").GetComponent<AttendanceCheckBaseGameManager>();
 

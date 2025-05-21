@@ -11,7 +11,7 @@ public abstract class UI_Base : MonoBehaviour
 
     protected bool _init;
 
-    public virtual bool Init()
+    public virtual bool InitEssentialUI()
     {
         if (_init)
             return false;
@@ -19,9 +19,9 @@ public abstract class UI_Base : MonoBehaviour
         return _init = true;
     }
 
-    private void Start()
+    protected virtual void Awake()
     {
-        Init();
+        InitEssentialUI();
     }
 
     protected void Bind<T>(Type type) where T : Object
@@ -57,11 +57,17 @@ public abstract class UI_Base : MonoBehaviour
         Bind<Image>(type);
     }
 
-    protected void BindText(Type type)
+    protected void BindTMP(Type type)
     {
         Bind<TextMeshProUGUI>(type);
     }
+    
+    protected void BindText(Type type)
+    {
+        Bind<Text>(type);
+    }
 
+    
     protected void BindButton(Type type)
     {
         Bind<Button>(type);
@@ -82,9 +88,14 @@ public abstract class UI_Base : MonoBehaviour
         return Get<GameObject>(idx);
     }
 
-    protected TextMeshProUGUI GetText(int idx)
+    protected TextMeshProUGUI GetTMP(int idx)
     {
         return Get<TextMeshProUGUI>(idx);
+    }
+    
+    protected Text GetText(int idx)
+    {
+        return Get<Text>(idx);
     }
 
     protected Button GetButton(int idx)

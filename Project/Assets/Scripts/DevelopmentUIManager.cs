@@ -51,6 +51,7 @@ public class DevelopmentUIManager : MonoBehaviour
     {
         //버튼으로 대체만하면 이건 해결
         if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
+    
     }
     private void Update()
     {

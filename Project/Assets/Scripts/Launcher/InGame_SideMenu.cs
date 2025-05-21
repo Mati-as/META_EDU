@@ -16,16 +16,19 @@ public class InGame_SideMenu : UI_PopUp
         //Btn_SensorRefresh,
         Btn_Quit,
         SettingCloseButton,
-        Btn_SensorShowGuide
+        Btn_SensorShowGuide,
+        Btn_SideMenu,
     }
     
-    private enum UIType
+    private enum UI
     {
         Setting,
         MainVolume,
         BGMVolume,
         EffectVolume,
-        NarrationVolume
+        NarrationVolume,
+        SideMenu_ScreenDim
+      
     }
 
     //sensor-related part.-----------------------------------
@@ -45,26 +48,47 @@ public class InGame_SideMenu : UI_PopUp
     private Button[] _btns;
     // scene-related part -----------------------------------
 
+    private bool _isUIClickable = true;
+    private bool _isSideMenuOn = false;
+
+    private Image _screenDim;
+    private Animator _animator;
     // Start is called before the first frame update
     private void Start()
     {
         BindButton(typeof(Btn_Type));
-        BindObject(typeof(UIType));
+        BindObject(typeof(UI));
         
         GetButton((int)Btn_Type.Btn_Home).gameObject.BindEvent(OnSceneQuitAndToHomeScreen);
         GetButton((int)Btn_Type.Btn_Home).gameObject.BindEvent(OnHomeBtnClicked);
-        
+        _screenDim = GetObject((int)UI.SideMenu_ScreenDim).GetComponent<Image>();
         GetButton((int)Btn_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
        // GetButton((int)Btn_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
         
         GetButton((int)Btn_Type.Btn_Setting).gameObject.BindEvent(OnSettingBtnClicked,Define.UIEvent.PointerUp);
         GetButton((int)Btn_Type.SettingCloseButton).gameObject.BindEvent(() =>
         {
-            GetObject((int)UIType.Setting).gameObject.SetActive(false);
+            isSettingActive = false;
+            GetObject((int)UI.Setting).gameObject.SetActive(isSettingActive);
         });
 
+        _animator = GetComponent<Animator>();
+        GetButton((int)Btn_Type.Btn_SideMenu).onClick.AddListener(() =>
+        {
+            if (!_isUIClickable) return;
+            _isUIClickable = false;
+            
+            _isSideMenuOn = !_isSideMenuOn;
+            _animator.SetBool(IsOn, _isSideMenuOn);
+           // _screenDim.raycastTarget = _isSideMenuOn;
 
-     
+            DOVirtual.DelayedCall(0.5f, () =>
+            {
+                _isUIClickable = true;
+            });
+        });
+        
+        
         _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
         Debug.Assert(_devUIManager!=null);
         GetButton((int)Btn_Type.Btn_SensorShowGuide).gameObject.BindEvent(() =>
@@ -73,7 +97,7 @@ public class InGame_SideMenu : UI_PopUp
         });
         
         
-        GetObject((int)UIType.Setting).gameObject.SetActive(false);
+        GetObject((int)UI.Setting).gameObject.SetActive(false);
         
         SetSlider();
     }
@@ -136,7 +160,7 @@ public class InGame_SideMenu : UI_PopUp
     public void OnSettingBtnClicked()
     {
         isSettingActive = !isSettingActive;
-        GetObject((int)UIType.Setting).gameObject.SetActive(!isSettingActive);
+        GetObject((int)UI.Setting).gameObject.SetActive(isSettingActive);
     }
     
     
@@ -178,23 +202,25 @@ public class InGame_SideMenu : UI_PopUp
         DOTween.KillAll();
     }
     private Slider[] _volumeSliders = new Slider[(int)SoundManager.Sound.Max];
+    private static readonly int IsOn = Animator.StringToHash("isOn");
+
     private void SetSlider()
     {
          _volumeSliders = new Slider[(int)SoundManager.Sound.Max];
 
-        _volumeSliders[(int)SoundManager.Sound.Main] = GetObject((int)UIType.MainVolume).GetComponent<Slider>();
+        _volumeSliders[(int)SoundManager.Sound.Main] = GetObject((int)UI.MainVolume).GetComponent<Slider>();
         _volumeSliders[(int)SoundManager.Sound.Main].value =
             Managers.Sound.volumes[(int)SoundManager.Sound.Main];
 #if UNITY_EDITOR
         Debug.Log($" 메인 볼륨 {Managers.Sound.volumes[(int)SoundManager.Sound.Main]}");
 #endif
 
-        _volumeSliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UIType.BGMVolume).GetComponent<Slider>();
+        _volumeSliders[(int)SoundManager.Sound.Bgm] = GetObject((int)UI.BGMVolume).GetComponent<Slider>();
 
-        _volumeSliders[(int)SoundManager.Sound.Effect] = GetObject((int)UIType.EffectVolume).GetComponent<Slider>();
+        _volumeSliders[(int)SoundManager.Sound.Effect] = GetObject((int)UI.EffectVolume).GetComponent<Slider>();
 
         _volumeSliders[(int)SoundManager.Sound.Narration] =
-            GetObject((int)UIType.NarrationVolume).GetComponent<Slider>();
+            GetObject((int)UI.NarrationVolume).GetComponent<Slider>();
 
         for (var i = 0; i < (int)SoundManager.Sound.Max; i++)
         {
@@ -272,4 +298,8 @@ public class InGame_SideMenu : UI_PopUp
         });
 
     }
+    
+    
+    
+
 }

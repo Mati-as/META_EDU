@@ -26,8 +26,11 @@ public class FP_Prefab : RaySynchronizer
     public static event Action onPrefabInput; 
     private MetaEduLauncher _launcher;
     private string name =string.Empty;
+    private bool isInitOnEnable =true;
 
+    //public Camera maincamera;
     //public bool isRayEnabled = true;
+    
 
     private void Awake()
     {
@@ -38,21 +41,22 @@ public class FP_Prefab : RaySynchronizer
 
     public override void Init()
     {
-        
         GameObject.FindWithTag("UICamera").TryGetComponent(out _uiCamera);
-        
-         _rectTransform = GetComponent<RectTransform>();
+        //GameObject.FindWithTag("MainCamera").TryGetComponent(out maincamera);
+
+        _rectTransform = GetComponent<RectTransform>();
          _imageComponent = GetComponent<Image>();
-       
     }
 
 
     protected override void OnEnable()
     {
-        
-        if (name.Contains("Real"))
+
+                    
+        if (name.Contains("REAL"))//
         {
             _imageComponent.enabled = SensorManager.isRealImageActive;
+          //  Debug.Log($"isRealImageActive : {SensorManager.isRealImageActive}");
             if (!SensorManager.isRealRayActive)
             {
                 return;
@@ -62,6 +66,7 @@ public class FP_Prefab : RaySynchronizer
         if (name.Contains("Normal"))
         {
             _imageComponent.enabled = SensorManager.isNormalImageActive;
+          //  Debug.Log($"isNormalImageActive : {SensorManager.isNormalImageActive}");
             if (!SensorManager.isNormalRayActive)
             {
                 return;
@@ -84,11 +89,11 @@ public class FP_Prefab : RaySynchronizer
         FP = this.GetComponent<RectTransform>();
         FPC = Manager_Sensor.instance.Get_RPC();
         //Image = this.transform.GetChild(0).gameObject;
-        Image = gameObject;
+       // Image = gameObject;
         //Debug.Log(FP.anchoredPosition.x + "," + FP.anchoredPosition.y);
         if (FPC.Check_FPposition(FP))
         {
-            Image.SetActive(true);
+           // Image.SetActive(true);
             base.Start();
             base.InvokeRayEvent();
         }
@@ -97,7 +102,6 @@ public class FP_Prefab : RaySynchronizer
 
     private void OnDestroy()
     {
-        
         Destroy(this.gameObject);
     }
 
@@ -126,9 +130,9 @@ public class FP_Prefab : RaySynchronizer
         }
 
         // 🔹 UI 요소 Raycast (GraphicRaycaster 사용)
-        PED.position = screenPosition;
+        PointerEventData.position = screenPosition;
         var results = new List<RaycastResult>();
-        GR.Raycast(PED, results);
+        graphicRaycaster.Raycast(PointerEventData, results);
 
         foreach (RaycastResult result in results)
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class SandwitchBaseGameManager : Base_GameManager
@@ -67,7 +68,7 @@ public class SandwitchBaseGameManager : Base_GameManager
     //중복클릭방지
     private bool _isClickable = true;
     private bool _isScalingUp;
-    private readonly float _clickableDelay = 3.0f;
+    private readonly float _clickableDelay = 1.0f;
 
     private readonly float RESTART_DELAY = 1.5f;
 
@@ -215,7 +216,15 @@ public class SandwitchBaseGameManager : Base_GameManager
     {
         base.OnGameStartStartButtonClicked();
 
-        MoveOutSandwich();
+    
+        initialMessage= "재료를 골라 샌드위치를 완성시켜보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
+
+        DOVirtual.DelayedCall(6f, () =>
+        {
+            MoveOutSandwich();
+        });
     }
 
 
@@ -535,6 +544,8 @@ public class SandwitchBaseGameManager : Base_GameManager
 
     private void OnSandwichMakingFinish()
     {
+        if (_isRoundFinished) return; 
+        
         _isRoundFinished = true;
         isGameStart = false;
 

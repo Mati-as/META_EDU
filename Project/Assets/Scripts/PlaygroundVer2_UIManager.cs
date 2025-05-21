@@ -38,7 +38,7 @@ public class PlaygroundVer2_UIManager : UI_PopUp
     private int _defaultFontSize;
 
     public static event Action OnReInitUIFinished;
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         PlaygroundBaseVer2GameManager.OnTimeOver -= OnTimeOver;
         PlaygroundBaseVer2GameManager.OnTimeOver += OnTimeOver;

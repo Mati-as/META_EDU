@@ -16,7 +16,7 @@ public class BallInfo : ScriptableObject
 
     public enum BallColor
     {
-        Red,
+        Pink,
         Yellow,
         Blue
     }

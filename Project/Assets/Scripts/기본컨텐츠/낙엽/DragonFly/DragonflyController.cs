@@ -20,6 +20,9 @@ public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClick
     [SerializeField] private Transform moveAwayPositionD;
     [SerializeField] private Transform moveAwayPositionE;
 
+    [SerializeField] private Transform nearCamPosA;
+    [SerializeField] private Transform nearCamPosB;
+    
 
   
     private float _elapsedTimeForMoveUp;
@@ -150,11 +153,19 @@ public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClick
 
     private void MoveAway()
     {
+        _moveAwayPositionIndex = Random.Range(0, 5);
+        
         transform.DOLookAt(_moveAwayPositions[_moveAwayPositionIndex].position, 1f)
             .OnStart(() => { })
             .OnComplete(() =>
             {
-                transform.DOMove(_moveAwayPositions[_moveAwayPositionIndex].position, moveAwayDuration)
+                Vector3[] randomPath = new Vector3[] 
+                {
+                    transform.position,
+                    Random.Range(0,10) > 5? nearCamPosA.position : nearCamPosB.position,
+                    _moveAwayPositions[_moveAwayPositionIndex].position
+                };
+                transform.DOPath(randomPath, moveAwayDuration)
                     .OnComplete(
                         () => { LandToGround(); });
             });
@@ -192,7 +203,7 @@ public class DragonflyController : MonoBehaviour, Lake_IAnimalBehavior, IOnClick
 
 
             _landPositionIndex = Random.Range(0, 6);
-            _moveAwayPositionIndex = Random.Range(0, 5);
+            
             _randomSpeed = Random.Range(0.8f, 2);
 
             while (_isOnThePlace[_landPositionIndex]) _landPositionIndex = Random.Range(0, 6);

@@ -18,8 +18,9 @@ public class SensorRelatedDevMenu : UI_PopUp
 
     private enum TMP
     {
-        TMP_NormalRay,
-        TMP_RealRay
+        // TMP_NormalRay,
+        // TMP_RealRay,
+        TMP_Log
     }
     private Animator _animator;
     private bool isOpen =false;
@@ -34,12 +35,12 @@ public class SensorRelatedDevMenu : UI_PopUp
         var img = buttonGO.GetComponent<Image>();
         img.color = isActive ? Color.white : new Color(0.3f, 0.3f, 0.3f); // 어두운 회색
     }
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         
         _animator = GetComponent<Animator>();
         BindObject(typeof(Btn));
-
+        BindTMP(typeof(TMP));
 
 
         GetObject((int)Btn.Btn_Open).gameObject.BindEvent(() =>
@@ -64,6 +65,8 @@ public class SensorRelatedDevMenu : UI_PopUp
             SensorManager.isRealImageActive = _isAllPrefabImageActive;
             SensorManager.isNormalImageActive = _isAllPrefabImageActive;
             SensorManager.isTouchZoneImageActive = _isAllPrefabImageActive;
+            
+            
 
             UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
             UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
@@ -81,7 +84,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         });
 
         GetObject((int)Btn.Btn_Real).gameObject.BindEvent(() =>
-        {
+        { 
              if (!_clickable) return;
             _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
             
@@ -142,11 +145,25 @@ public class SensorRelatedDevMenu : UI_PopUp
         
         Logger.Log($"센서 메뉴 초기화 완료 NormalRay:{SensorManager.isNormalRayActive} : RealRay:{SensorManager.isRealRayActive}");
 
+        RefreshSensorParameterText();
+      
+        
         return true;
     }
 
-    private void DelayClickable()
+    private void RefreshSensorParameterText()
     {
+
+        var logText = $"<b>[XML 설정값]</b>\n" +
+                      $"ScreenSize:{XmlManager.Instance.ScreenSize}, Ratio:{XmlManager.Instance.ScreenRatio}, TouchRange:{XmlManager.Instance.TouchRange}\n" +
+                      $"SensorPos({XmlManager.Instance.SensorPosX},{XmlManager.Instance.SensorPosY}), " +
+                      $"Offset({XmlManager.Instance.ScreenPositionOffsetX},{XmlManager.Instance.ScreenPositionOffsetY}), " +
+                      $"SensorOffset({XmlManager.Instance.SensorOffsetX},{XmlManager.Instance.SensorOffsetY})\n" +
+                      $"Threshold:{XmlManager.Instance.ClusterThreshold}, MaxZones:{XmlManager.Instance.MaxTouchzones}, " +
+                      $"Lifetime:{XmlManager.Instance.TouchzoneLifetime}";
+
+        GetTMP((int)TMP.TMP_Log).text = logText;
         
+
     }
 }

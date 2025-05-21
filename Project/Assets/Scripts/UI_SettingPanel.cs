@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class UI_SettingPanel : MonoBehaviour
 {
     private Vector3 _defaultPos;
-    private float _moveAmount = 220f;
+   // private float _moveAmount = 265;
     private RectTransform _panel;
     private bool _isPanelOn;
     private Button _button;
@@ -57,21 +57,21 @@ public class UI_SettingPanel : MonoBehaviour
 
     private void HandlePanelToggle()
     {
-        if (!_isPanelOn)
-        {
-            _panel.DOAnchorPos(_defaultPos + Vector3.left * _moveAmount, 0.66f).SetEase(Ease.InOutSine)
-                .OnComplete(() =>
-                {
-                    _isPanelOn = true;
-                });
-        }
-        else
-        {
-            _panel.DOAnchorPos(_defaultPos, 0.33f).SetEase(Ease.InOutSine)
-                .OnComplete(() =>
-                {
-                    _isPanelOn = false;
-                });
-        }
+        // if (!_isPanelOn)
+        // {
+        //     _panel.DOAnchorPos(_defaultPos + Vector3.left * _moveAmount, 0.66f).SetEase(Ease.InOutSine)
+        //         .OnComplete(() =>
+        //         {
+        //             _isPanelOn = true;
+        //         });
+        // }
+        // else
+        // {
+        //     _panel.DOAnchorPos(_defaultPos, 0.33f).SetEase(Ease.InOutSine)
+        //         .OnComplete(() =>
+        //         {
+        //             _isPanelOn = false;
+        //         });
+        // }
     }
 }

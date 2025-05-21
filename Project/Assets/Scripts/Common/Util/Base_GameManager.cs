@@ -1,26 +1,31 @@
 using System;
 using System.Collections;
 using DG.Tweening;
-using MyCustomizedEditor.Common.Util;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
 public abstract class Base_GameManager : MonoBehaviour
 {
-    
-    
     //20250225 플레이 활동성 체크용 활용변수 
-    public int DEV_sensorClick { get;  set; } // 센서로 클릭이 발생한 빈도 수
-    
-    public int DEV_validClick { get;  set; }//물체가 한개이상 클릭되어 게임로직이 실행된 경우의 빈도수
-    
+    public int DEV_sensorClick
+    {
+        get;
+        set;
+    } // 센서로 클릭이 발생한 빈도 수
+
+    public int DEV_validClick
+    {
+        get;
+        set;
+    } //물체가 한개이상 클릭되어 게임로직이 실행된 경우의 빈도수
+
     private void InitValidClickCount()
     {
         DEV_sensorClick = 0;
@@ -31,11 +36,12 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         DEV_validClick++;
     }
-    
+
     protected void DEV_OnSensorClick()
     {
         DEV_validClick++;
     }
+
     private readonly string METAEDU_LAUNCHER = "METAEDU_LAUNCHER";
 
     protected WaitForSeconds _waitForClickable;
@@ -44,8 +50,14 @@ public abstract class Base_GameManager : MonoBehaviour
 
     public bool isClikableInGameRay
     {
-        get => _isClikableInGameRay;
-        protected set => _isClikableInGameRay = value;
+        get
+        {
+            return _isClikableInGameRay;
+        }
+        protected set
+        {
+            _isClikableInGameRay = value;
+        }
     }
 
     /// <summary>
@@ -53,43 +65,81 @@ public abstract class Base_GameManager : MonoBehaviour
     ///     1.Click빈도수를 유니티상에서 제어할때 사용합니다.
     ///     2.물체가 많은경우 정확도 이슈로 센서자체를 필터링 하는것은 권장되지 않다고 판단하고 있습니다.
     /// </summary>
-    public bool isStartButtonClicked { get; set; } // startButton 클릭 이전,이후 동작 구분용입니다. 
+    public bool isStartButtonClicked
+    {
+        get;
+        set;
+    } // startButton 클릭 이전,이후 동작 구분용입니다. 
 
-    protected bool isInitialized { get; private set; }
-    protected int TARGET_FRAME { get; } = 60; //
+    protected bool isInitialized
+    {
+        get;
+        private set;
+    }
 
-    protected float BGM_VOLUME { get; set; } = 0.105f;
+    protected int TARGET_FRAME
+    {
+        get;
+    } = 60; //
 
-    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY =0.08f;
-    protected const float CLICKABLE_IN_GAME_DELAY_MIN =0.035f; 
+    protected float BGM_VOLUME
+    {
+        get;
+        set;
+    } = 0.105f;
+
+    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY = 0.08f;
+    protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
     protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
-    public void LoadUIManager()
+    protected UIManager_CommonBehaviorController _uiManagerCommonBehaviorController;
+
+    public void LoadUIManagerAndInit()
     {
-        var UIManagerCheck = GameObject.FindWithTag("UIManager");
-      //  if (UIManagerCheck == null) Managers.UI.ShowPopupUI("UIManager_"+SceneManager.GetActiveScene().name);
+        DOVirtual.DelayedCall(0.75f, () =>
+        {
+            var uiMangager = GameObject.FindWithTag("UIManager");
+            Debug.Assert(uiMangager != null, "UIManager not found");
+            _uiManagerCommonBehaviorController = uiMangager.GetComponentInChildren<UIManager_CommonBehaviorController>();
+        });
+
+    
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            if (_uiManagerCommonBehaviorController != null)
+            {
+                _uiManagerCommonBehaviorController.ManualInit();
+            }
+            else
+            {
+                Debug.LogWarning("UIManager_CommonBehaviorController not found");
+            }
+        });
     }
 
 
     protected virtual void Start()
     {
-        
+      
+     
     }
+
     protected float waitForClickableInGameRay
     {
-        get => waitForClickableInGameRayRay;
+        get
+        {
+            return waitForClickableInGameRayRay;
+        }
 
         set
         {
             if (value < CLICKABLE_IN_GAME_DELAY_MIN)
-            {
                 waitForClickableInGameRay = CLICKABLE_IN_GAME_DELAY_MIN;
-            }
 
             else
             {
                 if (Math.Abs(value - waitForClickableInGameRay) < 0.005f) return;
-                
+
                 waitForClickableInGameRayRay = value;
                 _waitForClickable = new WaitForSeconds(waitForClickableInGameRayRay);
             }
@@ -97,11 +147,14 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
 
+    private float _seonsorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
 
-    private float _seonsorSensitivity=SensorManager.SENSOR_DEFAULT_SENSITIVITY;
     public float SensorSensitivity
     {
-        get => _seonsorSensitivity;
+        get
+        {
+            return _seonsorSensitivity;
+        }
 
         protected set
         {
@@ -114,19 +167,15 @@ public abstract class Base_GameManager : MonoBehaviour
             else
             {
                 _seonsorSensitivity = value;
-                SensorManager.sensorSensitivity =  SensorManager.SENSOR_DEFAULT_SENSITIVITY;
+                SensorManager.sensorSensitivity = SensorManager.SENSOR_DEFAULT_SENSITIVITY;
             }
         }
     }
 
-    protected void SetClickableWithDelay(float waitTime =0)
+    protected void SetClickableWithDelay(float waitTime = 0)
     {
+        if (waitTime <= 0.001f) waitTime = waitForClickableInGameRay;
 
-        if (waitTime <= 0.001f)
-        {
-            waitTime = waitForClickableInGameRay; 
-        }
-       
 
         if (!isClikableInGameRay) return;
         StartCoroutine(SetClickableWithDelayCo(waitTime));
@@ -135,22 +184,42 @@ public abstract class Base_GameManager : MonoBehaviour
     private IEnumerator SetClickableWithDelayCo(float waitTime)
     {
         if (_waitForClickable == null) _waitForClickable = new WaitForSeconds(waitTime);
-        
+
         isClikableInGameRay = false;
         yield return _waitForClickable;
         isClikableInGameRay = true;
     }
 
     //런타임에서 고정
-    protected float SHADOW_MAX_DISTANCE { get; set; } //런타임에서 고정
+    protected float _shadowMaxDistance = 60;
+
+    protected float SHADOW_MAX_DISTANCE
+    {
+        get
+        {
+            return _shadowMaxDistance;
+        }
+        set
+        {
+            _shadowMaxDistance = value;
+        }
+    } //런타임에서 고정
 
     public LayerMask layerMask;
 
     // Ray 및 상호작용 관련 멤버
-    public static Ray GameManager_Ray { get; private set; } // 마우스, 발로밟은 위치에 Ray 발사. 
+    public static Ray GameManager_Ray
+    {
+        get;
+        private set;
+    } // 마우스, 발로밟은 위치에 Ray 발사. 
 
     public RaycastHit[]
-        GameManager_Hits { get; set; } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
+        GameManager_Hits
+    {
+        get;
+        set;
+    } // Ray에 따른 객체를 GameManager에서만 컨트롤하며, 다른객체는 이를 참조합니다. 즉 추가적인 레이를 발생하지 않습니다. 
 
     public static event Action On_GmRay_Synced;
     public static event Action<string, DateTime> OnSceneLoad;
@@ -158,9 +227,46 @@ public abstract class Base_GameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
-        
+      
         Debug.Assert(PrecheckOnInit());
+    }
 
+
+    /// <summary>
+    ///     카메라 Rect Xml설정값대로 조정
+    /// </summary>
+    private Camera UICamera;
+
+    private void InitCameraRect()
+    {
+        if (Camera.main != null)
+        {
+            Logger.CoreClassLog($"camera_rect :{Camera.main.rect.width} : {Camera.main.rect.height}");
+            Camera.main.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+        }
+        else
+            Logger.LogError("Main camera not found.");
+
+        //송하맹호도 같은 경우 현재 UIcamera가 없어도 동작 할 수 있기때문에 TryGetcomponent으로 처리
+        GameObject.FindWithTag("UICamera").TryGetComponent(out UICamera);
+        if (UICamera != null)
+        {
+            UICamera.rect = new Rect(
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
+                0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
+                XmlManager.Instance.ScreenSize,
+                XmlManager.Instance.ScreenSize
+            );
+
+            Logger.CoreClassLog($"camera_rect :{UICamera.rect.width} : {UICamera.rect.height}");
+        }
+        else
+            Logger.LogError("UICamera not found.");
     }
 
 
@@ -187,44 +293,60 @@ public abstract class Base_GameManager : MonoBehaviour
 
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
-        LoadUIManager();
-
+       
 
         InitValidClickCount();
         isInitialized = true;
+
+        InitCameraRect();
+        
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            // Canvas.ForceUpdateCanvases();
+            //
+            // var canvas = GameObject.FindObjectOfType<Canvas>();
+            // if (canvas != null)
+            // {
+            //     LayoutRebuilder.ForceRebuildLayoutImmediate(canvas.GetComponent<RectTransform>());
+            // }
+
+            //EventSystem.current.refr
+        });
+     
+        
+        if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
     }
 
 
+    protected string initialMessage = String.Empty;
     protected virtual void SetLayerMask()
     {
-        var uiLayer = LayerMask.NameToLayer("UI");
+        int uiLayer = LayerMask.NameToLayer("UI");
         LayerMask maskWithoutUI = ~(1 << uiLayer);
         layerMask = maskWithoutUI;
     }
+
     protected void OnOriginallyRaySynced()
     {
         GameManager_Ray = RaySynchronizer.initialRay;
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
-        
-        
+
         On_GmRay_Synced?.Invoke();
     }
 
-    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensorSensitivity,float objSensitivity=0)
+    protected virtual void ManageProjectSettings(float defaultShadowMaxDistance, float defaultSensorSensitivity,
+        float objSensitivity = 0)
     {
         SensorManager.sensorSensitivity = defaultSensorSensitivity;
 
         if (waitForClickableInGameRay < 0.05f)
         {
-
         }
         else
-        {
             waitForClickableInGameRay = objSensitivity;
-        }
-       
-        
+
+
         // Shadow Settings-------------- 게임마다 IGameMager상속받아 별도 지정
         var urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
 
@@ -289,27 +411,14 @@ public abstract class Base_GameManager : MonoBehaviour
         }
 
 
-        {
-            // if (!isClikableInGameRay)
-            // {
-            //     Logger.Log("Clicking Too Fast, Can't be clicked");
-            //
-            //     return false;
-            //     
-            // }
-            
+        Logger.SensorRelatedLog($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
+        SetClickableWithDelay(waitForClickableInGameRay);
 
-            Logger.SensorRelatedLog($"게임 내 클릭 민감도 : {waitForClickableInGameRay}초");
-            SetClickableWithDelay(waitForClickableInGameRay);
-            
-            
-            DEV_sensorClick++;
-            return true;
-        }
-        
+
+        DEV_sensorClick++;
+        return true;
     }
-    
-  
+
 
     protected virtual void BindEvent()
     {
@@ -337,7 +446,7 @@ public abstract class Base_GameManager : MonoBehaviour
         UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
         DOTween.KillAll();
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
 
@@ -345,8 +454,13 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         // 버튼 클릭시 Ray가 게임로직에 영향미치는 것을 방지하기위한 약간의 Delay 입니다. 
         DOVirtual
-            .Float(0, 1, 0.5f, _ => { })
-            .OnComplete(() => { isStartButtonClicked = true; });
+            .Float(0, 1, 0.5f, _ =>
+            {
+            })
+            .OnComplete(() =>
+            {
+                isStartButtonClicked = true;
+            });
     }
 
 
@@ -356,10 +470,12 @@ public abstract class Base_GameManager : MonoBehaviour
         if (!IsLauncherScene())
         {
             // delay for narration
-            DOVirtual.Float(0, 1, 1.5f, _ => { })
+            DOVirtual.Float(0, 1, 1.5f, _ =>
+                {
+                })
                 .OnComplete(() =>
                 {
-                    var isPlaying = Managers.Sound.Play(SoundManager.Sound.Narration,
+                    bool isPlaying = Managers.Sound.Play(SoundManager.Sound.Narration,
                         "Audio/나레이션/Intro/" + SceneManager.GetActiveScene().name + "_Intro", 0.8f);
 
 #if UNITY_EDITOR

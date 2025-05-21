@@ -5,6 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class EA006_GameManager : Ex_BaseGameManager
@@ -25,12 +26,18 @@ public class EA006_GameManager : Ex_BaseGameManager
         WheatGroup_C,
         WheatGroup_D,
         WheatGroup_E,
+            
         ScareCrowA,
         ScareCrowB,
         ScareCrowC,
         ScareCrowD,
         ScareCrowE,
         ScareCrowF,
+        ScareCrowG,
+        ScareCrowH,
+        ScareCrowI,
+        ScareCrowJ,
+        
         SparrowA,
         SparrowB,
         SparrowC,
@@ -64,22 +71,22 @@ public class EA006_GameManager : Ex_BaseGameManager
     {
         get
         {
-            return _currentThemeSequence;
+            return base._currentMainSequence;
         }
         set
         {
         
-            _currentThemeSequence = value;
+            base._currentMainSequence = value;
             
-            Logger.Log($"Sequence Changed--------{(SequenceName)_currentThemeSequence} : {value}");
-            SeqMessageEvent?.Invoke(_currentThemeSequence);
+            Logger.Log($"Sequence Changed--------{(SequenceName)base._currentMainSequence} : {value}");
+            SeqMessageEvent?.Invoke(base._currentMainSequence);
             SetWheatColliderStatus();
 
             //값반영 지연으로 value대신 _currentThemeSequence 사용하면 안됩니다 XXX
             switch (value)
             {
                 case (int)SequenceName.GrassColorChange:
-                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)_currentThemeSequence} : {value}");
+                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
                     currentChangedCount = 0;
                     ChangeThemeSeqAnim((int)SequenceName.GrassColorChange);
                     ResetClickable();
@@ -87,23 +94,26 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
                 
                 case (int)SequenceName.FindScarecrow:
-                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)_currentThemeSequence} : {value}");
+                    _elapsedTime = 0;
+                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
                     SetWheatColliderStatus(false);
                     ChangeThemeSeqAnim((int)SequenceName.FindScarecrow);
                     ResetClickable();
                     OnScareCrowFindStart();
+                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA008");
                     break;
 
                 case (int)SequenceName.SparrowAppear:
                     ResetClickable(false);//순서주의 
                     AppearSparrow(2);
                     ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
-                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)_currentThemeSequence} : {value}");
-                
+                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
+                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006");
 
                     break;
                 
                 case (int)SequenceName.OnFinish:
+                    ChangeThemeSeqAnim((int)SequenceName.OnFinish);
                     break;
                 
                 case (int)SequenceName.Default:
@@ -170,7 +180,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         }
 
 
-        for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowF; i++)
+        for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
         {
             GetObject(i).transform.localScale = Vector3.zero;
             GetObject(i).SetActive(false);
@@ -186,7 +196,11 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     protected override void OnGameStartStartButtonClicked()
     {
-        currentThemeSequence =(int)SequenceName.GrassColorChange;
+        DOVirtual.DelayedCall(1f, () =>
+        {
+
+            currentThemeSequence = (int)SequenceName.GrassColorChange;
+        });
     }
 
     public override void OnRaySynced()
@@ -203,6 +217,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
                 case (int)SequenceName.FindScarecrow:
                    
+                    
                     OnRaySyncedOnScareCrowFind(hit);
                 
                     break;
@@ -313,6 +328,15 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     #region 허수아비 찾기 파트----------------------------------------------------
 
+
+    [SerializeField]
+    [Range(0, 90)]
+    private int TIME_LIMIT;
+    private float _elapsedTime;
+    [FormerlySerializedAs("_feverModeTime")]
+    [SerializeField]
+    [Range(0, 70)]
+    private float FEVER_MODE_TIME; //허수아비가 더 많이 등장하는 시간.  (fevermodeTime시간 초 이상 부터 더 많은 허수아비가 나옵니다.)
     private void OnScareCrowFindStart()
     {
         DOVirtual.DelayedCall(1.5f, () =>
@@ -326,10 +350,10 @@ public class EA006_GameManager : Ex_BaseGameManager
         int SelectedScarecrow = -1; //sentinel val
         for (int i = 0; i < Count; i++)
         {
-            int randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowF);
+            int randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowJ);
 
             while (SelectedScarecrow == randoScareCrow)
-                randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowF);
+                randoScareCrow = Random.Range((int)Obj.ScareCrowA, (int)Obj.ScareCrowJ);
             SelectedScarecrow = randoScareCrow;
             
             GetObject(randoScareCrow).SetActive(true);
@@ -350,11 +374,11 @@ public class EA006_GameManager : Ex_BaseGameManager
     private void OnRaySyncedOnScareCrowFind(RaycastHit hit)
     {
 
-        if (_currentScarecrowCount >= TargetScarecrowCount)
-        {
-            Logger.ContentTestLog("허수아비 모두 찾음,, return");
-            return;
-        }
+        // if (_currentScarecrowCount >= TargetScarecrowCount)
+        // {
+        //     Logger.ContentTestLog("허수아비 모두 찾음,, return");
+        //     return;
+        // }
         var id = hit.transform.GetInstanceID();
         if (!_tfIdToEnumMap.ContainsKey(id))
         {
@@ -386,31 +410,21 @@ public class EA006_GameManager : Ex_BaseGameManager
         _sequenceMap[_tfIdToEnumMap[id]].Append(_tfidTotransformMap[id].transform.DOScale(Vector3.zero, Random.Range(0.5f, 0.75f)).OnComplete(
             () =>
             {
-                AppearScareCrow(Random.Range(1, 3));
+                if (_elapsedTime >= FEVER_MODE_TIME)
+                {
+                    //FEVER_MODE_TIME이상일때는 허수아비가 더 많이 나옵니다.
+                    Logger.ContentTestLog("FeverMode----------------------------------------------");
+                    AppearScareCrow(Random.Range(1, 5));
+                }
+                else
+                {
+                    AppearScareCrow(1);
+                }
+                
             }));
         
         _currentScarecrowCount++;
-
-
-        if (_currentScarecrowCount >= TargetScarecrowCount)
-        {
-            _currentScarecrowCount = 0;
-            DOVirtual.DelayedCall(1.5f, () =>
-            {
-          
-                for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowF; i++)
-                {
-                    GetObject(i).transform.DOScale(Vector3.zero, 1f).OnComplete(() =>
-                    {
-                        _sequenceMap[i]?.Kill();
-                        GetObject(i).SetActive(false);
-                    });
-                  
-                }
-            });
-            Logger.Log("허수아비 전부 잡음!-------------------");
-            currentThemeSequence = (int)SequenceName.SparrowAppear;
-        }
+        
 
     }
     
@@ -418,8 +432,30 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     #endregion
 
+    private void Update()
+    {
+        if (currentThemeSequence != (int)SequenceName.FindScarecrow) return; 
+        
+        _elapsedTime += Time.deltaTime;
+        
+        if (_elapsedTime > TIME_LIMIT)
+        {
+            _elapsedTime = 0;
 
-
+            _currentScarecrowCount = 0;
+            DOVirtual.DelayedCall(1.5f, () =>
+            {
+                for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
+                    GetObject(i).transform.DOScale(Vector3.zero, 1f).OnComplete(() =>
+                    {
+                        _sequenceMap[i]?.Kill();
+                        GetObject(i).SetActive(false);
+                    });
+            });
+            
+            currentThemeSequence = (int)SequenceName.SparrowAppear;
+        }
+    }
 
 
     int previousSparrowPos = -1;
@@ -433,7 +469,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         {
             int tfId = _enumToTfIdMap[i];
 
-            // 클릭 가능 상태(false) + 이전과 다른 참새만 추가
+            // 클릭 가능 상태(false)
             if (!_isClickableMap[tfId])
             {
                 Logger.Log($"{(Obj)i} 참새 Active 가능 상태 : {_isClickableMap[tfId]}");

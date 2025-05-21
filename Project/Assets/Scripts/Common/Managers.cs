@@ -20,21 +20,13 @@ public class Managers : MonoBehaviour
     private static SensorManager s_sensorManager = new SensorManager();
     private static PlayInfoManager _sInfoManager = new PlayInfoManager();
     private static CursorImageManager s_cursorImageManager= new CursorImageManager();
-    private static A_SettingManager s_SettingManager = new A_SettingManager();
+    private static SettingManager s_SettingManager = new SettingManager();
     
     public static float PROJECTOR_SCREEN_HEIGHT; 
     public static bool isGameStopped { get; set; }
 
-    // public static MetaEduLauncher launcher 
-    // {  
-    //     get 
-    //     { 
-    //         Init(); 
-    //         return s_launcher; 
-    //     } 
-    // }
-    
-    public static A_SettingManager Setting
+
+    public static SettingManager Setting
     {  
         get 
         { 

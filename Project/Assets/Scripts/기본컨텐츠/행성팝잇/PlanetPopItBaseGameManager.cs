@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class PlanetPopItBaseGameManager : Base_GameManager
@@ -64,8 +65,15 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     private static readonly string PlanetPopIt;
     private static readonly string Planet;
 
-  
-    
+
+    protected override void OnGameStartStartButtonClicked()
+    {
+        base.OnGameStartStartButtonClicked();
+        initialMessage= "다양한 행성 팝잇들을 눌러보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
+    }
+
     protected override void Init()
     {
         base.Init();

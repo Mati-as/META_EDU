@@ -24,10 +24,10 @@ public class SensorManager : MonoBehaviour
 
     #region Sensor Calibration시, 각 프리팹 이미지, Ray On-Off 관련 변수 // SesnorRelatedDevMenu.cs에서 제어 중
 
-    //Image On-OFF 관련
-    public static bool isTouchZoneImageActive = true;
-    public static bool isNormalImageActive = true;
-    public static bool isRealImageActive = true;
+    //Image On-OFF 관련 Default는 RealRay이외에 false로 설정중 20250408
+    public static bool isTouchZoneImageActive = false;
+    public static bool isNormalImageActive = false;
+    public static bool isRealImageActive = false;
     
     //Ray 생성 관련 
     public static bool isNormalRayActive = false;
@@ -79,20 +79,10 @@ public class SensorManager : MonoBehaviour
 
     private bool m_datachanged;
 
-    //=====
-    private Vector3 Temp_position;
-    //=====
-
-
-    //====1012
-    public bool Test_check;
-
     public GameObject Guideline;
-    //
 
     //1015
     private static float _height = 172;
-
     public static float height
     {
         get => _height;
@@ -160,8 +150,8 @@ public class SensorManager : MonoBehaviour
     private readonly float SENSEOR_OFFSET_MAX_VALUE = 1000;
 
 
-    private readonly float SCREEN_RATIO_MIN = 0.5f;
-    private readonly float SCREEN_RATIO_MAX = 10;
+    //private readonly float SCREEN_RATIO_MIN = 0.5f;
+    //private readonly float SCREEN_RATIO_MAX = 10;
 
 
     public int heightCm { get; set; } = 2;
@@ -331,6 +321,7 @@ public class SensorManager : MonoBehaviour
 
 
     private Canvas _launcherSettingCanvas;
+    private Vector3 _initPos = new Vector3(-54321,-54321,0); //맨처음 생성시 불필요하게 Ray발생 방지용
     private void SetPool<T>(Stack<T> pool, string path, int poolCount = 100) where T : Object
     {
         //런쳐도 센서로 터치 가능하도록 수정 09/24/2024
@@ -348,7 +339,7 @@ public class SensorManager : MonoBehaviour
                 return;
             }
 
-            var obj = Instantiate(prefab, UI_Canvas.transform.position, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
+            var obj = Instantiate(prefab, UI_Canvas.transform.localPosition - _initPos, Quaternion.Euler(0, 0, 0), UI_Canvas.transform);
 
             var component = obj.GetComponent<T>();
             if (component == null)
@@ -420,6 +411,7 @@ public class SensorManager : MonoBehaviour
         //InitSensor();
         //Sensor calibration
         RT_Lidar_object = GetComponent<RectTransform>();
+        touchZoneParent = GameObject.FindWithTag("UIManager").transform;
         Set_Screenscale(XmlManager.Instance.ScreenSize);
         if (Calibration_state_Screenratio != null) Calibration_state_Screenratio.text = _screenRatio.ToString("0.00");
 
@@ -475,6 +467,7 @@ public class SensorManager : MonoBehaviour
     //========== Sensor Calibration
     float Sensor_posx;
     float Sensor_posy;
+    float Sensor_angle;
     int _filteringAmount = 2;
 
     //[삭제]
@@ -505,9 +498,13 @@ public class SensorManager : MonoBehaviour
         if(State_rotation!=null)State_rotation.text = isMoterStarted ? "Motor ON" : "Motor OFF";
         if(State_scan!=null)State_scan.text = m_onscan ? "Scan ON" : "Scan OFF";
 
-        //센서 위치 보정
+        //현재 센서 좌표 저장
         Sensor_posx = RT_Lidar_object.anchoredPosition.x;
         Sensor_posy = RT_Lidar_object.anchoredPosition.y;
+
+        //현재 센서 회전 값 저장
+        Sensor_angle = RT_Lidar_object.localRotation.eulerAngles.z;
+        if (Sensor_angle > 180f) Sensor_angle -= 360f;
 
         List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
 
@@ -523,12 +520,27 @@ public class SensorManager : MonoBehaviour
                 if (_lidarDatas[i].theta > 90 && _lidarDatas[i].theta < 270) continue;
 
                 // 기존 좌표 계산
+                ////(구현) 기존 좌표 계산에 센서 회전 값 보정 부분 추가 필요
+                //Vector2 rawSensorPos = new Vector2(
+                //    Screen_Scale * (Sensor_posx - _screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad))),
+                //    Screen_Scale * (Sensor_posy - _screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad)))
+                //);
+
+                // 거리 기반 상대 위치 계산
+                float dx = -_screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad));
+                float dy = -_screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad));
+
+                // 회전 보정
+                float angleRad = Sensor_angle * Mathf.Deg2Rad;
+                float rotatedX = dx * Mathf.Cos(angleRad) - dy * Mathf.Sin(angleRad);
+                float rotatedY = dx * Mathf.Sin(angleRad) + dy * Mathf.Cos(angleRad);
+
+                // 센서 위치에 회전 보정된 상대좌표 적용
                 Vector2 rawSensorPos = new Vector2(
-                    Screen_Scale * (Sensor_posx - _screenRatio * (_lidarDatas[i].distant * Mathf.Cos((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad))),
-                    Screen_Scale * (Sensor_posy - _screenRatio * (_lidarDatas[i].distant * Mathf.Sin((90 - _lidarDatas[i].theta) * Mathf.Deg2Rad)))
+                    Screen_Scale * (Sensor_posx + rotatedX),
+                    Screen_Scale * (Sensor_posy + rotatedY)
                 );
 
-                
                 // 4개 좌표 TL,TR,BL,BR 보정용, 필요시 삭제 필요
                 //원래 아래 내용이었으나 정리하면서 수정되었음
                 //Vector2 correctedPos = isCalibrationApplied ? GetCorrectedPosition(rawSensorPos) : rawSensorPos;
@@ -612,94 +624,6 @@ public class SensorManager : MonoBehaviour
             m_datachanged = false;
         }
     }
-
-    //[삭제]
-    ////센서 실제 화면 보정 관련
-    //public bool isCalibrationActive = false; // ✅ 보정 모드 활성화 여부
-    //public bool isCalibrationApplied = false;
-    //public Vector2 TL_Point = new Vector2(-750, 350); // ✅ 화면 중앙 기준 좌표
-    //public Vector2 TR_Point = new Vector2(750, 350); // ✅ 화면 중앙 기준 좌표
-    //public Vector2 BL_Point = new Vector2(-750, -350); // ✅ 화면 중앙 기준 좌표
-    //public Vector2 BR_Point = new Vector2(750, -350); // ✅ 화면 중앙 기준 좌표
-
-    //private Vector2 Measure_TL_Point;
-    //private Vector2 Measure_TR_Point;
-    //private Vector2 Measure_BL_Point;
-    //private Vector2 Measure_BR_Point;
-
-    //// ✅ Homography 변환 행렬
-    //private Matrix4x4 homographyMatrix;
-
-    //private void CollectCalibrationPoint(Vector2 touchPoint)
-    //{
-    //    if (!isCalibrationActive) return;
-
-    //    switch (calibrationStep)
-    //    {
-    //        case 0:
-    //            Measure_TL_Point = touchPoint;
-    //            calibrationStep++;
-    //            Calibration_state_indetail.text = "TL 좌표 저장 완료";
-    //            isCalibrationActive = false;
-    //            break;
-    //        case 1:
-    //            Measure_TR_Point = touchPoint;
-    //            calibrationStep++;
-    //            Calibration_state_indetail.text = "TR 좌표 저장 완료";
-    //            isCalibrationActive = false;
-    //            break;
-    //        case 2:
-    //            Measure_BL_Point = touchPoint;
-    //            calibrationStep++;
-    //            Calibration_state_indetail.text = "BL 좌표 저장 완료";
-    //            isCalibrationActive = false;
-    //            break;
-    //        case 3:
-    //            Measure_BR_Point = touchPoint;
-    //            calibrationStep++;
-    //            Calibration_state_indetail.text = "BR 좌표 저장 완료";
-    //            isCalibrationActive = false;
-    //            break;
-    //    }
-    //    if (calibrationStep >= 4)
-    //    {
-    //        Debug.Log("✅ 모든 좌표가 저장되었습니다. 보정을 적용할 수 있습니다.");
-    //        isCalibrationActive = false;
-    //    }
-    //}
-
-    //public void ApplyCalibration()
-    //{
-    //    if (calibrationStep < 4)
-    //    {
-    //        Debug.LogWarning("⚠️ 모든 기준점을 설정해야 보정을 적용할 수 있습니다!");
-    //        return;
-    //    }
-
-    //    homographyMatrix = ComputeHomography(
-    //        new Vector2[] { Measure_TL_Point, Measure_TR_Point, Measure_BL_Point, Measure_BR_Point },
-    //        new Vector2[] { TL_Point, TR_Point, BL_Point, BR_Point });
-
-    //    isCalibrationApplied = true;
-    //    isCalibrationActive = false;
-
-    //    //텍스트 변경 필요
-    //    Debug.Log("✅ Homography 보정 적용 완료!");
-    //    Calibration_state.text = "보정 값 적용 중";
-    //}
-
-    //private Vector2 GetCorrectedPosition(Vector2 rawPos)
-    //{
-    //    Vector3 transformed = homographyMatrix.MultiplyPoint3x4(new Vector3(rawPos.x, rawPos.y, 1));
-    //    return new Vector2(transformed.x, transformed.y);
-    //}
-
-    //private Matrix4x4 ComputeHomography(Vector2[] src, Vector2[] dst)
-    //{
-    //    return Matrix4x4.identity; // Homography 변환 알고리즘 추가 필요
-    //}
-
-
 
     //  터치 영역 관리
     public List<GameObject> touchZoneObjects = new List<GameObject>(); //  터치 영역 리스트
@@ -1033,6 +957,8 @@ public class SensorManager : MonoBehaviour
 
         RectTransform rectTransform = this.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = new Vector2(XmlManager.Instance.SensorPosX, XmlManager.Instance.SensorPosY);
+        rectTransform.localRotation = Quaternion.Euler(0f, 0f, XmlManager.Instance.SensorAngle);
+
 
         thresholdDistance = XmlManager.Instance.ClusterThreshold;
         adjustYHorizontal = XmlManager.Instance.Yhorizontal;
@@ -1047,23 +973,6 @@ public class SensorManager : MonoBehaviour
         //이전에 센서 캘리브레이션 기능 테스트 후 실행시 에러 방지, 가이드라인 원상복구
         isFeatureActive = true;
         Guideline.GetComponent<RectTransform>().sizeDelta = new Vector2(1920, 1080);
-
-
-        //[구현필요] 각 콘텐츠 마다 UI캠 어디있는지 확인 공통으로 묶어서 일괄적으로 적용될 수 있도록 조절이 필요함
-        ////UI캠을 찾고
-        //float screenOffsetX = XmlManager.Instance.ScreenPositionOffsetX;
-        //float screenOffsetY = XmlManager.Instance.ScreenPositionOffsetY;
-
-        ////초기에 카메라 조정
-        //if (mainCamera != null)
-        //{
-        //    mainCamera.rect = new Rect(
-        //        0.5f - Screen_Scale / 2f + (screenOffsetX - 0.5f),
-        //        0.5f - Screen_Scale / 2f + (screenOffsetY - 0.5f),
-        //        Screen_Scale,
-        //        Screen_Scale
-        //    );
-        //}
 
     }
 }

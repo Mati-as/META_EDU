@@ -7,10 +7,10 @@ using UnityEngine;
 public class HandFootFlip_CollisionController : MonoBehaviour
 {
     //reference
-    private HandFootFlipBaseGameManager _gm;
+    private BB003_HandFootFlipBaseGameManager _gm;
     void Start()
     {
-        _gm = GameObject.FindWithTag("GameManager").GetComponent<HandFootFlipBaseGameManager>();
+        _gm = GameObject.FindWithTag("GameManager").GetComponent<BB003_HandFootFlipBaseGameManager>();
     }
     
     private void OnTriggerEnter(Collider other)

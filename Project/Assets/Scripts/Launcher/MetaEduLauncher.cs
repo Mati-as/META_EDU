@@ -35,7 +35,7 @@ public class MetaEduLauncher : UI_PopUp
         MainVolume,
         BGMVolume,
         EffectVolume,
-
+        NarrationVolume,
         //센서보정관련
         T0_Sensor_Settings,
         T1_Screen_Setting,
@@ -43,7 +43,7 @@ public class MetaEduLauncher : UI_PopUp
         T3_Calibration_Setting,
 
 
-        NarrationVolume
+      
         //Login,
         //Survey
     }
@@ -87,8 +87,8 @@ public class MetaEduLauncher : UI_PopUp
     private GameObject[] _UIs;
     private Animation messageAnim;
     private List<string> _animClips = new();
-    private readonly float _clickableIntervalForSensor = 2f;
-    private readonly float _clickableIntervalForMouse = 0.75f;
+    private readonly float _clickableIntervalForSensor = 0.3f;
+    private readonly float _clickableIntervalForMouse = 0.3f;
     private bool _isClikcable = true;
     private static bool _isLoadFinished;
     public Camera _uiCamera;
@@ -148,8 +148,8 @@ public class MetaEduLauncher : UI_PopUp
         _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
 
 
-        LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
-        LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete += OnLoadFinished;
 
 
         FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
@@ -228,6 +228,7 @@ public class MetaEduLauncher : UI_PopUp
                         CheckAndSetClickable();
 
                         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click", 1f);
+                      
                         //컨펌화면 게임이름 노출 로직 만들때 활용, 현재 미활용중 10/2/2024
                         _gameNameWaitingForConfirmation = button.gameObject.name;
                         GetObject((int)UIType.UI_Confirm).SetActive(true);
@@ -368,7 +369,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnDestroy()
     {
-        LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
+        UI_LoadInitialScene.onInitialLoadComplete -= OnLoadFinished;
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         FP_Prefab.onPrefabInput -= OnRaySyncByPrefab;
 
@@ -377,7 +378,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnLoadFinished()
     {
-        Init();
+        InitEssentialUI();
         SetUIEssentials();
 
         // 널방지를 위한 딜레이 입니다.
@@ -391,7 +392,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private UIType currentUITab = UIType.Home;
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         return true;
     }
@@ -518,17 +519,7 @@ public class MetaEduLauncher : UI_PopUp
                 GetObject((int)UIType.T0_Sensor_Settings).gameObject.SetActive(false);
                 GetObject((int)UIType.T2_Sensor_Setting).gameObject.SetActive(true);
                 break;
-            //  case UIType.Login:
-            //  	Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-            //  	GetObject((int)UIType.Login).gameObject.SetActive(true);
-            //  	GetObject((int)UIType.Login).GetComponent<ScrollRect>().ResetHorizontal();
-            //  	break;
-            //
-            // case UIType.Survey:
-            // 	Managers.Sound.Play(SoundManager.Sound.Effect, UI_CLICK_SOUND_PATH);
-            // 	GetObject((int)UIType.Survey).gameObject.SetActive(true);
-            // 	GetObject((int)UIType.Survey).GetComponent<ScrollRect>().ResetHorizontal();
-            // 	break;
+
         }
 
         if (isInitialSoundBlocked)
@@ -588,8 +579,8 @@ public class MetaEduLauncher : UI_PopUp
 
     private void SetUIEssentials()
     {
-        _launcherGR = _raySynchronizer.GR;
-        _launcherPED = _raySynchronizer.PED;
+        _launcherGR = _raySynchronizer.graphicRaycaster;
+        _launcherPED = _raySynchronizer.PointerEventData;
     }
 
     private RaySynchronizer _raySynchronizer;
@@ -646,13 +637,13 @@ public class MetaEduLauncher : UI_PopUp
         //테스트 후 삭제 필요
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-
-        float radius = 50f;
-        Gizmos.DrawSphere(currentPrefabPosition, radius);
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.red;
+    //
+    //     float radius = 50f;
+    //     Gizmos.DrawSphere(currentPrefabPosition, radius);
+    // }
 
 
     private string _gameNameWaitingForConfirmation;

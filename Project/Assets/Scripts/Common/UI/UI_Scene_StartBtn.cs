@@ -12,7 +12,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
     private Button _btn;
     private Image _btnImage;
     private TMP_Text _tmp_Start;
-    private TMP_Text _tmp_Time;
+   // private TMP_Text _tmp_Time;
     
     
     private int _remainTime;
@@ -37,7 +37,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _btnImage = GetComponent<Image>();
         _btn.onClick.AddListener(OnClicked);
         _tmp_Start = GetComponentInChildren<TMP_Text>();
-        _tmp_Time = transform.GetChild(1).GetComponent<TMP_Text>();
+    //   _tmp_Time = transform.GetChild(1).GetComponent<TMP_Text>();
 
         Message_anim_controller.onIntroUIOff -= OnAnimOff;
         Message_anim_controller.onIntroUIOff += OnAnimOff;
@@ -50,7 +50,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
 
         _btnImage.DOFade(0, 0.01f);
         _tmp_Start.DOFade(0, 0.01f);
-        _tmp_Time.DOFade(0, 0.01f);
+    //    _tmp_Time.DOFade(0, 0.01f);
 
         _btnImage
             .DOFade(1, 0.5f)
@@ -64,9 +64,9 @@ public class UI_Scene_StartBtn : MonoBehaviour
             .OnStart(() => { _isClickable = true; })
             .SetDelay(3f);
         
-        _tmp_Time.DOFade(1, 0.5f)
-            .OnStart(() => { _isClickable = true; })
-            .SetDelay(3f);
+ //       _tmp_Time.DOFade(1, 0.5f)
+ //           .OnStart(() => { _isClickable = true; })
+ //           .SetDelay(3f);
 
         _isSensorRefreshable = true;
     }
@@ -119,16 +119,16 @@ public class UI_Scene_StartBtn : MonoBehaviour
 
     private void Update()
     {
-        _elapsedTime += Time.deltaTime * _offset;
-        _remainTime = (int)(_autoShutTime - _elapsedTime);
-       // _tmp_Start.text = $"시작하기\n({_remainTime}초)";
-        _tmp_Time.text = $"{_remainTime}초";
-        if (_remainTime <= 0 && !_isInvoked)
-        {
-            Logger.Log("10초 지나 인트로 자동 닫힘.");
-            _isInvoked = true;
-            onGameStartBtnShut?.Invoke();
-        }
+       //  _elapsedTime += Time.deltaTime * _offset;
+       //  _remainTime = (int)(_autoShutTime - _elapsedTime);
+       // // _tmp_Start.text = $"시작하기\n({_remainTime}초)";
+       //  _tmp_Time.text = $"{_remainTime}초";
+       //  if (_remainTime <= 0 && !_isInvoked)
+       //  {
+       //      Logger.Log("10초 지나 인트로 자동 닫힘.");
+       //      _isInvoked = true;
+       //      onGameStartBtnShut?.Invoke();
+       //  }
     }
 
 
@@ -184,7 +184,7 @@ public class UI_Scene_StartBtn : MonoBehaviour
         _isClickable = false;
 
         _btnImage.DOFade(0, 0.5f);
-        _tmp_Time.DOFade(0, 0.5f);
+     //   _tmp_Time.DOFade(0, 0.5f);
         _tmp_Start.DOFade(0, 0.5f);
 
         RefreshSensor();

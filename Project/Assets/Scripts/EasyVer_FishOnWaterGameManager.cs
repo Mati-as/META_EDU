@@ -110,7 +110,7 @@ public class EasyVer_FishOnWaterGameManager : Base_GameManager
     public readonly int FISH_POOL_COUNT = 100;
 
 
-    public int fishCountGoal { get; set; } = 30;
+    public int fishCountGoal { get; set; } = 100;
 
     private readonly float ANIM_INTERVAL = 5.5f;
     private readonly float SIZE_IN_BUCKET = 0.4f;

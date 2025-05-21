@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using 기본컨텐츠.다양한악기놀이;
 
@@ -44,18 +45,26 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        var images = _parrotSlider.GetComponentsInChildren<Image>();
-        foreach (var image in images)
+        DOVirtual.DelayedCall(6.5f, () =>
         {
-            image.enabled = true;
-            image.DOFade(1, 1.2f);
-        }
-        var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
-        foreach (var tmp in tmps)
-        {
-            tmp.DOFade(1, 1f);
-        }
+            var images = _parrotSlider.GetComponentsInChildren<Image>();
+            foreach (var image in images)
+            {
+                image.enabled = true;
+                image.DOFade(1, 1.2f);
+            }
 
+            var tmps = _parrotSlider.GetComponentsInChildren<TextMeshProUGUI>();
+            foreach (var tmp in tmps)
+            {
+                tmp.DOFade(1, 1f);
+            }
+
+        });
+
+        initialMessage= "악기를 연주해 앵무새를 춤추게 해보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 
     private void Update()
@@ -76,7 +85,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
 
             if (_iOnClicked != null)
             {
-                DOVirtual.Float(0, 0.009f, 0.2f, val =>
+                DOVirtual.Float(0, 0.004f, 0.2f, val =>
                 {
                     _parrotSlider.value += val;
                 }).SetEase(Ease.InSine);

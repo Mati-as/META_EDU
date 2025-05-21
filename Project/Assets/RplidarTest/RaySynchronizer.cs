@@ -16,7 +16,7 @@ public class RaySynchronizer : MonoBehaviour
     public static Ray initialRay { get; set; }
 
   
-    private GameObject uiCamera;
+    //private GameObject uiCamera;
 
 
     private readonly string GAME_MANAGER = "GameManager";
@@ -26,12 +26,14 @@ public class RaySynchronizer : MonoBehaviour
     public Camera _uiCamera;
 
     [FormerlySerializedAs("_spaceAction")] public InputAction _mouseAction;
-    public GraphicRaycaster GR;
-    public PointerEventData PED { get; private set; }
+    [FormerlySerializedAs("GR")] public GraphicRaycaster graphicRaycaster;
+    public PointerEventData PointerEventData { get; private set; }
     public List<RaycastResult> raycastResults { get; protected set; }
     public Vector3 screenPosition;
     public Button btn;
 
+    [SerializeField]
+    private bool _isUIClickableBySesnor;
 
     public bool isRayEnabled = true;
 
@@ -81,8 +83,8 @@ public class RaySynchronizer : MonoBehaviour
     public void SetUIEssentials()
     {
         UI_Canvas = Manager_Sensor.instance.Get_UIcanvas();
-        GR = UI_Canvas.GetComponent<GraphicRaycaster>();
-        PED = new PointerEventData(EventSystem.current);
+        graphicRaycaster = UI_Canvas.GetComponent<GraphicRaycaster>();
+        PointerEventData = new PointerEventData(EventSystem.current);
     }
 
 
@@ -115,6 +117,7 @@ public class RaySynchronizer : MonoBehaviour
     public void OnKeyPressed(InputAction.CallbackContext context)
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장
+        OnGetInputFromUser?.Invoke();
         ShootRay();
     }
 
@@ -145,21 +148,24 @@ public class RaySynchronizer : MonoBehaviour
         
         initialRay = Camera.main.ScreenPointToRay(screenPosition);
 
-        PED.position = screenPosition;
+        PointerEventData.position = screenPosition;
 
         raycastResults = new List<RaycastResult>();
-        GR.Raycast(PED, raycastResults);
-        
-        foreach (RaycastResult result in raycastResults)
-        {
-            result.gameObject.TryGetComponent(out btn);
-            btn?.onClick?.Invoke();
-            
-            result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
-            eventHandler?.OnClickHandler?.Invoke();
-        }
+        graphicRaycaster.Raycast(PointerEventData, raycastResults);
 
-        OnGetInputFromUser?.Invoke();
+
+        if (_isUIClickableBySesnor)
+            foreach (var result in raycastResults)
+            {
+                result.gameObject.TryGetComponent(out btn);
+                btn?.onClick?.Invoke();
+
+                result.gameObject.TryGetComponent(out UI_EventHandler eventHandler);
+                eventHandler?.OnClickHandler?.Invoke();
+            }
+
+
+        //  OnGetInputFromUser?.Invoke();
 
 #if UNITY_EDITOR
 

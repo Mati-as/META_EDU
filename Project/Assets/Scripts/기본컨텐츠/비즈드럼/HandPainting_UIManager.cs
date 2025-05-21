@@ -31,7 +31,7 @@ public class HandPainting_UIManager : UI_PopUp
     private float  _intervalBtwStartAndReady =1f;
     public static event Action onStartUI; 
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
 
       //  _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();
@@ -123,8 +123,8 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, _scaleAnimationDurationTime, scale => { _rectStart.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Start",0.8f);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Start",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.4f);
                 onStartUI?.Invoke();
             }).WaitForCompletion();
         
@@ -148,8 +148,8 @@ public class HandPainting_UIManager : UI_PopUp
         yield return DOVirtual.Float(0, 1, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).OnStart(
             () =>
             {
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Stop",0.8f);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/기본컨텐츠/HandFlip2/Whistle",0.4f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Stop",0.8f);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Whistle",0.4f);
             }).WaitForCompletion();
         yield return _waitInterval;
         yield return DOVirtual.Float(1, 0, 1, scale => { _rectStop.localScale = Vector3.one * scale; }).WaitForCompletion();

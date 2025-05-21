@@ -239,7 +239,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         });
     }
 
-    public override bool Init()
+    public override bool InitEssentialUI()
     {
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady += OnReadyAndStart;
@@ -933,7 +933,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         _timeSinceLastTouch = 0;
 
         restartSliderFillAmount = _restartSliderImage.fillAmount;
-        yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ => { _restartSliderImage.fillAmount += 0.028f; })
+        yield return DOVirtual.Float(0, 0, _guageIncreaseSensitiviy, _ => { _restartSliderImage.fillAmount += 0.5f; })
             .WaitForCompletion();
         _isRestartBtnBeingClicked = false;
     }

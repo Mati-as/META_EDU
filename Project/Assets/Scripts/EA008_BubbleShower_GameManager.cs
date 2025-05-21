@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class EA008_BubbleShower_GameManager : Base_GameManager
+public class EA008_BubbleShower_GameManager : Ex_BaseGameManager
 {
     private enum ColorSide
     {
@@ -21,32 +22,7 @@ public class EA008_BubbleShower_GameManager : Base_GameManager
     private BubbleGermObj[] _prints;
     private int PRINTS_COUNT;
     private Vector3 _rotateVector;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     private readonly Stack<ParticleSystem> _particlPool = new();
 
 
@@ -257,7 +233,7 @@ public void OnStart()
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -332,8 +308,8 @@ public void OnStart()
 
     protected override void Init()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
 
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_UIManager.onStartUIFinished += OnStart;
@@ -464,9 +440,20 @@ public void OnStart()
         });
     }
 
-    private void OnGameStartButtonClicked()
+ 
+
+    protected override void OnGameStartStartButtonClicked()
     {
-        PrintsAppear();
+        base.OnGameStartStartButtonClicked();
+      
+        initialMessage= "세균팀과 거품팀으로 나눠, 놀이 해볼까요?";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
+        
+        DOVirtual.DelayedCall(4f, () =>
+        {
+            PrintsAppear();
+        });
     }
 
     private void PrintsAppear()

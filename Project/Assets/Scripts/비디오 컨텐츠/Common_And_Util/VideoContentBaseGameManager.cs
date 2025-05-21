@@ -204,7 +204,7 @@ public class VideoContentBaseGameManager : Base_GameManager
         yield return _waitForPs;
 
 #if UNITY_EDITOR
-Debug.Log("sub sound play -");
+//Debug.Log("sub sound play -");
 #endif
         Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/VideoClickEffectSound/{SceneManager.GetActiveScene().name}_OnPsEnd",0.3f);
         ps.Stop();
