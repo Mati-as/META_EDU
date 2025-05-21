@@ -5,9 +5,9 @@ using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
 
-public class Construction_UIManager : Base_UIManager
+public class CrossRoad_UIManager : Base_UIManager
 {
-    private Construction_GameManager manager;
+    private CrossRoad_GameManager manager;
 
     private Sequence seq;
 
@@ -15,8 +15,11 @@ public class Construction_UIManager : Base_UIManager
     {
         base.Awake();
         Messenger.Default.Subscribe<NarrationMessage>(OnNarrationFromGm);
-        if (manager == null) manager = GameObject.FindWithTag("GameManager").GetComponent<Construction_GameManager>();
-        Debug.Assert(manager != null, "GameManager not found");
+        if (manager == null)
+        {
+            manager = GameObject.FindWithTag("GameManager").GetComponent<CrossRoad_GameManager>();
+            Debug.Assert(manager != null, "GameManager가 씬에 없습니다");
+        }
 
     }
     public override bool InitEssentialUI()
@@ -37,14 +40,14 @@ public class Construction_UIManager : Base_UIManager
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
 
-        AudioClip audioClip = Resources.Load<AudioClip>($"Construction/Audio/audio_{audioPath}");
+        AudioClip audioClip = Resources.Load<AudioClip>($"CrossRoad/Audio/audio_{audioPath}");
 
         seq?.Kill();
         seq = DOTween.Sequence();
 
         seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
-        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"Construction/Audio/audio_{audioPath}"));
-        seq.AppendInterval(audioClip.length + 0.5f);
+        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"CrossRoad/Audio/audio_{audioPath}"));
+        seq.AppendInterval(audioClip.length + 0.2f);
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 

@@ -5,24 +5,7 @@ using Cinemachine;
 using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
-
-public class NarrationMessage
-{
-    public string Narration
-    {
-        get; set;
-    }
-    public string AudioPath
-    {
-        get; set;
-    }
-
-    public NarrationMessage(string narrtionText, string audioPath)
-    {
-        Narration = narrtionText;
-        AudioPath = audioPath;
-    }
-}
+using MyGame.Messages;
 
 public class Construction_GameManager : Base_GameManager
 {

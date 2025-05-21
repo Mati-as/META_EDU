@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
+using MyGame.Messages;
 
 public enum VehicleType
 {
