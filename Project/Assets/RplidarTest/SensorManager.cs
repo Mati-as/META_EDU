@@ -795,11 +795,17 @@ public class SensorManager : MonoBehaviour
     private void FixedUpdate()
     {
 
-        _timer += Time.deltaTime;
-        if (isSensorSensitivityFilterModeOn || _timer > sensorSensitivity)
+   
+
+        if (isSensorSensitivityFilterModeOn)
         {
-            _timer = 0;
-            GenerateDectectedPos();
+            _timer += Time.deltaTime;
+          
+            if (_timer > sensorSensitivity)
+            {
+                _timer = 0;
+                GenerateDectectedPos();
+            }
         }
         else
         {

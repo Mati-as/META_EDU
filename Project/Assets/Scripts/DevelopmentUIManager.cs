@@ -13,7 +13,7 @@ public class DevelopmentUIManager : MonoBehaviour
     private Stack<TextMeshProUGUI> _TMPPool;
     private Stack<Text> _textPool;
     
-    private TextMeshProUGUI _fpsCounter;
+  //  private TextMeshProUGUI _fpsCounter;
     private bool _currentStatus = true;
 
     private void Start()
@@ -26,7 +26,7 @@ public class DevelopmentUIManager : MonoBehaviour
         var tmps = gameObject.GetComponentsInChildren<TextMeshProUGUI>();
         var texts = gameObject.GetComponentsInChildren<Text>();
         
-        _fpsCounter = Utils.FindChild(gameObject,"FPSCounter").GetComponent<TextMeshProUGUI>();
+//        _fpsCounter = Utils.FindChild(gameObject,"FPSCounter").GetComponent<TextMeshProUGUI>();
         foreach (var image in images)
         {
             _imagesPool.Push(image);
@@ -45,18 +45,20 @@ public class DevelopmentUIManager : MonoBehaviour
         DisableAllImages();
     }
 
-    //[삭제]
-    [Conditional("DevOnly")]
+#if UNITY_EDITOR
     private void DisableImageWithSpaceKey()
     {
         //버튼으로 대체만하면 이건 해결
         if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
     
     }
+    
     private void Update()
     {
         DisableImageWithSpaceKey();
     }
+#endif
+
 
     //뭔가 콘텐츠 안에서 계속해서 키게 만드는 무언가가 있음
     //0326 private -> public
@@ -100,7 +102,7 @@ public class DevelopmentUIManager : MonoBehaviour
             text.enabled = _currentStatus;
         }
         
-        _fpsCounter.enabled = _currentStatus;
+       //_fpsCounter.enabled = _currentStatus;
 
         // _developerMenu.SetActive(_currentStatus);
 

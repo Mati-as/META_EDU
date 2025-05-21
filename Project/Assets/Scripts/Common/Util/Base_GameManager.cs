@@ -77,10 +77,7 @@ public abstract class Base_GameManager : MonoBehaviour
         private set;
     }
 
-    protected int TARGET_FRAME
-    {
-        get;
-    } = 60; //
+    private const int TARGET_FRAME = 60; //
 
     protected float BGM_VOLUME
     {
@@ -498,7 +495,7 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
         QualitySettings.vSyncCount = 1;
-        Application.targetFrameRate = targetFrame;
+        Application.targetFrameRate = TARGET_FRAME;
 
 #if UNITY_EDITOR
         Debug.Log(
