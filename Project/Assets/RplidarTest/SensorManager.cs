@@ -55,7 +55,17 @@ public class SensorManager : MonoBehaviour
 
     private static readonly float SENSOR_SENTSITIVITY_TOLERANCE = 0.005f;
     private static float _sensorSensitivity;
-
+    private static bool _isSensorSensitivityFilterModeOn = true;
+    public static bool isSensorSensitivityFilterModeOn
+    {
+        get => _isSensorSensitivityFilterModeOn;
+        set
+        {
+            if (value == _isSensorSensitivityFilterModeOn) return;
+            _isSensorSensitivityFilterModeOn = value;
+            Logger.Log($"sensitivity is {_isSensorSensitivityFilterModeOn}");
+        }
+    }
     public static float sensorSensitivity
     {
         get => _sensorSensitivity;
@@ -64,7 +74,7 @@ public class SensorManager : MonoBehaviour
             if (value < SENSOR_DEFAULT_SENSITIVITY)
             {
                 _sensorSensitivity = SENSOR_DEFAULT_SENSITIVITY;
-                Logger.LogWarning("sensitivity is too small. set as 0.05f");
+                Logger.LogWarning("sensitivity is too small. set as 0.005f");
             }
             else
             {
@@ -786,9 +796,13 @@ public class SensorManager : MonoBehaviour
     {
 
         _timer += Time.deltaTime;
-        if (_timer > sensorSensitivity)
+        if (isSensorSensitivityFilterModeOn || _timer > sensorSensitivity)
         {
             _timer = 0;
+            GenerateDectectedPos();
+        }
+        else
+        {
             GenerateDectectedPos();
         }
 

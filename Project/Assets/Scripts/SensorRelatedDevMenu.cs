@@ -14,6 +14,8 @@ public class SensorRelatedDevMenu : UI_PopUp
         Btn_TouchZone,
         Btn_RealRay,
         Btn_NormalRay
+        
+        ,Toggle_IsSensorFilterMode
     }
 
     private enum TMP
@@ -26,8 +28,10 @@ public class SensorRelatedDevMenu : UI_PopUp
     private bool isOpen =false;
     private bool _isAllPrefabImageActive = false;
     private readonly int _isOpen = Animator.StringToHash("isOn");
-
+    
     private bool _clickable =true;
+
+    private Toggle _toggleIsSensorFilterMode;
     // 통일된 스타일 적용용 함수
     void UpdateButtonVisual(Btn btn, bool isActive)
     {
@@ -42,7 +46,20 @@ public class SensorRelatedDevMenu : UI_PopUp
         BindObject(typeof(Btn));
         BindTMP(typeof(TMP));
 
+        
+        _toggleIsSensorFilterMode = GetObject((int)Btn.Toggle_IsSensorFilterMode).gameObject.GetComponent<Toggle>();
 
+
+        _toggleIsSensorFilterMode.isOn = SensorManager.isSensorSensitivityFilterModeOn;
+        _toggleIsSensorFilterMode.onValueChanged.AddListener((isOn) =>
+        {
+            if (!_clickable) return;
+            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+            
+            SensorManager.isSensorSensitivityFilterModeOn = isOn;
+            Logger.Log($"센서 필터 모드 : {isOn}");
+        });
+        
         GetObject((int)Btn.Btn_Open).gameObject.BindEvent(() =>
         {
             if (!_clickable) return;
