@@ -26,6 +26,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         WheatGroup_C,
         WheatGroup_D,
         WheatGroup_E,
+            
         ScareCrowA,
         ScareCrowB,
         ScareCrowC,

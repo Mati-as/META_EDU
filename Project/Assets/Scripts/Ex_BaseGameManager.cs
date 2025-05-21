@@ -89,8 +89,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<int, Sequence> _sequenceMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
 
+    //resourceFields
     protected string psResourcePath = string.Empty;
 
+    protected Dictionary<int,string> subPsResourcePathMap = new();
+    private const int MAX_SUB_PS_COUNT = 5; 
+    
+    
+    
     protected GameObject UIManagerObj;
   
     
@@ -356,5 +362,29 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected void ChangeThemeSeqAnim(int seqNum = 0)
     {
         mainAnimator.SetInteger(SEQ_NUM, seqNum);
+    }
+    
+    
+    protected void SetSubPsPool()
+    {
+        
+        for (int currentSubPsOrder = 0 ; currentSubPsOrder < MAX_SUB_PS_COUNT; currentSubPsOrder++)
+        {
+            if (!subPsResourcePathMap.ContainsKey(currentSubPsOrder))
+            {
+                Logger.ContentTestLog("effect 미사용");
+                continue;
+            }
+        
+            var particlePrefab = Resources.Load<GameObject>(psResourcePath);
+
+            for (int currentPoolSize = 0; currentPoolSize < 100; currentPoolSize++)
+            {
+                var ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+                ps.gameObject.SetActive(false);
+                _particlePool.Push(ps);
+            }
+        }
+       
     }
 }

@@ -305,7 +305,7 @@ public class EA012_GameManager : Ex_BaseGameManager
         Logger.ContentTestLog($" {Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.name} : 클릭불가 상태 지속시간 : {delayAmount}");
     }
 
-    private void OnTireSelectionFinished()
+    private void OnTireRemovalFinished()
     {
         _isCarMoveFinished = false;
         SetAllHelpCarMoveBtnStatus();
@@ -490,7 +490,13 @@ public class EA012_GameManager : Ex_BaseGameManager
     #endregion
 
     private int _seatClickedCount =1;
-
+    private Dictionary<int,MeshRenderer> _seatMeshRendererMap = new();
+    [SerializeField]
+    Color _defaultColor;
+    
+    [SerializeField] 
+    private Color _selectedFilter;
+    
     private void OnRaySyncedOnSeatSelection()
     {
         bool isAllSeatClicked = true;
@@ -502,9 +508,14 @@ public class EA012_GameManager : Ex_BaseGameManager
                 if (isSeatClickedMap[_tfIdToEnumMap[hitTransformID]]) return;
                 isSeatClickedMap[_tfIdToEnumMap[hitTransformID]] = true;
                 
+                MeshRenderer renderer = hit.transform.GetComponent<MeshRenderer>();
+                _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[hitTransformID], renderer);
+                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedFilter, 0.35f);
+                
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
                 _seatClickedCount++;
 
+                
                 _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
                 foreach (int key in isSeatClickedMap.Keys)
@@ -532,7 +543,7 @@ public class EA012_GameManager : Ex_BaseGameManager
     
     
     private bool _isTireRemovalFinished;
-    #region 타이어 등장파트
+    #region 타이어 및 제거 파트
 
     private void OnRaySyncedOnTireSelection(int currentTireGroup)
     {
@@ -607,11 +618,12 @@ public class EA012_GameManager : Ex_BaseGameManager
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarArrival");
             });
             
-            DOVirtual.DelayedCall(3.5f, () =>
+            //타이어가 제거된 후에 차량이 나타나는 시퀀스. 너무 짧으면 차량 애니메이션이 안보임
+            DOVirtual.DelayedCall(6.5f, () =>
             {
                 currentMainSeq++;
                 Logger.ContentTestLog($"current seq -> {currentMainSeq} -------------------");
-                OnTireSelectionFinished();
+                OnTireRemovalFinished();
             });
             currentRemovedTireCount = 0;
         }
@@ -649,11 +661,11 @@ public class EA012_GameManager : Ex_BaseGameManager
                 if (i == (int)GameObj.BtnA)
                 {
                     _helpMoveBtnColliderMap[(int)GameObj.BtnA].enabled =true;
-                    AnimateSeatLoopSelectively(GameObj.BtnA);
+                   // AnimateSeatLoopSelectively(GameObj.BtnA);
                 }
                 
-                Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
-                GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.25f);
+         //       Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
+        //        GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.25f);
             }
         }
         else
@@ -685,18 +697,33 @@ public class EA012_GameManager : Ex_BaseGameManager
         }
         SetAllHelpCarMoveBtnStatus(false);
     }
+
+    private Sequence _helpMoveBtnIntroSeq;
+
     private void AnimateAllCarMoveHelpBtns()
     {
         //차가 버튼으로움직일땐 비활성화 -----------------
+        _helpMoveBtnIntroSeq?.Kill();
+        _helpMoveBtnIntroSeq = DOTween.Sequence();
 
-       
+
         //GetObject((int)GameObj.Car_Ambulance).
         for (int i = (int)GameObj.BtnA; i <= (int)GameObj.BtnG; i++)
         {
-            GetObject((int)i).SetActive(true);
-//            Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
-            //AnimateSeatLoop((GameObj)i);
+            GetObject(i).SetActive(true);
+
+            _helpMoveBtnIntroSeq.AppendCallback(() =>
+            {
+                //GetObject(i).transform.localScale = Vector3.zero;
+            });
         }
+
+        _helpMoveBtnIntroSeq.AppendCallback(() =>
+        {
+            _helpMoveBtnIntroSeq
+                .Append(GetObject((int)GameObj.BtnA).transform.DOScale(_defaultSizeMap[(int)GameObj.BtnA], 0.25f));
+            AnimateSeatLoopSelectively(GameObj.BtnA);
+        });
     }
 
     private void AnimateSeatLoopSelectively(GameObj seat)
@@ -744,7 +771,8 @@ public class EA012_GameManager : Ex_BaseGameManager
     }
    // private MainSeq currentMainSeq;
     private bool _isCarMoveFinished;
-    
+    private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+
     #region 자동차 옮겨주기 파트
     
     private void OnRaySyncOnHelpCarMovePart(GameObj currentCar)
@@ -754,7 +782,11 @@ public class EA012_GameManager : Ex_BaseGameManager
             Logger.ContentTestLog("[HelpBtn] 클릭 불가 상태입니다. ----- 대기 필요 ");
             return;
         }
-        
+
+        foreach (var hit in GameManager_Hits)
+        {
+            PlayParticleEffect(hit.point);
+        }
         foreach (var hit in GameManager_Hits)
             if (hit.transform.name.Contains("BtnA")) OnHelpBtnClicked(GameObj.BtnA     ,currentCar);
             else if (hit.transform.name.Contains("BtnB")) OnHelpBtnClicked(GameObj.BtnB,currentCar);
@@ -820,7 +852,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                
 
                 // 차량 옮겨주는 애니메이션 종료 후 다음 시퀀스로 이동 및 초기화 진행 ----------------------------------------------
-                DOVirtual.DelayedCall(8f, () =>
+                DOVirtual.DelayedCall(12f, () =>
                 {
                       
                    
@@ -862,6 +894,7 @@ public class EA012_GameManager : Ex_BaseGameManager
 private void OnHelpMoveFinisehd()
 {
     KillHelpBtns();
+    
  //   currentMainSeq++;
 }
 
@@ -873,8 +906,8 @@ private void OnHelpBtnClicked(GameObj clickedBtn, GameObj currentCar)
         // Logger.ContentTestLog("[HelpBtn] BtnG 도달 → CarAnim Seq 2 설정됨");
         return;
 
-    PlayParticleEffect(GetObject((int)clickedBtn).transform.position);
 
+ 
     //C인경우 재생안되도록 설계됨. NextHelpMOveBtnC 파일 넣지 않은상태가 정상동작
     char randomCharAB = (char)Random.Range('A', 'F' + 1);
     Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/NextHelpMoveBtn" + randomCharAB);

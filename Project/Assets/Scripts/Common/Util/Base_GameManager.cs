@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
@@ -297,7 +299,21 @@ public abstract class Base_GameManager : MonoBehaviour
         isInitialized = true;
 
         InitCameraRect();
+        
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            // Canvas.ForceUpdateCanvases();
+            //
+            // var canvas = GameObject.FindObjectOfType<Canvas>();
+            // if (canvas != null)
+            // {
+            //     LayoutRebuilder.ForceRebuildLayoutImmediate(canvas.GetComponent<RectTransform>());
+            // }
 
+            //EventSystem.current.refr
+        });
+     
+        
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
     }
 
