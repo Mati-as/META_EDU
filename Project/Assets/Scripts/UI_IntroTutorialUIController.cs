@@ -35,8 +35,8 @@ public class UI_IntroTutorialUIController : UI_PopUp
     {
         BindObject(typeof(Intro_UI));
         BindTMP(typeof(TMPs));
-        UI_Scene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
-        UI_Scene_StartBtn.onGameStartBtnShut += FadeOutScreen;
+        UI_InScene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
+        UI_InScene_StartBtn.onGameStartBtnShut += FadeOutScreen;
         
         
         
@@ -63,7 +63,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
+        UI_InScene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
 
     }
     private void TurnOff()

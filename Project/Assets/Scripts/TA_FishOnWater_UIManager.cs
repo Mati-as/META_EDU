@@ -247,8 +247,8 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         TaFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
         TaFishOnWaterBaseGameManager.OnRoundFinished += ShowStopUI;
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
         
         
         
@@ -517,7 +517,7 @@ public class TA_FishOnWater_UIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         TaFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         TaFishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
     }
 
     private void Update()

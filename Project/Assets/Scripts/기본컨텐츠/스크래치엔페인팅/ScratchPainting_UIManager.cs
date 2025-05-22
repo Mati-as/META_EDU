@@ -64,8 +64,8 @@ public class ScratchPainting_UIManager : UI_PopUp
         _rectLetsPaint.localScale = Vector3.zero;
         _letsPaint.SetActive(false);
         
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
         ScratchPaintingBaseGameManager.onRoundRestart -= OnGameStartStart;
         ScratchPaintingBaseGameManager.onRoundRestart += OnGameStartStart;

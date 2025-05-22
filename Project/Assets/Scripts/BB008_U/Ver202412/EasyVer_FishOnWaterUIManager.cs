@@ -229,8 +229,8 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
     {
         
         
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartReadyAndStart;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartReadyAndStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartReadyAndStart;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartReadyAndStart;
         
         EasyVer_FishOnWaterGameManager.OnRoundFinished -= ShowStopUI;
         EasyVer_FishOnWaterGameManager.OnRoundFinished += ShowStopUI;
@@ -454,7 +454,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
        // UFishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartReadyAndStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartReadyAndStart;
     }
 
     private void Update()

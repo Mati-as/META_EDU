@@ -63,14 +63,14 @@ public class EA016_BallController : MonoBehaviour
         _gm = GameObject.FindWithTag("GameManager").GetComponent<EA016_GameManager>();
         Debug.Assert(_gm != null, "GameManager not found");
         
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartBtnClicked;
     
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartBtnClicked;
     }
 
     private void OnGameStartBtnClicked()

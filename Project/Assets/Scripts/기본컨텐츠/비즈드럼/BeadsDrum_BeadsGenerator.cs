@@ -27,15 +27,15 @@ public class BeadsDrum_BeadsGenerator : MonoBehaviour
     {
         _beadsContainer = new Queue<GameObject>();
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
 
         Init();
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
     }
 
     private void SetPool(Queue<GameObject> pool, string path, int poolCount = 50)

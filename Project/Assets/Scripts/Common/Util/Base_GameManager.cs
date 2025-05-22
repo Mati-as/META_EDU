@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
@@ -75,10 +77,7 @@ public abstract class Base_GameManager : MonoBehaviour
         private set;
     }
 
-    protected int TARGET_FRAME
-    {
-        get;
-    } = 60; //
+    private const int TARGET_FRAME = 60; //
 
     protected float BGM_VOLUME
     {
@@ -106,7 +105,7 @@ public abstract class Base_GameManager : MonoBehaviour
         {
             if (_uiManagerCommonBehaviorController != null)
             {
-                _uiManagerCommonBehaviorController.ManualInit();
+               // _uiManagerCommonBehaviorController.ManualInit();
             }
             else
             {
@@ -297,7 +296,21 @@ public abstract class Base_GameManager : MonoBehaviour
         isInitialized = true;
 
         InitCameraRect();
+        
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            // Canvas.ForceUpdateCanvases();
+            //
+            // var canvas = GameObject.FindObjectOfType<Canvas>();
+            // if (canvas != null)
+            // {
+            //     LayoutRebuilder.ForceRebuildLayoutImmediate(canvas.GetComponent<RectTransform>());
+            // }
 
+            //EventSystem.current.refr
+        });
+     
+        
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
     }
 
@@ -417,8 +430,8 @@ public abstract class Base_GameManager : MonoBehaviour
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
     }
 
     protected virtual void OnDestroy()
@@ -427,7 +440,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
 
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
         DOTween.KillAll();
         Destroy(gameObject);
@@ -481,7 +494,7 @@ public abstract class Base_GameManager : MonoBehaviour
     private void SetResolution(int width, int height, int targetFrame)
     {
         Screen.SetResolution(width, height, Screen.fullScreen);
-        QualitySettings.vSyncCount = 1;
+        QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = targetFrame;
 
 #if UNITY_EDITOR

@@ -55,7 +55,17 @@ public class SensorManager : MonoBehaviour
 
     private static readonly float SENSOR_SENTSITIVITY_TOLERANCE = 0.005f;
     private static float _sensorSensitivity;
-
+    private static bool _isSensorSensitivityFilterModeOn = true;
+    public static bool isSensorSensitivityFilterModeOn
+    {
+        get => _isSensorSensitivityFilterModeOn;
+        set
+        {
+            if (value == _isSensorSensitivityFilterModeOn) return;
+            _isSensorSensitivityFilterModeOn = value;
+            Logger.Log($"sensitivity is {_isSensorSensitivityFilterModeOn}");
+        }
+    }
     public static float sensorSensitivity
     {
         get => _sensorSensitivity;
@@ -64,7 +74,7 @@ public class SensorManager : MonoBehaviour
             if (value < SENSOR_DEFAULT_SENSITIVITY)
             {
                 _sensorSensitivity = SENSOR_DEFAULT_SENSITIVITY;
-                Logger.LogWarning("sensitivity is too small. set as 0.05f");
+                Logger.LogWarning("sensitivity is too small. set as 0.005f");
             }
             else
             {
@@ -175,14 +185,14 @@ public class SensorManager : MonoBehaviour
 
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
-        UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
-        UI_Scene_StartBtn.OnSensorRefreshEvent += AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent += AsyncInitSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
         Destroy(gameObject);
 
          
@@ -785,10 +795,20 @@ public class SensorManager : MonoBehaviour
     private void FixedUpdate()
     {
 
-        _timer += Time.deltaTime;
-        if (_timer > sensorSensitivity)
+   
+
+        if (isSensorSensitivityFilterModeOn)
         {
-            _timer = 0;
+            _timer += Time.deltaTime;
+          
+            if (_timer > sensorSensitivity)
+            {
+                _timer = 0;
+                GenerateDectectedPos();
+            }
+        }
+        else
+        {
             GenerateDectectedPos();
         }
 

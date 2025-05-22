@@ -247,8 +247,8 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished += ShowStopUI;
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartBtnClicked;
         
         
         
@@ -519,7 +519,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         //UI_Scene_Button.onBtnShut -= OnStartButtonClicked;
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         OriginalHardVer_FishOnWaterBaseGameManager.OnRoundFinished -= ShowStopUI;
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartBtnClicked;
     }
 
     private void Update()

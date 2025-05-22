@@ -43,13 +43,13 @@ public class Base_UIManager : UI_PopUp
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
         _objects = new();
         
-        TMP_Instruction.text = string.Empty;
-        UI_Instruction.SetActive(false);
+        //commonBehavior에서 정의 하도록 합니다. 
+ //       TMP_Instruction.text = string.Empty;------------
+ //       UI_Instruction.SetActive(false);
         
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        //_UIInstructionOriginalScale = UI_Instruction.transform.localScale;
-        
+
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
         
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
@@ -168,10 +168,10 @@ public class Base_UIManager : UI_PopUp
         // 텍스트 기반 사이즈 측정 (공백, 기호 포함)
         Vector2 textSize =  TMP_Instruction.GetPreferredValues( TMP_Instruction.text, 1000f, 0f); // 너비 한도 설정
         float paddingX = 100f; // 좌우 여백
-        float paddingY = 60f;  // 상하 여백
+     
 
         float finalWidth = textSize.x + paddingX;
-        float finalHeight =  TMP_Instruction.text.Contains("\n") ? _originalHeight * 2 : _originalHeight;
+        float finalHeight =  TMP_Instruction.text.Contains("\n") ? _originalHeight * 1.35f : _originalHeight;
 
         _bgRectTransform.sizeDelta = new Vector2(finalWidth, finalHeight);
     }
