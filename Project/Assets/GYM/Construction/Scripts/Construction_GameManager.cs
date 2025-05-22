@@ -130,7 +130,7 @@ public class Construction_GameManager : Base_GameManager
         truckVirtualCamera = cameras[6];
         bulldozerVirtualCamera = cameras[7];
 
-        UI_Scene_StartBtn.onGameStartBtnShut += StartGame;
+        UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
     
     private void StartGame()

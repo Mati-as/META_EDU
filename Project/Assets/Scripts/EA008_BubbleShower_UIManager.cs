@@ -73,8 +73,8 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
         _rectRedWin.localScale = Vector3.zero;
         _redWin.SetActive(false);
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStart;
         
         EA008_BubbleShower_GameManager.onRoundFinishedForUI -= OnRoundFinish;
         EA008_BubbleShower_GameManager.onRoundFinishedForUI += OnRoundFinish;
@@ -92,7 +92,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStart;
         EA008_BubbleShower_GameManager.onRoundFinishedForUI -= OnRoundFinish;
         EA008_BubbleShower_GameManager.onRoundFinished -= PopStopUI;
         EA008_BubbleShower_GameManager.restart -= OnGameStartStart;

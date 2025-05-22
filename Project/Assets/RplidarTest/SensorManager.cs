@@ -185,14 +185,14 @@ public class SensorManager : MonoBehaviour
 
         _lidarDatas = new LidarData[LIDAR_DATA_SIZE];
         _sensitivitySlider = GameObject.Find("SensitivitySlider").GetComponent<Slider>();
-        UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
-        UI_Scene_StartBtn.OnSensorRefreshEvent += AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent += AsyncInitSensor;
         // _width = _height * (Resolution_X / Resolution_Y);
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
+        UI_InScene_StartBtn.OnSensorRefreshEvent -= AsyncInitSensor;
         Destroy(gameObject);
 
          

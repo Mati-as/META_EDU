@@ -43,13 +43,13 @@ public class Base_UIManager : UI_PopUp
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
         _objects = new();
         
-        TMP_Instruction.text = string.Empty;
-        UI_Instruction.SetActive(false);
+        //commonBehavior에서 정의 하도록 합니다. 
+ //       TMP_Instruction.text = string.Empty;------------
+ //       UI_Instruction.SetActive(false);
         
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        //_UIInstructionOriginalScale = UI_Instruction.transform.localScale;
-        
+
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
         
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");

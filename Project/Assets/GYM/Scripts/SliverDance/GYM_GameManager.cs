@@ -66,7 +66,7 @@ public class GYM_GameManager : Base_GameManager
 
         Reset();
 
-        UI_Scene_StartBtn.onGameStartBtnShut += PlayNarration;
+        UI_InScene_StartBtn.onGameStartBtnShut += PlayNarration;
 
     }
 
@@ -90,7 +90,7 @@ public class GYM_GameManager : Base_GameManager
         msgSeq.AppendCallback(() => MessageImg.DOFade(0f, 1f).SetDelay(2f));
         msgSeq.AppendCallback(() => MessageText.DOFade(0f, 1f).SetDelay(2f));
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= PlayNarration;
+        UI_InScene_StartBtn.onGameStartBtnShut -= PlayNarration;
     }
 
     //private Dictionary<int, Sequence> sequenceMap =new Dictionary<int, Sequence>();
