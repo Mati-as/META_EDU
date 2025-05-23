@@ -73,7 +73,7 @@ public class Base_UIManager : UI_PopUp
     /// 최신 Instruction UI를 사용하고싶을때 InitInstructionUI()를 호출합니다.
     /// 아래함수를 사용하지않는경우 기본적으로 사용하지 않는것으로 간주 합니다. 
     /// </summary>
-    protected void InitInstructionUI()
+    public void InitInstructionUI()
     {
       //  UI_Instruction.SetActive(true);
         TMP_Instruction.text = string.Empty;
@@ -83,7 +83,7 @@ public class Base_UIManager : UI_PopUp
     /// 애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    protected void PopFromZeroInstructionUI(string instruction,float duration = 0f,float delay =0f)
+    public void PopFromZeroInstructionUI(string instruction,float duration = 0f,float delay =0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -112,7 +112,7 @@ public class Base_UIManager : UI_PopUp
 
     }
     
-    protected void PopAndChangeUI(string instruction, float delayAndShutTme = 0f)
+    public void PopAndChangeUI(string instruction, float delayAndShutTme = 0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -142,7 +142,7 @@ public class Base_UIManager : UI_PopUp
     }
 
     
-    protected void ShutInstructionUI(string instruction)
+    public void ShutInstructionUI(string instruction)
     {
         
         _uiSeq?.Kill();

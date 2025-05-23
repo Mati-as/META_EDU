@@ -1,305 +1,535 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using SuperMaxim.Messaging;
 using UnityEngine;
 
 public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 {
-
-
     private enum Obj
     {
         Sprites_Ambulance,
         Sprites_PoliceCar,
         Sprites_FireTruck,
-        
-        SpriteBg,
-        
-    }
-    
 
-    private Dictionary<int, Animator[]> _subPartsAnimMap = new();
-    private Dictionary<int,Animator> tfIDToAnimatorMap = new();
+        SpriteBg,
+
+        Seat_A,
+        Seat_B,
+        Seat_C,
+        Seat_D,
+        Seat_E,
+        Seat_F,
+        Seat_G
+    }
+
+    private const int SEAT_COUNT = 7;
+
+    private readonly Dictionary<int, Animator[]> _subPartsAnimMap = new();
+
+    private readonly Dictionary<int, Animator> tfIDToAnimatorMap = new();
+
     // 첫번쨰 Sprite이미지는 WholePicture로 사용 중
     // 1.whole 2~8 sub parts sprite Images
-    private Dictionary<int, SpriteRenderer[]> _spritesMap = new();
+    private readonly Dictionary<int, SpriteRenderer[]> _spritesMap = new();
+
+    private SpriteRenderer _spriteBgRenderer;
 
     private enum MainSeq
     {
         SeatSelection,
-        
+
         Ambulance_Intro,
         Ambulance_Outro,
-        
+
         PoliceCar_Intro,
         PoliceCar_Outro,
-        
+
         FireTruck_Intro,
         FireTruck_Outro,
-        
+
         OnFinish
     }
+
     public enum SubPartsAnim
     {
         Default,
         Seperated,
-        Completing,
+        Completing
     }
-    
-       public  int CurrentMainSeq
+
+    public int CurrentMainSeq
     {
-        get => _currentMainSequence;
+        get
+        {
+            return _currentMainSequence;
+        }
         set
         {
-           
             _currentMainSequence = value;
-            
-            Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
-            
+
+            //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
             Logger.ContentTestLog($"Current Sequence: {CurrentMainSeq.ToString()}");
 
 
-
             // commin Init Part.
-          
-            
+            ChangeThemeSeqAnim(value);
+
             switch (value)
             {
                 case (int)MainSeq.SeatSelection:
-                    ChangeThemeSeqAnim((int)value);
+                    AnimateAllSeats();
+                    ChangeThemeSeqAnim(value);
                     break;
+
+                
+                
                 
                 case (int)MainSeq.Ambulance_Intro:
-                    ChangeThemeSeqAnim((int)value);
+                    OnCarIntro((int)Obj.Sprites_Ambulance);
+                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 구급차를 완성시켜요!");
                     break;
                 case (int)MainSeq.Ambulance_Outro:
-                    ChangeThemeSeqAnim((int)value);
+                    _uiManager.PopFromZeroInstructionUI("구급차를 완성했어!");
+                    OnOutro((int)Obj.Sprites_Ambulance);
                     break;
+                
                 
                 case (int)MainSeq.PoliceCar_Intro:
+                    Logger.ContentTestLog("OnPoliceCarIntro -------------------");
+                    OnCarIntro((int)Obj.Sprites_PoliceCar);
+                    _uiManager.PopFromZeroInstructionUI("이번엔, 각 부품을 터치해서 경찰차를 완성시켜요!");
                     break;
                 case (int)MainSeq.PoliceCar_Outro:
+                    _uiManager.PopFromZeroInstructionUI("경찰차를 완성했어!");
+                    OnOutro((int)Obj.Sprites_PoliceCar);
                     break;
+
                 
                 case (int)MainSeq.FireTruck_Intro:
+                    OnCarIntro((int)Obj.Sprites_FireTruck);
                     break;
                 case (int)MainSeq.FireTruck_Outro:
                     break;
-                
+
                 case (int)MainSeq.OnFinish:
                     break;
-                
             }
         }
     }
-       
 
-    private const int COUNT_TO_COMPLETE = 10;
+    private void AnimateAllSeats()
+    {
+        for (int i = (int)Obj.Seat_A; i <= (int)Obj.Seat_G; i++)
+        {
+            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Obj)i}");
+            AnimateSeatLoop((Obj)i);
+        }
+    }
+
+    private void AnimateSeatLoop(Obj seat)
+    {
+        var SeatTransform = GetObject((int)seat).transform;
+
+        _sequenceMap[(int)seat]?.Kill();
+        _sequenceMap[(int)seat] = DOTween.Sequence();
+        _sequenceMap[(int)seat]
+            .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
+            .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
+            .SetLoops(-1, LoopType.Yoyo)
+            .OnKill(() =>
+            {
+                SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
+            });
+
+        _sequenceMap[(int)seat].Play();
+    }
+
+
+    private void OnOutro(int round)
+    {
+        var currentSprite = _spritesMap[round];
+        _spritesMap[round][0].DOFade(0f, 2f);
+        
+        _spriteBgRenderer.DOFade(0, 1f).OnComplete(() =>
+        {
+        });
+        
+        _spriteBgRenderer.DOFade(0f, 1.5f)
+            .OnComplete(() =>
+            {
+                foreach (var sprite in _spritesMap[(int)round])
+                {
+                    sprite.DOFade(0, 2f);
+                }
+            });
+        
+        DOVirtual.DelayedCall(12, () =>
+        {
+
+            CurrentMainSeq++;
+            isClickable = true;
+
+        });
+
+    }
 
     protected override void Init()
     {
-        DOTween.SetTweensCapacity(1000,1000);
+        DOTween.SetTweensCapacity(1000, 1000);
         BindObject(typeof(Obj));
-        
-        Animator[] ambulAnims = GetObject((int)Obj.Sprites_Ambulance).GetComponentsInChildren<Animator>(false);
-        
-        _subPartsAnimMap.Add((int)Obj.Sprites_Ambulance,  ambulAnims);
-        
-        Animator[] policeAnims = GetObject((int)Obj.Sprites_PoliceCar).GetComponentsInChildren<Animator>(false);
-        _subPartsAnimMap.Add((int)Obj.Sprites_PoliceCar, policeAnims);  
-        
-        Animator[] fireAnims = GetObject((int)Obj.Sprites_FireTruck).GetComponentsInChildren<Animator>(false);
+
+        var ambulAnims = GetObject((int)Obj.Sprites_Ambulance).GetComponentsInChildren<Animator>(false);
+
+        _subPartsAnimMap.Add((int)Obj.Sprites_Ambulance, ambulAnims);
+
+        var policeAnims = GetObject((int)Obj.Sprites_PoliceCar).GetComponentsInChildren<Animator>(false);
+        _subPartsAnimMap.Add((int)Obj.Sprites_PoliceCar, policeAnims);
+
+        var fireAnims = GetObject((int)Obj.Sprites_FireTruck).GetComponentsInChildren<Animator>(false);
         _subPartsAnimMap.Add((int)Obj.Sprites_FireTruck, fireAnims);
 
-        
-        
-        SpriteRenderer[] Amb_Sprites =
+
+        var Amb_Sprites =
             GetObject((int)Obj.Sprites_Ambulance).GetComponentsInChildren<SpriteRenderer>(false);
-        _spritesMap.Add((int)Obj.Sprites_Ambulance,Amb_Sprites);
-        
-        SpriteRenderer[] policeSprites =
+        _spritesMap.Add((int)Obj.Sprites_Ambulance, Amb_Sprites);
+
+        var policeSprites =
             GetObject((int)Obj.Sprites_PoliceCar).GetComponentsInChildren<SpriteRenderer>(false);
-        _spritesMap.Add((int)Obj.Sprites_PoliceCar,  policeSprites);  
-        
-        SpriteRenderer[] Sprites_FireTruck =
+        _spritesMap.Add((int)Obj.Sprites_PoliceCar, policeSprites);
+
+        var Sprites_FireTruck =
             GetObject((int)Obj.Sprites_FireTruck).GetComponentsInChildren<SpriteRenderer>(false);
         _spritesMap.Add((int)Obj.Sprites_FireTruck, Sprites_FireTruck);
-        
-        
-        
+
+
         //For RaySync Control. 
-        foreach (var key in _subPartsAnimMap.Keys.ToArray())
-        {
-            foreach (var animator in _subPartsAnimMap[key])
-            {
-                tfIDToAnimatorMap.Add(animator.transform.GetInstanceID(), animator);
-            }
-        }
+        foreach (int key in _subPartsAnimMap.Keys.ToArray())
+        foreach (var animator in _subPartsAnimMap[key])
+            tfIDToAnimatorMap.Add(animator.transform.GetInstanceID(), animator);
 
-        SetSubPartsAnimatorStatus(false);
-        SetSpriteStatus(false);
-        
-        foreach (var sprite in _spritesMap[0])
-        {
-            Logger.ContentTestLog($" Animator added: {sprite.name}");
-        }
+        SetAllAnimators(false);
+        SetAllSprites(false);
 
-        
+      
+
+
+        psResourcePath = "Runtime/EA018/Fx_Click";
+
+        _spriteBgRenderer = GetObject((int)Obj.SpriteBg).GetComponent<SpriteRenderer>();
+        _spriteBgRenderer.DOFade(0, 0.0001f);
         base.Init();
+
+        _uiManager = UIManagerObj.GetComponent<EA018_UIManager>();
+
+        for (int i = (int)Obj.Seat_A; i < (int)Obj.Seat_A + SEAT_COUNT; i++) isSeatClickedMap.Add(i, false);
     }
-    
-    private void SetSubPartsAnimatorStatus(bool isActive)
+
+    private void SetAnimatorStatus(int index, bool isActive = false)
     {
-        foreach (var key in _subPartsAnimMap.Keys.ToArray())
+        foreach (var animator in _subPartsAnimMap[index])
+            animator.enabled = isActive;
+    }
+
+    private void SetSpriteStatus(int index, bool isActive = false)
+    {
+        Logger.ContentTestLog($"{(Obj)index} is turned on?: {isActive}");
+
+        foreach (var sprite in _spritesMap[index])
         {
-            foreach (var animator in _subPartsAnimMap[key])
-            {
-                animator.enabled = isActive;
-            }
+            sprite.enabled = isActive;
+            Logger.ContentTestLog($"{sprite.name} is turned on?: {isActive}");
         }
     }
 
-    private void SetSpriteStatus(bool isActive)
+    private void SetAllAnimators(bool isActive)
     {
-        foreach (var key in _spritesMap.Keys.ToArray())
-        {
-            foreach (SpriteRenderer sprite in _spritesMap[key])
-            {
-                sprite.enabled = isActive;
-            }
-        }
+        foreach (int key in _subPartsAnimMap.Keys.ToArray())
+        foreach (var animator in _subPartsAnimMap[key])
+            animator.enabled = isActive;
     }
+
+    private void SetAllSprites(bool isActive)
+    {
+        foreach (int key in _spritesMap.Keys.ToArray())
+        foreach (var sprite in _spritesMap[key])
+            sprite.enabled = isActive;
+    }
+
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        
+
         DOVirtual.DelayedCall(1.5f, () =>
         {
             initialMessage = "먼저 친구들,\n각자 표시된 자리에 앉아주세요!";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
-            
-            CurrentMainSeq = (int)MainSeq.SeatSelection; 
-            
-            //테스트용으로 3초뒤에 시퀀스 변경
-            DOVirtual.DelayedCall(3f, () =>
-            {
-                CurrentMainSeq = (int)1;
-                ChangeThemeSeqAnim(1);
-                OnPoliceCarIntro();
-            });
-            
-            
+
+            CurrentMainSeq = (int)MainSeq.SeatSelection;
+
+
             Logger.ContentTestLog("Mainseq Changed SeatSelection -------------------");
         });
-
     }
 
-    #region  Subparts Movingpart------------------
+    private readonly Dictionary<int, bool> isSeatClickedMap = new();
+    private readonly Dictionary<int, MeshRenderer> _seatMeshRendererMap = new();
+    private int _seatClickedCount = 1;
 
-    
+    [SerializeField] private Color _selectedColor;
 
-
-    private void OnintroForSprites()
+    private void OnRaySyncedOnSeatSelection()
     {
-        foreach (var key in _subPartsAnimMap.Keys.ToArray())
+        bool isAllSeatClicked = true;
+        foreach (var hit in GameManager_Hits)
         {
-            foreach (var animator in _subPartsAnimMap[key])
+            int hitTransformID = hit.transform.GetInstanceID();
+            if (hit.transform.gameObject.name.Contains("Seat"))
             {
-                animator.enabled = false; 
+                if (isSeatClickedMap[_tfIdToEnumMap[hitTransformID]]) return;
+                isSeatClickedMap[_tfIdToEnumMap[hitTransformID]] = true;
+
+                var renderer = hit.transform.GetComponent<MeshRenderer>();
+                _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[hitTransformID], renderer);
+                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedColor, 0.35f);
+
+                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
+                _seatClickedCount++;
+
+
+                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+
+                foreach (int key in isSeatClickedMap.Keys)
+                    if (!isSeatClickedMap[key])
+                        isAllSeatClicked = false;
+
+                if (isAllSeatClicked)
+                {
+                    Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
+
+                    // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
+
+                    DOVirtual.DelayedCall(4, () =>
+                    {
+                        CurrentMainSeq = (int)MainSeq.Ambulance_Intro;
+                    });
+                    break;
+                }
+
+
+                PlayParticleEffect(hit.point);
             }
         }
     }
 
-    private bool _isPartsClickable = false;
+    #region Subparts Movingpart------------------
+
+    private void OnintroForSprites()
+    {
+        foreach (int key in _subPartsAnimMap.Keys.ToArray())
+        foreach (var animator in _subPartsAnimMap[key])
+            animator.enabled = false;
+    }
+
+    private bool _isPartsClickable;
+
+    private int currentArrivedSubPartCount;
+    private const int MAX_SUBPART_COUNT = 7;
+
+    private const int COUNT_TO_COMPLETE = 10;
+    private readonly Dictionary<int, int> _partProgress = new(); // 각 파트의 클릭 진행 상태
+    private readonly Dictionary<int, bool> isArrivedMap = new();
+    private bool isClickable = true;
 
     private void MoveTowardToCompletion()
     {
-        if (!_isPartsClickable) return;
-        
-        _isPartsClickable = false;
-        DOVirtual.DelayedCall(0.15f, () =>
-        {
-            _isPartsClickable = true;
-        });
-        
-        
-       
+        if (!isClickable) return;
+
 
         foreach (var hit in GameManager_Hits)
         {
             int ID = hit.transform.GetInstanceID();
-            
-            if (tfIDToAnimatorMap.ContainsKey(ID))
-            {
-                Animator animator = tfIDToAnimatorMap[ID];
 
+
+            _isClickableMap.TryAdd(ID, true);
+            if (_isClickableMap[ID] == false) continue;
+            _isClickableMap[ID] = false;
+            DOVirtual.DelayedCall(0.15f, () =>
+            {
+                _isClickableMap[ID] = true;
+            });
+
+            // 현재 진행도 저장 및 증가
+            isArrivedMap.TryAdd(ID, false);
+            if (isArrivedMap[ID]) continue;
+
+            if (tfIDToAnimatorMap.TryGetValue(ID, out var animator))
+            {
+                var tf = animator.transform;
                 // OnCompletion 클립 가져오기
-                AnimationClip clip = animator.runtimeAnimatorController.animationClips
-                    .FirstOrDefault(c => c.name == "Complete");
+                _defaultSizeMap.TryAdd(ID, tf.localScale);
+                _defaultRotationQuatMap.TryAdd(ID, tf.localRotation);
+
+
+                var clip = animator.runtimeAnimatorController.animationClips
+                    .FirstOrDefault(c => c.name.Contains("Complete"));
 
                 if (clip != null)
                 {
-                    float totalDuration = clip.length;
-                    float partialDuration = totalDuration * 0.1f; // 10분의 1
-
-                    // Animator 활성화
-                    animator.enabled = true;
-                    animator.Play("Complete", 0, 0f); // 처음부터 재생
-
-                    // 0.5초만 재생하고 비활성화
-                    DOVirtual.DelayedCall(0.5f, () =>
-                    {
-                        animator.enabled = false;
-                    });
+                    _partProgress.TryAdd(ID, 0);
+                    _partProgress[ID] = Mathf.Min(_partProgress[ID] + 1, COUNT_TO_COMPLETE);
                     
-                    Logger.ContentTestLog("Sub Parts Move Foward -------------------");
+
+                    float progressNormalized = _partProgress[ID] / (float)COUNT_TO_COMPLETE;
+
+                    //도착시 로직 
+                    if (!isArrivedMap[ID] && _partProgress[ID] >= COUNT_TO_COMPLETE)
+                    {
+                        currentArrivedSubPartCount++;
+                        isArrivedMap[ID] = true;
+
+                        _sequenceMap[ID]?.Kill();
+                        _sequenceMap[ID] = DOTween.Sequence();
+                        _sequenceMap[ID].AppendCallback(() =>
+                        {
+                            char randoChar = (char)Random.Range('A', 'B' + 1);
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/OnPartArrive_" + randoChar);
+                        });
+                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                            .SetEase(Ease.OutBounce));
+                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 0.8f, 0.2f)
+                            .SetEase(Ease.OutBounce));
+                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                            .SetEase(Ease.OutBounce));
+                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID], 0.5f));
+                        _sequenceMap[ID].Join(tf.transform.DORotateQuaternion(_defaultRotationQuatMap[ID], 0.5f));
+                        _sequenceMap[ID].AppendCallback(() =>
+                        {
+                            animator.enabled = true;
+                        });
+
+
+                       
+                        Logger.ContentTestLog($"sub part Arrived {currentArrivedSubPartCount}");
+
+                        if (currentArrivedSubPartCount >= MAX_SUBPART_COUNT)
+                        {
+                            Logger.ContentTestLog("All sub parts Arrived -------------------");
+                            isClickable = false;
+                            CurrentMainSeq++;
+                            currentArrivedSubPartCount = 0;
+                     
+                        }
+                
+                    }
+                    else 
+                    {
+                        PlayParticleEffect(hit.point);
+
+                        char randoChar = (char)Random.Range('A', 'E' + 1);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/Click_" + randoChar);
+                        // Animator 재생
+                        animator.enabled = true;
+                        animator.Play("Complete", 0, progressNormalized);
+
+                        // 재생 잠깐 유지 후 정지
+                        DOVirtual.DelayedCall(0.1f, () =>
+                        {
+                            animator.enabled = false;
+
+
+                            _sequenceMap.TryAdd(ID, DOTween.Sequence());
+                            _sequenceMap[ID]?.Kill();
+                            _sequenceMap[ID] = DOTween.Sequence();
+
+
+                            int effectType = Random.Range(0, 3); // 0~2 랜덤
+
+                            var originalRotation = tfIDToAnimatorMap[ID].transform.localRotation;
+                            switch (effectType)
+                            {
+                                case 0: // Shake
+                                    _sequenceMap[ID]
+                                        .Append(tf.DOShakePosition(0.5f, new Vector3(Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f))).OnKill(() =>
+                                        {
+                                            tf.localRotation = _defaultRotationQuatMap[ID];
+                                        }));
+                                    break;
+                                case 1: // Scale Up & Down
+                                    _sequenceMap[ID].Append(tf.DOScale(_defaultSizeMap[ID] * 1.2f, 0.30f)
+                                            .SetLoops(2, LoopType.Yoyo))
+                                        .OnKill(() =>
+                                        {
+                                            tf.localRotation = _defaultRotationQuatMap[ID];
+                                        });
+                                    break;
+                                case 2: // Rotate
+                                    float angle = Random.Range(-20f, 20f);
+
+                                    _sequenceMap[ID].Append(tf
+                                        .DORotateQuaternion(_defaultRotationQuatMap[ID]* new Quaternion(0, 0, Random.Range(-15,15), 0), 0.25f)
+                                        .SetLoops(2, LoopType.Yoyo)
+                                        .SetEase(Ease.InOutSine));
+                                    break;
+                            }
+                        });
+                    }
                 }
                 else
-                {
                     Logger.LogWarning("Clip is null");
-                }
             }
         }
 
 
     }
-    
+
+    private EA018_UIManager _uiManager;
+
     #endregion
+
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
-        MoveTowardToCompletion();
-    }
-    
-    #region  AmbulancePart
 
-    private void OnPoliceCarIntro()
+        if (CurrentMainSeq == (int)MainSeq.SeatSelection)
+            OnRaySyncedOnSeatSelection();
+        else
+            MoveTowardToCompletion();
+    }
+
+    #region AmbulancePart
+
+    private void OnCarIntro(int introCar)
     {
-        SetSubPartsAnimatorStatus(false);
-        SetSpriteStatus(true);
+        SetAnimatorStatus(introCar, false);
+        SetSpriteStatus(introCar, true);
 
-        foreach (var sprite in _spritesMap[0])
-        {
-            sprite.DOFade(0, 0.01f).OnComplete(() =>
+
+        int count = 0;
+        _spriteBgRenderer.DOFade(1f, 1.5f)
+            .OnComplete(() =>
             {
-              sprite.DOFade(1, 1f);
-            });
-        }
-         // Physics.RaycastAll(GameManager_Ray);
+                foreach (var sprite in _spritesMap[introCar])
+                {
+                    if (count != 0)
+                        sprite.DOFade(0, 0.001f).OnComplete(() =>
+                        {
+                            sprite.DOFade(1, 1f);
+                        });
+                    count++;
+                }
+
+    });
+        _spritesMap[(int)introCar][0].DOFade(0.10f, 2f);
+     
+
         Logger.ContentTestLog("OnPoliceCarIntro -------------------");
-        _isPartsClickable = true;
+        //   _isPartsClickable = true;
     }
+
     private void OnAmbulancePartIntro()
     {
-        SetSubPartsAnimatorStatus(true);
-        SetSpriteStatus(true);
-
-        foreach (var sprite in _spritesMap[0])
-        {
-            sprite.enabled = true;
-        }
+        SetAnimatorStatus((int)Obj.Sprites_Ambulance, true);
+        SetSpriteStatus((int)Obj.Sprites_Ambulance, true);
     }
 
     #endregion
