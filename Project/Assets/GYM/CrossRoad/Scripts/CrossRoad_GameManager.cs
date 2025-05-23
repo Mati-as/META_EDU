@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using System.Runtime.CompilerServices;
 using Cinemachine;
 using UnityEngine.UI;
 
@@ -27,18 +26,29 @@ public class CrossRoad_GameManager : Base_GameManager
 
     [SerializeField] private CinemachineVirtualCamera normalCamera;
     [SerializeField] private CinemachineVirtualCamera eventCamera;
+    [SerializeField] private CinemachineVirtualCamera endCamera;
 
     [SerializeField] private float carMoveSpeed = 4f;
 
     [SerializeField] private float eventTime;
 
     [SerializeField] private bool playingGame = false;          //게임중 체크용 불값
-    [SerializeField] private bool isEventOn = false;            //초록불 이벤트 발생 감지용 불값
+    //[SerializeField] private bool isEventOn = false;            //초록불 이벤트 발생 감지용 불값
         
     [SerializeField] private bool LoseEventOn = false;          //횡단보도 패배 신호 감지용 불값
     [SerializeField] private bool gameover = false;             //게임 오버 불값
         
-    [SerializeField] private Image GameOverBG;                  //드래그앤드롭
+    [SerializeField] private Image GameOverBG;                       //드래그앤드롭
+
+    [SerializeField] private GameObject TrafficSignal;               //드래그앤드롭
+    [SerializeField] private Image leftTrafficSignal;                //드래그앤드롭
+    [SerializeField] private Image rightTrafficSignal;               //드래그앤드롭
+
+    [SerializeField] private GameObject chractors;                   //드래그앤드롭
+
+    private Sprite RedTrafficSignalImg;
+    private Sprite GreenTrafficSignalImg;
+    private Sprite NoneTrafficSignalImg;
 
     private Sequence eventSeq;
     
@@ -75,8 +85,13 @@ public class CrossRoad_GameManager : Base_GameManager
             eventCamera = cams[1];
         }
 
-        //Messenger.Default.Publish(new NarrationMessage("공사장에서 일하는 자동차들이 건물을 짓고있어요", "0_공사장에서_일하는_자동차들이_건물을_짓고있어요_"));
+        RedTrafficSignalImg = Resources.Load<Sprite>("CrossRoad/Image/RedTrafficSignal");
+        GreenTrafficSignalImg = Resources.Load<Sprite>("CrossRoad/Image/GreenTrafficSignal");
+        NoneTrafficSignalImg = Resources.Load<Sprite>("CrossRoad/Image/NoneTrafficSignal");
 
+        chractors.SetActive(false);
+
+        //Messenger.Default.Publish(new NarrationMessage("공사장에서 일하는 자동차들이 건물을 짓고있어요", "0_공사장에서_일하는_자동차들이_건물을_짓고있어요_"));
 
 
         //if (mainCamera != null)
@@ -99,14 +114,15 @@ public class CrossRoad_GameManager : Base_GameManager
         //    );
         //}
 
-
-        UI_Scene_StartBtn.onGameStartBtnShut += StartGame;
+        UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
 
     private void StartGame()
     {
         _lightController.ChangeTrafficLight();
         _lightController.OnLightChanged += LightChanged;
+
+        TrafficSignal.SetActive(true);
 
         //bg음악 시작
 
@@ -149,11 +165,17 @@ public class CrossRoad_GameManager : Base_GameManager
 
     private void LightChanged(LightColor color)
     {
-        if (isEventOn)
+        if (level >= 7)     //게임종료
         {
-            Debug.Log("이벤트발생중이라서 색이바뀌지않았습니다");
+            EndGame();
             return;
         }
+
+        //if (isEventOn)
+        //{
+        //    Debug.Log("이벤트발생중이라서 색이바뀌지않았습니다");
+        //    return;
+        //}
 
         playingGame = true;
         CurrentColor = color;
@@ -175,9 +197,13 @@ public class CrossRoad_GameManager : Base_GameManager
 
     private void DoOnRedLight()
     {
+        leftTrafficSignal.sprite = RedTrafficSignalImg;
+        rightTrafficSignal.sprite = RedTrafficSignalImg;
+
         level += 1;
         redcar.SetActive(true);
         bluecar.SetActive(true);
+
 
         Debug.Log("차량이동시작");
         redcar.transform.DOMove(redTarget.position, carMoveSpeed + 1).SetEase(Ease.InQuad).OnComplete(() =>
@@ -195,10 +221,13 @@ public class CrossRoad_GameManager : Base_GameManager
 
     private void DoOnGreenLight()
     {
+        leftTrafficSignal.sprite = GreenTrafficSignalImg;
+        rightTrafficSignal.sprite = GreenTrafficSignalImg;
+
         if (level > 3 && randomIndex >= spawnChanceGreen)
         {
             //초록불 차량 이벤트 발생
-            isEventOn = true;
+            //isEventOn = true;
             LoseEventOn = false;
 
             Sequence seq = DOTween.Sequence()
@@ -211,13 +240,13 @@ public class CrossRoad_GameManager : Base_GameManager
                     eventCamera.Priority = 12;
                     normalCamera.Priority = 10;
                     eventcar.transform.DOMove(eventStopTransform.position, 7f).SetEase(Ease.Linear);
+                    _lightController.lightSequence.Pause();
                 })
                 .AppendInterval(eventTime)
                 .AppendCallback(() =>
                 {
                     normalCamera.Priority = 12;
                     eventCamera.Priority = 10;
-
                 })
                 .AppendInterval(2f)
                 .AppendCallback(() =>
@@ -242,6 +271,7 @@ public class CrossRoad_GameManager : Base_GameManager
 
         eventSeq.AppendCallback(() =>
             {
+                _lightController.lightSequence.Play();
                 Debug.Log("10초안에 밖으로 나가세요!");
                 //제한시간안에 밖으로 나가야함
                 //나레이션
@@ -254,17 +284,16 @@ public class CrossRoad_GameManager : Base_GameManager
                 Debug.Log("게임 종료 감지 시작");
                 Debug.Log("초록불일때도 차가 올수있어요!");
                 LoseEventOn = true;
-                eventcar.transform.DOMove(redTarget.position, carMoveSpeed).SetEase(Ease.InQuad);
+                eventcar.transform.DOMove(redTarget.position, carMoveSpeed - 2f).SetEase(Ease.InQuad);
             })
             .AppendInterval(5f)
             .AppendCallback(() =>
             {
                 eventcar.SetActive(false);
                 LoseEventOn = false;
-                isEventOn = false;
+                //isEventOn = false;
             });
-    }
-
+    }              
 
     private void LoseGame()
     {
@@ -274,7 +303,8 @@ public class CrossRoad_GameManager : Base_GameManager
             {
                 playingGame = false;
                 GameOverBG.DOFade(1f, 1f);
-                isEventOn = true;
+                //isEventOn = true;
+                _lightController.lightSequence.Pause();
                 LoseEventOn = false;
                 //패배 효과음
                 Debug.Log("횡단보도를 건너야 할 때는 신호를 보고난 후 좌우도 꼭 살펴야해요");
@@ -282,11 +312,40 @@ public class CrossRoad_GameManager : Base_GameManager
             .AppendInterval(10f)
             .AppendCallback(() =>
             {
-                isEventOn = false;
+                //isEventOn = false;
                 //패배 효과음
                 //게임 리셋
+                
                 GameOverBG.DOFade(0f, 1f);
+                _lightController.lightSequence.Play();
             });
 
     }
+
+    private void EndGame()
+    {
+
+        _lightController.OnLightChanged -= LightChanged;
+        playingGame = false;
+        Sequence endSeq = DOTween.Sequence()
+            .Append(GameOverBG.DOFade(1f, 1f))
+            .AppendCallback(() =>
+            {
+                endCamera.Priority = 20;
+                chractors.SetActive(true);
+                TrafficSignal.SetActive(false);
+
+                //게임 종료 나레이션
+            })
+            .AppendInterval(2f)
+            .Append(GameOverBG.DOFade(0f, 1f))
+            .AppendCallback(() =>
+            {
+                Debug.Log("게임종료");
+
+            });
+
+    }
+
+
 }

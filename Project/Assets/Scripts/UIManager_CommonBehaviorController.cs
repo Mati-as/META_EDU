@@ -36,7 +36,7 @@ public class UIManager_CommonBehaviorController : UI_PopUp
         GetTMP((int)TMPs.TMP_Instruction);
 
         GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;
-        GetObject((int)UI.InstructionUI).SetActive(false);
+      //  GetObject((int)UI.InstructionUI).SetActive(false);
 
         _bgRectTransform = GetObject((int)UI.InstructionUI).GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
