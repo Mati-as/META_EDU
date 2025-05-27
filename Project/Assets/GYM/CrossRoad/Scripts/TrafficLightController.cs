@@ -21,9 +21,6 @@ public class TrafficLightController : MonoBehaviour
     private Color redTextColor = new Color32(209, 80, 61, 255);
     private Color greenTextColor = new Color32(50, 139, 89, 255);
 
-    private float greenChangeTime;
-    private float redChangeTime;
-
     public LightColor CurrentColor
     {
         get; private set;
@@ -34,20 +31,39 @@ public class TrafficLightController : MonoBehaviour
 
     public void ChangeTrafficLight()    //시간 바꾸는 로직 변경
     {
+        float gTime = greenDuration + 1f;
+        float rTime = redDuration + 1f;
+
         lightSequence = DOTween.Sequence()
-            .AppendCallback(() =>
-            {
-                ChangeTo(LightColor.Green);
-                greenChangeTime = greenDuration + 1f;
-            })
-            .AppendInterval(greenChangeTime)
-            .AppendCallback(() =>
-            {
-                ChangeTo(LightColor.Red);
-                redChangeTime = redDuration + 1f;
-            })
-            .AppendInterval(redChangeTime)
-            .SetLoops(20);
+        .AppendCallback(() => ChangeTo(LightColor.Green))
+        .AppendInterval(gTime)
+        .Join(
+            DOVirtual.Float(
+                gTime, 0, gTime, v =>
+                {
+                    int seconds = Mathf.FloorToInt(v);
+                    leftTime.color = greenTextColor;
+                    rightTime.color = greenTextColor;
+                    leftTime.text = $"{seconds}";
+                    rightTime.text = $"{seconds}";
+                }
+            ).SetEase(Ease.Linear)
+        )
+
+        .AppendCallback(() => ChangeTo(LightColor.Red))
+        .AppendInterval(rTime)
+        .Join(DOVirtual.Float(rTime, 0, rTime, v =>
+                {
+                    int seconds = Mathf.FloorToInt(v);
+                    leftTime.color = redTextColor;
+                    rightTime.color = redTextColor;
+                    leftTime.text = $"{seconds}";
+                    rightTime.text = $"{seconds}";
+                }
+            ).SetEase(Ease.Linear)
+        )
+
+        .SetLoops(-1, LoopType.Restart);
     }
 
     private void ChangeTo(LightColor color)
