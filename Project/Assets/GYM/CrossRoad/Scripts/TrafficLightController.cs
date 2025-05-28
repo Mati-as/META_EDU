@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,8 +45,8 @@ public class TrafficLightController : MonoBehaviour
                     int seconds = Mathf.FloorToInt(v);
                     leftTime.color = greenTextColor;
                     rightTime.color = greenTextColor;
-                    leftTime.text = $"{seconds}";
-                    rightTime.text = $"{seconds}";
+                    leftTime.text = seconds.ToString();
+                    rightTime.text = seconds.ToString();
                 }
             ).SetEase(Ease.Linear)
         )
@@ -57,13 +58,13 @@ public class TrafficLightController : MonoBehaviour
                     int seconds = Mathf.FloorToInt(v);
                     leftTime.color = redTextColor;
                     rightTime.color = redTextColor;
-                    leftTime.text = $"{seconds}";
-                    rightTime.text = $"{seconds}";
+                    leftTime.text = seconds.ToString();
+                    rightTime.text = seconds.ToString();
                 }
             ).SetEase(Ease.Linear)
         )
 
-        .SetLoops(-1, LoopType.Restart);
+        .SetLoops(20, LoopType.Restart);
     }
 
     private void ChangeTo(LightColor color)
