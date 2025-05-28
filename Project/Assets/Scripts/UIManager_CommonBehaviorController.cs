@@ -89,6 +89,7 @@ public class UIManager_CommonBehaviorController : UI_PopUp
             _uiSeq.Append(GetObject((int)UI.InstructionUI).transform.DOScale(Vector3.zero, 0.15f)
                 .SetEase(Ease.InOutBounce));
         }
+        
     }
 
 
