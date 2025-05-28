@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -99,21 +100,32 @@ public class PlayInfoManager : MonoBehaviour
         
         
         
-        
-        
-        
         if (sceneName.Contains("LAUNCHER"))
         {
             Logger.Log($"Launcher: history checking X -------------");
             return;
         }
+        
         latestSceneStartTime = dateTime;
         CurrentActiveSceneName = sceneName;
         Logger.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
     }
     
+    private static bool _isXMLSavable = true;
     private void OnSceneOrAppQuit(string sceneName, DateTime dateTime)
     {
+        if (!_isXMLSavable)
+        {
+            Logger.CoreClassLog("중복 XML 저장시도.. 이미 XML 저장했습니다.");
+            return;
+        }
+        _isXMLSavable = false;
+        DOVirtual.DelayedCall(10f, () =>
+        {
+            _isXMLSavable = true;
+        });
+        
+        
         _playTime = TimeSpan.Zero;
         lastestSceneQuitTime = dateTime;
         CurrentActiveSceneName = sceneName;
@@ -142,10 +154,12 @@ public class PlayInfoManager : MonoBehaviour
     }
     public void AddPlayInfoNode(ref XmlDocument xmlDoc)
     {
+        
 
+        //아래 시간체크로 런처까지 체크하는 중
         if (_playTime.Minutes <= 0 && _playTime.Seconds < 10) 
         {
-            Debug.Log("playtime is too short, play info hasn't been saved.");
+            Debug.Log("Playtime is too short, play info hasn't been saved. Or it's the Launcher Scene");
             return;
         }
         
