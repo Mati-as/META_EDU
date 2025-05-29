@@ -88,7 +88,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
     protected Dictionary<int, Sequence> _sequenceMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
-
+    protected Dictionary<int,Vector3> _defaultPosMap = new(); //
     //resourceFields
     protected string psResourcePath = string.Empty;
 
@@ -191,16 +191,18 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     var transform = obj.transform;
                     _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
                     _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
-//                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
+               
                     _isClickableMap.Add(transform.GetInstanceID(), false);
                     _isClickedMap.Add(transform.GetInstanceID(), false);
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
                     _defaultSizeMap.Add(i, transform.localScale);
                     _defaultRotationQuatMap.Add(i, transform.rotation);
-
+                    _defaultPosMap.Add(i, transform.position);
                     _sequenceMap.Add(i, DOTween.Sequence());
 
                     obj.transform.TryGetComponent(out Animator animator);
+                    
+                    //                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
                     if (animator != null) _animatorMap.Add(i, animator);
                 }
             }

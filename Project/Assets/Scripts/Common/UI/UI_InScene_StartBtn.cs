@@ -165,6 +165,7 @@ public class UI_InScene_StartBtn : MonoBehaviour
         {
             _isBtnEventInvoked = true;
 
+          
             onGameStartBtnShut?.Invoke();
             FadeOutBtn();
         }
@@ -182,11 +183,15 @@ public class UI_InScene_StartBtn : MonoBehaviour
 
         _isBtnEventInvoked = true;
         _isClickable = false;
-
         _btnImage.DOFade(0, 0.5f);
-     //   _tmp_Time.DOFade(0, 0.5f);
+     //  _tmp_Time.DOFade(0, 0.5f);
         _tmp_Start.DOFade(0, 0.5f);
 
+
+
+
+        DOVirtual.DelayedCall(3f, PlayInfoManager.InitSensorCount);
+        
         RefreshSensor();
     }
 
