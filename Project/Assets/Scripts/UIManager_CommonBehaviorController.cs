@@ -24,6 +24,7 @@ public class UIManager_CommonBehaviorController : UI_PopUp
     protected bool isInited;
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
+    protected readonly Vector3 DEFAULT_SIZE = Vector3.one;
 
     public override bool InitEssentialUI()
     {
@@ -32,11 +33,19 @@ public class UIManager_CommonBehaviorController : UI_PopUp
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
 
-        GetObject((int)UI.InstructionUI);
+        if(GetObject((int)UI.InstructionUI) == null)
+        {
+            Logger.ContentTestLog("InstructionUI is null or not active ------------해당컨텐츠에서 미사용 아닌경우 확인 필요  (25/0523)");
+            return false;
+        }
+        
+        
+        
+        GetObject((int)UI.InstructionUI).transform.localScale = Vector3.zero;
         GetTMP((int)TMPs.TMP_Instruction);
 
         GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;
-      //  GetObject((int)UI.InstructionUI).SetActive(false);
+       // GetObject((int)UI.InstructionUI).SetActive(false);
 
         _bgRectTransform = GetObject((int)UI.InstructionUI).GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
@@ -80,9 +89,10 @@ public class UIManager_CommonBehaviorController : UI_PopUp
             _uiSeq.Append(GetObject((int)UI.InstructionUI).transform.DOScale(Vector3.zero, 0.15f)
                 .SetEase(Ease.InOutBounce));
         }
+        
     }
 
-    protected readonly Vector3 DEFAULT_SIZE = Vector3.one;
+
 
     private void UpdateBgSize()
     {

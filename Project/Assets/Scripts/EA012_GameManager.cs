@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
@@ -494,8 +495,8 @@ public class EA012_GameManager : Ex_BaseGameManager
     [SerializeField]
     Color _defaultColor;
     
-    [SerializeField] 
-    private Color _selectedFilter;
+    [FormerlySerializedAs("_selectedFilter")] [SerializeField] 
+    private Color _selectedColor;
     
     private void OnRaySyncedOnSeatSelection()
     {
@@ -510,7 +511,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 
                 MeshRenderer renderer = hit.transform.GetComponent<MeshRenderer>();
                 _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[hitTransformID], renderer);
-                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedFilter, 0.35f);
+                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedColor, 0.35f);
                 
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
                 _seatClickedCount++;

@@ -39,7 +39,7 @@ public class InGame_SideMenu : UI_PopUp
     public static event Action<string, DateTime> OnSceneQuit;
     public static event Action<string, DateTime> OnAppQuit;
     
-    private bool _isXMLSavable = true;
+   // private bool _isXMLSavable = true;
 
     DevelopmentUIManager _devUIManager;
     
@@ -121,7 +121,7 @@ public class InGame_SideMenu : UI_PopUp
     {
         OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         yield return _wait;
-        _isXMLSavable = true;
+        //_isXMLSavable = true;
     }
 
     private void OnSceneQuitAndToHomeScreen()
@@ -129,8 +129,8 @@ public class InGame_SideMenu : UI_PopUp
 #if UNITY_EDITOR
         Debug.Log("Scene Quit ");
 # endif
-        if (!_isXMLSavable) return;
-        _isXMLSavable = false;
+       // if (!_isXMLSavable) return;
+       // _isXMLSavable = false;
         StartCoroutine(XMLSaveCo());
     }
 
@@ -148,7 +148,7 @@ public class InGame_SideMenu : UI_PopUp
         OnAppQuit?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
         yield return new WaitForSeconds(1f);
         Application.Quit();
-        _isXMLSavable = true;
+      //  _isXMLSavable = true;
     }
     
     private Base_GameManager _gm;

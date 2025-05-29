@@ -4,6 +4,7 @@ using System.Net.Mime;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
@@ -45,11 +46,15 @@ public class DevelopmentUIManager : MonoBehaviour
         DisableAllImages();
     }
 
-#if UNITY_EDITOR
+
+    [Conditional("DevOnly")]
     private void DisableImageWithSpaceKey()
     {
         //버튼으로 대체만하면 이건 해결
-        if (Input.GetKeyDown(KeyCode.Space)) DisableAllImages();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            DisableAllImages();
+        }
     
     }
     
@@ -57,7 +62,7 @@ public class DevelopmentUIManager : MonoBehaviour
     {
         DisableImageWithSpaceKey();
     }
-#endif
+
 
 
     //뭔가 콘텐츠 안에서 계속해서 키게 만드는 무언가가 있음
