@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.DemiLib;
 using DG.Tweening;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class EA019_GameManager : Ex_BaseGameManager
@@ -140,6 +142,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnFinish:
+                    _uiManager.PopFromZeroInstructionUI("풍선이 날아가요~");
                     break;
 
             }
@@ -167,7 +170,7 @@ public class EA019_GameManager : Ex_BaseGameManager
             if (root == null) root = new GameObject { name = "@BalloonPoolRoot" };
 
             
-            root.gameObject.transform.localScale = Vector3.one*0.2772007f;
+            //root.gameObject.transform.localScale = Vector3.one*0.2772007f;
             return root;
         }
     }
@@ -183,6 +186,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         Objs.Balloon_OrangeTriangle,
         Objs.Balloon_YellowStar,
         Objs.Balloon_GreenCircle,
+        Objs.Balloon_BlueSquare,
         Objs.Balloon_PinkFlower
     }; 
     private List<GameObject> _spawnedBalloons = new(); // 풀에서 꺼낸 현재 라운드의 풍선들
@@ -221,57 +225,114 @@ public class EA019_GameManager : Ex_BaseGameManager
 
             for (int count = 0; count < 50; count++)
             {
-                var instantiatedFood = Instantiate(GetObject((int)objEnum), PoolRoot.transform, true);
-                instantiatedFood.name = ((Objs)objEnum).ToString() + $"{objEnum}".ToString();
-                _balloonClonePool[objEnum].Push(instantiatedFood);
-                allObj.Add(instantiatedFood.transform.GetInstanceID(), instantiatedFood);
-                _defaultSizeMap.TryAdd(instantiatedFood.transform.GetInstanceID(),
-                    instantiatedFood.transform.localScale);
-                instantiatedFood.SetActive(false);
+                var instantiatedBalloon = Instantiate(GetObject((int)objEnum), PoolRoot.transform, true);
+                
+                instantiatedBalloon.name = ((Objs)objEnum).ToString() + $"{objEnum}".ToString();
+                instantiatedBalloon.transform.rotation = GetObject(objEnum).transform.rotation;// 초기 회전값 설정
+                _balloonClonePool[objEnum].Push(instantiatedBalloon);
+                allObj.Add(instantiatedBalloon.transform.GetInstanceID(), instantiatedBalloon);
+                _defaultSizeMap.Add(instantiatedBalloon.transform.GetInstanceID(),instantiatedBalloon.transform.localScale);
+                
+                Logger.ContentTestLog($"clone default rotation: {instantiatedBalloon.transform.localRotation.eulerAngles}");
+                
+                instantiatedBalloon.SetActive(false);
 
             }
         }
     }
 
+    private string _currentBalloonNameToFind;
     private void SpawnBalloonsForCurrentRound()
     {
         if (_remainAnswerList.Count == 0)
         {
             Logger.ContentTestLog("🎉 모든 라운드 완료!");
+            CurrentMainSeqNum = (int)MainSeq.OnFinish;
             return;
         }
       
 
         // 1. 정답 풍선 하나 뽑기
         int answerIndex = Random.Range(0, _remainAnswerList.Count);
+        _currentBalloonNameToFind = ((Objs)_remainAnswerList[answerIndex]).ToString();
         Objs correctBalloonType = _remainAnswerList[answerIndex];
         _remainAnswerList.RemoveAt(answerIndex);
         
-        Logger.ContentTestLog("🎈 풍선 찾기 라운드 시작: " + _currentRound + ", 정답 풍선: " + correctBalloonType);
+        Logger.ContentTestLog($"🎈 풍선 찾기 라운드 시작: " + _currentRound + $",정답 풍선: {_currentBalloonNameToFind}");
         
-        // 2. 위치 섞기
-        List<Vector3> allPositions = _balloonFindPosArray.SelectMany(posRow => posRow).ToList();
-        allPositions = allPositions.OrderBy(_ => Random.value).ToList();
+        switch ((int)correctBalloonType)
+        {
+            case (int)Objs.Balloon_RedHeart:
+                _uiManager.PopFromZeroInstructionUI("빨간색 하트모양 풍선을 발로 터치해주세요!");
+                break;
+            case (int)Objs.Balloon_OrangeTriangle:
+                _uiManager.PopFromZeroInstructionUI("주황색 세모모양 풍선을 발로 터치해주세요!");
+                break;
+            case (int)Objs.Balloon_YellowStar:
+                _uiManager.PopFromZeroInstructionUI("노란색 별모양 풍선을 발로 터치해주세요!");
+                break;
+            case (int)Objs.Balloon_GreenCircle:
+                _uiManager.PopFromZeroInstructionUI("초록색 동그라미 모양 풍선을 발로 터치해주세요!");
+                break;
+            case (int)Objs.Balloon_BlueSquare:
+                _uiManager.PopFromZeroInstructionUI("파란색 네모 모양 풍선을 발로 터치해주세요!");
+                break;
+            case (int)Objs.Balloon_PinkFlower:
+                _uiManager.PopFromZeroInstructionUI("보라색 꽃 모양 풍선을 발로 터치해주세요!");
+                break;
+        }
+        
+        List<Vector3> allPositions = _balloonFindPosArray
+            .SelectMany(posRow => posRow)
+            .Distinct()
+            .OrderBy(_ => Random.value)
+            .ToList();
 
         // 3. 정답 풍선 10개
         for (int i = 0; i < 10; i++)
         {
             GameObject balloon = GetBalloonFromPool((int)correctBalloonType);
+            
             balloon.transform.position = allPositions[i];
             balloon.transform.localScale = Vector3.zero;
             balloon.SetActive(true);
             _spawnedBalloons.Add(balloon);
 
             // DOTween 바람 애니메이션
-            balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f).SetEase(Ease.OutBack);
+            int id = balloon.transform.GetInstanceID();
+            _sequenceMap.TryAdd(id, DOTween.Sequence());
+            _sequenceMap[id]?.Kill();
+            _sequenceMap[id] = DOTween.Sequence();
+            
+            _sequenceMap[id].Append(balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f)
+                .SetDelay(Random.Range(0.1f, 1f))
+                .SetEase(Ease.OutBack));
+           
+            //_sequenceMap[id].Append(balloon.transform.DOShakeScale(100f, Random.Range(0.1f, 0.2f),vibrato:2));
+            _sequenceMap[id].Join(balloon.transform.DOShakePosition(100f, Random.Range(0.2f, 0.35f),vibrato:1));
+            _sequenceMap[id].Join(balloon.transform.DOShakeRotation(100f, Random.Range(0.2f, 0.35f),vibrato:1).SetDelay(Random.Range(0.1f,0.2f)));
+            
         }
 
         // 4. 오답 풍선 11개
-        var wrongTypes = _remainAnswerList.ToList();
-        while (wrongTypes.Count < 4) wrongTypes.Add(correctBalloonType); // 오답 풍선 부족 방지용
+        var wrongList = new List<Objs> // 남은 정답 후보
+        {
+            Objs.Balloon_RedHeart,
+            Objs.Balloon_OrangeTriangle,
+            Objs.Balloon_YellowStar,
+            Objs.Balloon_GreenCircle,
+            Objs.Balloon_BlueSquare,
+            Objs.Balloon_PinkFlower
+        };
+
+        wrongList.RemoveAt(answerIndex);
+        // 4. 오답 풍선 11개
+        var wrongTypes = wrongList.ToList();
+        //while (wrongTypes.Count < 4) wrongTypes.Add(correctBalloonType); // 오답 풍선 부족 방지용
 
         for (int i = 10; i < 21; i++)
         {
+          
             Objs wrongType;
             do
             {
@@ -279,55 +340,223 @@ public class EA019_GameManager : Ex_BaseGameManager
             } while (wrongType == correctBalloonType);
 
             GameObject balloon = GetBalloonFromPool((int)wrongType);
+            
+            int id = balloon.transform.GetInstanceID();
+            _sequenceMap.TryAdd(id, DOTween.Sequence());
+            _sequenceMap[id]?.Kill();
+            
             balloon.transform.position = allPositions[i];
             balloon.transform.localScale = Vector3.zero;
             balloon.SetActive(true);
             _spawnedBalloons.Add(balloon);
 
-            balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f).SetEase(Ease.OutBack);
+            balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.4f)
+                .SetDelay(Random.Range(0.1f, 1f))
+                .SetEase(Ease.OutBack);
         }
     }
     
+    
+    
+    
+    private Dictionary<GameObject, int> _balloonOriginMap = new(); // GameObject → Objs enum
     private GameObject GetBalloonFromPool(int objEnum)
     {
+        GameObject obj;
+    
         if (_balloonClonePool[objEnum].Count == 0)
         {
             Logger.ContentTestLog($"⚠ 풀 부족! {objEnum} 인스턴스 생성");
-            var newObj = Instantiate(GetObject(objEnum), PoolRoot.transform);
-            allObj.Add(newObj.transform.GetInstanceID(), newObj);
-            _defaultSizeMap.TryAdd(newObj.transform.GetInstanceID(), newObj.transform.localScale);
-            return newObj;
+            obj = Instantiate(GetObject(objEnum), PoolRoot.transform);
+            allObj[obj.transform.GetInstanceID()] = obj;
+            _defaultSizeMap[obj.transform.GetInstanceID()] = obj.transform.localScale;
+        }
+        else
+        {
+            obj = _balloonClonePool[objEnum].Pop();
         }
 
-        return _balloonClonePool[objEnum].Pop();
+        _balloonOriginMap[obj] = objEnum; // ✅ 여기서 enum 기록
+        return obj;
     }
-    
     private void StartBalloonFindRound()
     {
+        foreach (var key in _sequenceMap.Keys.ToArray())
+        {
+            _sequenceMap[key]?.Kill();
+            _sequenceMap[key] = DOTween.Sequence();
+        }
+        
+        
         
         SpawnBalloonsForCurrentRound();
+
+        
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            Logger.ContentTestLog("🎈 풍선 찾기 라운드 시작--------------- 이제 부터 클릭 가능 ");
+            _isRoundFinished = false;
+        });
     }
 
 // 다음 라운드로 갈 때 (정답 누르면):
     private void GoToNextBalloonFindRound()
     {
         ReturnBalloonsToPool();
-        SpawnBalloonsForCurrentRound();
+        DOVirtual.DelayedCall(3f, () =>
+        {
+            SpawnBalloonsForCurrentRound();
+            InitBalloonFindClickData();
+        });
+
     }
     
+    
+    private void OnBalloonFindRoundFinished()
+    {
+        _uiManager.PopFromZeroInstructionUI("풍선을 전부 날려버렸어!");
+
+        DOVirtual.DelayedCall(3f, () =>
+        {
+            GoToNextBalloonFindRound();
+        });
+    }
+    private void InitBalloonFindClickData()
+    {
+        _currentClickedCountMap.Clear();
+        _currentBalloonScaleMap.Clear();
+        isDisappearedMap.Clear();
+        currentBalloonFindCount = 0;
+        _isRoundFinished = false;
+    }
     private void ReturnBalloonsToPool()
     {
         foreach (var balloon in _spawnedBalloons)
         {
-            int objEnum = allObj.FirstOrDefault(x => x.Value == balloon).Key;
-            balloon.SetActive(false);
-            _balloonClonePool[objEnum]?.Push(balloon);
+            if (!_balloonOriginMap.TryGetValue(balloon, out var objEnum))
+            {
+                Logger.ContentTestLog($"❌ Balloon origin type not found. Skipping.");
+                continue;
+            }
+
+            // 애니메이션 + 비활성화 + 풀로 되돌리기
+            balloon.transform.DOScale(Vector3.zero, Random.Range(0.5f, 0.7f))
+                .SetDelay(Random.Range(0.1f, 0.2f))
+                .OnComplete(() =>
+                {
+                    balloon.SetActive(false);
+                    _balloonClonePool[objEnum].Push(balloon);
+                });
         }
 
         _spawnedBalloons.Clear();
     }
-    #endregion
 
+    public override void OnRaySynced()
+    {
+        if(!PreCheckOnRaySync()) return;
+        if (CurrentMainSeqNum == (int)MainSeq.OnBalloonFind)
+        {
+            if (_isRoundFinished) return; 
+            
+            OnRaySyncOnBalloonFind();
+        }
+    }
+
+
+    private bool _isRoundFinished=true;
+    private const int MAX_CLICK_COUNT = 3; // 풍선 클릭 최대 횟수
+    private const int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을 풍선 개수
+    private int currentBalloonFindCount = 0; // 현재 라운드에서 찾은 풍선 개수
+    private Dictionary<int, float> _currentBalloonScaleMap =new();
+    private Dictionary<int, int> _currentClickedCountMap= new (); 
+    private Dictionary<int,bool> isDisappearedMap = new();
+    private const float BALLOON_RISE_Y_DISTANCE = 6.0f;
+    private const float BALLOON_RISE_DURATION = 0.75f;
+    private const string MUST_CONTAIN_STRING = "Balloon"; // 풍선 이름에 반드시 포함되어야 하는 문자열
+    private void OnRaySyncOnBalloonFind()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            if(hit.transform.gameObject.name.Contains(MUST_CONTAIN_STRING) == false)
+                continue; // 풍선이 아닌 오브젝트는 무시
+            
+            
+            Transform tf = hit.transform;
+            int id = tf.GetInstanceID();
+
+            _isClickableMap.TryAdd(id, true);
+            if (!_isClickableMap[id]) continue;
+            _isClickableMap[id] = false; // 클릭 후 더 이상 클릭 불가
+            DOVirtual.DelayedCall(0.3f, () => _isClickableMap[id] = true); // 0.1초 후 다시 클릭 가능
+            
+            
+            // 이미 사라진 풍선은 무시
+            if (isDisappearedMap.TryGetValue(id, out var isGone) && isGone)
+                continue;
+
+            // 정답 풍선인지 확인
+            if (!tf.gameObject.name.Contains(_currentBalloonNameToFind))
+            {
+                tf.DOScale(Vector3.zero, 0.35f).SetEase(Ease.OutBounce);
+                isDisappearedMap[id] = true; // 클릭했지만 정답이 아닌 풍선은 사라짐
+                PlayParticleEffect(hit.point);
+                continue;
+            }
+            
+
+            // 클릭 카운트 증가
+            if (!_currentClickedCountMap.ContainsKey(id))
+                _currentClickedCountMap[id] = 0;
+            _currentClickedCountMap[id]++;
+
+            int clickCount = _currentClickedCountMap[id];
+
+            // 현재 scale 계산
+            if (!_currentBalloonScaleMap.ContainsKey(id))
+                _currentBalloonScaleMap[id] = _defaultSizeMap[id].x;
+
+            float baseScale = _defaultSizeMap[id].x;
+            float nextScale = clickCount == 1 ? baseScale * 1.25f :
+                clickCount == 2 ? baseScale * 1.6f : baseScale;
+
+            // scale 애니메이션
+            tf.DOScale(Vector3.one * nextScale, 0.3f).SetEase(Ease.OutBack);
+
+            // 세 번째 클릭 시 날아가기
+            if (clickCount >= MAX_CLICK_COUNT)
+            {
+                float lastEffectTime = 0;
+                isDisappearedMap[id] = true;
+                tf.DOScale(Vector3.zero, 2.5f);
+                tf.DOMove(new Vector3(tf.position.x+Random.Range(-2f,2f), 
+                    tf.position.y + BALLOON_RISE_Y_DISTANCE, tf.position.z) ,BALLOON_RISE_DURATION).OnUpdate(() =>
+                {
+                    if (Time.time - lastEffectTime >= 0.05f)
+                    {
+                        PlayParticleEffect(tf.transform.position);
+                        lastEffectTime = Time.time;
+                    }
+                }).SetEase(Ease.OutSine).OnComplete(() =>
+                {
+                    tf.gameObject.SetActive(false); // 풀로 안 돌려도 됨
+                });
+              
+                currentBalloonFindCount++;
+                Logger.ContentTestLog($"🎯 Found: {currentBalloonFindCount}/{BALLOON_COUNT_TO_FIND}");
+
+                if (currentBalloonFindCount >= BALLOON_COUNT_TO_FIND && !_isRoundFinished)
+                {
+                    _isRoundFinished = true;
+                    OnBalloonFindRoundFinished(); // 다음 라운드 트리거 등 처리
+                }
+            }
+        }
+    }
+
+   
+    #endregion
+    
    
     
     
@@ -337,14 +566,18 @@ public class EA019_GameManager : Ex_BaseGameManager
     {
         BindObject(typeof(Objs));
         
+        DOTween.SetTweensCapacity(500,1000);
         psResourcePath = "Runtime/EA019/Fx_Click";
         base.Init();
+        SetBalloonPool(); //zero로 초기화하기 전에 defaultsizemap에 저장 필요 주의 
         
         _uiManager = UIManagerObj.GetComponent<EA019_UIManager>();
+      
         InitBalloonsForIntro();
         
         EA019_UIManager.onNextButtonClicked -= OnNextButtonClicked;
         EA019_UIManager.onNextButtonClicked += OnNextButtonClicked;
+        
         
         for(int i =(int)Objs.Intro_Hearts; i <= (int)Objs.Intro_Flowers; i++)
         {
@@ -363,7 +596,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         GetObject((int)Objs.Intro_Flowers).gameObject.SetActive(false);
         
         SaveBalloonsPosArray();
-        SetBalloonPool();
+       
     }
 
     protected override void OnDestroy()
@@ -471,6 +704,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                         isToZero? Vector3.zero : _defaultSizeMap[child.GetInstanceID()], 0.5f).SetEase(Ease.OutBounce));
                 _sequenceMap[instanceID].AppendInterval(0.5f);
                 _sequenceMap[instanceID].Join(child.DOShakePosition(100f, Random.Range(0.1f, 0.1f),vibrato:2));
+                _sequenceMap[instanceID].Join(child.DOShakeRotation(100f, Random.Range(0.1f, 0.1f),vibrato:2));
                 _sequenceMap[instanceID].Append(child.DOShakeScale(100f, Random.Range(0.1f, 0.2f),vibrato:2));
                 
             

@@ -30,7 +30,6 @@ public class EA019_UIManager : Base_UIManager
        {
            if (!_isInvokable) return;
            _isInvokable = false;
-           DeactivateNextButton(0f);
            DOVirtual.DelayedCall(3f, () =>
            {
                _isInvokable = true;
