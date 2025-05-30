@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.DemiLib;
 using DG.Tweening;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class EA019_GameManager : Ex_BaseGameManager
@@ -26,7 +23,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         Yellow,
         Green,
         Blue,
-        Pink,
+        Pink,f
     }
     
     private enum AnimSeqOnShape
@@ -145,6 +142,11 @@ public class EA019_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnOutro:
+                    
+                    DOVirtual.DelayedCall(3.0f,()=>
+                    {
+                      CurrentMainSeqNum = (int)MainSeq.OnFinish;
+                    });
                     break;
 
                 case (int)MainSeq.OnFinish:
@@ -153,7 +155,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     
                     DOVirtual.DelayedCall(3.0f,()=>
                     {
-                        _uiManager.PopFromZeroInstructionUI("풍선이 날아가요~");
+                        _uiManager.PopFromZeroInstructionUI("풍선이 날아가요~",duration:5f);
                         OnFinish();
                     });
 
@@ -324,7 +326,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         if (_remainAnswerList.Count == 0)
         {
             Logger.ContentTestLog("🎉 모든 라운드 완료!");
-            CurrentMainSeqNum = (int)MainSeq.OnFinish;
+            CurrentMainSeqNum = (int)MainSeq.OnOutro;
             return;
         }
       
@@ -355,7 +357,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                 _uiManager.PopFromZeroInstructionUI("노란색 별모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_GreenCircle:
-                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_BlueSquare");
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_GreenCircle");
                 _uiManager.PopFromZeroInstructionUI("초록색 동그라미 모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_BlueSquare:
@@ -505,10 +507,18 @@ public class EA019_GameManager : Ex_BaseGameManager
     {
         //_uiManager.DeactivateRoundScoreBoard();
         
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            _uiManager.PopFromZeroInstructionUI("풍선을 전부 날려버렸어!");
+        });
         
-        
-        _uiManager.PopFromZeroInstructionUI("풍선을 전부 날려버렸어!");
+       
         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnRoundFinish_BalloonsFlown");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/OnRoundFinish");
+        
+     
+            
+      
         DOVirtual.DelayedCall(3f, () =>
         {
             GoToNextBalloonFindRound();
@@ -559,7 +569,14 @@ public class EA019_GameManager : Ex_BaseGameManager
 
     private bool _isRoundFinished=true;
     private const int MAX_CLICK_COUNT = 3; // 풍선 클릭 최대 횟수
-    private const int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을 풍선 개수
+#if UNITY_EDITOR
+    [SerializeField]
+[Range(1,10)]
+private int BALLOON_COUNT_TO_FIND; // 풍선 찾기 라운드에서 찾을 풍선 개수
+    #else
+private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을 풍선 개수
+    #endif
+   
     private int currentBalloonFindCount = 0; // 현재 라운드에서 찾은 풍선 개수
     private Dictionary<int, float> _currentBalloonScaleMap =new();
     private Dictionary<int, int> _currentClickedCountMap= new (); 
@@ -653,6 +670,8 @@ public class EA019_GameManager : Ex_BaseGameManager
                 else
                 {
                     _uiManager.ShutInstructionUI();
+                    char randomcharB = (char)Random.Range('A', 'B' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/OnCorrectBalloon"+ randomcharB);
                     _uiManager.ActivateImageAndUpdateCount((int)currentBallonTypeToFind, BALLOON_COUNT_TO_FIND - currentBalloonFindCount);
                 }
              
@@ -902,8 +921,8 @@ public class EA019_GameManager : Ex_BaseGameManager
             initialMessage = "색깔 풍선이 나무에 걸려있어요~";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
             
-            CurrentMainSeqNum = (int)MainSeq.OnIntro;
-           // CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+            //CurrentMainSeqNum = (int)MainSeq.OnIntro;
+            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
            // CurrentMainSeqNum = (int)MainSeq.OnFinish;
             
             
