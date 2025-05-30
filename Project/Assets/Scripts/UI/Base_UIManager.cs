@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
@@ -30,7 +31,7 @@ public class Base_UIManager : UI_PopUp
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
-    private Sequence _uiSeq;
+    protected Sequence _uiSeq;
    // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
     
     
@@ -142,7 +143,7 @@ public class Base_UIManager : UI_PopUp
     }
 
     
-    public void ShutInstructionUI(string instruction)
+    public void ShutInstructionUI(string instruction = "")
     {
         
         _uiSeq?.Kill();
@@ -161,7 +162,7 @@ public class Base_UIManager : UI_PopUp
     
 
 
-    private void UpdateBgSize()
+    protected void UpdateBgSize()
     {
        // TMP_Instruction.ForceMeshUpdate();
 

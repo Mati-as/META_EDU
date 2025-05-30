@@ -24,9 +24,18 @@ public class PlayInfoManager : MonoBehaviour
     private XmlDocument _doc;
     private bool _isInit;
 
-    private int _validClickCount;
-    private int _sensorClickCount;
+    
+    public static int ValidClickCount;
+    public static int SensorClickCount;
 
+    /// <summary>
+    /// 씬실행시 두번실행중 (시작시, 스타트버튼 클릭후 2초뒤: (기존 프리팹떄문))
+    /// </summary>
+    public static void InitSensorCount()
+    {
+        SensorClickCount = 0;
+        ValidClickCount = 0;
+    }
    
     private string _playerInfoXmlPath ;
     public bool Init()
@@ -97,14 +106,16 @@ public class PlayInfoManager : MonoBehaviour
     /// <param name="dateTime"></param>
     private void OnSceneLoad(string sceneName, DateTime dateTime)
     {
-        
-        
+
+        InitSensorCount();
         
         if (sceneName.Contains("LAUNCHER"))
         {
             Logger.Log($"Launcher: history checking X -------------");
             return;
         }
+
+        PlayInfoManager._isXMLSavable = true;
         
         latestSceneStartTime = dateTime;
         CurrentActiveSceneName = sceneName;
@@ -144,8 +155,8 @@ public class PlayInfoManager : MonoBehaviour
         var currentGameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
         if (currentGameManager != null)
         {
-            _sensorClickCount = currentGameManager.DEV_sensorClick;
-            _validClickCount = currentGameManager.DEV_validClick;
+
+         //   _validClickCount = currentGameManager.DEV_validClick;
         }
         else
         {
@@ -178,8 +189,8 @@ public class PlayInfoManager : MonoBehaviour
         newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
         newUser.SetAttribute("sceneid", CurrentActiveSceneName);
         newUser.SetAttribute("playtimesec",formattedPlaytime.ToString());
-        newUser.SetAttribute("validClick", _validClickCount.ToString());
-        newUser.SetAttribute("sensorClick", _sensorClickCount.ToString());
+       newUser.SetAttribute("validClick", SensorClickCount.ToString());
+        newUser.SetAttribute("sensorClick", ValidClickCount.ToString());
         root?.AppendChild(newUser);
         
         Utils.SaveXML(ref _doc, _playerInfoXmlPath);

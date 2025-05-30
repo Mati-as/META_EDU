@@ -117,8 +117,8 @@ public class RaySynchronizer : MonoBehaviour
     public void OnKeyPressed(InputAction.CallbackContext context)
     {
         //UI클릭을 위한 RayCast를 발생 및 Ray저장
-        OnGetInputFromUser?.Invoke();
         ShootRay();
+        OnGetInputFromUser?.Invoke();
     }
 
     /// <summary>
