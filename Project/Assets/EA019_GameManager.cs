@@ -921,8 +921,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
             initialMessage = "색깔 풍선이 나무에 걸려있어요~";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
             
-            //CurrentMainSeqNum = (int)MainSeq.OnIntro;
-            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+            CurrentMainSeqNum = (int)MainSeq.OnIntro;
+            //CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
            // CurrentMainSeqNum = (int)MainSeq.OnFinish;
             
             

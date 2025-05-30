@@ -113,9 +113,20 @@ public class Construction_GameManager : Base_GameManager
         truckVirtualCamera = cameras[6];
         bulldozerVirtualCamera = cameras[7];
 
+        //구독해제 하셔야합니다
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
+        
         UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
-    
+
+    //OnDestroy 메서드에서 구독 해제 추가해야함
+    protected override void OnDestroy()
+    {
+       
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
+        base.OnDestroy();
+    }
+
     private void StartGame()
     {
         Sequence introSeq = DOTween.Sequence();
