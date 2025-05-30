@@ -25,6 +25,8 @@ public class GameStage : MonoBehaviour
     [SerializeField] private GameObject MainCircle;
     [SerializeField] private List<GameObject> circle = new List<GameObject>(7);
 
+    [SerializeField] private GameObject EndScene;
+
     Vector3 MainSquareScale = new Vector3(5.44f, 5.619f, 6.117f);
     Vector3 MainFlowerScale = new Vector3(2.4f, 2.48f, 2.7f);
     Vector3 MainStarScale = new Vector3(4.44f, 4.6f, 5f);
@@ -74,6 +76,7 @@ public class GameStage : MonoBehaviour
                     if (!circle.Any(o => o.activeInHierarchy))
                     {
                         NextStage(Stage.Done);
+                        Debug.Log(_stage);
                         isStageStart = false;
                     }
                     break;
@@ -99,9 +102,7 @@ public class GameStage : MonoBehaviour
             case Stage.Flower: StartFlowerStage(); break;
             case Stage.Star: StartStarStage(); break;
             case Stage.Circle: StartCircleStage(); break;
-            case Stage.Done:
-                Debug.Log("All stages complete!");
-                break;
+            case Stage.Done: StartEndScene(); break;
         }
     }
 
@@ -212,7 +213,7 @@ public class GameStage : MonoBehaviour
         Sequence stageSeq = DOTween.Sequence()
             .AppendCallback(() =>
             {
-                Debug.Log("꽃모양 스테이지 시퀀스 시작");
+                Debug.Log("원 모양 스테이지 시퀀스 시작");
                 MainCircle.SetActive(true);
                 MainCircle.transform.DOScale(MainCircleScale, 1)
                     .From(0.01f)
@@ -237,7 +238,17 @@ public class GameStage : MonoBehaviour
                 //카운트해서 7개가 비활성화되면 성공 효과음, 이펙트 재생
                 //다음 사각형 시퀀스 시작
                 //모양마다 반복
+                isStageStart = true;
             });
     }
 
+    public void StartEndScene()
+    {
+        Sequence stageSeq = DOTween.Sequence()
+           .AppendCallback(() =>
+           {
+               EndScene.SetActive(true);
+           });
+
+    }
 }

@@ -36,6 +36,8 @@ public class VariousShape_GameManager : Base_GameManager
     [SerializeField] private GameObject introNextBtn;
     [SerializeField] private GameObject IntroStage;
 
+    private const string ToWorkTag = "toWork";
+
     public GameStage gameStage;
 
     Sequence introSeq;
@@ -93,103 +95,76 @@ public class VariousShape_GameManager : Base_GameManager
         //ShapeAni(starImg, 1);
         //ShapeAni(circleImg, 0);
 
-        ////이걸 스타트나 init에 생성하고 pause걸어 놓고 startbtn에서 play
-        //introSeq = DOTween.Sequence()
-        ////.AppendCallback(() => 나레이션 기능) 
-        ////.AppendInterval(나레이션시간)
-        ////.AppendCallback(() => 나레이션 기능) 
-        ////.AppendInterval(나레이션시간)
-        //.Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
-        //.Join(flowerImg.transform.DOScale(originalFlowerSize * 4.8f, moveSpeed))
-        //.Append(flowerImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        //.AppendCallback(() => { })
-        //.AppendInterval(1f)
-        //.Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
-        //.Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
-        //.AppendInterval(1f)
-        ////.AppendCallback(() => introSeq.Pause())
+        introSeq = DOTween.Sequence()
+        //.AppendCallback(() => 나레이션 기능) 
+        //.AppendInterval(나레이션시간)
+        //.AppendCallback(() => 나레이션 기능) 
+        //.AppendInterval(나레이션시간)
+        .Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(flowerImg.transform.DOScale(originalFlowerSize * 4.8f, moveSpeed))
+        .Append(flowerImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => { })
+        .AppendInterval(1f)
+        .Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(1f)
 
-        //.Append(squareImg.transform.DOMove(targetPostition, moveSpeed))
-        //.Join(squareImg.transform.DOScale(originalSquareSize * 6f, moveSpeed))
-        //.Append(squareImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        //.AppendCallback(() => { })
-        //.AppendInterval(1f)
-        //.Append(squareImg.transform.DOMove(originalSquarePos, moveSpeed).SetEase(Ease.InQuad))
-        //.Join(squareImg.transform.DOScale(originalSquareSize, moveSpeed).SetEase(Ease.InQuad))
-        //.AppendInterval(1f)
-        ////.AppendCallback(() => introSeq.Pause())
+        .Append(squareImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(squareImg.transform.DOScale(originalSquareSize * 6f, moveSpeed))
+        .Append(squareImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => { })
+        .AppendInterval(1f)
+        .Append(squareImg.transform.DOMove(originalSquarePos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(squareImg.transform.DOScale(originalSquareSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(1f)
 
-        //.Append(starImg.transform.DOMove(targetPostition, moveSpeed))
-        //.Join(starImg.transform.DOScale(originalStarSize * 4.7f, moveSpeed))
-        //.Append(starImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        //.AppendCallback(() => { })
-        //.AppendInterval(1f)
-        //.Append(starImg.transform.DOMove(originalStarPos, moveSpeed).SetEase(Ease.InQuad))
-        //.Join(starImg.transform.DOScale(originalStarSize, moveSpeed).SetEase(Ease.InQuad))
-        //.AppendInterval(1)
-        ////.AppendCallback(() => introSeq.Pause())
+        .Append(starImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(starImg.transform.DOScale(originalStarSize * 4.7f, moveSpeed))
+        .Append(starImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => { })
+        .AppendInterval(1f)
+        .Append(starImg.transform.DOMove(originalStarPos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(starImg.transform.DOScale(originalStarSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(1)
 
-        //.Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
-        //.Join(circleImg.transform.DOScale(originalCircleSize * 6.2f, moveSpeed))
-        //.Append(circleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        //.AppendCallback(() => { })
-        //.AppendInterval(1f)
-        //.Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
-        //.Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
-        //.AppendInterval(1f)
-        ////.AppendCallback(() => introSeq.Pause())
+        .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(circleImg.transform.DOScale(originalCircleSize * 6.2f, moveSpeed))
+        .Append(circleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => { })
+        .AppendInterval(1f)
+        .Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(1f)
 
-        //.AppendCallback(() =>                   //게임스테이지 시작
-        //{
-        //    Debug.Log("시퀀스 종료");
-        //    IntroStage.SetActive(false);
-        //    
-        //});
+        .AppendCallback(() =>                   //게임스테이지 시작
+        {
+            Debug.Log("시퀀스 종료");
+            IntroStage.SetActive(false);
+            gameStage.OnGameStart();
+        });
 
-        SquareStageStart();
     }
-
 
     public override void OnRaySynced()
     {
-        Debug.Log("레이싱크작동");
-        if (!isStartButtonClicked)
-        {
-            Logger.Log("StartBtn Should be Clicked");
-
-            return;
-        }
-
-
+        if (!isStartButtonClicked) return;
 
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in GameManager_Hits)
         {
-            Debug.Log($"클릭 객체 {hit.transform.gameObject.name}");
-            if (hit.collider.CompareTag("toWork"))
+            if (hit.collider.CompareTag(ToWorkTag))
             {
-                Debug.Log("태그로 감지됨");
                 if (hit.collider.TryGetComponent<ClickableMover>(out var clickable))
                 {
-                    Debug.Log("클릭어블클래스가져옴");
-                    //gameStage.OnGameStart();
                     clickable.OnClicked();
                 }
             }
         }
-        if (GameManager_Hits.Length == 0) Logger.ContentTestLog("클릭된 객체 hit 없음");
     }
-
+    
     public void NextStepIntro()
     {
-        Debug.Log("버튼 클릭 중");
         introSeq.Play();
-    }
-
-    public void SquareStageStart()
-    {
-        gameStage.gameObject.SetActive(true);
-        gameStage.StartSquareStage();
     }
 
     private void ShapeAni(Image obj, int value)
