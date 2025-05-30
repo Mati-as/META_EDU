@@ -64,7 +64,8 @@ public class EA019_GameManager : Ex_BaseGameManager
         ShapeIntro_Squares,
         ShapeIntro_Flowers,
         
-        BalloonAppearPositions
+        BalloonAppearPositions,
+        OnFinishPos
     }
     
     public int CurrentMainSeqNum
@@ -99,6 +100,9 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnColor:
                     //초기화
                     _uiManager.PopFromZeroInstructionUI("색깔을 알아볼까요?");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnColor");
+                  
+                    
                     _currentSubSeqNum = 0;
                     curruentIntroObjNum = (int)Objs.Intro_Hearts;
 
@@ -114,6 +118,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                    
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
                     _uiManager.PopFromZeroInstructionUI("모양을 알아볼까요?");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnShape");
                     
                     DOVirtual.DelayedCall(2.5f,()=>
                     {
@@ -125,11 +130,12 @@ public class EA019_GameManager : Ex_BaseGameManager
                     _currentSubSeqNum = 0;
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
                       
-                    DOVirtual.DelayedCall(3.5f,()=>
+                    DOVirtual.DelayedCall(3.0f,()=>
                     {
                         
                         _uiManager.PopFromZeroInstructionUI("제시된 풍선을 터치해서 풍선을 날려주세요");
-                        DOVirtual.DelayedCall(3.5f,()=>
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_Intro");
+                        DOVirtual.DelayedCall(5.5f,()=>
                         {
                             StartBalloonFindRound();
                         });
@@ -142,13 +148,83 @@ public class EA019_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnFinish:
-                    _uiManager.PopFromZeroInstructionUI("풍선이 날아가요~");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFinish_BalloonsGotBigger");
+                    
+                    
+                    DOVirtual.DelayedCall(3.0f,()=>
+                    {
+                        _uiManager.PopFromZeroInstructionUI("풍선이 날아가요~");
+                        OnFinish();
+                    });
+
                     break;
 
             }
         }
     }
 
+    private void OnFinish()
+    {
+        GetObject((int)Objs.Balloons).SetActive(true);
+        
+        GetObject((int)Objs.Balloon_RedHeart).SetActive(true);
+        GetObject((int)Objs.Balloon_OrangeTriangle).SetActive(true);
+        GetObject((int)Objs.Balloon_YellowStar).SetActive(true);
+        GetObject((int)Objs.Balloon_GreenCircle).SetActive(true);
+        GetObject((int)Objs.Balloon_BlueSquare).SetActive(true);
+        GetObject((int)Objs.Balloon_PinkFlower).SetActive(true);
+        
+        _sequenceMap.TryAdd((int)Objs.OnFinishPos, DOTween.Sequence());
+        _sequenceMap[(int)Objs.OnFinishPos]?.Kill();
+        _sequenceMap[(int)Objs.OnFinishPos] = DOTween.Sequence();
+
+
+        
+        GetObject((int)Objs.Balloon_RedHeart).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_RedHeart]*1.5f,1f);
+        GetObject((int)Objs.Balloon_OrangeTriangle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_OrangeTriangle]*1.5f,1f);
+        GetObject((int)Objs.Balloon_YellowStar).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_YellowStar]*1.5f,1f);
+        GetObject((int)Objs.Balloon_GreenCircle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_GreenCircle]*1.5f,1f);
+        GetObject((int)Objs.Balloon_BlueSquare).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_BlueSquare]*1.5f,1f);
+        GetObject((int)Objs.Balloon_PinkFlower).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_PinkFlower]*1.5f,1f);
+        
+        
+        
+        AddFloatingBalloon((int)Objs.Balloon_RedHeart);
+        AddFloatingBalloon((int)Objs.Balloon_OrangeTriangle);
+        AddFloatingBalloon((int)Objs.Balloon_YellowStar);
+        AddFloatingBalloon((int)Objs.Balloon_GreenCircle);
+        AddFloatingBalloon((int)Objs.Balloon_BlueSquare);
+        AddFloatingBalloon((int)Objs.Balloon_PinkFlower);
+        
+        
+    }
+
+    private const float BALLOON_RISE_Y_DISTANCE_ONFINISH = 5.5f; // OnFinish에서 풍선이 올라가는 높이
+    private void AddFloatingBalloon(int objEnum)
+    {
+        _sequenceMap.TryAdd(objEnum, DOTween.Sequence());
+        _sequenceMap[(objEnum)]?.Kill();
+        _sequenceMap[(objEnum)] = DOTween.Sequence();
+
+        
+        
+        Transform tf = GetObject(objEnum).transform;
+
+        float riseAmount = BALLOON_RISE_Y_DISTANCE_ONFINISH + Random.Range(0.5f, 1.0f);
+        float initRiseduration = Random.Range(1.5f, 2.5f);
+        float duration = Random.Range(0.8f,1.2f);
+
+        // 처음 한번 쭉 올라감
+        _sequenceMap[objEnum].Join(
+            tf.DOMoveY(tf.position.y + riseAmount, initRiseduration).SetEase(Ease.OutSine)
+        );
+
+        // 이후 위아래로 반복 둥실둥실
+        tf.DOMoveY(tf.position.y  + riseAmount + Random.Range(0.2f,0.5f), Random.Range(1.8f, 2.5f))
+            .SetEase(Ease.InOutSine)
+            .SetLoops(300, LoopType.Yoyo)
+            .SetDelay(initRiseduration+1);
+    }
     private int curruentIntroObjNum = (int)Objs.Intro_Hearts;
 
     #region 색깔풍선 찾기 파트 -------------------------------------------
@@ -242,6 +318,7 @@ public class EA019_GameManager : Ex_BaseGameManager
     }
 
     private string _currentBalloonNameToFind;
+    private Objs currentBallonTypeToFind; 
     private void SpawnBalloonsForCurrentRound()
     {
         if (_remainAnswerList.Count == 0)
@@ -255,29 +332,38 @@ public class EA019_GameManager : Ex_BaseGameManager
         // 1. 정답 풍선 하나 뽑기
         int answerIndex = Random.Range(0, _remainAnswerList.Count);
         _currentBalloonNameToFind = ((Objs)_remainAnswerList[answerIndex]).ToString();
-        Objs correctBalloonType = _remainAnswerList[answerIndex];
+         currentBallonTypeToFind = _remainAnswerList[answerIndex];
         _remainAnswerList.RemoveAt(answerIndex);
         
         Logger.ContentTestLog($"🎈 풍선 찾기 라운드 시작: " + _currentRound + $",정답 풍선: {_currentBalloonNameToFind}");
         
-        switch ((int)correctBalloonType)
+            switch ((int)currentBallonTypeToFind)
         {
             case (int)Objs.Balloon_RedHeart:
+
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_RedHeart");
+
                 _uiManager.PopFromZeroInstructionUI("빨간색 하트모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_OrangeTriangle:
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_OrangeTriangle");
+                
                 _uiManager.PopFromZeroInstructionUI("주황색 세모모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_YellowStar:
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_YellowStar");
                 _uiManager.PopFromZeroInstructionUI("노란색 별모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_GreenCircle:
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_BlueSquare");
                 _uiManager.PopFromZeroInstructionUI("초록색 동그라미 모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_BlueSquare:
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_BlueSquare");
                 _uiManager.PopFromZeroInstructionUI("파란색 네모 모양 풍선을 발로 터치해주세요!");
                 break;
             case (int)Objs.Balloon_PinkFlower:
+                Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_PurpleFlower");
                 _uiManager.PopFromZeroInstructionUI("보라색 꽃 모양 풍선을 발로 터치해주세요!");
                 break;
         }
@@ -291,7 +377,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         // 3. 정답 풍선 10개
         for (int i = 0; i < 10; i++)
         {
-            GameObject balloon = GetBalloonFromPool((int)correctBalloonType);
+            GameObject balloon = GetBalloonFromPool((int)currentBallonTypeToFind);
             
             balloon.transform.position = allPositions[i];
             balloon.transform.localScale = Vector3.zero;
@@ -305,6 +391,8 @@ public class EA019_GameManager : Ex_BaseGameManager
             _sequenceMap[id] = DOTween.Sequence();
             
             _sequenceMap[id].Append(balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f)
+              
+                .OnStart(()=>{Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Bappear");})
                 .SetDelay(Random.Range(0.1f, 1f))
                 .SetEase(Ease.OutBack));
            
@@ -328,7 +416,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         wrongList.RemoveAt(answerIndex);
         // 4. 오답 풍선 11개
         var wrongTypes = wrongList.ToList();
-        //while (wrongTypes.Count < 4) wrongTypes.Add(correctBalloonType); // 오답 풍선 부족 방지용
+        //while (wrongTypes.Count < 4) wrongTypes.Add(currentBallonTypeToFind); // 오답 풍선 부족 방지용
 
         for (int i = 10; i < 21; i++)
         {
@@ -337,7 +425,7 @@ public class EA019_GameManager : Ex_BaseGameManager
             do
             {
                 wrongType = wrongTypes[Random.Range(0, wrongTypes.Count)];
-            } while (wrongType == correctBalloonType);
+            } while (wrongType == currentBallonTypeToFind);
 
             GameObject balloon = GetBalloonFromPool((int)wrongType);
             
@@ -351,6 +439,7 @@ public class EA019_GameManager : Ex_BaseGameManager
             _spawnedBalloons.Add(balloon);
 
             balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.4f)
+                .OnStart(()=>{Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Bappear");})
                 .SetDelay(Random.Range(0.1f, 1f))
                 .SetEase(Ease.OutBack);
         }
@@ -414,8 +503,12 @@ public class EA019_GameManager : Ex_BaseGameManager
     
     private void OnBalloonFindRoundFinished()
     {
+        //_uiManager.DeactivateRoundScoreBoard();
+        
+        
+        
         _uiManager.PopFromZeroInstructionUI("풍선을 전부 날려버렸어!");
-
+        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnRoundFinish_BalloonsFlown");
         DOVirtual.DelayedCall(3f, () =>
         {
             GoToNextBalloonFindRound();
@@ -498,9 +591,11 @@ public class EA019_GameManager : Ex_BaseGameManager
             // 정답 풍선인지 확인
             if (!tf.gameObject.name.Contains(_currentBalloonNameToFind))
             {
+                
                 tf.DOScale(Vector3.zero, 0.35f).SetEase(Ease.OutBounce);
                 isDisappearedMap[id] = true; // 클릭했지만 정답이 아닌 풍선은 사라짐
                 PlayParticleEffect(hit.point);
+                Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Bpop");
                 continue;
             }
             
@@ -523,6 +618,10 @@ public class EA019_GameManager : Ex_BaseGameManager
             // scale 애니메이션
             tf.DOScale(Vector3.one * nextScale, 0.3f).SetEase(Ease.OutBack);
 
+            char randomChar = (char)Random.Range('A', 'D' + 1);
+            Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Click" + randomChar);
+            
+            
             // 세 번째 클릭 시 날아가기
             if (clickCount >= MAX_CLICK_COUNT)
             {
@@ -549,8 +648,20 @@ public class EA019_GameManager : Ex_BaseGameManager
                 {
                     _isRoundFinished = true;
                     OnBalloonFindRoundFinished(); // 다음 라운드 트리거 등 처리
+                    _uiManager.DeactivateRoundScoreBoard();
                 }
+                else
+                {
+                    _uiManager.ShutInstructionUI();
+                    _uiManager.ActivateImageAndUpdateCount((int)currentBallonTypeToFind, BALLOON_COUNT_TO_FIND - currentBalloonFindCount);
+                }
+             
             }
+          
+               
+            
+           
+            
         }
     }
 
@@ -573,6 +684,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         
         _uiManager = UIManagerObj.GetComponent<EA019_UIManager>();
       
+       
         InitBalloonsForIntro();
         
         EA019_UIManager.onNextButtonClicked -= OnNextButtonClicked;
@@ -598,7 +710,18 @@ public class EA019_GameManager : Ex_BaseGameManager
         SaveBalloonsPosArray();
        
     }
+    private void StartWindSoundLoop()
+    {
+        void PlayWindLoop()
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/Wind",0.1f);
 
+            // 15초 후 다시 재생
+            DOVirtual.DelayedCall(Random.Range(15f,18f), PlayWindLoop);
+        }
+
+        PlayWindLoop(); // 최초 실행
+    }
     protected override void OnDestroy()
     {
         base.OnDestroy();
@@ -606,6 +729,7 @@ public class EA019_GameManager : Ex_BaseGameManager
     }
     #endregion
 
+    private const string NAR_PATH = "EA019/Narration/";
     
     #region Main Animation Part On Shape & Color -------------------------------------------------------------------
     
@@ -621,6 +745,17 @@ public class EA019_GameManager : Ex_BaseGameManager
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts));
                     _uiManager.PopFromZeroInstructionUI(  CurrentMainSeqNum == (int)MainSeq.OnColor?"빨간색":"하트");
+
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Red");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Heart");
+                    }
+                    
+                    
                     _uiManager.ActivateNextButton(2f);
                 });
                 break;
@@ -630,6 +765,16 @@ public class EA019_GameManager : Ex_BaseGameManager
                 DOVirtual.DelayedCall(delay, () =>
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles));
+                    
+                    
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Orange");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Triangle");
+                    }
 
                     _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor?"주황색":"세모");
                     _uiManager.ActivateNextButton(2f);
@@ -640,6 +785,15 @@ public class EA019_GameManager : Ex_BaseGameManager
                 DOVirtual.DelayedCall(delay, () =>
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars));
+                    
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Yellow");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Star");
+                    }
 
                     _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor?"노란색":"별");
                     _uiManager.ActivateNextButton(2f);
@@ -651,6 +805,14 @@ public class EA019_GameManager : Ex_BaseGameManager
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles));
 
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Green");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Circle");
+                    }
                     _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor?"초록색":"동그라미");
                     _uiManager.ActivateNextButton(2f);
                 });
@@ -661,6 +823,15 @@ public class EA019_GameManager : Ex_BaseGameManager
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares));
 
+                    
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Blue");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Square");
+                    }
                     _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor?"파란색":"네모");
                     _uiManager.ActivateNextButton(2f);
                 });
@@ -670,18 +841,29 @@ public class EA019_GameManager : Ex_BaseGameManager
                 DOVirtual.DelayedCall(delay, () =>
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers));
+                    
+                    if (CurrentMainSeqNum == (int)MainSeq.OnColor)
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Purple");
+                    }
+                    else
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH +"Flower");
+                    }
                     _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor?"보라색":"꽃");
                     _uiManager.ActivateNextButton(2f);
                 });
                 break;
         }
+        
+     
     }
 
     private Dictionary<int, Transform> _onColorBalloonMap = new();
     private void PlayScaleAnimOnColor(GameObject gameObject,bool isToZero = false)
     {
         gameObject.SetActive(true);
-        
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/Bappear");
         
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
@@ -719,8 +901,17 @@ public class EA019_GameManager : Ex_BaseGameManager
         {
             initialMessage = "색깔 풍선이 나무에 걸려있어요~";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
-            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+            
+            CurrentMainSeqNum = (int)MainSeq.OnIntro;
+           // CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+           // CurrentMainSeqNum = (int)MainSeq.OnFinish;
+            
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnIntro_BalloonsOnTree");
+            StartWindSoundLoop();
+
         });
+    
         
     }
     
@@ -729,17 +920,19 @@ public class EA019_GameManager : Ex_BaseGameManager
         //카메라 등 게임매니져 컨트롤러 제어
         _currentSubSeqNum++;
 
-        // 실행함수 제어 
+        // 실행함수 제어 ,.
         curruentIntroObjNum++;
 
         if (CurrentMainSeqNum == (int)MainSeq.OnColor && _currentSubSeqNum >(int)AnimSeqOnColor.Pink)
         {
             CurrentMainSeqNum = (int)MainSeq.OnShape;
-            
+            _uiManager.DeactivateNextButton();
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnRoundFinish");
         }
         else if (CurrentMainSeqNum == (int)MainSeq.OnShape && _currentSubSeqNum > (int)AnimSeqOnShape.Flower)
         {
             CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+            _uiManager.DeactivateNextButton();
         }
         else
         {
@@ -747,12 +940,14 @@ public class EA019_GameManager : Ex_BaseGameManager
             {
                 
                 PlayAnimForOnColorOrShapeSeq(curruentIntroObjNum);
+                _uiManager.DeactivateNextButton();
                 Logger.ContentTestLog($"NextBtnClicked : Current Seq number: {(AnimSeqOnColor)_currentSubSeqNum}");
             }
             else if(CurrentMainSeqNum == (int)MainSeq.OnShape)
             {
      
                 Logger.ContentTestLog($"NextBtnClicked : Current Seq number: {(AnimSeqOnShape)curruentIntroObjNum}");
+                _uiManager.DeactivateNextButton();
                 PlayAnimForOnColorOrShapeSeq(curruentIntroObjNum);
             }
      
@@ -791,6 +986,8 @@ public class EA019_GameManager : Ex_BaseGameManager
 
     private void PlayIntroBalloonsAnim(float delay = 1.2f)
     {
+       
+        
         GetObject((int)Objs.Balloons).SetActive(true);
         GetObject((int)Objs.Balloons).transform.localScale = _defaultSizeMap[(int)Objs.Balloons];
 
@@ -801,8 +998,13 @@ public class EA019_GameManager : Ex_BaseGameManager
             _sequenceMap[key].SetDelay(Random.Range(delay - 0.7f, delay + 0.7f));
 
             _sequenceMap[key].Append(introBalloons[key].DOScale(_defaultSizeMap[key], 1.25f)
+                .OnStart(() =>
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/BintroAppear");
+                })
                 .SetEase(Ease.OutBounce)
-                .SetDelay(0.1f * introBalloons.Count));
+                .SetDelay(0.25f * introBalloons.Count));
+           
             _sequenceMap[key].Join(introBalloons[key].DOShakePosition(30f, Random.Range(0.1f, 0.1f),vibrato:3));
             _sequenceMap[key].Append(introBalloons[key].DOShakeScale(30f, Random.Range(0.1f, 0.2f),vibrato:3));
         }
@@ -815,11 +1017,12 @@ public class EA019_GameManager : Ex_BaseGameManager
         {
             _sequenceMap[key]?.Kill();
         }
-        
+    
         foreach (int key in introBalloons.Keys.ToArray())
         {
             introBalloons[key]?.DOScale(Vector3.zero, Random.Range(0.15f,0.8f)).SetDelay(Random.Range(0.05f,0.15f)).OnComplete(() =>
             {
+                Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Bappear");
                 PlayParticleEffect( introBalloons[key].position);
             });
         
