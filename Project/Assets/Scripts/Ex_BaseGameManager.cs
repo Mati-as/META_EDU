@@ -65,7 +65,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    protected int _currentMainSequence;
+    protected int CurrentMainMainSequence;
 
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
 

@@ -32,13 +32,13 @@ public class EA016_GameManager : Ex_BaseGameManager
     
     public int currentMainSeq
     {
-        get => _currentMainSequence;
+        get => CurrentMainMainSequence;
         set
         {
             Logger.ContentTestLog($"current Mode : {(MainSequence)currentMainSeq}");
-            _currentMainSequence = value;
+            CurrentMainMainSequence = value;
 
-            switch (_currentMainSequence)
+            switch (CurrentMainMainSequence)
             {
                 case (int)MainSequence.ColorMode:
                     RoundSetInColorBallGame(color:BallInfo.BallColor.Pink);
