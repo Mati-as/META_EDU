@@ -89,6 +89,11 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
                 #region To Home
 
+                case UI_TestBuild:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_Home>();
+                    break;
+                
                 case UI_SemesterSelection:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_Home>();
