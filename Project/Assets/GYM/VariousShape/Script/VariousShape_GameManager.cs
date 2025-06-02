@@ -231,7 +231,4 @@ public class VariousShape_GameManager : Base_GameManager
 
 
 
-
-
-
 }

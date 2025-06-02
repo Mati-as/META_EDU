@@ -248,6 +248,9 @@ public class GameStage : MonoBehaviour
            .AppendCallback(() =>
            {
                EndScene.SetActive(true);
+               EndScene.transform.DOScale(Vector3.one, 0.5f)
+                                    .SetEase(Ease.InOutSine)
+                                    .SetLoops(-1, LoopType.Yoyo);
            });
 
     }
