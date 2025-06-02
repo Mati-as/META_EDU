@@ -8,7 +8,8 @@ public class UI_Home : UI_PopUp
     {
         Btn_SensorSettings,
         Btn_ContentSortedByArea,
-        Btn_ContentSortedByTheme
+        Btn_ContentSortedByTheme,
+        Btn_TestBuild
     }
 
     public override bool InitEssentialUI()
@@ -33,7 +34,11 @@ public class UI_Home : UI_PopUp
             Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
         });
-        
+        GetObject((int)UI.Btn_TestBuild).BindEvent(() =>
+        {
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_TestBuild>();
+        });
         return true;
     }
 }

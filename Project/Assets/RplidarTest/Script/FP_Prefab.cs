@@ -53,19 +53,24 @@ public class FP_Prefab : RaySynchronizer
     {
 
                     
-        if (name.Contains("REAL"))//
+        if (name.Contains("Real"))//
         {
             _imageComponent.enabled = SensorManager.isRealImageActive;
           //  Debug.Log($"isRealImageActive : {SensorManager.isRealImageActive}");
-            if (!SensorManager.isRealRayActive)
+          
+          PlayInfoManager.ValidClickCount++;
+          
+          if (!SensorManager.isRealRayActive)
             {
                 return;
             }
+            
         }
         
         if (name.Contains("Normal"))
         {
             _imageComponent.enabled = SensorManager.isNormalImageActive;
+            PlayInfoManager.SensorClickCount++;
           //  Debug.Log($"isNormalImageActive : {SensorManager.isNormalImageActive}");
             if (!SensorManager.isNormalRayActive)
             {

@@ -4,6 +4,8 @@ using Cinemachine;
 using UnityEngine.UI;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
+using Unity.VisualScripting;
+using Sequence = DG.Tweening.Sequence;
 
 public class CrossRoad_GameManager : Base_GameManager
 {
@@ -112,7 +114,14 @@ public class CrossRoad_GameManager : Base_GameManager
         //    );
         //}
 
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartIntro;
         UI_InScene_StartBtn.onGameStartBtnShut += StartIntro;
+    }
+
+    protected override void OnDestroy()
+    {
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartIntro;
+        base.OnDestroy();
     }
 
     private void StartIntro()

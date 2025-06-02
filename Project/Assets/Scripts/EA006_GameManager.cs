@@ -67,26 +67,26 @@ public class EA006_GameManager : Ex_BaseGameManager
     public static event Action<int> SeqMessageEvent;
     public static event Action<int> SparrowCountEvent;
 
-    public int currentThemeSequence
+    public int CurrentThemeMainSequence
     {
         get
         {
-            return base._currentMainSequence;
+            return base.CurrentMainMainSequence;
         }
         set
         {
         
-            base._currentMainSequence = value;
+            base.CurrentMainMainSequence = value;
             
-            Logger.Log($"Sequence Changed--------{(SequenceName)base._currentMainSequence} : {value}");
-            SeqMessageEvent?.Invoke(base._currentMainSequence);
+            Logger.Log($"Sequence Changed--------{(SequenceName)base.CurrentMainMainSequence} : {value}");
+            SeqMessageEvent?.Invoke(base.CurrentMainMainSequence);
             SetWheatColliderStatus();
 
             //값반영 지연으로 value대신 _currentThemeSequence 사용하면 안됩니다 XXX
             switch (value)
             {
                 case (int)SequenceName.GrassColorChange:
-                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
                     currentChangedCount = 0;
                     ChangeThemeSeqAnim((int)SequenceName.GrassColorChange);
                     ResetClickable();
@@ -95,7 +95,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                 
                 case (int)SequenceName.FindScarecrow:
                     _elapsedTime = 0;
-                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
                     SetWheatColliderStatus(false);
                     ChangeThemeSeqAnim((int)SequenceName.FindScarecrow);
                     ResetClickable();
@@ -107,7 +107,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     ResetClickable(false);//순서주의 
                     AppearSparrow(2);
                     ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
-                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base._currentMainSequence} : {value}");
+                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
                     Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006");
 
                     break;
@@ -199,14 +199,14 @@ public class EA006_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(1f, () =>
         {
 
-            currentThemeSequence = (int)SequenceName.GrassColorChange;
+            CurrentThemeMainSequence = (int)SequenceName.GrassColorChange;
         });
     }
 
     public override void OnRaySynced()
     {
         foreach (var hit in GameManager_Hits)
-            switch (currentThemeSequence)
+            switch (CurrentThemeMainSequence)
             {
                 case (int)SequenceName.Default:
                     break;
@@ -320,7 +320,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     }
     private void OnAllGrassColorChanged()
     {
-        currentThemeSequence = (int)SequenceName.FindScarecrow;
+        CurrentThemeMainSequence = (int)SequenceName.FindScarecrow;
     }
 
     #endregion
@@ -434,7 +434,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     private void Update()
     {
-        if (currentThemeSequence != (int)SequenceName.FindScarecrow) return; 
+        if (CurrentThemeMainSequence != (int)SequenceName.FindScarecrow) return; 
         
         _elapsedTime += Time.deltaTime;
         
@@ -453,7 +453,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     });
             });
             
-            currentThemeSequence = (int)SequenceName.SparrowAppear;
+            CurrentThemeMainSequence = (int)SequenceName.SparrowAppear;
         }
     }
 
@@ -522,7 +522,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     
     private void OnRaySyncedOnSparrow(RaycastHit hit)
     {
-        if (currentThemeSequence != (int)SequenceName.SparrowAppear) return;
+        if (CurrentThemeMainSequence != (int)SequenceName.SparrowAppear) return;
         
         var id = hit.transform.GetInstanceID();
         
@@ -575,7 +575,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             if(_currentSparrowCount > TargetSparrowCount)
             {
                 _currentSparrowCount = 0;
-                currentThemeSequence = (int)SequenceName.OnFinish;
+                CurrentThemeMainSequence = (int)SequenceName.OnFinish;
                 
                 DOVirtual.DelayedCall(2.5f, () =>
                 {

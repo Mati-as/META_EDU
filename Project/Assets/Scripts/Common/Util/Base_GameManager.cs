@@ -326,6 +326,7 @@ public abstract class Base_GameManager : MonoBehaviour
     protected void OnOriginallyRaySynced()
     {
         GameManager_Ray = RaySynchronizer.initialRay;
+        // ReSharper disable once Unity.PreferNonAllocApi
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray, Mathf.Infinity, layerMask);
 
 

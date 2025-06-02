@@ -244,18 +244,18 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         Completing
     }
 
-    public int CurrentMainSeq
+    public int CurrentMainMainSeq
     {
         get
         {
-            return _currentMainSequence;
+            return CurrentMainMainSequence;
         }
         set
         {
-            _currentMainSequence = value;
+            CurrentMainMainSequence = value;
 
             //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
-            Logger.ContentTestLog($"Current Sequence: {CurrentMainSeq.ToString()}");
+            Logger.ContentTestLog($"Current Sequence: {CurrentMainMainSeq.ToString()}");
 
 
             // commin Init Part.
@@ -402,12 +402,12 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
             if (round == (int)MainSeq.FireTruck_Outro)
             {
-                CurrentMainSeq = (int)MainSeq.OnFinish;
+                CurrentMainMainSeq = (int)MainSeq.OnFinish;
             }
 
             else
             {
-                CurrentMainSeq++;
+                CurrentMainMainSeq++;
             }
            
             isClickable = true;
@@ -527,7 +527,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
             initialMessage = "먼저 친구들,\n각자 표시된 자리에 앉아주세요!";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
 
-            CurrentMainSeq = (int)MainSeq.SeatSelection;
+            CurrentMainMainSeq = (int)MainSeq.SeatSelection;
 
 
             Logger.ContentTestLog("Mainseq Changed SeatSelection -------------------");
@@ -574,7 +574,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                     _uiManager.PopFromZeroInstructionUI("다 앉았구나! 이제 자동차들을 보러가자!");
                     DOVirtual.DelayedCall(4, () =>
                     {
-                        CurrentMainSeq = (int)MainSeq.Ambulance_Intro;
+                        CurrentMainMainSeq = (int)MainSeq.Ambulance_Intro;
                     });
                     break;
                 }
@@ -612,7 +612,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/OnComplete");
         isClickable = false;
         _isRoundFinished = true; 
-        CurrentMainSeq++;
+        CurrentMainMainSeq++;
         currentArrivedSubPartCount = 0;
     }
 
@@ -824,9 +824,9 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
     {
         if (!PreCheckOnRaySync()) return;
 
-        if (CurrentMainSeq == (int)MainSeq.SeatSelection)
+        if (CurrentMainMainSeq == (int)MainSeq.SeatSelection)
             OnRaySyncedOnSeatSelection();
-        else if (CurrentMainSeq == (int)MainSeq.OnFinish)
+        else if (CurrentMainMainSeq == (int)MainSeq.OnFinish)
         {
             OnRaySyncedOnFinish();
         }
