@@ -1,4 +1,6 @@
 using DG.Tweening;
+using MyGame.Messages;
+using SuperMaxim.Messaging;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,8 +8,9 @@ public class VariousShape_GameManager : Base_GameManager
 {
     [SerializeField] private GameObject flowerImg;
     [SerializeField] private GameObject squareImg;
-    [SerializeField] private GameObject starImg;
+    [SerializeField] private GameObject heartImg;
     [SerializeField] private GameObject circleImg;
+    [SerializeField] private GameObject triangleImg;
 
     //[SerializeField] private int flowerValue;
     //[SerializeField] private int squareValue;
@@ -23,11 +26,14 @@ public class VariousShape_GameManager : Base_GameManager
     Vector3 originalSquarePos;
     Vector3 originalSquareSize;
           
-    Vector3 originalStarPos;
-    Vector3 originalStarSize;
+    Vector3 originalHeartPos;
+    Vector3 originalHeartSize;
           
     Vector3 originalCirclePos;
     Vector3 originalCircleSize;
+
+    Vector3 originalTrianglePos;
+    Vector3 originalTriangleSize;
 
     Vector3 targetPostition = new Vector3(2.9f, 0, -0.591f);
     Vector3 shakeX = new Vector3(0, 0, 15f);
@@ -36,11 +42,11 @@ public class VariousShape_GameManager : Base_GameManager
     [SerializeField] private GameObject introNextBtn;
     [SerializeField] private GameObject IntroStage;
 
-    private const string ToWorkTag = "toWork";
-
     public GameStage gameStage;
 
     Sequence introSeq;
+
+    public bool isintroducing = false;
 
     protected override void Init()
     {
@@ -55,13 +61,16 @@ public class VariousShape_GameManager : Base_GameManager
         originalSquarePos = squareImg.transform.position;
         originalSquareSize = squareImg.transform.localScale;
 
-        originalStarPos = starImg.transform.position;
-        originalStarSize = starImg.transform.localScale;
+        //originalHeartPos =  heartImg.transform.position;
+        //originalHeartSize = heartImg.transform.localScale;
 
         originalCirclePos = circleImg.transform.position;
         originalCircleSize = circleImg.transform.localScale;
 
-        //Managers.Sound.Play(SoundManager.Sound.Bgm, "CrossRoad/Audio/CrossRoad_BGM");
+        //originalTrianglePos =  triangleImg.transform.position;
+        //originalTriangleSize = triangleImg.transform.localScale;
+
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "VariousShape/Audio/BGAudio");
 
         //if (mainCamera != null)
         //{
@@ -88,57 +97,61 @@ public class VariousShape_GameManager : Base_GameManager
 
     private void StartGame()
     {
-        //Messenger.Default.Publish(new NarrationMessage("지금처럼 신호를 보고 난 후\n좌우도 꼭 살피고 안전하게 건너야해", "7_지금처럼_신호를_보고_난_후_좌우도_꼭_살피고_안전하게_건너야해_"));
-
-        //ShapeAni(flowerImg, 1);
-        //ShapeAni(squareImg, 0);
-        //ShapeAni(starImg, 1);
-        //ShapeAni(circleImg, 0);
-
         introSeq = DOTween.Sequence()
-        //.AppendCallback(() => 나레이션 기능) 
-        //.AppendInterval(나레이션시간)
-        //.AppendCallback(() => 나레이션 기능) 
-        //.AppendInterval(나레이션시간)
-        .Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(flowerImg.transform.DOScale(originalFlowerSize * 4.8f, moveSpeed))
-        .Append(flowerImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        .AppendCallback(() => { })
-        .AppendInterval(1f)
-        .Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
-        .Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(1f)
+         //.AppendCallback(() => 나레이션 기능) 
+         //.AppendInterval(나레이션시간)
+         //.AppendCallback(() => 나레이션 기능) 
+         //.AppendInterval(나레이션시간)
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 함께 다양한 모양을 찾아봐요!", "audio_0_친구들과_함께_다양한_모양을_찾아봐요_")))
+        .AppendInterval(6f)
+        .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed))
+        .Append(circleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => { Messenger.Default.Publish(new NarrationMessage("동그라미", "audio_1_동그라미_")); })
+        .AppendInterval(2f)
+        .Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(5f)
 
         .Append(squareImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(squareImg.transform.DOScale(originalSquareSize * 6f, moveSpeed))
         .Append(squareImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        .AppendCallback(() => { })
-        .AppendInterval(1f)
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("네모", "audio_2_네모_")))
+        .AppendInterval(2f)
         .Append(squareImg.transform.DOMove(originalSquarePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(squareImg.transform.DOScale(originalSquareSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(1f)
+        .AppendInterval(5f)
 
-        .Append(starImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(starImg.transform.DOScale(originalStarSize * 4.7f, moveSpeed))
-        .Append(starImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        .AppendCallback(() => { })
-        .AppendInterval(1f)
-        .Append(starImg.transform.DOMove(originalStarPos, moveSpeed).SetEase(Ease.InQuad))
-        .Join(starImg.transform.DOScale(originalStarSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(1)
+        .Append(heartImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(heartImg.transform.DOScale(originalHeartSize * 6f, moveSpeed))
+        .Append(heartImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("하트", "audio_3_하트_")))
+        .AppendInterval(2f)
+        .Append(heartImg.transform.DOMove(originalHeartPos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(heartImg.transform.DOScale(originalHeartSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(5f)
 
-        .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(circleImg.transform.DOScale(originalCircleSize * 6.2f, moveSpeed))
-        .Append(circleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        .AppendCallback(() => { })
-        .AppendInterval(1f)
-        .Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
-        .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(1f)
+        .Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(flowerImg.transform.DOScale(originalFlowerSize * 6.2f, moveSpeed))
+        .Append(flowerImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("꽃", "audio_4_꽃_")))
+        .AppendInterval(2f)
+        .Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(3f)
+        //.Append(triangleImg.transform.DOMove(targetPostition, moveSpeed))
+        //.Join(triangleImg.transform.DOScale(originalTriangleSize * 6.2f, moveSpeed))
+        //.Append(triangleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        //.AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("세모", "audio_5_세모_")))
+        //.AppendInterval(2f)
+        //.Append(triangleImg.transform.DOMove(originalTrianglePos, moveSpeed).SetEase(Ease.InQuad))
+        //.Join(triangleImg.transform.DOScale(originalTriangleSize, moveSpeed).SetEase(Ease.InQuad))
+        //.AppendInterval(5f)
 
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("이제부터 모양 친구들과 놀아볼까요~", "audio_6_이제부터_모양_친구들과_놀아볼까요_")))
+        .AppendInterval(3f)
         .AppendCallback(() =>                   //게임스테이지 시작
         {
-            Debug.Log("시퀀스 종료");
             IntroStage.SetActive(false);
             gameStage.OnGameStart();
         });
@@ -152,21 +165,18 @@ public class VariousShape_GameManager : Base_GameManager
         GameManager_Hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in GameManager_Hits)
         {
-            if (hit.collider.CompareTag(ToWorkTag))
+            if (hit.collider.TryGetComponent<ClickableMover>(out var clickable))
             {
-                if (hit.collider.TryGetComponent<ClickableMover>(out var clickable))
-                {
-                    clickable.OnClicked();
-                }
+                clickable.OnClicked();
+            }
+            if (hit.collider.TryGetComponent<IntroduceSelf>(out var introduce))
+            {
+                if (!isintroducing)
+                    introduce.IntroduceSelfShape();
             }
         }
     }
     
-    public void NextStepIntro()
-    {
-        introSeq.Play();
-    }
-
     private void ShapeAni(Image obj, int value)
     {
         int randomvalue = Random.Range(0, 2);
@@ -229,6 +239,10 @@ public class VariousShape_GameManager : Base_GameManager
         }
     }
 
-
+    protected override void OnDestroy()
+    {
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
+        base.OnDestroy();
+    }
 
 }
