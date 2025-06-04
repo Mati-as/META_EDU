@@ -23,7 +23,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         Yellow,
         Green,
         Blue,
-        Pink,f
+        Pink,
     }
     
     private enum AnimSeqOnShape

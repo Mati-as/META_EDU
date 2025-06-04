@@ -273,6 +273,15 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.Ambulance_Intro:
                     OnCarIntro((int)Obj.Sprites_Ambulance);
                     
+                  
+                        for (int i = (int)Obj.Seat_A; i <= (int)Obj.Seat_G; i++)
+                        {
+                            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Obj)i}");
+                            GetObject(i).SetActive(false);
+                        }
+                    
+                    
+                    
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
                     
@@ -285,7 +294,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         });
 ;                    break;
                 case (int)MainSeq.Ambulance_Outro:
-                    _uiManager.PopFromZeroInstructionUI("구급차를 완성했어!");
+                    _uiManager.PopFromZeroInstructionUI("구급차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
@@ -307,11 +316,11 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         {
                             Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/PutTogether_PoliceCar");   
                         });
-                    _uiManager.PopFromZeroInstructionUI("이번엔, 각 부품을 터치해서 경찰차를 완성시켜요!");
+                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 경찰차를 완성시켜요!");
                     break;
                 case (int)MainSeq.PoliceCar_Outro:
                     
-                    _uiManager.PopFromZeroInstructionUI("경찰차를 완성! 출동!");
+                    _uiManager.PopFromZeroInstructionUI("경찰차 완성! 출동!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_PoliceCar");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_PoliceCar");
                     OnOutro((int)Obj.Sprites_PoliceCar);
@@ -319,7 +328,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
                 
                 case (int)MainSeq.FireTruck_Intro:
-                    _uiManager.PopFromZeroInstructionUI("마지막으로, 각 부품을 터치해서 소방차를 완성시켜요!");
+                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 소방차를 완성시켜요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
                     OnCarIntro((int)Obj.Sprites_FireTruck);
@@ -332,7 +341,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                     
                     break;
                 case (int)MainSeq.FireTruck_Outro:
-                    _uiManager.PopFromZeroInstructionUI("소방차를 완성! 출동!");
+                    _uiManager.PopFromZeroInstructionUI("소방차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
@@ -341,7 +350,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/OnFinish");
-                    _uiManager.PopFromZeroInstructionUI("친구들 덕분에 도와줄 수 있었어요!\n고마워요!");
+                    _uiManager.PopFromZeroInstructionUI("친구들 덕분에 도와줄 수 있었어요!");
      
                     OnFinishInit();
                     break;
@@ -462,7 +471,8 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         }
       
 
-
+        subPsResourcePathMap.Add(0, "Runtime/EA018/OnComplete");
+        SetSubPsPool(0);
         psResourcePath = "Runtime/EA018/Fx_Click";
 
         _spriteBgRenderer = GetObject((int)Obj.SpriteBg).GetComponent<SpriteRenderer>();
@@ -524,7 +534,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
         DOVirtual.DelayedCall(1.5f, () =>
         {
-            initialMessage = "먼저 친구들,\n각자 표시된 자리에 앉아주세요!";
+            initialMessage = "각자 표시된 자리에 앉아주세요!";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
 
             CurrentMainMainSeq = (int)MainSeq.SeatSelection;
@@ -668,7 +678,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         char randoChar = (char)Random.Range('A', 'B' + 1);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/OnPartArrive_" + randoChar);
                   
-                        
+                       
                         currentArrivedSubPartCount++;
 
                         _sequenceMap[ID]?.Kill();
@@ -691,8 +701,9 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         });
 
                   
-                       
                         Logger.ContentTestLog($"sub part Arrived {currentArrivedSubPartCount}");
+                        PlaySubParticleEffect(0,hit.transform.position);
+                      
 
                         if (currentArrivedSubPartCount >= MAX_SUBPART_COUNT)
                         {
