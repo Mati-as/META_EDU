@@ -8,7 +8,7 @@ public class VariousShape_GameManager : Base_GameManager
 {
     [SerializeField] private GameObject flowerImg;
     [SerializeField] private GameObject squareImg;
-    [SerializeField] private GameObject heartImg;
+    [SerializeField] private GameObject starImg;
     [SerializeField] private GameObject circleImg;
     [SerializeField] private GameObject triangleImg;
 
@@ -22,18 +22,23 @@ public class VariousShape_GameManager : Base_GameManager
 
     Vector3 originalFlowerPos;
     Vector3 originalFlowerSize;
+    Vector3 originalFlowerEuler;
 
     Vector3 originalSquarePos;
     Vector3 originalSquareSize;
-          
-    Vector3 originalHeartPos;
-    Vector3 originalHeartSize;
-          
+    Vector3 originalSquareEuler;
+
+    Vector3 originalStarPos;
+    Vector3 originalStarSize;
+    Vector3 originalStarEuler;
+
     Vector3 originalCirclePos;
     Vector3 originalCircleSize;
+    Vector3 originalCircleEuler;
 
     Vector3 originalTrianglePos;
     Vector3 originalTriangleSize;
+    Vector3 originalTriangleEuler;
 
     Vector3 targetPostition = new Vector3(2.9f, 0, -0.591f);
     Vector3 shakeX = new Vector3(0, 0, 15f);
@@ -48,6 +53,8 @@ public class VariousShape_GameManager : Base_GameManager
 
     public bool isintroducing = false;
 
+    public bool isStageStart = false;
+
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -56,19 +63,24 @@ public class VariousShape_GameManager : Base_GameManager
         ManageProjectSettings(150, 0.15f);
 
         originalFlowerPos = flowerImg.transform.position;
+        originalFlowerEuler = flowerImg.transform.eulerAngles;
         originalFlowerSize = flowerImg.transform.localScale;
 
         originalSquarePos = squareImg.transform.position;
+        originalSquareEuler = squareImg.transform.eulerAngles;
         originalSquareSize = squareImg.transform.localScale;
 
-        //originalHeartPos =  heartImg.transform.position;
-        //originalHeartSize = heartImg.transform.localScale;
+        originalStarPos =  starImg.transform.position;
+        originalStarEuler = starImg.transform.eulerAngles;
+        originalStarSize = starImg.transform.localScale;
 
         originalCirclePos = circleImg.transform.position;
+        originalCircleEuler = circleImg.transform.eulerAngles;
         originalCircleSize = circleImg.transform.localScale;
 
-        //originalTrianglePos =  triangleImg.transform.position;
-        //originalTriangleSize = triangleImg.transform.localScale;
+        originalTrianglePos =  triangleImg.transform.position;
+        originalTriangleEuler = triangleImg.transform.eulerAngles;
+        originalTriangleSize = triangleImg.transform.localScale;
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "VariousShape/Audio/BGAudio");
 
@@ -98,55 +110,71 @@ public class VariousShape_GameManager : Base_GameManager
     private void StartGame()
     {
         introSeq = DOTween.Sequence()
-         //.AppendCallback(() => 나레이션 기능) 
-         //.AppendInterval(나레이션시간)
-         //.AppendCallback(() => 나레이션 기능) 
-         //.AppendInterval(나레이션시간)
+        //.AppendCallback(() => 나레이션 기능) 
+        //.AppendInterval(나레이션시간)
+        //.AppendCallback(() => 나레이션 기능) 
+        //.AppendInterval(나레이션시간)
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 함께 다양한 모양을 찾아봐요!", "audio_0_친구들과_함께_다양한_모양을_찾아봐요_")))
         .AppendInterval(6f)
         .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed))
+        .Join(circleImg.transform.DOScale(originalCircleSize * 4f, moveSpeed))
+        .Join(circleImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
         .Append(circleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .JoinCallback(() => Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/BoingSound_1"))
         .AppendCallback(() => { Messenger.Default.Publish(new NarrationMessage("동그라미", "audio_1_동그라미_")); })
         .AppendInterval(2f)
         .Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(5f)
+        .Join(circleImg.transform.DOLocalRotate(originalCircleEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(3f)
 
         .Append(squareImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(squareImg.transform.DOScale(originalSquareSize * 6f, moveSpeed))
+        .Join(squareImg.transform.DOScale(originalSquareSize * 4f, moveSpeed))
+        .Join(squareImg.transform.DOLocalRotate(new Vector3(0, 0, -2f), moveSpeed))
         .Append(squareImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .JoinCallback(() => Managers.Sound.Play(SoundManager.Sound.Effect, $"VariousShape/Audio/BoingSound_2"))
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("네모", "audio_2_네모_")))
         .AppendInterval(2f)
         .Append(squareImg.transform.DOMove(originalSquarePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(squareImg.transform.DOScale(originalSquareSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(5f)
+        .Join(squareImg.transform.DOLocalRotate(originalSquareEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(3f)
 
-        .Append(heartImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(heartImg.transform.DOScale(originalHeartSize * 6f, moveSpeed))
-        .Append(heartImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("하트", "audio_3_하트_")))
+        .Append(starImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(starImg.transform.DOScale(originalStarSize * 3.7f, moveSpeed))
+        .Join(starImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
+        .Append(starImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .JoinCallback(() => Managers.Sound.Play(SoundManager.Sound.Effect, $"VariousShape/Audio/BoingSound_3"))
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("별", "audio_30_별")))
         .AppendInterval(2f)
-        .Append(heartImg.transform.DOMove(originalHeartPos, moveSpeed).SetEase(Ease.InQuad))
-        .Join(heartImg.transform.DOScale(originalHeartSize, moveSpeed).SetEase(Ease.InQuad))
-        .AppendInterval(5f)
+        .Append(starImg.transform.DOMove(originalStarPos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(starImg.transform.DOScale(originalStarSize, moveSpeed).SetEase(Ease.InQuad))
+        .Join(starImg.transform.DOLocalRotate(originalStarEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(3f)
 
         .Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
-        .Join(flowerImg.transform.DOScale(originalFlowerSize * 6.2f, moveSpeed))
+        .Join(flowerImg.transform.DOScale(originalFlowerSize * 4f, moveSpeed))
+        .Join(flowerImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
         .Append(flowerImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .JoinCallback(() => Managers.Sound.Play(SoundManager.Sound.Effect, $"VariousShape/Audio/BoingSound_2"))
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("꽃", "audio_4_꽃_")))
         .AppendInterval(2f)
         .Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
         .Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
+        .Join(flowerImg.transform.DOLocalRotate(originalFlowerEuler, moveSpeed).SetEase(Ease.InQuad))
         .AppendInterval(3f)
-        //.Append(triangleImg.transform.DOMove(targetPostition, moveSpeed))
-        //.Join(triangleImg.transform.DOScale(originalTriangleSize * 6.2f, moveSpeed))
-        //.Append(triangleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
-        //.AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("세모", "audio_5_세모_")))
-        //.AppendInterval(2f)
-        //.Append(triangleImg.transform.DOMove(originalTrianglePos, moveSpeed).SetEase(Ease.InQuad))
-        //.Join(triangleImg.transform.DOScale(originalTriangleSize, moveSpeed).SetEase(Ease.InQuad))
-        //.AppendInterval(5f)
+
+        .Append(triangleImg.transform.DOMove(targetPostition, moveSpeed))
+        .Join(triangleImg.transform.DOScale(originalTriangleSize * 4f, moveSpeed))
+        .Join(triangleImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
+        .Append(triangleImg.transform.DOShakeRotation(duration: 0.5f, strength: shakeX))
+        .JoinCallback(() => Managers.Sound.Play(SoundManager.Sound.Effect, $"VariousShape/Audio/BoingSound_1"))
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("세모", "audio_5_세모_")))
+        .AppendInterval(2f)
+        .Append(triangleImg.transform.DOMove(originalTrianglePos, moveSpeed).SetEase(Ease.InQuad))
+        .Join(triangleImg.transform.DOScale(originalTriangleSize, moveSpeed).SetEase(Ease.InQuad))
+        .Join(triangleImg.transform.DOLocalRotate(originalTriangleEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendInterval(3f)
 
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("이제부터 모양 친구들과 놀아볼까요~", "audio_6_이제부터_모양_친구들과_놀아볼까요_")))
         .AppendInterval(3f)

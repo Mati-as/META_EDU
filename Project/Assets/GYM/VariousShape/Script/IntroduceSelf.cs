@@ -1,11 +1,13 @@
 using DG.Tweening;
+using MyGame.Messages;
+using SuperMaxim.Messaging;
 using UnityEngine;
 
 public class IntroduceSelf : MonoBehaviour
 {
     public enum ShapeType
     {
-        Square, Flower, Star, Circle
+        Square, Flower, Star, Circle, Triangle
     }
 
     [SerializeField] private ShapeType myShape;
@@ -37,7 +39,7 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(targetScale,2f).SetEase(Ease.Linear))
                     .JoinCallback(() =>
                     {
-                        Debug.Log("사각형 나레이션");
+                        Messenger.Default.Publish(new NarrationMessage("네모", "audio_2_네모_"));
                         gameManager.isintroducing = true;
                     })
                     .AppendInterval(2F)
@@ -52,7 +54,7 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(targetScale, 2f).SetEase(Ease.Linear))
                     .JoinCallback(() =>
                     {
-                        Debug.Log("꽃 나레이션");
+                        Messenger.Default.Publish(new NarrationMessage("꽃", "audio_4_꽃_"));
                         gameManager.isintroducing = true;
                     })
                     .AppendInterval(2F)
@@ -66,7 +68,7 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(targetScale, 2f).SetEase(Ease.Linear))
                     .JoinCallback(() =>
                     {
-                        Debug.Log("별 나레이션");
+                        Messenger.Default.Publish(new NarrationMessage("별", "audio_30_별"));
                         gameManager.isintroducing = true;
                     })
                     .AppendInterval(2F)
@@ -80,7 +82,21 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(targetScale, 2f).SetEase(Ease.Linear))
                     .JoinCallback(() =>
                     {
-                        Debug.Log("원 나레이션");
+                        Messenger.Default.Publish(new NarrationMessage("동그라미", "audio_1_동그라미_"));
+                        gameManager.isintroducing = true;
+                    })
+                    .AppendInterval(2F)
+                    .Append(gameObject.transform.DOMove(oriPosition, 2f).SetEase(Ease.OutSine))
+                    .Join(gameObject.transform.DOScale(oriScale, 2f).SetEase(Ease.Linear))
+                    .OnComplete(() => gameManager.isintroducing = false);
+                break;
+            case ShapeType.Triangle:
+                introduceSeq
+                    .Append(gameObject.transform.DOMove(targetVector, 2f).SetEase(Ease.InSine))
+                    .Join(gameObject.transform.DOScale(targetScale, 2f).SetEase(Ease.Linear))
+                    .JoinCallback(() =>
+                    {
+                        Messenger.Default.Publish(new NarrationMessage("세모", "audio_5_세모_"));
                         gameManager.isintroducing = true;
                     })
                     .AppendInterval(2F)
