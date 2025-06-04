@@ -46,6 +46,12 @@ public class EA019_GameManager : Ex_BaseGameManager
         Balloon_GreenCircle,
         Balloon_BlueSquare,
         Balloon_PinkFlower,
+        Balloon_RedHeart_A,
+        Balloon_OrangeTriangle_A,
+        Balloon_YellowStar_A,
+        Balloon_GreenCircle_A,
+        Balloon_BlueSquare_A,
+        Balloon_PinkFlower_A,
         
         Intro_Hearts,
         Intro_Triangles,
@@ -83,11 +89,11 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnIntro:
                     PlayIntroBalloonsAnim();
    
-                    DOVirtual.DelayedCall(8f,()=>
+                    DOVirtual.DelayedCall(10f,()=>
                     {
                         KillIntroBalloonsAnim();
                     });
-                    DOVirtual.DelayedCall(10f,()=>
+                    DOVirtual.DelayedCall(12f,()=>
                     {
                         CurrentMainSeqNum = (int)MainSeq.OnColor;
                        PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:2.5f);
@@ -98,7 +104,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     //초기화
                     _uiManager.PopFromZeroInstructionUI("색깔을 알아볼까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnColor");
-                  
+                    _introClickable = true;
                     
                     _currentSubSeqNum = 0;
                     curruentIntroObjNum = (int)Objs.Intro_Hearts;
@@ -112,7 +118,8 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnShape:
                     _currentSubSeqNum = 0;
                     curruentIntroObjNum = (int)Objs.Intro_Hearts;
-                   
+                    _introClickable = true;
+                    
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
                     _uiManager.PopFromZeroInstructionUI("모양을 알아볼까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnShape");
@@ -125,6 +132,7 @@ public class EA019_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.OnBalloonFind:
                     _currentSubSeqNum = 0;
+                    _uiManager.ResetTextColor();
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
                       
                     DOVirtual.DelayedCall(3.0f,()=>
@@ -165,43 +173,123 @@ public class EA019_GameManager : Ex_BaseGameManager
         }
     }
 
+    private bool _introClickable =true;
+  private void OnRaySyncOnIntroduce()
+  {
+    if (!_introClickable) return;
+      _introClickable = false;
+      DOVirtual.DelayedCall(1f, () =>
+      {
+          _introClickable = true;
+      });
+      
+      
+    foreach (var hit in GameManager_Hits)
+    {
+        string clickedName = hit.collider.gameObject.name;
+
+        if (clickedName.Contains("Red"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "빨간색" : "하트");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Red]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Red" : "Heart"));
+        }
+        else if (clickedName.Contains("Orange"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts), true);
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "주황색" : "세모");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Orange]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Orange" : "Triangle"));
+        }
+        else if (clickedName.Contains("Yellow"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles), true);
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "노란색" : "별");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Yellow]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Yellow" : "Star"));
+        }
+        else if (clickedName.Contains("Green"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars), true);
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "초록색" : "동그라미");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Green]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Green" : "Circle"));
+        }
+        else if (clickedName.Contains("Blue"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles), true);
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "파란색" : "네모");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Blue]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Blue" : "Square"));
+        }
+        else if (clickedName.Contains("Purple") || clickedName.Contains("Pink"))
+        {
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares), true);
+            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers));
+            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "보라색" : "꽃");
+            _uiManager.ChangeTextColor(colors[(int)Colors.Purple]);
+            
+            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Purple" : "Flower"));
+        }
+
+      
+    }
+}
+
     private void OnFinish()
     {
         GetObject((int)Objs.Balloons).SetActive(true);
-        
-        GetObject((int)Objs.Balloon_RedHeart).SetActive(true);
-        GetObject((int)Objs.Balloon_OrangeTriangle).SetActive(true);
-        GetObject((int)Objs.Balloon_YellowStar).SetActive(true);
-        GetObject((int)Objs.Balloon_GreenCircle).SetActive(true);
-        GetObject((int)Objs.Balloon_BlueSquare).SetActive(true);
-        GetObject((int)Objs.Balloon_PinkFlower).SetActive(true);
-        
-        _sequenceMap.TryAdd((int)Objs.OnFinishPos, DOTween.Sequence());
-        _sequenceMap[(int)Objs.OnFinishPos]?.Kill();
-        _sequenceMap[(int)Objs.OnFinishPos] = DOTween.Sequence();
-
 
         
-        GetObject((int)Objs.Balloon_RedHeart).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_RedHeart]*1.5f,1f);
-        GetObject((int)Objs.Balloon_OrangeTriangle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_OrangeTriangle]*1.5f,1f);
-        GetObject((int)Objs.Balloon_YellowStar).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_YellowStar]*1.5f,1f);
-        GetObject((int)Objs.Balloon_GreenCircle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_GreenCircle]*1.5f,1f);
-        GetObject((int)Objs.Balloon_BlueSquare).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_BlueSquare]*1.5f,1f);
-        GetObject((int)Objs.Balloon_PinkFlower).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_PinkFlower]*1.5f,1f);
+        
+        for(int i = 0 ; i < 12; i++)
+        {
+            GetObject(i).SetActive(true);
+            GetObject(i).transform.DOScale(_defaultSizeMap[i]*1.5f,1f);
+            _defaultSizeMap.TryAdd(i+6,GetObject(i).transform.localScale);
+            AddFloatingBalloon(i);
+        }
+   
+       
         
         
+        // GetObject((int)Objs.Balloon_RedHeart).SetActive(true);
+        // GetObject((int)Objs.Balloon_OrangeTriangle).SetActive(true);
+        // GetObject((int)Objs.Balloon_YellowStar).SetActive(true);
+        // GetObject((int)Objs.Balloon_GreenCircle).SetActive(true);
+        // GetObject((int)Objs.Balloon_BlueSquare).SetActive(true);
+        // GetObject((int)Objs.Balloon_PinkFlower).SetActive(true);
+      
         
-        AddFloatingBalloon((int)Objs.Balloon_RedHeart);
-        AddFloatingBalloon((int)Objs.Balloon_OrangeTriangle);
-        AddFloatingBalloon((int)Objs.Balloon_YellowStar);
-        AddFloatingBalloon((int)Objs.Balloon_GreenCircle);
-        AddFloatingBalloon((int)Objs.Balloon_BlueSquare);
-        AddFloatingBalloon((int)Objs.Balloon_PinkFlower);
+        // GetObject((int)Objs.Balloon_RedHeart).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_RedHeart]*1.5f,1f);
+        // GetObject((int)Objs.Balloon_OrangeTriangle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_OrangeTriangle]*1.5f,1f);
+        // GetObject((int)Objs.Balloon_YellowStar).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_YellowStar]*1.5f,1f);
+        // GetObject((int)Objs.Balloon_GreenCircle).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_GreenCircle]*1.5f,1f);
+        // GetObject((int)Objs.Balloon_BlueSquare).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_BlueSquare]*1.5f,1f);
+        // GetObject((int)Objs.Balloon_PinkFlower).transform.DOScale(_defaultSizeMap[(int)Objs.Balloon_PinkFlower]*1.5f,1f);
+      
         
+        // AddFloatingBalloon((int)Objs.Balloon_RedHeart);
+        // AddFloatingBalloon((int)Objs.Balloon_OrangeTriangle);
+        // AddFloatingBalloon((int)Objs.Balloon_YellowStar);
+        // AddFloatingBalloon((int)Objs.Balloon_GreenCircle);
+        // AddFloatingBalloon((int)Objs.Balloon_BlueSquare);
+        // AddFloatingBalloon((int)Objs.Balloon_PinkFlower);
+      
         
     }
 
-    private const float BALLOON_RISE_Y_DISTANCE_ONFINISH = 5.5f; // OnFinish에서 풍선이 올라가는 높이
+    private const float BALLOON_RISE_Y_DISTANCE_ONFINISH = 9.5f; // OnFinish에서 풍선이 올라가는 높이
     private void AddFloatingBalloon(int objEnum)
     {
         _sequenceMap.TryAdd(objEnum, DOTween.Sequence());
@@ -345,28 +433,33 @@ public class EA019_GameManager : Ex_BaseGameManager
 
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_RedHeart");
 
-                _uiManager.PopFromZeroInstructionUI("빨간색 하트모양 풍선을 발로 터치해주세요!");
+                _uiManager.ChangeTextColor(colors[(int)Colors.Red]);
+                _uiManager.PopFromZeroInstructionUI("빨간색 하트모양 풍선을 터치해주세요!");
                 break;
             case (int)Objs.Balloon_OrangeTriangle:
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_OrangeTriangle");
-                
-                _uiManager.PopFromZeroInstructionUI("주황색 세모모양 풍선을 발로 터치해주세요!");
+                _uiManager.ChangeTextColor(colors[(int)Colors.Orange]);
+                _uiManager.PopFromZeroInstructionUI("주황색 세모모양 풍선을 터치해주세요!");
                 break;
             case (int)Objs.Balloon_YellowStar:
+                _uiManager.ChangeTextColor(colors[(int)Colors.Yellow]);
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_YellowStar");
-                _uiManager.PopFromZeroInstructionUI("노란색 별모양 풍선을 발로 터치해주세요!");
+                _uiManager.PopFromZeroInstructionUI("노란색 별모양 풍선을 터치해주세요!");
                 break;
             case (int)Objs.Balloon_GreenCircle:
+                _uiManager.ChangeTextColor(colors[(int)Colors.Green]);
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_GreenCircle");
-                _uiManager.PopFromZeroInstructionUI("초록색 동그라미 모양 풍선을 발로 터치해주세요!");
+                _uiManager.PopFromZeroInstructionUI("초록색 동그라미 모양 풍선을 터치해주세요!");
                 break;
             case (int)Objs.Balloon_BlueSquare:
+                _uiManager.ChangeTextColor(colors[(int)Colors.Blue]);
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_BlueSquare");
-                _uiManager.PopFromZeroInstructionUI("파란색 네모 모양 풍선을 발로 터치해주세요!");
+                _uiManager.PopFromZeroInstructionUI("파란색 네모 모양 풍선을 터치해주세요!");
                 break;
             case (int)Objs.Balloon_PinkFlower:
+                _uiManager.ChangeTextColor(colors[(int)Colors.Purple]);
                 Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_PurpleFlower");
-                _uiManager.PopFromZeroInstructionUI("보라색 꽃 모양 풍선을 발로 터치해주세요!");
+                _uiManager.PopFromZeroInstructionUI("보라색 꽃 모양 풍선을 터치해주세요!");
                 break;
         }
         
@@ -558,7 +651,12 @@ public class EA019_GameManager : Ex_BaseGameManager
     public override void OnRaySynced()
     {
         if(!PreCheckOnRaySync()) return;
-        if (CurrentMainSeqNum == (int)MainSeq.OnBalloonFind)
+        
+        if(CurrentMainSeqNum== (int)MainSeq.OnShape || CurrentMainSeqNum== (int)MainSeq.OnColor)
+        {
+            OnRaySyncOnIntroduce();
+        }
+        else if (CurrentMainSeqNum == (int)MainSeq.OnBalloonFind)
         {
             if (_isRoundFinished) return; 
             
@@ -634,7 +732,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
 
             // scale 애니메이션
             tf.DOScale(Vector3.one * nextScale, 0.3f).SetEase(Ease.OutBack);
-
+            PlayParticleEffect(hit.point);
+            
             char randomChar = (char)Random.Range('A', 'D' + 1);
             Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Click" + randomChar);
             
@@ -751,7 +850,18 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
     private const string NAR_PATH = "EA019/Narration/";
     
     #region Main Animation Part On Shape & Color -------------------------------------------------------------------
-    
+
+    [SerializeField]
+    private Color[] colors ;
+    private enum Colors
+    {
+        Red,
+        Orange,
+        Yellow,
+        Green,
+        Blue,
+        Purple
+    }
     private void PlayAnimForOnColorOrShapeSeq(int index, float delay = 2.2f)
     {
     
@@ -764,7 +874,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts));
                     _uiManager.PopFromZeroInstructionUI(  CurrentMainSeqNum == (int)MainSeq.OnColor?"빨간색":"하트");
-
+               
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Red]);
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Red");
@@ -784,8 +895,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 DOVirtual.DelayedCall(delay, () =>
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles));
-                    
-                    
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Orange]);
+                 
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Orange");
@@ -803,6 +914,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles), true);
                 DOVirtual.DelayedCall(delay, () =>
                 {
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Yellow]);
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars));
                     
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
@@ -824,6 +936,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles));
 
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Green]);
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Green");
@@ -842,7 +955,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 {
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares));
 
-                    
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Blue]);
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH+ "Blue");
@@ -859,6 +972,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares), true);
                 DOVirtual.DelayedCall(delay, () =>
                 {
+                    _uiManager.ChangeTextColor(colors[(int)Colors.Purple]);
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers));
                     
                     if (CurrentMainSeqNum == (int)MainSeq.OnColor)
@@ -912,6 +1026,14 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         }
     }
 
+#if UNITY_EDITOR
+    [SerializeField]
+    private MainSeq seq;
+#else
+    private MainSeq seq = MainSeq.OnIntro;
+#endif
+    
+
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
@@ -921,7 +1043,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
             initialMessage = "색깔 풍선이 나무에 걸려있어요~";
             _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
             
-            CurrentMainSeqNum = (int)MainSeq.OnIntro;
+            CurrentMainSeqNum = (int)seq;
             //CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
            // CurrentMainSeqNum = (int)MainSeq.OnFinish;
             
@@ -1003,7 +1125,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         GetObject((int)Objs.Balloons).SetActive(false);
     }
 
-    private void PlayIntroBalloonsAnim(float delay = 1.2f)
+    private void PlayIntroBalloonsAnim(float delay = 0.6f)
     {
        
         
@@ -1014,7 +1136,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         {
             _sequenceMap.Add(key, DOTween.Sequence());
 
-            _sequenceMap[key].SetDelay(Random.Range(delay - 0.7f, delay + 0.7f));
+            _sequenceMap[key].SetDelay(Random.Range(delay - 0.5f, delay + 0.5f));
 
             _sequenceMap[key].Append(introBalloons[key].DOScale(_defaultSizeMap[key], 1.25f)
                 .OnStart(() =>
@@ -1022,7 +1144,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/BintroAppear");
                 })
                 .SetEase(Ease.OutBounce)
-                .SetDelay(0.25f * introBalloons.Count));
+                .SetDelay(0.3f * introBalloons.Count));
            
             _sequenceMap[key].Join(introBalloons[key].DOShakePosition(30f, Random.Range(0.1f, 0.1f),vibrato:3));
             _sequenceMap[key].Append(introBalloons[key].DOShakeScale(30f, Random.Range(0.1f, 0.2f),vibrato:3));
