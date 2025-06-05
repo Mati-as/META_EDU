@@ -127,6 +127,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
         subPsResourcePathMap.Add(0, "Runtime/EA020/OnArrival");
         SetSubPsPool(0);
         
+        subPsResourcePathMap.Add(1, "Runtime/EA020/OnRun");
+        SetSubPsPool(1);
+        
         BindObject(typeof(Objs));
         InitCars();
         
@@ -270,10 +273,11 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                     
                     for (int i = (int)Objs.Seat_BA; i < (int)Objs.Seat_BD + 1; i++)
                     {
+                        int cahceIndex = i;
                         GetObject(i).transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine)
                             .OnComplete(() =>
                             {
-                                GetObject(i).SetActive(false);
+                                GetObject(cahceIndex).SetActive(false);
                             });
                     }
 
@@ -501,6 +505,7 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
         private bool isRoundActive = false;
         private const int COUNT_TO_ARRIVE = 15;
         private int currentArrivedCarCount = 0; 
+        private Vector3 _particlePosOffset = new Vector3(0, 0, -1.5f);
         
         
         private void MoveCarTowardOnTrack()
@@ -612,16 +617,26 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                      //       Managers.Sound.Play(SoundManager.Sound.Effect, "EA020/CarMove",0.1f);
                             animator.Play(_currentTrackNameForAnimStateMap[ID], 0, progressNormalized);
                         });
-                        
+
+                        float time = 0;
                         _sequenceMap[ID].AppendCallback(() =>
                         {
                             DOVirtual.DelayedCall(0.1f, () =>
                             {
                                 _isClickableMap[ID] = true;
                                 animator.enabled = false;
-                            }).OnUpdate(()=>
+                            }).OnUpdate(() =>
                             {
-                                PlayParticleEffect(animator.transform.position);
+                                var pos = hit.transform.position +_particlePosOffset;
+                                DOVirtual.DelayedCall(0.05f, () =>
+                                {
+                                    time += Time.deltaTime;
+                                    if (time > 0.05f)
+                                    {
+                                        time = 0;
+                                        PlaySubParticleEffect(1,pos);
+                                    }
+                                });
                             });
                         });
                         
