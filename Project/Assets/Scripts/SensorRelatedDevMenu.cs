@@ -31,14 +31,23 @@ public class SensorRelatedDevMenu : UI_PopUp
     private readonly int _isOpen = Animator.StringToHash("isOn");
     
     private bool _clickable =true;
-
     private Toggle _toggleIsSensorFilterMode;
+
+    private Sequence _sensorClickSeq;
     // 통일된 스타일 적용용 함수
     void UpdateButtonVisual(Btn btn, bool isActive)
     {
         var buttonGO = GetObject((int)btn);
         var img = buttonGO.GetComponent<Image>();
         img.color = isActive ? Color.white : new Color(0.3f, 0.3f, 0.3f); // 어두운 회색
+    }
+
+    private void SetClickable()
+    {
+        _sensorClickSeq?.Kill(); _sensorClickSeq = DOTween.Sequence();
+            
+        _sensorClickSeq.AppendInterval(0.5f);
+        _sensorClickSeq.AppendCallback(() => _clickable = true);
     }
     public override bool InitEssentialUI()
     {
@@ -55,9 +64,11 @@ public class SensorRelatedDevMenu : UI_PopUp
         _toggleIsSensorFilterMode.isOn = SensorManager.isSensorSensitivityFilterModeOn;
         _toggleIsSensorFilterMode.onValueChanged.AddListener((isOn) =>
         {
+            
             if (!_clickable) return;
-            _clickable = false; 
-            DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+            _clickable = false;
+
+            SetClickable();
             
             SensorManager.isSensorSensitivityFilterModeOn = isOn;
             Logger.Log($"센서 필터 모드 : {isOn}");
@@ -66,8 +77,9 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_Open).gameObject.BindEvent(() =>
         {
             if (!_clickable) return;
-            _clickable = false; 
-            DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+            _clickable = false;
+
+            SetClickable();
          
             isUIOpen = !isUIOpen;
             
@@ -84,7 +96,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_Image).gameObject.BindEvent(() =>
         {
             if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             _isAllPrefabImageActive = !_isAllPrefabImageActive;
             Logger.Log("이미지 전체 끄기");
@@ -103,7 +115,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_Normal).gameObject.BindEvent(() =>
         {
              if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             SensorManager.isNormalImageActive = !SensorManager.isNormalImageActive;
             UpdateButtonVisual(Btn.Btn_Normal, SensorManager.isNormalImageActive);
@@ -112,7 +124,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_Real).gameObject.BindEvent(() =>
         { 
              if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             SensorManager.isRealImageActive = !SensorManager.isRealImageActive;
             UpdateButtonVisual(Btn.Btn_Real, SensorManager.isRealImageActive);
@@ -121,7 +133,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_TouchZone).gameObject.BindEvent(() =>
         {
              if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             SensorManager.isTouchZoneImageActive = !SensorManager.isTouchZoneImageActive;
             UpdateButtonVisual(Btn.Btn_TouchZone, SensorManager.isTouchZoneImageActive);
@@ -132,7 +144,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_RealRay).gameObject.BindEvent(() =>
         {
              if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             SensorManager.isRealRayActive = !SensorManager.isRealRayActive;
             UpdateButtonVisual(Btn.Btn_RealRay, SensorManager.isRealRayActive);
@@ -141,7 +153,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         GetObject((int)Btn.Btn_NormalRay).gameObject.BindEvent(() =>
         {
              if (!_clickable) return;
-            _clickable = false; DOVirtual.DelayedCall(0.5f, () => _clickable = true);
+           SetClickable();
             
             SensorManager.isNormalRayActive = !SensorManager.isNormalRayActive;
             UpdateButtonVisual(Btn.Btn_NormalRay, SensorManager.isNormalRayActive);
