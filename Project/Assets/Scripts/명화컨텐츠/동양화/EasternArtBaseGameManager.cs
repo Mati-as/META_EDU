@@ -106,8 +106,8 @@ public class EasternArtBaseGameManager : Base_GameManager
         }
         else
         {
-            UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartBtnShut;
-            UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartBtnShut;
+            UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartBtnShut;
+            UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartBtnShut;
         }
 
     }

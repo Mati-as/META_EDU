@@ -32,13 +32,13 @@ public class Message_anim_controller : MonoBehaviour
         //Debug.Log("UI Animation On");
 #endif
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= DeactivateUI;
-        UI_Scene_StartBtn.onGameStartBtnShut += DeactivateUI;
+        UI_InScene_StartBtn.onGameStartBtnShut -= DeactivateUI;
+        UI_InScene_StartBtn.onGameStartBtnShut += DeactivateUI;
     }
 
     private void OnDestroy()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= DeactivateUI;
+        UI_InScene_StartBtn.onGameStartBtnShut -= DeactivateUI;
     }
 
     public void Animation_On()

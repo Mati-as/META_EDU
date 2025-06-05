@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -23,9 +24,18 @@ public class PlayInfoManager : MonoBehaviour
     private XmlDocument _doc;
     private bool _isInit;
 
-    private int _validClickCount;
-    private int _sensorClickCount;
+    
+    public static int ValidClickCount;
+    public static int SensorClickCount;
 
+    /// <summary>
+    /// 씬실행시 두번실행중 (시작시, 스타트버튼 클릭후 2초뒤: (기존 프리팹떄문))
+    /// </summary>
+    public static void InitSensorCount()
+    {
+        SensorClickCount = 0;
+        ValidClickCount = 0;
+    }
    
     private string _playerInfoXmlPath ;
     public bool Init()
@@ -96,24 +106,37 @@ public class PlayInfoManager : MonoBehaviour
     /// <param name="dateTime"></param>
     private void OnSceneLoad(string sceneName, DateTime dateTime)
     {
-        
-        
-        
-        
-        
+
+        InitSensorCount();
         
         if (sceneName.Contains("LAUNCHER"))
         {
             Logger.Log($"Launcher: history checking X -------------");
             return;
         }
+
+        PlayInfoManager._isXMLSavable = true;
+        
         latestSceneStartTime = dateTime;
         CurrentActiveSceneName = sceneName;
         Logger.Log($"Scene On -------currentScene: {sceneName}, startTime : {dateTime}");
     }
     
+    private static bool _isXMLSavable = true;
     private void OnSceneOrAppQuit(string sceneName, DateTime dateTime)
     {
+        if (!_isXMLSavable)
+        {
+            Logger.CoreClassLog("중복 XML 저장시도.. 이미 XML 저장했습니다.");
+            return;
+        }
+        _isXMLSavable = false;
+        DOVirtual.DelayedCall(10f, () =>
+        {
+            _isXMLSavable = true;
+        });
+        
+        
         _playTime = TimeSpan.Zero;
         lastestSceneQuitTime = dateTime;
         CurrentActiveSceneName = sceneName;
@@ -132,8 +155,8 @@ public class PlayInfoManager : MonoBehaviour
         var currentGameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
         if (currentGameManager != null)
         {
-            _sensorClickCount = currentGameManager.DEV_sensorClick;
-            _validClickCount = currentGameManager.DEV_validClick;
+
+         //   _validClickCount = currentGameManager.DEV_validClick;
         }
         else
         {
@@ -142,10 +165,12 @@ public class PlayInfoManager : MonoBehaviour
     }
     public void AddPlayInfoNode(ref XmlDocument xmlDoc)
     {
+        
 
+        //아래 시간체크로 런처까지 체크하는 중
         if (_playTime.Minutes <= 0 && _playTime.Seconds < 10) 
         {
-            Debug.Log("playtime is too short, play info hasn't been saved.");
+            Debug.Log("Playtime is too short, play info hasn't been saved. Or it's the Launcher Scene");
             return;
         }
         
@@ -164,8 +189,8 @@ public class PlayInfoManager : MonoBehaviour
         newUser.SetAttribute("dayofweek",  today.DayOfWeek.ToString());
         newUser.SetAttribute("sceneid", CurrentActiveSceneName);
         newUser.SetAttribute("playtimesec",formattedPlaytime.ToString());
-        newUser.SetAttribute("validClick", _validClickCount.ToString());
-        newUser.SetAttribute("sensorClick", _sensorClickCount.ToString());
+       newUser.SetAttribute("validClick", SensorClickCount.ToString());
+        newUser.SetAttribute("sensorClick", ValidClickCount.ToString());
         root?.AppendChild(newUser);
         
         Utils.SaveXML(ref _doc, _playerInfoXmlPath);

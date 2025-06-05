@@ -233,7 +233,7 @@ public void OnStart()
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -308,8 +308,8 @@ public void OnStart()
 
     protected override void Init()
     {
-        UI_Scene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
-        UI_Scene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
 
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_UIManager.onStartUIFinished += OnStart;

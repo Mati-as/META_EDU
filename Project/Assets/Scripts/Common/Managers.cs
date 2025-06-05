@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Managers : MonoBehaviour
@@ -112,6 +113,8 @@ public class Managers : MonoBehaviour
             s_instance = Utils.GetOrAddComponent<Managers>(go);
             s_SettingManager.Init();
             PROJECTOR_SCREEN_HEIGHT = Setting.SCREEN_PROJECTOER_HEIGHT_FROM_XML;
+            
+            Application.runInBackground = true;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
             

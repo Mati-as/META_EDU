@@ -65,13 +65,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected bool _init;
     protected Animator mainAnimator;
-    protected int _currentMainSequence;
+    protected int CurrentMainMainSequence;
 
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
 
 
     private readonly Stack<ParticleSystem> _particlePool = new();
-
+    private Dictionary<int,Stack<ParticleSystem>> _subParticlePool = new();
+    
     protected Dictionary<int, bool> _isClickableMap = new();
     protected Dictionary<int,bool> _isClickedMap = new();
     
@@ -88,7 +89,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
     protected Dictionary<int, Sequence> _sequenceMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
-
+    protected Dictionary<int,Vector3> _defaultPosMap = new(); //
     //resourceFields
     protected string psResourcePath = string.Empty;
 
@@ -191,16 +192,18 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                     var transform = obj.transform;
                     _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
                     _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
-//                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
+               
                     _isClickableMap.Add(transform.GetInstanceID(), false);
                     _isClickedMap.Add(transform.GetInstanceID(), false);
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
                     _defaultSizeMap.Add(i, transform.localScale);
                     _defaultRotationQuatMap.Add(i, transform.rotation);
-
+                    _defaultPosMap.Add(i, transform.position);
                     _sequenceMap.Add(i, DOTween.Sequence());
 
                     obj.transform.TryGetComponent(out Animator animator);
+                    
+                    //                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
                     if (animator != null) _animatorMap.Add(i, animator);
                 }
             }
@@ -330,12 +333,16 @@ public abstract class Ex_BaseGameManager : Base_GameManager
             ps.gameObject.SetActive(true);
             return ps;
         }
+        else
+        {
+            SetPool();
+            var newPs = _particlePool.Pop();
 
-        SetPool();
-        var newPs = _particlePool.Pop();
+            newPs.gameObject.SetActive(true);
+            return newPs;
+        }
 
-        newPs.gameObject.SetActive(true);
-        return newPs;
+      
     }
 
     protected WaitForSeconds _poolReturnWait;
@@ -358,6 +365,14 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         currentPS.Play();
         StartCoroutine(ReturnToPoolAfterDelay(currentPS));
     }
+    
+    protected void PlaySubParticleEffect(int subParticleIndex,Vector3 pos)
+    {
+        var currentPS = GetFromSubPsPool(subParticleIndex);
+        currentPS.transform.position = pos;
+        currentPS.Play();
+        StartCoroutine(ReturnToSubPoolAfterDelay(subParticleIndex,currentPS));
+    }
 
     protected void ChangeThemeSeqAnim(int seqNum = 0)
     {
@@ -365,26 +380,61 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     }
     
     
-    protected void SetSubPsPool()
+    
+
+    protected ParticleSystem GetFromSubPsPool(int subParticleIndex)
     {
+        if (_particlePool.Count > 0)
+        {
+            var ps = _subParticlePool[subParticleIndex].Pop();
+
+            ps.gameObject.SetActive(true);
+            return ps;
+        }
+        else
+        {
+            SetSubPsPool(subParticleIndex);
+            var newPs = _subParticlePool[subParticleIndex].Pop();
+
+            newPs.gameObject.SetActive(true);
+            return newPs;
+        }
+
+
+    }
+    
+    protected void SetSubPsPool(int subParticleIndex)
+    {
+        _subParticlePool.TryAdd(subParticleIndex, new Stack<ParticleSystem>());
         
         for (int currentSubPsOrder = 0 ; currentSubPsOrder < MAX_SUB_PS_COUNT; currentSubPsOrder++)
         {
-            if (!subPsResourcePathMap.ContainsKey(currentSubPsOrder))
+            if (!subPsResourcePathMap.ContainsKey(subParticleIndex))
             {
-                Logger.ContentTestLog("effect 미사용");
+                Logger.ContentTestLog("Sub effect 미사용");
                 continue;
             }
         
-            var particlePrefab = Resources.Load<GameObject>(psResourcePath);
+            var particlePrefab = Resources.Load<GameObject>(subPsResourcePathMap[subParticleIndex]);
 
             for (int currentPoolSize = 0; currentPoolSize < 100; currentPoolSize++)
             {
                 var ps = Instantiate(particlePrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
                 ps.gameObject.SetActive(false);
-                _particlePool.Push(ps);
+                _subParticlePool[subParticleIndex].Push(ps);
             }
         }
        
     }
+    protected IEnumerator ReturnToSubPoolAfterDelay(int subParticleIndex, ParticleSystem ps)
+    {
+        if (_poolReturnWait == null) _poolReturnWait = new WaitForSeconds(ps.main.startLifetime.constantMax);
+
+        yield return _poolReturnWait;
+        ps.Stop();
+        ps.Clear();
+        ps.gameObject.SetActive(false);
+        _subParticlePool[subParticleIndex].Push(ps); // Return the particle system to the pool
+    }
+
 }

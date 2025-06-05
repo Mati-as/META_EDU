@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
@@ -30,7 +31,7 @@ public class Base_UIManager : UI_PopUp
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
-    private Sequence _uiSeq;
+    protected Sequence _uiSeq;
    // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
     
     
@@ -43,13 +44,13 @@ public class Base_UIManager : UI_PopUp
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
         _objects = new();
         
-        TMP_Instruction.text = string.Empty;
-        UI_Instruction.SetActive(false);
+        //commonBehavior에서 정의 하도록 합니다. 
+ //       TMP_Instruction.text = string.Empty;------------
+ //       UI_Instruction.SetActive(false);
         
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
-        //_UIInstructionOriginalScale = UI_Instruction.transform.localScale;
-        
+
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
         
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
@@ -73,7 +74,7 @@ public class Base_UIManager : UI_PopUp
     /// 최신 Instruction UI를 사용하고싶을때 InitInstructionUI()를 호출합니다.
     /// 아래함수를 사용하지않는경우 기본적으로 사용하지 않는것으로 간주 합니다. 
     /// </summary>
-    protected void InitInstructionUI()
+    public void InitInstructionUI()
     {
       //  UI_Instruction.SetActive(true);
         TMP_Instruction.text = string.Empty;
@@ -83,7 +84,7 @@ public class Base_UIManager : UI_PopUp
     /// 애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    protected void PopFromZeroInstructionUI(string instruction,float duration = 0f,float delay =0f)
+    public void PopFromZeroInstructionUI(string instruction,float duration = 0f,float delay =0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -112,7 +113,7 @@ public class Base_UIManager : UI_PopUp
 
     }
     
-    protected void PopAndChangeUI(string instruction, float delayAndShutTme = 0f)
+    public void PopAndChangeUI(string instruction, float delayAndShutTme = 0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -142,7 +143,7 @@ public class Base_UIManager : UI_PopUp
     }
 
     
-    protected void ShutInstructionUI(string instruction)
+    public void ShutInstructionUI(string instruction = "")
     {
         
         _uiSeq?.Kill();
@@ -161,7 +162,7 @@ public class Base_UIManager : UI_PopUp
     
 
 
-    private void UpdateBgSize()
+    protected void UpdateBgSize()
     {
        // TMP_Instruction.ForceMeshUpdate();
 

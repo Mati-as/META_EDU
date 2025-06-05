@@ -103,7 +103,7 @@ public class ColorTogether_Manager : Base_GameManager
         }
 
 
-        UI_Scene_StartBtn.onGameStartBtnShut += StartGame;
+        UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
 
     private void StartGame()
@@ -144,7 +144,7 @@ public class ColorTogether_Manager : Base_GameManager
         msgSeq.AppendInterval(0.05f); // 아주 짧게 1프레임 기다림 동시 시작이라 에러가 생김
         msgSeq.AppendCallback(() => boxDropper.StartDropCycle());
 
-        UI_Scene_StartBtn.onGameStartBtnShut -= StartGame;
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
 
     }
 
