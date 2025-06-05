@@ -88,6 +88,8 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                     
                     GetObject((int)Objs.TrackA_Set).SetActive(true);
                     GetObject((int)Objs.TrackB_Set).SetActive(false);
+                    ScaleBackSeats();
+                  
                     InitForSeatSelection();
                     AnimateAllSeats(Objs.Seats_TrackA);
                     
@@ -101,7 +103,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                     _uiManager.PopFromZeroInstructionUI("각자 자리에 서주세요!");
                     GetObject((int)Objs.TrackA_Set).SetActive(false);
                     GetObject((int)Objs.TrackB_Set).SetActive(true);
+                   
                     InitForSeatSelection();
+                    ScaleBackSeats();
                     AnimateAllSeats(Objs.Seats_TrackA);
                     break;
 
@@ -136,6 +140,31 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
 
 
 
+    private void ScaleBackSeats()
+    {
+        if (CurrentMainMainSeq == (int)MainSeq.SeatSelectionA)
+        {
+            for (int i = (int)Objs.Seat_AA; i < (int)Objs.Seat_AD + 1; i++)
+            {
+                GetObject(i).SetActive(true);
+                GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.5f).SetEase(Ease.InOutSine);
+
+            }
+
+        }
+        else if (CurrentMainMainSeq == (int)MainSeq.SeatSelectionB)
+        {
+                       
+            for (int i = (int)Objs.Seat_BA; i < (int)Objs.Seat_BD + 1; i++)
+            {
+                GetObject(i).SetActive(true);
+                GetObject(i).transform.DOScale(_defaultSizeMap[i], 0.5f).SetEase(Ease.InOutSine);
+            }
+
+
+        }
+
+    }
 
     #region Seat Selection --------------------------------------------------------------------------------
 
@@ -230,9 +259,29 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                 _uiManager.PopFromZeroInstructionUI("다 앉았구나! 이제 자동차들을 보러가자!");
                 DOVirtual.DelayedCall(4, () =>
                 {
+                    for (int i = (int)Objs.Seat_AA; i < (int)Objs.Seat_AD + 1; i++)
+                    {
+                        GetObject(i).transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine)
+                            .OnComplete(() =>
+                            {
+                                GetObject(i).SetActive(false);
+                            });
+                    }
+                    
+                    for (int i = (int)Objs.Seat_BA; i < (int)Objs.Seat_BD + 1; i++)
+                    {
+                        GetObject(i).transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine)
+                            .OnComplete(() =>
+                            {
+                                GetObject(i).SetActive(false);
+                            });
+                    }
+
+                 
+
                     if (CurrentMainMainSeq == (int)MainSeq.SeatSelectionA)
                         CurrentMainMainSeq = (int)MainSeq.OnRaceA;
-                    
+
                     else if (CurrentMainMainSeq == (int)MainSeq.SeatSelectionB)
                         CurrentMainMainSeq = (int)MainSeq.OnRaceB;
                 });
@@ -449,7 +498,7 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
         private readonly Dictionary<int, int> _partProgress = new(); // 각 파트의 클릭 진행 상태
         private readonly Dictionary<int, bool> isArrivedMap = new();
         private readonly Dictionary<int, Animator> tfIDToAnimatorMap = new();
-        private bool isRoundActive = true;
+        private bool isRoundActive = false;
         private const int COUNT_TO_ARRIVE = 15;
         private int currentArrivedCarCount = 0; 
         
@@ -570,6 +619,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                             {
                                 _isClickableMap[ID] = true;
                                 animator.enabled = false;
+                            }).OnUpdate(()=>
+                            {
+                                PlayParticleEffect(animator.transform.position);
                             });
                         });
                         
@@ -642,6 +694,7 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
             if (_timeElapsed >= TIME_LIMIT)
             {
                 isRoundActive = false;
+                Managers.Sound.Play(SoundManager.Sound.Effect, "EA020/Stop");
                 _uiManager.PopFromZeroInstructionUI("그만!");
                 OnTrackRoundFinished();
 
