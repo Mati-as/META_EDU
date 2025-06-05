@@ -40,6 +40,8 @@ public class Truck : MonoBehaviour
 
     public void StartSoilDumping()
     {
+        manager.ClickSound();
+
         float move = moveDistance + soilCountClass.plusMoveDistance;
         audioSource.clip = manager.HeavyMachinerySound;
 

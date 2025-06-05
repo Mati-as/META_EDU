@@ -127,7 +127,7 @@ public class SoilCount : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_ExcavatorStage.SetActive(false);
         });
-        seq.AppendInterval(5f);
+        seq.AppendInterval(7f);
         seq.AppendCallback(() =>
         {
             Messenger.Default.Publish(new NarrationMessage("다른 일을 하는 자동차를 만나러 가요", "10_다른_일을_하는_자동차를_만나러_가요_"));
@@ -135,7 +135,7 @@ public class SoilCount : MonoBehaviour
             manager.excavatorVirtualCamera.Priority = 10;
             inputCount = 0;
         });
-        seq.AppendInterval(4f);
+        seq.AppendInterval(5f);
         seq.AppendCallback(() =>
         {
             manager.introVirtualCamera.Priority = 10;
@@ -144,6 +144,8 @@ public class SoilCount : MonoBehaviour
             Messenger.Default.Publish(new NarrationMessage("트럭은 많은 흙을 옮겨 줄 수 있어요", "3_트럭은_많은_흙을_옮겨_줄_수_있어요"));
             //instrcutionUI가 비활성화됨 문제의 원인을 파악하지못햇음
             manager.truckAni.SetBool("LiftUp", true);
+            Managers.Sound.Play(SoundManager.Sound.Effect, manager.HeavyMachinerySound);
+            DOVirtual.DelayedCall(3.75f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
 
             manager.Btns_TruckIntro.SetActive(true);
             manager.Btns_TruckIntro.transform.DOScale(1f, 0.4f)
@@ -175,7 +177,7 @@ public class SoilCount : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_TruckStage.SetActive(false);
         });
-        seq.AppendInterval(5f);
+        seq.AppendInterval(6f);
         seq.AppendCallback(() =>
         {
             Messenger.Default.Publish(new NarrationMessage("다른 일을 하는 자동차를 만나러 가요", "10_다른_일을_하는_자동차를_만나러_가요_"));
@@ -183,7 +185,7 @@ public class SoilCount : MonoBehaviour
             manager.excavatorVirtualCamera.Priority = 10;
             inputCount = 0;
         });
-        seq.AppendInterval(4f);
+        seq.AppendInterval(5f);
         seq.AppendCallback(() =>
         {
             manager.introVirtualCamera.Priority = 10;
@@ -191,6 +193,10 @@ public class SoilCount : MonoBehaviour
 
             Messenger.Default.Publish(new NarrationMessage("불도저는 많은 흙을 옮겨 줄 수 있어요", "19_불도저는_많은_흙을_옮겨_줄_수_있어요_"));
             manager.bulldozerAni.SetBool("Work", true);
+
+            Managers.Sound.Play(SoundManager.Sound.Effect, manager.HeavyMachinerySound);
+            DOVirtual.DelayedCall(3.2f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
+
 
             manager.Btns_BulldozerIntro.SetActive(true);
             manager.Btns_BulldozerIntro.transform.DOScale(1f, 0.4f)

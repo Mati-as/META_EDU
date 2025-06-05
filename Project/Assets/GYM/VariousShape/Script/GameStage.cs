@@ -4,7 +4,6 @@ using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 public class GameStage : MonoBehaviour
 {
@@ -13,6 +12,8 @@ public class GameStage : MonoBehaviour
         None, Square, Flower, Star, Circle, Triangle, Done
     }
     private Stage _stage = Stage.None;
+
+    public bool endStageStart = false;
 
     [SerializeField] private GameObject MainSquare;
     [SerializeField] private List<GameObject> square = new List<GameObject>(7);
@@ -42,8 +43,6 @@ public class GameStage : MonoBehaviour
     Vector3 TargetStarScale = Vector3.one * 0.25f;
     Vector3 TargetCircleScale = Vector3.one * 0.25f;
     Vector3 TargetTriangleScale = Vector3.one * 0.25f;
-
-    Vector3 shakeX = new Vector3(0, 0, 15f);
 
     public bool flowerStageClear = false;
     public bool StarStageClear = false;
@@ -151,14 +150,19 @@ public class GameStage : MonoBehaviour
             {
                 Messenger.Default.Publish(new NarrationMessage("친구들 네모 안에 모여요!", "audio_10_친구들_네모_안에_모여요_"));
                 MainSquare.SetActive(true);
-                MainSquare.transform.DOScale(MainSquareScale, 1)
-                    .From(0.01f)
-                    .SetEase(Ease.OutBack)
-                    .OnComplete(() => { MainSquare.transform.DOShakeRotation(duration: 0.5f, strength: shakeX); });
             })
-            .AppendInterval(10f)
-            .AppendCallback(() => explosionParticle.Play())
+            .Append(MainSquare.transform.DOScale(MainSquareScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                MainSquare.transform
+                    .DOScale(MainSquareScale * 0.95f, 1f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+            })
+            .AppendInterval(9f)
+            .AppendCallback(() => explosionParticle.Play())
+            .AppendInterval(0.5f)
             .AppendCallback(() =>
             {
                 MainSquare.SetActive(false);
@@ -181,7 +185,7 @@ public class GameStage : MonoBehaviour
                             DOVirtual.DelayedCall(randomValue, () =>
                                  {
                                      shape.transform
-                                    .DOScale(TargetSquareScale * 1.2f, 0.5f)
+                                    .DOScale(TargetSquareScale * 1.1f, 0.5f)
                                     .SetEase(Ease.InOutSine)
                                      .SetLoops(-1, LoopType.Yoyo);
                                  });
@@ -204,7 +208,7 @@ public class GameStage : MonoBehaviour
     public void StartFlowerStage()
     {
         Sequence stageSeq = DOTween.Sequence()
-            .AppendCallback(() => 
+            .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Effect, victoryAudioClip);
                 victoryParticles[0].Play();
@@ -213,17 +217,21 @@ public class GameStage : MonoBehaviour
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                Debug.Log("꽃모양 스테이지 시퀀스 시작");
                 Messenger.Default.Publish(new NarrationMessage("친구들 꽃 안에 모여요!", "audio_13_친구들_꽃_안에_모여요_"));
                 MainFlower.SetActive(true);
-                MainFlower.transform.DOScale(MainFlowerScale, 1)
-                    .From(0.01f)
-                    .SetEase(Ease.OutBack)
-                    .OnComplete(() => { MainFlower.transform.DOShakeRotation(duration: 0.5f, strength: shakeX); });
             })
-            .AppendInterval(10f)
-            .AppendCallback(() => explosionParticle.Play())
+            .Append(MainFlower.transform.DOScale(MainFlowerScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                MainFlower.transform
+                    .DOScale(MainFlowerScale * 0.95f, 1f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+            })
+            .AppendInterval(9f)
+            .AppendCallback(() => explosionParticle.Play())
+            .AppendInterval(0.5f)
             .AppendCallback(() =>
             {
                 explosionParticle.Play();
@@ -246,7 +254,7 @@ public class GameStage : MonoBehaviour
                             DOVirtual.DelayedCall(randomValue, () =>
                             {
                                 shape.transform
-                                .DOScale(TargetFlowerScale * 1.2f, 0.5f)
+                                .DOScale(TargetFlowerScale * 1.1f, 0.5f)
                                 .SetEase(Ease.InOutSine)
                                 .SetLoops(-1, LoopType.Yoyo);
                             });
@@ -257,7 +265,7 @@ public class GameStage : MonoBehaviour
             .AppendCallback(() =>
             {
                 Messenger.Default.Publish(new NarrationMessage("작은 꽃들을 터치해주세요!", "audio_15_작은_꽃들을_터치해주세요_"));
-               
+
                 flowerStageClear = true;
                 isStageStart = true;
             })
@@ -280,17 +288,21 @@ public class GameStage : MonoBehaviour
            .AppendInterval(3f)
            .AppendCallback(() =>
            {
-               Debug.Log("별모양 스테이지 시퀀스 시작");
                Messenger.Default.Publish(new NarrationMessage("친구들 별모양 안에 모여요!", "audio_31_친구들_별모양_안에_모여요_"));
                MainStar.SetActive(true);
-               MainStar.transform.DOScale(MainStarScale, 1)
-                   .From(0.01f)
-                   .SetEase(Ease.OutBack)
-                   .OnComplete(() => { MainStar.transform.DOShakeRotation(duration: 0.5f, strength: shakeX); });
            })
-           .AppendInterval(10f)
-           .AppendCallback(() => explosionParticle.Play())
+            .Append(MainStar.transform.DOScale(MainStarScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                MainStar.transform
+                    .DOScale(MainStarScale * 0.95f, 1f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+            })
+            .AppendInterval(9f)
+            .AppendCallback(() => explosionParticle.Play())
+            .AppendInterval(0.5f)
            .AppendCallback(() =>
            {
                explosionParticle.Play();
@@ -313,7 +325,7 @@ public class GameStage : MonoBehaviour
                            DOVirtual.DelayedCall(randomValue, () =>
                            {
                                shape.transform
-                               .DOScale(TargetStarScale * 1.2f, 0.5f)
+                               .DOScale(TargetStarScale * 1.1f, 0.5f)
                                .SetEase(Ease.InOutSine)
                                .SetLoops(-1, LoopType.Yoyo);
                            });
@@ -346,17 +358,21 @@ public class GameStage : MonoBehaviour
           .AppendInterval(3f)
           .AppendCallback(() =>
           {
-              Debug.Log("원모양 스테이지 시퀀스 시작");
               Messenger.Default.Publish(new NarrationMessage("친구들 동그라미 안에 모여요!", "audio_7_친구들_동그라미_안에_모여요_"));
               MainCircle.SetActive(true);
-              MainCircle.transform.DOScale(MainCircleScale, 1)
-                  .From(0.01f)
-                  .SetEase(Ease.OutBack)
-                  .OnComplete(() => { MainCircle.transform.DOShakeRotation(duration: 0.5f, strength: shakeX); });
           })
-          .AppendInterval(10f)
-          .AppendCallback(() => explosionParticle.Play())
-           .AppendInterval(1f)
+            .Append(MainCircle.transform.DOScale(MainCircleScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                MainCircle.transform
+                    .DOScale(MainCircleScale * 0.95f, 1f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+            })
+            .AppendInterval(9f)
+            .AppendCallback(() => explosionParticle.Play())
+            .AppendInterval(0.5f)
           .AppendCallback(() =>
           {
               explosionParticle.Play();
@@ -379,7 +395,7 @@ public class GameStage : MonoBehaviour
                           DOVirtual.DelayedCall(randomValue, () =>
                           {
                               shape.transform
-                              .DOScale(TargetCircleScale * 1.2f, 0.5f)
+                              .DOScale(TargetCircleScale * 1.1f, 0.5f)
                               .SetEase(Ease.InOutSine)
                               .SetLoops(-1, LoopType.Yoyo);
                           });
@@ -412,17 +428,21 @@ public class GameStage : MonoBehaviour
           .AppendInterval(3f)
           .AppendCallback(() =>
           {
-              Debug.Log("세모모양 스테이지 시퀀스 시작");
               Messenger.Default.Publish(new NarrationMessage("친구들 세모 안에 모여요!", "audio_19_친구들_세모_안에_모여요_"));
               MainTriangle.SetActive(true);
-              MainTriangle.transform.DOScale(MainTriangleScale, 1)
-                  .From(0.01f)
-                  .SetEase(Ease.OutBack)
-                  .OnComplete(() => { MainTriangle.transform.DOShakeRotation(duration: 0.5f, strength: shakeX); });
           })
-          .AppendInterval(10f)
+          .Append(MainTriangle.transform.DOScale(MainTriangleScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
+          .AppendInterval(1f)
+          .AppendCallback(() =>
+          {
+              MainTriangle.transform
+                  .DOScale(MainTriangleScale * 0.95f, 1f)
+                  .SetEase(Ease.InOutSine)
+                  .SetLoops(-1, LoopType.Yoyo);
+          })
+          .AppendInterval(9f)
           .AppendCallback(() => explosionParticle.Play())
-           .AppendInterval(1f)
+          .AppendInterval(0.5f)
           .AppendCallback(() =>
           {
               explosionParticle.Play();
@@ -445,7 +465,7 @@ public class GameStage : MonoBehaviour
                           DOVirtual.DelayedCall(randomValue, () =>
                           {
                               shape.transform
-                              .DOScale(TargetTriangleScale * 1.2f, 0.5f)
+                              .DOScale(TargetTriangleScale * 1.1f, 0.5f)
                               .SetEase(Ease.InOutSine)
                               .SetLoops(-1, LoopType.Yoyo);
                           });
@@ -481,8 +501,12 @@ public class GameStage : MonoBehaviour
                Messenger.Default.Publish(new NarrationMessage("마지막으로 모양을 다시 알아볼까!", "audio_22_마지막으로_모양을_다시_알아볼까_"));
 
                EndScene.SetActive(true);
-               EndScene.transform.DOScale(Vector3.one, 0.5f)
-                                    .SetEase(Ease.InOutSine);
+           })
+           .AppendInterval(3f)
+           .AppendCallback(() =>
+           {
+               EndScene.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutSine);
+               endStageStart = true;
            });
     }
 }

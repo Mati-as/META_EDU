@@ -39,6 +39,8 @@ public class Bulldozer : MonoBehaviour
 
     public void StartBulldozerWork()
     {
+        manager.ClickSound();
+
         float move = moveDistance + soilCountClass.plusMoveDistance;
 
         if (!btnTwiceIssue)

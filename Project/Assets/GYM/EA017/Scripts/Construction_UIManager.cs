@@ -44,7 +44,7 @@ public class Construction_UIManager : Base_UIManager
 
         seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
         seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"Construction/Audio/audio_{audioPath}"));
-        seq.AppendInterval(audioClip.length + 0.5f);
+        seq.AppendInterval(audioClip.length + 1f);
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 

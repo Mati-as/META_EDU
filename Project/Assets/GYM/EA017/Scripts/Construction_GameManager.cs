@@ -6,6 +6,7 @@ using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
+using Random = UnityEngine.Random;
 
 public class Construction_GameManager : Base_GameManager
 {
@@ -149,6 +150,8 @@ public class Construction_GameManager : Base_GameManager
             excavatorShowCamera.Priority = 20;
             Messenger.Default.Publish(new NarrationMessage("포크레인은 땅 속에 있는 흙을 팔 수 있어요", "2_포크레인은_땅_속에_있는_흙을_팔_수_있어요"));
             excavatorAni.SetBool("Dig", true);
+            Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
+            DOVirtual.DelayedCall(3.2f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); twiceAudioIssue = true; });
 
             Btns_ExcavatorIntro.SetActive(true);
             Btns_ExcavatorIntro.transform.DOScale(1f, 0.4f)
@@ -222,6 +225,8 @@ public class Construction_GameManager : Base_GameManager
 
     public void Btn_ExcavatorNext() //포크레인 다음 버튼
     {
+        ClickSound();
+
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
@@ -252,6 +257,8 @@ public class Construction_GameManager : Base_GameManager
 
     public void Btn_TruckNext() //트럭 다음 버튼
     {
+        ClickSound();
+
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
@@ -283,6 +290,8 @@ public class Construction_GameManager : Base_GameManager
     
     public void Btn_BulldozerNext() // 다음 버튼
     {
+        ClickSound();
+
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
@@ -311,9 +320,10 @@ public class Construction_GameManager : Base_GameManager
 
     }
 
-    private bool twiceAudioIssue = true;
+    public bool twiceAudioIssue = true;
     public void Btn_ExcavatorAni()
     {
+        ClickSound();
         float AnimationLength = 3.1f;
         if (twiceAudioIssue)
         {
@@ -327,6 +337,8 @@ public class Construction_GameManager : Base_GameManager
 
     public void Btn_TruckAni()
     {
+        ClickSound();
+
         float AnimationLength = 3.75f;
         truckAni.SetBool("LiftDown", false);
         truckAni.SetBool("LiftUp", true);
@@ -340,6 +352,7 @@ public class Construction_GameManager : Base_GameManager
 
     public void Btn_BulldozerAni()
     {
+        ClickSound();
         float AnimationLength = 3.1f;
         bulldozerAni.SetBool("Work", true);
         Managers.Sound.Play(SoundManager.Sound.Effect, HeavyMachinerySound);
@@ -357,5 +370,12 @@ public class Construction_GameManager : Base_GameManager
 
     }
 
+
+    public void ClickSound()
+    {
+        var click = (char)('A' + Random.Range(0, 6));
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Construction/Audio/Click_{click}");
+
+    }
 
 }

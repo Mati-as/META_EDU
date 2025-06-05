@@ -39,6 +39,8 @@ public class Excavator : MonoBehaviour
 
     public void StartExcavation()
     {
+        manager.ClickSound();
+
         //int randomindex = Random.Range(0, 2);
         if (!btnTwiceIssue)
         {

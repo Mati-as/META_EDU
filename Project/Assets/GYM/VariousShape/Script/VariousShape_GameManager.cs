@@ -110,10 +110,6 @@ public class VariousShape_GameManager : Base_GameManager
     private void StartGame()
     {
         introSeq = DOTween.Sequence()
-        //.AppendCallback(() => 나레이션 기능) 
-        //.AppendInterval(나레이션시간)
-        //.AppendCallback(() => 나레이션 기능) 
-        //.AppendInterval(나레이션시간)
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 함께 다양한 모양을 찾아봐요!", "audio_0_친구들과_함께_다양한_모양을_찾아봐요_")))
         .AppendInterval(6f)
         .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
@@ -195,7 +191,7 @@ public class VariousShape_GameManager : Base_GameManager
         {
             if (hit.collider.TryGetComponent<ClickableMover>(out var clickable))
             {
-                clickable.OnClicked();
+                clickable.OnClicked(clickable.shapeType);
             }
             if (hit.collider.TryGetComponent<IntroduceSelf>(out var introduce))
             {
