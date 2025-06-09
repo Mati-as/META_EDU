@@ -601,6 +601,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                 });
 
                 Logger.ContentTestLog($"Car {carIndex} ID{selectedCarID}-> {(CarAnim)animInt}");
+
+                //Doshake
+                //transform.DOShakeScale(1.0f, 1, 10, 90, true).SetEase(Ease.OutQuad);
             }
 
             
