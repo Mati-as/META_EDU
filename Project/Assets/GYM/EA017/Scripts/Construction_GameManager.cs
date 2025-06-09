@@ -54,6 +54,7 @@ public class Construction_GameManager : Base_GameManager
 
     public AudioClip HeavyMachinerySound; //지워야함 오류생겨서 일단 살린것임
 
+    public Construction_UIManager construction_UIManager;
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -167,6 +168,19 @@ public class Construction_GameManager : Base_GameManager
         introSeq.AppendCallback(() =>
         {
             excavatorAni.SetBool("Dig", false);
+
+        });
+        introSeq.AppendInterval(4.3f);
+        introSeq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("포크레인이 멈췄어요!", "26_포크레인이_멈췄어요_"));
+
+        });
+        introSeq.AppendInterval(4f);
+        introSeq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 포크레인을 움직여보세요!", "23_버튼을_눌러_포크레인을_움직여보세요_", 20f));
+
         });
 
     }
@@ -225,6 +239,7 @@ public class Construction_GameManager : Base_GameManager
 
     public void Btn_ExcavatorNext() //포크레인 다음 버튼
     {
+        construction_UIManager.ForceCloseNarration();
         ClickSound();
 
         if (Btn_TwiceIssue)
@@ -258,7 +273,7 @@ public class Construction_GameManager : Base_GameManager
     public void Btn_TruckNext() //트럭 다음 버튼
     {
         ClickSound();
-
+        construction_UIManager.ForceCloseNarration();
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;
@@ -291,7 +306,7 @@ public class Construction_GameManager : Base_GameManager
     public void Btn_BulldozerNext() // 다음 버튼
     {
         ClickSound();
-
+        construction_UIManager.ForceCloseNarration();
         if (Btn_TwiceIssue)
         {
             Btn_TwiceIssue = false;

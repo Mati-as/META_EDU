@@ -61,7 +61,7 @@ public class Bulldozer : MonoBehaviour
                     audioSource.Play();
                     bulldozerAnimator.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * move;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => bulldozerAnimator.SetBool("Move", false));
@@ -78,7 +78,7 @@ public class Bulldozer : MonoBehaviour
                 {
                     bulldozerAnimator.SetBool("Move", true);
                     Vector3 targetPos = transform.position - transform.forward * move;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { bulldozerAnimator.SetBool("Move", false); audioSource.Stop(); });

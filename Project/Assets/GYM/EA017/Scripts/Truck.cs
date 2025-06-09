@@ -61,7 +61,7 @@ public class Truck : MonoBehaviour
                     audioSource.Play();
                     truckAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * (move);
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => truckAni.SetBool("Move", false));
@@ -77,7 +77,7 @@ public class Truck : MonoBehaviour
                 {
                     truckAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position - transform.forward * (move);
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => truckAni.SetBool("Move", false));

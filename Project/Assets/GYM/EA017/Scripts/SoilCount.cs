@@ -123,7 +123,7 @@ public class SoilCount : MonoBehaviour
 
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 포크레인을 도와줘서 흙을 많이 팠어요!", "9_우리_친구들이_포크레인을_도와줘서_흙을_많이_팠어요_"));
+            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 포크레인을 도와줘서\n흙을 많이 팠어요!", "9_우리_친구들이_포크레인을_도와줘서_흙을_많이_팠어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_ExcavatorStage.SetActive(false);
         });
@@ -142,7 +142,6 @@ public class SoilCount : MonoBehaviour
             manager.truckShowCamera.Priority = 20;
 
             Messenger.Default.Publish(new NarrationMessage("트럭은 많은 흙을 옮겨 줄 수 있어요", "3_트럭은_많은_흙을_옮겨_줄_수_있어요"));
-            //instrcutionUI가 비활성화됨 문제의 원인을 파악하지못햇음
             manager.truckAni.SetBool("LiftUp", true);
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.HeavyMachinerySound);
             DOVirtual.DelayedCall(3.75f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
@@ -164,7 +163,17 @@ public class SoilCount : MonoBehaviour
             manager.truckAni.SetBool("LiftDown", true);
             twiceissue = false;
         });
+        seq.AppendInterval(4.3f);
+        seq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("트럭이 멈췄어요!", "27_트럭이_멈췄어요_"));
 
+        });
+        seq.AppendInterval(4f);
+        seq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 트럭을 움직여보세요!", "24_버튼을_눌러_트럭을_움직여보세요_"));
+        });
     }
 
     void EndTruckStage()    //트럭 스테이지 종료 메서드
@@ -173,7 +182,7 @@ public class SoilCount : MonoBehaviour
 
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 트럭을 도와줘서 흙을 많이 옮겼어요!", "13_우리_친구들이_트럭을_도와줘서_흙을_많이_옮겼어요_"));
+            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 트럭을 도와줘서\n흙을 많이 옮겼어요!", "13_우리_친구들이_트럭을_도와줘서_흙을_많이_옮겼어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_TruckStage.SetActive(false);
         });
@@ -215,6 +224,20 @@ public class SoilCount : MonoBehaviour
             plusMoveDistance = 0f;
             twiceissue = false;
         });
+        seq.AppendInterval(5.2f);
+        seq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("불도저가 멈췄어요!", "28_불도저가_멈췄어요_"));
+
+        });
+        seq.AppendInterval(4f);
+        seq.AppendCallback(() =>
+        {
+            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 불도저를 움직여보세요!", "25_버튼을_눌러_불도저를_움직여보세요_"));
+        });
+
+
+
     }
 
     void EndBulldozerStage()    //불도저 스테이지 종료 메서드 (게임 종료)
@@ -223,7 +246,7 @@ public class SoilCount : MonoBehaviour
 
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 불도저를 도와줘서 흙을 많이 옮겼어요!", "20_우리_친구들이_불도저를_도와줘서_흙을_많이_옮겼어요_"));
+            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 불도저를 도와줘서\n흙을 많이 옮겼어요!", "20_우리_친구들이_불도저를_도와줘서_흙을_많이_옮겼어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_BulldozerStage.SetActive(false);
         });
