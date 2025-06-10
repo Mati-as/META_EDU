@@ -172,7 +172,7 @@ public class SoilCount : MonoBehaviour
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 트럭을 움직여보세요!", "24_버튼을_눌러_트럭을_움직여보세요_"));
+            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 트럭을 움직여보세요!", "24_버튼을_눌러_트럭을_움직여보세요_", 20f));
         });
     }
 
@@ -233,7 +233,7 @@ public class SoilCount : MonoBehaviour
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 불도저를 움직여보세요!", "25_버튼을_눌러_불도저를_움직여보세요_"));
+            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 불도저를 움직여보세요!", "25_버튼을_눌러_불도저를_움직여보세요_", 20f));
         });
 
 
