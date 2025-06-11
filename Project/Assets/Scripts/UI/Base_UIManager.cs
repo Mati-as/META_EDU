@@ -109,6 +109,10 @@ public class Base_UIManager : UI_PopUp
             _uiSeq.Append(UI_Instruction.transform.DOScale(Vector3.zero, 0.15f)
                 .SetEase(Ease.InOutBounce));
         }
+        else
+        {
+            //duration설정하지 않은경우, 다음 UI 표출실행 전까지 UI 지속--------------
+        }
 
 
     }

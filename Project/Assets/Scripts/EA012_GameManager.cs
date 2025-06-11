@@ -434,8 +434,11 @@ public class EA012_GameManager : Ex_BaseGameManager
     {
         if (!tireSeqMap.ContainsKey(currentTireGroup))
             tireSeqMap[currentTireGroup] = new Dictionary<int, Sequence>();
-
-        _isTireRemovalFinished = false;
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            _isTireRemovalFinished = false;
+        });
+      
         Managers.Sound.Play(SoundManager.Sound.Effect,"EA012/TireRoll");
         for (int i = 0; i < WHEEL_COUNT_TO_REMOVE; i++)
         {
@@ -601,8 +604,8 @@ public class EA012_GameManager : Ex_BaseGameManager
 
         if (!_isTireRemovalFinished && currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE )
         {
-            _isTireRemovalFinished = true;
-         
+          
+            currentRemovedTireCount = 0;
            // CurrentSeq = Seq.WheelSelectFinished;
            //group*2는단순 수적관계임 주의 ---------------------------------
             Logger.ContentTestLog($"모든 타이어 제거됨--------------------Caranim:{(currentTireGroup*2)+1}{(CarAnimSeq)(currentTireGroup*2)+1}------");
@@ -616,6 +619,7 @@ public class EA012_GameManager : Ex_BaseGameManager
           
             DOVirtual.DelayedCall(0.5f,()=>
             {
+                _isTireRemovalFinished = true;
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarArrival");
             });
             
@@ -626,7 +630,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 Logger.ContentTestLog($"current seq -> {currentMainSeq} -------------------");
                 OnTireRemovalFinished();
             });
-            currentRemovedTireCount = 0;
+           
         }
         else
         {
