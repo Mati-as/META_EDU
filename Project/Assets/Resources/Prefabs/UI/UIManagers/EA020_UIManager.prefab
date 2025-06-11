@@ -409,7 +409,7 @@ PrefabInstance:
     - target: {fileID: 7751385765212302507, guid: ba9f03e89a7df964b97ad3692b9150fc,
         type: 3}
       propertyPath: m_Name
-      value: EA020_Park_UIManager
+      value: EA020_UIManager
       objectReference: {fileID: 0}
     - target: {fileID: 7751385765212302507, guid: ba9f03e89a7df964b97ad3692b9150fc,
         type: 3}
@@ -461,7 +461,8 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1577924701997619733, guid: ba9f03e89a7df964b97ad3692b9150fc, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ba9f03e89a7df964b97ad3692b9150fc, type: 3}
 --- !u!1 &628898712047952050 stripped
 GameObject:
@@ -487,3 +488,26 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7145022669357714457}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8560729823835575818 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1577924701997619731, guid: ba9f03e89a7df964b97ad3692b9150fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 7145022669357714457}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7709989059953979667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8560729823835575818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
