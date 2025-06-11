@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
@@ -115,21 +117,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
 
             //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
             Logger.ContentTestLog($"Current Sequence: {CurrentMainMainSeq.ToString()}");
-
-
             // commin Init Part.
             isRoundActive = false;
-            if (currentRoundCount % 2 == 1)
-            {
-                GetObject((int)Objs.TrackA_Set).SetActive(true);
-                GetObject((int)Objs.TrackB_Set).SetActive(false);
-            }
-            else
-            {
-                GetObject((int)Objs.TrackA_Set).SetActive(false);
-                GetObject((int)Objs.TrackB_Set).SetActive(true);
-                
-            }
+
             
             ChangeThemeSeqAnim(value);
             switch (value)
@@ -139,6 +129,19 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                     currentRoundCount++;
                     if (CheckIfMaxRoundCount()) return;
                     InitCarsPerRound();
+                    
+               
+                    if (currentRoundCount % 2 == 1)
+                    {
+                        GetObject((int)Objs.TrackA_Set).SetActive(true);
+                        GetObject((int)Objs.TrackB_Set).SetActive(false);
+                    }
+                    else
+                    {
+                        GetObject((int)Objs.TrackA_Set).SetActive(false);
+                        GetObject((int)Objs.TrackB_Set).SetActive(true);
+                
+                    }
                     break;
                     
                 
@@ -198,11 +201,7 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
         GetObject((int)Objs.TrackB_Set).SetActive(false);
         _uiManager = UIManagerObj.GetComponent<EA020_UIManager>();
         
-        for(int i = (int)Objs.Seat_AA; i <= (int)Objs.Excavator; i++)
-        {
-           // _defaultSizeMap.Add(i, GetObject(i).transform.localScale);
-            _sequenceMap.Add(i, DOTween.Sequence());
-        }
+
         
         _nameInKoreanMap = new()
         {
@@ -512,7 +511,9 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
             currentTrackNameForAnimStateMap = new();
             
             _uiManager.PopFromZeroInstructionUI("차를 도와주세요! 누가 빨리가는지 볼까요?"); 
+            
             selectedCars.Clear();
+            _selectedCarAnimators.Clear();
 
             List<int> carIndices = new List<int>(_cars.Keys);
 
@@ -533,6 +534,7 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                 int carIndex = carIndices[i];
                 GameObject car = _cars[carIndex];
                 Animator animator = _carAnimators[carIndex];
+                _selectedCarAnimators.Add(i, animator);
                 selectedCars.Add(i, car);
            
                 car.SetActive(true);
@@ -606,29 +608,59 @@ public class EA020_ParkingGame_GameManager : Ex_BaseGameManager
                 //transform.DOShakeScale(1.0f, 1, 10, 90, true).SetEase(Ease.OutQuad);
             }
 
-            
-            
-            
-            for (int i = 0; i < selectedCars.Count; i++)
+
+
+            DOVirtual.DelayedCall(3.5f, () =>
             {
-                _nameInKoreanMap.TryGetValue(selectedCars[0].transform.GetInstanceID(), out string carName);
-                _CarIntroduceSequence.AppendCallback(() =>
+                IntroduceCars(() =>
                 {
-                    _uiManager.PopFromZeroInstructionUI($"차량 {carName})");
+                    if ((int)currentRoundCount % 2 == 1)
+                    {
+                        CurrentMainMainSeq = (int)MainSeq.SeatSelectionA;
+                    }
+                    else
+                    {
+                        CurrentMainMainSeq = (int)MainSeq.SeatSelectionB;
+                    }
+
+                });
+            });
+        }
+
+        private readonly Dictionary<int, Animator> _selectedCarAnimators = new();
+        private const int CAR_ANIM_INTRO = 101;
+
+        private void IntroduceCars(Action onComplete)
+        {
+            float delay = 4.5f;
+            int count = 0;
+            int total = _selectedCarAnimators.Count;
+
+
+            foreach (int key in _selectedCarAnimators.Keys.ToArray())
+            {
+                Logger.ContentTestLog($"Intro Car {count} ----------------------------");
+                bool isLast = count == total - 1; // 마지막 차 판별
+
+                int countCache = count;
+                DOVirtual.DelayedCall(delay * count, () =>
+                {
+                    _selectedCarAnimators[key].enabled = true;
+                    _selectedCarAnimators[key].SetInteger(TrackNum, CAR_ANIM_INTRO);
+                    _uiManager.PopFromZeroInstructionUI(
+                        $"{countCache + 1}번, {_nameInKoreanMap[_selectedCarAnimators[key].transform.GetInstanceID()]}!");
+
+                    if (isLast && onComplete != null) onComplete.Invoke();
+                    //  _selectedCarAnimators[key].enabled = true;
+                }).OnComplete(() =>
+                {
+                    _selectedCarAnimators[key]
+                        .Play(currentTrackNameForAnimStateMap[_selectedCarAnimators[key].transform.GetInstanceID()], 0,
+                            0);
                 });
 
+                count++;
             }
-            
-
-           if ((int)currentRoundCount % 2 == 1)
-            {
-                CurrentMainMainSeq = (int)MainSeq.SeatSelectionA;
-            }
-            else
-            {
-                CurrentMainMainSeq = (int)MainSeq.SeatSelectionB;
-            }
-            
         }
 
         private void StartTrackRoundWithCount()
