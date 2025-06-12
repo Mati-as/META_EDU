@@ -143,26 +143,40 @@ public class UIManager
     
     /// <summary>
     /// ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
+    /// 개별컨트롤할 필요가 없는경우, Original UIManager를 사용합니다. 개별 UI가 필요없는경우 Original Prefab만 사용해도 무방합니다. 
     /// </summary>
     /// <returns></returns>
-    
     public bool ShowCurrentSceneUIManager<T>(out GameObject uiGamobj,string sceneName = null, Transform parent = null) 
     {
         if (string.IsNullOrEmpty(sceneName))
             sceneName = typeof(T).Name;
 
         var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
-
         if (prefab == null)
         {
-            Logger.ContentTestLog("UIManager prefab is null");
-            uiGamobj = null;
-            return false;
+            prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/UIManager");
+            
+            if(prefab == null)
+            {
+                uiGamobj = null;
+                Debug.LogError($"Prefab for {sceneName}_UIManager not found.");
+                return false;
+            }
+            
+            
+            var go = Managers.Resource.Instantiate($"UI/UIManagers/UIManager");
+            uiGamobj = go;
+            Logger.CoreClassLog("Using Original UIManager Prefab.....");
+        }
+        else
+        {
+            var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
+            uiGamobj = go;
         }
 
-        var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
 
-        uiGamobj = go;
+
+       
         // if (parent != null)
         //     go.transform.SetParent(parent);
         // else if (SceneUI != null)

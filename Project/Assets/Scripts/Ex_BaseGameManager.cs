@@ -219,7 +219,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     {
         foreach (int key in _isClickableMap.Keys.ToArray())
         {
-            Logger.ContentTestLog($"{key} : {isClickable}");
+//            Logger.ContentTestLog($"{key} : {isClickable}");
             _isClickableMap[key] = isClickable;
         }
     }

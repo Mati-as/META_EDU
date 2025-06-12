@@ -43,7 +43,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         SparrowC,
         SparrowD,
         SparrowE,
-        
+        Fx_OnSuccess
     }
     
     private enum AnimationName
@@ -108,7 +108,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     AppearSparrow(2);
                     ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
                     Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
-                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006");
+                    Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006",0.1f);
 
                     break;
                 
@@ -128,7 +128,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     private readonly Dictionary<int, Collider> colliderMap = new(); //group별임에 주의
 
-
+    private ParticleSystem onSuccess;
     private readonly Dictionary<int, MeshRenderer[]> _mRendererMap = new(); //group별임에 주의
     private Material _defaultMat;
     private Material _changedMat; //클릭시 변경될 색상
@@ -192,6 +192,8 @@ public class EA006_GameManager : Ex_BaseGameManager
             GetObject(i).SetActive(false);
                   
         }
+        
+        onSuccess = GetObject((int)Obj.Fx_OnSuccess).GetComponent<ParticleSystem>();
     }
 
     protected override void OnGameStartStartButtonClicked()
@@ -212,7 +214,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
                 case (int)SequenceName.GrassColorChange:
                 
-                    OnRaySyncedOnGrassColorChange(hit);
+                    OnRaySyncedOnRiceFieldColorChange(hit);
                  
                     break;
                 case (int)SequenceName.FindScarecrow:
@@ -233,7 +235,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     #region A)풀색상 변화 파트 -----------------------------------------------------------
     
-    private void OnRaySyncedOnGrassColorChange(RaycastHit hit)
+    private void OnRaySyncedOnRiceFieldColorChange(RaycastHit hit)
     {
         int id = hit.transform.GetInstanceID();
         if (!_tfIdToEnumMap.ContainsKey(id))
@@ -293,6 +295,9 @@ public class EA006_GameManager : Ex_BaseGameManager
 
         if (currentChangedCount >= TargetColorChangedCount)
         {
+            onSuccess.Play();
+            Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA006/OnSuccess");
+            
             DOVirtual.DelayedCall(1.5f, () =>
             {
                 Logger.ContentTestLog("currentChangedCount : " + currentChangedCount + " / " + TargetColorChangedCount);
@@ -301,6 +306,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                 {
                     currentChangedCount = 0;
                     OnAllGrassColorChanged();
+                   
                 }
             });
         }
@@ -320,7 +326,11 @@ public class EA006_GameManager : Ex_BaseGameManager
     }
     private void OnAllGrassColorChanged()
     {
-        CurrentThemeMainSequence = (int)SequenceName.FindScarecrow;
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            CurrentThemeMainSequence = (int)SequenceName.FindScarecrow;
+        });
+       
     }
 
     #endregion
@@ -342,6 +352,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(1.5f, () =>
         {
             AppearScareCrow();
+            Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA006/Narration/Hello");
         });
     }
 
@@ -546,6 +557,10 @@ public class EA006_GameManager : Ex_BaseGameManager
         if (_animatorMap.ContainsKey(_tfIdToEnumMap[id]))
         {
         
+            char ranChar= (char)Random.Range('A','D'+1); //C,D는 없으므로 50%확률로 소리재생
+            Managers.Sound.Play(SoundManager.Sound.Effect,"SortedByScene/EA006/OnSparrow" +ranChar);
+            
+            
             PlayRandomClickSound();
             PlayParticleEffect(hit.point);
             
@@ -586,6 +601,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                 });
             
                 AppearScareCrow(2);
+                Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/Thanks");
             }
 
         }
