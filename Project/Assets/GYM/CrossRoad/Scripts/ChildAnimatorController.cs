@@ -10,7 +10,7 @@ public class ChildAnimatorController : MonoBehaviour
     [SerializeField] private GameObject rightChild;
 
     [SerializeField] private Vector3 leftChildTargetTransform = new Vector3(-269.28668212890627f, 34.73564910888672f, 113.57100677490235f);
-    [SerializeField] private Vector3 rightChildTargetTransform = new Vector3(-271.13665771484377f, 34.73564910888672f, 96.85100555419922f);
+    [SerializeField] private Vector3 rightChildTargetTransform = new Vector3(-271.13665771484377f, 34.73564910888672f, 97.71601104736328f);
 
     [SerializeField] private Vector3 leftStartVector3 = new Vector3(-269.28668212890627f, 34.73564910888672f, 98.74101257324219f);
     [SerializeField] private Vector3 rightStartVector3 = new Vector3(-271.13665771484377f, 34.73564910888672f, 113.40100860595703f);
@@ -44,26 +44,29 @@ public class ChildAnimatorController : MonoBehaviour
 
 
         //워크 애니메이션 진행
-        leftchildanimator.SetBool("Walk", true);
-        rightchildanimator.SetBool("Walk", true);
-
-        DOVirtual.DelayedCall(1f, () =>
+        DOVirtual.DelayedCall(2f, () =>
         {
             leftChild.SetActive(true);
+            leftchildanimator.SetBool("Walk", true);
             leftChild.transform.DOMove(leftChildTargetTransform, 8f).OnComplete(() =>
             {
                 leftChild.SetActive(false);
                 leftchildanimator.SetBool("Walk", false);
             });
         });
-        DOVirtual.DelayedCall(2f, () =>
+        DOVirtual.DelayedCall(9f, () =>
         {
             rightChild.SetActive(true);
-            rightChild.transform.DOMove(rightChildTargetTransform, 7f).OnComplete(() =>
+            rightchildanimator.SetBool("Walk", true);
+            DOVirtual.DelayedCall(0.5f, () =>
             {
-            rightChild.SetActive(false);
-            rightchildanimator.SetBool("Walk", false);
+                rightChild.transform.DOMove(rightChildTargetTransform, 7f).SetEase(Ease.Linear).OnComplete(() =>
+                {
+                    rightChild.SetActive(false);
+                    rightchildanimator.SetBool("Walk", false);
+                });
             });
+
         });
     }
 
