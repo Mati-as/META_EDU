@@ -61,6 +61,7 @@ public class GameStage : MonoBehaviour
     [SerializeField]
     private ParticleSystem explosionParticle;
 
+    public ParticleSystem centerMagicParticle;
 
     private void Start()
     {
@@ -159,8 +160,11 @@ public class GameStage : MonoBehaviour
                     .DOScale(MainSquareScale * 0.95f, 1f)
                     .SetEase(Ease.InOutSine)
                     .SetLoops(-1, LoopType.Yoyo);
+                centerMagicParticle.Play();
             })
             .AppendInterval(9f)
+            .AppendCallback(() => centerMagicParticle.Stop())
+            .AppendInterval(0.5f)
             .AppendCallback(() => explosionParticle.Play())
             .AppendInterval(0.5f)
             .AppendCallback(() =>
@@ -228,8 +232,11 @@ public class GameStage : MonoBehaviour
                     .DOScale(MainFlowerScale * 0.95f, 1f)
                     .SetEase(Ease.InOutSine)
                     .SetLoops(-1, LoopType.Yoyo);
+                centerMagicParticle.Play();
             })
             .AppendInterval(9f)
+            .AppendCallback(() => centerMagicParticle.Stop())
+            .AppendInterval(0.5f)
             .AppendCallback(() => explosionParticle.Play())
             .AppendInterval(0.5f)
             .AppendCallback(() =>
@@ -298,9 +305,12 @@ public class GameStage : MonoBehaviour
                 MainStar.transform
                     .DOScale(MainStarScale * 0.95f, 1f)
                     .SetEase(Ease.InOutSine)
-                    .SetLoops(-1, LoopType.Yoyo);
+                    .SetLoops(-1, LoopType.Yoyo); 
+                centerMagicParticle.Play();
             })
             .AppendInterval(9f)
+            .AppendCallback(() => centerMagicParticle.Stop())
+            .AppendInterval(0.5f)
             .AppendCallback(() => explosionParticle.Play())
             .AppendInterval(0.5f)
            .AppendCallback(() =>
@@ -369,8 +379,11 @@ public class GameStage : MonoBehaviour
                     .DOScale(MainCircleScale * 0.95f, 1f)
                     .SetEase(Ease.InOutSine)
                     .SetLoops(-1, LoopType.Yoyo);
+                centerMagicParticle.Play();
             })
             .AppendInterval(9f)
+            .AppendCallback(() => centerMagicParticle.Stop())
+            .AppendInterval(0.5f)
             .AppendCallback(() => explosionParticle.Play())
             .AppendInterval(0.5f)
           .AppendCallback(() =>
@@ -439,9 +452,12 @@ public class GameStage : MonoBehaviour
                   .DOScale(MainTriangleScale * 0.95f, 1f)
                   .SetEase(Ease.InOutSine)
                   .SetLoops(-1, LoopType.Yoyo);
+              centerMagicParticle.Play();
           })
-          .AppendInterval(9f)
-          .AppendCallback(() => explosionParticle.Play())
+            .AppendInterval(9f)
+            .AppendCallback(() => centerMagicParticle.Stop())
+            .AppendInterval(0.5f)
+            .AppendCallback(() =>explosionParticle.Play())
           .AppendInterval(0.5f)
           .AppendCallback(() =>
           {

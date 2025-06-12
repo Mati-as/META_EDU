@@ -1,6 +1,7 @@
 using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -55,6 +56,12 @@ public class VariousShape_GameManager : Base_GameManager
 
     public bool isStageStart = false;
 
+    private float startZ1;
+    private float startZ2;
+    private float startZ3;
+    private float startZ4;
+    private float startZ5;
+
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -81,6 +88,51 @@ public class VariousShape_GameManager : Base_GameManager
         originalTrianglePos =  triangleImg.transform.position;
         originalTriangleEuler = triangleImg.transform.eulerAngles;
         originalTriangleSize = triangleImg.transform.localScale;
+
+        startZ1 = flowerImg.transform.localEulerAngles.z;
+        flowerImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ1 - 10);
+        flowerImg.transform
+            .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(40, LoopType.Yoyo);
+        startZ2 = squareImg.transform.localEulerAngles.z;
+        DOVirtual.DelayedCall(0.3f, () =>
+        {
+            squareImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ2 - 10);
+            squareImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        });
+       
+        startZ3 = starImg.transform.localEulerAngles.z;
+        DOVirtual.DelayedCall(0.6f, () =>
+        {
+            starImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ3 - 10);
+        starImg.transform
+            .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(40, LoopType.Yoyo);
+        });
+        startZ4 = triangleImg.transform.localEulerAngles.z;
+        DOVirtual.DelayedCall(0.9f, () =>
+        {
+            triangleImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ4 - 10);
+        triangleImg.transform
+            .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(40, LoopType.Yoyo);
+        });
+        startZ5 = circleImg.transform.localEulerAngles.z;
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            circleImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ5 - 10);
+        circleImg.transform
+            .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(40, LoopType.Yoyo);
+        });
+
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "VariousShape/Audio/BGAudio");
 
@@ -112,6 +164,7 @@ public class VariousShape_GameManager : Base_GameManager
         introSeq = DOTween.Sequence()
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 함께 다양한 모양을 찾아봐요!", "audio_0_친구들과_함께_다양한_모양을_찾아봐요_")))
         .AppendInterval(6f)
+        .AppendCallback(() => circleImg.transform.DOKill())
         .Append(circleImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(circleImg.transform.DOScale(originalCircleSize * 4f, moveSpeed))
         .Join(circleImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
@@ -122,8 +175,17 @@ public class VariousShape_GameManager : Base_GameManager
         .Append(circleImg.transform.DOMove(originalCirclePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(circleImg.transform.DOScale(originalCircleSize, moveSpeed).SetEase(Ease.InQuad))
         .Join(circleImg.transform.DOLocalRotate(originalCircleEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendCallback(() =>
+        {
+            circleImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ5 - 10);
+            circleImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        })
         .AppendInterval(3f)
 
+        .AppendCallback(() => squareImg.transform.DOKill())
         .Append(squareImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(squareImg.transform.DOScale(originalSquareSize * 4f, moveSpeed))
         .Join(squareImg.transform.DOLocalRotate(new Vector3(0, 0, -2f), moveSpeed))
@@ -134,8 +196,17 @@ public class VariousShape_GameManager : Base_GameManager
         .Append(squareImg.transform.DOMove(originalSquarePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(squareImg.transform.DOScale(originalSquareSize, moveSpeed).SetEase(Ease.InQuad))
         .Join(squareImg.transform.DOLocalRotate(originalSquareEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendCallback(() =>
+        {
+            squareImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ2 - 10);
+            squareImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        })
         .AppendInterval(3f)
 
+        .AppendCallback(() => starImg.transform.DOKill())
         .Append(starImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(starImg.transform.DOScale(originalStarSize * 3.7f, moveSpeed))
         .Join(starImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
@@ -146,8 +217,17 @@ public class VariousShape_GameManager : Base_GameManager
         .Append(starImg.transform.DOMove(originalStarPos, moveSpeed).SetEase(Ease.InQuad))
         .Join(starImg.transform.DOScale(originalStarSize, moveSpeed).SetEase(Ease.InQuad))
         .Join(starImg.transform.DOLocalRotate(originalStarEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendCallback(() =>
+        {
+            starImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ3 - 10);
+            starImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        })
         .AppendInterval(3f)
 
+        .AppendCallback(() => flowerImg.transform.DOKill())
         .Append(flowerImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(flowerImg.transform.DOScale(originalFlowerSize * 4f, moveSpeed))
         .Join(flowerImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
@@ -158,8 +238,17 @@ public class VariousShape_GameManager : Base_GameManager
         .Append(flowerImg.transform.DOMove(originalFlowerPos, moveSpeed).SetEase(Ease.InQuad))
         .Join(flowerImg.transform.DOScale(originalFlowerSize, moveSpeed).SetEase(Ease.InQuad))
         .Join(flowerImg.transform.DOLocalRotate(originalFlowerEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendCallback(() =>
+        {
+            flowerImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ1 - 10);
+            flowerImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        })
         .AppendInterval(3f)
 
+        .AppendCallback(() => triangleImg.transform.DOKill())
         .Append(triangleImg.transform.DOMove(targetPostition, moveSpeed))
         .Join(triangleImg.transform.DOScale(originalTriangleSize * 4f, moveSpeed))
         .Join(triangleImg.transform.DOLocalRotate(Vector3.zero, moveSpeed))
@@ -170,16 +259,25 @@ public class VariousShape_GameManager : Base_GameManager
         .Append(triangleImg.transform.DOMove(originalTrianglePos, moveSpeed).SetEase(Ease.InQuad))
         .Join(triangleImg.transform.DOScale(originalTriangleSize, moveSpeed).SetEase(Ease.InQuad))
         .Join(triangleImg.transform.DOLocalRotate(originalTriangleEuler, moveSpeed).SetEase(Ease.InQuad))
+        .AppendCallback(() =>
+        {
+            triangleImg.transform.localRotation = Quaternion.Euler(0f, 0f, startZ4 - 10);
+            triangleImg.transform
+                .DOLocalRotate(new Vector3(0f, 0f, 10 * 2f), 1, RotateMode.LocalAxisAdd)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(40, LoopType.Yoyo);
+        })
         .AppendInterval(3f)
 
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("이제부터 모양 친구들과 놀아볼까요~", "audio_6_이제부터_모양_친구들과_놀아볼까요_")))
         .AppendInterval(3f)
+        .AppendCallback(() => IntroStage.transform.DOScale(3f, 0.5f).SetEase(Ease.Linear))
+        .AppendInterval(0.5f)
         .AppendCallback(() =>                   //게임스테이지 시작
         {
             IntroStage.SetActive(false);
             gameStage.OnGameStart();
         });
-
     }
 
     public override void OnRaySynced()
