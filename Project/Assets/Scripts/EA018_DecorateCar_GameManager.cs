@@ -41,10 +41,22 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
     private Dictionary<int, Vector3> _defaultPosMap = new();
     private Vector3 strenth = new Vector3(8f, 8f, 8f);
     private bool _isClickableOnFinish = false;
+
+    private bool _isDefalutRotationRefreshed;
     
     private void OnRaySyncedOnFinish()
     {
-        if (!_isClickableOnFinish) return; 
+        if (!_isClickableOnFinish) return;
+
+        if (!_isDefalutRotationRefreshed)
+        {
+            _isDefalutRotationRefreshed = true;
+            
+            _defaultRotationQuatMap[(int)Obj.Car_FireTruck] = GetObject((int)Obj.Car_FireTruck).transform.rotation;
+            _defaultRotationQuatMap[(int)Obj.Car_PoliceCar] = GetObject((int)Obj.Car_PoliceCar).transform.rotation;
+            _defaultRotationQuatMap[(int)Obj.Car_Ambulance] = GetObject((int)Obj.Car_Ambulance).transform.rotation;
+            
+        }
         
         foreach (var hit in GameManager_Hits)
         {
@@ -192,7 +204,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         GetObject((int)Obj.Car_FireTruck).GetComponent<Collider>().enabled =true;
         GetObject((int)Obj.Car_Ambulance).GetComponent<Collider>().enabled =true;
 
-        DOVirtual.DelayedCall(6, () =>
+        DOVirtual.DelayedCall(5, () =>
         {
             _isClickableOnFinish = true;
             mainAnimator.enabled = false;
@@ -697,7 +709,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         {
                             _isClickableMap[ID] = false;
                             animator.enabled = true;
-                            _tfIdToSpriteMap[ID].DOFade(0.8f, 0.75f);
+                            _tfIdToSpriteMap[ID].DOFade(0.7f, 0.75f);
                         });
 
                   
