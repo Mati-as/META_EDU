@@ -12,15 +12,20 @@ public class BoxDropper : MonoBehaviour
     public List<Mesh> boxMeshes;               // 변경될 메쉬 목록
     public GameObject Btn_NextBoxDrop;
 
+    [SerializeField] private RectTransform rt;
+
     public int dropIndex = 0;
 
     private DG.Tweening.Sequence sequence;
 
     private bool onButtonClicked = false;
 
+    private Vector2 strength = new Vector2(5, 5);
+
     void Start()
     {
         manager = FindObjectOfType<ColorTogether_Manager>();
+        rt = transform as RectTransform;
     }
 
     public void StartDropCycle()
@@ -56,6 +61,10 @@ public class BoxDropper : MonoBehaviour
 
     public void NextDropBoxButton()
     {
+        
+        manager.ClickedSound();
+        rt.DOShakeAnchorPos(0.3f, strength, 6, 45);
+
         if (!onButtonClicked)
         {
             onButtonClicked = true;

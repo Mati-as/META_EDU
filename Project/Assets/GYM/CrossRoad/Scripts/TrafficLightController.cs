@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Linq;
 using DG.Tweening;
+using MyGame.Messages;
+using SuperMaxim.Messaging;
 using UnityEngine;
 using UnityEngine.UI;
 
 public enum LightColor
 {
-    Red, Orange, Green
+    Red, Green
 }
 
 public class TrafficLightController : MonoBehaviour
@@ -36,6 +38,8 @@ public class TrafficLightController : MonoBehaviour
         float rTime = redDuration + 1f;
 
         lightSequence = DOTween.Sequence()
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("건너기 전에 주위를 살피고 건너요", "0_건너기_전에_주위를_살피고_건너요")))
+        .AppendInterval(4f)
         .AppendCallback(() => ChangeTo(LightColor.Green))
         .AppendInterval(gTime)
         .Join(
@@ -50,7 +54,8 @@ public class TrafficLightController : MonoBehaviour
                 }
             ).SetEase(Ease.Linear)
         )
-
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("빨간 불에는 건너지 않아요", "1_빨간_불에는_건너지_않아요_")))
+        .AppendInterval(4f)
         .AppendCallback(() => ChangeTo(LightColor.Red))
         .AppendInterval(rTime)
         .Join(DOVirtual.Float(rTime, 0, rTime, v =>
