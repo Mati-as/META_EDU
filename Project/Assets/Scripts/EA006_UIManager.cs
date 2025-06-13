@@ -33,11 +33,11 @@ public class EA006_UIManager : Base_UIManager
         Logger.Log($"Get Message ---- {message}");
         switch (message)
         {
-            case (int)EA006_GameManager.SequenceName.Default:
+            case (int)EA006_GameManager.MainSeq.Default:
               //  PopFromZeroInstructionUI( string.Empty);
                 
                 break;
-            case (int)EA006_GameManager.SequenceName.GrassColorChange:
+            case (int)EA006_GameManager.MainSeq.GrassColorChange:
                 PopFromZeroInstructionUI("초록색 벼를 터치해 노란색으로 바꿔주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/RipenIt");
 
@@ -50,7 +50,7 @@ public class EA006_UIManager : Base_UIManager
                 
                 break;
             
-            case (int)EA006_GameManager.SequenceName.FindScarecrow:
+            case (int)EA006_GameManager.MainSeq.FindScarecrow:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/ThereScareCrow");
                 
                 PopFromZeroInstructionUI( "장난치는 허수아비 아저씨를 터치해주세요!");
@@ -61,7 +61,7 @@ public class EA006_UIManager : Base_UIManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/GetRidOfScarecrow");
                 });
                 break;
-            case (int)EA006_GameManager.SequenceName.SparrowAppear:
+            case (int)EA006_GameManager.MainSeq.SparrowAppear:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/SparrowAppear");
                 PopFromZeroInstructionUI( "참새가 나타났어요!");
                 DOVirtual.DelayedCall(2.5f, () =>
@@ -77,7 +77,7 @@ public class EA006_UIManager : Base_UIManager
                     });
                 });
                 break;
-            case (int)EA006_GameManager.SequenceName.OnFinish:
+            case (int)EA006_GameManager.MainSeq.OnFinish:
                 
                 DOVirtual.DelayedCall(3f, () =>
                 {

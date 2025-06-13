@@ -539,7 +539,8 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
             sprite.enabled = isActive;
     }
 
-    
+
+
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();

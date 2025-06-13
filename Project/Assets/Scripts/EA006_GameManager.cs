@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 public class EA006_GameManager : Ex_BaseGameManager
 {
-    public enum SequenceName
+    public enum MainSeq
     {
         Default,
         GrassColorChange,
@@ -78,46 +78,46 @@ public class EA006_GameManager : Ex_BaseGameManager
         
             base.CurrentMainMainSequence = value;
             
-            Logger.Log($"Sequence Changed--------{(SequenceName)base.CurrentMainMainSequence} : {value}");
+            Logger.Log($"Sequence Changed--------{(MainSeq)base.CurrentMainMainSequence} : {value}");
             SeqMessageEvent?.Invoke(base.CurrentMainMainSequence);
             SetWheatColliderStatus();
 
             //값반영 지연으로 value대신 _currentThemeSequence 사용하면 안됩니다 XXX
             switch (value)
             {
-                case (int)SequenceName.GrassColorChange:
-                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
+                case (int)MainSeq.GrassColorChange:
+                    Logger.ContentTestLog($"풀 색상 변경 모드 시작 {(MainSeq)base.CurrentMainMainSequence} : {value}");
                     currentChangedCount = 0;
-                    ChangeThemeSeqAnim((int)SequenceName.GrassColorChange);
+                    ChangeThemeSeqAnim((int)MainSeq.GrassColorChange);
                     ResetClickable();
                     SetWheatColliderStatus(true);
                     break;
                 
-                case (int)SequenceName.FindScarecrow:
+                case (int)MainSeq.FindScarecrow:
                     _elapsedTime = 0;
-                    Logger.ContentTestLog($"허수아비 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
+                    Logger.ContentTestLog($"허수아비 모드 시작 {(MainSeq)base.CurrentMainMainSequence} : {value}");
                     SetWheatColliderStatus(false);
-                    ChangeThemeSeqAnim((int)SequenceName.FindScarecrow);
+                    ChangeThemeSeqAnim((int)MainSeq.FindScarecrow);
                     ResetClickable();
                     OnScareCrowFindStart();
                     Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA008");
                     break;
 
-                case (int)SequenceName.SparrowAppear:
+                case (int)MainSeq.SparrowAppear:
                     ResetClickable(false);//순서주의 
-                    AppearSparrow(2);
-                    ChangeThemeSeqAnim((int)SequenceName.SparrowAppear);
-                    Logger.ContentTestLog($"참새 모드 시작 {(SequenceName)base.CurrentMainMainSequence} : {value}");
+                    AppearSparrow(4);
+                    ChangeThemeSeqAnim((int)MainSeq.SparrowAppear);
+                    Logger.ContentTestLog($"참새 모드 시작 {(MainSeq)base.CurrentMainMainSequence} : {value}");
                     Managers.Sound.Play(SoundManager.Sound.Bgm,"Bgm/EA006",0.1f);
 
                     break;
                 
-                case (int)SequenceName.OnFinish:
-                    ChangeThemeSeqAnim((int)SequenceName.OnFinish);
+                case (int)MainSeq.OnFinish:
+                    ChangeThemeSeqAnim((int)MainSeq.OnFinish);
                     break;
                 
-                case (int)SequenceName.Default:
-                    Logger.LogError("시퀀스 에러--------------확인필요");
+                case (int)MainSeq.Default:
+//                    Logger.LogError("시퀀스 에러--------------확인필요");
                     break;
             }
             
@@ -134,6 +134,8 @@ public class EA006_GameManager : Ex_BaseGameManager
     private Material _changedMat; //클릭시 변경될 색상
     private readonly int COLOR_A_CHANGED = Shader.PropertyToID("_Color1");
     private readonly int COLOR_B_CHANGED = Shader.PropertyToID("_Color2");
+   
+  
     private Color _targetColorA;
     private Color _targetColorB;
     private int currentChangedCount = 0;
@@ -143,7 +145,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     private readonly int TargetScarecrowCount = 10;
     
     private int _currentSparrowCount = 0;
-    private readonly int TargetSparrowCount = 10;
+    private readonly int SPARROW_CATCH_TARGET_COUNT = 30;
     private readonly int ANIM_NUM = Animator.StringToHash("animNum");
     private readonly int ANIM_ACTION = Animator.StringToHash("animAction");
     private void SetWheatColliderStatus(bool isOn = false)
@@ -195,13 +197,21 @@ public class EA006_GameManager : Ex_BaseGameManager
         
         onSuccess = GetObject((int)Obj.Fx_OnSuccess).GetComponent<ParticleSystem>();
     }
+    
+    
+#if UNITY_EDITOR
+    [SerializeField]
+    private MainSeq seq;
+#else
+    private MainSeq seq = MainSeq.GrassColorChange;
+#endif
 
     protected override void OnGameStartStartButtonClicked()
     {
         DOVirtual.DelayedCall(1f, () =>
         {
 
-            CurrentThemeMainSequence = (int)SequenceName.GrassColorChange;
+            CurrentThemeMainSequence =(int)seq;
         });
     }
 
@@ -210,20 +220,20 @@ public class EA006_GameManager : Ex_BaseGameManager
         foreach (var hit in GameManager_Hits)
             switch (CurrentThemeMainSequence)
             {
-                case (int)SequenceName.Default:
+                case (int)MainSeq.Default:
                     break;
-                case (int)SequenceName.GrassColorChange:
+                case (int)MainSeq.GrassColorChange:
                 
                     OnRaySyncedOnRiceFieldColorChange(hit);
                  
                     break;
-                case (int)SequenceName.FindScarecrow:
+                case (int)MainSeq.FindScarecrow:
                    
                     
                     OnRaySyncedOnScareCrowFind(hit);
                 
                     break;
-                case (int)SequenceName.SparrowAppear:
+                case (int)MainSeq.SparrowAppear:
                   
                     OnRaySyncedOnSparrow(hit);
                     break;
@@ -283,7 +293,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
             // 색상에 약간의 랜덤 편차 추가
             var randColorA = _targetColorA * Random.Range(0.95f, 1.05f);
-            var randColorB = _targetColorB * Random.Range(0.95f, 1.05f);
+            var randColorB = _targetColorB * Random.Range(0.90f, 1.05f);
 
             // 트위닝 적용
             mat.DOColor(randColorA, COLOR_A_CHANGED, 1f);
@@ -328,7 +338,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     {
         DOVirtual.DelayedCall(2f, () =>
         {
-            CurrentThemeMainSequence = (int)SequenceName.FindScarecrow;
+            CurrentThemeMainSequence = (int)MainSeq.FindScarecrow;
         });
        
     }
@@ -358,6 +368,14 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     private void AppearScareCrow(int Count = 2)
     {
+
+        int randomPoss = Random.Range(0, 100);
+        if (randomPoss > 70)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Effect, "SortedByScene/EA006/Narration/Hello");
+        }
+     
+        
         int SelectedScarecrow = -1; //sentinel val
         for (int i = 0; i < Count; i++)
         {
@@ -445,7 +463,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     private void Update()
     {
-        if (CurrentThemeMainSequence != (int)SequenceName.FindScarecrow) return; 
+        if (CurrentThemeMainSequence != (int)MainSeq.FindScarecrow) return; 
         
         _elapsedTime += Time.deltaTime;
         
@@ -464,17 +482,30 @@ public class EA006_GameManager : Ex_BaseGameManager
                     });
             });
             
-            CurrentThemeMainSequence = (int)SequenceName.SparrowAppear;
+            CurrentThemeMainSequence = (int)MainSeq.SparrowAppear;
         }
     }
 
 
     int previousSparrowPos = -1;
+
+    private Dictionary<int, bool> _isPositionAvailMap = new() {
+
+        {1, true},
+        {2, true},
+        {3, true},
+        {4, true},
+        {5, true},
+    };
+    private Dictionary<int, int> _sparrowCurrentPosMap = new() {
+
+      
+    };
     #region 참새파트------------------------------------------------------------
 
     private void AppearSparrow(int count = 1)
     {
-        List<int> availableSparrows = new();
+        List<int> availableSparrowsEnum = new();
     
         for (int i = (int)Obj.SparrowA; i <= (int)Obj.SparrowE; i++)
         {
@@ -483,28 +514,34 @@ public class EA006_GameManager : Ex_BaseGameManager
             // 클릭 가능 상태(false)
             if (!_isClickableMap[tfId])
             {
-                Logger.Log($"{(Obj)i} 참새 Active 가능 상태 : {_isClickableMap[tfId]}");
-                availableSparrows.Add(i);
+            //Logger.Log($"{(Obj)i} 참새 Active 가능 상태 : {_isClickableMap[tfId]}");
+                availableSparrowsEnum.Add(i);
             }
             else
             {
-                Logger.Log($"{(Obj)i} 참새 Active 불가상태 : {_isClickableMap[tfId]}");
+             //   Logger.Log($"{(Obj)i} 참새 Active 불가상태 : {_isClickableMap[tfId]}");
             }
             
         }
 
-        if (availableSparrows.Count == 0)
+        if (availableSparrowsEnum.Count == 0)
         {
             Logger.ContentTestLog("❌ 등장 가능한 참새가 없습니다.");
             return;
         }
 
+        // if (availableSparrowsEnum.Count < 3)
+        // {
+        //     Logger.ContentTestLog("❌❌❌❌❌ 참새수가 적어 두마리 생성 .");
+        //     count = 2;
+        // }
+
         for (int i = 0; i < count; i++)
         {
-            int randIdx = Random.Range(0, availableSparrows.Count);
-            int sparrowToActivate = availableSparrows[randIdx];
-            availableSparrows.RemoveAt(randIdx);
-            
+            int randIdx = Random.Range(0, availableSparrowsEnum.Count);
+            int sparrowEnumToActivate = availableSparrowsEnum[randIdx];
+            availableSparrowsEnum.RemoveAt(randIdx);
+            _sparrowCurrentPosMap.TryAdd(sparrowEnumToActivate, -1);
 
            
 
@@ -512,17 +549,28 @@ public class EA006_GameManager : Ex_BaseGameManager
             do
             {
                 randomSparrowPos = Random.Range((int)AnimationName.ToA, (int)AnimationName.ToE + 1);
-            } while (randomSparrowPos == previousSparrowPos);
+            } while (randomSparrowPos == previousSparrowPos
+                     || !_isPositionAvailMap[randomSparrowPos]
+                     || _sparrowCurrentPosMap[sparrowEnumToActivate] == randomSparrowPos
+                     ||_isClickableMap[_enumToTfIdMap[sparrowEnumToActivate]]
+                     );
 
+            
+            _sparrowCurrentPosMap[sparrowEnumToActivate] = randomSparrowPos;
+           // _isPositionAvailMap[sparrowEnumToActivate] = false; //해당 위치는 사용불가로 변경
+            _isPositionAvailMap[randomSparrowPos] = false; // ✅ 위치 기준으로 차
             previousSparrowPos = randomSparrowPos;
-
-            Logger.ContentTestLog($"🐦 참새 등장: {(Obj)sparrowToActivate} / pos: {randomSparrowPos}");
+            _isClickableMap[_enumToTfIdMap[sparrowEnumToActivate]] = true;
+            
+            _animatorMap[sparrowEnumToActivate].SetInteger(ANIM_NUM, -1); //animator 초기화 
+           // Logger.ContentTestLog($"🐦 참새 등장: {(Obj)sparrowEnumToActivate} / pos: {randomSparrowPos}");
             DOVirtual.DelayedCall(1f, () =>
             {
-                GetObject(sparrowToActivate).SetActive(true);
-                _isClickableMap[_enumToTfIdMap[sparrowToActivate]] = true;
-                _animatorMap[sparrowToActivate].SetInteger(ANIM_NUM, randomSparrowPos);
-                _animatorMap[sparrowToActivate].SetInteger(ANIM_ACTION, (int)AnimationAction.Eat);
+                GetObject(sparrowEnumToActivate).SetActive(true);
+                _animatorMap[sparrowEnumToActivate].SetInteger(ANIM_NUM, randomSparrowPos);
+                _animatorMap[sparrowEnumToActivate].SetInteger(ANIM_ACTION, (int)AnimationAction.Eat);
+              
+                Logger.ContentTestLog($"🐦 참새 등장 위치 맵 업데이트: {(Obj)sparrowEnumToActivate} / pos: {randomSparrowPos}");
             });
          
         
@@ -533,7 +581,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     
     private void OnRaySyncedOnSparrow(RaycastHit hit)
     {
-        if (CurrentThemeMainSequence != (int)SequenceName.SparrowAppear) return;
+        if (CurrentThemeMainSequence != (int)MainSeq.SparrowAppear) return;
         
         var id = hit.transform.GetInstanceID();
         
@@ -553,10 +601,14 @@ public class EA006_GameManager : Ex_BaseGameManager
         
         
         
-        // 클릭한객체가 참새일때만 
+        // 클릭한객체가 참새일때만 (Animator)
         if (_animatorMap.ContainsKey(_tfIdToEnumMap[id]))
         {
-        
+            _isPositionAvailMap[_sparrowCurrentPosMap[_tfIdToEnumMap[id]]] = true; //해당 위치는 사용가능으로 변경
+            Logger.ContentTestLog($"🐦 참새 클릭 Pos가능:  {(Obj)_tfIdToEnumMap[id]} / pos: {_sparrowCurrentPosMap[_tfIdToEnumMap[id]]}");
+            _sparrowCurrentPosMap[_tfIdToEnumMap[id]] = -1; //해당 참새의 위치를 초기화
+            
+            
             char ranChar= (char)Random.Range('A','D'+1); //C,D는 없으므로 50%확률로 소리재생
             Managers.Sound.Play(SoundManager.Sound.Effect,"SortedByScene/EA006/OnSparrow" +ranChar);
             
@@ -570,29 +622,34 @@ public class EA006_GameManager : Ex_BaseGameManager
                 return; 
             }
             _isClickableMap[id] = false;
-            Logger.Log($" 참새 클릭 false체크 아이디 확인-----{id} {(Obj)_tfIdToEnumMap[id]}:{_isClickableMap[id]}");
+            //Logger.Log($" 참새 클릭 false체크 아이디 확인-----{id} {(Obj)_tfIdToEnumMap[id]}:{_isClickableMap[id]}");
             
-            _animatorMap[_tfIdToEnumMap[id]].SetInteger(ANIM_NUM,Random.Range((int)AnimationName.OutA,(int)AnimationName.OutC+1));
-            _animatorMap[_tfIdToEnumMap[id]]
-                .SetInteger(ANIM_ACTION, Random.Range((int)ANIM_ACTION, (int)AnimationAction.Fly));
-            DOVirtual.DelayedCall(0.5f, () =>
+        
+            DOVirtual.DelayedCall(0.1f, () =>
             {
-                _animatorMap[_tfIdToEnumMap[id]].SetInteger(ANIM_NUM,0);
+             
+                _animatorMap[_tfIdToEnumMap[id]].SetInteger(ANIM_NUM,Random.Range((int)AnimationName.OutA,(int)AnimationName.OutC+1));
+                _animatorMap[_tfIdToEnumMap[id]]
+                    .SetInteger(ANIM_ACTION, Random.Range((int)ANIM_ACTION, (int)AnimationAction.Fly));
                // GetObject(_tfIdToEnumMap[id]).SetActive(false);
             });
-            DOVirtual.DelayedCall(1.0f, () =>
+            DOVirtual.DelayedCall(0.4f, () =>
             {
-                AppearSparrow(Random.Range(1,3));
+                _animatorMap[_tfIdToEnumMap[id]].SetInteger(ANIM_NUM,0);
+                DOVirtual.DelayedCall(0.7f, () =>
+                {
+                    AppearSparrow(1);
+                });
             });
             
             SparrowCountEvent?.Invoke(++_currentSparrowCount);
             
-            if(_currentSparrowCount > TargetSparrowCount)
+            if(_currentSparrowCount > SPARROW_CATCH_TARGET_COUNT)
             {
                 _currentSparrowCount = 0;
-                CurrentThemeMainSequence = (int)SequenceName.OnFinish;
+                CurrentThemeMainSequence = (int)MainSeq.OnFinish;
                 
-                DOVirtual.DelayedCall(2.5f, () =>
+                DOVirtual.DelayedCall(3.5f, () =>
                 {
                     for (int i = (int)Obj.SparrowA; i <= (int)Obj.SparrowE; i++)
                     {
