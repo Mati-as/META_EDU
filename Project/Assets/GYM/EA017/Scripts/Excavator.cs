@@ -82,7 +82,7 @@ public class Excavator : MonoBehaviour
                 });
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Excavator));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.5f);
 
                 seq.AppendCallback(() =>
                 {
@@ -95,7 +95,7 @@ public class Excavator : MonoBehaviour
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { excavatorAni.SetBool("Move", false); audioSource.Stop(); });
 
-                seq.AppendInterval(1.5f);
+                seq.AppendInterval(1f);
                 seq.AppendCallback(() => soil.SetActive(false));
                 seq.AppendCallback(() => { isDigging = false; audioTwiceIssue = false; });
             

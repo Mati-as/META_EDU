@@ -66,12 +66,12 @@ public class Truck : MonoBehaviour
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => truckAni.SetBool("Move", false));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.3f);
 
                 seq.AppendCallback(() => soil.SetActive(true));
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Truck));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.3f);
 
                 seq.AppendCallback(() =>
                 {

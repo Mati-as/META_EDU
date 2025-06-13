@@ -146,14 +146,6 @@ public class SoilCount : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.HeavyMachinerySound);
             DOVirtual.DelayedCall(3.75f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
 
-            manager.Btns_TruckIntro.SetActive(true);
-            manager.Btns_TruckIntro.transform.DOScale(1f, 0.4f)
-                .From(0.01f)
-                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
-                .OnComplete(() =>
-                {
-                    manager.Btns_TruckIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
-                });
             
         });
         seq.AppendInterval(1f);
@@ -172,7 +164,17 @@ public class SoilCount : MonoBehaviour
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
         {
+
+            manager.Btns_TruckIntro.SetActive(true);
+            manager.Btns_TruckIntro.transform.DOScale(1f, 0.4f)
+                .From(0.01f)
+                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
+                .OnComplete(() =>
+                {
+                    manager.Btns_TruckIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+                });
             Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 트럭을 움직여보세요!", "24_버튼을_눌러_트럭을_움직여보세요_", 20f));
+            manager.canNextBtnClick = true;
         });
     }
 
@@ -207,15 +209,6 @@ public class SoilCount : MonoBehaviour
             DOVirtual.DelayedCall(3.2f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
 
 
-            manager.Btns_BulldozerIntro.SetActive(true);
-            manager.Btns_BulldozerIntro.transform.DOScale(1f, 0.4f)
-                .From(0.01f)
-                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
-                .OnComplete(() =>
-                {
-                    manager.Btns_BulldozerIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
-                });
-
         });
         seq.AppendInterval(0.1f);
         seq.AppendCallback(() =>
@@ -233,7 +226,17 @@ public class SoilCount : MonoBehaviour
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
         {
+            manager.Btns_BulldozerIntro.SetActive(true);
+            manager.Btns_BulldozerIntro.transform.DOScale(1f, 0.4f)
+                .From(0.01f)
+                .SetEase(Ease.Flash) // 팡! 튀어나오는 느낌
+                .OnComplete(() =>
+                {
+                    manager.Btns_BulldozerIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+                });
             Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 불도저를 움직여보세요!", "25_버튼을_눌러_불도저를_움직여보세요_", 20f));
+
+            manager.canNextBtnClick = true;
         });
 
 

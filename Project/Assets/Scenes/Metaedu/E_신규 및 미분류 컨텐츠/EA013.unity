@@ -28810,6 +28810,14 @@ MonoBehaviour:
   stageLeftTimeValue: 60
   leftFloor: {fileID: 0}
   rightFloor: {fileID: 0}
+  targetImage: {fileID: 882191876}
+  sprites:
+  - {fileID: 21300000, guid: 3948e97c06bdc8047814c2b15e91f078, type: 3}
+  - {fileID: 21300000, guid: e4f2f645e2cfdbd469620aacf7fe319a, type: 3}
+  - {fileID: 21300000, guid: 69cb3877acc796a43a64c5a37d6cb7c5, type: 3}
+  - {fileID: 21300000, guid: ae497a2d91ed3c040bb5bd31535a31a8, type: 3}
+  - {fileID: 21300000, guid: 09f8f4885a5f5a542af81cdd26af0fec, type: 3}
+  startTime: 60
 --- !u!4 &653398419
 Transform:
   m_ObjectHideFlags: 0
@@ -28846,11 +28854,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!1 &678480028
 GameObject:
   m_ObjectHideFlags: 0
@@ -39864,6 +39873,82 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 868236452}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &882191874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 882191875}
+  - component: {fileID: 882191877}
+  - component: {fileID: 882191876}
+  m_Layer: 8
+  m_Name: GameStartUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &882191875
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882191874}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1375233085}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 944.84, y: 544.84}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &882191876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882191874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 09f8f4885a5f5a542af81cdd26af0fec, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &882191877
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882191874}
+  m_CullTransparentMesh: 1
 --- !u!1001 &883263003
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48401,11 +48486,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!1 &1481865795 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4862367516440976706, guid: 077a924bb6ce07844886301393ec0e9e,
@@ -53334,11 +53420,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!1 &1606655306
 GameObject:
   m_ObjectHideFlags: 0
@@ -53374,7 +53461,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 251}
+  m_AnchoredPosition: {x: 0, y: 217}
   m_SizeDelta: {x: 629.13, y: 477.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1606655308
@@ -53390,7 +53477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.118725546, g: 0.8679245, b: 0.70820934, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -53398,8 +53485,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: f3ced94854960d54fb12ffe4f317ba83, type: 3}
-    m_FontSize: 130
+    m_Font: {fileID: 12800000, guid: d14e5b0bfcd2aca4a88ae1c1178ab94e, type: 3}
+    m_FontSize: 140
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -58969,11 +59056,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!224 &1738003606 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1577924701997619730, guid: ba9f03e89a7df964b97ad3692b9150fc,
@@ -60484,11 +60572,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!1001 &1891254001
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66731,11 +66820,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b5cf32b1740841b157719522638d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   totalStepstoScale: 50
+  OriginalScale: {x: 2.7, y: 2, z: 1.8}
+  targetScale: {x: 14.45, y: 8.27, z: 10.96}
   originalMaterial: {fileID: 0}
   shineMaterial: {fileID: 0}
-  canColorClicked: 1
+  scaleDuration: 0.1
 --- !u!4 &2085826330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6289510956898360910, guid: 770e27fb59af82d4e962567943f83539,
