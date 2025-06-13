@@ -1,20 +1,21 @@
 using DG.Tweening;
 
-public class EA010_UIManager : UI_Base
+public class EA010_UIManager : Base_UIManager
 {
 
     public enum TMP
     {
-        MessageBox
+       // MessageBox
     }
 
     public override bool InitEssentialUI()
     {
-        BindTMP(typeof(TMP));
-
-        EA010_AutumnalFruits_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
-        EA010_AutumnalFruits_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
-        GetTMP((int)TMP.MessageBox).text = string.Empty;
+     //   BindTMP(typeof(TMP));
+     EA010_AutumnalFruits_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
+     EA010_AutumnalFruits_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
+        base.InitEssentialUI();
+    
+       // GetTMP((int)TMP.MessageBox).text = string.Empty;
         return true;
     }
 
@@ -26,36 +27,47 @@ public class EA010_UIManager : UI_Base
         switch (message)
         {
             case nameof(EA010_AutumnalFruits_GameManager.SeqName.Default):
-                GetTMP((int)TMP.MessageBox).text = string.Empty;
+               // PopFromZeroInstructionUI( "string.Empty;)
                 break;
             
-             case "Q" : GetTMP((int)TMP.MessageBox).text ="어떤 열매 일까요?";
+             case "Q" :
+                 PopFromZeroInstructionUI("어떤 열매 일까요?");
                  break;
              
             case nameof(EA010_AutumnalFruits_GameManager.MessageSequence.Intro):
-                GetTMP((int)TMP.MessageBox).text = "가을에는 주렁주렁열매가 매달려요\n어떤 열매가 있을까요?";
+                PopFromZeroInstructionUI( "가을에는 주렁주렁열매가 매달려요)\n어떤 열매가 있을까요?");
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Chestnut):
-                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "밤"; });
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    PopFromZeroInstructionUI("밤");});
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Acorn):
-                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "도토리"; });
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    PopFromZeroInstructionUI("도토리"); });
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Apple):
-                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "사과"; });
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    PopFromZeroInstructionUI("사과"); });
                 break;
             
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Ginkgo):
-                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "은행"; });
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    PopFromZeroInstructionUI("은행"); });
           
                 break;
 
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Persimmon):
 
-                DOVirtual.DelayedCall(1f, () => { GetTMP((int)TMP.MessageBox).text = "감"; });
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    PopFromZeroInstructionUI("감"); });
                 
                 break;
         }

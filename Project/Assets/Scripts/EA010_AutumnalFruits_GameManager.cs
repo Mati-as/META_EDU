@@ -246,7 +246,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                 case SeqName.OnTreeScene_E:
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
-                        SeqMessageEvent?.Invoke("OnTreeScenfe_A");
+                        SeqMessageEvent?.Invoke("OnTreeScene_A");
                         _isFruitOnTreeAlreadyClicked = false;
                     });
                     break;
@@ -627,7 +627,7 @@ private void OnRaysyncOnPuzzeGame()
             {
                 DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Chestnut));
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Chestnut));});
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/" + nameof(Fruits.Chestnut));});
                 currentCountFruitsDropped++;
                 
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
@@ -645,7 +645,7 @@ private void OnRaysyncOnPuzzeGame()
             {
                 DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Acorn));
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Acorn));});
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/" + nameof(Fruits.Acorn));});
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
@@ -661,7 +661,7 @@ private void OnRaysyncOnPuzzeGame()
             {
                 DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Apple));
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Apple));});
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/" + nameof(Fruits.Apple));});
 
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
@@ -678,7 +678,7 @@ private void OnRaysyncOnPuzzeGame()
             {
                 DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Ginkgo));
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Ginkgo));});
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/" + nameof(Fruits.Ginkgo));});
 
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
@@ -695,7 +695,7 @@ private void OnRaysyncOnPuzzeGame()
             {
                 DropFruitOnTrees(clickedFruitID);
                 SeqMessageEvent?.Invoke(nameof(Fruits.Persimmon));
-                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Persimmon));});
+                DOVirtual.DelayedCall(NarrDealy,()=>{Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/" + nameof(Fruits.Persimmon));});
 
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
