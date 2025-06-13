@@ -361,42 +361,11 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
 
     private IEnumerator ShowUserInfoCo()
     {
-       // if (!_uiGameObjects[(int)UI_Type.Tutorial].activeSelf && _isAnimating) yield break;
-
+    
 
         yield return _waitInterval;
         currentUserChracterImage.sprite = _gm._characterImageMap[_gm.currentImageChar];
 
-        // yield return _uiRectTransforms[(int)UI_Type.Tutorial]
-        //     .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.8f)
-        //     .SetEase(Ease.InOutSine)
-        //     .WaitForCompletion();
-
-        //
-        // _uiGameObjects[(int)UI_Type.Tutorial].SetActive(false);
-        // _btnRects[(int)UI_Button.Btn_ShowUserInfo].gameObject.SetActive(false);
-
-
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo].anchoredPosition =
-        //     _defaultanchorPosArray[(int)UI_Type.CurrentUserNameInfo];
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo].localScale = Vector3.zero;
-        // _uiGameObjects[(int)UI_Type.CurrentUserNameInfo].SetActive(true);
-        //
-        // DOVirtual.Float(0, 1, 0.5f,
-        //     value => { _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo].localScale = Vector3.one * value; });
-        //
-        // _TMP_introUserName.text = _gm.currentUserName;
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo].anchoredPosition =
-        //     _uiRectTransforms[(int)UI_Type.UIHidePosition].position;
-        //
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
-        //     .DOAnchorPos(_defaultanchorPosArray[(int)UI_Type.CurrentUserNameInfo], 0.8f).SetEase(Ease.InOutSine);
-
-        // _uiBtns[(int)UI_Button.Btn_StartOnUserInfo].gameObject.SetActive(true);
-        // _btnRects[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.zero;
-        // DOVirtual.Float(0, 1, 0.45f,
-        //         scale => { _btnRects[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.one * scale; })
-        //     .SetDelay(1.35f);
 
         _isAnimating = false;
     }
@@ -405,17 +374,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
     private void OnStartButtonClicked()
     {
         if (!_isBtnClickable || _isAnimating) return;
-
-
-        // _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();
-        //
-        // if (_screenDim == null)
-        //     Debug.LogError("screenDim is Null");
-        // else
-        //     _screenDim.DOFade(0, 0.55f);
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
-        //     .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.5f)
-        //     .SetEase(Ease.InOutSine);
+        
     }
 
     private void InitializeRankingElements()
@@ -428,25 +387,6 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         _TMP_usersOnRankScores = new TextMeshProUGUI[USER_ON_RANKING_COUNT];
         _usersOnRankingIconSpriteImages = new Image[USER_ON_RANKING_COUNT];
 
-      //   //var usersOnRankingObj = _uiGameObjects[(int)UI_Type.OnRankingUsers];
-      //   _usersOnRankingRects = new RectTransform[USER_ON_RANKING_COUNT];
-      //   for (var i = 0; i < USER_ON_RANKING_COUNT; i++)
-      //   {
-      //       var userTransform = usersOnRankingObj.transform.GetChild(i);
-      //       _usersOnRankingRects[i] = userTransform.GetComponent<RectTransform>();
-      //       _usersOnRankingIconSpriteImages[i] = userTransform.Find("CharacterFrame").GetChild(0).GetComponent<Image>();
-      //       _TMP_usersOnRankNames[i] = userTransform.Find("Text_UserName")?.GetComponent<TextMeshProUGUI>();
-      //       _TMP_usersOnRankScores[i] = userTransform.Find("Text_Score_Value")?.GetComponent<TextMeshProUGUI>();
-      //   }
-      //
-      // //  var currentUser = _uiGameObjects[(int)UI_Type.CurrentUser];
-      //   var currentUserTransform = currentUser.transform;
-      //   _TMP_currentUser = new TextMeshProUGUI[(int)RankUserInfo.Max];
-      //   _TMP_currentUser[(int)RankUserInfo.Name] = currentUserTransform.GetChild(1).GetComponent<TextMeshProUGUI>();
-      //   _TMP_currentUser[(int)RankUserInfo.ScoreFishCaughtCount] =
-      //       currentUserTransform.GetChild(2).GetComponent<TextMeshProUGUI>();
-      //   _TMP_currentUser[(int)RankUserInfo.ScoreRemainTime] =
-      //       currentUserTransform.GetChild(3).GetComponent<TextMeshProUGUI>();
     }
 
     private void OnDestroy()
@@ -623,50 +563,6 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
        // StartCoroutine(ShowModeSelectionModeCo());
     }
 
-    // private IEnumerator ShowModeSelectionModeCo()
-    // {
-    //     _isBtnClickable = false;
-    //     OnModeSelectionUIAppear?.Invoke();
-    //     
-    //     DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() => { _isBtnClickable = true; });
-    //
-    //     _uiRectTransforms[(int)UI_Type.ModeSelection].anchoredPosition =
-    //         _defaultanchorPosArray[(int)UI_Type.ModeSelection];
-    //     _uiGameObjects[(int)UI_Type.ModeSelection].SetActive(true);
-    //     _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.zero;
-    //
-    //     yield return DOVirtual.Float(0, 1, ANIM_DURATION_START_AND_READY_STOP,
-    //             scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; })
-    //         .SetDelay(0.5f);
-    // }
-    //
-    // private void OnSinglePlayBtnClicked()
-    // {
-    //     if (!_isBtnClickable) return;
-    //     _isBtnClickable = false;
-    //
-    //     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
-    //
-    //     DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
-    //         scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
-    //
-    //     _gm.currentMode = (int)OriginalHardVer_FishOnWaterBaseGameManager.PlayMode.SinglePlay;
-    //     ShowTutorial();
-    // }
-
-    // private void OnMultiPlayBtnClicked()
-    // {
-    //     if (!_isBtnClickable) return;
-    //     _isBtnClickable = false;
-    //     Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
-    //
-    //
-    //     _gm.currentMode = (int)OriginalHardVer_FishOnWaterBaseGameManager.PlayMode.MultiPlay;
-    //
-    //     DOVirtual.Float(1, 0, ANIM_DURATION_START_AND_READY_STOP,
-    //         scale => { _uiRectTransforms[(int)UI_Type.ModeSelection].localScale = Vector3.one * scale; });
-    //     ShowTutorial();
-    // }
 
     private void ShowStartUI()
     {
@@ -813,42 +709,7 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         seq.SetDelay(0.3f);
     }
 
-    // private IEnumerator ShowRankingPanelCo()
-    // {
-    //     // //btn
-    //     // _isAnimating = true;
-    //     // _isBtnClickable = false;
-    //     // DOVirtual.Float(0, 0, 2.5f, _ => { }).OnComplete(() => { _isBtnClickable = true; });
-    //     // //delay
-    //     // yield return DOVirtual.Float(0, 0, 1.5f, _ => { }).WaitForCompletion();
-    //     //
-    //     // if (_waitInterval == null) _waitInterval = new WaitForSeconds(0.3f);
-    //     //
-    //     // _fishCountTMP.enabled = false;
-    //     // _timerTMP.enabled = false;
-    //     //
-    //     // LoadRankingInfo();
-    //     // yield return _waitInterval;
-    //     //
-    //     // _uiGameObjects[(int)UI_Type.RankingParent].SetActive(true);
-    //     // _uiGameObjects[(int)UI_Type.CurrentUser].SetActive(true);
-    //     // _uiGameObjects[(int)UI_Type.OnRankingUsers].SetActive(true);
-    //     //
-    //     // _uiBtns[(int)UI_Button.Btn_Restart].transform.gameObject.SetActive(true);
-    //     // yield return
-    //     //     DOVirtual.Float(0, 1, 0.45f, scale
-    //     //         =>
-    //     //     {
-    //     //         _uiRectTransforms[(int)UI_Type.RankingParent].localScale = Vector3.one * scale;
-    //     //     });
-    //     //
-    //     // yield return DOVirtual.Float(0, 0, RESTART_CLIICKABLE_DELAY, _ => { }).WaitForCompletion();
-    //     // _isRestartBtnClickable = true;
-    //     //
-    //     // DOVirtual.Float(0, 0, 2.5f, _ => { _isBtnClickable = true; });
-    //     //
-    //     // _isAnimating = false;
-    // }
+  
 
     private void ShowRankingPanel()
     {
@@ -919,16 +780,6 @@ public class EasyVer_FishOnWaterUIManager : UI_PopUp
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/UI_Message_Button", 0.3f);
         OnRestartBtnClicked?.Invoke();
 
-        // _screenDim = _uiGameObjects[(int)UI_Type.ScreenDim].GetComponent<Image>();
-        // _screenDim?.DOFade(0, 0.55f);
-        // _uiRectTransforms[(int)UI_Type.CurrentUserNameInfo]
-        //     .DOAnchorPos(_uiRectTransforms[(int)UI_Type.UIHidePosition].anchoredPosition, 0.5f)
-        //     .SetEase(Ease.InOutSine);
-        // DOVirtual.Float(1, 0, 0.35f, scale
-        //     =>
-        // {
-        //     _btnRects[(int)UI_Button.Btn_StartOnUserInfo].localScale = Vector3.one * scale;
-        // }).OnComplete(() => { _isAnimating = false; });
     }
 
 

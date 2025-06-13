@@ -529,7 +529,10 @@ public class EA012_GameManager : Ex_BaseGameManager
                 if (isAllSeatClicked)
                 {
                     Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
+
+                    DeactivateSeats();
                     
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Common/OnAllSeatSelected");
                     Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
 
                     DOVirtual.DelayedCall(4, () =>
@@ -768,6 +771,30 @@ public class EA012_GameManager : Ex_BaseGameManager
         _sequenceMap[(int)seat].Play();
     }
 
+    private void DeactivateSeats()
+    {
+        for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
+        {
+            _sequenceMap[i]?.Kill();
+        
+        
+        }
+
+
+        TweenCallback _scaleCallback = () =>
+        {
+            for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
+            {
+                var SeatTransform = GetObject(i).transform;
+                _sequenceMap[i] = DOTween.Sequence();
+                _sequenceMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
+            }
+        };
+
+        DOVirtual.DelayedCall(1f, _scaleCallback);
+
+    }
+
     private CarAnimSeq currentCarAnimSeq;
     public bool isLastCar
     {
@@ -829,27 +856,34 @@ public class EA012_GameManager : Ex_BaseGameManager
                         case CarAnimSeq.Ambulance_Leave :
                              Messenger.Default.Publish(new EA012Payload("Arrival","구급차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_Ambulance");
+                            
                             break;
                         
                         case CarAnimSeq.PoliceCar_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","경찰차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/PoliceCar_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_PoliceCar");
+                             
                             break;
                         
                         case CarAnimSeq.FireTruck_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","소방차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/FireTruck_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_FireTruck");
                              break;
                       
                         case CarAnimSeq.Taxi_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","택시"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Taxi_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Taxi_Honk");
                              break;
                         
                         case CarAnimSeq.Bus_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","버스"));
                              isLastCar = true;
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Bus_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Bus_Honk");
                              break;
                     }
 
@@ -924,6 +958,11 @@ private void OnHelpBtnClicked(GameObj clickedBtn, GameObj currentCar)
 
     _sequenceMap[(int)clickedBtn]?.Kill();
     _sequenceMap[(int)clickedBtn] = DOTween.Sequence();
+
+    DOVirtual.DelayedCall(1f, () =>
+    {
+        GetObject((int)clickedBtn).transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InOutElastic);
+    });
     AnimateSeatLoopSelectively(clickedBtn + 1);
 
 
