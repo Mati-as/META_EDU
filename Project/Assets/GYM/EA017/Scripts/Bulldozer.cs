@@ -72,7 +72,7 @@ public class Bulldozer : MonoBehaviour
                 seq.AppendCallback(() => bulldozerAnimator.SetBool("Work", false));
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Bulldozer));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.5f);
 
                 seq.AppendCallback(() =>
                 {
@@ -83,7 +83,7 @@ public class Bulldozer : MonoBehaviour
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { bulldozerAnimator.SetBool("Move", false); audioSource.Stop(); });
 
-                seq.AppendInterval(1.5f);
+                seq.AppendInterval(1f);
                 seq.AppendCallback(() => { isWork = false; audioTwiceIssue = false; });
 
             }

@@ -1,28 +1,33 @@
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShowColorBox : MonoBehaviour
 {
-    public ColorTogether_Manager manager;
-
-    public float totalStepstoScale;
-
-    private Vector3 OriginalScale = new Vector3(2.7f, 2, 1.8f);
-    private Vector3 targetScale = new Vector3(14.45f, 8.27F, 10.96f);
-
+    public float totalStepstoScale = 10f;
     private Vector3 step;
+
+    public Vector3 OriginalScale = new Vector3(2.7f, 2f, 1.8f);
+    public Vector3 targetScale = new Vector3(14.45f, 8.27f, 10.96f);
 
     public Material originalMaterial;
     public Material shineMaterial;
 
     private Renderer _renderer;
+    private Vector3 _baseScale;
+    private int _clickCount;
+    private Coroutine _scaleRoutine;
 
-    public bool canColorClicked = true;
+    [SerializeField] private float scaleDuration = 0.1f;
 
-    void Start()
+    private ColorTogether_Manager manager;
+
+    void Awake()
     {
-        step = (targetScale - OriginalScale) / totalStepstoScale; //클릭 한번에 커질 정도
+        _baseScale = OriginalScale;
+        transform.localScale = _baseScale;
+
+        step = (targetScale - OriginalScale) / totalStepstoScale;
 
         _renderer = GetComponent<Renderer>();
         originalMaterial = Resources.Load<Material>("Material/ColorTogether/Color");
@@ -36,45 +41,58 @@ public class ShowColorBox : MonoBehaviour
         Reset();
     }
 
-
     public void ColorClicked()
     {
-        if (manager.leftTeamScore >= 50 || manager.rightTeamScore >= 50 || !canColorClicked)
-            return;
-        canColorClicked = false;
-        Transform originalTransform = transform;
-        Vector3 bigScale = transform.localScale + step;
+        _clickCount++;
 
-        //_renderer.material = shineMaterial;
-        // DOVirtual.DelayedCall(0.3f, () => _renderer.material = originalMaterial);
+        if (_scaleRoutine != null)
+            StopCoroutine(_scaleRoutine);
 
-        var seq = DOTween.Sequence();
-        seq.AppendCallback(() => Flash());
-        seq.Append(transform.DOShakePosition(0.1f, 1.5f)).OnComplete(() => transform.position = originalTransform.position);
-        seq.Append(transform.DOScale(bigScale, 0.1f).SetEase(Ease.OutCubic).OnComplete(() =>
-            {
-                if (manager.leftTeamScore >= 50 || manager.rightTeamScore >= 50)
-                {
-                    manager.OnBoxWin(this);
-                }
-            }));
-        seq.AppendInterval(0.15f);
-        seq.AppendCallback(() => canColorClicked = true);
-        //DoScale은 비동기 애니메이션이라서 DoScale이 작동이 끝나기전에 위if문이 실행되서 오류가 생길 수 있음
-        //그래서 OnComplete로 완료 된 후 실행 하도록 변경
+        Vector3 target = _baseScale + step * _clickCount;
+
+        _scaleRoutine = StartCoroutine(ScaleToTarget(target, scaleDuration));
+
+        Flash();
+        StartCoroutine(ShakePosition(0.1f, 1.5f));
 
     }
 
-    void Flash()
+    private IEnumerator ScaleToTarget(Vector3 target, float duration)
+    {
+        Vector3 start = transform.localScale;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            transform.localScale = Vector3.Lerp(start, target, t);
+            yield return null;
+        }
+        transform.localScale = target;
+    }
+
+    private IEnumerator ShakePosition(float duration, float magnitude)
+    {
+        Vector3 originalPos = transform.position;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            transform.position = originalPos + (Vector3)Random.insideUnitCircle * magnitude;
+            yield return null;
+        }
+        transform.position = originalPos;
+    }
+    private void Flash()
     {
         _renderer.material = shineMaterial;
         DOVirtual.DelayedCall(0.15f, () => _renderer.material = originalMaterial);
     }
 
-    void Reset()
+    private void Reset()
     {
-        this.transform.localScale = OriginalScale;
+        _clickCount = 0;
+        transform.localScale = _baseScale;
     }
-
 
 }

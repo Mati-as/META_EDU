@@ -151,6 +151,7 @@ public class GameStage : MonoBehaviour
             {
                 Messenger.Default.Publish(new NarrationMessage("친구들 네모 안에 모여요!", "audio_10_친구들_네모_안에_모여요_"));
                 MainSquare.SetActive(true);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/OnBallInPipe");
             })
             .Append(MainSquare.transform.DOScale(MainSquareScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
@@ -223,6 +224,7 @@ public class GameStage : MonoBehaviour
             {
                 Messenger.Default.Publish(new NarrationMessage("친구들 꽃 안에 모여요!", "audio_13_친구들_꽃_안에_모여요_"));
                 MainFlower.SetActive(true);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/OnBallInPipe");
             })
             .Append(MainFlower.transform.DOScale(MainFlowerScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
@@ -297,6 +299,7 @@ public class GameStage : MonoBehaviour
            {
                Messenger.Default.Publish(new NarrationMessage("친구들 별모양 안에 모여요!", "audio_31_친구들_별모양_안에_모여요_"));
                MainStar.SetActive(true);
+               Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/OnBallInPipe");
            })
             .Append(MainStar.transform.DOScale(MainStarScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
@@ -370,6 +373,7 @@ public class GameStage : MonoBehaviour
           {
               Messenger.Default.Publish(new NarrationMessage("친구들 동그라미 안에 모여요!", "audio_7_친구들_동그라미_안에_모여요_"));
               MainCircle.SetActive(true);
+              Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/OnBallInPipe");
           })
             .Append(MainCircle.transform.DOScale(MainCircleScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
             .AppendInterval(1f)
@@ -443,6 +447,7 @@ public class GameStage : MonoBehaviour
           {
               Messenger.Default.Publish(new NarrationMessage("친구들 세모 안에 모여요!", "audio_19_친구들_세모_안에_모여요_"));
               MainTriangle.SetActive(true);
+              Managers.Sound.Play(SoundManager.Sound.Effect, "VariousShape/Audio/OnBallInPipe");
           })
           .Append(MainTriangle.transform.DOScale(MainTriangleScale, 1f).From(0.01f).SetEase(Ease.InOutBack))
           .AppendInterval(1f)

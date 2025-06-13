@@ -20,9 +20,9 @@ public class ClickedFloor : MonoBehaviour
 
     public void OnClicked()
     {
-        if (linkedBox == null || !linkedBox.canColorClicked)
+        if (linkedBox == null)
             return;
-            
+
         linkedBox.ColorClicked();
         selectEffectSound = (char)Random.Range((int)'A', (int)'F' + 1);
         Managers.Sound.Play(SoundManager.Sound.Effect, $"ColorTogether/Click_{selectEffectSound}");

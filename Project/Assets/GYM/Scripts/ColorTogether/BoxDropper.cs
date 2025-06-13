@@ -18,7 +18,7 @@ public class BoxDropper : MonoBehaviour
 
     private DG.Tweening.Sequence sequence;
 
-    private bool onButtonClicked = false;
+    private bool onButtonClicked = true;
 
     private Vector2 strength = new Vector2(5, 5);
 
@@ -57,23 +57,26 @@ public class BoxDropper : MonoBehaviour
         manager.TakeTextImg("Image/ColorTogether/Img_" + (dropIndex + 2));
 
         dropIndex++;
+
+        DOVirtual.DelayedCall(2.3f, () => onButtonClicked = false);
     }
+
 
     public void NextDropBoxButton()
     {
-        
-        manager.ClickedSound();
-        rt.DOShakeAnchorPos(0.3f, strength, 6, 45);
-
         if (!onButtonClicked)
         {
+            manager.ClickedSound();
+            rt.DOShakeAnchorPos(0.3f, strength, 6, 45);
+
             onButtonClicked = true;
 
             if (dropIndex >= boxMeshes.Count) //박스 선택 종료 스테이지 이동 타이밍
             {
                 manager.narrationBG.transform.localScale = new Vector3(1f, 1, 1);
                 manager.narrationImgGameObject.SetActive(false);
-                manager.StartNarrationCoroutine();
+                manager.StartCoroutine(manager.PlayNarrationCoroutine());
+
                 foreach (var box in boxes)
                 {
                     box.SetActive(false);
@@ -128,7 +131,7 @@ public class BoxDropper : MonoBehaviour
 
             dropIndex++;
 
-            DOVirtual.DelayedCall(0.1f, () => onButtonClicked = false);
+            DOVirtual.DelayedCall(2.3f, () => onButtonClicked = false);
         }
     }
 }

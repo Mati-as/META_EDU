@@ -14,8 +14,8 @@ public enum LightColor
 
 public class TrafficLightController : MonoBehaviour
 {
-    [SerializeField] private float redDuration = 10f;
-    [SerializeField] private float greenDuration = 10f;
+    [SerializeField] private float redDuration = 20f;
+    [SerializeField] private float greenDuration = 20f;
 
 
     [SerializeField] private Text leftTime;                          //드래그앤드롭
@@ -23,6 +23,12 @@ public class TrafficLightController : MonoBehaviour
 
     private Color redTextColor = new Color32(209, 80, 61, 255);
     private Color greenTextColor = new Color32(50, 139, 89, 255);
+
+    [SerializeField] private Image leftTrafficSignal;                //드래그앤드롭
+    [SerializeField] private Image rightTrafficSignal;               //드래그앤드롭
+
+    private Sprite RedTrafficSignalImg;
+    private Sprite GreenTrafficSignalImg;
 
     public LightColor CurrentColor
     {
@@ -32,13 +38,33 @@ public class TrafficLightController : MonoBehaviour
 
     public Sequence lightSequence;
 
+    private void Awake()
+    {
+        RedTrafficSignalImg = Resources.Load<Sprite>("CrossRoad/Image/RedTrafficSignal");
+        GreenTrafficSignalImg = Resources.Load<Sprite>("CrossRoad/Image/GreenTrafficSignal");
+    }
+
+    public void EndGame()
+    {
+        lightSequence.Kill();
+    }
+
     public void ChangeTrafficLight()    //시간 바꾸는 로직 변경
     {
-        float gTime = greenDuration + 1f;
-        float rTime = redDuration + 1f;
+        float gTime = greenDuration;
+        float rTime = redDuration;
 
         lightSequence = DOTween.Sequence()
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("건너기 전에 주위를 살피고 건너요", "0_건너기_전에_주위를_살피고_건너요")))
+        .JoinCallback(() =>
+        {
+            leftTrafficSignal.sprite = GreenTrafficSignalImg;
+            rightTrafficSignal.sprite = GreenTrafficSignalImg;
+            leftTime.color = greenTextColor;
+            rightTime.color = greenTextColor;
+            leftTime.text = greenDuration.ToString();
+            rightTime.text = greenDuration.ToString();
+        })
         .AppendInterval(4f)
         .AppendCallback(() => ChangeTo(LightColor.Green))
         .AppendInterval(gTime)
@@ -47,22 +73,28 @@ public class TrafficLightController : MonoBehaviour
                 gTime, 0, gTime, v =>
                 {
                     int seconds = Mathf.FloorToInt(v);
-                    leftTime.color = greenTextColor;
-                    rightTime.color = greenTextColor;
+                    
                     leftTime.text = seconds.ToString();
                     rightTime.text = seconds.ToString();
                 }
             ).SetEase(Ease.Linear)
         )
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("빨간 불에는 건너지 않아요", "1_빨간_불에는_건너지_않아요_")))
+        .JoinCallback(() =>
+        {
+            leftTrafficSignal.sprite = RedTrafficSignalImg;
+            rightTrafficSignal.sprite = RedTrafficSignalImg;
+            leftTime.color = redTextColor;
+            rightTime.color = redTextColor;
+            leftTime.text = redDuration.ToString();
+            rightTime.text = redDuration.ToString();
+        })
         .AppendInterval(4f)
         .AppendCallback(() => ChangeTo(LightColor.Red))
         .AppendInterval(rTime)
         .Join(DOVirtual.Float(rTime, 0, rTime, v =>
                 {
                     int seconds = Mathf.FloorToInt(v);
-                    leftTime.color = redTextColor;
-                    rightTime.color = redTextColor;
                     leftTime.text = seconds.ToString();
                     rightTime.text = seconds.ToString();
                 }
