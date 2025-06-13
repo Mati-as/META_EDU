@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ButtonChange : MonoBehaviour, IPointerClickHandler ,IPointerEnterHandler, IPointerExitHandler
+public class ButtonChange : MonoBehaviour
 {
     [SerializeField] private Image buttonImage;
     [SerializeField] private Sprite blueSprite;
@@ -21,31 +21,20 @@ public class ButtonChange : MonoBehaviour, IPointerClickHandler ,IPointerEnterHa
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnClick()
     {
         transform.DOKill();
         transform.localScale = Vector3.one;
 
         Sequence clickSequence = DOTween.Sequence();
+        clickSequence.AppendCallback(() => buttonImage.sprite = yellowSprite);
         clickSequence.Append(transform.DOScale(0.9f, 0.05f));
         clickSequence.Append(transform.DOScale(1.1f, 0.05f));
         clickSequence.Append(transform.DOScale(1f, 0.05f));
+        clickSequence.AppendInterval(0.25f);
+        clickSequence.AppendCallback(() => buttonImage.sprite = blueSprite);
 
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (buttonImage != null)
-        {
-            buttonImage.sprite = yellowSprite;
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (buttonImage != null)
-        {
-            buttonImage.sprite = blueSprite;
-        }
-    }
+    
 }
