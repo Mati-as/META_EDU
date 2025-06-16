@@ -65,12 +65,23 @@ public class ColorTogether_Manager : Base_GameManager
 
     public RectTransform narrationBG;
 
+
+    public GameObject TimerObject;
     public Text stageLeftTime;
 
     public int stageLeftTimeValue = 60;
 
     public ClickedFloor leftFloor;
     public ClickedFloor rightFloor;
+
+    public GameObject leftBoxColor;
+    public GameObject rightBoxColor;
+
+    public Image leftBoxImage;
+    public Image rightBoxImage;
+
+    public List<Sprite> colorTextImg;
+
 
     protected override void Init()
     {
@@ -80,7 +91,7 @@ public class ColorTogether_Manager : Base_GameManager
         ManageProjectSettings(150, 0.15f);
 
         narrationImgGameObject.SetActive(false);
-        stageLeftTime.gameObject.SetActive(false);
+        TimerObject.gameObject.SetActive(false);
 
         leftFloor = GameObject.Find("LeftFloor").GetComponent<ClickedFloor>();
         rightFloor = GameObject.Find("RightFloor").GetComponent<ClickedFloor>();
@@ -113,7 +124,7 @@ public class ColorTogether_Manager : Base_GameManager
             );
         }
 
-
+        
         UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
 
@@ -215,7 +226,7 @@ public class ColorTogether_Manager : Base_GameManager
                     DOVirtual.DelayedCall(0.5F, () =>
                     {
                         stageLeftTimeValue = 60;
-                        stageLeftTime.gameObject.SetActive(false);
+                        TimerObject.gameObject.SetActive(false);
                     });
 
                     return;
@@ -227,7 +238,7 @@ public class ColorTogether_Manager : Base_GameManager
                     DOVirtual.DelayedCall(0.5F, () =>
                     {
                         stageLeftTimeValue = 60;
-                        stageLeftTime.gameObject.SetActive(false);
+                        TimerObject.gameObject.SetActive(false);
                     });
 
                     return;
@@ -253,6 +264,8 @@ public class ColorTogether_Manager : Base_GameManager
     {
         if (!isInStage) return;
 
+        leftBoxColor.SetActive(false);
+        rightBoxColor.SetActive(false);
         PauseCountdown();
         
         isInStage = false;
@@ -373,6 +386,25 @@ public class ColorTogether_Manager : Base_GameManager
         prefab2.SetActive(true);
         prefab2.transform.DOPunchScale(Vector3.one * 0.2f, 0.7f, 10, 1);
 
+        leftBoxColor.SetActive(true);
+        rightBoxColor.SetActive(true);
+
+        switch (selectedKey)
+        {
+            case 0:
+                leftBoxImage.sprite = colorTextImg[0];
+                rightBoxImage.sprite = colorTextImg[1];
+                break;
+            case 1:
+                leftBoxImage.sprite = colorTextImg[2];
+                rightBoxImage.sprite = colorTextImg[3];
+                break;
+            case 2:
+                leftBoxImage.sprite = colorTextImg[4];
+                rightBoxImage.sprite = colorTextImg[5];
+                break;
+        }
+
         prefab1.transform.position = spawnPoint1.position;
         prefab2.transform.position = spawnPoint2.position;
 
@@ -413,7 +445,7 @@ public class ColorTogether_Manager : Base_GameManager
             });
             DOVirtual.DelayedCall(11f, () => 
             {
-                stageLeftTime.gameObject.SetActive(true);
+                TimerObject.gameObject.SetActive(true);
                 StartCountdown();
                 isInStage = true;
             });
@@ -529,7 +561,7 @@ public class ColorTogether_Manager : Base_GameManager
         _countdownTween?.Kill();
 
         _currentTime = startTime;
-        stageLeftTime.gameObject.SetActive(true);
+        TimerObject.gameObject.SetActive(true);
 
         _countdownTween = DOVirtual.Float(
                 startTime,       
@@ -544,7 +576,7 @@ public class ColorTogether_Manager : Base_GameManager
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
-                stageLeftTime.gameObject.SetActive(false);
+                TimerObject.gameObject.SetActive(false);
                 OnTimerEnd();
             });
     }
@@ -558,7 +590,7 @@ public class ColorTogether_Manager : Base_GameManager
     public void StopCountdown()
     {
         _countdownTween?.Kill();
-        stageLeftTime.gameObject.SetActive(false);
+        TimerObject.gameObject.SetActive(false);
     }
 
     private void OnTimerEnd()

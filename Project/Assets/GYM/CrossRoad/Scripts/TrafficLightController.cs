@@ -30,6 +30,10 @@ public class TrafficLightController : MonoBehaviour
     private Sprite RedTrafficSignalImg;
     private Sprite GreenTrafficSignalImg;
 
+    [SerializeField] private Image GameOverBG;
+    [SerializeField] private GameObject greenGameOver;
+    [SerializeField] private GameObject redGameOver;
+
     public LightColor CurrentColor
     {
         get; private set;
@@ -64,8 +68,21 @@ public class TrafficLightController : MonoBehaviour
             rightTime.color = greenTextColor;
             leftTime.text = greenDuration.ToString();
             rightTime.text = greenDuration.ToString();
+            GameOverBG.DOFade(1, 1);
         })
-        .AppendInterval(4f)
+        .AppendInterval(1f)
+        .AppendCallback(() => 
+        { 
+            greenGameOver.SetActive(true);
+        })
+        .AppendInterval(1f)
+        .AppendCallback(() =>
+        {
+            GameOverBG.DOFade(0, 1);
+        })
+        .AppendInterval(1f)
+        .AppendCallback(() => greenGameOver.SetActive(false))
+        .AppendInterval(1f)
         .AppendCallback(() => ChangeTo(LightColor.Green))
         .AppendInterval(gTime)
         .Join(
@@ -87,9 +104,22 @@ public class TrafficLightController : MonoBehaviour
             leftTime.color = redTextColor;
             rightTime.color = redTextColor;
             leftTime.text = redDuration.ToString();
-            rightTime.text = redDuration.ToString();
+            rightTime.text = redDuration.ToString(); 
+            GameOverBG.DOFade(1, 1);
         })
-        .AppendInterval(4f)
+        .AppendInterval(1f)
+        .AppendCallback(() =>
+        {
+            redGameOver.SetActive(true);
+        })
+        .AppendInterval(1f)
+        .AppendCallback(() =>
+        {
+            GameOverBG.DOFade(0, 1);
+        })
+        .AppendInterval(1f)
+        .AppendCallback(() => redGameOver.SetActive(false))
+        .AppendInterval(1f)
         .AppendCallback(() => ChangeTo(LightColor.Red))
         .AppendInterval(rTime)
         .Join(DOVirtual.Float(rTime, 0, rTime, v =>

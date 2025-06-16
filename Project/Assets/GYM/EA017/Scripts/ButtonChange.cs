@@ -24,13 +24,13 @@ public class ButtonChange : MonoBehaviour
     public void OnClick()
     {
         transform.DOKill();
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.one * 1.3f;
 
         Sequence clickSequence = DOTween.Sequence();
         clickSequence.AppendCallback(() => buttonImage.sprite = yellowSprite);
-        clickSequence.Append(transform.DOScale(0.9f, 0.05f));
-        clickSequence.Append(transform.DOScale(1.1f, 0.05f));
-        clickSequence.Append(transform.DOScale(1f, 0.05f));
+        clickSequence.Append(transform.DOScale(1.2f, 0.05f));
+        clickSequence.Append(transform.DOScale(1.4f, 0.05f));
+        clickSequence.Append(transform.DOScale(1.3f, 0.05f));
         clickSequence.AppendInterval(0.25f);
         clickSequence.AppendCallback(() => buttonImage.sprite = blueSprite);
 

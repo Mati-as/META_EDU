@@ -53,17 +53,17 @@ public class Base_UIManager : UI_PopUp
         BindObject(typeof(UI));
         UI_Instruction = GetObject(((int)UI.InstructionUI));
         
-        UI_Ready = GetObject(((int)UI.UI_Ready)).  GetComponent<RectTransform>();
-        UI_Start = GetObject(((int)UI.UI_Start)).  GetComponent<RectTransform>();
-        UI_Stop =  GetObject(((int)UI.UI_Stop)).  GetComponent<RectTransform>();
+        //UI_Ready = GetObject(((int)UI.UI_Ready)).  GetComponent<RectTransform>();
+        //UI_Start = GetObject(((int)UI.UI_Start)).  GetComponent<RectTransform>();
+        //UI_Stop =  GetObject(((int)UI.UI_Stop)).  GetComponent<RectTransform>();
         
             // GetObject(((int)UI.UI_Ready)).    SetActive(false);
             // GetObject(((int)UI.UI_Start)).SetActive(false);
             // GetObject(((int)UI.UI_Stop)). SetActive(false);
             
-            UI_Ready.localScale = Vector3.zero;
-            UI_Start.localScale = Vector3.zero;
-            UI_Stop .localScale = Vector3.zero;
+            //UI_Ready.localScale = Vector3.zero;
+            //UI_Start.localScale = Vector3.zero;
+            //UI_Stop .localScale = Vector3.zero;
         
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
         _objects = new();

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Cinemachine;
-using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
