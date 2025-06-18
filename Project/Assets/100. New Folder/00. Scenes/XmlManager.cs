@@ -207,6 +207,7 @@ public class XmlManager
         public string Id;
         public bool IsActive;
         public string Category;
+        public string Month; // ← 추가
     }
 
     private static string menuSettingPath = Path.Combine(Application.streamingAssetsPath, "MenuSettingData.xml");

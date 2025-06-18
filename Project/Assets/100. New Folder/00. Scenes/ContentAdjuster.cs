@@ -3,9 +3,60 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class ContentAdjuster : MonoBehaviour
 {
+    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
+    {
+        { "BB002", "사방치기 놀이" },
+        { "BB003", "알록달록 손발을 뒤집어요" },
+        { "BB006", "고래와 공놀이를 해요" },
+        { "BB008", "물고기를 잡아요" },
+        { "BB009", "우주의 행성이 움직여요" },
+        { "EA006", "허수아비 아저씨" },
+        { "EA009", "몸에 좋은 음식을 찾아요" },
+        { "BA001", "송하맹호도 색칠해요" },
+        { "BD001", "무지개 건반을 연주해요" },
+        { "BD002", "바다에서 연주해요" },
+        { "BD004", "악기 연주를 해요" },
+        { "BD003", "비즈드럼" },
+        { "BC001", "가을낙엽" },
+        { "AA004", "밤하늘이 반짝여요" },
+        { "AA005", "코스모스가 움직여요" },
+        { "AA006", "뒤뚱뒤뚱 펭귄이 와요" },
+        { "EA002", "동물을 찾아봐요" },
+        { "EA010", "가을열매 맞추기" },
+        { "EA014", "같은 모양을 찾아요" },
+        { "EA015", "가을 낙엽 [3세]" },
+        { "EA016", "고래와 공놀이를 해요 [3세]" },
+        { "EA021", "해변 (미디어 아트)" },
+        { "EA028", "다양한 모양을 찾아요" },
+        { "EA029", "자동차를 주차해요" },
+        { "EA024", "무지개 (미디어 아트)" },
+        { "EA019", "풍선을 날려요" },
+        { "BB004", "손발을 뒤집어요" },
+        { "EA004", "다양한 표정을 알아봐요" },
+        { "EA008", "거품목욕놀이" },
+        { "BA005", "샌드위치를 만들어요" },
+        { "EA003", "과일과 야채담기" },
+        { "EA003_E", "과일과 야채담기(영문)" },
+        { "EA025", "북극 (미디어 아트)" },
+        { "EA026", "공룡 (미디어 아트)" },
+        { "EA029", "자동차를 주차해요" },
+        { "EA018", "자동차를 꾸며요" },
+        { "EA017", "일하는 자동차가 있어요" },
+        { "EA012", "어떤 자동차 일까요?" },
+        { "EA021", "(미디어 아트) 해변" },     // 중복 가능, 다시 명시해도 문제 없음
+        { "EA020", "(교통) 횡단보도를 안전하게 건너요" },
+        { "EA010", "가을 열매를 찾아요" },
+        { "EA006", "허수아비 아저씨를 도와줘요" },
+        { "EA022", "(미디어 아트) 코스모스" },
+        { "EA023", "(미디어 아트) 숲속" },
+        { "EA031", "(재난) 불이 나면 비상구로 대피해요" },
+        { "EA030", "가을 곤충은 어디 있을까요?" }
+    };
+
     //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작
     public enum ModeType
     {
@@ -15,7 +66,19 @@ public class ContentAdjuster : MonoBehaviour
         예술경험,
         자연탐구,
         의사소통,
-        사회관계
+        사회관계,
+        주제별1월,
+        주제별2월,
+        주제별3월,
+        주제별4월,
+        주제별5월,
+        주제별6월,
+        주제별7월,
+        주제별8월,
+        주제별9월,
+        주제별10월,
+        주제별11월,
+        주제별12월
     }
     public enum ContentCategory
     {
@@ -41,8 +104,8 @@ public class ContentAdjuster : MonoBehaviour
     {
         ApplyContentAdjustments();
     }
-    //[주제별]
 
+    //[주제별]
     public void ApplyContentAdjustments()
     {
         string[] keysToCheck = new string[6];
@@ -78,6 +141,54 @@ public class ContentAdjuster : MonoBehaviour
                 FilterAndPaginateContent(ContentCategory.Communication);
                 InitPageNavigation();
                 return;
+            case ModeType.주제별1월:
+                FilterAndPaginateContentByMonth("Jan");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별2월:
+                FilterAndPaginateContentByMonth("Feb");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별3월:
+                FilterAndPaginateContentByMonth("Mar");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별4월:
+                FilterAndPaginateContentByMonth("Apr");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별5월:
+                FilterAndPaginateContentByMonth("May");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별6월:
+                FilterAndPaginateContentByMonth("Jun");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별7월:
+                FilterAndPaginateContentByMonth("Jul");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별8월:
+                FilterAndPaginateContentByMonth("Aug");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별9월:
+                FilterAndPaginateContentByMonth("Sep");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별10월:
+                FilterAndPaginateContentByMonth("Oct");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별11월:
+                FilterAndPaginateContentByMonth("Nov");
+                InitPageNavigation();
+                return;
+            case ModeType.주제별12월:
+                FilterAndPaginateContentByMonth("Dec");
+                InitPageNavigation();
+                return;
         }
 
 
@@ -106,7 +217,7 @@ public class ContentAdjuster : MonoBehaviour
     public Button prevButton;
     public Button nextButton;
 
-    public GameObject pageNavi;
+    public GameObject pageNavi; //(중요) 3페이지 이상일 경우 하위 오브젝트 추가 필요
 
     private int currentPageIndex = 0;
     private int currentPageSlot = 0; // 0 = A, 1 = B
@@ -121,7 +232,6 @@ public class ContentAdjuster : MonoBehaviour
     private bool isSliding = false;
 
 
-    [ContextMenu("1️⃣ 자연탐구 콘텐츠 페이지화")]
     public void InitPageNavigation()
     {
         pageAButtons = new GameObject[8];
@@ -159,6 +269,8 @@ public class ContentAdjuster : MonoBehaviour
 
         prevButton.onClick.AddListener(() => SwitchPage(false));
         nextButton.onClick.AddListener(() => SwitchPage(true));
+
+        UpdateNavigationControls();
     }
 
     void UpdateNavigationIndicator(int activePageIndex)
@@ -170,6 +282,23 @@ public class ContentAdjuster : MonoBehaviour
 
             if (onIndicator != null)
                 onIndicator.gameObject.SetActive(i == activePageIndex);
+        }
+    }
+    private void UpdateNavigationControls()
+    {
+        int pageCount = pagedSceneData.Count;
+
+        // 페이지 수가 1개 미만이면 모두 숨김
+        bool enableNav = pageCount > 1;
+
+        prevButton.interactable = enableNav && currentPageIndex > 0;
+        nextButton.interactable = enableNav && currentPageIndex < pageCount - 1;
+
+        if (pageNavi != null)
+        {
+            pageNavi.gameObject.SetActive(enableNav);
+            prevButton.gameObject.SetActive(enableNav);
+            nextButton.gameObject.SetActive(enableNav);
         }
     }
 
@@ -230,6 +359,32 @@ public class ContentAdjuster : MonoBehaviour
         Debug.Log($"{categoryKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지로 구성 완료");
     }
 
+    public void FilterAndPaginateContentByMonth(string monthKey)
+    {
+        var allScenes = XmlManager.Instance.SceneSettings.Values;
+
+        // XML에서 이 월이 활성화되어 있는지 확인
+        if (!XmlManager.Instance.MenuSettings.TryGetValue(monthKey, out bool isMonthEnabled) || !isMonthEnabled)
+        {
+            Debug.LogWarning($"[{monthKey}]은 MenuSettingData.xml에서 비활성화된 월입니다.");
+            pagedSceneData.Clear();
+            return;
+        }
+
+        // 월이 일치하고 활성화된 콘텐츠만 필터
+        var filtered = allScenes
+            .Where(x => x.Month == monthKey && x.IsActive)
+            .ToList();
+
+        pagedSceneData.Clear();
+        for (int i = 0; i < filtered.Count; i += 8)
+        {
+            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
+        }
+
+        Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
+    }
+
     void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
     {
         var buttonObjs = slotIndex == 0 ? pageAButtons : pageBButtons;
@@ -257,13 +412,18 @@ public class ContentAdjuster : MonoBehaviour
             }
 
             // 텍스트
-            //var textObj = buttonObj.transform.Find("Text");
-            //if (textObj != null)
-            //{
-            //    var text = textObj.GetComponent<Text>();
-            //    if (text != null)
-            //        text.text = data.Id;
-            //}
+            var textObj = buttonObj.transform.GetChild(2);
+            if (textObj != null)
+            {
+                var text = textObj.GetComponent<Text>();
+                if (text != null)
+                {
+                    if (sceneTitles.TryGetValue(data.Id, out string title))
+                        text.text = title;
+                    else
+                        text.text = data.Id; // fallback: ID 그대로 표시
+                }
+            }
 
             // 자물쇠
             var lockFrame = buttonObj.transform.Find("LockFrame");
@@ -271,17 +431,17 @@ public class ContentAdjuster : MonoBehaviour
                 lockFrame.gameObject.SetActive(!data.IsActive);
 
             // 버튼 이벤트
-            //var btn = buttonObj.GetComponent<Button>();
-            //if (btn != null)
-            //{
-            //    btn.interactable = data.IsActive;
-            //    btn.onClick.RemoveAllListeners();
-            //    if (data.IsActive)
-            //    {
-            //        string sceneId = data.Id;
-            //        btn.onClick.AddListener(() => SceneManager.LoadScene(sceneId));
-            //    }
-            //}
+            var btn = buttonObj.GetComponent<Button>();
+            if (btn != null)
+            {
+                btn.interactable = data.IsActive;
+                btn.onClick.RemoveAllListeners();
+                if (data.IsActive)
+                {
+                    string sceneId = data.Id;
+                    btn.onClick.AddListener(() => SceneManager.LoadScene(sceneId));
+                }
+            }
         }
     }
 }
