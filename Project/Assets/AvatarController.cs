@@ -18,6 +18,8 @@ public class AvatarController : Ex_MonoBehaviour
 
     private Dictionary<int, Animator> _controllerMap = new();
     private int CHARACTER_ANIM_NUM = Animator.StringToHash("AnimNum");
+    private static readonly int ToDefault = Animator.StringToHash("ToDefault");
+
     protected override void Init()
     {
         base.Init();
@@ -25,11 +27,15 @@ public class AvatarController : Ex_MonoBehaviour
         for(int i = 0 ;i < transform.childCount; i++)
         {
             _controllerMap.Add(i,transform.GetChild(i).GetComponent<Animator>());
+            SetDefault(i);
         }
+
+    
     }
 
     public void PlayAnimation(int animator,AnimClip animName)
     {
+        _controllerMap[animator].SetTrigger(ToDefault);
         _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
     }
 
