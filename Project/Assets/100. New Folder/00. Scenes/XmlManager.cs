@@ -207,6 +207,7 @@ public class XmlManager
         public string Id;
         public bool IsActive;
         public string Category;
+        public string Month;
     }
 
     private static string menuSettingPath = Path.Combine(Application.streamingAssetsPath, "MenuSettingData.xml");
@@ -252,13 +253,15 @@ public class XmlManager
         {
             string id = node.Attributes["id"].Value;
             bool value = bool.Parse(node.Attributes["value"].Value);
-            string category = node.Attributes["category"]?.Value ?? "Uncategorized";
+            string category = node.Attributes["category"]?.Value ?? "";
+            string month = node.Attributes["month"]?.Value ?? ""; // ✅ 추가
 
             SceneData data = new SceneData
             {
                 Id = id,
                 IsActive = value,
-                Category = category
+                Category = category,
+                Month = month
             };
 
             SceneSettings[id] = data;
