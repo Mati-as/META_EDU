@@ -49,9 +49,9 @@ public class UIManager_CommonBehaviorController : UI_PopUp
 
                 
         
-        GetObject(((int)UI.UI_Ready)).    SetActive(false);
-        GetObject(((int)UI.UI_Start)).SetActive(false);
-        GetObject(((int)UI.UI_Stop)). SetActive(false);
+        GetObject(((int)UI.UI_Ready)).transform.localScale =Vector3.zero;
+        GetObject(((int)UI.UI_Start)).transform.localScale =Vector3.zero;
+        GetObject(((int)UI.UI_Stop)). transform.localScale =Vector3.zero;
 
         
         GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;

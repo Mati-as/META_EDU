@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AvatarController : Ex_MonoBehaviour
 {
-    public enum AnimationName
+    public enum AnimClip
     {
         Idle,
         SitAndPoint,
@@ -28,7 +28,7 @@ public class AvatarController : Ex_MonoBehaviour
         }
     }
 
-    public void PlayAnimation(int animator,AnimationName animName)
+    public void PlayAnimation(int animator,AnimClip animName)
     {
         _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
     }
@@ -40,6 +40,6 @@ public class AvatarController : Ex_MonoBehaviour
 
     public void SetDefault(int animator)
     {
-        _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int));
+        _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)AnimClip.Idle);
     }
 }

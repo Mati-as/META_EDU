@@ -54,7 +54,16 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
     private readonly Vector3 DEFAULT_SIZE =2.0f * Vector3.one; 
     private EA029_UIManager _uiManager;
     private int currentRoundCount =0;
+    
+    #if UNITY_EDITOR
+    [SerializeField]
+    [Range(1,10)]
+    private int MAX_ROUND_COUNT = 6;
+    #else
+
     private const int MAX_ROUND_COUNT = 6;
+    #endif
+  
 
     private enum CarAnim
     {
@@ -150,7 +159,8 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 
                 case (int)MainSeq.SeatSelectionA:
                     ScaleBackSeats();
-                    _uiManager.PopFromZeroInstructionUI("각자 자리에 서주세요!");
+                    _uiManager.PopFromZeroInstructionUI("각자 네모 모양에 서주세요!");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     AnimateAllSeats(Objs.Seats_TrackA);
                     
@@ -159,7 +169,8 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.SeatSelectionB:
              
-                    _uiManager.PopFromZeroInstructionUI("각자 자리에 서주세요!");
+                    _uiManager.PopFromZeroInstructionUI("각자 네모 모양에 서주세요!");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     ScaleBackSeats();
                     AnimateAllSeats(Objs.Seats_TrackB);
@@ -175,6 +186,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnFinish:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/EA029/Narration/ThankPark");
                     _uiManager.PopFromZeroInstructionUI("차를 전부 주차했어요!");
                     break;
             }
@@ -507,6 +519,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         {
             Logger.ContentTestLog("최대 라운드 수를 초과했습니다. ----------OnFinish");
             CurrentMainMainSeq = (int)MainSeq.OnFinish;
+            mainAnimator.SetTrigger(Finish);
             return true;
         }
         else
@@ -987,7 +1000,8 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
     private static readonly int OnFinish = Animator.StringToHash("OnFinish");
     private int _lastNarratedSecond = -1;
     private bool isCountNarPlayed  = false;
-    
+    private static readonly int Finish = Animator.StringToHash("Finish");
+
 
     private void Update()
     {

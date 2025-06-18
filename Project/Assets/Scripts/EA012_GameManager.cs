@@ -620,7 +620,7 @@ public class EA012_GameManager : Ex_BaseGameManager
            
             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/OnCarAppear");
           
-            DOVirtual.DelayedCall(0.5f,()=>
+            DOVirtual.DelayedCall(0.2f,()=>
             {
                 _isTireRemovalFinished = true;
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarArrival");

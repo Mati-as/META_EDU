@@ -66,6 +66,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     public static event Action<int> SeqMessageEvent;
     public static event Action<int> SparrowCountEvent;
+    private EA006_UIManager _uiManager;
 
     public int CurrentThemeMainSequence
     {
@@ -153,11 +154,13 @@ public class EA006_GameManager : Ex_BaseGameManager
         for (int i = (int)Obj.WheatGroup_A; i <= (int)Obj.WheatGroup_E; i++) colliderMap[i].enabled = isOn;
     }
 
+   
     protected override void Init()
     {
         psResourcePath = "Runtime/EA006/FX_leaves";
-        base.Init();
         BindObject(typeof(Obj));
+        base.Init();
+        _uiManager = UIManagerObj.GetComponent<EA006_UIManager>();
 
         _defaultMat = Resources.Load<Material>("Runtime/EA006/EA006_WheatA");
         _changedMat = Resources.Load<Material>("Runtime/EA006/EA006_WheatA_Changed");
@@ -470,7 +473,8 @@ public class EA006_GameManager : Ex_BaseGameManager
         if (_elapsedTime > TIME_LIMIT)
         {
             _elapsedTime = 0;
-
+          
+            
             _currentScarecrowCount = 0;
             DOVirtual.DelayedCall(1.5f, () =>
             {
@@ -482,7 +486,14 @@ public class EA006_GameManager : Ex_BaseGameManager
                     });
             });
             
-            CurrentThemeMainSequence = (int)MainSeq.SparrowAppear;
+            _uiManager.PopFromZeroInstructionUI("허수아비 아저씨를 다 찾았어요!");
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/SortedByScene/EA006/Narration/FoundAllScarecrow");
+
+            DOVirtual.DelayedCall(4f, () =>
+            {
+                CurrentThemeMainSequence = (int)MainSeq.SparrowAppear;
+            });
+          
         }
     }
 

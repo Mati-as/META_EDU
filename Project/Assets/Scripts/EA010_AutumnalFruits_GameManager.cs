@@ -60,12 +60,22 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         TreeC,
         TreeD,
         TreeE,
-        Max
+        Max,
+        basket,
     }
 
     private Dictionary<int, Collider> _colliders = new();
     private Dictionary<int, Transform> objMap =new();
+    private Dictionary<int, SpriteRenderer> _woodSpriteRendererMap = new();
+    private Color _defaultColor = Color.white;
+    [SerializeField, ColorUsage(true, true)]
+    private Color _targetColor;
+    
 
+    private EA010_UIManager _uiManager;
+
+    private Transform _basket;
+    
     private const int FALL_IMAGE_COUNT = 5;
     private SpriteRenderer spriteRenderer;
 
@@ -96,6 +106,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
             if (value == (int)Fruits.Chestnut)
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/ChestnutDescription");
+                
                 DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length,
                     () => { Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/WhatFruit"); });
                 DOVirtual.DelayedCall(spriteShowDelay,()=>{spriteRenderer.sprite = fruitImages[(int)Fruits.Chestnut];});
@@ -216,10 +227,13 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     DOVirtual.DelayedCall(2.5f, OnPuzzleGameStart);
                     break;
                 case SeqName.OnTreeScene_A:
+                    
+                    Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/TreeA");
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
                         SeqMessageEvent?.Invoke("OnTreeScene_A");
                         _isFruitOnTreeAlreadyClicked = false;
+                        _uiManager.PopFromZeroInstructionUI("열매를 터치해 주세요!");
                     });
                     break;
                 case SeqName.OnTreeScene_B:
@@ -255,8 +269,15 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     {
                         _fruitAnimatorMap[key].SetBool(DROP, false);
                     }
-                    SetColliderStatus(true);
+                   
                     DOVirtual.DelayedCall(2.5f, () => { SeqMessageEvent?.Invoke("OnTreeScene_A"); });
+                    
+                    DOVirtual.DelayedCall(2f, () =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OnFin");
+                        _uiManager.PopFromZeroInstructionUI("가을 열매를 모두 담았어요!");
+                        DOVirtual.DelayedCall(2f, () =>  SetColliderStatus(true));
+                    });
                     break;
             }
             
@@ -281,6 +302,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         psResourcePath = "Runtime/EA010/FX_leaves";
         
         base.Init();
+        _uiManager = UIManagerObj.GetComponent<EA010_UIManager>();
         
         LoadSpriteImage();
         _mainAnimator = GetComponent<Animator>();
@@ -362,10 +384,38 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         _mainAnimator.SetInteger(SEQ_NUM, currentSeq);
     }
 
+    private void BlinkBlocks()
+    {
+        int count = 0;
+
+        DOVirtual.DelayedCall(7.2f, () =>
+        {
+            _uiManager.PopFromZeroInstructionUI("네모 칸을 터치해주세요");
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/TouchBlock");
+            
+            foreach (int key in _woodSpriteRendererMap.Keys.ToArray())
+            {
+                int delayIndex = count; // 캡처 방지
+                var renderer = _woodSpriteRendererMap[key];
+            
+                DOVirtual.DelayedCall(delayIndex * 0.04f, () =>
+                {
+                    var seq = DOTween.Sequence();
+                    seq.Append(renderer.material.DOColor(_targetColor, 0.25f).SetEase(Ease.Linear));
+                    seq.Append(renderer.material.DOColor(_defaultColor, 0.25f).SetEase(Ease.Linear));
+                    seq.SetLoops(4, LoopType.Yoyo);
+                });
+
+                count++;
+            }
+        });
+    }
     private void OnPuzzleGameStart()
     {
         _isWoodBlockClickable = true;
+  
         currentRoundCount = (int)Fruits.Chestnut;
+        BlinkBlocks();
     }
 
     
@@ -421,6 +471,7 @@ private void OnRaysyncOnPuzzeGame()
                         DOVirtual.DelayedCall(answerNarDealy, () =>
                         {
                             Managers.Sound.Play(SoundManager.Sound.Narration, "EA010/" + nameof(Fruits.Acorn));
+                            
                             SeqMessageEvent?.Invoke(nameof(Fruits.Acorn));
                         });
                         break;
@@ -465,13 +516,14 @@ private void OnRaysyncOnPuzzeGame()
     }
     private void OnWoodBlockClicked(int id)
     {
+        
         var randomChar = (char)Random.Range('A', 'D');
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/EA010/Click_" + randomChar);
 
         _currentRemovedWoodBlockCount++;
         var randomEase = (Ease)Random.Range((int)Ease.InOutBack, (int)Ease.OutBounce);
         var duration = Random.Range(0.15f, 0.40f);
-        _woodBlockSeqMap[id].Append(_woodBlockMap[id].DOScale(Vector3.zero, duration).SetEase(randomEase))
+        _woodBlockMap[id].DOScale(Vector3.zero, duration).SetEase(randomEase)
             .OnComplete(() => { _woodBlockMap[id].gameObject.SetActive(false); });
 
         DOVirtual.DelayedCall(0.11f, () => { _isWoodBlockClickable = true; });
@@ -495,7 +547,7 @@ private void OnRaysyncOnPuzzeGame()
                 
 
 
-        DOVirtual.DelayedCall(3f, ResetForNextRound);
+    
 
         if (ROUND_COUNT <= _currentRoundCount && currentSeqNum != 2)
         {
@@ -507,6 +559,10 @@ private void OnRaysyncOnPuzzeGame()
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA010/OnCorrectA");
                 currentSeqNum = (int)SeqName.OnTreeScene_A;
             });
+        }
+        else
+        {
+            DOVirtual.DelayedCall(3f, ResetForNextRound);
         }
     }
 
@@ -550,13 +606,10 @@ private void OnRaysyncOnPuzzeGame()
             block.DOScale(_defaultScale, ranDuration).SetEase(
                 _ease).OnStart(() => { block.gameObject.SetActive(true); }) .SetDelay(Random.Range(0.01f,0.25f));
 
-
-        DOVirtual.DelayedCall(6f, () =>
-        {
-            _isWoodBlockClickable = true;
-            _isResettingForNextRound = false;
-            foreach (var key in _woodBlockMap.Keys.ToArray()) KillWoodScaleSeq(key);
-        });
+   
+        _isResettingForNextRound = false;
+        
+        BlinkBlocks();
     }
 
 
@@ -574,7 +627,13 @@ private void OnRaysyncOnPuzzeGame()
             allWoodblocks[col] = new Transform[ROW_COUNT];
 
             for (var row = 0; row < ROW_COUNT; row++)
-                allWoodblocks[col][row] = GetObject((int)Obj.WoodBlocks).transform.GetChild(col).GetChild(row);
+            {
+                var block = GetObject((int)Obj.WoodBlocks).transform.GetChild(col).GetChild(row);
+                allWoodblocks[col][row] = block;
+                _woodSpriteRendererMap.Add(block.GetInstanceID(),block.GetComponent<SpriteRenderer>());
+                _isClickableMap.Add(block.GetInstanceID(), true);
+            }
+             
         }
 
         _defaultScale = allWoodblocks[0][0].localScale;
@@ -598,6 +657,9 @@ private void OnRaysyncOnPuzzeGame()
     }
 
     private Dictionary<int, bool> _isAlreadyClickedMap = new Dictionary<int, bool>();
+    private Sequence _basketSeq;
+    private bool _isBasketShakeable =true;
+    
     private void OnRaySyncOnFruitOnTree()
     {
         // if (!_clickable) return;
@@ -615,9 +677,22 @@ private void OnRaysyncOnPuzzeGame()
             if (_isAlreadyClickedMap[clickedFruitID]) return;
             _isAlreadyClickedMap[clickedFruitID] = true;
 
-            
-          
-            
+
+
+            if (_isBasketShakeable)
+            {
+                _isBasketShakeable = false;
+                _basketSeq?.Kill();
+                _basketSeq = DOTween.Sequence();
+
+                _basketSeq.AppendInterval(0.5f);
+                _basketSeq.Append(GetObject((int)Obj.basket).transform
+                    .DOShakeScale(0.3f, 0.25f, 10, 90));
+                _basketSeq.AppendCallback(() => _isBasketShakeable = true);
+            }
+        
+         
+               
             if ((!_fruitAnimatorMap.ContainsKey(clickedFruitID)&&_fruitAnimatorMap.TryAdd(clickedFruitID, hit.transform.TryGetComponent(out Animator animator) ? animator : null)))
 
 
@@ -632,6 +707,11 @@ private void OnRaysyncOnPuzzeGame()
                 
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
+                       DOVirtual.DelayedCall(3f, () =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
+            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+        });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
                         currentSeqNum = (int)SeqName.OnTreeScene_B;
@@ -649,6 +729,11 @@ private void OnRaysyncOnPuzzeGame()
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
+                       DOVirtual.DelayedCall(3f, () =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
+            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+        });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
                         currentSeqNum =  (int)SeqName.OnTreeScene_C;
@@ -666,6 +751,11 @@ private void OnRaysyncOnPuzzeGame()
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
+                       DOVirtual.DelayedCall(3f, () =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
+            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+        });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
                         currentSeqNum = (int)SeqName.OnTreeScene_D;
@@ -683,6 +773,11 @@ private void OnRaysyncOnPuzzeGame()
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
+                       DOVirtual.DelayedCall(3f, () =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
+            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+        });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
                         currentSeqNum = (int)SeqName.OnTreeScene_E;
@@ -700,6 +795,7 @@ private void OnRaysyncOnPuzzeGame()
                 currentCountFruitsDropped++;
                 if(currentCountFruitsDropped>=COUNT_FRUIT_TO_DROP)
                 {
+                      
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
                         currentSeqNum = (int)SeqName.OnFinish;
