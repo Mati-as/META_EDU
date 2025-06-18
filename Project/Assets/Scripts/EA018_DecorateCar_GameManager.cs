@@ -1,13 +1,10 @@
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 using Random = UnityEngine.Random;
-
-public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
+ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 {
     private enum Obj
     {
@@ -313,6 +310,8 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
           
                     
                     OnOutro((int)Obj.Sprites_Ambulance);
+                    
+                    
                     break;
                 
                 
@@ -639,7 +638,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         currentArrivedSubPartCount = 0;
     }
 
-    private void MoveTowardToCompletion()
+    private void MovePuzzlePartTowardToCompletion()
     {
         if (!isClickable) return;
 
@@ -854,7 +853,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         {
             OnRaySyncedOnFinish();
         }
-        else MoveTowardToCompletion();
+        else MovePuzzlePartTowardToCompletion();
     }
 
     #region AmbulancePart
@@ -885,13 +884,39 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         });
 
 
-        DOVirtual.DelayedCall(1f, () =>
+   
+        
+        DOVirtual.DelayedCall(2.25f, () =>
         {
-            _elapsed = 0; 
-            _isRoundFinished = false;
+        
+            DOVirtual.DelayedCall(1f, () =>
+            {
+                _elapsed = 0; 
+                _isRoundFinished = false;
+            });
+            
+            int count = 0;
+            foreach (var sprite in _spritesMap[introCar])
+            {
+                if (count != 0)
+                {
+                    Logger.ContentTestLog("Intro Scale Event -------------------");
+
+                    int ID = sprite.transform.GetInstanceID();
+                    Vector3 defaultScale = sprite.transform.localScale;
+                    Sequence seq = DOTween.Sequence();
+                    seq.Append(sprite.transform.DOScale(defaultScale * 1.1f, 0.35f).SetEase(Ease.OutBounce));
+                    seq.Append(sprite.transform.DOScale(defaultScale * 0.9f, 0.35f).SetEase(Ease.OutBounce));
+                    seq.SetLoops(4);
+                }
+
+                count++;
+
+            }
+      
         });
 
-        Logger.ContentTestLog("OnPoliceCarIntro -------------------");
+    
         //   _isPartsClickable = true;
     }
 
