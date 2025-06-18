@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using Sequence = DG.Tweening.Sequence;
+
 
 public class EA019_GameManager : Ex_BaseGameManager
 {
@@ -147,7 +150,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     break;
                 
                 case (int)MainSeq.SeatSelection:
-                    
+                   
                     if (_remainAnswerList.Count == 0)
                     {
                         Logger.ContentTestLog("🎉 모든 라운드 완료!");
@@ -164,15 +167,15 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnBalloonFind:
 
                     _currentSubSeqNum = 0;
-                   
+                    _uiManager.ResetTextColor();
                     OnExitSeatSelectionMode();
                     if (!_isFirstRound) return;
               
                 
-                    _uiManager.ResetTextColor();
+                  
                     DOVirtual.DelayedCall(3.0f,()=>
                     {
-                        _uiManager.PopFromZeroInstructionUI("제시된 풍선을 터치해서 풍선을 날려주세요");
+                        _uiManager.PopFromZeroInstructionUI("모양 풍선을 터치해서 풍선을 날려주세요");
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_Intro");
                         DOVirtual.DelayedCall(5.5f,()=>
                         {
@@ -210,14 +213,18 @@ public class EA019_GameManager : Ex_BaseGameManager
     #region 색깔,모양 소개파트
 
     private bool _introSoundable =true;
+    private bool _introClickable = true;
   private void OnRaySyncOnIntroduce()
   {
+      if (!_introClickable) return;
+      
       _introSoundable = false;
       DOVirtual.DelayedCall(1.5f, () =>
       {
           _introSoundable = true;
       });
 
+     
 
       foreach (var hit in GameManager_Hits)
       {
@@ -417,9 +424,11 @@ public class EA019_GameManager : Ex_BaseGameManager
                 {
                     Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
 
+                    Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Common/OnAllSeatSelected");
+                    Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA019/OnBalloonReady");
                     // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
                     //Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
-                    _uiManager.PopFromZeroInstructionUI("준비 됬구나! 풍선을 찾아보자!");
+                    _uiManager.PopFromZeroInstructionUI("준비 됐구나! 풍선을 찾아보자!");
                     DeactivateAllSeats();
                     DOVirtual.DelayedCall(4, () =>
                     {
@@ -1050,9 +1059,13 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
     }
     private void PlayAnimForOnColorOrShapeSeq(int index, float delay = 2.2f)
     {
-    
-      
-        switch (index)
+        DOVirtual.DelayedCall(2.5f, () =>
+        {
+            _introClickable = true;
+        });
+     
+         
+     switch (index)
         {
             case (int)Objs.Intro_Hearts:
 
@@ -1174,7 +1187,9 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 });
                 break;
         }
-        
+    
+      
+   
      
     }
 
@@ -1212,6 +1227,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
             
         }
     }
+    
+    private Dictionary<int,Sequence> _introShakeSeqMap = new();
 
     private void PlayScaleAnimOnColorByRay(GameObject clickedGameObj, bool isOnClick = false)
     {
@@ -1231,16 +1248,18 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         _onColorBalloonMap.TryAdd(instanceID, parent.transform);
         _defaultSizeMap.TryAdd(instanceID, parent.transform.localScale);
 
-        _sequenceMap.TryAdd(thisInstanceID, DOTween.Sequence());
+        _introShakeSeqMap.TryAdd(thisInstanceID, DOTween.Sequence());
 
-        _sequenceMap[thisInstanceID]?.Kill();
-        _sequenceMap[thisInstanceID] = DOTween.Sequence();
+        _introShakeSeqMap[thisInstanceID]?.Kill();
+        _introShakeSeqMap[thisInstanceID] = DOTween.Sequence();
+
+
         
-        _sequenceMap[thisInstanceID].Append(parent.transform
+        _introShakeSeqMap[thisInstanceID].Append(parent.transform
             .DOScale(_defaultSizeMap[parent.transform.GetInstanceID()], 0.5f).SetEase(Ease.OutBounce));
-        _sequenceMap[thisInstanceID].Join(parent.transform.DOShakePosition(100f, Random.Range(0.1f, 0.1f), 2));
-        _sequenceMap[thisInstanceID].Join(parent.transform.DOShakeRotation(100f, Random.Range(0.1f, 0.1f), 2));
-        _sequenceMap[thisInstanceID].Append(parent.transform.DOShakeScale(100f, Random.Range(0.1f, 0.2f), 2));
+        _introShakeSeqMap[thisInstanceID].Join(parent.transform.DOShakePosition(100f, Random.Range(0.1f, 0.1f), 2));
+        _introShakeSeqMap[thisInstanceID].Join(parent.transform.DOShakeRotation(100f, Random.Range(0.1f, 0.1f), 2));
+        _introShakeSeqMap[thisInstanceID].Append(parent.transform.DOShakeScale(100f, Random.Range(0.1f, 0.2f), 2));
         
             
         
@@ -1281,6 +1300,11 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
     
     private void OnNextButtonClicked()
     {
+        _introClickable = false;
+        foreach (var key in _introShakeSeqMap.Keys.ToArray())
+        {
+            _introShakeSeqMap[key]?.Kill();
+        }
         //카메라 등 게임매니져 컨트롤러 제어
         _currentSubSeqNum++;
 
