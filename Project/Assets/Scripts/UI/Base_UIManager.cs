@@ -1,16 +1,16 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using Sequence = DG.Tweening.Sequence;
 
 
 
+
+/// <summary>
+/// 1.아래 기본기능만 사용할땐 씬번호_UIManager 생성후 Base_UIManager만 할당해서 사용가능
+/// 2.게임별 특별한 UI기능 추가시 상속받아 별도 UIManager 클래스 구성 필요
+/// </summary>
 public class Base_UIManager : UI_PopUp
 {
   

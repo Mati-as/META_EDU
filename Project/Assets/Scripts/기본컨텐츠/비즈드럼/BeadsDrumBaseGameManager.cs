@@ -5,7 +5,7 @@ using DefaultNamespace;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class BeadsDrumBaseGameManager : Base_GameManager
+public class BeadsDrumBaseGameManager : Ex_BaseGameManager
 {
     [SerializeField]
     [Range(0,10)]
@@ -17,7 +17,7 @@ public class BeadsDrumBaseGameManager : Base_GameManager
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
-        if (Physics.Raycast(GameManager_Ray, out GameManager_Hits[0]))
+        if (GameManager_Hits.Length >0 && Physics.Raycast(GameManager_Ray, out GameManager_Hits[0]))
         {
             Collider[] hitColliders = Physics.OverlapSphere(GameManager_Hits[0].point, clickRadius);
             foreach (var hitCollider in hitColliders)
@@ -65,6 +65,14 @@ public class BeadsDrumBaseGameManager : Base_GameManager
                   
             }
         }
+        
+    }
+
+    protected override void OnGameStartStartButtonClicked()
+    {
+        initialMessage = "비즈드럼을 터치해 연주해보세요!";
+        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        base.OnGameStartStartButtonClicked();
         
     }
 }
