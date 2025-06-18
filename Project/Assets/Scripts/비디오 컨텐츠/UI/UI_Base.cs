@@ -23,6 +23,7 @@ public abstract class UI_Base : MonoBehaviour
     {
         InitEssentialUI();
     }
+    protected virtual void Start(){}
 
     protected void Bind<T>(Type type) where T : Object
     {

@@ -38,14 +38,14 @@ public class VariousShape_UIManager : Base_UIManager
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
 
-        AudioClip audioClip = Resources.Load<AudioClip>($"VariousShape/Audio/audio_{audioPath}");
+        AudioClip audioClip = Resources.Load<AudioClip>($"VariousShape/Audio/{audioPath}");
 
         seq?.Kill();
         seq = DOTween.Sequence();
 
         seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
-        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"VariousShape/Audio/audio_{audioPath}"));
-        seq.AppendInterval(audioClip.length + 0.2f);
+        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"VariousShape/Audio/{audioPath}"));
+        seq.AppendInterval(audioClip.length + 1f);
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 

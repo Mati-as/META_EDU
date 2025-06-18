@@ -65,6 +65,13 @@ public class ColorTogether_Manager : Base_GameManager
 
     public RectTransform narrationBG;
 
+    public Text stageLeftTime;
+
+    public int stageLeftTimeValue = 60;
+
+    public ClickedFloor leftFloor;
+    public ClickedFloor rightFloor;
+
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -73,6 +80,10 @@ public class ColorTogether_Manager : Base_GameManager
         ManageProjectSettings(150, 0.15f);
 
         narrationImgGameObject.SetActive(false);
+        stageLeftTime.gameObject.SetActive(false);
+
+        leftFloor = GameObject.Find("LeftFloor").GetComponent<ClickedFloor>();
+        rightFloor = GameObject.Find("RightFloor").GetComponent<ClickedFloor>();
 
         //boxDropper = FindObjectOfType<BoxDropper>();
         endShowBox = FindObjectOfType<EndShowBox>();
@@ -114,7 +125,6 @@ public class ColorTogether_Manager : Base_GameManager
             { 1, (greenBox, yellowBox) },
             { 2, (purpleBox, orangeBox) }
         };
-        //딕셔너리 공부 더 해야함
 
         ShuffleSelectionOrder();
         narrationImgGameObject.SetActive(true);
@@ -141,7 +151,7 @@ public class ColorTogether_Manager : Base_GameManager
         }
 
         msgSeq.AppendCallback(() => Img_NextBoxDrop.SetActive(true));
-        msgSeq.AppendInterval(0.05f); // 아주 짧게 1프레임 기다림 동시 시작이라 에러가 생김
+        msgSeq.AppendInterval(0.05f);
         msgSeq.AppendCallback(() => boxDropper.StartDropCycle());
 
         UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
@@ -169,7 +179,11 @@ public class ColorTogether_Manager : Base_GameManager
         }
     }
 
-
+    private void Update()
+    {
+        if (stageLeftTimeValue < 7)
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/ColorTogether/Countdown", 0.5f);
+    }
 
     public override void OnRaySynced()
     {
@@ -194,7 +208,30 @@ public class ColorTogether_Manager : Base_GameManager
             if (ColorBox != null && isInStage)
             {
                 ColorBox.OnClicked();
+                if (leftTeamScore >= 50)
+                {
+                    OnBoxWin(leftFloor.linkedBox);
 
+                    DOVirtual.DelayedCall(0.5F, () =>
+                    {
+                        stageLeftTimeValue = 60;
+                        stageLeftTime.gameObject.SetActive(false);
+                    });
+
+                    return;
+                }
+                else if (rightTeamScore >= 50)
+                {
+                    OnBoxWin(rightFloor.linkedBox);
+
+                    DOVirtual.DelayedCall(0.5F, () =>
+                    {
+                        stageLeftTimeValue = 60;
+                        stageLeftTime.gameObject.SetActive(false);
+                    });
+
+                    return;
+                }
                 return;
             }
 
@@ -205,18 +242,19 @@ public class ColorTogether_Manager : Base_GameManager
                 Vector3 forceDirection = rb.transform.position - hit.point + Vector3.up * 2;
                 rb.AddForce(forceDirection.normalized * 100, ForceMode.Impulse);
 
-                selectEffectSound = (char)Random.Range((int)'A', (int)'F' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, $"ColorTogether/Click_{selectEffectSound}");
+                ClickedSound();
 
             }
         }   // 돌고래 게임 공 팅기는 로직
 
     }
 
-    public void OnBoxWin(ShowColorBox box)
+    public void  OnBoxWin(ShowColorBox box)
     {
         if (!isInStage) return;
 
+        PauseCountdown();
+        
         isInStage = false;
         AudioClip victoryAudioClip = Resources.Load<AudioClip>("Audio/ColorTogether/Victory");
         Managers.Sound.Play(SoundManager.Sound.Effect, victoryAudioClip);
@@ -341,11 +379,6 @@ public class ColorTogether_Manager : Base_GameManager
         prefab1.transform.localScale = new Vector3(2.7f, 2, 1.8f);
         prefab2.transform.localScale = new Vector3(2.7f, 2, 1.8f);
 
-
-        // 바닥에 연결
-        var leftFloor = GameObject.Find("LeftFloor").GetComponent<ClickedFloor>();
-        var rightFloor = GameObject.Find("RightFloor").GetComponent<ClickedFloor>();
-
         leftFloor.linkedBox = prefab1.GetComponent<ShowColorBox>();
         rightFloor.linkedBox = prefab2.GetComponent<ShowColorBox>();
     }
@@ -354,6 +387,7 @@ public class ColorTogether_Manager : Base_GameManager
     {
         if (currentIndex < selectionOrder.Count && currentIndex > 0)
         {
+            StopCountdown();
             narrationBG.sizeDelta = new Vector2(1100, 143);
             string AudioPath = "Audio/ColorTogether/audio_13";
             AudioClip clip = Resources.Load<AudioClip>(AudioPath);
@@ -361,7 +395,6 @@ public class ColorTogether_Manager : Base_GameManager
             Managers.Sound.Play(SoundManager.Sound.Narration, clip);
             narrationImgGameObject.SetActive(true);
             TakeTextImg("Image/ColorTogether/Img_" + 13);
-            isInStage = false;
             prefab1.SetActive(false);
             prefab2.SetActive(false);
 
@@ -372,10 +405,20 @@ public class ColorTogether_Manager : Base_GameManager
 
             DOVirtual.DelayedCall(5f, () =>
             {
+                StartCoroutine(PlaySprites());
+
                 narrationImgGameObject.SetActive(false);
                 SpawnRandomPair();
+                
+            });
+            DOVirtual.DelayedCall(11f, () => 
+            {
+                stageLeftTime.gameObject.SetActive(true);
+                StartCountdown();
                 isInStage = true;
             });
+
+
 
         }
         else
@@ -430,32 +473,21 @@ public class ColorTogether_Manager : Base_GameManager
         //narrationImgGameObject.transform.DOPunchScale(Vector3.one * 0.2f, 0.5f, 10, 1);
     }
 
-    public void StartNarrationCoroutine()
+
+    public IEnumerator PlayNarrationCoroutine()
     {
-        StartCoroutine(PlayNarrationCoroutine());
-    }
+        AudioClip clip = Resources.Load<AudioClip>("Audio/ColorTogether/audio_" + 9);
+        narrationBG.sizeDelta = new Vector2(995, 143);
+        Managers.Sound.Play(SoundManager.Sound.Narration, clip);
+        narrationImgGameObject.SetActive(true);
+        TakeTextImg("Image/ColorTogether/Img_" + 9);
+        yield return new WaitForSeconds(clip.length + 2f);
 
-    private IEnumerator PlayNarrationCoroutine()
-    {
-        for(int i = 9; i <= 11; i++)
-        {
-            AudioClip clip = Resources.Load<AudioClip>("Audio/ColorTogether/audio_" + i);
+        narrationImgGameObject.SetActive(false);
 
-            if (i == 8)
-                narrationBG.sizeDelta = new Vector2(970, 200);
-            else if (i == 9)
-                narrationBG.sizeDelta = new Vector2(995, 143);
-            else if (i == 10)
-                narrationBG.sizeDelta = new Vector2(550, 143);
-            else if (i == 11)
-                narrationBG.sizeDelta = new Vector2(380, 143);
+        yield return StartCoroutine(PlaySprites());
 
-            Managers.Sound.Play(SoundManager.Sound.Narration, clip);
-            narrationImgGameObject.SetActive(true);
-            TakeTextImg("Image/ColorTogether/Img_" + i);
-
-            yield return new WaitForSeconds(clip.length + 2f);
-        }
+        StartCountdown();
 
         leftTeamScoreObj.SetActive(true);
         rightTeamScoreObj.SetActive(true);
@@ -465,5 +497,85 @@ public class ColorTogether_Manager : Base_GameManager
         narrationBG.transform.localScale = Vector3.one;
         narrationImgGameObject.SetActive(false);
         isInStage = true;
+
     }
+
+    [SerializeField] private Image targetImage;
+    [SerializeField] private Sprite[] sprites; // 길이가 5인 배열
+
+
+    private IEnumerator PlaySprites()
+    {
+        targetImage.gameObject.SetActive(true);
+
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            targetImage.sprite = sprites[i];
+            Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/ColorTogether/audio_{50 + i}");
+            yield return new WaitForSeconds(1.5f);
+
+        }
+
+        targetImage.gameObject.SetActive(false);
+    }
+
+    [SerializeField] private int startTime = 60;
+
+    private Tween _countdownTween;
+    private int _currentTime;
+
+    public void StartCountdown()
+    {
+        _countdownTween?.Kill();
+
+        _currentTime = startTime;
+        stageLeftTime.gameObject.SetActive(true);
+
+        _countdownTween = DOVirtual.Float(
+                startTime,       
+                0,                
+                startTime,        
+                value =>
+                {
+                    _currentTime = Mathf.CeilToInt(value);
+                    stageLeftTime.text = _currentTime.ToString();
+                }
+            )
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                stageLeftTime.gameObject.SetActive(false);
+                OnTimerEnd();
+            });
+    }
+
+    public void PauseCountdown()
+    {
+        _countdownTween?.Pause();
+    }
+
+
+    public void StopCountdown()
+    {
+        _countdownTween?.Kill();
+        stageLeftTime.gameObject.SetActive(false);
+    }
+
+    private void OnTimerEnd()
+    {
+        if (leftTeamScore > rightTeamScore)
+            OnBoxWin(leftFloor.linkedBox);
+        else if (rightTeamScore > leftTeamScore)
+            OnBoxWin(rightFloor.linkedBox);
+
+        Debug.Log("시간 종료!");
+    }
+
+
+    public void ClickedSound()
+    {
+        char randomChar = (char)('A' + Random.Range(0, 6));
+        Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/ColorTogether/Click_{randomChar}");
+    }
+
 }

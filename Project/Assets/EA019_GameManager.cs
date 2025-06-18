@@ -13,7 +13,9 @@ public class EA019_GameManager : Ex_BaseGameManager
         OnShape,
         OnBalloonFind,
         OnOutro,
-        OnFinish
+        OnFinish,
+        
+        SeatSelection = 1000
     }
 
     private enum AnimSeqOnColor
@@ -37,7 +39,7 @@ public class EA019_GameManager : Ex_BaseGameManager
     }
    
 
-    private enum Objs
+    public enum Objs
     {
         Balloons,
         Balloon_RedHeart,
@@ -67,10 +69,22 @@ public class EA019_GameManager : Ex_BaseGameManager
         ShapeIntro_Squares,
         ShapeIntro_Flowers,
         
+        
         BalloonAppearPositions,
         OnFinishPos,
+        
+        Seat_A,
+        Seat_B,
+        Seat_C,
+        Seat_D,
+        Seat_E,
+        Seat_F,
+        Seat_G,
+        BgForSeatSelection
+        
     }
 
+    private SpriteRenderer _bgForSeatSelection;
  
     public int CurrentMainSeqNum
     {
@@ -78,6 +92,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         set
         {
 
+            Logger.ContentTestLog($"{nameof(CurrentMainSeqNum)} : {(MainSeq)value}");
             CurrentMainMainSequence = value;
             ChangeThemeSeqAnim(value);
             
@@ -105,7 +120,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     //초기화
                     _uiManager.PopFromZeroInstructionUI("색깔을 알아볼까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnColor");
-                    _introClickable = true;
+                    _introSoundable = true;
                     
                     _currentSubSeqNum = 0;
                     curruentIntroObjNum = (int)Objs.Intro_Hearts;
@@ -119,7 +134,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnShape:
                     _currentSubSeqNum = 0;
                     curruentIntroObjNum = (int)Objs.Intro_Hearts;
-                    _introClickable = true;
+                    _introSoundable = true;
                     
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
                     _uiManager.PopFromZeroInstructionUI("모양을 알아볼까요?");
@@ -130,15 +145,33 @@ public class EA019_GameManager : Ex_BaseGameManager
                         PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:2.5f);
                     });
                     break;
+                
+                case (int)MainSeq.SeatSelection:
+                    
+                    if (_remainAnswerList.Count == 0)
+                    {
+                        Logger.ContentTestLog("🎉 모든 라운드 완료!");
+                        CurrentMainSeqNum = (int)MainSeq.OnOutro;
+                        return;
+                    }
+
+                    PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
+                    OnSeatSelection();
+                    
+                    break;
+                    
 
                 case (int)MainSeq.OnBalloonFind:
+
                     _currentSubSeqNum = 0;
+                   
+                    OnExitSeatSelectionMode();
+                    if (!_isFirstRound) return;
+              
+                
                     _uiManager.ResetTextColor();
-                    PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
-                      
                     DOVirtual.DelayedCall(3.0f,()=>
                     {
-                        
                         _uiManager.PopFromZeroInstructionUI("제시된 풍선을 터치해서 풍선을 날려주세요");
                         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnFind_Intro");
                         DOVirtual.DelayedCall(5.5f,()=>
@@ -174,79 +207,89 @@ public class EA019_GameManager : Ex_BaseGameManager
         }
     }
 
-    private bool _introClickable =true;
+    #region 색깔,모양 소개파트
+
+    private bool _introSoundable =true;
   private void OnRaySyncOnIntroduce()
   {
-    if (!_introClickable) return;
-      _introClickable = false;
+      _introSoundable = false;
       DOVirtual.DelayedCall(1.5f, () =>
       {
-          _introClickable = true;
+          _introSoundable = true;
       });
-      
-      
-    foreach (var hit in GameManager_Hits)
-    {
-        string clickedName = hit.collider.gameObject.name;
 
-        if (clickedName.Contains("Red"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "빨간색" : "하트");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Red]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Red" : "Heart"));
-        }
-        else if (clickedName.Contains("Orange"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Hearts), true);
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "주황색" : "세모");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Orange]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Orange" : "Triangle"));
-        }
-        else if (clickedName.Contains("Yellow"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Triangles), true);
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "노란색" : "별");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Yellow]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Yellow" : "Star"));
-        }
-        else if (clickedName.Contains("Green"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars), true);
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "초록색" : "동그라미");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Green]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Green" : "Circle"));
-        }
-        else if (clickedName.Contains("Blue"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles), true);
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "파란색" : "네모");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Blue]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Blue" : "Square"));
-        }
-        else if (clickedName.Contains("Purple") || clickedName.Contains("Pink"))
-        {
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares), true);
-            PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers),isOnClick:true);
-            _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "보라색" : "꽃");
-            _uiManager.ChangeTextColor(colors[(int)Colors.Purple]);
-            
-            Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Purple" : "Flower"));
-        }
 
-      
-    }
-}
+      foreach (var hit in GameManager_Hits)
+      {
+          string clickedName = hit.collider.gameObject.name;
 
+
+          if (clickedName.Contains("Red"))
+          {
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "빨간색" : "하트");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Red]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Red" : "Heart"));
+          }
+          else if (clickedName.Contains("Orange"))
+          {
+              PlayScaleAnimOnColor(GetObject((int)Colors.Red), true);
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject, true);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "주황색" : "세모");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Orange]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Orange" : "Triangle"));
+          }
+          else if (clickedName.Contains("Yellow"))
+          {
+              PlayScaleAnimOnColor(GetObject((int)Colors.Orange), true);
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject, true);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "노란색" : "별");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Yellow]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Yellow" : "Star"));
+          }
+          else if (clickedName.Contains("Green"))
+          {
+              PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Stars), true);
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject, true);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "초록색" : "동그라미");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Green]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Green" : "Circle"));
+          }
+          else if (clickedName.Contains("Blue"))
+          {
+              PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Circles), true);
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject, true);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "파란색" : "네모");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Blue]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Blue" : "Square"));
+          }
+          else if (clickedName.Contains("Purple") || clickedName.Contains("Pink"))
+          {
+              PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Squares), true);
+              PlayScaleAnimOnColorByRay(hit.transform.gameObject, true);
+              _uiManager.PopFromZeroInstructionUI(CurrentMainSeqNum == (int)MainSeq.OnColor ? "보라색" : "꽃");
+              _uiManager.ChangeTextColor(colors[(int)Colors.Purple]);
+
+              Managers.Sound.Play(SoundManager.Sound.Narration,
+                  NAR_PATH + (CurrentMainSeqNum == (int)MainSeq.OnColor ? "Purple" : "Flower"));
+          }
+      }
+  }
+
+    #endregion
+  
+    
+    #region 아웃트로 파트
     private void OnFinish()
     {
         GetObject((int)Objs.Balloons).SetActive(true);
@@ -296,6 +339,163 @@ public class EA019_GameManager : Ex_BaseGameManager
     }
     private int curruentIntroObjNum = (int)Objs.Intro_Hearts;
 
+    #endregion
+
+ 
+    #region 자리밖으로 나가기 파트
+    
+    private readonly Dictionary<int, bool> isSeatClickedMap = new();
+    private readonly Dictionary<int, MeshRenderer> _seatMeshRendererMap = new();
+    private int _seatClickedCount = 1;
+    [SerializeField] private Color _selectedColor;
+    [SerializeField] private Color defaultColor;
+    private void OnSeatSelection()
+    {
+        _seatClickedCount = 0;
+        foreach (var key in isSeatClickedMap.Keys.ToArray())
+        {
+            isSeatClickedMap[key] = false; // 모든 자리 초기화
+        }
+        
+        DOVirtual.DelayedCall(1.5f, () =>
+        {
+           
+            _bgForSeatSelection.transform.gameObject.SetActive(true);
+            _bgForSeatSelection.DOFade(211f/225f, 1f).SetEase(Ease.InBounce);
+            AnimateAllSeats();
+            _uiManager.PopFromZeroInstructionUI("각자 자리에 앉아볼까요?");
+   
+
+            foreach (var VARIABLE in _seatMeshRendererMap)
+            {
+                if (VARIABLE.Value != null)
+                {
+                    VARIABLE.Value.material.color = defaultColor; // 모든 자리 색상 초기화
+                }
+            }
+        });
+
+
+
+    }
+
+    private void InitForSeatSelection()
+    {
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) isSeatClickedMap.Add(i, false);
+        
+        _bgForSeatSelection = GetObject((int)Objs.BgForSeatSelection).GetComponent<SpriteRenderer>();
+        OnExitSeatSelectionMode();
+    }
+
+    private bool _isFirstRound = true;
+    private void OnRaySyncedOnSeatSelection()
+    {
+        bool isAllSeatClicked = true;
+        foreach (var hit in GameManager_Hits)
+        {
+            int hitTransformID = hit.transform.GetInstanceID();
+            if (hit.transform.gameObject.name.Contains("Seat"))
+            {
+                if (isSeatClickedMap[_tfIdToEnumMap[hitTransformID]]) return;
+                isSeatClickedMap[_tfIdToEnumMap[hitTransformID]] = true;
+
+                var renderer = hit.transform.GetComponent<MeshRenderer>();
+                _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[hitTransformID], renderer);
+                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedColor, 0.35f);
+
+                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
+                _seatClickedCount++;
+
+
+                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+
+                foreach (int key in isSeatClickedMap.Keys)
+                    if (!isSeatClickedMap[key])
+                        isAllSeatClicked = false;
+
+                if (isAllSeatClicked)
+                {
+                    Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
+
+                    // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
+                    //Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
+                    _uiManager.PopFromZeroInstructionUI("준비 됬구나! 풍선을 찾아보자!");
+                    DeactivateAllSeats();
+                    DOVirtual.DelayedCall(4, () =>
+                    {
+                        if (_isFirstRound)
+                        {
+                            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+                            _isFirstRound = false;
+                        }
+                        else
+                        {
+                            GoToNextBalloonFindRound();
+                        }
+                    });
+                    break;
+                }
+
+
+                PlayParticleEffect(hit.point);
+            }
+        }
+    }
+    
+    public void AnimateAllSeats()
+    {
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
+        {
+            GetObject(i).SetActive(true);
+            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
+            AnimateSeatLoop((Objs)i);
+        }
+    }
+
+    private void OnExitSeatSelectionMode()
+    {
+        DeactivateAllSeats();
+      
+    }
+    public void AnimateSeatLoop(Objs seat)
+    {
+        var SeatTransform = GetObject((int)seat).transform;
+
+        _sequenceMap[(int)seat]?.Kill();
+        _sequenceMap[(int)seat] = DOTween.Sequence();
+        _sequenceMap[(int)seat]
+            .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
+            .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
+            .SetLoops(100, LoopType.Yoyo)
+            .OnKill(() =>
+            {
+                SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
+            });
+
+        _sequenceMap[(int)seat].Play();
+    }
+
+    public void DeactivateAllSeats()
+    {
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
+        {
+            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
+            _sequenceMap[(int)i]?.Kill();
+            _sequenceMap[(int)i] = DOTween.Sequence();
+            _sequenceMap[(int)i]
+                .Append(GetObject(i).transform.DOScale(Vector3.zero, 1.25f))
+                .OnComplete(() =>
+                {
+                    GetObject(i).SetActive(false);
+                });
+        }
+        _bgForSeatSelection.DOFade(0, 0.5f).SetEase(Ease.InBounce).SetDelay(1.0f).OnComplete(
+            () =>
+            {
+                _bgForSeatSelection.transform.gameObject.SetActive(false);
+            });
+    }
+    #endregion
     #region 색깔풍선 찾기 파트 -------------------------------------------
 
     //private readonly Dictionary<int,bool> _isPosEmptyMap = new(); // 재생성관련 , true인경우 좋은음식은 여기서 생성
@@ -390,12 +590,6 @@ public class EA019_GameManager : Ex_BaseGameManager
     private Objs currentBallonTypeToFind; 
     private void SpawnBalloonsForCurrentRound()
     {
-        if (_remainAnswerList.Count == 0)
-        {
-            Logger.ContentTestLog("🎉 모든 라운드 완료!");
-            CurrentMainSeqNum = (int)MainSeq.OnOutro;
-            return;
-        }
       
 
         // 1. 정답 풍선 하나 뽑기
@@ -562,10 +756,16 @@ public class EA019_GameManager : Ex_BaseGameManager
         });
     }
 
+    private void OnAllSeatSelected()
+    {
+        
+    }
+    
 // 다음 라운드로 갈 때 (정답 누르면):
     private void GoToNextBalloonFindRound()
     {
-        ReturnBalloonsToPool();
+        CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+      
         DOVirtual.DelayedCall(3f, () =>
         {
             SpawnBalloonsForCurrentRound();
@@ -588,12 +788,12 @@ public class EA019_GameManager : Ex_BaseGameManager
         Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnRoundFinish_BalloonsFlown");
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/OnRoundFinish");
         
-     
-            
+    
       
         DOVirtual.DelayedCall(3f, () =>
-        {
-            GoToNextBalloonFindRound();
+        { 
+            ReturnBalloonsToPool();
+            CurrentMainSeqNum = (int)MainSeq.SeatSelection;
         });
     }
     private void InitBalloonFindClickData()
@@ -640,6 +840,10 @@ public class EA019_GameManager : Ex_BaseGameManager
             if (_isRoundFinished) return; 
             
             OnRaySyncOnBalloonFind();
+        }
+        else if (CurrentMainSeqNum == (int)MainSeq.SeatSelection)
+        {
+            OnRaySyncedOnSeatSelection();
         }
     }
 
@@ -786,7 +990,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         
         EA019_UIManager.onNextButtonClicked -= OnNextButtonClicked;
         EA019_UIManager.onNextButtonClicked += OnNextButtonClicked;
-        
+       
         
         for(int i =(int)Objs.Intro_Hearts; i <= (int)Objs.Intro_Flowers; i++)
         {
@@ -806,7 +1010,8 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         
         SaveBalloonsPosArray();
 
-     
+        InitForSeatSelection();
+       
 
     }
     private void StartWindSoundLoop()
@@ -1008,6 +1213,38 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         }
     }
 
+    private void PlayScaleAnimOnColorByRay(GameObject clickedGameObj, bool isOnClick = false)
+    {
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA019/Bappear");
+        
+        GameObject parent = clickedGameObj.transform.parent.gameObject;
+
+        int instanceID = parent.transform.GetInstanceID();
+        int thisInstanceID = clickedGameObj.transform.GetInstanceID(); //자식초기화를 위해 
+        _isClickableMap.TryAdd(instanceID, true);
+        if (_isClickableMap[instanceID] == false) return; // 이미 클릭된 풍선은 무시
+        DOVirtual.DelayedCall(0.5f, () => _isClickableMap[instanceID] = true); // 0.5초 후 다시 클릭 가능
+        
+        parent.transform.DOShakeScale(0.5f, 2).SetEase(Ease.OutQuad);
+
+
+        _onColorBalloonMap.TryAdd(instanceID, parent.transform);
+        _defaultSizeMap.TryAdd(instanceID, parent.transform.localScale);
+
+        _sequenceMap.TryAdd(thisInstanceID, DOTween.Sequence());
+
+        _sequenceMap[thisInstanceID]?.Kill();
+        _sequenceMap[thisInstanceID] = DOTween.Sequence();
+        
+        _sequenceMap[thisInstanceID].Append(parent.transform
+            .DOScale(_defaultSizeMap[parent.transform.GetInstanceID()], 0.5f).SetEase(Ease.OutBounce));
+        _sequenceMap[thisInstanceID].Join(parent.transform.DOShakePosition(100f, Random.Range(0.1f, 0.1f), 2));
+        _sequenceMap[thisInstanceID].Join(parent.transform.DOShakeRotation(100f, Random.Range(0.1f, 0.1f), 2));
+        _sequenceMap[thisInstanceID].Append(parent.transform.DOShakeScale(100f, Random.Range(0.1f, 0.2f), 2));
+        
+            
+        
+    }
 #if UNITY_EDITOR
     [SerializeField]
     private MainSeq seq;
@@ -1022,13 +1259,17 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
 
         DOVirtual.DelayedCall(1.5f, () =>
         {
-            initialMessage = "색깔 풍선이 나무에 걸려있어요~";
-            _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+           
             
             CurrentMainSeqNum = (int)seq;
             //CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
            // CurrentMainSeqNum = (int)MainSeq.OnFinish;
-            
+
+           if (CurrentMainSeqNum == (int)MainSeq.OnIntro)
+           {
+               initialMessage = "색깔 풍선이 나무에 걸려있어요~";
+               _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+           }
             
             Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnIntro_BalloonsOnTree");
             StartWindSoundLoop();
@@ -1054,7 +1295,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         }
         else if (CurrentMainSeqNum == (int)MainSeq.OnShape && _currentSubSeqNum > (int)AnimSeqOnShape.Flower)
         {
-            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+            CurrentMainSeqNum = (int)MainSeq.SeatSelection;
             _uiManager.DeactivateNextButton();
         }
         else

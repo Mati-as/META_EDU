@@ -33,42 +33,44 @@ public class EA006_UIManager : Base_UIManager
         Logger.Log($"Get Message ---- {message}");
         switch (message)
         {
-            case (int)EA006_GameManager.SequenceName.Default:
+            case (int)EA006_GameManager.MainSeq.Default:
               //  PopFromZeroInstructionUI( string.Empty);
                 
                 break;
-            case (int)EA006_GameManager.SequenceName.GrassColorChange:
-                PopFromZeroInstructionUI("초록색 벼를 터치해 노란색으로 바꿔주세요!");
+            case (int)EA006_GameManager.MainSeq.GrassColorChange:
+                PopFromZeroInstructionUI("초록색 벼를 터치해 노란색 벼로 바꿔주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/RipenIt");
 
-                float dealyAmount = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 0.45f;
+                float dealyAmount = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length ;
                 DOVirtual.DelayedCall(dealyAmount, () =>
                 {
                    //초록색 벼를 터치해~ 재생
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/ChangeRiceToYellow");
+                
                 });
                 
                 break;
             
-            case (int)EA006_GameManager.SequenceName.FindScarecrow:
+            case (int)EA006_GameManager.MainSeq.FindScarecrow:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/ThereScareCrow");
                 
-                PopFromZeroInstructionUI( "장난치는 허수아비 아저씨를 터치해주세요!");
-                float dealyAmountB = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 0.45f;
+                PopFromZeroInstructionUI( "숨어있는 허수아비 아저씨를 찾아 터치해주세요 ");
+                float dealyAmountB = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length;
                 DOVirtual.DelayedCall(dealyAmountB, () =>
                 {
                     //장난치는 허수아비 아저씨를 터치해주세요!
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/GetRidOfScarecrow");
                 });
                 break;
-            case (int)EA006_GameManager.SequenceName.SparrowAppear:
+            case (int)EA006_GameManager.MainSeq.SparrowAppear:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/SparrowAppear");
-                PopFromZeroInstructionUI( "참새가 나타났어요!");
-                DOVirtual.DelayedCall(2.5f, () =>
+                PopFromZeroInstructionUI( "참새가 나타나서 벼를 먹고 있어요!");
+                DOVirtual.DelayedCall(3.2f, () =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/HelpScareCrow");
                     
-                    PopFromZeroInstructionUI( "참새를 터치해 쫓아주세요");
+                    PopFromZeroInstructionUI( "참새를 잡아 허수아비 아저씨를 도와주고\n벼를 지켜줘요");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/ProtectRice");
+                    
                     float dealyAmountC = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 0.45f;
                     DOVirtual.DelayedCall(dealyAmountC, () =>
                     {
@@ -77,7 +79,7 @@ public class EA006_UIManager : Base_UIManager
                     });
                 });
                 break;
-            case (int)EA006_GameManager.SequenceName.OnFinish:
+            case (int)EA006_GameManager.MainSeq.OnFinish:
                 
                 DOVirtual.DelayedCall(3f, () =>
                 {

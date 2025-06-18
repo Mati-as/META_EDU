@@ -39,6 +39,8 @@ public class Bulldozer : MonoBehaviour
 
     public void StartBulldozerWork()
     {
+        manager.ClickSound();
+
         float move = moveDistance + soilCountClass.plusMoveDistance;
 
         if (!btnTwiceIssue)
@@ -59,7 +61,7 @@ public class Bulldozer : MonoBehaviour
                     audioSource.Play();
                     bulldozerAnimator.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * move;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => bulldozerAnimator.SetBool("Move", false));
@@ -70,18 +72,18 @@ public class Bulldozer : MonoBehaviour
                 seq.AppendCallback(() => bulldozerAnimator.SetBool("Work", false));
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Bulldozer));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.5f);
 
                 seq.AppendCallback(() =>
                 {
                     bulldozerAnimator.SetBool("Move", true);
                     Vector3 targetPos = transform.position - transform.forward * move;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { bulldozerAnimator.SetBool("Move", false); audioSource.Stop(); });
 
-                seq.AppendInterval(1.5f);
+                seq.AppendInterval(1f);
                 seq.AppendCallback(() => { isWork = false; audioTwiceIssue = false; });
 
             }

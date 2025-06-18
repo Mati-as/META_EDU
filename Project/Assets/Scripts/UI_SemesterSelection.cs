@@ -24,7 +24,7 @@ public class UI_SemesterSelection : UI_PopUp
         
         GetObject((int)UI.SemesterB).BindEvent(() =>
         {
-            
+            Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
         });
         return base.InitEssentialUI();
     }

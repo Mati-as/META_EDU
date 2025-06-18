@@ -13,7 +13,11 @@ public class UIManager_CommonBehaviorController : UI_PopUp
 {
     public enum UI
     {
-        InstructionUI
+        InstructionUI,
+        
+        UI_Ready,
+        UI_Start,
+        UI_Stop
     }
 
     public enum TMPs
@@ -38,12 +42,18 @@ public class UIManager_CommonBehaviorController : UI_PopUp
             Logger.ContentTestLog("InstructionUI is null or not active ------------해당컨텐츠에서 미사용 아닌경우 확인 필요  (25/0523)");
             return false;
         }
-        
-        
+
         
         GetObject((int)UI.InstructionUI).transform.localScale = Vector3.zero;
         GetTMP((int)TMPs.TMP_Instruction);
 
+                
+        
+        GetObject(((int)UI.UI_Ready)).transform.localScale =Vector3.zero;
+        GetObject(((int)UI.UI_Start)).transform.localScale =Vector3.zero;
+        GetObject(((int)UI.UI_Stop)). transform.localScale =Vector3.zero;
+
+        
         GetTMP((int)TMPs.TMP_Instruction).text = string.Empty;
        // GetObject((int)UI.InstructionUI).SetActive(false);
 

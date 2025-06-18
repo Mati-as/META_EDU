@@ -16,7 +16,12 @@ public class Base_UIManager : UI_PopUp
   
     public enum UI
     {
-        InstructionUI
+        InstructionUI,
+        //Optional Tools
+        UI_Ready,
+        UI_Start,
+        UI_Stop
+        
     }
 
     public enum TMPs
@@ -27,11 +32,17 @@ public class Base_UIManager : UI_PopUp
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
     
+    protected RectTransform UI_Ready; 
+    protected RectTransform UI_Start; 
+    protected RectTransform UI_Stop; 
+    
     protected readonly Vector3 DEFAULT_SIZE = Vector3.one;
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
     protected Sequence _uiSeq;
+    
+    
    // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
     
     
@@ -41,6 +52,19 @@ public class Base_UIManager : UI_PopUp
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
         UI_Instruction = GetObject(((int)UI.InstructionUI));
+        
+        UI_Ready = GetObject(((int)UI.UI_Ready)).  GetComponent<RectTransform>();
+        UI_Start = GetObject(((int)UI.UI_Start)).  GetComponent<RectTransform>();
+        UI_Stop =  GetObject(((int)UI.UI_Stop)).  GetComponent<RectTransform>();
+        
+            // GetObject(((int)UI.UI_Ready)).    SetActive(false);
+            // GetObject(((int)UI.UI_Start)).SetActive(false);
+            // GetObject(((int)UI.UI_Stop)). SetActive(false);
+            
+            UI_Ready.localScale = Vector3.zero;
+            UI_Start.localScale = Vector3.zero;
+            UI_Stop .localScale = Vector3.zero;
+        
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
         _objects = new();
         
@@ -179,6 +203,121 @@ public class Base_UIManager : UI_PopUp
         float finalHeight =  TMP_Instruction.text.Contains("\n") ? _originalHeight * 1.35f : _originalHeight;
 
         _bgRectTransform.sizeDelta = new Vector2(finalWidth, finalHeight);
+    }
+
+
+    private Sequence _timerRelatedAnimSeq;
+
+    public void PlayReadyAndStart(Action OnStart =null,float intervalBtwStartAndReady=1f)
+    {
+        _timerRelatedAnimSeq?.Kill();
+        _timerRelatedAnimSeq = DOTween.Sequence();
+        
+        UI_Ready.gameObject.SetActive(true);
+        UI_Start.gameObject.SetActive(true);
+        
+
+        _timerRelatedAnimSeq.Append(UI_Ready.DOScale(Vector3.one * 1.1f, 0.75f).OnStart(() =>
+        {
+            // PopFromZeroInstructionUI("준비!");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "EA020/Ready");
+        }));
+        _timerRelatedAnimSeq.AppendInterval(0.75f);
+        _timerRelatedAnimSeq.Append(UI_Ready.DOScale(Vector3.zero, 0.8f));
+        _timerRelatedAnimSeq.AppendInterval(intervalBtwStartAndReady);
+        _timerRelatedAnimSeq.Append(UI_Start.DOScale(Vector3.one * 1.1f, 0.15f).OnStart(() =>
+        {
+            // PopFromZeroInstructionUI("시작!");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "EA020/Start");
+          
+        }));
+        _timerRelatedAnimSeq.AppendInterval(0.1f);
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            OnStart?.Invoke();
+        });
+        _timerRelatedAnimSeq.Append(UI_Start.DOScale(Vector3.zero, 0.25f));
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            UI_Ready.gameObject.SetActive(false);
+            UI_Start.gameObject.SetActive(false);
+        });
+
+        _timerRelatedAnimSeq.OnKill(() =>
+        {
+            UI_Ready.localScale = Vector3.zero;
+            UI_Start.localScale = Vector3.zero;
+            UI_Ready.gameObject.SetActive(false);
+            UI_Start.gameObject.SetActive(false);
+        });
+        
+       
+    }
+    
+    public void PlayStopAnimation(float interval =1.5f)
+    {
+        UI_Stop .gameObject.SetActive(true);
+        
+        _timerRelatedAnimSeq?.Kill();
+        _timerRelatedAnimSeq = DOTween.Sequence();
+
+        _timerRelatedAnimSeq.Append(UI_Stop.DOScale(Vector3.one * 1.1f, 1f).OnStart(() =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "EA020/Stop");
+        }));
+        _timerRelatedAnimSeq.AppendInterval(interval);
+        _timerRelatedAnimSeq.Append(UI_Stop.DOScale(Vector3.zero, 1f));
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            UI_Stop.gameObject.SetActive(false);
+        });
+        
+        _timerRelatedAnimSeq.OnKill(() =>
+        {
+            UI_Stop.localScale = Vector3.zero;
+            UI_Stop.gameObject.SetActive(false);
+        });
+    }
+
+    public void PlayTimerRelatedAnimationByEnum(UI ui)
+    {
+        if (ui == UI.UI_Start)
+        {
+            PlayTimerRelatedAnimation(UI_Start);
+        }
+        if (ui == UI.UI_Ready)
+        {
+            PlayTimerRelatedAnimation(UI_Ready);
+        }
+        if (ui == UI.UI_Stop)
+        {
+            PlayTimerRelatedAnimation(UI_Stop);
+        }
+       
+    }
+    
+    private void PlayTimerRelatedAnimation(RectTransform rect,float interval = 1.25f)
+    {
+        rect .gameObject.SetActive(true);
+        
+        _timerRelatedAnimSeq?.Kill();
+        _timerRelatedAnimSeq = DOTween.Sequence();
+
+        _timerRelatedAnimSeq.Append(rect.DOScale(Vector3.one * 1.5f, 1f));
+        _timerRelatedAnimSeq.AppendInterval(interval);
+        _timerRelatedAnimSeq.Append(rect.DOScale(Vector3.zero, 1f));
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            rect.gameObject.SetActive(false);
+        });
+        
+        _timerRelatedAnimSeq.OnKill(() =>
+        {
+            rect.localScale = Vector3.zero;
+            rect.gameObject.SetActive(false);
+        });
+        
+      
     }
 
 }

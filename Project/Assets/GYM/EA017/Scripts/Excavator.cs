@@ -39,6 +39,8 @@ public class Excavator : MonoBehaviour
 
     public void StartExcavation()
     {
+        manager.ClickSound();
+
         //int randomindex = Random.Range(0, 2);
         if (!btnTwiceIssue)
         {
@@ -58,7 +60,7 @@ public class Excavator : MonoBehaviour
                     audioSource.Play();
                     excavatorAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * moveDistance;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { 
@@ -80,20 +82,20 @@ public class Excavator : MonoBehaviour
                 });
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Excavator));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.5f);
 
                 seq.AppendCallback(() =>
                 {
                     excavatorAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position - transform.forward * moveDistance;
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                     //audioSource.clip = manager.audioClipMove1;
                     //audioSource.Play();
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => { excavatorAni.SetBool("Move", false); audioSource.Stop(); });
 
-                seq.AppendInterval(1.5f);
+                seq.AppendInterval(1f);
                 seq.AppendCallback(() => soil.SetActive(false));
                 seq.AppendCallback(() => { isDigging = false; audioTwiceIssue = false; });
             
