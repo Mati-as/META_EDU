@@ -90,6 +90,16 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     Managers.UI.ShowPopupUI<UI_SemesterSelection>();
                     break;
 
+                
+                case UI_Sep_ContentSelection:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
+                    break;
+                
+                case UI_Oct_ContentSelection:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
+                    break;
                 #endregion
 
 
