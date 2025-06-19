@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-public class EA021_GameManager : Ex_BaseGameManager
+public class EA031_GameManager : Ex_BaseGameManager
 {
     private enum MainSeq
     {
