@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class UI_SensorSettingMain : UI_PopUp
 {
-
     public enum UI
     {
         Btn_ScreenSetting,
         Btn_SensorSetting,
+        Btn_MenuSetting,
     }
 
 
@@ -26,6 +26,11 @@ public class UI_SensorSettingMain : UI_PopUp
         GetObject((int)UI.Btn_SensorSetting).BindEvent(() =>
         {
             Managers.UI.ShowPopupUI<UI_SensorSetting>();
+        });
+
+        GetObject((int)UI.Btn_MenuSetting).BindEvent(() =>
+        {
+            Managers.UI.ShowPopupUI<UI_MenuSetting>();
         });
         return base.InitEssentialUI();
     }

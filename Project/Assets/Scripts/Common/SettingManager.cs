@@ -44,7 +44,7 @@ public class SettingManager : MonoBehaviour
 
     private void OnSceneLoad(string _, DateTime __)
     {
-        XmlManager.Instance.LoadSettings();
+        XmlManager.Instance.LoadGameSettings();
         Logger.Log("센서관련 XML데이터 로드완료----------------------------------");
     }
 #region  XML을 통한 세팅 초기화 및 저장
