@@ -1,13 +1,14 @@
-using System;
+
 using System.Collections.Generic;
-using System.Reflection;
 using DG.Tweening;
-using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+/// <summary>
+/// ui_Scene 으로, 항시 켜져있는 UI 표출중 
+/// </summary>
 public class UI_MetaEduLauncherMaster : UI_Scene
 {
     private static bool _isLoadFinished;
@@ -80,6 +81,11 @@ public class UI_MetaEduLauncherMaster : UI_Scene
                     break;
 
                 case UI_FirstSemester_ContentSortedByTheme:
+                    Managers.UI.ClosePopupUI();
+                    Managers.UI.ShowPopupUI<UI_SemesterSelection>();
+                    break;
+                
+                case UI_SecondSemester_ContentSortedByTheme:
                     Managers.UI.ClosePopupUI();
                     Managers.UI.ShowPopupUI<UI_SemesterSelection>();
                     break;
@@ -186,16 +192,16 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         //마우스 및 포인터 위치를 기반으로 하고싶은경우.
         screenPosition = Mouse.current.position.ReadValue();
         if (_launcherPED != null) _launcherPED.position = screenPosition;
-        else Logger.CoreClassLog("PointerEventData is null -----------------");
+    //    else Logger.CoreClassLog("PointerEventData is null -----------------");
 
         _results = new List<RaycastResult>();
         if (_launcherGR != null) _launcherGR.Raycast(_launcherPED, _results);
-        else Logger.CoreClassLog("laucnherGR is null -----------------");
+      //  else Logger.CoreClassLog("laucnherGR is null -----------------");
 
         if (_results.Count <= 0) return;
         {
            // Logger.CoreClassLog("Raysync On Scene Selection -----------------");
-            ShowTabOrLoadScene(_results);
+            //OnSceneBtnClicked(_results);
         }
     }
 
@@ -209,7 +215,35 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     }
 
 
-    public void ShowTabOrLoadScene(List<RaycastResult> results)
+    // public void OnSceneBtnClicked(List<RaycastResult> results)
+    // {
+    //     DOVirtual.Float(0, 0, 0.1f, _ =>
+    //         {
+    //         })
+    //         .OnComplete(() =>
+    //         {
+    //             MetaEduLauncher.UIType clickedUI = 0;
+    //
+    //             foreach (var result in results)
+    //                 // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
+    //                 if (result.gameObject.name.Contains("SceneName"))
+    //                 {
+    //                     GameNameWaitingForConfirmation = result.gameObject.name;
+    //                     GameKoreanName = result.gameObject.GetComponentInChildren<Text>().text;
+    //                     // ** 씬 로드** ---------------------------------------------------------
+    //                     Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
+    //              
+    //                         Managers.UI.ShowPopupUI<UI_Confirmation>();
+    //                         return;
+    //                     
+    //
+    //
+    //                     return;
+    //                 }
+    //         });
+    // }
+    
+    public void OnSceneBtnClicked(string sceneId,string title)
     {
         DOVirtual.Float(0, 0, 0.1f, _ =>
             {
@@ -218,22 +252,20 @@ public class UI_MetaEduLauncherMaster : UI_Scene
             {
                 MetaEduLauncher.UIType clickedUI = 0;
 
-                foreach (var result in results)
-                    // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
-                    if (result.gameObject.name.Contains("SceneName"))
-                    {
-                        GameNameWaitingForConfirmation = result.gameObject.name;
-                        GameKoreanName = result.gameObject.GetComponentInChildren<Text>().text;
+
+
+                GameNameWaitingForConfirmation = sceneId;
+                GameKoreanName = title;
                         // ** 씬 로드** ---------------------------------------------------------
-                        Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
+            //    Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
                  
-                            Managers.UI.ShowPopupUI<UI_Confirmation>();
-                            return;
+                Managers.UI.ShowPopupUI<UI_Confirmation>();
+                        return;
                         
 
 
-                        return;
-                    }
+                 
+                    
             });
     }
     

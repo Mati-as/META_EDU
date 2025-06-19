@@ -17,7 +17,7 @@ public class ThumbnailImageController : MonoBehaviour
         else
         {
 #if UNITY_EDITOR
-            Debug.LogWarning($"sprite is null, check the resource : {ExtractThumbnailSuffix(gameObject.name)}");
+      //      Debug.LogWarning($"sprite is null, check the resource : {ExtractThumbnailSuffix(gameObject.name)}");
 #endif
         }
     }
@@ -32,7 +32,7 @@ public class ThumbnailImageController : MonoBehaviour
             return input.Substring(prefix.Length);
         }
 #if UNITY_EDITOR
-        Debug.LogWarning($"This image is not set to Thumbnail image.{gameObject.name}");
+//        Debug.LogWarning($"This image is not set to Thumbnail image.{gameObject.name}");
 #endif
         return input;
     }

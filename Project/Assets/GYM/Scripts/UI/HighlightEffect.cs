@@ -51,12 +51,12 @@ public class HighlightEffect : MonoBehaviour
     }
     private void StartSelectAni()
     {
-        animator.SetBool("Select", true);
+//        animator.SetBool("Select", true);
     }
 
     private void EndSelectAni()
     {
-        animator.SetBool("Select", false);
+ //       animator.SetBool("Select", false);
     }
 
     private void OnDisable()

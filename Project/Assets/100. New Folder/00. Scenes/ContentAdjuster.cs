@@ -7,14 +7,15 @@ using UnityEngine.SceneManagement;
 
 public class ContentAdjuster : MonoBehaviour
 {
-    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
+    UI_MetaEduLauncherMaster _metaEduLauncherMaster;
+    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>() 
     {
         { "BB002", "사방치기 놀이" },
         { "BB003", "알록달록 손발을 뒤집어요" },
         { "BB006", "고래와 공놀이를 해요" },
         { "BB008", "물고기를 잡아요" },
         { "BB009", "우주의 행성이 움직여요" },
-        { "EA006", "허수아비 아저씨" },
+        { "EA006", "허수아비 아저씨를 도와줘요" },
         { "EA009", "몸에 좋은 음식을 찾아요" },
         { "BA001", "송하맹호도 색칠해요" },
         { "BD001", "무지개 건반을 연주해요" },
@@ -26,11 +27,9 @@ public class ContentAdjuster : MonoBehaviour
         { "AA005", "코스모스가 움직여요" },
         { "AA006", "뒤뚱뒤뚱 펭귄이 와요" },
         { "EA002", "동물을 찾아봐요" },
-        { "EA010", "가을열매 맞추기" },
         { "EA014", "같은 모양을 찾아요" },
         { "EA015", "가을 낙엽 [3세]" },
         { "EA016", "고래와 공놀이를 해요 [3세]" },
-        { "EA021", "해변 (미디어 아트)" },
         { "EA028", "다양한 모양을 찾아요" },
         { "EA029", "자동차를 주차해요" },
         { "EA024", "무지개 (미디어 아트)" },
@@ -43,14 +42,12 @@ public class ContentAdjuster : MonoBehaviour
         { "EA003_E", "과일과 야채담기(영문)" },
         { "EA025", "북극 (미디어 아트)" },
         { "EA026", "공룡 (미디어 아트)" },
-        { "EA029", "자동차를 주차해요" },
         { "EA018", "자동차를 꾸며요" },
         { "EA017", "일하는 자동차가 있어요" },
         { "EA012", "어떤 자동차 일까요?" },
-        { "EA021", "(미디어 아트) 해변" },     // 중복 가능, 다시 명시해도 문제 없음
+        { "EA021", "(미디어 아트) 해변" },
         { "EA020", "(교통) 횡단보도를 안전하게 건너요" },
         { "EA010", "가을 열매를 찾아요" },
-        { "EA006", "허수아비 아저씨를 도와줘요" },
         { "EA022", "(미디어 아트) 코스모스" },
         { "EA023", "(미디어 아트) 숲속" },
         { "EA031", "(재난) 불이 나면 비상구로 대피해요" },
@@ -391,8 +388,11 @@ public class ContentAdjuster : MonoBehaviour
 
         for (int i = 0; i < buttonObjs.Length; i++)
         {
+           
+          
             GameObject buttonObj = buttonObjs[i];
-
+            
+            
             if (i >= sceneList.Count)
             {
                 buttonObj.SetActive(false);
@@ -438,10 +438,25 @@ public class ContentAdjuster : MonoBehaviour
                 btn.onClick.RemoveAllListeners();
                 if (data.IsActive)
                 {
+                    //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
+                    var btnImageController =  Utils.GetOrAddComponent<CursorImageController>(buttonObj);
+                    btnImageController.DefaultScale =buttonObj.transform.localScale; 
+                    
                     string sceneId = data.Id;
-                    btn.onClick.AddListener(() => SceneManager.LoadScene(sceneId));
+                    btn.onClick.AddListener(() =>
+                    {
+                        
+                        //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
+                        if(_metaEduLauncherMaster == null)
+                            _metaEduLauncherMaster =  Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
+                       
+                        if (sceneTitles.TryGetValue(data.Id, out string title)) _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, title);
+                       
+                        // SceneManager.LoadScene(sceneId);
+                    });
                 }
             }
+
         }
     }
 }

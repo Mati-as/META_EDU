@@ -41,11 +41,11 @@ public class UI_Confirmation : UI_PopUp
     
     public void LoadScene(string sceneName)
     {
-        string originalName = sceneName;
-        string modifiedName = originalName.Substring("SceneName_".Length);
+        // string originalName = sceneName;
+        // string modifiedName = originalName.Substring("SceneName_".Length);
 
         gameObject.SetActive(false);
-        SceneManager.LoadScene(modifiedName);
+        SceneManager.LoadScene(sceneName);
     }
 
 }
