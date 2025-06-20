@@ -17,7 +17,7 @@ public class UI_InScene_StartBtn : MonoBehaviour
     
     private int _remainTime;
     private bool _isClickable;
-
+    private Vector3 _defaultSize;
 
     /*
      * 1.onBtnClicked와 Message_anim_controller의 onIntroUIOff 이벤트는 같은 기능을 수행
@@ -47,11 +47,19 @@ public class UI_InScene_StartBtn : MonoBehaviour
         onGameStartBtnShut -= OnGameStartInvoke;
         onGameStartBtnShut += OnGameStartInvoke;
 
-
+        _defaultSize = transform.localScale;
+        transform.localScale = Vector3.zero;
+        
         _btnImage.DOFade(0, 0.01f);
         _tmp_Start.DOFade(0, 0.01f);
     //    _tmp_Time.DOFade(0, 0.01f);
 
+    
+    
+        transform.DOScale(_defaultSize, 0.5f)
+            .SetEase(Ease.OutBack)
+            .SetDelay(3f);
+        
         _btnImage
             .DOFade(1, 0.5f)
             .SetDelay(3f);

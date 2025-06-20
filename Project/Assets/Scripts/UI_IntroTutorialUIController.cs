@@ -1,9 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -48,8 +51,11 @@ public class UI_IntroTutorialUIController : UI_PopUp
         
         #region Loading Image and Prefab(Animation Part)
 
-        var imageA = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name+"_1");
-        GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = imageA;
+        GetIntroImage();
+        
+    
+        // var imageA = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name+"_1");
+        // GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = imageA;
         
         //2025.05.16 이미지 분할방식으로 업데이트 주석해제 필요. 현재는 통합형 이미지 사용중 입니다.
  //       var imageB = Resources.Load<Sprite>("UI/Tutorial_Bg/" + SceneManager.GetActiveScene().name +"_2");
@@ -59,8 +65,35 @@ public class UI_IntroTutorialUIController : UI_PopUp
 
         return true;
     }
-    
 
+    private void GetIntroImage()
+    {
+        StartCoroutine(LoadTutorialImage());
+    }
+    public IEnumerator LoadTutorialImage()
+    {
+        string imagePath = Path.Combine(Application.streamingAssetsPath, $"Tutorial_Bg/{SceneManager.GetActiveScene().name}_1.png");
+        string uri = "file://" + imagePath;
+
+        using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(uri))
+        {
+            yield return uwr.SendWebRequest();
+
+            if (uwr.result != UnityWebRequest.Result.Success)
+            {
+                GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = null;
+                Logger.CoreClassLog("tutorial 이미지 없음 ---------확인필요");
+            }
+            else
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+                Sprite sprite = Sprite.Create(texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f));
+                GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = sprite;
+            }
+        }
+    }
     private void OnDestroy()
     {
         UI_InScene_StartBtn.onGameStartBtnShut -= FadeOutScreen;
