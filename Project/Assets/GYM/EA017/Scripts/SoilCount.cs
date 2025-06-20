@@ -44,6 +44,11 @@ public class SoilCount : MonoBehaviour
     {
         inputCount++;
 
+        if (inputCount == 11)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Construction/Audio/audio_4_흙이_줄어들고_있어요__더_많이_터치해주세요");
+        }
+
         if (inputCount >= maxInputs && !twiceissue)    //스테이지 종료 호출 타이밍
         {
             twiceissue = true;
@@ -146,7 +151,7 @@ public class SoilCount : MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.HeavyMachinerySound);
             DOVirtual.DelayedCall(3.75f, () => { Managers.Sound.Stop(SoundManager.Sound.Effect); manager.twiceAudioIssue = true; });
 
-            
+
         });
         seq.AppendInterval(1f);
         seq.AppendCallback(() =>
@@ -173,7 +178,12 @@ public class SoilCount : MonoBehaviour
                 {
                     manager.Btns_TruckIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
                 });
-            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 트럭을 움직여보세요!", "24_버튼을_눌러_트럭을_움직여보세요_", 20f));
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Construction/Audio/audio_5_트럭이_움직일_수_있게_동작_버튼을_터치해주세요");
+
+        });
+        seq.AppendInterval(4f);
+        seq.AppendCallback(() =>
+        {
             manager.canNextBtnClick = true;
         });
     }
@@ -234,8 +244,13 @@ public class SoilCount : MonoBehaviour
                 {
                     manager.Btns_BulldozerIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
                 });
-            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 불도저를 움직여보세요!", "25_버튼을_눌러_불도저를_움직여보세요_", 20f));
 
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Construction/Audio/audio_6_불도저가_움직일_수_있게_동작_버튼을_터치해주세요");
+
+        });
+        seq.AppendInterval(4f);
+        seq.AppendCallback(() =>
+        {
             manager.canNextBtnClick = true;
         });
 
@@ -249,19 +264,21 @@ public class SoilCount : MonoBehaviour
 
         seq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 불도저를 도와줘서\n흙을 많이 옮겼어요!", "20_우리_친구들이_불도저를_도와줘서_흙을_많이_옮겼어요_"));
+            Messenger.Default.Publish(new NarrationMessage("우리 친구들이 불도저를 도와줘서\n튼튼한 건물이 지어지고 있어요!", "0_우리_친구들이_불도저를_도와줘서_튼튼한_건물이_지어지고_있어요_"));
             Managers.Sound.Play(SoundManager.Sound.Effect, manager.victoryAuidoClip);
             manager.Btn_BulldozerStage.SetActive(false);
         });
-        seq.AppendInterval(5f);
+        seq.AppendInterval(7.3f);
         seq.AppendCallback(() =>
         {
-            manager.introVirtualCamera.Priority = 21;
+            manager.endVirtualCamera.Priority = 21;
             manager.bulldozerVirtualCamera.Priority = 10;
-            Messenger.Default.Publish(new NarrationMessage("자동차들을 도와서 흙을 옮겨줘서 고마워!", "21_자동차들을_도와서_흙을_옮겨줘서_고마워_"));
+            Managers.Sound.Play(SoundManager.Sound.Effect, "Construction/Audio/Clapping", 0.5f);
+            Messenger.Default.Publish(new NarrationMessage("와! 우리가 힘을 합쳐\n튼튼한 건물이 완성되었어요!", "1_와__우리가_힘을_합쳐_튼튼한_건물이_완성되었어요_"));
             inputCount = 0;
             plusMoveDistance = 0f;
             twiceissue = false;
+            manager.endBuilding.SetActive(true);
         });
     }
 

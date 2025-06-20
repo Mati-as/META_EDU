@@ -16,7 +16,7 @@ public class Construction_GameManager : Base_GameManager
     public Animator truckAni;
     public Animator bulldozerAni;
 
-    public List<CinemachineVirtualCamera> cameras = new List<CinemachineVirtualCamera>(5);
+    public List<CinemachineVirtualCamera> cameras;
 
     public CinemachineVirtualCamera startVirtualCamera;
     public CinemachineVirtualCamera introVirtualCamera;
@@ -28,6 +28,8 @@ public class Construction_GameManager : Base_GameManager
     public CinemachineVirtualCamera excavatorVirtualCamera;
     public CinemachineVirtualCamera truckVirtualCamera;
     public CinemachineVirtualCamera bulldozerVirtualCamera;
+
+    public CinemachineVirtualCamera endVirtualCamera;
 
     public GameObject Btns_ExcavatorIntro;
     public GameObject Btns_TruckIntro;
@@ -57,6 +59,8 @@ public class Construction_GameManager : Base_GameManager
     public Construction_UIManager construction_UIManager;
 
     public bool canNextBtnClick = false;
+
+    public GameObject endBuilding;
 
     protected override void Init()
     {
@@ -117,6 +121,7 @@ public class Construction_GameManager : Base_GameManager
         excavatorVirtualCamera = cameras[5];
         truckVirtualCamera = cameras[6];
         bulldozerVirtualCamera = cameras[7];
+        endVirtualCamera = cameras[8];
 
         //구독해제 하셔야합니다
         UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
@@ -145,7 +150,7 @@ public class Construction_GameManager : Base_GameManager
         introSeq.AppendInterval(6f);
         introSeq.AppendCallback(() =>
         {
-            Messenger.Default.Publish(new NarrationMessage("일하는 자동차들을 도와줘볼까요", "1_일하는_자동차들을_도와줘볼까요_"));
+            Messenger.Default.Publish(new NarrationMessage("일하는 자동차들을 도와줘요", "0_일하는_자동차를_도와줘요"));
         });
         introSeq.AppendInterval(5f);
         introSeq.AppendCallback(() =>
@@ -181,10 +186,14 @@ public class Construction_GameManager : Base_GameManager
            {
                Btns_ExcavatorIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
            });
-            Messenger.Default.Publish(new NarrationMessage("버튼을 눌러 포크레인을 움직여보세요!", "23_버튼을_눌러_포크레인을_움직여보세요_", 20f));
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Construction/Audio/audio_1_동작_버튼을_눌러_포크레인을_움직여주세요");
+
+        });
+        introSeq.AppendInterval(3f);
+        introSeq.AppendCallback(() =>
+        {
             canNextBtnClick = true;
         });
-
     }
 
 
@@ -262,14 +271,24 @@ public class Construction_GameManager : Base_GameManager
                 seq.AppendInterval(3f);
                 seq.AppendCallback(() =>
                 {
-                    Messenger.Default.Publish(new NarrationMessage("포크레인으로 흙을 파봐요", "8_포크레인으로_흙을_파봐요_"));
+                    Messenger.Default.Publish(new NarrationMessage("흙이 많이 쌓여있어요!\n포크레인으로 흙을 파요", "2_흙이_많이_쌓여있어요_포크레인으로_흙을_파요"));
                     Btn_ExcavatorStage.SetActive(true);
                     Btn_ExcavatorStage.transform.localScale = Vector3.zero;
                     Btn_TwiceIssue = true;
                 });
+                seq.AppendInterval(5f);
                 seq.Append(Btn_ExcavatorStage.transform.DOScale(Vector3.one, 1f));
                 seq.Append(Btn_ExcavatorStage.transform.DOShakeScale(0.3f, 0.1f));
-                canNextBtnClick = false;
+                seq.AppendCallback(() =>
+                {
+                    Messenger.Default.Publish(new NarrationMessage("운전대를 터치해요", "3_운전대를_터치해요"));
+
+                });
+                seq.AppendInterval(2f);
+                seq.AppendCallback(() =>
+                {
+                    canNextBtnClick = false;
+                });
             }
         }
     }
@@ -365,6 +384,7 @@ public class Construction_GameManager : Base_GameManager
                     twiceAudioIssue = true;
                 });
             }
+            DOVirtual.DelayedCall(AnimationLength + 0.5f, () => Btn_ExcavatorNext());
         }
     }
 
@@ -393,9 +413,10 @@ public class Construction_GameManager : Base_GameManager
                     canNextBtnClick = true;
                     twiceAudioIssue = true;
                 });
+                DOVirtual.DelayedCall(AnimationLength + 0.5f, () => Btn_TruckNext());
             }
         }
-        
+
     }
 
     public void Btn_BulldozerAni()
@@ -420,6 +441,7 @@ public class Construction_GameManager : Base_GameManager
                     canNextBtnClick = true;
                     twiceAudioIssue = true;
                 });
+                DOVirtual.DelayedCall(AnimationLength + 0.5f, () => Btn_BulldozerNext());
             }
         }
     }
