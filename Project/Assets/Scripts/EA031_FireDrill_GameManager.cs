@@ -359,7 +359,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     [SerializeField]
     private MainSeq initialSeq; 
 #else
-     MainSeq initialSeq int)MainSeq.OnIntro;
+     MainSeq initialSeq (int)MainSeq.OnIntro;
 #endif
     protected override void OnGameStartStartButtonClicked()
     {
@@ -429,7 +429,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
     private void OnEscapePathSuccess()
     {
-
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnStepA");
         
         InitForNewEscapePath();
         var thisRotation = GetObject((int)Objs.OnEscapeAvatar).transform.localRotation.eulerAngles;
@@ -489,8 +489,11 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             _isClickableMap.TryAdd(id, true);
 
             if (_stepOrderMap.ContainsKey(id))
+                
                 if (_stepOrderMap[id] == _currentStepOrderToClick && _isClickableMap[id])
                 {
+                    char randomChar = (char)Random.Range('A', 'B' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnStep"+randomChar);
                     _isClickableMap[id] = false;
                     hitTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBounce);
                     _currentStepOrderToClick++;
