@@ -357,9 +357,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     
 #if UNITY_EDITOR
     [SerializeField]
-    private MainSeq initialSeq; 
+    private MainSeq initialSeq;
+ 
 #else
-     MainSeq initialSeq (int)MainSeq.OnIntro;
+     private MainSeq initialSeq = MainSeq.OnIntro;
 #endif
     protected override void OnGameStartStartButtonClicked()
     {
