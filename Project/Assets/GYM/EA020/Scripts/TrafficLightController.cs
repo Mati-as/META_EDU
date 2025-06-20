@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Linq;
 using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
@@ -31,8 +29,8 @@ public class TrafficLightController : MonoBehaviour
     private Sprite GreenTrafficSignalImg;
 
     [SerializeField] private Image GameOverBG;
-    [SerializeField] private GameObject greenGameOver;
-    [SerializeField] private GameObject redGameOver;
+    [SerializeField] private Image greenGameOver;
+    [SerializeField] private Image redGameOver;
 
     public LightColor CurrentColor
     {
@@ -69,19 +67,14 @@ public class TrafficLightController : MonoBehaviour
             leftTime.text = greenDuration.ToString();
             rightTime.text = greenDuration.ToString();
             GameOverBG.DOFade(1, 1);
+            greenGameOver.DOFade(1, 1);
         })
-        .AppendInterval(1f)
-        .AppendCallback(() => 
-        { 
-            greenGameOver.SetActive(true);
-        })
-        .AppendInterval(1f)
+        .AppendInterval(4f)
         .AppendCallback(() =>
         {
             GameOverBG.DOFade(0, 1);
+            greenGameOver.DOFade(0, 1);
         })
-        .AppendInterval(1f)
-        .AppendCallback(() => greenGameOver.SetActive(false))
         .AppendInterval(1f)
         .AppendCallback(() => ChangeTo(LightColor.Green))
         .AppendInterval(gTime)
@@ -106,19 +99,14 @@ public class TrafficLightController : MonoBehaviour
             leftTime.text = redDuration.ToString();
             rightTime.text = redDuration.ToString(); 
             GameOverBG.DOFade(1, 1);
+            redGameOver.DOFade(1, 1);
         })
-        .AppendInterval(1f)
-        .AppendCallback(() =>
-        {
-            redGameOver.SetActive(true);
-        })
-        .AppendInterval(1f)
+        .AppendInterval(4f)
         .AppendCallback(() =>
         {
             GameOverBG.DOFade(0, 1);
+            redGameOver.DOFade(0, 1);
         })
-        .AppendInterval(1f)
-        .AppendCallback(() => redGameOver.SetActive(false))
         .AppendInterval(1f)
         .AppendCallback(() => ChangeTo(LightColor.Red))
         .AppendInterval(rTime)
