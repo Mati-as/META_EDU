@@ -20,6 +20,7 @@ public class AvatarController : Ex_MonoBehaviour
     private Dictionary<int, int> tfIdToIndexMap= new();
     private int CHARACTER_ANIM_NUM = Animator.StringToHash("AnimNum");
     private static readonly int ToDefault = Animator.StringToHash("ToDefault");
+    private static readonly int IsWalking = Animator.StringToHash("IsWalking");
 
     protected override void Init()
     {
@@ -35,8 +36,13 @@ public class AvatarController : Ex_MonoBehaviour
     
     }
 
+    public void SetWalking(int index,bool isWalking =false)
+    {
+        _controllerMap[index].SetBool(IsWalking, isWalking);
+    }
     public void PlayAnimation(int animator,AnimClip animName)
     {
+        
         _controllerMap[animator].SetTrigger(ToDefault);
         _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
     }
