@@ -186,12 +186,13 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnEscape:
-                    _uiManager.PopFromZeroInstructionUI("두손으로 코와 입을 막고 비상구로 나가는 것을 기억해요!");
-                    Managers.Sound.Play(SoundManager.Sound.Bgm, "Bgm/EA031");
+                  
                     break;
 
                 case (int)MainSeq.OnFinish:
-               
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/6_Finish");
+                    _uiManager.PopFromZeroInstructionUI("두손으로 코와 입을 막고\n비상구로 나가는 것을 기억해요!");
+                    Managers.Sound.Play(SoundManager.Sound.Bgm, "Bgm/EA031");
                     break;
             }
         }
@@ -242,6 +243,9 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.Wave);
             _onEscapeAvatarController.SetWalking(0, false);
             
+            _uiManager.PopFromZeroInstructionUI("준비 다 됐으면 차분히 날 따라서 나가자!");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/Lets");
+
             
         });
 
@@ -430,7 +434,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
     private void OnEscapePathSuccess()
     {
-        Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnStepA");
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnSuccess");
         
         InitForNewEscapePath();
         var thisRotation = GetObject((int)Objs.OnEscapeAvatar).transform.localRotation.eulerAngles;
@@ -471,10 +475,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     private bool _isClickableForRound;
     private void InitForNewEscapePath()
     {
-        
-   
+      
         _uiManager.PopFromZeroInstructionUI("잘했어! 다음친구도 어서 대피하자!");
-        _arrowAnimSeq?.Kill();
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/GoodJob");
+       // _arrowAnimSeq?.Kill();
         _pathAnimSAeq?.Kill();
         _currentStepOrderToClick = 0;
     }

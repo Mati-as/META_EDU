@@ -26,7 +26,7 @@ public class UI_Devmenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            Cursor.SetCursor(Managers.CursorImage.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
+            //Cursor.SetCursor(Managers.CursorImage.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
 
             if (Inactive_click)
             {
@@ -39,12 +39,12 @@ public class UI_Devmenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
 
-        Cursor.SetCursor(Managers.CursorImage.Get_hand_image(), Vector2.zero, CursorMode.ForceSoftware);
+        //Cursor.SetCursor(Managers.CursorImage.Get_hand_image(), Vector2.zero, CursorMode.ForceSoftware);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Cursor.SetCursor(Managers.CursorImage.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
+      //  Cursor.SetCursor(Managers.CursorImage.Get_arrow_image(), Vector2.zero, CursorMode.ForceSoftware);
     }
 
     void Check_DevMenu()
