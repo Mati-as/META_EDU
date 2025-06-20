@@ -81,7 +81,8 @@ public class UI_IntroTutorialUIController : UI_PopUp
 
             if (uwr.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError("이미지를 불러올 수 없습니다: " + uwr.error);
+                GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = null;
+                Logger.CoreClassLog("tutorial 이미지 없음 ---------확인필요");
             }
             else
             {
