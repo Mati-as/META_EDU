@@ -87,6 +87,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     //protected Dictionary<Type,Sequence> _sequences = new();
     protected Dictionary<int, Vector3> _defaultSizeMap = new();
     protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
+    protected Dictionary<int, Quaternion> _defaultLocalRotationQuatMap = new();
     protected Dictionary<int, Sequence> _sequenceMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
     protected Dictionary<int,Vector3> _defaultPosMap = new(); //
@@ -195,9 +196,12 @@ public abstract class Ex_BaseGameManager : Base_GameManager
                
                     _isClickableMap.Add(transform.GetInstanceID(), false);
                     _isClickedMap.Add(transform.GetInstanceID(), false);
+           
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
                     _defaultSizeMap.Add(i, transform.localScale);
+                    
                     _defaultRotationQuatMap.Add(i, transform.rotation);
+                    _defaultLocalRotationQuatMap.Add(i, transform.localRotation);
                     _defaultPosMap.Add(i, transform.position);
                     _sequenceMap.Add(i, DOTween.Sequence());
 

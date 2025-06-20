@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 {
@@ -29,9 +31,16 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         OnEscapeAvatarController,
         OnEscapeAvatar, // 애니메이션과 별개로 Transform 컨트롤
         
+        EscapeDefaultPos,
+        PathOutPos,
+        
         InducingArrowPath_A,
         InducingArrowPath_B,
         InducingArrowPath_C,
+        
+        EscapeStepsA,
+        EscapeStepsB,
+        EscapeStepsC,
     }
 
     private AvatarController _introAvatarController;
@@ -65,6 +74,15 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnIntro:
+                    DOVirtual.DelayedCall(3f, () =>
+                    {
+                        CurrentMainMainSeq = (int)MainSeq.OnFireAndAlarm;
+                    });
+                    
+                    _smokePs.Clear();
+                    _smokePs.Stop();
+                    _smokePs.Play();
+
                     break;
 
                 case (int)MainSeq.OnFireAndAlarm:
@@ -168,6 +186,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnEscape:
+                    _uiManager.PopFromZeroInstructionUI("두손으로 코와 입을 막고 비상구로 나가는 것을 기억해요!");
                     Managers.Sound.Play(SoundManager.Sound.Bgm, "Bgm/EA031");
                     break;
 
@@ -195,15 +214,19 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     {
         _onEscapeAvatarController.SetWalking(0, true);
         _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.HideFace);
+        GetObject((int)Objs.OnEscapeAvatar).transform.localRotation = _defaultLocalRotationQuatMap[(int)Objs.OnEscapeAvatar];
+        
         
         _pathAnimSAeq?.Kill();
         _pathAnimSAeq = DOTween.Sequence();
-       // GetObject((int)Objs.OnEscapeAvatar).transform.position = _escapePathMap[pathIndex][0];
+   
 
         int PathDuration = 10;
         _pathAnimSAeq.AppendInterval(delay);
         _pathAnimSAeq.AppendCallback( () =>
         {
+            GetObject((int)Objs.OnEscapeAvatar).transform.position = GetObject((int)Objs.EscapeDefaultPos).transform.position;
+            
             GetObject((int)Objs.OnEscapeAvatar).transform
                 .DOPath(_escapePathMap[pathIndex], PathDuration, PathType.CatmullRom)
                 .SetEase(Ease.Linear);
@@ -221,25 +244,52 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             
             
         });
-        
-        _escapePathMap[pathIndex][0] = GetObject((int)Objs.InducingArrowPath_A).transform.position;
-        GetObject((int)Objs.InducingArrowPath_A).SetActive(true);
-        
-        DOVirtual.DelayedCall(10, () =>
+
+        GameObject currentInducingArrow = null;
+        switch (pathIndex)
         {
+            case 0 :
+                currentInducingArrow =GetObject((int)Objs.InducingArrowPath_A);
+                break;
+            case 1 :
+                currentInducingArrow =GetObject((int)Objs.InducingArrowPath_B);
+                break;
+            case 2 :
+                currentInducingArrow =GetObject((int)Objs.InducingArrowPath_C);
+                break;
+        }
+        
+        currentInducingArrow.SetActive(true);
+        
+        DOVirtual.DelayedCall(15, () =>
+        {
+            _isClickableForRound = true;
+            
+             currentInducingArrow.transform.position =GetObject((int)Objs.EscapeDefaultPos).transform.position;
+            
             _arrowAnimSeq?.Kill();
             _arrowAnimSeq = DOTween.Sequence();
             
-            _arrowAnimSeq.Append(GetObject((int)Objs.InducingArrowPath_A).transform
-                .DOPath(_escapePathMap[pathIndex], PathDuration, PathType.CatmullRom)
-                .SetEase(Ease.Linear));
+            _arrowAnimSeq.Append(currentInducingArrow.transform
+                .DOPath(_escapePathMap[pathIndex], 5, PathType.CatmullRom)
+                .SetEase(Ease.Linear)
+                .SetLookAt(1));
             _arrowAnimSeq.AppendInterval(3f);
-            _arrowAnimSeq.SetLoops(5, LoopType.Restart);
+            _arrowAnimSeq.SetLoops(30, LoopType.Restart);
+            
+            
         });
 ;
     }
 
     private Dictionary<int, Vector3[]> _escapePathMap = new();
+    
+    
+    private Dictionary<int, Transform[]> _stepsMap = new ();
+    private Dictionary<int, int> _stepOrderMap = new();
+    private int _currentStepOrderToClick;
+    private const int STEP_MAX_COUNT = 5;
+    
 
     protected override sealed void Init()
     {
@@ -255,7 +305,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         _towelDefaultScale = GetObject((int)Objs.TowelToCover).transform.localScale;
         _onExitAvatarController = GetObject((int)Objs.OnExitAvataController).GetComponent<AvatarController>();
         _onEscapeAvatarController = GetObject((int)Objs.OnEscapeAvatarController).GetComponent<AvatarController>();
-
+        _introAvatarController = GetObject((int)Objs.IntroAvatarController).GetComponent<AvatarController>();
+        
         GetObject((int)Objs.TowelToCover).SetActive(false);
         GetObject((int)Objs.OnExitAvataController).SetActive(false);
         GetObject((int)Objs.OnEscapeAvatarController).SetActive(false);
@@ -278,7 +329,25 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
           
         }
 
+
+
+        for (int group = 0; group < 3; group++)
+        {
+            _stepsMap.Add(group, new Transform[STEP_MAX_COUNT]);
+            
+            for (int step = 0; step < STEP_MAX_COUNT; step++)
+            {
+                _stepsMap[group][step] = GetObject(((int)Objs.EscapeStepsA)+group).transform.GetChild(step);
+                _stepOrderMap.Add(_stepsMap[group][step].GetInstanceID(), step);
+            }
+
+        }
+  
+        
+
         Logger.Log("Init--------------------------------");
+        
+        
     }
 
     private Sequence _pathAnimSAeq;
@@ -286,20 +355,21 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     private Vector3 _towelDefaultScale;
     private Sequence _arrowAnimSeq;
     
-    
+#if UNITY_EDITOR
+    [SerializeField]
+    private MainSeq initialSeq; 
+#else
+     MainSeq initialSeq int)MainSeq.OnIntro;
+#endif
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        CurrentMainMainSeq = (int)MainSeq.OnIntro;
-        _smokePs.Clear();
-        _smokePs.Stop();
-        _smokePs.Play();
 
-        DOVirtual.DelayedCall(3f, () =>
-        {
-            CurrentMainMainSeq = (int)MainSeq.OnFireAndAlarm;
-        });
-        _introAvatarController = GetObject((int)Objs.IntroAvatarController).GetComponent<AvatarController>();
+
+        CurrentMainMainSeq = (int)initialSeq;
+
+     
+     
     }
 
     public override void OnRaySynced()
@@ -310,6 +380,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         {
             Logger.ContentTestLog("OnRaySynced - CloseMouthAndNose");
             OnRaySyncOnAvatarClick();
+        }
+        if(CurrentMainMainSeq == (int)MainSeq.TakeExit || CurrentMainMainSeq == (int)MainSeq.OnEscape)
+        {
+            OnRaySyncOnEscape();
         }
     }
 
@@ -352,17 +426,84 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                 Logger.ContentTestLog("there's no animator for this avatar: " + hit.transform.name);
         }
     }
-    
+
+    private void OnEscapePathSuccess()
+    {
+
+        
+        InitForNewEscapePath();
+        var thisRotation = GetObject((int)Objs.OnEscapeAvatar).transform.localRotation.eulerAngles;
+        GetObject((int)Objs.OnEscapeAvatar).transform
+            .DOLocalRotate(new Vector3(thisRotation.x, thisRotation.y + 180, thisRotation.z), 0.5f);
+        
+        _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.HideFace);
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            _onEscapeAvatarController.SetWalking(0, true);
+            GetObject((int)Objs.OnEscapeAvatar).transform.DOMove(GetObject((int)Objs.PathOutPos).transform.position,1.0f);
+        });
+      
+        
+
+      
+        
+        
+        
+        _currentPathIndex++;
+        
+        if (_currentPathIndex >= 3)
+        {
+            CurrentMainMainSeq = (int)MainSeq.OnFinish;
+        }
+        else
+        {
+            DOVirtual.DelayedCall(6f, () =>
+            {
+                InitPaths(_currentPathIndex);
+                PlayEscapePathAnim(_currentPathIndex);
+            });
+        }
+       
+    }
+
+    private int _currentPathIndex = 0;
+    private bool _isClickableForRound;
+    private void InitForNewEscapePath()
+    {
+        
+   
+        _uiManager.PopFromZeroInstructionUI("잘했어! 다음친구도 어서 대피하자!");
+        _arrowAnimSeq?.Kill();
+        _pathAnimSAeq?.Kill();
+        _currentStepOrderToClick = 0;
+    }
+
     private void OnRaySyncOnEscape()
     {
+        if (!_isClickableForRound) return;
         
         foreach (var hit in GameManager_Hits)
         {
             int id = hit.transform.GetInstanceID();
+            var hitTransform = hit.transform;
             _isClickableMap.TryAdd(id, true);
-            
-            
-            
+
+            if (_stepOrderMap.ContainsKey(id))
+                if (_stepOrderMap[id] == _currentStepOrderToClick && _isClickableMap[id])
+                {
+                    _isClickableMap[id] = false;
+                    hitTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBounce);
+                    _currentStepOrderToClick++;
+                    //Logger.ContentTestLog($"남은 클릭 개수{STEP_MAX_COUNT-_currentStepOrderToClick}");
+
+                    if (_currentStepOrderToClick >= STEP_MAX_COUNT)
+                    {
+                        _currentStepOrderToClick = 0;
+                        _isClickableForRound = false;
+                        OnEscapePathSuccess();
+                    }
+                }
+
             Logger.ContentTestLog("there's no animator for this avatar: " + hit.transform.name);
         }
     }
