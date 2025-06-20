@@ -64,7 +64,7 @@ RectTransform:
   m_GameObject: {fileID: 1577924701997619731}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5300887017303704547}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &1577924701997619733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1002,6 +1002,22 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9044084905242779787, guid: d130da7e414740f47b9926130bfaca1d,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d9a77ebfa027a2445ae51731fe5c4bdc,
+        type: 3}
+    - target: {fileID: 9044084905242779788, guid: d130da7e414740f47b9926130bfaca1d,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 9044084905242779788, guid: d130da7e414740f47b9926130bfaca1d,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 1080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d130da7e414740f47b9926130bfaca1d, type: 3}
