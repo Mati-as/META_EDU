@@ -51,16 +51,13 @@ public class DevelopmentUIManager : MonoBehaviour
     private void DisableImageWithSpaceKey()
     {
         //버튼으로 대체만하면 이건 해결
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
             DisableAllImages();
-        }
-    
     }
     
+ //  2026.06.22 스페이스바 관련 비활성화. 버튼으로만 동작
     private void Update()
     {
-        DisableImageWithSpaceKey();
+        if (Input.GetKeyDown(KeyCode.Space)&& SceneManager.GetActiveScene().name.Contains("LAUNCHER"))DisableImageWithSpaceKey();
     }
 
 
@@ -106,10 +103,7 @@ public class DevelopmentUIManager : MonoBehaviour
         {
             text.enabled = _currentStatus;
         }
-        
-       //_fpsCounter.enabled = _currentStatus;
 
-        // _developerMenu.SetActive(_currentStatus);
 
     }
 }
