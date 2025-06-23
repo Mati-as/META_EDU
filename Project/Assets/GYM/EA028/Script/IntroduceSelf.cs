@@ -111,7 +111,7 @@ public class IntroduceSelf : MonoBehaviour
         {
             case ShapeType.Square:
                 introduceSeq
-                    .AppendCallback(() => gameManager.isintroducing = true)
+                    .AppendCallback(() => gameManager.isIntroducing = true)
                     .Append(gameObject.transform.DOMove(targetVector, 1.5f).SetEase(Ease.OutBack))
                     .Join(gameObject.transform.DOScale(targetScale, 1.5f).SetEase(Ease.Linear))
                     .AppendCallback(() =>
@@ -123,13 +123,13 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(oriScale, 1.5f).SetEase(Ease.Linear))
                     .OnComplete(() =>
                     {
-                        gameManager.isintroducing = false;
+                        gameManager.isIntroducing = false;
                         RandomAni();
                     });
                 break;
             case ShapeType.Flower:
                 introduceSeq
-                    .AppendCallback(() => gameManager.isintroducing = true)
+                    .AppendCallback(() => gameManager.isIntroducing = true)
                     .Append(gameObject.transform.DOMove(targetVector, 1.5f).SetEase(Ease.OutBack))
                     .Join(gameObject.transform.DOScale(targetScale, 1.5f).SetEase(Ease.Linear))
                     .AppendCallback(() =>
@@ -141,13 +141,13 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(oriScale, 1.5f).SetEase(Ease.Linear))
                     .OnComplete(() =>
                     {
-                        gameManager.isintroducing = false;
+                        gameManager.isIntroducing = false;
                         RandomAni();
                     });
                 break;
             case ShapeType.Star:
                 introduceSeq
-                    .AppendCallback(() => gameManager.isintroducing = true)
+                    .AppendCallback(() => gameManager.isIntroducing = true)
                     .Append(gameObject.transform.DOMove(targetVector, 1.5f).SetEase(Ease.OutBack))
                     .Join(gameObject.transform.DOScale(targetScale, 1.5f).SetEase(Ease.Linear))
                     .AppendCallback(() =>
@@ -159,13 +159,13 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(oriScale, 1.5f).SetEase(Ease.Linear))
                     .OnComplete(() =>
                     {
-                        gameManager.isintroducing = false;
+                        gameManager.isIntroducing = false;
                         RandomAni();
                     });
                 break;
             case ShapeType.Circle:
                 introduceSeq
-                    .AppendCallback(() => gameManager.isintroducing = true)
+                    .AppendCallback(() => gameManager.isIntroducing = true)
                     .Append(gameObject.transform.DOMove(targetVector, 1.5f).SetEase(Ease.OutBack))
                     .Join(gameObject.transform.DOScale(targetScale, 1.5f).SetEase(Ease.Linear))
                     .AppendCallback(() =>
@@ -177,13 +177,13 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(oriScale, 1.5f).SetEase(Ease.Linear))
                     .OnComplete(() =>
                     {
-                        gameManager.isintroducing = false;
+                        gameManager.isIntroducing = false;
                         RandomAni();
                     });
                 break;
             case ShapeType.Triangle:
                 introduceSeq
-                    .AppendCallback(() => gameManager.isintroducing = true)
+                    .AppendCallback(() => gameManager.isIntroducing = true)
                     .Append(gameObject.transform.DOMove(targetVector, 1.5f).SetEase(Ease.OutBack))
                     .Join(gameObject.transform.DOScale(targetScale, 1.5f).SetEase(Ease.Linear))
                     .AppendCallback(() =>
@@ -195,7 +195,7 @@ public class IntroduceSelf : MonoBehaviour
                     .Join(gameObject.transform.DOScale(oriScale, 1.5f).SetEase(Ease.Linear))
                     .OnComplete(() =>
                     {
-                        gameManager.isintroducing = false;
+                        gameManager.isIntroducing = false;
                         RandomAni();
                     });
                 break;
