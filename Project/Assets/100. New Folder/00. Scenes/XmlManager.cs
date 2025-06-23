@@ -297,6 +297,7 @@ public class XmlManager
             scene.SetAttribute("id", kv.Value.Id);
             scene.SetAttribute("value", kv.Value.IsActive.ToString().ToLower());
             scene.SetAttribute("category", kv.Value.Category);
+            scene.SetAttribute("month", kv.Value.Month ?? "None"); 
             root.AppendChild(scene);
         }
 

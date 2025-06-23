@@ -8,12 +8,12 @@ using UnityEngine.SceneManagement;
 public class ContentAdjuster : MonoBehaviour
 {
     UI_MetaEduLauncherMaster _metaEduLauncherMaster;
-    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>() 
+    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
     {
         { "BB002", "사방치기 놀이" },
         { "BB003", "알록달록 손발을 뒤집어요" },
         { "BB006", "고래와 공놀이를 해요" },
-        { "BB008", "물고기를 잡아요" },
+        { "BB008_E", "물고기를 잡아요" },
         { "BB009", "우주의 행성이 움직여요" },
         { "EA006", "허수아비 아저씨를 도와줘요" },
         { "EA009", "몸에 좋은 음식을 찾아요" },
@@ -21,7 +21,7 @@ public class ContentAdjuster : MonoBehaviour
         { "BD001", "무지개 건반을 연주해요" },
         { "BD002", "바다에서 연주해요" },
         { "BD004", "악기 연주를 해요" },
-        { "BD003", "비즈드럼" },
+        { "BD003", "비즈드럼을 연주해요" },
         { "BC001", "가을낙엽" },
         { "AA004", "밤하늘이 반짝여요" },
         { "AA005", "코스모스가 움직여요" },
@@ -32,25 +32,25 @@ public class ContentAdjuster : MonoBehaviour
         { "EA016", "고래와 공놀이를 해요 [3세]" },
         { "EA028", "다양한 모양을 찾아요" },
         { "EA029", "자동차를 주차해요" },
-        { "EA024", "무지개 (미디어 아트)" },
+        { "EA024", "무지개 [미디어 아트]" },
         { "EA019", "풍선을 날려요" },
         { "BB004", "손발을 뒤집어요" },
         { "EA004", "다양한 표정을 알아봐요" },
         { "EA008", "거품목욕놀이" },
         { "BA005", "샌드위치를 만들어요" },
         { "EA003", "과일과 야채담기" },
-        { "EA003_E", "과일과 야채담기(영문)" },
-        { "EA025", "북극 (미디어 아트)" },
-        { "EA026", "공룡 (미디어 아트)" },
+        { "EA003_E", "과일과 야채담기 [ENG]" },
+        { "EA025", "북극 [미디어 아트]" },
+        { "EA026", "공룡 [미디어 아트]" },
         { "EA018", "자동차를 꾸며요" },
         { "EA017", "일하는 자동차가 있어요" },
         { "EA012", "어떤 자동차 일까요?" },
-        { "EA021", "(미디어 아트) 해변" },
-        { "EA020", "(교통) 횡단보도를 안전하게 건너요" },
+        { "EA021", "해변 [미디어 아트]" },
+        { "EA020", "횡단보도를 안전하게 건너요" },
         { "EA010", "가을 열매를 찾아요" },
-        { "EA022", "(미디어 아트) 코스모스" },
-        { "EA023", "(미디어 아트) 숲속" },
-        { "EA031", "(재난) 불이 나면 비상구로 대피해요" },
+        { "EA022", "코스모스  [미디어 아트]" },
+        { "EA023", "숲속  [미디어 아트]" },
+        { "EA031", "불이 나면 비상구로 대피해요" },
         { "EA030", "가을 곤충은 어디 있을까요?" }
     };
 
@@ -342,18 +342,22 @@ public class ContentAdjuster : MonoBehaviour
     {
         var allScenes = XmlManager.Instance.SceneSettings.Values;
 
-        string categoryKey = category.ToString(); // "Physical_Activity" 등
+        string categoryKey = category.ToString();
+
         var filtered = allScenes
-            .Where(x => x.Category == categoryKey)
+            .Where(x =>
+                    x.Category == categoryKey &&
+                    x.Month == "None")
             .ToList();
 
         pagedSceneData.Clear();
+
         for (int i = 0; i < filtered.Count; i += 8)
         {
             pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
         }
 
-        Debug.Log($"{categoryKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지로 구성 완료");
+        Debug.Log($"[{categoryKey}] 영역 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
 
     public void FilterAndPaginateContentByMonth(string monthKey)
@@ -370,8 +374,7 @@ public class ContentAdjuster : MonoBehaviour
 
         // 월이 일치하고 활성화된 콘텐츠만 필터
         var filtered = allScenes
-            .Where(x => x.Month == monthKey && x.IsActive)
-            .ToList();
+            .Where(x => x.Month == monthKey).ToList();
 
         pagedSceneData.Clear();
         for (int i = 0; i < filtered.Count; i += 8)
@@ -388,11 +391,11 @@ public class ContentAdjuster : MonoBehaviour
 
         for (int i = 0; i < buttonObjs.Length; i++)
         {
-           
-          
+
+
             GameObject buttonObj = buttonObjs[i];
-            
-            
+
+
             if (i >= sceneList.Count)
             {
                 buttonObj.SetActive(false);
@@ -439,19 +442,19 @@ public class ContentAdjuster : MonoBehaviour
                 if (data.IsActive)
                 {
                     //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
-                    var btnImageController =  Utils.GetOrAddComponent<CursorImageController>(buttonObj);
-                    btnImageController.DefaultScale =buttonObj.transform.localScale; 
-                    
+                    var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
+                    btnImageController.DefaultScale = buttonObj.transform.localScale;
+
                     string sceneId = data.Id;
                     btn.onClick.AddListener(() =>
                     {
-                        
+
                         //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
-                        if(_metaEduLauncherMaster == null)
-                            _metaEduLauncherMaster =  Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
-                       
+                        if (_metaEduLauncherMaster == null)
+                            _metaEduLauncherMaster = Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
+
                         if (sceneTitles.TryGetValue(data.Id, out string title)) _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, title);
-                       
+
                         // SceneManager.LoadScene(sceneId);
                     });
                 }
