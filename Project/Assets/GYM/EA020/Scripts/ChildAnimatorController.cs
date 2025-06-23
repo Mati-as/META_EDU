@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -19,9 +17,9 @@ public class ChildAnimatorController : MonoBehaviour
     [SerializeField] private Vector3 leftEndVector3 = new Vector3(-269.836669921875f, 34.73564910888672f, 103.5610122680664f);
     [SerializeField] private Vector3 centerEndVector3 = new Vector3(-270.63665771484377f, 34.73564910888672f, 106.09101104736328f);
 
-    [SerializeField] private Animator leftchildanimator;
-    [SerializeField] private Animator centerchildanimator;
-    [SerializeField] private Animator rightchildanimator;
+    [SerializeField] private Animator leftChildAnimator;
+    [SerializeField] private Animator centerChildAnimator;
+    [SerializeField] private Animator rightChildAnimator;
 
     private void Start()
     {
@@ -33,7 +31,9 @@ public class ChildAnimatorController : MonoBehaviour
         rightChild.SetActive(false);
 
     }
-
+    
+    private static readonly int WalkHash = Animator.StringToHash("Walk");
+    
     public void Walk()
     {
         leftChild.transform.position = leftStartVector3;
@@ -42,34 +42,36 @@ public class ChildAnimatorController : MonoBehaviour
         leftChild.transform.rotation = Quaternion.identity;
         rightChild.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
-
+        
         //워크 애니메이션 진행
         DOVirtual.DelayedCall(2f, () =>
         {
             leftChild.SetActive(true);
-            leftchildanimator.SetBool("Walk", true);
+            leftChildAnimator.SetBool(WalkHash, true);
             leftChild.transform.DOMove(leftChildTargetTransform, 8f).OnComplete(() =>
             {
                 leftChild.SetActive(false);
-                leftchildanimator.SetBool("Walk", false);
+                leftChildAnimator.SetBool(WalkHash, true);
             });
         });
         DOVirtual.DelayedCall(9f, () =>
         {
             rightChild.SetActive(true);
-            rightchildanimator.SetBool("Walk", true);
+            rightChildAnimator.SetBool(WalkHash, true);
             DOVirtual.DelayedCall(0.5f, () =>
             {
                 rightChild.transform.DOMove(rightChildTargetTransform, 7f).SetEase(Ease.Linear).OnComplete(() =>
                 {
                     rightChild.SetActive(false);
-                    rightchildanimator.SetBool("Walk", false);
+                    rightChildAnimator.SetBool(WalkHash, true);
                 });
             });
 
         });
     }
 
+    private static readonly int GoodHash = Animator.StringToHash("Good");
+    
     public void End()
     {
         rightChild.transform.position = rightEndVector3;
@@ -85,9 +87,9 @@ public class ChildAnimatorController : MonoBehaviour
         rightChild.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
 
         //굿애니메이션 진행
-        leftchildanimator.SetBool("Good", true);
-        centerchildanimator.SetBool("Good", true);
-        rightchildanimator.SetBool("Good", true);
+        leftChildAnimator.SetBool(GoodHash, true);
+        centerChildAnimator.SetBool(GoodHash, true);
+        rightChildAnimator.SetBool(GoodHash, true);
     }
 
 

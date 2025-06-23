@@ -39,7 +39,7 @@ public class CrossRoad_UIManager : Base_UIManager
     {
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
-
+    
         AudioClip audioClip = Resources.Load<AudioClip>($"CrossRoad/Audio/audio_{audioPath}");
 
         seq?.Kill();
@@ -47,7 +47,13 @@ public class CrossRoad_UIManager : Base_UIManager
 
         seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
         seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"CrossRoad/Audio/audio_{audioPath}"));
-        seq.AppendInterval(audioClip.length + 0.2f);
+
+        // CustomDuration이 유효한 값(0보다 큰 값)이면 그걸, 아니면 audioClip 길이에 0.2초 추가한 걸 사용
+        float interval = message.CustomDuration 
+                         ?? (audioClip.length + 0.3f);
+        
+        seq.AppendInterval(interval);
+
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 

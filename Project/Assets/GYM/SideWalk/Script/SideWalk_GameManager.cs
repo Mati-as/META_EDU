@@ -3,6 +3,7 @@ using Cinemachine;
 using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,11 +28,16 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     [SerializeField] private Button nextRoadBtn; 
     [SerializeField] private Button nextEndSideWalkBtn;
 
-    [SerializeField] private Transform eventChildSideWalkTranform;
-    [SerializeField] private Transform eventCarSideWalkTranform;
+    [SerializeField] private Transform eventChildSideWalkTransform;
+    [SerializeField] private Transform eventCarSideWalkTransform;
 
     [SerializeField] private GameObject blackoutSideWalk;
     [SerializeField] private GameObject blackoutRoad;
+
+    public Image roadTextBg;
+    public Image sidewalkTextBg;
+    public TMP_Text roadText;
+    public TMP_Text sidewalkText;
 
 
     protected override void Init()
@@ -88,11 +94,11 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         OnGameStart();
     }
 
-    public void OnGameStart()
+    private void OnGameStart()
     {
         //if (_stage == EventStage.Intro)
         //    NextStage(EventStage.Intro);
-        NextStage(EventStage.Road);
+        NextStage(EventStage.EndRoad);
 
     }
 
@@ -106,8 +112,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             case EventStage.CarExample: StartCarExampleStage(); break;
             case EventStage.Road: StartRoadStage(); break;
             case EventStage.SideWalk: StartSideWalkStage(); break;
-            case EventStage.EndSideWalk: EndSceneSideWalkStage(); break;
             case EventStage.EndRoad: EndSceneRoadStage(); break;
+            case EventStage.EndSideWalk: EndSceneSideWalkStage(); break;
         }
 
         Logger.Log($"{next}스테이지로 변경");
@@ -117,7 +123,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     private void StartIntroStage()
     {
-        Sequence sequence = DOTween.Sequence()
+        DOTween.Sequence()
             .AppendCallback(() =>
             {
                 TriggerAllMoves();
@@ -137,7 +143,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     private void StartHumanExampleStage()
     {
-        Sequence sequence = DOTween.Sequence()
+        DOTween.Sequence()
             .AppendCallback(() =>
             {
                 eventChild.SetActive(true);
@@ -181,11 +187,11 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     private void StartCarExampleStage()
     {
         eventCar.transform.DOKill();
-        Sequence sequence = DOTween.Sequence()
+        DOTween.Sequence()
             .AppendCallback(() =>
             {
-                eventCar.transform.position = eventCarSideWalkTranform.transform.position;
-                eventChild.transform.position = eventChildSideWalkTranform.transform.position;
+                eventCar.transform.position = eventCarSideWalkTransform.transform.position;
+                eventChild.transform.position = eventChildSideWalkTransform.transform.position;
             })
             .AppendInterval(1f)
             .AppendCallback(() =>
@@ -233,7 +239,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     private void StartRoadStage()
     {
-        Sequence seq = DOTween.Sequence()
+        DOTween.Sequence()
         .Append(blackoutRoad.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
              .Join(blackoutRoad.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
              .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("자동차가 다니는 길이 없어졌어요!", "audio_5_자동차가_가는_길이_없어졌어요_")))
@@ -259,7 +265,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     private void StartSideWalkStage()
     {
-        Sequence seq = DOTween.Sequence()
+        DOTween.Sequence()
              .Append(blackoutSideWalk.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
              .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
              .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들이 다니는 길이 없어졌어요!", "audio_10_친구들이_다니는_길이_없어졌어요_")))
@@ -284,15 +290,26 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     {
         //기존 사람이 지나다니는 1번상황에서 인도를 스케일 조정으로 눈에 띄게 표시
         //하단에 텍스트로 "차도" 표시 , 다음으로 버튼
-        Sequence seq = DOTween.Sequence()
-                .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("마지막으로 오늘 배운 걸 다시 한번 볼까요?", "audio_16_마지막으로_오늘_배운_걸_다시_한번_볼까요_")))
-                .AppendInterval(5f)
-
-                .Append(blackoutRoad.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear).SetLoops(10, LoopType.Yoyo))
-                .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("자동차는 차도로 다녀요", "audio_18_자동차는_차도로_다녀요_")))
-                .AppendInterval(4f)
-                .AppendCallback(() => nextEndSideWalkBtn.gameObject.SetActive(true))
-        ;
+        DOTween.Sequence()
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("마지막으로 오늘 배운 걸 다시 한번 볼까요?",
+                    "audio_16_마지막으로_오늘_배운_걸_다시_한번_볼까요_")))
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                roadTextBg.DOFade(1, 1);
+                roadText.DOFade(1, 1);
+            })
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("자동차는 차도로 다녀요", "audio_18_자동차는_차도로_다녀요_")))
+            .Append(blackoutRoad.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear)
+                .SetLoops(10, LoopType.Yoyo))
+            .Join(roadTextBg.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear)
+                .SetLoops(10, LoopType.Yoyo))
+            .AppendInterval(1f)
+            .AppendCallback(() => nextEndSideWalkBtn.gameObject.SetActive(true))
+            ;
 
     }
 
@@ -301,11 +318,32 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     {
         //기존 차가 지나다니는 1번상황에서 인도를 스케일 조정으로 눈에 띄게 표시
         //하단에 텍스트로 "인도" 표시
-        Sequence seq = DOTween.Sequence()
-               .Append(blackoutSideWalk.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear).SetLoops(10, LoopType.Yoyo))
-               .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들은 인도로 다녀요", "audio_17_친구들은_인도로_다녀요_")))
-               .AppendInterval(4f)
-       ;
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                roadTextBg.DOFade(0, 1);
+                roadText.DOFade(0, 1);
+            })
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                sidewalkTextBg.DOFade(1, 1);
+                sidewalkText.DOFade(1, 1);
+            })
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("친구들은 인도로 다녀요", "audio_17_친구들은_인도로_다녀요_")))
+            .Append(blackoutSideWalk.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear)
+                .SetLoops(10, LoopType.Yoyo))
+            .Join(sidewalkTextBg.transform.DOScale(Vector3.one * 1.1f, 0.5f).SetEase(Ease.Linear)
+                .SetLoops(10, LoopType.Yoyo))
+            .AppendCallback(() =>
+            {
+                sidewalkTextBg.DOFade(0, 1);
+                sidewalkText.DOFade(0, 1);
+            })
+            .AppendInterval(1f)
+            ;
     }
 
     
@@ -333,7 +371,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(0.6f, () => nextEndSideWalkBtn.gameObject.SetActive(false));
     }
 
-    public void TriggerAllMoves()
+    private void TriggerAllMoves()
     {
         foreach (var m in _movers)
         {

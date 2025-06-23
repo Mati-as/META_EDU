@@ -43,7 +43,7 @@ public class Truck : MonoBehaviour
         manager.ClickSound();
 
         float move = moveDistance + soilCountClass.plusMoveDistance;
-        audioSource.clip = manager.HeavyMachinerySound;
+        audioSource.clip = manager.heavyMachinerySound;
 
         if (!btnTwiceIssue)
         {

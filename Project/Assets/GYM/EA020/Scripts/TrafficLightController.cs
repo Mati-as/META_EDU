@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using MyGame.Messages;
 using SuperMaxim.Messaging;
@@ -32,6 +33,10 @@ public class TrafficLightController : MonoBehaviour
     [SerializeField] private Image greenGameOver;
     [SerializeField] private Image redGameOver;
 
+    public List<GameObject> crossRoadArrow;
+    
+    public CrossRoad_GameManager gameManager;
+    
     public LightColor CurrentColor
     {
         get; private set;
@@ -56,6 +61,14 @@ public class TrafficLightController : MonoBehaviour
         float gTime = greenDuration;
         float rTime = redDuration;
 
+        
+        if (gameManager.level >= 4)     //게임종료
+        {
+            EndGame();
+            gameManager.EndGame();
+            return;
+        }
+        
         lightSequence = DOTween.Sequence()
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("건너기 전에 주위를 살피고 건너요", "0_건너기_전에_주위를_살피고_건너요")))
         .JoinCallback(() =>
@@ -63,6 +76,7 @@ public class TrafficLightController : MonoBehaviour
             leftTrafficSignal.sprite = GreenTrafficSignalImg;
             rightTrafficSignal.sprite = GreenTrafficSignalImg;
             leftTime.color = greenTextColor;
+            rightTime.color = greenTextColor;
             rightTime.color = greenTextColor;
             leftTime.text = greenDuration.ToString();
             rightTime.text = greenDuration.ToString();
@@ -72,11 +86,17 @@ public class TrafficLightController : MonoBehaviour
         .AppendInterval(4f)
         .AppendCallback(() =>
         {
+            foreach (var go in crossRoadArrow)
+                go.SetActive(true);
             GameOverBG.DOFade(0, 1);
             greenGameOver.DOFade(0, 1);
         })
         .AppendInterval(1f)
-        .AppendCallback(() => ChangeTo(LightColor.Green))
+        .AppendCallback(() =>
+        {
+            ChangeTo(LightColor.Green);
+            Messenger.Default.Publish(new NarrationMessage("친구들과 함께 횡단보도를 건너주세요", "0_친구들과_다함께_횡단보도를_건너야해요_", 18));
+        })
         .AppendInterval(gTime)
         .Join(
             DOVirtual.Float(
@@ -89,6 +109,8 @@ public class TrafficLightController : MonoBehaviour
                 }
             ).SetEase(Ease.Linear)
         )
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("초록불이 끝났어요. 다음 신호를 기다려볼까요?", "1_초록불이_끝났어요__다음_신호를_기다려볼까요_", 3)))
+        .AppendInterval(5)
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("빨간 불에는 건너지 않아요", "1_빨간_불에는_건너지_않아요_")))
         .JoinCallback(() =>
         {
@@ -104,12 +126,17 @@ public class TrafficLightController : MonoBehaviour
         .AppendInterval(4f)
         .AppendCallback(() =>
         {
+            foreach (var go in crossRoadArrow)
+                go.SetActive(false);
             GameOverBG.DOFade(0, 1);
             redGameOver.DOFade(0, 1);
         })
         .AppendInterval(1f)
-        .AppendInterval(1f)
-        .AppendCallback(() => ChangeTo(LightColor.Red))
+        .AppendCallback(() =>
+        {
+            ChangeTo(LightColor.Red);
+            Messenger.Default.Publish(new NarrationMessage("초록불이 켜질 때 까지 기다려요!", "0_초록불이_켜질_때_까지_기다려요_", 18));
+        })
         .AppendInterval(rTime)
         .Join(DOVirtual.Float(rTime, 0, rTime, v =>
                 {
@@ -119,9 +146,17 @@ public class TrafficLightController : MonoBehaviour
                 }
             ).SetEase(Ease.Linear)
         )
-
+        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("빨간불이 끝났어요. 횡단보도를 건너볼까요?", "3__빨간불이_끝났어요__횡단보도를_건너볼까요_", 3)))
+        .AppendInterval(5)
         .SetLoops(20, LoopType.Restart);
     }
+    //
+    // public Action OnCheckGameEnd;
+    //
+    // private void CheckGameEnd()
+    // {
+    //     OnCheckGameEnd?.Invoke();
+    // }
 
     private void ChangeTo(LightColor color)
     {
@@ -129,23 +164,23 @@ public class TrafficLightController : MonoBehaviour
         OnLightChanged?.Invoke(color);
     }
 
-    private void UpdateCountdownText(float time, LightColor color)  //시간 체크하는 용도
-    {
-        // 초 단위 정수만 보고 싶으면 Mathf.CeilToInt
-        int seconds = Mathf.CeilToInt(time);
-        switch (color)
-        {
-            case LightColor.Red:
-                leftTime.color = redTextColor;
-                rightTime.color = redTextColor;
-                break;
-            case LightColor.Green:
-                leftTime.color = greenTextColor;
-                rightTime.color = greenTextColor;
-                break;
-        }
-        leftTime.text = seconds.ToString();
-        rightTime.text = seconds.ToString();
-    }
+    // private void UpdateCountdownText(float time, LightColor color) //시간 체크하는 용도
+    // {
+    //     // 초 단위 정수만 보고 싶으면 Mathf.CeilToInt
+    //     int seconds = Mathf.CeilToInt(time);
+    //     switch (color)
+    //     {
+    //         case LightColor.Red:
+    //             leftTime.color = redTextColor;
+    //             rightTime.color = redTextColor;
+    //             break;
+    //         case LightColor.Green:
+    //             leftTime.color = greenTextColor;
+    //             rightTime.color = greenTextColor;
+    //             break;
+    //     }
+    //     leftTime.text = seconds.ToString();
+    //     rightTime.text = seconds.ToString();
+    // }
 
 }
