@@ -29,7 +29,8 @@ public class UI_IntroTutorialUIController : UI_PopUp
     private enum TMPs
     {
         TutorialTextA,
-        TutorialTextB
+        TutorialTextB,
+        TutorialText_PlayType
     }
     
     
@@ -189,6 +190,18 @@ public class UI_IntroTutorialUIController : UI_PopUp
             }
         }
 
+        foreach (XmlNode node in nodes)
+        {
+      
+            if (node.Attributes["sceneid"].Value == _currentSceneName +"_B")
+            {
+                GetTMP((int)TMPs.TutorialText_PlayType).text = node.Attributes["text"].Value;
+                isUiInfoOnText = 1;
+                break;
+            }
+        }
+        
+        
         if (isUiInfoOnText == 0)
         {
 #if UNITY_EDITOR
