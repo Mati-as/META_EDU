@@ -172,8 +172,8 @@ public class CrossRoad_GameManager : Base_GameManager
 
     private void StartGame()
     {
-        lightController.ChangeTrafficLight();
         lightController.OnLightChanged += LightChanged;
+        lightController.ChangeTrafficLight();
 
         DOVirtual.DelayedCall(5f, () =>
         {
@@ -222,6 +222,13 @@ public class CrossRoad_GameManager : Base_GameManager
     private void LightChanged(LightColor color)
     {
 
+        if (level >= 3)     //게임종료
+        {
+            lightController.EndGame();
+            EndGame();
+            return;
+        }
+        
         playingGame = true;
         CurrentColor = color;
         randomIndex = Random.Range(0, 101);
