@@ -79,11 +79,18 @@ public abstract class Base_GameManager : MonoBehaviour
 
     private const int TARGET_FRAME = 60; //
 
-    protected float BGM_VOLUME
+    private float _bgmVolume = 0.8f; // BGM 볼륨은 0.7f ~ 1f 사이로 설정합니다.
+    protected float bgmVolume
     {
-        get;
-        private set;
-    } = 0.105f;
+        get
+        {
+            return _bgmVolume;
+        }
+        set
+        {
+            _bgmVolume = Mathf.Lerp(0f, 1f, Managers.Setting.BGM_VOLUME_SETTING_VALUE); // BGM 볼륨은 0.7f ~ 1f 사이로 설정합니다.
+        }
+    } 
 
     protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY = 0.08f;
     protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
@@ -483,7 +490,7 @@ public abstract class Base_GameManager : MonoBehaviour
                 });
 
             Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/{SceneManager.GetActiveScene().name}",
-                BGM_VOLUME);
+                bgmVolume);
         }
     }
 

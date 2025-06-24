@@ -23,7 +23,7 @@ public class SoundManager : MonoBehaviour
     public float[] VOLUME_MAX = new float[(int)Sound.Max];
 
     private readonly float VOLUME_MAX_MAIN = 1f;
-    private readonly float VOLUME_MAX_BGM = 0.5f;
+    private readonly float VOLUME_MAX_BGM = 1f;
     private readonly float VOLUME_MAX_EFFECT = 1f;
     private readonly float VOLUME_MAX_NARRATION = 1f;
 
@@ -79,7 +79,7 @@ public class SoundManager : MonoBehaviour
                 {
                     volumes[(int)Sound.Main] = Managers.Setting.MAIN_VOLIUME;
                     volumes[(int)Sound.Bgm] = Managers.Setting.EFFECT_VOLUME;
-                    volumes[(int)Sound.Effect] = Managers.Setting.BGM_VOLUME;
+                    volumes[(int)Sound.Effect] = Managers.Setting.BGM_VOLUME_SETTING_VALUE;
                     volumes[(int)Sound.Narration] = Managers.Setting.NARRATION_VOLUME;
                 }
 
