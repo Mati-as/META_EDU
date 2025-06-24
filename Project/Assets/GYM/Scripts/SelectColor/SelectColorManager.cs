@@ -10,7 +10,7 @@ public class SelectColorManager : Base_GameManager
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
-        BGM_VOLUME = 0.2f;
+        //BGM_VOLUME = 0.2f;
         base.Init();
         ManageProjectSettings(150, 0.15f);
     }

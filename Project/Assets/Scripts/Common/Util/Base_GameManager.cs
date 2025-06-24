@@ -82,7 +82,7 @@ public abstract class Base_GameManager : MonoBehaviour
     protected float BGM_VOLUME
     {
         get;
-        set;
+        private set;
     } = 0.105f;
 
     protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY = 0.08f;

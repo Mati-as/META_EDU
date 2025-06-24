@@ -85,7 +85,7 @@ public class EA016_GameManager : Ex_BaseGameManager
     {
         SetPool(ref particlePool);
         SensorSensitivity = 0.18f;
-        BGM_VOLUME = 0.2f;
+        //////BGM_VOLUME = 0.2f;
         psResourcePath = "SortedByScene/BasicContents/EA016/Fx_Click";
         base.Init();
         ManageProjectSettings(150, 0.15f);
