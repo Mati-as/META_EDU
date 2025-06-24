@@ -5,18 +5,18 @@ using MyGame.Messages;
 
 public class SideWalk_UIManager : Base_UIManager
 {
-    private SideWalk_GameManager manager;
+    private SideWalk_GameManager _manager;
 
-    private Sequence seq;
+    private Sequence _seq;
 
     protected override void Awake()
     {
         base.Awake();
         Messenger.Default.Subscribe<NarrationMessage>(OnNarrationFromGm);
-        if (manager == null)
+        if (_manager == null)
         {
-            manager = GameObject.FindWithTag("GameManager").GetComponent<SideWalk_GameManager>();
-            Debug.Assert(manager != null, "GameManager가 씬에 없습니다");
+            _manager = GameObject.FindWithTag("GameManager").GetComponent<SideWalk_GameManager>();
+            Debug.Assert(_manager != null, "GameManager가 씬에 없습니다");
         }
 
     }
@@ -38,15 +38,18 @@ public class SideWalk_UIManager : Base_UIManager
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
 
-        AudioClip audioClip = Resources.Load<AudioClip>($"SideWalk/Audio/{audioPath}");
+        var audioClip = Resources.Load<AudioClip>($"SideWalk/Audio/{audioPath}");
 
-        seq?.Kill();
-        seq = DOTween.Sequence();
+        // CustomDuration이 유효하면 그걸 아니면 audioClip 길이에 2초 추가
+        float interval = message.CustomDuration ?? (audioClip.length + 2f);
+        
+        _seq?.Kill();
+        _seq = DOTween.Sequence();
 
-        seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
-        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
-        seq.AppendInterval(audioClip.length + 2f);
-        seq.AppendCallback(() => ShutInstructionUI(narrationText));
+        _seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
+        _seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
+        _seq.AppendInterval(interval);
+        _seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 
 
