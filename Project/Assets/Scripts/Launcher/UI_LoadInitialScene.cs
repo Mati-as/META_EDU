@@ -54,6 +54,7 @@ public class UI_LoadInitialScene : UI_PopUp
                 StopAllCoroutines();
               
 
+                Managers.UI.CloseAllPopupUI();
                 Managers.UI.ShowPopupUI<UI_Home>();
             }
             
