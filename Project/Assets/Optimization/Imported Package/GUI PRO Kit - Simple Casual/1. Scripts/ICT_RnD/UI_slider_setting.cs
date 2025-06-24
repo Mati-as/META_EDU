@@ -33,7 +33,7 @@ public class UI_slider_setting : MonoBehaviour
             }
             else if (BGM == true)
             {
-                // volume_slider.value = Manager_audio.instance.Get_BGM_volume();
+                // volume_slider.value = Manager_audio.instance.Get_//BGM_VOLUME();
             }
             else if (Narration == true)
             {
@@ -59,7 +59,7 @@ public class UI_slider_setting : MonoBehaviour
                 }
                 else if (BGM == true)
                 {
-                    // Manager_audio.instance.Set_BGM_volume(volume_slider.value);
+                    // Manager_audio.instance.Set_//BGM_VOLUME(volume_slider.value);
                 }
                 else if (Narration == true)
                 {

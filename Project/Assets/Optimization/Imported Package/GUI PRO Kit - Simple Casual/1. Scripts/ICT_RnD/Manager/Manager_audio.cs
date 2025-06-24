@@ -17,7 +17,7 @@
 //     //private float All_volume = 1f;
 //     private float Effect_volume = 0.5f;
 //     private float Narration_volume = 0.5f;
-//     private float BGM_volume = 0.3f;
+//     private float //BGM_VOLUME = 0.3f;
 //
 //
 //     public GameObject Launcher;
@@ -48,9 +48,9 @@
 //     {
 //         return Effect_volume;
 //     }
-//     public float Get_BGM_volume()
+//     public float Get_//BGM_VOLUME()
 //     {
-//         return BGM_volume;
+//         return //BGM_VOLUME;
 //     }
 //     public float Get_Narration_volume()
 //     {
@@ -107,7 +107,7 @@
 //         //Wrong_answer = this.transform.GetChild(10).gameObject.GetComponent<AudioSource>();
 //
 //         Set_effect_sound_volume(Effect_volume);
-//         Set_BGM_volume(BGM_volume);
+//         Set_//BGM_VOLUME(//BGM_VOLUME);
 //     }
 //     public void Set_all_sound_volume(float volume)
 //     {
@@ -130,7 +130,7 @@
 //         Click.volume = volume;
 //     }
 //
-//     public void Set_BGM_volume(float volume)
+//     public void Set_//BGM_VOLUME(float volume)
 //     {
 //         BGM.volume = volume;
 //         Warm.volume = volume;

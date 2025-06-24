@@ -25,7 +25,7 @@ public class BB006_WaterPlaygroundGameManager : Base_GameManager
     {
       SetPool(ref particlePool);
       SensorSensitivity = 0.18f;
-      BGM_VOLUME = 0.2f;
+      //BGM_VOLUME = 0.2f;
       base.Init();
       ManageProjectSettings(150,0.15f);
         
