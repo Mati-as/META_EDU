@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 
-public class ContentAdjuster_Test : MonoBehaviour
+public class TestOnly_ContentAdjuster : MonoBehaviour
 {
     UI_MetaEduLauncherMaster _metaEduLauncherMaster;
     private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>() 
@@ -61,11 +61,7 @@ public class ContentAdjuster_Test : MonoBehaviour
     }
     public enum ContentCategory
     {
-        Physical_Activity,
-        Art_Expression,
-        Science_Exploration,
-        Social_Skills,
-        Communication
+        Test
     }
 
     public ModeType mode; // 인스펙터에서 선택
@@ -75,8 +71,7 @@ public class ContentAdjuster_Test : MonoBehaviour
 
     private string[] allKeys = new string[]
     {
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+       "Test"
     };
 
     void Start()
@@ -94,7 +89,7 @@ public class ContentAdjuster_Test : MonoBehaviour
         {
      
             case ModeType.테스트:
-                FilterAndPaginateContentByMonth("Dec");
+                FilterAndPaginateContent(ContentCategory.Test);
                 InitPageNavigation();
                 return;
         }
@@ -113,9 +108,30 @@ public class ContentAdjuster_Test : MonoBehaviour
         }
     }
 
+    public void FilterAndPaginateContent(ContentCategory category)
+    {
+        var allScenes = XmlManager.Instance.SceneSettings.Values;
+
+        string categoryKey = category.ToString();
+
+        var filtered = allScenes
+            .Where(x =>
+                x.Category == categoryKey &&
+                x.Month == "None")
+            .ToList();
+
+        pagedSceneData.Clear();
+
+        for (int i = 0; i < filtered.Count; i += 8)
+        {
+            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
+        }
+
+        Debug.Log($"[{categoryKey}] 영역 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
+    }
 
     //[영역별]
-    public ContentCategory selectedCategory = ContentCategory.Science_Exploration;
+    public ContentCategory selectedCategory = ContentCategory.Test;
 
     public GameObject pageA;
     public GameObject pageB;
@@ -249,50 +265,7 @@ public class ContentAdjuster_Test : MonoBehaviour
         });
     }
 
-    public void FilterAndPaginateContent(ContentCategory category)
-    {
-        var allScenes = XmlManager.Instance.SceneSettings.Values;
-
-        string categoryKey = category.ToString(); // "Physical_Activity" 등
-        var filtered = allScenes
-            .Where(x => x.Category == categoryKey)
-            .ToList();
-
-        pagedSceneData.Clear();
-        for (int i = 0; i < filtered.Count; i += 8)
-        {
-            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
-        }
-
-        Debug.Log($"{categoryKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지로 구성 완료");
-    }
-
-    public void FilterAndPaginateContentByMonth(string monthKey)
-    {
-        var allScenes = XmlManager.Instance.SceneSettings.Values;
-
-        // XML에서 이 월이 활성화되어 있는지 확인
-        if (!XmlManager.Instance.MenuSettings.TryGetValue(monthKey, out bool isMonthEnabled) || !isMonthEnabled)
-        {
-            Debug.LogWarning($"[{monthKey}]은 MenuSettingData.xml에서 비활성화된 월입니다.");
-            pagedSceneData.Clear();
-            return;
-        }
-
-        // 월이 일치하고 활성화된 콘텐츠만 필터
-        var filtered = allScenes
-            .Where(x => x.Month == monthKey && x.IsActive)
-            .ToList();
-
-        pagedSceneData.Clear();
-        for (int i = 0; i < filtered.Count; i += 8)
-        {
-            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
-        }
-
-        Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
-    }
-
+    
     void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
     {
         var buttonObjs = slotIndex == 0 ? pageAButtons : pageBButtons;
@@ -337,9 +310,9 @@ public class ContentAdjuster_Test : MonoBehaviour
             }
 
             // 자물쇠
-            var lockFrame = buttonObj.transform.Find("LockFrame");
-            if (lockFrame != null)
-                lockFrame.gameObject.SetActive(!data.IsActive);
+            // var lockFrame = buttonObj.transform.Find("LockFrame");
+            // if (lockFrame != null)
+            //     lockFrame.gameObject.SetActive(!data.IsActive);
 
             // 버튼 이벤트
             var btn = buttonObj.GetComponent<Button>();
