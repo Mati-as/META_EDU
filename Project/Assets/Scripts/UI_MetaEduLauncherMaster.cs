@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -32,7 +33,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     private enum UI
     {
         Btn_Home,
-        Btn_Setting,
+        //Btn_Setting,
         Btn_Quit,
         Btn_Back
     }
@@ -62,117 +63,31 @@ public class UI_MetaEduLauncherMaster : UI_Scene
             Managers.UI.CloseAllPopupUI();
             Managers.UI.ShowPopupUI<UI_Home>();
         });
-        GetObject((int)UI.Btn_Setting).BindEvent(()=>
-        {
-            Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
-        });
+        // GetObject((int)UI.Btn_Setting).BindEvent(()=>
+        // {
+        //     Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
+        // });
         GetObject((int)UI.Btn_Quit).BindEvent(()=>{
             Application.Quit();
         });
-        GetObject((int)UI.Btn_Back).BindEvent(()=>
+        GetObject((int)UI.Btn_Back).BindEvent(() =>
         {
-            switch (Managers.UI.currentPopupClass)
+            Logger.ContentTestLog($"{Managers.UI.GetUICounts()}");
+
+         
+            if (!(Managers.UI.currentPopupClass is UI_Home))
             {
-                #region To 주제별
-
-                case UI_ChuseokAndVehicles_ContentSortedByTheme:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_FirstSemester_ContentSortedByTheme>();
-                    break;
-
-                case UI_FirstSemester_ContentSortedByTheme:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SemesterSelection>();
-                    break;
-                
-                case UI_SecondSemester_ContentSortedByTheme:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SemesterSelection>();
-                    break;
-
-                
-                case UI_Sep_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
-                    break;
-                
-                case UI_Oct_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
-                    break;
-                #endregion
-
-
-                #region To Home
-
-                case UI_TestBuild:
-                    Managers.UI.ClosePopupUI();
+                Managers.UI.ClosePopupUI();
+                if (Managers.UI.GetUICounts() == 2)
+                {
                     Managers.UI.ShowPopupUI<UI_Home>();
-                    break;
-                
-                case UI_SemesterSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_Home>();
-                    break;
+                }
 
-                case UI_ContentSortedByArea:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_Home>();
-                    break;
-                case UI_SensorSettingMain:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_Home>();
-                    break;
-
-                #endregion
-
-
-                #region To 영역별
-
-                case UI_PA_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
-                    break;
-                case UI_Art_ContentSelection:
-
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
-                    break;
-                case UI_Communication_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
-                    break;
-                case UI_Science_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
-                    break;
-                case UI_Social_ContentSelection:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_ContentSortedByArea>();
-                    break;
-
-                #endregion
-
-                case UI_SensorSetting:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
-                    break;
-                case UI_ScreenSetting:
-                    Managers.UI.ClosePopupUI();
-                    Managers.UI.ShowPopupUI<UI_SensorSettingMain>();
-                    break;
-
-                default:
-                    Managers.UI.ClosePopupUI();
-                    Logger.CoreClassLog("UIConfirmation 아닌경우 주의");
-                    break;
+                return;
             }
+            
         });
         
-        GetObject((int)UI.Btn_Home).SetActive(false);
-        GetObject((int)UI.Btn_Setting).SetActive(false);
-        GetObject((int)UI.Btn_Quit).SetActive(false);
-        GetObject((int)UI.Btn_Back).SetActive(false);
         
        
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
@@ -225,33 +140,6 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     }
 
 
-    // public void OnSceneBtnClicked(List<RaycastResult> results)
-    // {
-    //     DOVirtual.Float(0, 0, 0.1f, _ =>
-    //         {
-    //         })
-    //         .OnComplete(() =>
-    //         {
-    //             MetaEduLauncher.UIType clickedUI = 0;
-    //
-    //             foreach (var result in results)
-    //                 // 설정,홈,컨텐츠 **버튼** ---------------------------------------------------------
-    //                 if (result.gameObject.name.Contains("SceneName"))
-    //                 {
-    //                     GameNameWaitingForConfirmation = result.gameObject.name;
-    //                     GameKoreanName = result.gameObject.GetComponentInChildren<Text>().text;
-    //                     // ** 씬 로드** ---------------------------------------------------------
-    //                     Logger.Log($"{result.gameObject.name}게임 씬 버튼 클릭 됨--------------------------------------");
-    //              
-    //                         Managers.UI.ShowPopupUI<UI_Confirmation>();
-    //                         return;
-    //                     
-    //
-    //
-    //                     return;
-    //                 }
-    //         });
-    // }
     
     public void OnSceneBtnClicked(string sceneId,string title)
     {
@@ -291,17 +179,18 @@ public class UI_MetaEduLauncherMaster : UI_Scene
      if(Managers.UI.FindPopup<UI_Home>())
      {
          GetObject((int)UI.Btn_Home).SetActive(false);
-         GetObject((int)UI.Btn_Setting).SetActive(false);
-         GetObject((int)UI.Btn_Quit).SetActive(false);
+         GetObject((int)UI.Btn_Quit).SetActive(true);
          GetObject((int)UI.Btn_Back).SetActive(false);
+       //  GetObject((int)UI.Btn_Setting).SetActive(true);
+       Logger.CoreClassLog("UI_MetaEduLauncherMaster RefreshUI() - Home UI 활성화");
          
      }
      else
      {
          GetObject((int)UI.Btn_Home).SetActive(true);
-         GetObject((int)UI.Btn_Setting).SetActive(true);
          GetObject((int)UI.Btn_Quit).SetActive(true);
          GetObject((int)UI.Btn_Back).SetActive(true);
+     //    GetObject((int)UI.Btn_Setting).SetActive(true);
      }
     }
     
@@ -309,9 +198,9 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     public void UIOff()
     {
        GetObject((int)UI.Btn_Home).SetActive(false);
-            GetObject((int)UI.Btn_Setting).SetActive(false);
             GetObject((int)UI.Btn_Quit).SetActive(false);
             GetObject((int)UI.Btn_Back).SetActive(false);
+          //  GetObject((int)UI.Btn_Setting).SetActive(false);
 
     }
     

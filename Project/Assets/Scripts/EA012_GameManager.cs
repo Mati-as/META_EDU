@@ -202,7 +202,16 @@ public class EA012_GameManager : Ex_BaseGameManager
                     {
                         _carAnimator.enabled = true;
                         _carAnimator.SetInteger(CAR_NUM ,(int)CarAnimSeq.Finished);
+                        
+                        DOVirtual.DelayedCall(12f, () =>
+                        {
+                            isClickableOnFinish = true;
+                            _carAnimator.enabled = false;
+                        });
+
                     });
+
+                  
         
                     break;
                 case MainSeq.SeatSelection:
@@ -340,11 +349,18 @@ public class EA012_GameManager : Ex_BaseGameManager
         }
     }
 
+#if UNITY_EDITOR
+    [SerializeField]
+    private MainSeq startSeq;
+#else
+     private MainSeq startSeq = MainSeq.SeatSelection;
+#endif
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-        currentMainSeq = MainSeq.SeatSelection;
+        currentMainSeq = startSeq;
     }
+
 
     public override void OnRaySynced()
     {
@@ -395,8 +411,65 @@ public class EA012_GameManager : Ex_BaseGameManager
         {
             OnRaySyncOnHelpCarMovePart(GameObj.Car_Bus);
         }
+            
+        else if (currentMainSeq == MainSeq.Finished)
+        {
+            OnRaySyncOnFinish();
+            //_carAnimator.enabled = false;
+           
+        }
     }
 
+    private bool isClickableOnFinish = false;
+    private Base_UIManager _uiManager;
+    private void OnRaySyncOnFinish()
+    {
+
+        if (!isClickableOnFinish) return;
+
+        if (_uiManager == null)
+            _uiManager = UIManagerObj.GetComponent<Base_UIManager>();
+        foreach (var hit in GameManager_Hits)
+        {
+            int id = hit.transform.GetInstanceID();
+
+
+            switch (_tfIdToEnumMap[id])
+            {
+                case (int)GameObj.Car_Ambulance:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Ambulance");
+                    GetObject((int)GameObj.Car_Ambulance).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Ambulance];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    _uiManager.PopFromZeroInstructionUI("구급차");
+                    break;
+                case (int)GameObj.Car_PoliceCar:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
+                        GetObject((int)GameObj.Car_PoliceCar).transform.localScale =_defaultSizeMap[(int)GameObj.Car_PoliceCar];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    _uiManager.PopFromZeroInstructionUI("경찰차");
+                    break;
+                case (int)GameObj.Car_FireTruck:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_FireTruck");
+                        GetObject((int)GameObj.Car_FireTruck).transform.localScale =_defaultSizeMap[(int)GameObj.Car_FireTruck];
+                    _uiManager.PopFromZeroInstructionUI("소방차");
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+                case (int)GameObj.Car_Bus:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Bus");
+                        GetObject((int)GameObj.Car_Bus).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Bus];
+                    _uiManager.PopFromZeroInstructionUI("버스");
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+                case (int)GameObj.Car_Taxi:
+                    _uiManager.PopFromZeroInstructionUI("택시");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Taxi");
+                        GetObject((int)GameObj.Car_Taxi).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Taxi];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+            }
+         
+        }
+    }
     #region Seat Selection Part
     
     int TIRE_GROUPCOUNT = 5;

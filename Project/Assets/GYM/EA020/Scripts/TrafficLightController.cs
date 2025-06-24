@@ -61,14 +61,6 @@ public class TrafficLightController : MonoBehaviour
         float gTime = greenDuration;
         float rTime = redDuration;
 
-        
-        if (gameManager.level >= 4)     //게임종료
-        {
-            EndGame();
-            gameManager.EndGame();
-            return;
-        }
-        
         lightSequence = DOTween.Sequence()
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("건너기 전에 주위를 살피고 건너요", "0_건너기_전에_주위를_살피고_건너요")))
         .JoinCallback(() =>

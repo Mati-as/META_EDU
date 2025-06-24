@@ -880,7 +880,7 @@ using Random = UnityEngine.Random;
                     }
                 });
         
-            _spritesMap[introCar][0].DOFade(0.10f, 2f);
+            _spritesMap[introCar][0].DOFade(0.20f, 2f);
         });
 
 

@@ -11,6 +11,12 @@ public class UIManager
 
      Stack<UI_PopUp> _popupStack = new Stack<UI_PopUp>();
      
+     
+     public UI_PopUp previousPopupClass
+     {
+         get;
+         set;
+     }
      public UI_PopUp currentPopupClass
      {
          get;
@@ -60,6 +66,11 @@ public class UIManager
 
     public int GetUICounts()
     {
+        
+        foreach (var popUP in _popupStack)
+        {
+            Logger.CoreClassLog($"[UI] Popup: {popUP.name}, Type: {popUP.GetType().Name}");
+        }
         return _popupStack.Count;
     }
     public T MakeSubItem<T>(Transform parent = null, string name = null) where T : UI_Base
@@ -129,6 +140,9 @@ public class UIManager
 
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
+        
+        previousPopupClass = currentPopupClass;
+        
       if (popupInstance.GetType() != typeof(UI_Confirmation))currentPopupClass = popupInstance;
 
         return popupInstance;

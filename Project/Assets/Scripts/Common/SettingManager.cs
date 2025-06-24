@@ -16,7 +16,7 @@ public class SettingManager : MonoBehaviour
     public  float SCREEN_PROJECTOER_HEIGHT_FROM_XML{get;private set;}
     public  float MAIN_VOLIUME{get;private set;}
     public  float EFFECT_VOLUME{get;private set;}
-    public  float BGM_VOLUME{get;private set;}
+    public  float BGM_VOLUME_SETTING_VALUE{get;private set;}
     public  float NARRATION_VOLUME{get;private set;}
 
     private string BgmSettingData;
@@ -81,7 +81,7 @@ public class SettingManager : MonoBehaviour
             MAIN_VOLIUME = float.Parse(mainVol);
             
             var bgmVol = node.Attributes["bgmvol"].Value;
-            BGM_VOLUME= float.Parse(bgmVol);
+            BGM_VOLUME_SETTING_VALUE= float.Parse(bgmVol);
             
             var effectVol = node.Attributes["effectvol"].Value;
             EFFECT_VOLUME = float.Parse(effectVol);

@@ -22,7 +22,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         OnRaceB, //OnStart, OnRoundFinish,
         OnFinish,
         
-        OnWinnerShow=11,
+        OnWinnerShow=11,ㄹㄴ
         
         
     }
@@ -159,7 +159,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 
                 case (int)MainSeq.SeatSelectionA:
                     ScaleBackSeats();
-                    _uiManager.PopFromZeroInstructionUI("각자 네모 모양에 서주세요!");
+                    _uiManager.PopFromZeroInstructionUI("마음에드는 차를 골라\n네모 모양에 서주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     AnimateAllSeats(Objs.Seats_TrackA);
@@ -169,7 +169,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.SeatSelectionB:
              
-                    _uiManager.PopFromZeroInstructionUI("각자 네모 모양에 서주세요!");
+                    _uiManager.PopFromZeroInstructionUI("마음에드는 차를 골라\n네모 모양에 서주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     ScaleBackSeats();
@@ -787,6 +787,14 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                     {
                         //_uiManager.PopFromZeroInstructionUI("시작!", 0f);
                         // Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Start");
+
+                        DOVirtual.DelayedCall(1.5f, () =>
+                        {
+                            char randomChar = (char)Random.Range('A', 'B' + 1);
+                            Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/Hurry" + randomChar);
+                        });
+                     
+                     
                         isRoundActive = true;
 
                         foreach (var key in _arrowMap.Keys.ToArray())
@@ -1003,23 +1011,27 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
     private static readonly int Finish = Animator.StringToHash("Finish");
 
 
+    private float _timeElapsedForNarration = 0f;
+    private const float NARRATION_INTERVAL = 12f; // 1초마다 내레이션 재생
+    
     private void Update()
     {
         if (isRoundActive)
         {
             _timeElapsed += Time.deltaTime;
+            _timeElapsedForNarration += Time.deltaTime;
+            
+            if (_timeElapsedForNarration >= Random.Range(NARRATION_INTERVAL-3,NARRATION_INTERVAL+3) && (TIME_LIMIT-_timeElapsed)>16)
+            {
+                isCountNarPlayed = true;
+                _timeElapsedForNarration = 0;
+                char randomChar = (char)Random.Range('A', 'B' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/Hurry" + randomChar);
+               
+            }
             if (_timeElapsed >= TIME_LIMIT)
             {
-                isRoundActive = false;
-                Managers.Sound.Play(SoundManager.Sound.Effect, "EA029/Stop");
-                //_uiManager.PopFromZeroInstructionUI("그만!");
-                _uiManager.PlayStopAnimation();
-                Managers.Sound.Play(SoundManager.Sound.Effect, "EA029/CarHonk");
-                foreach (var key in _arrowMap.Keys.ToArray())
-                {
-                    _arrowMap[key].DOScale(Vector3.zero, 0.75f).SetEase(Ease.InOutBounce);
-                    //_arrowMap[key].gameObject.SetActive(true);
-                }
+             
                 OnTrackRoundFinished();
             }
             int remainTime = TIME_LIMIT - (int)_timeElapsed;
@@ -1034,7 +1046,21 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
     }
 
     private void OnTrackRoundFinished()
-    {
+    {  
+        
+        _timeElapsedForNarration = 0;
+        isRoundActive = false;
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA029/Stop");
+        //_uiManager.PopFromZeroInstructionUI("그만!");
+        _uiManager.PlayStopAnimation();
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA029/CarHonk");
+        foreach (var key in _arrowMap.Keys.ToArray())
+        {
+            _arrowMap[key].DOScale(Vector3.zero, 0.75f).SetEase(Ease.InOutBounce);
+            //_arrowMap[key].gameObject.SetActive(true);
+        }
+        
+        
         foreach (var key in _selectedCarAnimators.Keys.ToArray())
         {
             _selectedCarAnimators[key].enabled = true;
