@@ -245,8 +245,7 @@ public class SoilCount : MonoBehaviour
                 {
                     _manager.btnBulldozerIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
                 });
-            Messenger.Default.Publish(new NarrationMessage("불도저가 움직일 수 있게 동작 버튼을 터치해주세요!", "6_불도저가_움직일_수_있게_동작_버튼을_터치해주세요"));
-
+            Messenger.Default.Publish(new NarrationMessage("불도저가 움직이도록 동작 버튼을 터치해주세요!", "6_불도저가_움직일_수_있게_동작_버튼을_터치해주세요"));
         });
         seq.AppendInterval(4f);
         seq.AppendCallback(() =>
