@@ -57,6 +57,8 @@ public class CrossRoad_GameManager : Base_GameManager
     [SerializeField] private GameObject readyImg;
     [SerializeField] private GameObject startImg;
     
+    [SerializeField] private ParticleSystem accidentParticle;
+    
     private enum LoseType
     {
         RedEvent, GreenEvent
@@ -151,20 +153,20 @@ public class CrossRoad_GameManager : Base_GameManager
                 {
                     trafficSignal.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
                 });
-                readyImg.SetActive(true);
+                readyImg.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => readyImg.SetActive(true));
                 Managers.Sound.Play(SoundManager.Sound.Narration, "CrossRoad/Audio/audio_1_준비");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                readyImg.SetActive(false);
-                startImg.SetActive(true);
+                readyImg.transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => readyImg.SetActive(false));
+                startImg.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => startImg.SetActive(true));
                 Managers.Sound.Play(SoundManager.Sound.Narration, "CrossRoad/Audio/audio_2_시작");
             })
             .AppendInterval(3f)
             .AppendCallback(()=>
             {
-                startImg.SetActive(false);
+                startImg.transform.DOScale(0, 0.5f).SetEase(Ease.OutElastic).OnComplete(() => startImg.SetActive(false));
                 StartGame();
             });
 
@@ -191,31 +193,47 @@ public class CrossRoad_GameManager : Base_GameManager
         _hits = Physics.RaycastAll(GameManager_Ray);
         foreach (var hit in _hits)
         {
-            if ((hit.collider.name == "BlueCar" || hit.collider.name == "RedCar") && playingGame)
+            if (hit.collider.name == "BlueCar" && playingGame)
                 if (CurrentColor == LightColor.Red)
-                    LoseGame(LoseType.RedEvent);
-            
-            if (hit.collider.CompareTag("toWork") && playingGame)
-            {
-                switch (CurrentColor)
                 {
-                    //case LightColor.Red:
-                    //        LoseGame(LoseType.RedEvent);
-                    //    return;
-                    case LightColor.Green:
-                        if (loseEventOn)
-                        {
-                            LoseGame(LoseType.GreenEvent);
-                            eventSeq.Kill();
-                        }
-                        else if (!loseEventOn)
-                        {
-                            //위치 파악용 이펙트 발생
-
-                        }
-                        return;
+                    hit.transform.DOKill();
+                    accidentParticle.transform.position = hit.point;
+                    accidentParticle.Play();
+                    LoseGame(LoseType.RedEvent);
+                    DOVirtual.DelayedCall(2f, () => hit.transform.position = _oriBlueCarPosition);
                 }
-            }
+
+            if (hit.collider.name == "RedCar" && playingGame)
+                if (CurrentColor == LightColor.Red)
+                {
+                    hit.transform.DOKill();
+                    accidentParticle.transform.position = hit.point;
+                    accidentParticle.Play();
+                    LoseGame(LoseType.RedEvent);
+                    DOVirtual.DelayedCall(2f, () => hit.transform.position = _oriRedCarPosition);
+                }
+            
+            // if (hit.collider.CompareTag("toWork") && playingGame)
+            // {
+            //     switch (CurrentColor)
+            //     {
+            //         //case LightColor.Red:
+            //         //        LoseGame(LoseType.RedEvent);
+            //         //    return;
+            //         case LightColor.Green:
+            //             if (loseEventOn)
+            //             {
+            //                 LoseGame(LoseType.GreenEvent);
+            //                 eventSeq.Kill();
+            //             }
+            //             else if (!loseEventOn)
+            //             {
+            //                 //위치 파악용 이펙트 발생
+            //
+            //             }
+            //             return;
+            //     }
+            // }
         }
     }
 
@@ -367,14 +385,17 @@ public class CrossRoad_GameManager : Base_GameManager
             .AppendCallback(() =>
             {
                 playingGame = false;
-                gameOverBg.DOFade(1f, 1f);
                 lightController.lightSequence.Pause();
                 loseEventOn = false;
                 Managers.Sound.Play(SoundManager.Sound.Effect, "CrossRoad/Audio/Car_Skid");
-                Messenger.Default.Publish(new NarrationMessage("빨간불에 건너면 위험해요!", "0_빨간불에_건너면_위험해요_"));
-
             })
-            .AppendInterval(6f)
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                gameOverBg.DOFade(1f, 1f);
+                Messenger.Default.Publish(new NarrationMessage("빨간불에 건너면 위험해요!", "0_빨간불에_건너면_위험해요_"));
+            })
+            .AppendInterval(5f)
             .AppendCallback(() =>
             {
                 //패배 효과음

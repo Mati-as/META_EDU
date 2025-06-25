@@ -313,7 +313,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     }
 
-
+    
     private void EndSceneSideWalkStage()        //컨텐츠 종료 
     {
         //기존 차가 지나다니는 1번상황에서 인도를 스케일 조정으로 눈에 띄게 표시
