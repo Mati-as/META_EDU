@@ -217,15 +217,23 @@ public class Base_UIManager : UI_PopUp
         UI_Start.gameObject.SetActive(true);
         
 
-        _timerRelatedAnimSeq.Append(UI_Ready.DOScale(Vector3.one * 1.1f, 0.75f).OnStart(() =>
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            UI_Ready.localScale=Vector3.one;
+        });
+        _timerRelatedAnimSeq.Append(UI_Ready.DOShakeScale(1.2f, 0.5f).OnStart(() =>
         {
             // PopFromZeroInstructionUI("준비!");
             Managers.Sound.Play(SoundManager.Sound.Narration, "EA020/Ready");
         }));
-        _timerRelatedAnimSeq.AppendInterval(0.75f);
-        _timerRelatedAnimSeq.Append(UI_Ready.DOScale(Vector3.zero, 0.8f));
+        _timerRelatedAnimSeq.AppendInterval(0.65f);
+        _timerRelatedAnimSeq.Append(UI_Ready.DOScale(Vector3.zero, 0.3f));
         _timerRelatedAnimSeq.AppendInterval(intervalBtwStartAndReady);
-        _timerRelatedAnimSeq.Append(UI_Start.DOScale(Vector3.one * 1.1f, 0.15f).OnStart(() =>
+        _timerRelatedAnimSeq.AppendCallback(()=>
+        {
+            UI_Start.localScale=Vector3.one;
+        });
+        _timerRelatedAnimSeq.Append(UI_Start.DOShakeScale(0.8f, 0.4f).OnStart(() =>
         {
             // PopFromZeroInstructionUI("시작!");
             Managers.Sound.Play(SoundManager.Sound.Narration, "EA020/Start");
@@ -236,7 +244,7 @@ public class Base_UIManager : UI_PopUp
         {
             OnStart?.Invoke();
         });
-        _timerRelatedAnimSeq.Append(UI_Start.DOScale(Vector3.zero, 0.25f));
+        _timerRelatedAnimSeq.Append(UI_Start.DOScale(Vector3.zero, 0.1f));
         _timerRelatedAnimSeq.AppendCallback(()=>
         {
             UI_Ready.gameObject.SetActive(false);
