@@ -39,6 +39,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     }
 
     private readonly bool _isClikcable = true;
+    private const int DEFAULT_UI_COUNT = 2; // UI_Home, 
 
     public override bool InitEssentialUI()
     {
@@ -78,7 +79,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
             if (!(Managers.UI.currentPopupClass is UI_Home))
             {
                 Managers.UI.ClosePopupUI();
-                if (Managers.UI.GetUICounts() == 2)
+                if (Managers.UI.GetUICounts() <= DEFAULT_UI_COUNT)
                 {
                     Managers.UI.ShowPopupUI<UI_Home>();
                 }

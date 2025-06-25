@@ -24,8 +24,8 @@ public class SoundManager : MonoBehaviour
 
     private readonly float VOLUME_MAX_MAIN = 1f;
     private readonly float VOLUME_MAX_BGM = 1f;
-    private readonly float VOLUME_MAX_EFFECT = 1f;
-    private readonly float VOLUME_MAX_NARRATION = 1f;
+    private readonly float VOLUME_MAX_EFFECT = 0.4f;
+    private readonly float VOLUME_MAX_NARRATION =0.8f;
 
 
     public static readonly float VOLUME_INITVALUE_MAIN = 0.5f;

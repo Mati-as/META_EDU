@@ -62,6 +62,8 @@ public class EA019_UIManager : Base_UIManager
        GetObject((int)UI.OnRoundUI).SetActive(false);
 
        _defaultColor = TMP_Instruction.colorGradient;
+       GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
+       
        return true;
    }
 

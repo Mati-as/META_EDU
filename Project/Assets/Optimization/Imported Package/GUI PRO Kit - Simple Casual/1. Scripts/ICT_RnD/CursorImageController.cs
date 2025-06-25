@@ -7,10 +7,18 @@ public class CursorImageController : MonoBehaviour, IPointerEnterHandler, IPoint
 {
     private Sequence _buttonScaleSeq;
 
+    private Vector3 _defaultScale;
     public Vector3 DefaultScale
     {
-        get;
-        set;
+        get => _defaultScale;
+        set
+        {
+            _defaultScale = new Vector3(
+                Mathf.Max(value.x, 0.75f),
+                Mathf.Max(value.y, 0.75f),
+                Mathf.Max(value.z, 0.75f)
+            );
+        }
     }
     public void Awake()
     {
