@@ -96,7 +96,7 @@ public class EA_Party : Ex_BaseGameManager
 #if UNITY_EDITOR
     [SerializeField] private MainSeq _startSeq;    
 #else
-    [SerializeField] private MainSeq seq = MainSeq.Intro;
+    [SerializeField] private MainSeq _startSeq = MainSeq.Intro;
 #endif
     
     protected override void OnGameStartStartButtonClicked()
