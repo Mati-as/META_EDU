@@ -5,6 +5,12 @@ public class MoveFunction : MonoBehaviour
 {
     [SerializeField] private float speed;            // 초당 이동 속도
     [SerializeField] private float showDistance;     // 보여줄 이동 거리
+    private Vector3 _startPosition;
+
+    private void Start()
+    {
+        _startPosition = transform.position;
+    }
 
     public void BeginMove()
     {
@@ -14,6 +20,9 @@ public class MoveFunction : MonoBehaviour
         transform
             .DOMove(targetPos, duration)
             .SetEase(Ease.Linear)
-            .OnComplete(() => gameObject.SetActive(false));
+            .OnComplete(() =>
+            {
+                transform.position = _startPosition;
+            });
     }
 }

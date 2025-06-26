@@ -54,7 +54,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     [SerializeField] private List<ParticleSystem> victoryParticles;
     private readonly Color _c = new Color(1, 1, 1, 0);
 
-    [SerializeField] private bool _canTouch;
+    [SerializeField] private bool canTouch;
     
     protected override void Init()
     {
@@ -128,7 +128,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         
         foreach (var hit in GameManager_Hits)
         {
-            if (hit.collider.CompareTag("toWork") && _canTouch)
+            if (hit.collider.CompareTag("toWork") && canTouch)
             {
                 PlayParticleEffect(hit.point);
                 
@@ -140,7 +140,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                 
                 if (count == 6)
                 {
-                    _canTouch = false;
+                    canTouch = false;
                     seatClickedCount = 1;
                     DOTween.Sequence()
                         .Append(gameStageBg.DOFade(0,0.5f))
@@ -155,15 +155,16 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                                 particle.Play();
                             }
                         })
-                        .AppendInterval(2f)
+                        .AppendInterval(1f)
+                        .AppendCallback(TriggerAllMoves)
+                        .AppendInterval(1f)
                         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("차는 도로로 다녀요!", "audio_9_차는_도로로_다녀요_")))
-                        //사람들이 지나다니는 듯한 연출
-                        .AppendInterval(4f)
+                        .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.SideWalk));
                 }
                 else if (count == 12)
                 {
-                    _canTouch = false;
+                    canTouch = false;
                     DOTween.Sequence()
                         .Append(gameStageBg.DOFade(0,0.5f))
                         .AppendInterval(0.5f)
@@ -177,10 +178,11 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                                 particle.Play();
                             }
                         })
-                        .AppendInterval(2f)
+                        .AppendInterval(1f)
+                        .AppendCallback(TriggerAllMoves)
+                        .AppendInterval(1f)
                         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들은 인도로 다녀요!", "audio_12_친구들은_인도로_다녀요_")))
-                        //사람들이 지나다니는 듯한 연출
-                        .AppendInterval(4f)
+                        .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.EndRoad))
                         ;
                 }
@@ -275,7 +277,6 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .SetEase(Ease.Linear))
             .Append(eventChild.transform.DOMoveX(eventChild.transform.position.x - 10f, 1f)
             .SetEase(Ease.Linear))
-            .AppendInterval(1f)
             .AppendCallback(() =>
             {
                 eventCar.transform.DOMoveX(transform.position.x + 10f, 3f).SetEase(Ease.OutQuad);
@@ -328,7 +329,6 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                 90f,
                 eventCar.transform.eulerAngles.z), 1f).SetEase(Ease.Linear))
             .Append(eventCar.transform.DOMoveX(eventCar.transform.position.x + 10f, 1f).SetEase(Ease.Linear))
-            .AppendInterval(1f)
             .AppendCallback(() =>
             {
                 eventChild.transform.DOMoveX(transform.position.x - 10f, 3f).SetEase(Ease.OutQuad);
@@ -427,7 +427,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     private void OnGameStage(GameStage stage)
     {
         gameStageBg.DOFade(1, 0.5f);
-        DOVirtual.DelayedCall(1f, () => _canTouch = true);
+        DOVirtual.DelayedCall(1.5f, () => canTouch = true);
         DOVirtual.DelayedCall(0.5f, () =>
         {
             switch (stage)
