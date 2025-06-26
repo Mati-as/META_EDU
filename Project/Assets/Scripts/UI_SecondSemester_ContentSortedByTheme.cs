@@ -18,13 +18,13 @@ public class UI_SecondSemester_ContentSortedByTheme : UI_PopUp
         BindButton(typeof(Btns));
         GetButton((int)Btns.Btn_ChuseokAndVehicles).gameObject.BindEvent(() =>
         {
-            Managers.UI.ClosePopupUI();
+         //   Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_Sep_ContentSelection>();
         });
         
         GetButton((int)Btns.Btn_Fall).gameObject.BindEvent(() =>
         {
-            Managers.UI.ClosePopupUI();
+           // Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_Oct_ContentSelection>();
         });
         return base.InitEssentialUI();

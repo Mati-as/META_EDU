@@ -1,3 +1,4 @@
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -88,13 +89,54 @@ public class Managers : MonoBehaviour
     }
 
 
+    private static Mutex mutex;
+
 
 
     private void Awake()
     {
+
+        CheckSingleInstance();
+
         Init();
     }
 
+
+
+    void OnApplicationQuit()
+    {
+        RemoveMutex();
+    }
+    
+    
+    
+    
+    /// <summary>
+    /// 소프트웨어 중복실행 방지로직입니다. 
+    /// </summary>
+    private void CheckSingleInstance()
+    {
+        bool isNewInstance;
+        string mutexName = "META_EDU"; // 시스템 전체에서 유일한 이름 사용
+
+        mutex = new Mutex(true, mutexName, out isNewInstance);
+
+        if (!isNewInstance)
+        {
+            Debug.Log("앱이 이미 실행 중입니다.");
+            Application.Quit(); // 실행 중인 인스턴스가 있으면 종료
+        }
+    }
+
+    private void RemoveMutex()
+    {
+        if (mutex != null)
+        {
+            mutex.ReleaseMutex();
+            mutex.Close();
+            mutex = null;
+        }
+    }
     
     /// <summary>
     /// Manager별 순서 바뀌지않도록 주의합니다.
@@ -126,5 +168,5 @@ public class Managers : MonoBehaviour
         }
     }
     
-    
+
 }

@@ -75,7 +75,8 @@ public class ContentAdjuster : MonoBehaviour
         주제별9월,
         주제별10월,
         주제별11월,
-        주제별12월
+        주제별12월,
+        Test
     }
     public enum ContentCategory
     {
@@ -90,6 +91,8 @@ public class ContentAdjuster : MonoBehaviour
 
     public GameObject Active_month;   // 6개 자식 포함
     public GameObject Inactive_month; // 6개 자식 포함
+
+    private bool _isTestScene =false; //전체활성화 토글용
 
     private string[] allKeys = new string[]
     {
@@ -107,7 +110,8 @@ public class ContentAdjuster : MonoBehaviour
     {
         string[] keysToCheck = new string[6];
         int[] monthIndices = new int[6];
-
+        _isTestScene = false;
+        
         switch (mode)
         {
             case ModeType.주제별1학기:
@@ -184,6 +188,12 @@ public class ContentAdjuster : MonoBehaviour
                 return;
             case ModeType.주제별12월:
                 FilterAndPaginateContentByMonth("Dec");
+                InitPageNavigation();
+                return;
+            
+            case ModeType.Test:
+                _isTestScene = true;
+                FilterAllScenes(); // 전체 씬 가져오는 함수 호출
                 InitPageNavigation();
                 return;
         }
@@ -431,15 +441,15 @@ public class ContentAdjuster : MonoBehaviour
             // 자물쇠
             var lockFrame = buttonObj.transform.Find("LockFrame");
             if (lockFrame != null)
-                lockFrame.gameObject.SetActive(!data.IsActive);
+                lockFrame.gameObject.SetActive(!data.IsActive && !_isTestScene);
 
             // 버튼 이벤트
             var btn = buttonObj.GetComponent<Button>();
             if (btn != null)
             {
-                btn.interactable = data.IsActive;
+                btn.interactable = (data.IsActive || _isTestScene);
                 btn.onClick.RemoveAllListeners();
-                if (data.IsActive)
+                if (data.IsActive  || _isTestScene)
                 {
                     //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
                     var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
@@ -461,5 +471,21 @@ public class ContentAdjuster : MonoBehaviour
             }
 
         }
+    }
+    
+    /// <summary>
+    /// 테스트 전용 전체 씬 로드 
+    /// </summary>
+    public void FilterAllScenes()
+    {
+        var allScenes = XmlManager.Instance.SceneSettings.Values.ToList();
+
+        pagedSceneData.Clear();
+        for (int i = 0; i < allScenes.Count; i += 8)
+        {
+            pagedSceneData.Add(allScenes.Skip(i).Take(8).ToList());
+        }
+
+        Debug.Log($"[Test 모드] 전체 콘텐츠 {allScenes.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
 }
