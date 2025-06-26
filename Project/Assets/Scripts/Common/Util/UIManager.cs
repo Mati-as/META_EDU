@@ -165,7 +165,21 @@ public class UIManager
         if (string.IsNullOrEmpty(sceneName))
             sceneName = typeof(T).Name;
 
+        GameObject uiManagerOnScene = GameObject.Find($"{sceneName}_UIManager");
+        if (uiManagerOnScene != null)
+        {
+            Logger.Log("UIManager 이미 씬에 있음");
+            uiGamobj = uiManagerOnScene;
+            return false;
+        }
+        
         var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
+        
+        bool isUIManagerOnScene = false;
+        
+
+        
+        
         if (prefab == null)
         {
             prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/UIManager");

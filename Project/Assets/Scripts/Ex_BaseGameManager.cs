@@ -128,7 +128,11 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     {
         bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj,SceneManager.GetActiveScene().name);
 
-        if (!isUIManagerLoadedOnRuntime) return;
+        if (!isUIManagerLoadedOnRuntime)
+        {
+            Logger.CoreClassLog("UIManager가 로드되지 않았습니다. 이미 씬 깔려있는지 확인 필요");
+            return;
+        }
 
         baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
         
