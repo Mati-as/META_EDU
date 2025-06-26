@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-
-
 public class SeatSelectionController : Ex_MonoBehaviour
 {
-    public enum SeatType
+    public enum Objs
     {
         Seat_A,
         Seat_B,
@@ -15,28 +14,60 @@ public class SeatSelectionController : Ex_MonoBehaviour
         Seat_D,
         Seat_E,
         Seat_F,
-        Seatcount_Max
+        Seat_G,
+
+        Bg
+        //   Seatcount_Max
     }
+
+
+    public event Action OnAllSeatSelected;
+    private bool _isClickable;
 
     private Color _defaultColor;
-    public Color ColorToChange;
     [SerializeField] private Color _selectedColor;
+    SpriteRenderer _bgRenderer;
+
+    private readonly Dictionary<int, bool> isSeatClickedMap = new();
+    private readonly Dictionary<int, MeshRenderer> _seatMeshRendererMap = new();
+
+    private int _seatClickedCount;
+
     protected override void Init()
     {
-        BindObject(typeof(SeatType));
-    }
+        BindObject(typeof(Objs));
+        
+        _bgRenderer = GetObject((int)Objs.Bg).GetComponent<SpriteRenderer>();
+        GetObject((int)Objs.Bg).SetActive(false);
 
-
-    public void AnimateAllSeats()
-    {
-        for (int i = (int)SeatType.Seat_A; i <= (int)SeatType.Seatcount_Max; i++)
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
         {
-            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(SeatType)i}");
-            AnimateSeatLoop((SeatType)i);
+            int IndexCache = i;
+            GetObject(i).BindEvent(() =>
+            {
+                OnSeatClicked(IndexCache);
+            });
+
+            var Seatrenderer = GetObject(i).transform.GetComponent<MeshRenderer>();
+            _defaultColor = Seatrenderer.material.color;
+            _seatMeshRendererMap.Add(i, Seatrenderer);
+            isSeatClickedMap.Add(i, false);
+            GetObject(i).SetActive(false);
         }
     }
 
-    public void AnimateSeatLoop(SeatType seat)
+
+    private void AnimateAllSeats()
+    {
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
+        {
+            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
+            GetObject(i).SetActive(true);
+            AnimateSeatLoop((Objs)i);
+        }
+    }
+
+    private void AnimateSeatLoop(Objs seat)
     {
         var SeatTransform = GetObject((int)seat).transform;
 
@@ -53,59 +84,73 @@ public class SeatSelectionController : Ex_MonoBehaviour
 
         _sequenceMap[(int)seat].Play();
     }
-    
-    public void DeactivateAllSeats()
+
+    private void DeactivateAllSeats()
     {
-        for (int i = (int)SeatType.Seat_A; i <= (int)SeatType.Seatcount_Max; i++)
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) _sequenceMap[i]?.Kill();
+
+        TweenCallback _scaleCallback = () =>
         {
-            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(SeatType)i}");
-            AnimateSeatLoop((SeatType)i);
-        }
+            for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
+            {
+                var SeatTransform = GetObject(i).transform;
+                _sequenceMap[i] = DOTween.Sequence();
+                _sequenceMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
+            }
+        };
+
+        DOVirtual.DelayedCall(1f, _scaleCallback);
     }
-    
-    private readonly Dictionary<int, bool> isSeatClickedMap = new();
-    private readonly Dictionary<int, MeshRenderer> _seatMeshRendererMap = new();
-    
-    private int _seatClickedCount = 0;
 
-    private void InitForNewClick()
+
+    public void StartSeatSelection()
     {
-        
+        _seatClickedCount = 0;
+        _isClickable = true;
+        foreach (int key in _seatMeshRendererMap.Keys.ToArray())
+            _seatMeshRendererMap[key].material.DOColor(_defaultColor, 0.35f);
+
+        foreach (int key in isSeatClickedMap.Keys.ToArray()) isSeatClickedMap[key] = false;
+        AnimateAllSeats();
     }
-    public void OnSeatClicked(RaycastHit hit,Color color = default(Color))
+
+    
+    private void OnSeatClicked(int clickedSeat, Color color = default)
     {
-        bool isAllSeatClicked = true;
-        int ID =hit.transform.GetInstanceID();
-        if (isSeatClickedMap[_tfIdToEnumMap[ID]]) return;
-        isSeatClickedMap[_tfIdToEnumMap[ID]] = true;
+        if (!_isClickable) return;
 
-        var renderer = hit.transform.GetComponent<MeshRenderer>();
-        _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[ID], renderer);
-        _seatMeshRendererMap[_tfIdToEnumMap[ID]].material.DOColor(_selectedColor, 0.35f);
+    
 
-        Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
+        if (isSeatClickedMap[clickedSeat]) return;
+        isSeatClickedMap[clickedSeat] = true;
+
+
+        _seatMeshRendererMap[clickedSeat].material.DOColor(_selectedColor, 0.35f);
         _seatClickedCount++;
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
 
 
-        _sequenceMap[_tfIdToEnumMap[ID]]?.Kill();
+        _sequenceMap[clickedSeat]?.Kill();
 
+        bool isAllSeatClicked = true;
+        
         foreach (int key in isSeatClickedMap.Keys)
             if (!isSeatClickedMap[key])
                 isAllSeatClicked = false;
 
         if (isAllSeatClicked)
         {
+            OnAllSeatClicked();
             Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
 
-            OnAllSeatClicked();
-            // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
+            _isClickable = false;
+            OnAllSeatSelected?.Invoke();
         }
-        
     }
-
-    private void OnAllSeatClicked(Action action = null)
+    
+    private void OnAllSeatClicked()
     {
-        action?.Invoke();
+        DeactivateAllSeats();
+     
     }
-
 }
