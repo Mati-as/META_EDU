@@ -100,6 +100,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     
     
     protected GameObject UIManagerObj;
+    protected Base_UIManager baseUIManager;
   
     
 
@@ -127,7 +128,10 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     {
         bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj,SceneManager.GetActiveScene().name);
 
-        if (!isUIManagerLoadedOnRuntime) return; 
+        if (!isUIManagerLoadedOnRuntime) return;
+
+        baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+        
         var mainCamera = Camera.main;
         
         // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
