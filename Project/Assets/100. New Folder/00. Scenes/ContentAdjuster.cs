@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class ContentAdjuster : MonoBehaviour
 {
     UI_MetaEduLauncherMaster _metaEduLauncherMaster;
+    // (추가 필요) Scene ID, 표기될 이름
     private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
     {
         { "BB002", "사방치기 놀이" },
@@ -52,9 +53,10 @@ public class ContentAdjuster : MonoBehaviour
         { "EA023", "숲속  [미디어 아트]" },
         { "EA031", "불이 나면 비상구로 대피해요" },
         { "EA030", "가을 곤충은 어디 있을까요?" }
+        
     };
 
-    //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작
+    //(설정) 모드 타입 설정 Inspector 상에서 별도 설정 필요
     public enum ModeType
     {
         주제별1학기,
@@ -75,7 +77,8 @@ public class ContentAdjuster : MonoBehaviour
         주제별9월,
         주제별10월,
         주제별11월,
-        주제별12월
+        주제별12월,
+        테스트
     }
     public enum ContentCategory
     {
@@ -90,6 +93,8 @@ public class ContentAdjuster : MonoBehaviour
 
     public GameObject Active_month;   // 6개 자식 포함
     public GameObject Inactive_month; // 6개 자식 포함
+
+    public ModeType currentModeType;
 
     private string[] allKeys = new string[]
     {
@@ -184,6 +189,12 @@ public class ContentAdjuster : MonoBehaviour
                 return;
             case ModeType.주제별12월:
                 FilterAndPaginateContentByMonth("Dec");
+                InitPageNavigation();
+                return;
+
+            case ModeType.테스트:
+                currentModeType = ModeType.테스트;
+                FilterAndPaginateContentForTestMode();
                 InitPageNavigation();
                 return;
         }
@@ -385,9 +396,27 @@ public class ContentAdjuster : MonoBehaviour
         Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
 
+    public void FilterAndPaginateContentForTestMode()
+    {
+        var allScenes = XmlManager.Instance.SceneSettings.Values;
+
+        // 필터 조건 없이 전체 콘텐츠를 모두 가져옴
+        var filtered = allScenes.ToList();
+
+        pagedSceneData.Clear();
+
+        for (int i = 0; i < filtered.Count; i += 8)
+        {
+            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
+        }
+
+        Debug.Log($"[테스트] 전체 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
+    }
+
     void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
     {
         var buttonObjs = slotIndex == 0 ? pageAButtons : pageBButtons;
+        bool isTestMode = currentModeType == ModeType.테스트;
 
         for (int i = 0; i < buttonObjs.Length; i++)
         {
@@ -428,18 +457,21 @@ public class ContentAdjuster : MonoBehaviour
                 }
             }
 
+            // 테스트 모드일 경우 무조건 활성화로 수정 - 자물쇠, 버튼 이벤트 연계
+            bool isActive = isTestMode ? true : data.IsActive;
+
             // 자물쇠
             var lockFrame = buttonObj.transform.Find("LockFrame");
             if (lockFrame != null)
-                lockFrame.gameObject.SetActive(!data.IsActive);
+                lockFrame.gameObject.SetActive(!isActive);
 
             // 버튼 이벤트
             var btn = buttonObj.GetComponent<Button>();
             if (btn != null)
             {
-                btn.interactable = data.IsActive;
+                btn.interactable = isActive;
                 btn.onClick.RemoveAllListeners();
-                if (data.IsActive)
+                if (isActive)
                 {
                     //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
                     var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
