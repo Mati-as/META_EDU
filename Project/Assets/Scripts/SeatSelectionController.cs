@@ -76,7 +76,7 @@ public class SeatSelectionController : Ex_MonoBehaviour
         _sequenceMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
-            .SetLoops(-1, LoopType.Yoyo)
+            .SetLoops(100, LoopType.Yoyo)
             .OnKill(() =>
             {
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
@@ -105,8 +105,19 @@ public class SeatSelectionController : Ex_MonoBehaviour
 
     public void StartSeatSelection()
     {
+        transform.localScale = Vector3.one;
+        Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Common/LetsSeat");
+        
         _seatClickedCount = 0;
         _isClickable = true;
+        
+        _bgRenderer.transform.gameObject.SetActive(true);
+        _bgRenderer.DOFade(0, 0.0001f).OnComplete(() =>
+        {
+            _bgRenderer.DOFade(1, 1f);
+        });
+       
+        
         foreach (int key in _seatMeshRendererMap.Keys.ToArray())
             _seatMeshRendererMap[key].material.DOColor(_defaultColor, 0.35f);
 
@@ -141,6 +152,13 @@ public class SeatSelectionController : Ex_MonoBehaviour
         if (isAllSeatClicked)
         {
             OnAllSeatClicked();
+
+
+            DOVirtual.DelayedCall(0.10f, () =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/OnAllSeatSelected");
+            });
+           
             Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
 
             _isClickable = false;
@@ -150,6 +168,12 @@ public class SeatSelectionController : Ex_MonoBehaviour
     
     private void OnAllSeatClicked()
     {
+        _isClickable = false;
+        _bgRenderer.DOFade(0, 0.7f).OnComplete(() =>
+        {
+            _bgRenderer.transform.gameObject.SetActive(false);
+        });
+        _seatClickedCount = 0;
         DeactivateAllSeats();
      
     }

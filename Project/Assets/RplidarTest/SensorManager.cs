@@ -795,22 +795,22 @@ public class SensorManager : MonoBehaviour
     private void FixedUpdate()
     {
 
-   
+        GenerateDectectedPos();
 
-        if (isSensorSensitivityFilterModeOn)
-        {
-            _timer += Time.deltaTime;
-          
-            if (_timer > sensorSensitivity)
-            {
-                _timer = 0;
-                GenerateDectectedPos();
-            }
-        }
-        else
-        {
-            GenerateDectectedPos();
-        }
+        // if (isSensorSensitivityFilterModeOn)
+        // {
+        //     _timer += Time.deltaTime;
+        //   
+        //     if (_timer > sensorSensitivity)
+        //     {
+        //         _timer = 0;
+        //         GenerateDectectedPos();
+        //     }
+        // }
+        // else
+        // {
+        //     GenerateDectectedPos();
+        // }
 
 
     }

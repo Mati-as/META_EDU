@@ -10,6 +10,15 @@ public class ContentAdjuster : MonoBehaviour
     UI_MetaEduLauncherMaster _metaEduLauncherMaster;
     private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
     {
+        
+        //⚠️⛔️ 테스트용 임시 컨텐츠 이름, 컨텐츠 이름 반드시 수정 필요  ⛔️⚠️
+        { "EA_Party", "파티를 해요" },
+        
+        //
+        
+        
+        
+        
         { "BB002", "사방치기 놀이" },
         { "BB003", "알록달록 손발을 뒤집어요" },
         { "BB006", "고래와 공놀이를 해요" },
