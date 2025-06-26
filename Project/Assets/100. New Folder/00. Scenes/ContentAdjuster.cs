@@ -13,6 +13,7 @@ public class ContentAdjuster : MonoBehaviour
         
         //⚠️⛔️ 테스트용 임시 컨텐츠 이름, 컨텐츠 이름 반드시 수정 필요  ⛔️⚠️
         { "EA_Party", "파티를 해요" },
+        { "SideWalk", "차도와 보도는 달라요" },
         
         //
         
