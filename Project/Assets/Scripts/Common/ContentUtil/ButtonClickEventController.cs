@@ -47,7 +47,10 @@ public class ButtonClickEventController : Ex_MonoBehaviour
             GetObject(indexCache).BindEvent(() =>
             {
                 if (!isClickable) return;
-                
+                Char randomChar = (char)UnityEngine.Random.Range('A','D'+1);
+
+                Managers.Sound.Play(SoundManager.Sound.Effect, 
+                    "Audio/Common/Click/Click"+randomChar.ToString());
                 if(_currentClickMode == ButtonClickMode.Sequential && indexCache == _currentOrder)
                 {
                     OnButtonClicked?.Invoke(indexCache);
@@ -56,6 +59,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
                 }
                 else if (_currentClickMode == ButtonClickMode.AnyOrder)
                 {
+     
                     OnButtonClicked?.Invoke(indexCache);
                     OnButtonClickedOnAnyOrderMode(indexCache);
                 }

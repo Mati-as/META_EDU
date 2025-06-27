@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.Mathematics;
 using UnityEngine;
-using Random = System.Random;
 
 public class EA034_Party_GameManager : Ex_BaseGameManager
 {
@@ -30,7 +28,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         CakeCream_C,
         CandySetRoot,
         OriginPosParent,
-        TargetPos,
+        TargetPos
     }
 
 
@@ -54,6 +52,11 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Intro:
+                    DOVirtual.DelayedCall(1f, () =>
+                    {
+                        baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
+                        _seatSelectionController.StartSeatSelection();
+                    });
                     break;
 
                 case (int)MainSeq.OnCream:
@@ -66,6 +69,14 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
                     break;
                 case (int)MainSeq.OnDecorate:
+
+                    _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Deco");
+                    DOVirtual.DelayedCall(1.5f, () =>
+                    {
+                        baseUIManager.PopFromZeroInstructionUI("이번엔 케이크를 꾸며봐요!\n 버튼을 눌러 꾸며주세요!");
+                        _buttonClickEventController.StartBtnClickAnyOrder();
+                    });
+                    break;
 
                 case (int)MainSeq.OnCandle:
                     break;
@@ -86,6 +97,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     {
         base.Init();
         BindObject(typeof(Objs));
+
+        InitializeCandyPrefabs();
+        InitializePool();
         _seatSelectionController = GetObject((int)Objs.SeatSelection).GetComponent<SeatSelectionController>();
         _buttonClickEventController = GetObject((int)Objs.Buttons).GetComponent<ButtonClickEventController>();
 
@@ -118,12 +132,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     {
         base.OnGameStartStartButtonClicked();
 
-        DOVirtual.DelayedCall(1f, () =>
-        {
-            baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
-            _seatSelectionController.StartSeatSelection();
-        });
-
+   
         CurrentMainMainSeq = (int)_startSeq;
     }
 
@@ -144,7 +153,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     private void OnAllBtnClicked()
     {
-        baseUIManager.PopFromZeroInstructionUI("잘했어! 빵에 생크림을 전부 올렸어!");
+
     }
 
     protected override void OnDestroy()
@@ -169,13 +178,47 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     private void OnButtonClicked(int clickedButtonIndex)
     {
+        switch (CurrentMainMainSeq)
+        {
+            case (int)MainSeq.Default:
+                break;
+
+            case (int)MainSeq.Intro:
+                break;
+
+            case (int)MainSeq.OnCream:
+                OnBtnClickedOnCream();
+                break;
+            case (int)MainSeq.OnDecorate:
+                OnBtnClickedOnDeco(clickedButtonIndex);
+                break;
+
+            case (int)MainSeq.OnCandle:
+                break;
+
+            case (int)MainSeq.OnCelebrate:
+                break;
+
+            case (int)MainSeq.OnFinish:
+                break;
+        }
+    }
+
+    private void OnBtnClickedOnCream()
+    {
         _currentClickCountOnCream++;
         if (_currentClickCountOnCream > COUNT_TO_CLICK_ONCREAM && currentCakeRound >= ROUND_COUNT_ONCREAM)
         {
+            ChangeCakeToCreamOne(currentCakeRound); //마지막 케이크
             _isCakeRoundFinish = true;
             _buttonClickEventController.DeactivateAllButtons();
             _currentClickCountOnCream = 0;
-            baseUIManager.PopFromZeroInstructionUI("잘했어! 빵에 생크림을 전부 올렸어!");
+            baseUIManager.PopFromZeroInstructionUI("잘했어! 빵에 생크림을 전부 발랐어!");
+
+            DOVirtual.DelayedCall(2.5f, () =>
+            {
+                CurrentMainMainSeq = (int)MainSeq.OnDecorate;
+            });
         }
         else if (_currentClickCountOnCream > COUNT_TO_CLICK_ONCREAM)
         {
@@ -187,27 +230,24 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         {
             if (_isCakeRoundFinish) return;
             _sequenceMap.TryAdd((int)Objs.CakeA + currentCakeRound, DOTween.Sequence());
-            
-            
+
+
             if (!isCakeRotatable) return;
             isCakeRotatable = false;
             DOVirtual.DelayedCall(0.3f, () =>
             {
                 isCakeRotatable = true;
             });
-            
+
             var t = GetObject((int)Objs.CakeA + currentCakeRound).transform;
 
-            Quaternion targetRot = t.localRotation * Quaternion.Euler(0, 15, 0);
+            var targetRot = t.localRotation * Quaternion.Euler(0, 15, 0);
 
             _sequenceMap[(int)Objs.CakeA + currentCakeRound]?.Kill();
             _sequenceMap[(int)Objs.CakeA + currentCakeRound] = DOTween.Sequence();
 
             _sequenceMap[(int)Objs.CakeA + currentCakeRound]
                 .Append(t.DOLocalRotateQuaternion(targetRot, 0.1f).SetEase(Ease.OutBack));
-            
-            
-
         }
     }
 
@@ -215,7 +255,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     {
         GetObject((int)Objs.CakeCream_A + currentCake).transform.localScale = Vector3.zero;
         GetObject((int)Objs.CakeCream_A + currentCake).SetActive(true);
-        
+
         GetObject((int)Objs.CakeA + currentCake)
             .transform.DOScale(Vector3.zero, 0.55f).SetEase(Ease.InOutCirc).OnComplete(() =>
             {
@@ -223,33 +263,30 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     .DOScale(_defaultSizeMap[(int)Objs.CakeCream_A + currentCake], 0.25f).SetEase(Ease.InOutCirc);
             });
     }
-    
-  //  [SerializeField] private Transform candySetRoot; // CandySet 오브젝트
+
+    //  [SerializeField] private Transform candySetRoot; // CandySet 오브젝트
     [SerializeField] private int poolSize = 500;
 
-    private List<GameObject> _candyPrefabs = new();
-    private Queue<GameObject> _pool = new();
+    private readonly List<GameObject> _candyPrefabs = new();
+    private readonly Queue<GameObject> _pool = new();
 
-    private void Awake()
+
+    private void OnBtnClickedOnDeco(int index)
     {
-        InitializeCandyPrefabs();
-        InitializePool();
+        LaunchCandies(index);
     }
 
     private void InitializeCandyPrefabs()
     {
-        foreach (Transform child in GetObject((int)Objs.CandySetRoot).transform)
-        {
-            _candyPrefabs.Add(child.gameObject);
-        }
+        foreach (Transform child in GetObject((int)Objs.CandySetRoot).transform) _candyPrefabs.Add(child.gameObject);
     }
 
     private void InitializePool()
     {
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject prefab = _candyPrefabs[UnityEngine.Random.Range(0, _candyPrefabs.Count)];
-            GameObject instance = Instantiate(prefab, transform);
+            var prefab = _candyPrefabs[Random.Range(0, _candyPrefabs.Count)];
+            var instance = Instantiate(prefab, transform);
             instance.SetActive(false);
             _pool.Enqueue(instance);
         }
@@ -259,15 +296,13 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     {
         if (_pool.Count > 0)
         {
-            GameObject obj = _pool.Dequeue();
+            var obj = _pool.Dequeue();
             obj.SetActive(true);
             return obj;
         }
-        else
-        {
-            Debug.LogWarning("Pool empty!");
-            return null;
-        }
+
+        Debug.LogWarning("Pool empty!");
+        return null;
     }
 
     public void ReturnToPool(GameObject obj)
@@ -275,55 +310,48 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         obj.SetActive(false);
         _pool.Enqueue(obj);
     }
-    
-    [SerializeField]
-    float launchPower = 10f; // 발사 힘 조절 변수
-    public void LaunchCandies()
-    {
-        int launchCount = 5;
 
-        if (GetObject((int)Objs.OriginPosParent).transform.childCount < launchCount)
+    [SerializeField] private float launchPower = 10f; // 발사 힘 조절 변수
+
+    public void LaunchCandies(int index = -1)
+    {
+        int launchCount = 3;
+
+        var originParent = GetObject((int)Objs.OriginPosParent).transform;
+        var target = GetObject((int)Objs.TargetPos).transform;
+
+        if (originParent.childCount == 0)
         {
-            Debug.LogWarning("Not enough launch points!");
+            Debug.LogWarning("No origin points available!");
             return;
         }
 
-        // ✅ 하나의 TargetPos 지정
-        Transform target = GetObject((int)Objs.TargetPos).transform;
 
-        // ✅ GetObject((int)Objs.OriginPosParent).transform 자식 중 중복 없이 5개 선택
-        List<Transform> selectedLaunchPoints = new();
-        while (selectedLaunchPoints.Count < launchCount)
-        {
-            Transform candidate = GetObject((int)Objs.OriginPosParent)
-                .transform.GetChild(UnityEngine.Random.Range(0, GetObject((int)Objs.OriginPosParent).transform.childCount));
-            if (!selectedLaunchPoints.Contains(candidate))
-                selectedLaunchPoints.Add(candidate);
-        }
+        var origin = originParent.GetChild(index);
 
-        // ✅ 각각 발사
-        foreach (Transform launchPoint in selectedLaunchPoints)
-        {
-            GameObject candy = GetCandyFromPool();
-            if (candy == null) continue;
-
-            Rigidbody rb = candy.GetComponent<Rigidbody>();
-            if (rb == null)
-            {
-                Debug.LogError("No Rigidbody on candy!");
-                continue;
-            }
-
-            candy.transform.position = launchPoint.position;
-            candy.transform.rotation = Quaternion.identity;
-
-            Vector3 dir = (target.position - launchPoint.position).normalized;
-
-            rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            rb.AddForce(dir * launchPower, ForceMode.Impulse);
-        }
+        for (int i = 0; i < launchCount; i++) LaunchCandyFrom(origin.position, target.position +
+            new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
     }
 
+    private void LaunchCandyFrom(Vector3 originPos, Vector3 targetPos)
+    {
+        var candy = GetCandyFromPool();
+        if (candy == null) return;
 
+        var rb = candy.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            Debug.LogError("No Rigidbody on candy!");
+            return;
+        }
+
+        candy.transform.position = originPos;
+        candy.transform.rotation = Quaternion.identity;
+
+        var dir = (targetPos - originPos).normalized;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.AddForce(dir * Random.Range(1.8f,3.7f), ForceMode.Impulse);
+    }
 }
