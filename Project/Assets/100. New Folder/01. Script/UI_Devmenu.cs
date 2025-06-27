@@ -26,20 +26,28 @@ public class UI_Devmenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
 
         // 실행 시 버전 텍스트 업데이트
-        UpdateVersionText();
+        UpdatePlayCountText();
     }
 
-    //(확인 필요) 아래 텍스트에서 뒤엣단을 제외한 나머지 숫자는 수정 필요
-    void UpdateVersionText()
+    //(확인 필요) 버전을 크게 올릴 경우 확인 필요
+    void UpdatePlayCountText()
     {
-        int buildNumber = PlayerPrefs.GetInt("buildVersion", 0);
+        int playCount = PlayerPrefs.GetInt("PlayCount", 0);
         if (Text_Version != null)
         {
             var textComp = Text_Version.GetComponent<Text>();
             if (textComp != null)
-                textComp.text = $"v0.0.{buildNumber}";
+                textComp.text = $"v0.0.{playCount}";
         }
     }
+
+    //(확인) 버전 텍스트 초기화용
+    public void ResetPlayCount()
+    {
+        PlayerPrefs.SetInt("PlayCount", 0);
+        PlayerPrefs.Save();
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -75,4 +83,5 @@ public class UI_Devmenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             Inactive_click = false;
         }
     }
+    
 }
