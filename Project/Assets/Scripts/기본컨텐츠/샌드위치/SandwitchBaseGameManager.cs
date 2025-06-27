@@ -221,7 +221,7 @@ public class SandwitchBaseGameManager : Base_GameManager
         _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
-        DOVirtual.DelayedCall(6f, () =>
+        DOVirtual.DelayedCall(4.5f, () =>
         {
             MoveOutSandwich();
         });
