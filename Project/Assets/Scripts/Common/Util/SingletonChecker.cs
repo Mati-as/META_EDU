@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class SingletonAppChecker : MonoBehaviour
 {
+    #if !UNITY_EDITOR
     private static Mutex mutex;
 
     void Awake()
@@ -30,4 +31,5 @@ public class SingletonAppChecker : MonoBehaviour
             mutex = null;
         }
     }
+    #endif
 }

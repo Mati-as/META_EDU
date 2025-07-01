@@ -43,10 +43,8 @@ public class SeatSelectionController : Ex_MonoBehaviour
         for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
         {
             int IndexCache = i;
-            GetObject(i).BindEvent(() =>
-            {
-                OnSeatClicked(IndexCache);
-            });
+            
+     
 
             var Seatrenderer = GetObject(i).transform.GetComponent<MeshRenderer>();
             _defaultColor = Seatrenderer.material.color;
@@ -56,6 +54,15 @@ public class SeatSelectionController : Ex_MonoBehaviour
         }
     }
 
+    protected override void OnRaySyncedByGameManager()
+    {
+        foreach (var hit in GameManager.GameManager_Hits)
+        {
+            int id = hit.transform.GetInstanceID();   
+            if(_tfIdToEnumMap.ContainsKey(id))OnSeatClicked((int)_tfIdToEnumMap[id]);
+        }
+   
+    }
 
     private void AnimateAllSeats()
     {

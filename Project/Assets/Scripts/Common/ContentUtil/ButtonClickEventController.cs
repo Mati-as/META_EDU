@@ -43,33 +43,43 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
         {
           
-            var indexCache = i;
-            GetObject(indexCache).BindEvent(() =>
-            {
-                if (!isClickable) return;
-                Char randomChar = (char)UnityEngine.Random.Range('A','D'+1);
-
-                Managers.Sound.Play(SoundManager.Sound.Effect, 
-                    "Audio/Common/Click/Click"+randomChar.ToString());
-                if(_currentClickMode == ButtonClickMode.Sequential && indexCache == _currentOrder)
-                {
-                    OnButtonClicked?.Invoke(indexCache);
-                    _currentOrder++;
-                    OnButtonClickedOnSequentialMode(indexCache);
-                }
-                else if (_currentClickMode == ButtonClickMode.AnyOrder)
-                {
-     
-                    OnButtonClicked?.Invoke(indexCache);
-                    OnButtonClickedOnAnyOrderMode(indexCache);
-                }
-             
-            });
-
             GetObject(i).transform.localScale = Vector3.zero;
             _buttonImageMap.Add(i, GetObject(i).GetComponentInChildren<Image>());
             EmptyBtnImage();
         }
+    }
+    
+    protected override void OnRaySyncedByGameManager()
+    {
+        foreach (var hit in GameManager.GameManager_Hits)
+        {
+            int id = hit.transform.GetInstanceID();
+            if (!_tfIdToEnumMap.ContainsKey(id)) return; 
+            
+            
+            int clickedEnum = _tfIdToEnumMap[id];
+            
+            
+            if (!isClickable) return;
+            Char randomChar = (char)UnityEngine.Random.Range('A','D'+1);
+
+            Managers.Sound.Play(SoundManager.Sound.Effect, 
+                "Audio/Common/Click/Click"+randomChar.ToString());
+            if(_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
+            {
+                OnButtonClicked?.Invoke(clickedEnum);
+                _currentOrder++;
+                OnButtonClickedOnSequentialMode(clickedEnum);
+            }
+            else if (_currentClickMode == ButtonClickMode.AnyOrder)
+            {
+     
+                OnButtonClicked?.Invoke(clickedEnum);
+                OnButtonClickedOnAnyOrderMode(clickedEnum);
+            }
+         
+        }
+   
     }
     
     public void StartBtnClickSequential()

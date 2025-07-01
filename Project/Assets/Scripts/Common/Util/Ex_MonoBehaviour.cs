@@ -10,12 +10,28 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
+/// <summary>
+/// 센서 자동 갱신 기능 추가
+/// </summary>
 public class Ex_MonoBehaviour : MonoBehaviour
 {
-
+    protected Base_GameManager GameManager;
     protected virtual void Awake()
     {
         Init();
+    }
+
+    protected virtual void Start()
+    {
+        GameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+        Base_GameManager.On_GmRay_Synced -= OnRaySyncedByGameManager;
+        Base_GameManager.On_GmRay_Synced += OnRaySyncedByGameManager;
+        Debug.Assert(GameManager!=null);
+    }
+
+    protected virtual void OnRaySyncedByGameManager()
+    {
+        
     }
     
     protected Dictionary<int, bool> _isClickableMap = new();
@@ -40,6 +56,7 @@ public class Ex_MonoBehaviour : MonoBehaviour
     protected void OnDestroy()
     { 
         _objects = new Dictionary<Type, Object[]>();
+        Base_GameManager.On_GmRay_Synced -= OnRaySyncedByGameManager;
     }
 
     protected void BindObject(Type type)

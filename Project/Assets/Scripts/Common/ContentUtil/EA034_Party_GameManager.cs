@@ -52,9 +52,10 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Intro:
+                    baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
                     DOVirtual.DelayedCall(1f, () =>
                     {
-                        baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
+                  
                         _seatSelectionController.StartSeatSelection();
                     });
                     break;
@@ -79,6 +80,8 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnCandle:
+                    _buttonClickEventController.DeactivateAllButtons();
+                    baseUIManager.PopFromZeroInstructionUI("이번엔 마지막으로 촛불을 꽂을거에요!");
                     break;
 
                 case (int)MainSeq.OnCelebrate:
@@ -96,6 +99,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     protected override void Init()
     {
         base.Init();
+        baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
         BindObject(typeof(Objs));
 
         InitializeCandyPrefabs();
@@ -124,7 +128,11 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
 #if UNITY_EDITOR
     [SerializeField] private MainSeq _startSeq;
+    [SerializeField]
+    [Range(0, 60)]
+    private float DECO_TIME = 20; 
 #else
+     [SerializeField] private const float DECO_TIME = 15; 
     [SerializeField] private MainSeq _startSeq = MainSeq.Intro;
 #endif
 
@@ -158,13 +166,13 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     protected override void OnDestroy()
     {
-        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
-        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
-        _seatSelectionController.OnAllSeatSelected -= OnAllSeatSelected;
-        _seatSelectionController.OnAllSeatSelected -= OnAllSeatSelected;
-        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
-        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
         base.OnDestroy();
+        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
+        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
+        _seatSelectionController.OnAllSeatSelected -= OnAllSeatSelected;
+        _seatSelectionController.OnAllSeatSelected -= OnAllSeatSelected;
+        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
+        _buttonClickEventController.OnButtonClicked -= OnButtonClicked;
     }
 
 
@@ -190,10 +198,12 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                 OnBtnClickedOnCream();
                 break;
             case (int)MainSeq.OnDecorate:
+                _elapsed = 0f;
                 OnBtnClickedOnDeco(clickedButtonIndex);
                 break;
 
             case (int)MainSeq.OnCandle:
+               
                 break;
 
             case (int)MainSeq.OnCelebrate:
@@ -333,6 +343,29 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
             new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
     }
 
+    private float _elapsed;
+
+    private void Update()
+    {
+        if (CurrentMainMainSeq == (int)MainSeq.OnDecorate)
+        {
+            
+            _elapsed += Time.deltaTime;
+            
+            
+            if (_elapsed >= DECO_TIME)
+            {
+                _elapsed = 0f;
+                CurrentMainMainSeq = (int)MainSeq.OnCandle;
+            }
+       
+        }
+        else
+        {
+            _elapsed = 0f;
+        }
+   
+    }
     private void LaunchCandyFrom(Vector3 originPos, Vector3 targetPos)
     {
         var candy = GetCandyFromPool();
