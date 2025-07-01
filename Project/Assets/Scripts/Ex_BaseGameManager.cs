@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using SuperMaxim.Core.Extensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -320,7 +321,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected void SetPool()
     {
-        if (psResourcePath == string.Empty)
+        if (psResourcePath.IsNullOrEmpty())
         {
             Logger.ContentTestLog("effect 미사용");
             return;
