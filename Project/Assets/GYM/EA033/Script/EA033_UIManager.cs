@@ -56,7 +56,7 @@ public class EA033_UIManager : Base_UIManager
            OnNextButtonClicked?.Invoke();
        });
        
-       //GetObject((int)UI.OnRoundUI).SetActive(false);
+       GetObject((int)UI.OnRoundUI).SetActive(false);
 
        //_defaultColor = TMP_Instruction.colorGradient;
        GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
@@ -146,27 +146,27 @@ public class EA033_UIManager : Base_UIManager
 //    }
 //
 //
-//    public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
-//    {
-//          
-//        GetObject((int)UI.OnRoundUI).SetActive(true);
-//        
-//        GetObject((int)UI.Image_RedHeart).SetActive(false);
-//        GetObject((int)UI.Image_OrangeTriangle).SetActive(false);
-//        GetObject((int)UI.Image_YellowStar).SetActive(false);
-//        GetObject((int)UI.Image_GreenCircle).SetActive(false);
-//        GetObject((int)UI.Image_BlueSquare).SetActive(false);
-//        GetObject((int)UI.Image_PinkFlower).SetActive(false);
-//        
-//        GetObject(ImageToActivate).SetActive(true);
-//        GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
-//        
-//        
-//        // _ea019UISeq?.Kill();
-//        // _ea019UISeq = DOTween.Sequence();
-//        // GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
-//        // _ea019UISeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
-//        //     .SetEase(Ease.InOutBounce));
-//    }
+    public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
+    {
+          
+        GetObject((int)UI.OnRoundUI).SetActive(true);
+        
+        GetObject((int)UI.Image_RedHeart).SetActive(false);
+        GetObject((int)UI.Image_OrangeTriangle).SetActive(false);
+        GetObject((int)UI.Image_YellowStar).SetActive(false);
+        GetObject((int)UI.Image_GreenCircle).SetActive(false);
+        GetObject((int)UI.Image_BlueSquare).SetActive(false);
+        GetObject((int)UI.Image_PinkFlower).SetActive(false);
+        
+        GetObject(ImageToActivate).SetActive(true);
+        GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
+        
+        
+        Sequence _ea019UISeq = DOTween.Sequence();
+        _ea019UISeq?.Kill();
+        GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
+        _ea019UISeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
+            .SetEase(Ease.InOutBounce));
+    }
 
 }
