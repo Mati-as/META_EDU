@@ -63,8 +63,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
             if (!isClickable) return;
             Char randomChar = (char)UnityEngine.Random.Range('A','D'+1);
 
-            Managers.Sound.Play(SoundManager.Sound.Effect, 
-                "Audio/Common/Click/Click"+randomChar.ToString());
+            Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Common/Click/Click"+randomChar.ToString());
             if(_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
             {
                 OnButtonClicked?.Invoke(clickedEnum);

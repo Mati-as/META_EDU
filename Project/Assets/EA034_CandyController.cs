@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA034_CandyController : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class EA034_CandyController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.name.Contains("Cake"))
+        float randomPoss = Random.Range(0f, 1f);
+        if (other.gameObject.name.Contains("Cake") && randomPoss < 0.80f)
         {
             DOVirtual.Float(0, 1, 0.5f, _ =>
             {

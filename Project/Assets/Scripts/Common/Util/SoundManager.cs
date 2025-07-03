@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 /// <summary>
 ///     사운드 재생과 사운드관련 파라미터를 관리합니다.
@@ -179,6 +180,31 @@ public class SoundManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// </summary>
+    /// <param name="path">재생경로</param>
+    /// <param name="randomCharMax">랜덤으로 재생할 파일중 문자열 오름차순상 가장 마지막 파일 (에시, A부터시작해 D까지있을떄 D)</param>
+    /// <returns></returns>
+    public bool PlayRandomEffect(string path, char randomCharMax)
+    {
+        if (path.Contains("Audio/") == false) path = string.Format("Audio/{0}", path);
+
+        char randomChar = (char)Random.Range('A', randomCharMax + 1);
+
+        var audioSource = audioSources[(int)Sound.Effect];
+
+        var audioClip = GetAudioClip(path + randomChar);
+        if (audioClip == null)
+        {
+            Logger.LogWarning($"audio clip is null : path: {path + randomChar}");
+            return false;
+        }
+
+        audioSource.volume = volumes[(int)Sound.Effect];
+
+        audioSource.PlayOneShot(audioClip);
+        return true;
+    }
     public bool Play(Sound type, string path, float volume = 1.0f, float pitch = 1.0f)
     {
         if (string.IsNullOrEmpty(path))
@@ -317,7 +343,11 @@ public class SoundManager : MonoBehaviour
         var audioSource = audioSources[(int)type];
         audioSource.Stop();
     }
-
+    public void Pause(Sound type)
+    {
+        var audioSource = audioSources[(int)type];
+        audioSource.Pause();
+    }
     public float GetAudioClipLength(string path)
     {
         var audioClip = GetAudioClip(path);

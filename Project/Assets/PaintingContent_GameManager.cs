@@ -172,8 +172,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         videoPlayer.playbackSpeed = playbackSpeed;
 
         string sceneName = SceneManager.GetActiveScene().name;
-        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"{sceneName}.mp4");
-        string movPath = Path.Combine(Application.streamingAssetsPath, $"{sceneName}.mov");
+        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mp4");
+        string movPath = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mov");
 
         if (File.Exists(mp4Path))
             videoPlayer.url = mp4Path;
