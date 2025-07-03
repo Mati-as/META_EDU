@@ -363,7 +363,7 @@ public class MetaEduLauncher : UI_PopUp
             })
             .OnComplete(() =>
             {
-                Managers.isGameStopped = false;
+                Managers.IsGameStopped = false;
             });
     }
 

@@ -178,7 +178,7 @@ public class InGame_SideMenu : UI_PopUp
     private IEnumerator ChangeScene()
     {
 
-        Managers.isGameStopped = true;
+        Managers.IsGameStopped = true;
        
         yield return _waitForSceneChange;
 

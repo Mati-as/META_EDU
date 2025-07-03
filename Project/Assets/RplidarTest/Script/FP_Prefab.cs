@@ -111,7 +111,7 @@ public class FP_Prefab : RaySynchronizer
     {
         if (!isRayEnabled) return; //Raycast 작동 여부 제어
 
-        if (Managers.isGameStopped || _rectTransform == null) return;
+        if (Managers.IsGameStopped || _rectTransform == null) return;
         if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
         {
             return;

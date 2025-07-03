@@ -10,13 +10,24 @@ public class UIManager
     private int _order = -20;
 
      Stack<UI_PopUp> _popupStack = new Stack<UI_PopUp>();
+
+
      
-     
-     public UI_PopUp previousPopupClass
+     /// <summary>
+     /// 게임실행중 나갔을때 보여줄 해당 UI선택화면
+     /// </summary>
+     private static UI_PopUp _uiSelectionOnGameExit = null;
+     public static UI_PopUp UISelectionOnGameExit
      {
-         get;
-         set;
-     }
+         get
+         {
+             return _uiSelectionOnGameExit;}
+         set
+         {
+             _uiSelectionOnGameExit = value;
+             Logger.CoreClassLog("뒤로가기 _uiSelectionOnGameExit set to: " + _uiSelectionOnGameExit.GetType().Name);
+         }
+     } 
      public UI_PopUp currentPopupClass
      {
          get;
@@ -141,18 +152,64 @@ public class UIManager
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
         
-        previousPopupClass = currentPopupClass;
+
+      if (popupInstance.GetType() != typeof(UI_Confirmation)
+          && popupInstance.GetType() !=typeof(UI_LoadInitialScene))currentPopupClass = popupInstance;
+
+      Logger.CoreClassLog($"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
+        return popupInstance;
+    }
+    
+    public UI_PopUp ShowPopupUI(Type type, string name = null, Transform parent = null)
+    {
+        if (!typeof(UI_PopUp).IsAssignableFrom(type))
+        {
+            Debug.LogError($"Type {type} is not a UI_PopUp");
+            return null;
+        }
+
+        if (string.IsNullOrEmpty(name))
+            name = type.Name;
+
+        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
+        var go = Managers.Resource.Instantiate($"UI/Popup/{name}");
+        var popupInstance = go.AddComponent(type) as UI_PopUp;
+
+        _popupStack.Push(popupInstance);
+
+        if (parent != null)
+            go.transform.SetParent(parent);
+        else if (SceneUI != null)
+            go.transform.SetParent(SceneUI.transform);
+        else
+            go.transform.SetParent(Root.transform);
+
+        go.transform.localScale = Vector3.one;
+        go.transform.localPosition = prefab.transform.position;
+
+        Managers.UI.SceneUI.OnPopupUI();
+
+        PreviousPopup = CurrentPopup;
+        CurrentPopup = name;
         
-      if (popupInstance.GetType() != typeof(UI_Confirmation))currentPopupClass = popupInstance;
+        
+        
+        if (popupInstance.GetType() != typeof(UI_Confirmation))currentPopupClass = popupInstance;
 
         return popupInstance;
+    }
+
+
+    private void SetPreviousClass()
+    {
+        
     }
     
     public void InitOnLauncherLoad(){
         _popupStack.Clear();
-        CurrentPopup = null;
-        PreviousPopup = null;
-        currentPopupClass = null;
+       // CurrentPopup = null;
+        //PreviousPopup = null;
+       // currentPopupClass = null;
     }
     
     /// <summary>

@@ -53,9 +53,27 @@ public class UI_LoadInitialScene : UI_PopUp
                 gameObject.SetActive(false);
                 StopAllCoroutines();
               
-
-                //Managers.UI.CloseAllPopupUI();
-                Managers.UI.ShowPopupUI<UI_Home>();
+                if (Managers.IsAlreadyFirstTimeHomeOpened)
+                {
+                    if (UIManager.UISelectionOnGameExit != null)
+                    {
+                        Type uISelectionToShow = UIManager.UISelectionOnGameExit.GetType();
+                        Logger.CoreClassLog("뒤로가기시 Prev Popup UI Type : " + uISelectionToShow);
+                        Managers.UI.ShowPopupUI(uISelectionToShow);
+                    }
+                    else
+                    {
+                        Type uISelectionToShow = UIManager.UISelectionOnGameExit.GetType();
+                        Logger.CoreClassLog("뒤로가기시 Managers.UI.UISelectionOnGameExit is null");
+                        Managers.UI.ShowPopupUI(uISelectionToShow);
+                    }
+                }
+                else
+                {
+                    Logger.CoreClassLog("뒤로가기X Initial Load Complete, Opening Home UI");
+                    Managers.UI.ShowPopupUI<UI_Home>();
+                    Managers.IsAlreadyFirstTimeHomeOpened = true;
+                }
             }
             
         }

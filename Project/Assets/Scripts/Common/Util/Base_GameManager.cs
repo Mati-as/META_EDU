@@ -408,7 +408,7 @@ public abstract class Base_GameManager : MonoBehaviour
             return false;
         }
 
-        if (Managers.isGameStopped)
+        if (Managers.IsGameStopped)
         {
             Logger.Log("gameStopped, Can't be clicked");
 

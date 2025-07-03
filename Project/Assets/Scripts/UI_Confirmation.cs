@@ -29,12 +29,15 @@ public class UI_Confirmation : UI_PopUp
         
         GetObject((int)UI.Btn_Yes).BindEvent(() =>
         {
+            UIManager.UISelectionOnGameExit = Managers.UI.currentPopupClass;
+            Logger.CoreClassLog($"뒤로가기시 실행버튼 -------{UIManager.UISelectionOnGameExit}");
             LoadScene(UI_MetaEduLauncherMaster.GameNameWaitingForConfirmation);
         });
         GetObject((int)UI.Btn_No).BindEvent(() =>
         {
             Managers.UI.ClosePopupUI();
         });
+        
         return base.InitEssentialUI();
         
     }
@@ -44,6 +47,7 @@ public class UI_Confirmation : UI_PopUp
         // string originalName = sceneName;
         // string modifiedName = originalName.Substring("SceneName_".Length);
 
+   
         gameObject.SetActive(false);
         SceneManager.LoadScene(sceneName);
     }

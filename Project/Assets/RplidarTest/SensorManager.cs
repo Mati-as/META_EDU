@@ -519,7 +519,7 @@ public class SensorManager : MonoBehaviour
         List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
 
         if (!isMoterStarted) return;
-        if (Managers.isGameStopped) return;
+        if (Managers.IsGameStopped) return;
         _timer = 0f;
 
         if (m_datachanged)

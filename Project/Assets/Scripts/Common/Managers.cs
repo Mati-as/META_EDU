@@ -25,8 +25,10 @@ public class Managers : MonoBehaviour
     private static SettingManager s_SettingManager = new SettingManager();
     
     public static float PROJECTOR_SCREEN_HEIGHT; 
-    public static bool isGameStopped { get; set; }
-
+   
+    public static bool IsGameStopped { get; set; }
+    public static bool IsAlreadyFirstTimeHomeOpened = false;
+    public static bool IsInited= false;
 
     public static SettingManager Setting
     {  
@@ -95,9 +97,13 @@ public class Managers : MonoBehaviour
 
     private void Awake()
     {
-
+        if (IsInited)
+        {
+            Logger.CoreClassLog("이미 초기화 되었음");
+            return;
+        }
+        IsInited = true;
         CheckSingleInstance();
-
         Init();
     }
 
