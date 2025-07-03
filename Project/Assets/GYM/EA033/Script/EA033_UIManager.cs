@@ -11,16 +11,14 @@ public class EA033_UIManager : Base_UIManager
        Btn_Next
    }
    
-   private enum UI
+   public enum UI
    {
        OnRoundUI,
        
-       Image_RedHeart,
-       Image_OrangeTriangle,
-       Image_YellowStar,
-       Image_GreenCircle,
-       Image_BlueSquare,
-       Image_PinkFlower,
+       Image_Bell,
+       Image_Bulb,
+       Image_Candy,
+       Image_Star
        
    }
 
@@ -63,7 +61,43 @@ public class EA033_UIManager : Base_UIManager
        
        return true;
    }
+   
+   
+   public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
+   {
+       GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
+        
+       GetObject((int)UI.OnRoundUI).SetActive(true);
+       GetObject((int)UI.Image_Bell).SetActive(false);
+       GetObject((int)UI.Image_Bulb).SetActive(false);
+       GetObject((int)UI.Image_Candy).SetActive(false);
+       GetObject((int)UI.Image_Star).SetActive(false);
+        
+       GetObject(ImageToActivate).SetActive(true);
+       GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
+        
+       var seq = DOTween.Sequence();
+       seq?.Kill();
+       seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
+           .SetEase(Ease.InOutBounce));
+   }
 
+   public void DeactivateImageAndUpdateCount()
+   {
+       var seq = DOTween.Sequence();
+       seq?.Kill();
+       seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.zero, 0.15f).From(Vector3.one)
+           .SetEase(Ease.InOutBounce).OnComplete(() =>
+           {
+               GetObject((int)UI.OnRoundUI).SetActive(false);
+               GetObject((int)UI.Image_Bell).SetActive(false);
+               GetObject((int)UI.Image_Bulb).SetActive(false);
+               GetObject((int)UI.Image_Candy).SetActive(false);
+               GetObject((int)UI.Image_Star).SetActive(false);
+           }));
+        
+   }
+   
 //
 //    private VertexGradient _defaultColor;
 //    public void ChangeTextColor(Color color)
@@ -118,55 +152,6 @@ public class EA033_UIManager : Base_UIManager
 //            GetButton((int)Btns.Btn_Next).gameObject.SetActive(false);
 //        });
 //    }
-//
-//
-//    public void PopBallonCountUI(string instruction, float duration = 5f, float delay = 0f)
-//    {
-//        _uiSeq?.Kill();
-//        _uiSeq = DOTween.Sequence();
-//        _uiSeq.AppendInterval(delay);
-// //        Logger.ContentTestLog($"PopInstructionUI :활성화------------ {instruction}");
-//
-//        GetObject((int)UI.OnRoundUI).SetActive(true);
-//
-//        TMP_Instruction.text = instruction;
-//
-//        GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
-//        _uiSeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(DEFAULT_SIZE * 1.2f, 0.6f)
-//            .SetEase(Ease.InOutBounce));
-//        _uiSeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(DEFAULT_SIZE, 0.15f)
-//            .SetEase(Ease.InOutBounce));
-//
-//        if (duration > 0.5f)
-//        {
-//            _uiSeq.AppendInterval(duration);
-//            _uiSeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.zero, 0.15f)
-//                .SetEase(Ease.InOutBounce));
-//        }
-//    }
-//
-//
-    public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
-    {
-          
-        GetObject((int)UI.OnRoundUI).SetActive(true);
-        
-        GetObject((int)UI.Image_RedHeart).SetActive(false);
-        GetObject((int)UI.Image_OrangeTriangle).SetActive(false);
-        GetObject((int)UI.Image_YellowStar).SetActive(false);
-        GetObject((int)UI.Image_GreenCircle).SetActive(false);
-        GetObject((int)UI.Image_BlueSquare).SetActive(false);
-        GetObject((int)UI.Image_PinkFlower).SetActive(false);
-        
-        GetObject(ImageToActivate).SetActive(true);
-        GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
-        
-        
-        Sequence _ea019UISeq = DOTween.Sequence();
-        _ea019UISeq?.Kill();
-        GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
-        _ea019UISeq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
-            .SetEase(Ease.InOutBounce));
-    }
+
 
 }
