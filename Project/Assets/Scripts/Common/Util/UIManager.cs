@@ -173,18 +173,18 @@ public class UIManager
             return false;
         }
         
-        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
+        var UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
         
         bool isUIManagerOnScene = false;
         
 
         
         
-        if (prefab == null)
+        if (UIManagerPrefab == null)
         {
-            prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/UIManager");
+            UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/UIManager");
             
-            if(prefab == null)
+            if(UIManagerPrefab == null)
             {
                 uiGamobj = null;
                 Debug.LogError($"Prefab for {sceneName}_UIManager not found.");

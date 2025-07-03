@@ -12,7 +12,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         OnDecorate,
         OnCandle,
         OnCelebrate,
-        OnFinish
+        OnBlowCandle,
+        OnFinish,
+      
     }
 
 
@@ -28,7 +30,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         CakeCream_C,
         CandySetRoot,
         OriginPosParent,
-        TargetPos
+        TargetPos,
+        CandleStartPos,
+        Candles
     }
 
 
@@ -52,42 +56,77 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Intro:
+                    Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_1_케이크를_만들어볼까요_");
                     baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
                     DOVirtual.DelayedCall(1f, () =>
                     {
-                  
+
+
                         _seatSelectionController.StartSeatSelection();
                     });
                     break;
 
                 case (int)MainSeq.OnCream:
+                  
+                  
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA034/CreamImage");
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
+                        Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_2__생크림을_터치해_빵에_생크림을_발라주세요___생크림을_터치해주세요");
                         baseUIManager.PopFromZeroInstructionUI("생크림을 터치해주세요!");
+
+                        DOVirtual.DelayedCall(10f, () =>
+                        {
+                            Managers.Sound.Play(SoundManager.Sound.Narration,
+                                "SortedByScene/EA034/audio_3__생크림을_더_많이_발라주세요__");
+                        });
                         _buttonClickEventController.StartBtnClickAnyOrder();
                     });
 
                     break;
                 case (int)MainSeq.OnDecorate:
 
+                    _elapsed = 0f;
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Deco");
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
-                        baseUIManager.PopFromZeroInstructionUI("이번엔 케이크를 꾸며봐요!\n 버튼을 눌러 꾸며주세요!");
+                        Managers.Sound.Play(SoundManager.Sound.Narration,
+                            "SortedByScene/EA034/audio_5_생크림_위에_달콤한_재료로_꾸며볼까요___달콤한_재료를_골라~");
+                        baseUIManager.PopFromZeroInstructionUI("달콤한 재료를 골라 터치해주세요");
                         _buttonClickEventController.StartBtnClickAnyOrder();
                     });
                     break;
 
                 case (int)MainSeq.OnCandle:
                     _buttonClickEventController.DeactivateAllButtons();
-                    baseUIManager.PopFromZeroInstructionUI("이번엔 마지막으로 촛불을 꽂을거에요!");
+                    
+                    DOVirtual.DelayedCall(1.5f, () =>
+                    {
+                        baseUIManager.PopFromZeroInstructionUI("초를 터치해 꽂아주세요");
+                        _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Candle");
+                        _buttonClickEventController.StartBtnClickAnyOrder();
+                    });
+                    
+                    _currentClickCount = 0;
+                  
                     break;
 
                 case (int)MainSeq.OnCelebrate:
+                    Managers.Sound.Play(SoundManager.Sound.Narration,
+                        "SortedByScene/EA034/audio_8_케익에_초를_꽂았어요__형님이_되었으니_축하_노래를_불러볼까요_");
+                    baseUIManager.PopFromZeroInstructionUI("케잌에 초를 꽂았어요!\n형님이 되었으니 축하 노래를 불러볼까요?");
                     break;
-
+                
+                case (int)MainSeq.OnBlowCandle:
+                    Managers.Sound.Play(SoundManager.Sound.Narration,
+                        "SortedByScene/EA034/audio_9_초에_불을_꺼볼까요__초에_있는_불을_터치해_주세요_");
+                    baseUIManager.PopFromZeroInstructionUI("초를 터치해서 불을 꺼주세요");
+                    break;
+                  
                 case (int)MainSeq.OnFinish:
+                    Managers.Sound.Play(SoundManager.Sound.Narration,
+                        "SortedByScene/EA034/audio_10__친구들__형님이_되었네요_축하해요_");
+                    baseUIManager.PopFromZeroInstructionUI("형님이 되었네요 축하해요!");
                     break;
             }
         }
@@ -96,6 +135,10 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     private SeatSelectionController _seatSelectionController;
     private ButtonClickEventController _buttonClickEventController;
 
+
+    private Dictionary<int, Transform> _candleTransformMap = new();
+    private Dictionary<int, Vector3> _candleArrivalPos = new();
+    
     protected override void Init()
     {
         base.Init();
@@ -123,6 +166,17 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         GetObject((int)Objs.CakeCream_A).SetActive(false);
         GetObject((int)Objs.CakeCream_B).SetActive(false);
         GetObject((int)Objs.CakeCream_C).SetActive(false);
+
+        for (int i = 0; i < GetObject((int)Objs.Candles).transform.childCount; i++)
+        {
+            Transform candle = GetObject((int)Objs.Candles).transform.GetChild(i);
+            
+            _candleArrivalPos.Add(i, candle.position);
+            
+            candle.position = GetObject((int)Objs.CandleStartPos).transform.position;
+            _candleTransformMap.Add(i, candle);
+            candle.gameObject.SetActive(false);
+        }
     }
 
 
@@ -177,12 +231,17 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
 
     private const int COUNT_TO_CLICK_ONCREAM = 21;
-    private int _currentClickCountOnCream;
+    private int _currentClickCount;
     private bool isCakeRotatable = true;
     private bool _isCakeRoundFinish;
 
-    private int currentCakeRound;
+    private int _cakeCurrentRound;
     private readonly int ROUND_COUNT_ONCREAM = 2; // 생크림 올리기 라운드 수 (0부터시작이라 3개 라운드) 
+
+
+    private const int COUNT_TO_CLICK_ONCANDLE = 15;
+    private readonly int CANDLE_ROUND_COUNT = 6; // 양초 올리기 라운드 수(갯수) (0부터시작이라 3개 라운드) 
+    private int _candleCurrentRound;
 
     private void OnButtonClicked(int clickedButtonIndex)
     {
@@ -198,12 +257,12 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                 OnBtnClickedOnCream();
                 break;
             case (int)MainSeq.OnDecorate:
-                _elapsed = 0f;
+                
                 OnBtnClickedOnDeco(clickedButtonIndex);
                 break;
 
             case (int)MainSeq.OnCandle:
-               
+                OnBtnClickedOnCandle();
                 break;
 
             case (int)MainSeq.OnCelebrate:
@@ -214,32 +273,76 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         }
     }
 
+    private bool isCandleRoundFinished = false;
+
+    private void OnBtnClickedOnCandle()
+    {
+        if(isCandleRoundFinished) return;
+        _currentClickCount++;
+        if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE && _candleCurrentRound >= CANDLE_ROUND_COUNT)
+        {
+            isCandleRoundFinished = true;
+            _currentClickCount = 0;
+            PutCandleOnCake(_candleCurrentRound);
+            _buttonClickEventController.DeactivateAllButtons();
+         
+          
+
+            DOVirtual.DelayedCall(2.5f, () =>
+            {
+                CurrentMainMainSeq = (int)MainSeq.OnCelebrate;
+            });
+        }
+        else if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE)
+        {
+            _currentClickCount = 0;
+            PutCandleOnCake(_candleCurrentRound);
+            _candleCurrentRound++;
+           
+        }
+      
+    }
+
+    private void PutCandleOnCake(int candleIndex)
+    {
+        _candleTransformMap[candleIndex].DOMove(_candleArrivalPos[candleIndex], 1.2f).SetEase(Ease.OutExpo).OnComplete(() =>
+        {
+            _candleTransformMap[candleIndex].DOScale(Vector3.one*1.2f, 0.5f).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                _candleTransformMap[candleIndex].DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutSine);
+            });
+        });
+        _candleTransformMap[candleIndex].gameObject.SetActive(true);
+    }
+
     private void OnBtnClickedOnCream()
     {
-        _currentClickCountOnCream++;
-        if (_currentClickCountOnCream > COUNT_TO_CLICK_ONCREAM && currentCakeRound >= ROUND_COUNT_ONCREAM)
+        _currentClickCount++;
+        if (_currentClickCount > COUNT_TO_CLICK_ONCREAM && _cakeCurrentRound >= ROUND_COUNT_ONCREAM)
         {
-            ChangeCakeToCreamOne(currentCakeRound); //마지막 케이크
+            ChangeCakeToCreamOne(_cakeCurrentRound); //마지막 케이크
             _isCakeRoundFinish = true;
             _buttonClickEventController.DeactivateAllButtons();
-            _currentClickCountOnCream = 0;
-            baseUIManager.PopFromZeroInstructionUI("잘했어! 빵에 생크림을 전부 발랐어!");
+            _currentClickCount = 0;
+
+            Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_4__와____달콤한__생크림_케이크가_만들어지고_있어요_");
+            baseUIManager.PopFromZeroInstructionUI("생크림 케이크가 만들어지고 있어요!");
 
             DOVirtual.DelayedCall(2.5f, () =>
             {
                 CurrentMainMainSeq = (int)MainSeq.OnDecorate;
             });
         }
-        else if (_currentClickCountOnCream > COUNT_TO_CLICK_ONCREAM)
+        else if (_currentClickCount > COUNT_TO_CLICK_ONCREAM)
         {
-            _currentClickCountOnCream = 0;
-            ChangeCakeToCreamOne(currentCakeRound);
-            currentCakeRound++;
+            _currentClickCount = 0;
+            ChangeCakeToCreamOne(_cakeCurrentRound);
+            _cakeCurrentRound++;
         }
         else
         {
             if (_isCakeRoundFinish) return;
-            _sequenceMap.TryAdd((int)Objs.CakeA + currentCakeRound, DOTween.Sequence());
+            _sequenceMap.TryAdd((int)Objs.CakeA + _cakeCurrentRound, DOTween.Sequence());
 
 
             if (!isCakeRotatable) return;
@@ -249,14 +352,14 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                 isCakeRotatable = true;
             });
 
-            var t = GetObject((int)Objs.CakeA + currentCakeRound).transform;
+            var t = GetObject((int)Objs.CakeA + _cakeCurrentRound).transform;
 
             var targetRot = t.localRotation * Quaternion.Euler(0, 15, 0);
 
-            _sequenceMap[(int)Objs.CakeA + currentCakeRound]?.Kill();
-            _sequenceMap[(int)Objs.CakeA + currentCakeRound] = DOTween.Sequence();
+            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound]?.Kill();
+            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound] = DOTween.Sequence();
 
-            _sequenceMap[(int)Objs.CakeA + currentCakeRound]
+            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound]
                 .Append(t.DOLocalRotateQuaternion(targetRot, 0.1f).SetEase(Ease.OutBack));
         }
     }
@@ -356,14 +459,17 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
             if (_elapsed >= DECO_TIME)
             {
                 _elapsed = 0f;
-                CurrentMainMainSeq = (int)MainSeq.OnCandle;
+                
+                Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_6_달콤한_케이크가_완성되었어요_");
+                baseUIManager.PopFromZeroInstructionUI("달콤한 케이크가 완성되었어요!");
+                DOVirtual.DelayedCall(4f,()=>
+                {
+                    CurrentMainMainSeq = (int)MainSeq.OnCandle;
+                });
             }
        
         }
-        else
-        {
-            _elapsed = 0f;
-        }
+
    
     }
     private void LaunchCandyFrom(Vector3 originPos, Vector3 targetPos)
