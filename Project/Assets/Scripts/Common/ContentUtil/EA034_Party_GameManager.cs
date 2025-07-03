@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         OnDecorate,
         OnCandle,
         OnCelebrate,
-        OnBlowCandle,
+        OnBlowOutCandle,
         OnFinish,
       
     }
@@ -56,7 +57,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Intro:
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_1_케이크를_만들어볼까요_");
+                 
                     baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
                     DOVirtual.DelayedCall(1f, () =>
                     {
@@ -72,14 +73,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA034/CreamImage");
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
-                        Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_2__생크림을_터치해_빵에_생크림을_발라주세요___생크림을_터치해주세요");
                         baseUIManager.PopFromZeroInstructionUI("생크림을 터치해주세요!");
-
-                        DOVirtual.DelayedCall(10f, () =>
-                        {
-                            Managers.Sound.Play(SoundManager.Sound.Narration,
-                                "SortedByScene/EA034/audio_3__생크림을_더_많이_발라주세요__");
-                        });
+                        Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/PutCream");
+                     
                         _buttonClickEventController.StartBtnClickAnyOrder();
                     });
 
@@ -102,6 +98,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
+                        Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/PutCandle");
                         baseUIManager.PopFromZeroInstructionUI("초를 터치해 꽂아주세요");
                         _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Candle");
                         _buttonClickEventController.StartBtnClickAnyOrder();
@@ -112,20 +109,51 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnCelebrate:
+                
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/audio_8_케익에_초를_꽂았어요__형님이_되었으니_축하_노래를_불러볼까요_");
-                    baseUIManager.PopFromZeroInstructionUI("케잌에 초를 꽂았어요!\n형님이 되었으니 축하 노래를 불러볼까요?");
+                    baseUIManager.PopFromZeroInstructionUI("케잌에 초를 꽂았어요!\n형님이 되었으니 축하 노래를 불러볼까요?",5);
+
+                    //노래부르기 버튼 넣으면 좋을것 같음
+                    DOVirtual.DelayedCall(6f, () =>
+                    {
+                        Managers.Sound.Pause(SoundManager.Sound.Bgm);
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA034/HappyBD",bgmVolume);
+                        
+                        DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length , () =>
+                        {
+                            DOVirtual.DelayedCall(3f, () =>
+                            {
+                                Managers.Sound.Play(SoundManager.Sound.Bgm, $"Audio/Bgm/EA034",bgmVolume);
+                                CurrentMainMainSeq = (int)MainSeq.OnBlowOutCandle;
+                            });
+                        });
+                    
+                    });
+                    
+              
                     break;
                 
-                case (int)MainSeq.OnBlowCandle:
+                case (int)MainSeq.OnBlowOutCandle:
+                    foreach (var key in _fireOnCandleTransformMap.Keys.ToArray())
+                    {
+                        var originalScale = _fireOnCandleTransformMap[key].localScale;
+                        var targetScale = originalScale * 1.5f;
+                        Sequence fireScaleSeq = DOTween.Sequence();
+                        fireScaleSeq.Append(_fireOnCandleTransformMap[key].DOScale(targetScale, 0.25f).SetEase(Ease.InOutSine));
+                        fireScaleSeq.Append(_fireOnCandleTransformMap[key].DOScale(originalScale, 0.25f).SetEase(Ease.InOutSine));
+                        fireScaleSeq.SetLoops(6,LoopType.Yoyo);
+                    }
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/audio_9_초에_불을_꺼볼까요__초에_있는_불을_터치해_주세요_");
                     baseUIManager.PopFromZeroInstructionUI("초를 터치해서 불을 꺼주세요");
                     break;
                   
                 case (int)MainSeq.OnFinish:
+                    TriggerFinish();
+                    
                     Managers.Sound.Play(SoundManager.Sound.Narration,
-                        "SortedByScene/EA034/audio_10__친구들__형님이_되었네요_축하해요_");
+                        "SortedByScene/EA034/Finish");
                     baseUIManager.PopFromZeroInstructionUI("형님이 되었네요 축하해요!");
                     break;
             }
@@ -137,6 +165,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
 
     private Dictionary<int, Transform> _candleTransformMap = new();
+    private Dictionary<int, Transform> _fireOnCandleTransformMap = new();
     private Dictionary<int, Vector3> _candleArrivalPos = new();
     
     protected override void Init()
@@ -172,29 +201,34 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
             Transform candle = GetObject((int)Objs.Candles).transform.GetChild(i);
             
             _candleArrivalPos.Add(i, candle.position);
-            
             candle.position = GetObject((int)Objs.CandleStartPos).transform.position;
             _candleTransformMap.Add(i, candle);
             candle.gameObject.SetActive(false);
+            _fireOnCandleTransformMap.Add(i, candle.GetChild(0));
+            
+           
         }
+        
+        
     }
 
 
 #if UNITY_EDITOR
     [SerializeField] private MainSeq _startSeq;
-    [SerializeField]
-    [Range(0, 60)]
-    private float DECO_TIME = 20; 
 #else
-     [SerializeField] private const float DECO_TIME = 15; 
-    [SerializeField] private MainSeq _startSeq = MainSeq.Intro;
+    private MainSeq _startSeq = MainSeq.Intro;
 #endif
 
+    [SerializeField]
+#if UNITY_EDITOR
+    [Range(0, 60)]
+    private float DECO_TIME = 20;
+#else
+private const float DECO_TIME = 15;
+#endif
     protected override void OnGameStartStartButtonClicked()
     {
         base.OnGameStartStartButtonClicked();
-
-   
         CurrentMainMainSeq = (int)_startSeq;
     }
 
@@ -204,7 +238,12 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
         baseUIManager.PopFromZeroInstructionUI("잘했어! 모두 자리에 앉았구나!");
 
 
-        DOVirtual.DelayedCall(2.5f, () =>
+        DOVirtual.DelayedCall(3f, () =>
+        {
+            baseUIManager.PopFromZeroInstructionUI("케이크를 만들어 볼까요?");
+            Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA034/audio_1_케이크를_만들어볼까요_");
+        });
+        DOVirtual.DelayedCall(5.5f, () =>
         {
             CurrentMainMainSeq = (int)MainSeq.OnCream;
         });
@@ -239,7 +278,13 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     private readonly int ROUND_COUNT_ONCREAM = 2; // 생크림 올리기 라운드 수 (0부터시작이라 3개 라운드) 
 
 
-    private const int COUNT_TO_CLICK_ONCANDLE = 15;
+#if UNITY_EDITOR
+    [SerializeField] private int COUNT_TO_CLICK_ONCANDLE;
+#else
+   private const int COUNT_TO_CLICK_ONCANDLE = 15;
+#endif
+    
+
     private readonly int CANDLE_ROUND_COUNT = 6; // 양초 올리기 라운드 수(갯수) (0부터시작이라 3개 라운드) 
     private int _candleCurrentRound;
 
@@ -247,16 +292,11 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
     {
         switch (CurrentMainMainSeq)
         {
-            case (int)MainSeq.Default:
-                break;
-
-            case (int)MainSeq.Intro:
-                break;
-
+            
             case (int)MainSeq.OnCream:
                 OnBtnClickedOnCream();
                 break;
-            case (int)MainSeq.OnDecorate:
+             case (int)MainSeq.OnDecorate:
                 
                 OnBtnClickedOnDeco(clickedButtonIndex);
                 break;
@@ -264,13 +304,56 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
             case (int)MainSeq.OnCandle:
                 OnBtnClickedOnCandle();
                 break;
-
-            case (int)MainSeq.OnCelebrate:
+                
+              
                 break;
-
-            case (int)MainSeq.OnFinish:
-                break;
+            
         }
+    }
+
+
+    private const string Candle = null;
+    private const int CANDLES_TO_BLOW_OUT = 7;
+    private int currentCandleBlowOutCount = 0;
+    private bool _isFinished = false;
+    private void OnRaySyncOnCandleBlowOut()
+    {
+        if (_isFinished) return;
+        foreach (RaycastHit hit in GameManager_Hits)
+        {
+
+            if (hit.transform.gameObject.name.Contains(nameof(Candle)))
+            {
+                _isClickableMap.TryAdd(hit.transform.GetInstanceID(), true);
+                if(!_isClickableMap[hit.transform.GetInstanceID()]) return;
+       
+                
+                _isClickableMap[hit.transform.GetInstanceID()] = false;
+                Managers.Sound.PlayRandomEffect("Common/Effect/OnMove", 'B');
+                
+                
+                Transform fireOnCandle = hit.transform.GetChild(0);
+                Vector3 fireOnCandlePosToMove = fireOnCandle.position + Vector3.up *2;
+                fireOnCandle.DOMoveY(fireOnCandlePosToMove.y, 3f);
+                fireOnCandle.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InOutSine);
+                currentCandleBlowOutCount++;
+                if (currentCandleBlowOutCount >= CANDLES_TO_BLOW_OUT)
+                {
+                    baseUIManager.PopFromZeroInstructionUI("촛불을 다 껐어요!");
+                    DOVirtual.DelayedCall(5f, () =>
+                    {
+                        CurrentMainMainSeq = (int)MainSeq.OnFinish;
+                    });   
+                    _isFinished = true;
+                }
+            }
+        }
+    }
+
+    public override void OnRaySynced()
+    {
+        base.OnRaySynced();
+        if(CurrentMainMainSeq == (int)MainSeq.OnBlowOutCandle) OnRaySyncOnCandleBlowOut();
     }
 
     private bool isCandleRoundFinished = false;
@@ -285,7 +368,12 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
             _currentClickCount = 0;
             PutCandleOnCake(_candleCurrentRound);
             _buttonClickEventController.DeactivateAllButtons();
-         
+
+            DOVirtual.DelayedCall(1f, () =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Common/Effect/OnSuccess");
+            });
+          
           
 
             DOVirtual.DelayedCall(2.5f, () =>
@@ -305,6 +393,8 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     private void PutCandleOnCake(int candleIndex)
     {
+        Managers.Sound.PlayRandomEffect("Common/Effect/OnMove", 'B');
+        
         _candleTransformMap[candleIndex].DOMove(_candleArrivalPos[candleIndex], 1.2f).SetEase(Ease.OutExpo).OnComplete(() =>
         {
             _candleTransformMap[candleIndex].DOScale(Vector3.one*1.2f, 0.5f).SetEase(Ease.OutBack).OnComplete(() =>
@@ -354,7 +444,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
             var t = GetObject((int)Objs.CakeA + _cakeCurrentRound).transform;
 
-            var targetRot = t.localRotation * Quaternion.Euler(0, 15, 0);
+            var targetRot = t.localRotation * Quaternion.Euler(0, 20, 0);
 
             _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound]?.Kill();
             _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound] = DOTween.Sequence();
@@ -366,6 +456,13 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     private void ChangeCakeToCreamOne(int currentCake)
     {
+        if(currentCake ==0)DOVirtual.DelayedCall(1f, () =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration,
+                "SortedByScene/EA034/audio_3__생크림을_더_많이_발라주세요__");
+        });
+        Managers.Sound.PlayRandomEffect("Common/Effect/OnMove", 'B');
+        
         GetObject((int)Objs.CakeCream_A + currentCake).transform.localScale = Vector3.zero;
         GetObject((int)Objs.CakeCream_A + currentCake).SetActive(true);
 

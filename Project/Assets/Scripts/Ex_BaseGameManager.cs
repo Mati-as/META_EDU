@@ -190,44 +190,53 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         var objects = new Object[names.Length];
         _objects.Add(typeof(T), objects);
 
-        for (int i = 0; i < names.Length; i++)
+        for (int enumIndex = 0; enumIndex < names.Length; enumIndex++)
         {
             if (typeof(T) == typeof(GameObject))
             {
-                var obj = Utils.FindChild(gameObject, names[i], true);
-                objects[i] = obj;
+                var obj = Utils.FindChild(gameObject, names[enumIndex], true);
+                objects[enumIndex] = obj;
 
                 if (obj != null)
                 {
-                    var transform = obj.transform;
-                    _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
-                    _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
-               
-                    _isClickableMap.Add(transform.GetInstanceID(), false);
-                    _isClickedMap.Add(transform.GetInstanceID(), false);
-           
-                    _enumToTfIdMap.Add(i, transform.GetInstanceID());
-                    _defaultSizeMap.Add(i, transform.localScale);
-                    
-                    _defaultRotationQuatMap.Add(i, transform.rotation);
-                    _defaultLocalRotationQuatMap.Add(i, transform.localRotation);
-                    _defaultPosMap.Add(i, transform.position);
-                    _sequenceMap.Add(i, DOTween.Sequence());
-
-                    obj.transform.TryGetComponent(out Animator animator);
-                    
-                    //                    Logger.ContentTestLog($"Key added {transform.GetInstanceID()}:{transform.gameObject.name}");
-                    if (animator != null) _animatorMap.Add(i, animator);
+                    SetDefaultObjInfo(obj, enumIndex);
                 }
             }
             else
-                objects[i] = Utils.FindChild<T>(gameObject, names[i], true);
+                objects[enumIndex] = Utils.FindChild<T>(gameObject, names[enumIndex], true);
 
-            if (objects[i] == null)
-                Debug.Log($"Failed to bind({names[i]})");
+            if (objects[enumIndex] == null)
+                Debug.Log($"Failed to bind({names[enumIndex]})");
         }
     }
 
+    
+    
+    /// <summary>
+    /// 자주사용되는 초기위치, 회전, 스케일값 클릭가능여부, transformID를 Enum변환값등을 미리 캐싱합니다. 
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="enumIndex"></param>
+    protected void SetDefaultObjInfo(GameObject obj, int enumIndex)
+    {
+        var transform = obj.transform;
+        _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
+        _tfIdToEnumMap.Add(transform.GetInstanceID(), enumIndex);
+               
+        _isClickableMap.Add(transform.GetInstanceID(), false);
+        _isClickedMap.Add(transform.GetInstanceID(), false);
+           
+        _enumToTfIdMap.Add(enumIndex, transform.GetInstanceID());
+        _defaultSizeMap.Add(enumIndex, transform.localScale);
+                    
+        _defaultRotationQuatMap.Add(enumIndex, transform.rotation);
+        _defaultLocalRotationQuatMap.Add(enumIndex, transform.localRotation);
+        _defaultPosMap.Add(enumIndex, transform.position);
+        _sequenceMap.Add(enumIndex, DOTween.Sequence());
+
+        obj.transform.TryGetComponent(out Animator animator);
+        if (animator != null) _animatorMap.Add(enumIndex, animator);
+    }
     protected void ResetClickable(bool isClickable = true)
     {
         foreach (int key in _isClickableMap.Keys.ToArray())
@@ -359,6 +368,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     }
 
     protected WaitForSeconds _poolReturnWait;
+    private static readonly int Finish = Animator.StringToHash("Finish");
 
     protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
     {
@@ -392,7 +402,11 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         mainAnimator.SetInteger(SEQ_NUM, seqNum);
     }
     
-    
+    protected void TriggerFinish()
+    {
+        mainAnimator.SetTrigger(Finish);
+    }
+
     
 
     protected ParticleSystem GetFromSubPsPool(int subParticleIndex)
