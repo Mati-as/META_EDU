@@ -245,7 +245,7 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         if (Camera.main != null)
         {
-            Logger.CoreClassLog($"camera_rect :{Camera.main.rect.width} : {Camera.main.rect.height}");
+          //  Logger.CoreClassLog($"camera_rect :{Camera.main.rect.width} : {Camera.main.rect.height}");
             Camera.main.rect = new Rect(
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
@@ -267,7 +267,7 @@ public abstract class Base_GameManager : MonoBehaviour
                 XmlManager.Instance.ScreenSize
             );
 
-            Logger.CoreClassLog($"camera_rect :{UICamera.rect.width} : {UICamera.rect.height}");
+//            Logger.CoreClassLog($"camera_rect :{UICamera.rect.width} : {UICamera.rect.height}");
         }
         else
             Logger.LogError("UICamera not found.");
@@ -303,6 +303,9 @@ public abstract class Base_GameManager : MonoBehaviour
         isInitialized = true;
 
         InitCameraRect();
+
+        DOTween.Init(useSafeMode: false);
+        
         
         DOVirtual.DelayedCall(0.2f, () =>
         {
@@ -385,7 +388,7 @@ public abstract class Base_GameManager : MonoBehaviour
     /// <returns></returns>
     private bool PrecheckOnInit()
     {
-        if (SceneManager.GetActiveScene().name == nameof(METAEDU_LAUNCHER))
+        if (!Utils.IsLauncherScene())
         {
             var gmObjects = GameObject.FindGameObjectsWithTag("GameManager");
             if (gmObjects.Length > 1) return false;

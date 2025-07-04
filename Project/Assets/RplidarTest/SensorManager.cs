@@ -81,7 +81,7 @@ public class SensorManager : MonoBehaviour
                 if (Math.Abs(value - sensorSensitivity) < SENSOR_SENTSITIVITY_TOLERANCE) return;
                 _poolReturnWait = new WaitForSeconds(sensorSensitivity);
                 _sensorSensitivity = value;
-                Logger.Log($"current sensitivity {value}");
+//                Logger.Log($"current sensitivity {value}");
             }
         }
     }

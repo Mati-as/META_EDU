@@ -151,7 +151,7 @@ public class FP_Prefab : RaySynchronizer
         }
 
         // 🚨 최적화
-        if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
+        if (Utils.IsLauncherScene())
         {
             if (_launcher == null)
             {
