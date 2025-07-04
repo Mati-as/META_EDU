@@ -1,49 +1,98 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MyCustomizedEditor.Common.Util;
 using UnityEngine;
-using System;
-using System.Reflection;
 
 public class UIManager
 {
     private int _order = -20;
 
-     Stack<UI_PopUp> _popupStack = new Stack<UI_PopUp>();
+    private static readonly Stack<UI_PopUp> _popupStack = new();
 
 
-     
-     /// <summary>
-     /// 게임실행중 나갔을때 보여줄 해당 UI선택화면
-     /// </summary>
-     private static UI_PopUp _uiSelectionOnGameExit = null;
-     public static UI_PopUp UISelectionOnGameExit
-     {
-         get
-         {
-             return _uiSelectionOnGameExit;}
-         set
-         {
-             _uiSelectionOnGameExit = value;
-             Logger.CoreClassLog("뒤로가기 _uiSelectionOnGameExit set to: " + _uiSelectionOnGameExit.GetType().Name);
-         }
-     } 
-     public UI_PopUp currentPopupClass
-     {
-         get;
-         set;
-     }
-     public string CurrentPopup
-     {
-         get;
-         private set;
-     }
-     public string PreviousPopup
-     {
-         get;
-         private set;
-     }
-     public UI_Scene SceneUI { get; private set; }
+    private readonly Stack<Type> _previousPopupTypeStack = new();
+
+    public void SavePreviousPopup()
+    {
+        _previousPopupTypeStack.Clear(); // 기존 저장 내용 초기화
+
+        foreach (var popup in _popupStack) // 스택 순서 유지 위해 뒤집어서 push
+            if (popup != null)
+            {
+                var popupType = popup.GetType();
+
+                _previousPopupTypeStack.Push(popupType);
+                Logger.CoreClassLog($"[UI] Saved popup TYPE: {popupType.Name}");
+            }
+    }
+
+    /// <summary>
+    ///     초기 UI (로딩,게임매니저) 등은 중복로드하지 않도록 설계중, 단순화 필요. 2025/07/04
+    /// </summary>
+    /// <returns></returns>
+    public void LoadPopUp()
+    {
+        if (Managers.IsAlreadyFirstTimeHomeOpened)
+        {
+            Logger.Log("저장된 씬");
+
+            foreach (var uiType in _previousPopupTypeStack)
+            {
+                Logger.CoreClassLog($"[UI] Loading popup TYPE: {uiType.Name}");
+                Managers.UI.ShowPopupUI(uiType);
+            }
+        }
+        else
+        {
+            Logger.Log("첫 로드씬 ---- 첫 로드씬인지 반드시 확인해야함 ");
+            ShowPopupUI<UI_Home>();
+        }
+
+        Managers.IsAlreadyFirstTimeHomeOpened = true;
+    }
+
+    /// <summary>
+    ///     게임실행중 나갔을때 보여줄 해당 UI선택화면
+    /// </summary>
+    private static UI_PopUp _uiSelectionOnGameExit;
+
+    public static UI_PopUp UISelectionOnGameExit
+    {
+        get
+        {
+            return _uiSelectionOnGameExit;
+        }
+        set
+        {
+            _uiSelectionOnGameExit = value;
+            Logger.CoreClassLog("뒤로가기 _uiSelectionOnGameExit set to: " + _uiSelectionOnGameExit.GetType().Name);
+        }
+    }
+
+    public UI_PopUp currentPopupClass
+    {
+        get;
+        set;
+    }
+
+    public string CurrentPopup
+    {
+        get;
+        private set;
+    }
+
+    public string PreviousPopup
+    {
+        get;
+        private set;
+    }
+
+    public UI_Scene SceneUI
+    {
+        get;
+        private set;
+    }
 
     public GameObject Root
     {
@@ -69,21 +118,17 @@ public class UIManager
             _order++;
         }
         else
-        {
             canvas.sortingOrder = 0;
-        }
     }
 
 
     public int GetUICounts()
     {
-        
         foreach (var popUP in _popupStack)
-        {
             Logger.CoreClassLog($"[UI] Popup: {popUP.name}, Type: {popUP.GetType().Name}");
-        }
         return _popupStack.Count;
     }
+
     public T MakeSubItem<T>(Transform parent = null, string name = null) where T : UI_Base
     {
         if (string.IsNullOrEmpty(name))
@@ -101,19 +146,19 @@ public class UIManager
         return Utils.GetOrAddComponent<T>(go);
     }
 
-	public T ShowSceneUI<T>(string name = null) where T : UI_Scene
-	{
-		if (string.IsNullOrEmpty(name))
-			name = typeof(T).Name;
+    public T ShowSceneUI<T>(string name = null) where T : UI_Scene
+    {
+        if (string.IsNullOrEmpty(name))
+            name = typeof(T).Name;
 
-		GameObject go = Managers.Resource.Instantiate($"UI/Scene/{name}");
-		T sceneUI = Utils.GetOrAddComponent<T>(go);
-		SceneUI = sceneUI;
+        var go = Managers.Resource.Instantiate($"UI/Scene/{name}");
+        var sceneUI = Utils.GetOrAddComponent<T>(go);
+        SceneUI = sceneUI;
 
-		go.transform.SetParent(Root.transform);
+        go.transform.SetParent(Root.transform);
 
-		return sceneUI;
-	}
+        return sceneUI;
+    }
 
     public T ShowPopupUI<T>(string name = null, Transform parent = null) where T : UI_PopUp
     {
@@ -122,13 +167,12 @@ public class UIManager
 
         // 🔒 중복 팝업 검사
         foreach (var popup in _popupStack)
-        {
             if (popup != null && popup.GetType() == typeof(T))
             {
                 Debug.LogWarning($"[UI] Popup '{name}' is already open. Duplicate not allowed.");
+                return null;
                 return popup as T;
             }
-        }
 
         // 프리팹 로드 및 인스턴스화
         var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
@@ -151,15 +195,16 @@ public class UIManager
 
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
-        
 
-      if (popupInstance.GetType() != typeof(UI_Confirmation)
-          && popupInstance.GetType() !=typeof(UI_LoadInitialScene))currentPopupClass = popupInstance;
 
-      Logger.CoreClassLog($"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
+        if (popupInstance.GetType() != typeof(UI_Confirmation)
+            && popupInstance.GetType() != typeof(UI_LoadInitialScene)) currentPopupClass = popupInstance;
+
+        Logger.CoreClassLog(
+            $"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
         return popupInstance;
     }
-    
+
     public UI_PopUp ShowPopupUI(Type type, string name = null, Transform parent = null)
     {
         if (!typeof(UI_PopUp).IsAssignableFrom(type))
@@ -191,10 +236,9 @@ public class UIManager
 
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
-        
-        
-        
-        if (popupInstance.GetType() != typeof(UI_Confirmation))currentPopupClass = popupInstance;
+
+
+        if (popupInstance.GetType() != typeof(UI_Confirmation)) currentPopupClass = popupInstance;
 
         return popupInstance;
     }
@@ -202,54 +246,52 @@ public class UIManager
 
     private void SetPreviousClass()
     {
-        
     }
-    
-    public void InitOnLauncherLoad(){
+
+    public void InitOnLauncherLoad()
+    {
         _popupStack.Clear();
-       // CurrentPopup = null;
+        // CurrentPopup = null;
         //PreviousPopup = null;
-       // currentPopupClass = null;
+        // currentPopupClass = null;
     }
-    
+
     /// <summary>
-    /// ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
-    /// 개별컨트롤할 필요가 없는경우, Original UIManager를 사용합니다. 개별 UI가 필요없는경우 Original Prefab만 사용해도 무방합니다. 
+    ///     ** 런쳐에서 사용 금지 -----------------------------각 씬별 GameManager용 입니다----------------------
+    ///     개별컨트롤할 필요가 없는경우, Original UIManager를 사용합니다. 개별 UI가 필요없는경우 Original Prefab만 사용해도 무방합니다.
     /// </summary>
     /// <returns></returns>
-    public bool ShowCurrentSceneUIManager<T>(out GameObject uiGamobj,string sceneName = null, Transform parent = null) 
+    public bool ShowCurrentSceneUIManager<T>(out GameObject uiGamobj, string sceneName = null, Transform parent = null)
     {
         if (string.IsNullOrEmpty(sceneName))
             sceneName = typeof(T).Name;
 
-        GameObject uiManagerOnScene = GameObject.Find($"{sceneName}_UIManager");
+        var uiManagerOnScene = GameObject.Find($"{sceneName}_UIManager");
         if (uiManagerOnScene != null)
         {
             Logger.Log("UIManager 이미 씬에 있음");
             uiGamobj = uiManagerOnScene;
             return false;
         }
-        
-        var UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
-        
-        bool isUIManagerOnScene = false;
-        
 
-        
-        
+        var UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
+
+        bool isUIManagerOnScene = false;
+
+
         if (UIManagerPrefab == null)
         {
-            UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/UIManager");
-            
-            if(UIManagerPrefab == null)
+            UIManagerPrefab = Managers.Resource.Load<GameObject>("Prefabs/UI/UIManagers/UIManager");
+
+            if (UIManagerPrefab == null)
             {
                 uiGamobj = null;
                 Debug.LogError($"Prefab for {sceneName}_UIManager not found.");
                 return false;
             }
-            
-            
-            var go = Managers.Resource.Instantiate($"UI/UIManagers/UIManager");
+
+
+            var go = Managers.Resource.Instantiate("UI/UIManagers/UIManager");
             uiGamobj = go;
             Logger.CoreClassLog("Using Original UIManager Prefab.....");
         }
@@ -260,8 +302,6 @@ public class UIManager
         }
 
 
-
-       
         // if (parent != null)
         //     go.transform.SetParent(parent);
         // else if (SceneUI != null)
@@ -274,9 +314,8 @@ public class UIManager
 
         return true;
     }
-    
 
-  
+
     public UI_PopUp ShowPopupUI(string className, Transform parent = null)
     {
         if (string.IsNullOrEmpty(className))
@@ -296,7 +335,7 @@ public class UIManager
         var go = Managers.Resource.Instantiate($"UI/Popup/{className}");
 
         // 문자열로 타입 가져오기
-        Type popupType = Type.GetType(className);
+        var popupType = Type.GetType(className);
         if (popupType == null)
         {
             Debug.LogError($"Type {className} could not be found.");
@@ -304,7 +343,7 @@ public class UIManager
         }
 
         // Component 붙이기
-        UI_PopUp popup = go.AddComponent(popupType) as UI_PopUp;
+        var popup = go.AddComponent(popupType) as UI_PopUp;
         if (popup == null)
         {
             Debug.LogError($"Type {className} is not a UI_PopUp.");
@@ -331,9 +370,6 @@ public class UIManager
 
         return popup;
     }
-
-
-
 
 
     public T FindPopup<T>() where T : UI_PopUp
@@ -368,7 +404,10 @@ public class UIManager
         if (_popupStack.Count == 0)
             return;
 
-        UI_PopUp popup = _popupStack.Pop();
+        var type = _popupStack.Peek().GetType();
+
+
+        var popup = _popupStack.Pop();
         Managers.Resource.Destroy(popup.gameObject);
         popup = null;
         _order--;
@@ -376,8 +415,12 @@ public class UIManager
 
     public void CloseAllPopupUI()
     {
+        int _closeCount = 0;
         while (_popupStack.Count > 0)
+        {
             ClosePopupUI();
+            _closeCount++;
+        }
     }
 
     public void Clear()

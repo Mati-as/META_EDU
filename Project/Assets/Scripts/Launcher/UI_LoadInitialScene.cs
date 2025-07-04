@@ -20,14 +20,18 @@ public class UI_LoadInitialScene : UI_PopUp
     public static event Action onInitialLoadComplete;
 
 
-    void Start()
+    private void Init()
     {
        // StartCoroutine(LoadScene());
-        StartCoroutine(RotateIcon());
+    }
 
+    public void ShowLoadingScene()
+    {
         loadingCompleted = false;
         nextScene = 0;
         
+        StartCoroutine(RotateIcon());
+ 
     }
 
 
@@ -35,6 +39,8 @@ public class UI_LoadInitialScene : UI_PopUp
     IEnumerator RotateIcon()
     {
         float timer = 0f;
+        gameObject.SetActive(true);
+        
         while (true)
         {
 
@@ -52,28 +58,8 @@ public class UI_LoadInitialScene : UI_PopUp
                 onInitialLoadComplete?.Invoke();
                 gameObject.SetActive(false);
                 StopAllCoroutines();
-              
-                if (Managers.IsAlreadyFirstTimeHomeOpened)
-                {
-                    if (UIManager.UISelectionOnGameExit != null)
-                    {
-                        Type uISelectionToShow = UIManager.UISelectionOnGameExit.GetType();
-                        Logger.CoreClassLog("뒤로가기시 Prev Popup UI Type : " + uISelectionToShow);
-                        Managers.UI.ShowPopupUI(uISelectionToShow);
-                    }
-                    else
-                    {
-                        Type uISelectionToShow = UIManager.UISelectionOnGameExit.GetType();
-                        Logger.CoreClassLog("뒤로가기시 Managers.UI.UISelectionOnGameExit is null");
-                        Managers.UI.ShowPopupUI(uISelectionToShow);
-                    }
-                }
-                else
-                {
-                    Logger.CoreClassLog("뒤로가기X Initial Load Complete, Opening Home UI");
-                    Managers.UI.ShowPopupUI<UI_Home>();
-                    Managers.IsAlreadyFirstTimeHomeOpened = true;
-                }
+
+                Managers.UI.LoadPopUp();
             }
             
         }

@@ -81,7 +81,7 @@ public class VideoContentBaseGameManager : Base_GameManager
 
         var mp4Path =
             Path.Combine(Application.streamingAssetsPath,
-                $"{SceneManager.GetActiveScene().name}.mp4");
+                $"MediaArt/{SceneManager.GetActiveScene().name}.mp4");
 
         if (File.Exists(mp4Path))
         {
@@ -92,7 +92,7 @@ public class VideoContentBaseGameManager : Base_GameManager
             // MP4 파일이 없으면 MOV 파일 재생
             var movPath =
                 Path.Combine(Application.streamingAssetsPath,
-                    $"{SceneManager.GetActiveScene().name}.mov");
+                    $"MediaArt/{SceneManager.GetActiveScene().name}.mov");
             videoPlayer.url = movPath;
         }
 

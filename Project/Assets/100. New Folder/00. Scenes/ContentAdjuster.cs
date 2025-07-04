@@ -116,9 +116,17 @@ public class ContentAdjuster : MonoBehaviour
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
 
-    void Start()
+    private void Start()
     {
+        pageA = Utils.FindChild(gameObject, "Page_A", true);
+        pageB = Utils.FindChild(gameObject, "Page_B", true);
+        prevButton = Utils.FindChild(gameObject, "Button_Prev", true)?.GetComponent<Button>();
+        nextButton = Utils.FindChild(gameObject, "Button_Next", true)?.GetComponent<Button>();
+        pageNavi = Utils.FindChild(gameObject, "PageNavi", true);
+        
         ApplyContentAdjustments();
+        
+     
     }
 
     //[주제별]

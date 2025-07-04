@@ -6,6 +6,7 @@ using System.Xml;
 using KoreanTyper;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
 
 
@@ -35,6 +36,11 @@ public class Utils :MonoBehaviour
 
             // 원하는 컴포넌트를 찾지 못한 경우 null을 반환합니다.
             return null;
+        }
+
+        public static bool IsLauncherScene()
+        {
+            return SceneManager.GetActiveScene().name.Contains("META");
         }
 
         //XML 관련 ----------------------------------------------------------------------------
