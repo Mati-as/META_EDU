@@ -65,7 +65,6 @@ public class ContentAdjuster : MonoBehaviour
         
         ApplyContentAdjustments();
         
-     
     }
 
     //[주제별]
