@@ -182,7 +182,7 @@ public class Base_UIManager : UI_PopUp
 
 
         float finalWidth = textSize.x + paddingX;
-        float finalHeight = TMP_Instruction.text.Contains("\n") ? _originalHeight * 1.35f : _originalHeight;
+        float finalHeight = TMP_Instruction.text.Contains("\n") ? _originalHeight * 1.5f : _originalHeight;
 
         _bgRectTransform.sizeDelta = new Vector2(finalWidth, finalHeight);
     }

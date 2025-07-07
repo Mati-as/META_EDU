@@ -307,13 +307,23 @@ public abstract class Base_GameManager : MonoBehaviour
      
     }
 
- private void SetUIManager()
+    private void SetUIManager()
     {
-        bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj,SceneManager.GetActiveScene().name);
+        if (Utils.IsLauncherScene())
+        {
+            Logger.CoreClassLog("Launcher Scene의 경우 로드X.");
+            return;
+        }
+
+        bool isUIManagerLoadedOnRuntime =
+            Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj, SceneManager.GetActiveScene().name);
 
         if (!isUIManagerLoadedOnRuntime)
         {
             Logger.CoreClassLog("UIManager가 로드되지 않았습니다. 이미 씬 깔려있는지 확인 필요");
+            
+            UIManagerObj = GameObject.FindWithTag("UIManager");
+            baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
             return;
         }
 

@@ -884,7 +884,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                             char randoChar = (char)Random.Range('A', 'B' + 1);
                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/OnPartArrive_" + randoChar);
 
-
+                            _arrowMap[hitID].gameObject.SetActive(false);
                      
 
                             _sequenceMap[hitID]?.Kill();
@@ -1058,7 +1058,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         foreach (var key in _arrowMap.Keys.ToArray())
         {
             _arrowMap[key].DOScale(Vector3.zero, 0.75f).SetEase(Ease.InOutBounce);
-            //_arrowMap[key].gameObject.SetActive(true);
+            _arrowMap[key].gameObject.SetActive(false);
         }
         
         
