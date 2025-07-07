@@ -97,7 +97,6 @@ public abstract class Base_GameManager : MonoBehaviour
     protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
     protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
-    protected UIManager_CommonBehaviorController _uiManagerCommonBehaviorController;
     
     
     protected GameObject UIManagerObj;
@@ -109,21 +108,11 @@ public abstract class Base_GameManager : MonoBehaviour
         {
             var uiMangager = GameObject.FindWithTag("UIManager");
             Debug.Assert(uiMangager != null, "UIManager not found");
-            _uiManagerCommonBehaviorController = uiMangager.GetComponentInChildren<UIManager_CommonBehaviorController>();
+          //  _uiManagerCommonBehaviorController = uiMangager.GetComponentInChildren<UIManager_CommonBehaviorController>();
         });
 
     
-        DOVirtual.DelayedCall(1f, () =>
-        {
-            if (_uiManagerCommonBehaviorController != null)
-            {
-               // _uiManagerCommonBehaviorController.ManualInit();
-            }
-            else
-            {
-                Debug.LogWarning("UIManager_CommonBehaviorController not found");
-            }
-        });
+       
     }
 
     
@@ -272,8 +261,7 @@ public abstract class Base_GameManager : MonoBehaviour
                 XmlManager.Instance.ScreenSize,
                 XmlManager.Instance.ScreenSize
             );
-
-//            Logger.CoreClassLog($"camera_rect :{UICamera.rect.width} : {UICamera.rect.height}");
+            
         }
         else
             Logger.LogError("UICamera not found.");
@@ -313,21 +301,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
         DOTween.Init(useSafeMode: false);
         
-        
-        DOVirtual.DelayedCall(0.2f, () =>
-        {
-            // Canvas.ForceUpdateCanvases();
-            //
-            // var canvas = GameObject.FindObjectOfType<Canvas>();
-            // if (canvas != null)
-            // {
-            //     LayoutRebuilder.ForceRebuildLayoutImmediate(canvas.GetComponent<RectTransform>());
-            // }
-
-            //EventSystem.current.refr
-        });
-     
-        
+    
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
         
      
