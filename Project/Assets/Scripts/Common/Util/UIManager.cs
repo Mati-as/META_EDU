@@ -266,53 +266,43 @@ public class UIManager
         if (string.IsNullOrEmpty(sceneName))
             sceneName = typeof(T).Name;
 
-        var uiManagerOnScene = GameObject.Find($"{sceneName}_UIManager");
+        // 1.씬에 UIManager 배치여부 확인
+        var uiManagerOnScene = GameObject.FindWithTag("UIManager");
         if (uiManagerOnScene != null)
         {
             Logger.Log("UIManager 이미 씬에 있음");
             uiGamobj = uiManagerOnScene;
             return false;
         }
+        
+        
+        
 
-        var UIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
-
-        bool isUIManagerOnScene = false;
-
-
-        if (UIManagerPrefab == null)
+        // 2.씬에 없는경우, Custom UIManager인지 확인
+        var customUIManagerPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/UIManagers/{sceneName}_UIManager");
+        
+        
+        
+        // 3.Custom 아닌경우 Original UIManager를 사용
+        if (customUIManagerPrefab == null)
         {
-            UIManagerPrefab = Managers.Resource.Load<GameObject>("Prefabs/UI/UIManagers/UIManager");
+            var originalUIManager = Managers.Resource.Load<GameObject>("Prefabs/UI/UIManagers/UIManager");
 
-            if (UIManagerPrefab == null)
-            {
-                uiGamobj = null;
-                Debug.LogError($"Prefab for {sceneName}_UIManager not found.");
-                return false;
-            }
+            Debug.Assert(originalUIManager != null, $"Original UIManager prefab은 누락될 수 없음.");
 
 
             var go = Managers.Resource.Instantiate("UI/UIManagers/UIManager");
             uiGamobj = go;
             Logger.CoreClassLog("Using Original UIManager Prefab.....");
+            return true;
         }
-        else
+        else// 4.커스텀인경우 로드 
         {
             var go = Managers.Resource.Instantiate($"UI/UIManagers/{sceneName}_UIManager");
             uiGamobj = go;
+            return true;
         }
-
-
-        // if (parent != null)
-        //     go.transform.SetParent(parent);
-        // else if (SceneUI != null)
-        //     go.transform.SetParent(SceneUI.transform);
-        // else
-        //     go.transform.SetParent(Root.transform);
-
-        // go.transform.localScale = Vector3.one;
-        // go.transform.localPosition = prefab.transform.position;
-
-        return true;
+        
     }
 
 

@@ -222,7 +222,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         _pathAnimSAeq = DOTween.Sequence();
    
 
-        int PathDuration = 10;
+        int PathDuration = 5;
         _pathAnimSAeq.AppendInterval(delay);
         _pathAnimSAeq.AppendCallback( () =>
         {
@@ -275,7 +275,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             _arrowAnimSeq = DOTween.Sequence();
             
             _arrowAnimSeq.Append(currentInducingArrow.transform
-                .DOPath(_escapePathMap[pathIndex], 5, PathType.CatmullRom)
+                .DOPath(_escapePathMap[pathIndex], 3, PathType.CatmullRom)
                 .SetEase(Ease.Linear)
                 .SetLookAt(1));
             _arrowAnimSeq.AppendInterval(3f);
