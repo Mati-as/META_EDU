@@ -597,5 +597,22 @@ public abstract class Base_GameManager : MonoBehaviour
 
         });
     }
+    
+    protected void StartCountdown(float duration, Action onComplete =null)
+    {
+        int previousSecond = -1;
+
+        DOVirtual.Float(0f, duration, duration, value =>
+            {
+                int remainingSeconds = (int)(duration - value);
+                if (remainingSeconds != previousSecond)
+                {
+                    previousSecond = remainingSeconds;
+                    baseUIManager.PopAndChangeUI("({remainingSeconds.ToString()})");
+                }
+            })
+            .SetEase(Ease.Linear)
+            .OnComplete(() => onComplete?.Invoke());
+    }
 
 }

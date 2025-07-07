@@ -96,7 +96,7 @@ public class EA006_UIManager : Base_UIManager
     {
         
         Logger.Log($"Get Message ---- {message}");
-        PopInstructionUIFromScaleZero( "참새를 잡아서 허수아비 아저씨를 도와줘요\n" +message.ToString() + "마리");
+        PopInstructionUIFromScaleZero(message + "마리");
     }
 
     private void OnDestroy()

@@ -108,14 +108,14 @@ public class EA019_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnIntro:
                     PlayIntroBalloonsAnim();
    
-                    DOVirtual.DelayedCall(10f,()=>
+                    DOVirtual.DelayedCall(8f,()=>
                     {
                         KillIntroBalloonsAnim();
                     });
-                    DOVirtual.DelayedCall(12f,()=>
+                    DOVirtual.DelayedCall(10f,()=>
                     {
                         CurrentMainSeqNum = (int)MainSeq.OnColor;
-                       PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:2.5f);
+                       PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:5.0f);
                     });
                     break;
 
@@ -123,13 +123,18 @@ public class EA019_GameManager : Ex_BaseGameManager
                     //초기화
                     _uiManager.PopInstructionUIFromScaleZero("색깔을 알아볼까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnColor");
-                    _introSoundable = true;
-                    
-                    _currentSubSeqNum = 0;
-                    curruentIntroObjNum = (int)Objs.Intro_Hearts;
 
-                    mainAnimator.SetInteger(SEQ_NUM, (int)MainSeq.OnColor);
-                    mainAnimator.SetInteger(SUB_SEQ_NUM, _currentSubSeqNum);
+                    DOVirtual.DelayedCall(6.5f, () =>
+                    {
+                        _introSoundable = true;
+                        _currentSubSeqNum = 0;
+                        curruentIntroObjNum = (int)Objs.Intro_Hearts;
+
+                        mainAnimator.SetInteger(SEQ_NUM, (int)MainSeq.OnColor);
+                        mainAnimator.SetInteger(SUB_SEQ_NUM, _currentSubSeqNum);
+                    });
+                    
+
                  
                     
                     break;
@@ -143,9 +148,9 @@ public class EA019_GameManager : Ex_BaseGameManager
                     _uiManager.PopInstructionUIFromScaleZero("모양을 알아볼까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "LetsLearnShape");
                     
-                    DOVirtual.DelayedCall(2.5f,()=>
+                    DOVirtual.DelayedCall(1,()=>
                     {
-                        PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:2.5f);
+                        PlayAnimForOnColorOrShapeSeq((int)Objs.Intro_Hearts,delay:4.8f);
                     });
                     break;
                 
@@ -1219,8 +1224,12 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
 
            if (CurrentMainSeqNum == (int)MainSeq.OnIntro)
            {
-               initialMessage = "색깔 풍선이 나무에 걸려있어요~";
-                baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+               DOVirtual.DelayedCall(1.5f, () =>
+               {
+                   initialMessage = "색깔 풍선이 나무에 걸려있어요~";
+                   baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+               });
+
            }
             
             Managers.Sound.Play(SoundManager.Sound.Narration, NAR_PATH + "OnIntro_BalloonsOnTree");
@@ -1306,7 +1315,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         GetObject((int)Objs.Balloons).SetActive(false);
     }
 
-    private void PlayIntroBalloonsAnim(float delay = 0.6f)
+    private void PlayIntroBalloonsAnim(float delay = 0.1f)
     {
        
         
@@ -1317,7 +1326,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         {
             _sequenceMap.Add(key, DOTween.Sequence());
 
-            _sequenceMap[key].SetDelay(Random.Range(delay - 0.5f, delay + 0.5f));
+            _sequenceMap[key].SetDelay(Random.Range(delay - 0.1f, delay + 0.5f));
 
             _sequenceMap[key].Append(introBalloons[key].DOScale(_defaultSizeMap[key], 1.25f)
                 .OnStart(() =>
@@ -1325,7 +1334,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/BintroAppear");
                 })
                 .SetEase(Ease.OutBounce)
-                .SetDelay(0.3f * introBalloons.Count));
+                .SetDelay(0.2f * introBalloons.Count));
            
             _sequenceMap[key].Join(introBalloons[key].DOShakePosition(30f, Random.Range(0.1f, 0.1f),vibrato:3));
             _sequenceMap[key].Append(introBalloons[key].DOShakeScale(30f, Random.Range(0.1f, 0.2f),vibrato:3));

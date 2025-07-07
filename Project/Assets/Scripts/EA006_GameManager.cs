@@ -95,6 +95,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
                 
                 case (int)MainSeq.FindScarecrow:
+                    TIME_LIMIT = 90;
                     _elapsedTime = 0;
                     Logger.ContentTestLog($"허수아비 모드 시작 {(MainSeq)base.CurrentMainMainSequence} : {value}");
                     SetWheatColliderStatus(false);
@@ -105,6 +106,8 @@ public class EA006_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.SparrowAppear:
+                    TIME_LIMIT = 60;
+                    _elapsedTime = 0;
                     ResetClickable(false);//순서주의 
                     AppearSparrow(4);
                     ChangeThemeSeqAnim((int)MainSeq.SparrowAppear);
