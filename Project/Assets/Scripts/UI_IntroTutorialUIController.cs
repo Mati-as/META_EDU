@@ -120,10 +120,10 @@ public class UI_IntroTutorialUIController : UI_PopUp
     private bool LoadUITextInfo()
     {
     
-        var asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/Archive/UI_Heading_Dynamic");
+        var asset = Resources.Load<TMP_FontAsset>("TMP/UI_Heading_Dynamic");
         if (asset == null)
         {
-            Debug.LogWarning("Failed to load TMP_FontAsset for scene: " + _currentSceneName +"\n Loadaed Dynamic Asset");
+            Debug.LogError("Failed to load TMP_FontAsset : " + _currentSceneName +"\n Loadaed Dynamic Asset");
             
             asset = Resources.Load<TMP_FontAsset>("TMP_UI_IntroText/DynamicTMP");
             return false; // early return if font asset is not found

@@ -188,6 +188,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/EA029/Narration/ThankPark");
                     _uiManager.PopInstructionUIFromScaleZero("차를 전부 주차했어요!");
+                    RestartScene();
                     break;
             }
         }
@@ -812,7 +813,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         private readonly Dictionary<int, bool> isArrivedMap = new();
         private readonly Dictionary<int, Animator> tfIDToAnimatorMap = new();
         private bool isRoundActive = false;
-        private const int COUNT_TO_ARRIVE = 20;
+        private const int COUNT_TO_ARRIVE = 25;
         private int currentArrivedCarCount = 0; 
         private Vector3 _particlePosOffset = new Vector3(0, 0, -1.5f);
      
@@ -875,7 +876,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                         float progressNormalized = _partProgress[hitID] / (float)COUNT_TO_ARRIVE;
 
                         //도착시 로직 
-                        if (!isArrivedMap[hitID] && _partProgress[hitID] >= COUNT_TO_ARRIVE)
+                        if (!isArrivedMap[hitID] && _partProgress[hitID] >= COUNT_TO_ARRIVE -3)
                         {
                             isArrivedMap[hitID] = true;
                             currentArrivedCarCount++;

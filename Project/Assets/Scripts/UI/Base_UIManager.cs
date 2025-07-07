@@ -65,7 +65,7 @@ public class Base_UIManager : UI_PopUp
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
 
-
+        UI_Instruction.transform.localScale = Vector3.zero;
         Logger.CoreClassLog("Base UI Manager Init ------------------------");
 
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
@@ -132,7 +132,7 @@ public class Base_UIManager : UI_PopUp
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
 
-        Logger.ContentTestLog($"PopInstructionUI ------------ {instruction}");
+//        Logger.ContentTestLog($"PopInstructionUI ------------ {instruction}");
 
         UI_Instruction.SetActive(true);
 

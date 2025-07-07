@@ -18,7 +18,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         OnOutro,
         OnFinish,
         
-        SeatSelection = 1000
+        RoundMaxCheck = 1000
     }
 
     private enum AnimSeqOnColor
@@ -76,13 +76,13 @@ public class EA019_GameManager : Ex_BaseGameManager
         BalloonAppearPositions,
         OnFinishPos,
         
-        Seat_A,
-        Seat_B,
-        Seat_C,
-        Seat_D,
-        Seat_E,
-        Seat_F,
-        Seat_G,
+        // Seat_A,
+        // Seat_B,
+        // Seat_C,
+        // Seat_D,
+        // Seat_E,
+        // Seat_F,
+        // Seat_G,
         BgForSeatSelection
         
     }
@@ -149,7 +149,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                     });
                     break;
                 
-                case (int)MainSeq.SeatSelection:
+                case (int)MainSeq.RoundMaxCheck:
                    
                     if (_remainAnswerList.Count == 0)
                     {
@@ -157,9 +157,16 @@ public class EA019_GameManager : Ex_BaseGameManager
                         CurrentMainSeqNum = (int)MainSeq.OnOutro;
                         return;
                     }
-
+                    else
+                    {
+                        DOVirtual.DelayedCall(2f, () =>
+                        {
+                            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
+                        });
+                    
+                    }
                     PlayScaleAnimOnColor(GetObject((int)Objs.Intro_Flowers), true);
-                    OnSeatSelection();
+                 //   OnSeatSelectionOnSeatSelection();
                     
                     break;
                     
@@ -313,7 +320,7 @@ public class EA019_GameManager : Ex_BaseGameManager
    
        
         
-        
+        RestartScene(delay:6f);
       
         
     }
@@ -369,7 +376,7 @@ public class EA019_GameManager : Ex_BaseGameManager
            
             _bgForSeatSelection.transform.gameObject.SetActive(true);
             _bgForSeatSelection.DOFade(211f/225f, 1f).SetEase(Ease.InBounce);
-            AnimateAllSeats();
+  //         AnimateAllSeats();
             _uiManager.PopInstructionUIFromScaleZero("각자 자리에 앉아볼까요?");
    
 
@@ -386,84 +393,29 @@ public class EA019_GameManager : Ex_BaseGameManager
 
     }
 
-    private void InitForSeatSelection()
-    {
-        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) isSeatClickedMap.Add(i, false);
-        
-        _bgForSeatSelection = GetObject((int)Objs.BgForSeatSelection).GetComponent<SpriteRenderer>();
-        OnExitSeatSelectionMode();
-    }
+    // private void InitForSeatSelection()
+    // {
+    //     for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) isSeatClickedMap.Add(i, false);
+    //     
+    //     _bgForSeatSelection = GetObject((int)Objs.BgForSeatSelection).GetComponent<SpriteRenderer>();
+    //     OnExitSeatSelectionMode();
+    // }
 
     private bool _isFirstRound = true;
-    private void OnRaySyncedOnSeatSelection()
-    {
-        bool isAllSeatClicked = true;
-        foreach (var hit in GameManager_Hits)
-        {
-            int hitTransformID = hit.transform.GetInstanceID();
-            if (hit.transform.gameObject.name.Contains("Seat"))
-            {
-                if (isSeatClickedMap[_tfIdToEnumMap[hitTransformID]]) return;
-                isSeatClickedMap[_tfIdToEnumMap[hitTransformID]] = true;
-
-                var renderer = hit.transform.GetComponent<MeshRenderer>();
-                _seatMeshRendererMap.TryAdd(_tfIdToEnumMap[hitTransformID], renderer);
-                _seatMeshRendererMap[_tfIdToEnumMap[hitTransformID]].material.DOColor(_selectedColor, 0.35f);
-
-                Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
-                _seatClickedCount++;
-
-
-                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
-
-                foreach (int key in isSeatClickedMap.Keys)
-                    if (!isSeatClickedMap[key])
-                        isAllSeatClicked = false;
-
-                if (isAllSeatClicked)
-                {
-                    Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
-
-                    Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Common/OnAllSeatSelected");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA019/OnBalloonReady");
-                    // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
-                    //Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
-                    _uiManager.PopInstructionUIFromScaleZero("준비 됐구나! 풍선을 찾아보자!");
-                    DeactivateAllSeats();
-                    DOVirtual.DelayedCall(4, () =>
-                    {
-                        if (_isFirstRound)
-                        {
-                            CurrentMainSeqNum = (int)MainSeq.OnBalloonFind;
-                            _isFirstRound = false;
-                        }
-                        else
-                        {
-                            GoToNextBalloonFindRound();
-                        }
-                    });
-                    break;
-                }
-
-
-                PlayParticleEffect(hit.point);
-            }
-        }
-    }
-    
-    public void AnimateAllSeats()
-    {
-        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
-        {
-            GetObject(i).SetActive(true);
-            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
-            AnimateSeatLoop((Objs)i);
-        }
-    }
+ 
+    // public void AnimateAllSeats()
+    // {
+    //     for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
+    //     {
+    //         GetObject(i).SetActive(true);
+    //         Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
+    //         AnimateSeatLoop((Objs)i);
+    //     }
+    // }
 
     private void OnExitSeatSelectionMode()
     {
-        DeactivateAllSeats();
+      //  DeactivateAllSeats();
       
     }
     public void AnimateSeatLoop(Objs seat)
@@ -484,26 +436,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         _sequenceMap[(int)seat].Play();
     }
 
-    public void DeactivateAllSeats()
-    {
-        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
-        {
-            Logger.ContentTestLog($"AnimateAllSeats :Animating seat {(Objs)i}");
-            _sequenceMap[(int)i]?.Kill();
-            _sequenceMap[(int)i] = DOTween.Sequence();
-            _sequenceMap[(int)i]
-                .Append(GetObject(i).transform.DOScale(Vector3.zero, 1.25f))
-                .OnComplete(() =>
-                {
-                    GetObject(i).SetActive(false);
-                });
-        }
-        _bgForSeatSelection.DOFade(0, 0.5f).SetEase(Ease.InBounce).SetDelay(1.0f).OnComplete(
-            () =>
-            {
-                _bgForSeatSelection.transform.gameObject.SetActive(false);
-            });
-    }
+   
     #endregion
     #region 색깔풍선 찾기 파트 -------------------------------------------
 
@@ -802,7 +735,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(3f, () =>
         { 
             ReturnBalloonsToPool();
-            CurrentMainSeqNum = (int)MainSeq.SeatSelection;
+            CurrentMainSeqNum = (int)MainSeq.RoundMaxCheck;
         });
     }
     private void InitBalloonFindClickData()
@@ -850,9 +783,9 @@ public class EA019_GameManager : Ex_BaseGameManager
             
             OnRaySyncOnBalloonFind();
         }
-        else if (CurrentMainSeqNum == (int)MainSeq.SeatSelection)
+        else if (CurrentMainSeqNum == (int)MainSeq.RoundMaxCheck)
         {
-            OnRaySyncedOnSeatSelection();
+          
         }
     }
 
@@ -1019,7 +952,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         
         SaveBalloonsPosArray();
 
-        InitForSeatSelection();
+       // InitForSeatSelection();
        
 
     }
@@ -1319,8 +1252,9 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         }
         else if (CurrentMainSeqNum == (int)MainSeq.OnShape && _currentSubSeqNum > (int)AnimSeqOnShape.Flower)
         {
-            CurrentMainSeqNum = (int)MainSeq.SeatSelection;
+            CurrentMainSeqNum = (int)MainSeq.RoundMaxCheck;
             _uiManager.DeactivateNextButton();
+            
         }
         else
         {
