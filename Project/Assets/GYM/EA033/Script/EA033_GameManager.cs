@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA033_GameManager : Ex_BaseGameManager
 {
@@ -41,9 +44,6 @@ public class EA033_GameManager : Ex_BaseGameManager
         CandyStageTreeGroup,
         StarStageTreeGroup,
 
-        StageObjectAppearPosition,
-        StageObjectSpawnStartPosition,
-
     }
 
     private enum Particle
@@ -53,6 +53,7 @@ public class EA033_GameManager : Ex_BaseGameManager
     }
 
     private EA033_UIManager _uiManager;
+    private PoolManager _poolManager;
     private bool gamePlaying;
     private int i;
     private Vector3 effectPos;
@@ -66,14 +67,14 @@ public class EA033_GameManager : Ex_BaseGameManager
     private Transform candyStageParent;
     private Transform starStageParent;
 
-    private const int ROW_COUNT = 4;
-    private const int COL_COUNT = 5;
-
-    private readonly Vector3[][] _StageObjectsPosArray = new Vector3[ROW_COUNT][];
-
-    public GameObject[] testGameObjects;
-
-
+    private readonly Dictionary<PoolType, Objects> _groupMap = new Dictionary<PoolType, Objects>
+    {
+        { PoolType.Bell, Objects.BellStageTreeGroup },
+        { PoolType.Bulb, Objects.BulbStageTreeGroup },
+        { PoolType.Candy, Objects.CandyStageTreeGroup },
+        { PoolType.Star, Objects.StarStageTreeGroup },
+    };
+    
     protected override void Init()
     {
         Bind<CinemachineVirtualCamera>(typeof(Cameras));
@@ -83,7 +84,8 @@ public class EA033_GameManager : Ex_BaseGameManager
         base.Init();
 
         _uiManager = UIManagerObj.GetComponent<EA033_UIManager>();
-
+        _poolManager = FindObjectOfType<PoolManager>();
+            
         _stage = MainSeq.OnStart;
 
         psResourcePath = "SideWalk/Asset/Fx_Click";
@@ -102,13 +104,11 @@ public class EA033_GameManager : Ex_BaseGameManager
             GetObject((int)Objects.CandyStageTreeGroup).transform,
             GetObject((int)Objects.StarStageTreeGroup).transform
         };
-
+        
         foreach (var parent in stageParents)
             foreach (Transform child in parent)
                 child.gameObject.SetActive(false);
         
-
-        SaveStageObjectPosArray();
 
         // GetObject((int)Objs.Intro_Triangles).gameObject.SetActive(false);
         // GetObject((int)Objs.Intro_Stars).gameObject.SetActive(false);
@@ -135,16 +135,13 @@ public class EA033_GameManager : Ex_BaseGameManager
         if (!PreCheckOnRaySync()) return;
 
         if (_stage == MainSeq.OnBellStage && gamePlaying)
-            //Bell로 수정해야됨 테스트라 star로 해놓은것
-            HandleAllowedObjectClick("Star", 1, MainSeq.OnBulbStage);
-        // else if (_stage == MainSeq.OnIntro && gamePlaying)
-        // {
-        //     HandleAllowedObjectClick("Bulb", 2, MainSeq.OnCandyStage);
-        // }
-        // else if (_stage == MainSeq.OnIntro && gamePlaying)
-        // {
-        //     HandleAllowedObjectClick("Candy", 3, MainSeq.OnStarStage);
-        // }
+            HandleAllowedObjectClick("Bell", 1, MainSeq.OnBulbStage);
+        
+        else if (_stage == MainSeq.OnBulbStage && gamePlaying)
+            HandleAllowedObjectClick("Bulb", 2, MainSeq.OnCandyStage);
+        
+        else if (_stage == MainSeq.OnCandyStage && gamePlaying)
+            HandleAllowedObjectClick("Candy", 3, MainSeq.OnStarStage);
         
         else if (_stage == MainSeq.OnStarStage && gamePlaying)
             HandleAllowedObjectClick("Star", 4, MainSeq.OnFinish);
@@ -153,123 +150,97 @@ public class EA033_GameManager : Ex_BaseGameManager
     private readonly string[] allowedKeywords = { "Star", "Candy", "Bulb", "Bell" };
 
     private void HandleAllowedObjectClick(string keyWord, int uiImage, MainSeq next)
+{
+    foreach (var hit in GameManager_Hits)
     {
-        foreach (var hit in GameManager_Hits)
+        var go = hit.collider.gameObject;
+        string clickedName = go.name;
+
+        if (!allowedKeywords.Any(keyword => clickedName.Contains(keyword)))
+            continue;
+
+        effectPos = hit.point;
+        effectPos.y += 0.2f;
+        PlayParticleEffect(effectPos);
+
+        // 클릭된 이름으로 PoolType 결정
+        var poolType = Enum.GetValues(typeof(PoolType))
+                                .Cast<PoolType>()
+                                .FirstOrDefault(pt => clickedName.Contains(pt.ToString()));
+
+        if (clickedName.Contains(keyWord))
         {
-            string clickedName = hit.collider.gameObject.name;
-
-            // 4개 중 하나라도 포함되어 있지 않으면 건너뜀
-            if (!allowedKeywords.Any(keyword => clickedName.Contains(keyword)))
-                continue;
-
-            effectPos = hit.point;
-            effectPos.y += 0.2f;
-            PlayParticleEffect(effectPos);
-
-            if (clickedName.Contains(keyWord))
+            if (i < 9)
             {
-                if (i < 9)
+                int currentIndex = i;
+                DOVirtual.DelayedCall(1.5f, () =>
                 {
-                    int currentIndex = i;
-                    DOVirtual.DelayedCall(1.5f, () =>
-                    {
-                        starStageParent.GetChild(currentIndex).gameObject.SetActive(true);
-                    });
-                }
-
-                i++;
-                _uiManager.ActivateImageAndUpdateCount(uiImage, i);
-
-                CorrectClickedSound();
-
-                var startPos = path1.position;
-                var middlePos = path2.position;
-                var endPos = path3.position;
-
-                Vector3[] pathPoints =
-                {
-                    startPos,
-                    middlePos,
-                    endPos
-                };
-
-                hit.collider.gameObject.transform.DOPath(pathPoints, 1.5f);
-
-                if (i == 5)
-                    Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
-
-                if (i == 10)
-                {
-                    i = 0;
-                    gamePlaying = false;
-
-                    VictorySoundAndEffect();
-
-                    DOVirtual.DelayedCall(1f, () =>
-                    {
-                        _uiManager.DeactivateImageAndUpdateCount();
-
-                        Get<CinemachineVirtualCamera>((int)Cameras.Camera4).Priority = 12;
-                        Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10; //여기도 수정 필요함 
-                    });
-                    DOVirtual.DelayedCall(4f, () => NextStage(next));
-                }
+                    // 매핑된 Objects enum 가져오기
+                    var treeGroup = _groupMap[poolType];
+                    GetObject((int)treeGroup)
+                        .transform
+                        .GetChild(currentIndex)
+                        .gameObject
+                        .SetActive(true);
+                });
             }
-            else
-            {
-                hit.collider.gameObject.SetActive(false);
 
-                WrongClickedSound();
+            i++;
+            _uiManager.ActivateImageAndUpdateCount(uiImage, i);
+            CorrectClickedSound();
+
+            var startPos  = path1.position;
+            var middlePos = path2.position;
+            var endPos    = path3.position;
+            Vector3[] pathPoints = { startPos, middlePos, endPos };
+
+            go.transform
+              .DOPath(pathPoints, 1.5f)
+              .OnComplete(() => go.SetActive(false));
+
+            if (i == 5)
+                Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
+
+            if (i == 10)
+            {
+                i = 0;
+                gamePlaying = false;
+                VictorySoundAndEffect();
+                _poolManager.StopSpawnPool();
+
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    _uiManager.DeactivateImageAndUpdateCount();
+                    Get<CinemachineVirtualCamera>((int)Cameras.Camera4).Priority = 12;
+                    Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10;
+                });
+
+                DOVirtual.DelayedCall(4f, () =>
+                {
+                    // 완료 후 트리 비활성화
+                    var treeGroup = _groupMap[poolType];
+                    GetObject((int)treeGroup).SetActive(false);
+                    NextStage(next);
+                });
             }
         }
-    }
-    
-    
-    
-    private void SpawnObjectForCurrentRound(Objects SpawnPool)
-    {
-        var allPositions = _StageObjectsPosArray //가져다 사용할 랜덤 위치를 가진 리스트
-            .SelectMany(posRow => posRow)
-            // .Distinct()  //안에 들어있는 값 중복 시 제거 기능인데 일단 보류
-            .OrderBy(_ => Random.value)
-            .ToList();
-
-        var seq = DOTween.Sequence();
-        
-        
-        
-        for (int i = 0; i < allPositions.Count; i++)
+        else
         {
-            int num = Random.Range(0, 4);
-
-            int idx = i;
-            var startPos = GetObject((int)Objects.StageObjectSpawnStartPosition).transform
-                .GetChild(num).transform.position;
-            var middlePos = path1.position;
-            var endPos = allPositions[idx];
-
-            Vector3[] pathPoints =
-            {
-                startPos,
-                middlePos,
-                endPos
-            };
-
-            seq.AppendCallback(() =>
-                {
-                    Logger.Log($"랜덤 스폰중 {idx}");
-                    testGameObjects[idx].SetActive(true);
-                    testGameObjects[idx].transform.DOPath(pathPoints, 1.5f, PathType.Linear);
-                })
-                .AppendInterval(1.5f);
+            go.SetActive(false);
+            WrongClickedSound();
         }
-    }
 
+        // 클릭 후 콜라이더 비활성화(중복 클릭 방지)
+        hit.collider.enabled = false;
+    }
+}
+    
+    
     private void GameStart()
     {
         //if (_stage == MainSeq.OnStart)
-        //NextStage(MainSeq.OnStart);
-        NextStage(MainSeq.OnStarStage);
+        NextStage(MainSeq.OnStart);
+        //NextStage(MainSeq.OnCandyStage);
     }
 
     private void NextStage(MainSeq next)
@@ -285,7 +256,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             case MainSeq.OnStarStage: OnStarStage(); break;
             case MainSeq.OnFinish: OnFinishStage(); break;
         }
-
+        
         Logger.Log($"{next}스테이지로 변경");
     }
 
@@ -314,6 +285,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         });
         
         DOVirtual.DelayedCall(7f, () => NextStage(MainSeq.OnBellStage));
+        
     }
 
     private void OnBellStage()
@@ -321,6 +293,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
@@ -338,7 +311,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                //SpawnObjectForCurrentRound(Objects.);
+                _poolManager.SpawnRandomPools(PoolType.Bell);
                 _uiManager.ActivateImageAndUpdateCount(1, 0);
             })
             ;
@@ -346,18 +319,60 @@ public class EA033_GameManager : Ex_BaseGameManager
 
     private void OnBulbStage()
     {
-        _uiManager.PopFromZeroInstructionUI("이번에는 반짝이는 전구장식을 터치해\n트리를 꾸며주세요!");
-        Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_0_이번에는_반짝이는_전구장식을_터치해__트리를_꾸며주세요_");
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-        DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.OnCandyStage));
+                _uiManager.PopFromZeroInstructionUI("이번에는 반짝이는 전구장식을 터치해\n트리를 꾸며주세요!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_0_이번에는_반짝이는_전구장식을_터치해__트리를_꾸며주세요_");
+            })
+            .AppendInterval(5.5f)
+            .AppendCallback(() =>
+            {
+                _uiManager.ShutInstructionUI();
+                _uiManager.PlayReadyAndStart();
+            })
+            .AppendInterval(5f)
+            .AppendCallback(() =>
+            {
+                gamePlaying = true;
+
+                _poolManager.SpawnRandomPools(PoolType.Bulb);
+                _uiManager.ActivateImageAndUpdateCount(2, 0);
+            })
+            ;
     }
 
     private void OnCandyStage()
     {
-        _uiManager.PopFromZeroInstructionUI("이번에는 맛있는 사탕장식을 터치해\n트리를 꾸며주세요!");
-        Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_1_이번에는_맛있는_사탕장식을_터치해__트리를_꾸며주세요_");
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-        DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.OnStarStage));
+                _uiManager.PopFromZeroInstructionUI("이번에는 맛있는 사탕장식을 터치해\n트리를 꾸며주세요!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_1_이번에는_맛있는_사탕장식을_터치해__트리를_꾸며주세요_");
+            })
+            .AppendInterval(5.5f)
+            .AppendCallback(() =>
+            {
+                _uiManager.ShutInstructionUI();
+                _uiManager.PlayReadyAndStart();
+            })
+            .AppendInterval(5f)
+            .AppendCallback(() =>
+            {
+                gamePlaying = true;
+
+                _poolManager.SpawnRandomPools(PoolType.Candy);
+                _uiManager.ActivateImageAndUpdateCount(3, 0);
+            })
+            ;
     }
 
     private void OnStarStage()
@@ -383,7 +398,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                SpawnObjectForCurrentRound(Objects.StarPool);
+                _poolManager.SpawnRandomPools(PoolType.Star);
                 _uiManager.ActivateImageAndUpdateCount(4, 0);
             })
             ;
@@ -422,20 +437,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         Get<ParticleSystem>((int)Particle.Victory2).Play();
     }
 
-    private void SaveStageObjectPosArray()
-    {
-        for (int i = 0; i < ROW_COUNT; i++)
-        {
-            _StageObjectsPosArray[i] = new Vector3[COL_COUNT];
-            for (int k = 0; k < COL_COUNT; k++)
-            {
-                _StageObjectsPosArray[i][k] =
-                    GetObject((int)Objects.StageObjectAppearPosition).transform
-                        .GetChild(i).GetChild(k).transform.position;
-                Logger.ContentTestLog("StageObjectAppearPosition : " + _StageObjectsPosArray[i][k]);
-            }
-        }
-    }
+    
     
     
     
