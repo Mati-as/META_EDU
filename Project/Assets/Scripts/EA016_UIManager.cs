@@ -60,7 +60,7 @@ public class EA016_UIManager : Base_UIManager
         Logger.ContentTestLog($"Get Message ---- {payload.Narration}");
         if (payload.IsCustom)
         {
-            if (payload.IsPopFromZero) PopFromZeroInstructionUI($"{payload.Narration}", payload.DelayAndAutoShutTime);
+            if (payload.IsPopFromZero) PopInstructionUIFromScaleZero($"{payload.Narration}", payload.DelayAndAutoShutTime);
             else PopAndChangeUI(payload.Narration, payload.DelayAndAutoShutTime);
         }
     }

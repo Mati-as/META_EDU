@@ -63,7 +63,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
         });
 
         initialMessage= "악기를 연주해 앵무새를 춤추게 해보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 

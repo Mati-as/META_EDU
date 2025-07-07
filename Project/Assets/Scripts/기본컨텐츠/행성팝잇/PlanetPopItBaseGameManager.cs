@@ -70,7 +70,7 @@ public class PlanetPopItBaseGameManager : Base_GameManager
     {
         base.OnGameStartStartButtonClicked();
         initialMessage= "다양한 행성 팝잇들을 눌러보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 

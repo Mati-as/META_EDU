@@ -49,7 +49,7 @@ public class Construction_UIManager : Base_UIManager
         seq?.Kill();
         seq = DOTween.Sequence();
 
-        seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
+        seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
 
         //오디오 재생 (있을 때만)
         if (audioClip != null)

@@ -58,7 +58,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.Intro:
                  
-                    baseUIManager.PopFromZeroInstructionUI("친구들! 각자 자리에 앉아 주세요!");
+                    baseUIManager.PopInstructionUIFromScaleZero("친구들! 각자 자리에 앉아 주세요!");
                     DOVirtual.DelayedCall(1f, () =>
                     {
 
@@ -73,7 +73,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA034/CreamImage");
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
-                        baseUIManager.PopFromZeroInstructionUI("생크림을 터치해주세요!");
+                        baseUIManager.PopInstructionUIFromScaleZero("생크림을 터치해주세요!");
                         Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/PutCream");
                      
                         _buttonClickEventController.StartBtnClickAnyOrder();
@@ -88,7 +88,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration,
                             "SortedByScene/EA034/audio_5_생크림_위에_달콤한_재료로_꾸며볼까요___달콤한_재료를_골라~");
-                        baseUIManager.PopFromZeroInstructionUI("달콤한 재료를 골라 터치해주세요");
+                        baseUIManager.PopInstructionUIFromScaleZero("달콤한 재료를 골라 터치해주세요");
                         _buttonClickEventController.StartBtnClickAnyOrder();
                     });
                     break;
@@ -99,7 +99,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/PutCandle");
-                        baseUIManager.PopFromZeroInstructionUI("초를 터치해 꽂아주세요");
+                        baseUIManager.PopInstructionUIFromScaleZero("초를 터치해 꽂아주세요");
                         _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Candle");
                         _buttonClickEventController.StartBtnClickAnyOrder();
                     });
@@ -112,7 +112,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                 
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/audio_8_케익에_초를_꽂았어요__형님이_되었으니_축하_노래를_불러볼까요_");
-                    baseUIManager.PopFromZeroInstructionUI("케잌에 초를 꽂았어요!\n형님이 되었으니 축하 노래를 불러볼까요?",5);
+                    baseUIManager.PopInstructionUIFromScaleZero("케잌에 초를 꽂았어요!\n형님이 되었으니 축하 노래를 불러볼까요?",5);
 
                     //노래부르기 버튼 넣으면 좋을것 같음
                     DOVirtual.DelayedCall(6f, () =>
@@ -146,7 +146,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     }
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/audio_9_초에_불을_꺼볼까요__초에_있는_불을_터치해_주세요_");
-                    baseUIManager.PopFromZeroInstructionUI("초를 터치해서 불을 꺼주세요");
+                    baseUIManager.PopInstructionUIFromScaleZero("초를 터치해서 불을 꺼주세요");
                     break;
                 
                   
@@ -155,7 +155,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/Finish");
-                    baseUIManager.PopFromZeroInstructionUI("형님이 되었네요 축하해요!");
+                    baseUIManager.PopInstructionUIFromScaleZero("형님이 되었네요 축하해요!");
+                    
+                    RestartScene();
                     break;
             }
         }
@@ -236,12 +238,12 @@ private const float DECO_TIME = 15;
     private void OnAllSeatSelected()
     {
         Logger.ContentTestLog("전체 자리 선택 완료 -----------------------EA_Party");
-        baseUIManager.PopFromZeroInstructionUI("잘했어! 모두 자리에 앉았구나!");
+        baseUIManager.PopInstructionUIFromScaleZero("잘했어! 모두 자리에 앉았구나!");
 
 
         DOVirtual.DelayedCall(3f, () =>
         {
-            baseUIManager.PopFromZeroInstructionUI("케이크를 만들어 볼까요?");
+            baseUIManager.PopInstructionUIFromScaleZero("케이크를 만들어 볼까요?");
             Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA034/audio_1_케이크를_만들어볼까요_");
         });
         DOVirtual.DelayedCall(5.5f, () =>
@@ -340,7 +342,7 @@ private const float DECO_TIME = 15;
                 currentCandleBlowOutCount++;
                 if (currentCandleBlowOutCount >= CANDLES_TO_BLOW_OUT)
                 {
-                    baseUIManager.PopFromZeroInstructionUI("촛불을 다 껐어요!");
+                    baseUIManager.PopInstructionUIFromScaleZero("촛불을 다 껐어요!");
                     DOVirtual.DelayedCall(5f, () =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.OnFinish;
@@ -417,7 +419,7 @@ private const float DECO_TIME = 15;
             _currentClickCount = 0;
 
             Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_4__와____달콤한__생크림_케이크가_만들어지고_있어요_");
-            baseUIManager.PopFromZeroInstructionUI("생크림 케이크가 만들어지고 있어요!");
+            baseUIManager.PopInstructionUIFromScaleZero("생크림 케이크가 만들어지고 있어요!");
 
             DOVirtual.DelayedCall(2.5f, () =>
             {
@@ -559,7 +561,7 @@ private const float DECO_TIME = 15;
                 _elapsed = 0f;
                 
                 Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/audio_6_달콤한_케이크가_완성되었어요_");
-                baseUIManager.PopFromZeroInstructionUI("달콤한 케이크가 완성되었어요!");
+                baseUIManager.PopInstructionUIFromScaleZero("달콤한 케이크가 완성되었어요!");
                 DOVirtual.DelayedCall(4f,()=>
                 {
                     CurrentMainMainSeq = (int)MainSeq.OnCandle;

@@ -45,7 +45,7 @@ public class CrossRoad_UIManager : Base_UIManager
         seq?.Kill();
         seq = DOTween.Sequence();
 
-        seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
+        seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
         seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"CrossRoad/Audio/audio_{audioPath}"));
 
         // CustomDuration이 유효한 값(0보다 큰 값)이면 그걸, 아니면 audioClip 길이에 0.2초 추가한 걸 사용

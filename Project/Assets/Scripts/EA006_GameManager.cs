@@ -486,7 +486,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     });
             });
             
-            _uiManager.PopFromZeroInstructionUI("허수아비 아저씨를 다 찾았어요!");
+            _uiManager.PopInstructionUIFromScaleZero("허수아비 아저씨를 다 찾았어요!");
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/SortedByScene/EA006/Narration/FoundAllScarecrow");
 
             DOVirtual.DelayedCall(4f, () =>

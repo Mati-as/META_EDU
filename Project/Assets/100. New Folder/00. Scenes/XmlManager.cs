@@ -208,6 +208,7 @@ public class XmlManager
         public bool IsActive;
         public string Category;
         public string Month;
+        public string Title;
     }
 
     private static string menuSettingPath = Path.Combine(Application.streamingAssetsPath, "MenuSettingData.xml");
@@ -254,14 +255,15 @@ public class XmlManager
             string id = node.Attributes["id"].Value;
             bool value = bool.Parse(node.Attributes["value"].Value);
             string category = node.Attributes["category"]?.Value ?? "";
-            string month = node.Attributes["month"]?.Value ?? ""; // ✅ 추가
-
+            string month = node.Attributes["month"]?.Value ?? ""; 
+            string title = node.Attributes["title"]?.Value ?? ""; // ✅ 추가
             SceneData data = new SceneData
             {
                 Id = id,
                 IsActive = value,
                 Category = category,
-                Month = month
+                Month = month,
+                Title = title // ✅ 추가
             };
 
             SceneSettings[id] = data;
@@ -298,6 +300,8 @@ public class XmlManager
             scene.SetAttribute("value", kv.Value.IsActive.ToString().ToLower());
             scene.SetAttribute("category", kv.Value.Category);
             scene.SetAttribute("month", kv.Value.Month ?? "None"); 
+            scene.SetAttribute("title", kv.Value.Title ?? ""); 
+            
             root.AppendChild(scene);
         }
 

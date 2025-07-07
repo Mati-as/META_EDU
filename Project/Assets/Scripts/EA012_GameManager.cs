@@ -440,28 +440,28 @@ public class EA012_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Ambulance");
                     GetObject((int)GameObj.Car_Ambulance).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Ambulance];
                     hit.transform.DOShakeScale(1, 0.4f);
-                    _uiManager.PopFromZeroInstructionUI("구급차");
+                    _uiManager.PopInstructionUIFromScaleZero("구급차");
                     break;
                 case (int)GameObj.Car_PoliceCar:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
                         GetObject((int)GameObj.Car_PoliceCar).transform.localScale =_defaultSizeMap[(int)GameObj.Car_PoliceCar];
                     hit.transform.DOShakeScale(1, 0.4f);
-                    _uiManager.PopFromZeroInstructionUI("경찰차");
+                    _uiManager.PopInstructionUIFromScaleZero("경찰차");
                     break;
                 case (int)GameObj.Car_FireTruck:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_FireTruck");
                         GetObject((int)GameObj.Car_FireTruck).transform.localScale =_defaultSizeMap[(int)GameObj.Car_FireTruck];
-                    _uiManager.PopFromZeroInstructionUI("소방차");
+                    _uiManager.PopInstructionUIFromScaleZero("소방차");
                     hit.transform.DOShakeScale(1, 0.4f);
                     break;
                 case (int)GameObj.Car_Bus:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Bus");
                         GetObject((int)GameObj.Car_Bus).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Bus];
-                    _uiManager.PopFromZeroInstructionUI("버스");
+                    _uiManager.PopInstructionUIFromScaleZero("버스");
                     hit.transform.DOShakeScale(1, 0.4f);
                     break;
                 case (int)GameObj.Car_Taxi:
-                    _uiManager.PopFromZeroInstructionUI("택시");
+                    _uiManager.PopInstructionUIFromScaleZero("택시");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Taxi");
                         GetObject((int)GameObj.Car_Taxi).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Taxi];
                     hit.transform.DOShakeScale(1, 0.4f);

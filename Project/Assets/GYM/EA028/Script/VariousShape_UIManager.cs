@@ -43,7 +43,7 @@ public class VariousShape_UIManager : Base_UIManager
         seq?.Kill();
         seq = DOTween.Sequence();
 
-        seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
+        seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
         seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"VariousShape/Audio/{audioPath}"));
         seq.AppendInterval(audioClip.length + 1f);
         seq.AppendCallback(() => ShutInstructionUI(narrationText));

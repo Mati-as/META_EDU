@@ -6,7 +6,8 @@ public class AA006_VideoGameManager : VideoContentBaseGameManager
     {
         base.OnGameStartStartButtonClicked();
         initialMessage= "눈꽃을 만들어 펭귄과 놀아볼까요?";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+       
+        baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -97,6 +98,10 @@ public abstract class Base_GameManager : MonoBehaviour
     protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
     protected UIManager_CommonBehaviorController _uiManagerCommonBehaviorController;
+    
+    
+    protected GameObject UIManagerObj;
+    protected Base_UIManager baseUIManager;
 
     public void LoadUIManagerAndInit()
     {
@@ -121,7 +126,8 @@ public abstract class Base_GameManager : MonoBehaviour
         });
     }
 
-
+    
+    
     protected virtual void Start()
     {
       
@@ -302,6 +308,7 @@ public abstract class Base_GameManager : MonoBehaviour
         InitValidClickCount();
         isInitialized = true;
 
+        SetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
         InitCameraRect();
 
         DOTween.Init(useSafeMode: false);
@@ -322,8 +329,67 @@ public abstract class Base_GameManager : MonoBehaviour
      
         
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
+        
+     
     }
 
+ private void SetUIManager()
+    {
+        bool isUIManagerLoadedOnRuntime = Managers.UI.ShowCurrentSceneUIManager<GameObject>(out UIManagerObj,SceneManager.GetActiveScene().name);
+
+        if (!isUIManagerLoadedOnRuntime)
+        {
+            Logger.CoreClassLog("UIManager가 로드되지 않았습니다. 이미 씬 깔려있는지 확인 필요");
+            return;
+        }
+
+        baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+        
+        var mainCamera = Camera.main;
+        
+        // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
+        var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
+      
+        
+        
+        Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
+
+        if (canvas != null && uiCameraObj != null)
+        {
+            // Set the render mode and assign the camera
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = uiCameraObj.GetComponent<Camera>();
+
+            Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
+        }
+        else
+        {
+            Logger.LogError("Canvas or Camera not found on UICamera object.");
+        }
+        if (uiCameraObj != null)
+        {
+            var uiCamera = uiCameraObj.GetComponent<Camera>();
+            if (uiCamera != null)
+            {
+               uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
+            
+                if (mainCamera != null && mainCamera.cameraType == CameraType.Game)
+                {
+                    if (!mainCamera.GetUniversalAdditionalCameraData().cameraStack.Contains(uiCamera))
+                    {
+                        mainCamera.GetUniversalAdditionalCameraData().cameraStack.Add(uiCamera);
+                        Logger.ContentTestLog("UICamera가 MainCamera의 Stack에 추가됨.");
+                    }
+                }
+                else
+                    Logger.LogError("MainCamera가 없거나 올바르지 않은 타입입니다.");
+            }
+            else
+                Logger.LogError("UICamera 오브젝트에 Camera 컴포넌트가 없습니다.");
+        }
+        else
+            Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
+    }
 
     protected string initialMessage = String.Empty;
     protected virtual void SetLayerMask()
@@ -516,7 +582,46 @@ public abstract class Base_GameManager : MonoBehaviour
 #endif
     }
 
-    private void OnApplicationQuit()
+    private float currentRestartTime = 0f;
+    private const float RESTART_WAIT_TIME = 10f; // 혹은 외부에서 설정
+    private Sequence _restartSequence;
+
+    protected void RestartScene(Action callback = null, float delay = 5f)
     {
+        _restartSequence?.Kill();
+        _restartSequence = DOTween.Sequence();
+
+
+        _restartSequence.AppendInterval(delay);
+        _restartSequence.AppendCallback(() =>
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "Common/Narration/OnRestart");
+            baseUIManager.PopInstructionUIFromScaleZero("놀이가 끝났어요! 놀이가 곧 다시시작 해요!");
+        });
+        
+        _restartSequence.AppendInterval(7f);
+
+        _restartSequence.AppendCallback(() =>
+        {
+            int previousSecond = -1;
+
+            DOVirtual.Float(0f, RESTART_WAIT_TIME, RESTART_WAIT_TIME, value =>
+                {
+                    int remainingSeconds = (int)(RESTART_WAIT_TIME - value);
+                    if (remainingSeconds != previousSecond)
+                    {
+                        previousSecond = remainingSeconds;
+                        baseUIManager.PopAndChangeUI("놀이를 곧 다시 시작해요!" + $" ({remainingSeconds.ToString()})");
+                    }
+                })
+                .SetEase(Ease.Linear)
+                .OnComplete(() =>
+                {
+                    callback?.Invoke();
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                });
+
+        });
     }
+
 }

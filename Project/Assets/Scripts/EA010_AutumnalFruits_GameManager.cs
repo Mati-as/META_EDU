@@ -233,7 +233,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     {
                         SeqMessageEvent?.Invoke("OnTreeScene_A");
                         _isFruitOnTreeAlreadyClicked = false;
-                        _uiManager.PopFromZeroInstructionUI("열매를 터치해 주세요!");
+                        _uiManager.PopInstructionUIFromScaleZero("열매를 터치해 주세요!");
                     });
                     break;
                 case SeqName.OnTreeScene_B:
@@ -275,7 +275,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     DOVirtual.DelayedCall(2f, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OnFin");
-                        _uiManager.PopFromZeroInstructionUI("가을 열매를 모두 담았어요!");
+                        _uiManager.PopInstructionUIFromScaleZero("가을 열매를 모두 담았어요!");
                         DOVirtual.DelayedCall(2f, () =>  SetColliderStatus(true));
                     });
                     break;
@@ -390,7 +390,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
 
         DOVirtual.DelayedCall(7.2f, () =>
         {
-            _uiManager.PopFromZeroInstructionUI("네모 칸을 터치해주세요");
+            _uiManager.PopInstructionUIFromScaleZero("네모 칸을 터치해주세요");
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/TouchBlock");
             
             foreach (int key in _woodSpriteRendererMap.Keys.ToArray())
@@ -710,7 +710,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -732,7 +732,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -754,7 +754,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -776,7 +776,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {

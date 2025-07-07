@@ -159,7 +159,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 
                 case (int)MainSeq.SeatSelectionA:
                     ScaleBackSeats();
-                    _uiManager.PopFromZeroInstructionUI("마음에드는 차를 골라\n네모 모양에 서주세요!");
+                    _uiManager.PopInstructionUIFromScaleZero("마음에드는 차를 골라\n네모 모양에 서주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     AnimateAllSeats(Objs.Seats_TrackA);
@@ -169,7 +169,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.SeatSelectionB:
              
-                    _uiManager.PopFromZeroInstructionUI("마음에드는 차를 골라\n네모 모양에 서주세요!");
+                    _uiManager.PopInstructionUIFromScaleZero("마음에드는 차를 골라\n네모 모양에 서주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/OnSeatSelection");
                     InitForSeatSelection();
                     ScaleBackSeats();
@@ -187,7 +187,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "Audio/EA029/Narration/ThankPark");
-                    _uiManager.PopFromZeroInstructionUI("차를 전부 주차했어요!");
+                    _uiManager.PopInstructionUIFromScaleZero("차를 전부 주차했어요!");
                     break;
             }
         }
@@ -303,7 +303,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(1.5f, () =>
         {
             initialMessage = "각자 표시된 자리에 서주세요!";
-            _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+             baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
             CurrentMainMainSeq = (int)selection;
             Logger.ContentTestLog("Mainseq Changed SeatSelection -------------------");
         });
@@ -394,7 +394,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
                 // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
-                _uiManager.PopFromZeroInstructionUI("다 앉았구나! 이제 자동차들을 보러가자!");
+                _uiManager.PopInstructionUIFromScaleZero("다 앉았구나! 이제 자동차들을 보러가자!");
                 
                 DeactivateSeats();
                 
@@ -504,7 +504,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
     {
         base.OnGameStartStartButtonClicked();
         
-        _uiManager.PopFromZeroInstructionUI("차를 도와주세요! 누가 빨리가는지 볼까요?");
+        _uiManager.PopInstructionUIFromScaleZero("차를 도와주세요! 누가 빨리가는지 볼까요?");
         Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/Story/CarLookingFor");
         CurrentMainMainSeq =0;
         DOVirtual.DelayedCall(3.25f, () =>
@@ -726,7 +726,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Effect, "EA029/CarIntro");
                     _selectedCarAnimators[key].enabled = true;
                     _selectedCarAnimators[key].SetInteger(TrackNum, CAR_ANIM_INTRO);
-                    _uiManager.PopFromZeroInstructionUI(
+                    _uiManager.PopInstructionUIFromScaleZero(
                         $"{countCache + 1}번차, {_nameInKoreanMap[_selectedCarAnimators[key].transform.GetInstanceID()]}!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA029/Narration/Number_" + (countCache + 1).ToString());
@@ -775,7 +775,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
             DOVirtual.DelayedCall(3f, () =>
             {
-                _uiManager.PopFromZeroInstructionUI("친구들의 차를 터치해서 주차해주세요!");
+                _uiManager.PopInstructionUIFromScaleZero("친구들의 차를 터치해서 주차해주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration,"EA029/Narration/Story/TouchAndPark");
                 DOVirtual.DelayedCall(4.5f, () =>
                 {
@@ -1040,7 +1040,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
             {
                 _lastNarratedSecond = remainTime;
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/Count_" + remainTime);
-                _uiManager.PopFromZeroInstructionUI($"{remainTime}");
+                _uiManager.PopInstructionUIFromScaleZero($"{remainTime}");
             }
         }
     }
@@ -1071,13 +1071,13 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
             if (_winnerIndex != -1)
             {
-                _uiManager.PopFromZeroInstructionUI($"{_winnerIndex + 1}번 친구가 가장 먼저 들어왔어! 주차 성공!");
+                _uiManager.PopInstructionUIFromScaleZero($"{_winnerIndex + 1}번 친구가 가장 먼저 들어왔어! 주차 성공!");
               
                 Managers.Sound.Play(SoundManager.Sound.Narration, $"EA029/Narration/Story/Winner_{_winnerIndex+1}");
             }
             else
             {
-                _uiManager.PopFromZeroInstructionUI("열심히 터치해서 차를 주차해요!"); 
+                _uiManager.PopInstructionUIFromScaleZero("열심히 터치해서 차를 주차해요!"); 
             }
             Logger.ContentTestLog("");
             DOVirtual.DelayedCall(3f, () =>

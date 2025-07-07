@@ -218,7 +218,7 @@ public class SandwitchBaseGameManager : Base_GameManager
 
     
         initialMessage= "5가지 재료를 골라 샌드위치를 완성해보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
         DOVirtual.DelayedCall(4.5f, () =>

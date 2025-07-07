@@ -93,7 +93,7 @@ public class PlayInfoManager : MonoBehaviour
             newXml.Save(path);
             Logger.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
         }
-        Logger.Log("History Checker Active");
+        Logger.Log("[UTIL] ---------  유저 씬 플레이정보 기록 활성화 ---------------------");
     }
     
     

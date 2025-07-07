@@ -25,7 +25,7 @@ public class EA010_UIManager : Base_UIManager
         DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            PopFromZeroInstructionUI("다른 열매도 알아볼까요?");
+            PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
     }
     private void OnGetMessageEventFromGm(string message)
@@ -39,7 +39,7 @@ public class EA010_UIManager : Base_UIManager
                 break;
 
             case "Q":
-                PopFromZeroInstructionUI("어떤 열매 일까요?");
+                PopInstructionUIFromScaleZero("어떤 열매 일까요?");
                 DOVirtual.DelayedCall(7.5f, () =>
                 {
                     // PopFromZeroInstructionUI("네모 칸을 터치해주세요");
@@ -48,13 +48,13 @@ public class EA010_UIManager : Base_UIManager
                 break;
 
             case nameof(EA010_AutumnalFruits_GameManager.MessageSequence.Intro):
-                PopFromZeroInstructionUI("가을에는 주렁주렁열매가 매달려요)\n어떤 열매가 있을까요?");
+                PopInstructionUIFromScaleZero("가을에는 주렁주렁열매가 매달려요)\n어떤 열매가 있을까요?");
                 break;
 
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Chestnut):
                 DOVirtual.DelayedCall(1f, () =>
                 {
-                    PopFromZeroInstructionUI("밤");
+                    PopInstructionUIFromScaleZero("밤");
                 });
 
                 
@@ -63,7 +63,7 @@ public class EA010_UIManager : Base_UIManager
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Acorn):
                 DOVirtual.DelayedCall(1f, () =>
                 {
-                    PopFromZeroInstructionUI("도토리");
+                    PopInstructionUIFromScaleZero("도토리");
                 });
           
                 break;
@@ -71,7 +71,7 @@ public class EA010_UIManager : Base_UIManager
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Apple):
                 DOVirtual.DelayedCall(1f, () =>
                 {
-                    PopFromZeroInstructionUI("사과");
+                    PopInstructionUIFromScaleZero("사과");
                 });
                 
                 break;
@@ -79,7 +79,7 @@ public class EA010_UIManager : Base_UIManager
             case nameof(EA010_AutumnalFruits_GameManager.Fruits.Ginkgo):
                 DOVirtual.DelayedCall(1f, () =>
                 {
-                    PopFromZeroInstructionUI("은행");
+                    PopInstructionUIFromScaleZero("은행");
                 });
                 
           
@@ -89,7 +89,7 @@ public class EA010_UIManager : Base_UIManager
 
                 DOVirtual.DelayedCall(1f, () =>
                 {
-                    PopFromZeroInstructionUI("감"); });
+                    PopInstructionUIFromScaleZero("감"); });
                 
                 
                 break;

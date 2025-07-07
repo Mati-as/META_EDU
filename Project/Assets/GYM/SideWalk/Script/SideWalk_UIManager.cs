@@ -46,7 +46,7 @@ public class SideWalk_UIManager : Base_UIManager
         _seq?.Kill();
         _seq = DOTween.Sequence();
 
-        _seq.AppendCallback(() => PopFromZeroInstructionUI(narrationText));
+        _seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
         _seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
         _seq.AppendInterval(interval);
         _seq.AppendCallback(() => ShutInstructionUI(narrationText));

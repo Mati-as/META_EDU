@@ -10,7 +10,7 @@ public class WaterMusicBaseGameManager : Base_GameManager
     {
         base.OnGameStartStartButtonClicked();
         initialMessage= "바다위 색깔 블럭을 눌러 연주 해볼까요?";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 }

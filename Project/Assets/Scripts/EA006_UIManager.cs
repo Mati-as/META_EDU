@@ -38,7 +38,7 @@ public class EA006_UIManager : Base_UIManager
                 
                 break;
             case (int)EA006_GameManager.MainSeq.GrassColorChange:
-                PopFromZeroInstructionUI("초록색 벼를 터치해 노란색 벼로 바꿔주세요!");
+                PopInstructionUIFromScaleZero("초록색 벼를 터치해 노란색 벼로 바꿔주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/RipenIt");
 
                 float dealyAmount = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length ;
@@ -53,7 +53,7 @@ public class EA006_UIManager : Base_UIManager
             case (int)EA006_GameManager.MainSeq.FindScarecrow:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/ThereScareCrow");
                 
-                PopFromZeroInstructionUI( "숨어있는 허수아비 아저씨를 찾아 터치해주세요 ");
+                PopInstructionUIFromScaleZero( "숨어있는 허수아비 아저씨를 찾아 터치해주세요 ");
                 float dealyAmountB = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length;
                 DOVirtual.DelayedCall(dealyAmountB, () =>
                 {
@@ -63,12 +63,12 @@ public class EA006_UIManager : Base_UIManager
                 break;
             case (int)EA006_GameManager.MainSeq.SparrowAppear:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/SparrowAppear");
-                PopFromZeroInstructionUI( "참새가 나타나서 벼를 먹고 있어요!");
+                PopInstructionUIFromScaleZero( "참새가 나타나서 벼를 먹고 있어요!");
                 DOVirtual.DelayedCall(3.2f, () =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/HelpScareCrow");
                     
-                    PopFromZeroInstructionUI( "참새를 잡아 허수아비 아저씨를 도와주고\n벼를 지켜줘요");
+                    PopInstructionUIFromScaleZero( "참새를 잡아 허수아비 아저씨를 도와주고\n벼를 지켜줘요");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/Narration/ProtectRice");
                     
                     float dealyAmountC = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 0.45f;
@@ -84,7 +84,7 @@ public class EA006_UIManager : Base_UIManager
                 DOVirtual.DelayedCall(3f, () =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/FinishCatching");
-                    PopFromZeroInstructionUI( "참새를 다 잡았어요!\n 우리가 허수아비 아저씨를 도와줬어요!");
+                    PopInstructionUIFromScaleZero( "참새를 다 잡았어요!\n 우리가 허수아비 아저씨를 도와줬어요!");
                 });
                 
                 break;
@@ -96,7 +96,7 @@ public class EA006_UIManager : Base_UIManager
     {
         
         Logger.Log($"Get Message ---- {message}");
-        PopFromZeroInstructionUI( "참새를 잡아서 허수아비 아저씨를 도와줘요\n" +message.ToString() + "마리");
+        PopInstructionUIFromScaleZero( "참새를 잡아서 허수아비 아저씨를 도와줘요\n" +message.ToString() + "마리");
     }
 
     private void OnDestroy()

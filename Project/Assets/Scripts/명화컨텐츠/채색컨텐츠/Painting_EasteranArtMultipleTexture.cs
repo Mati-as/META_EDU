@@ -150,7 +150,7 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
     {
         base.OnGameStartStartButtonClicked();
         initialMessage= "화면을 터치해 송하맹호도를 완성시켜 보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }

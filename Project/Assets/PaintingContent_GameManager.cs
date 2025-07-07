@@ -136,7 +136,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                     videoPlayer.Play();
                     videoPlayer.SetDirectAudioMute(0, false);
                     // 트랙 0번을 뮤트
-                    _baseUIManager.PopFromZeroInstructionUI("살아있는 그림을 완성시켰어요!", 5f);
+                    _baseUIManager.PopInstructionUIFromScaleZero("살아있는 그림을 완성시켰어요!", 5f);
 
 
                     float videoLength = (float)videoPlayer.url.Length - 3;
@@ -152,7 +152,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                         {
                             
                             Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
-                            _baseUIManager.PopFromZeroInstructionUI("그림을 터치해 완성시켜보세요!", 5f);
+                            _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
                             SketchFinishFilterSet(false);
                             _isPaintFinished = false;
                             _currentBrushCount = 0;
@@ -200,7 +200,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
     protected override void OnGameStartStartButtonClicked()
     {
-        _baseUIManager.PopFromZeroInstructionUI("그림을 터치해 완성시켜보세요!", 5f);
+        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
         base.OnGameStartStartButtonClicked();
     }
 

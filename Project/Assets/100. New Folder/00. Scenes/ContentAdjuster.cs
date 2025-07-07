@@ -8,68 +8,7 @@ using UnityEngine.SceneManagement;
 public class ContentAdjuster : MonoBehaviour
 {
     UI_MetaEduLauncherMaster _metaEduLauncherMaster;
-    private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>()
-    {
-        
-        //⚠️⛔️ 테스트용 임시 컨텐츠 이름, 컨텐츠 이름 반드시 수정 필요  ⛔️⚠️
-        { "EA034", "파티를 해요" },
-        { "SideWalk", "차도와 보도는 달라요" },
-    
-        { "EA035", "풍속화첩 씨름 색칠해요" },
-        { "EA036", "풍속화첩 서당 색칠해요" },
-        { "EA037", "모나리자 색칠해요" },
-        { "EA038", "고흐 초상화 색칠해요" },
-        { "EA039", "별이 빛나는 밤에 색칠해요" },
-        
-        //
-        
-        
-        
-        
-        { "BB002", "사방치기 놀이" },
-        { "BB003", "알록달록 손발을 뒤집어요" },
-        { "BB006", "고래와 공놀이를 해요" },
-        { "BB008_E", "물고기를 잡아요" },
-        { "BB009", "우주의 행성이 움직여요" },
-        { "EA006", "허수아비 아저씨를 도와줘요" },
-        { "EA009", "몸에 좋은 음식을 찾아요" },
-        { "BA001", "송하맹호도 색칠해요" },
-        { "BD001", "무지개 건반을 연주해요" },
-        { "BD002", "바다에서 연주해요" },
-        { "BD004", "악기 연주를 해요" },
-        { "BD003", "비즈드럼을 연주해요" },
-        { "BC001", "가을낙엽" },
-        { "AA004", "밤하늘이 반짝여요" },
-        { "AA005", "코스모스가 움직여요" },
-        { "AA006", "뒤뚱뒤뚱 펭귄이 와요" },
-        { "EA002", "동물을 찾아봐요" },
-        { "EA014", "같은 모양을 찾아요" },
-        { "EA015", "가을 낙엽 [3세]" },
-        { "EA016", "고래와 공놀이를 해요 [3세]" },
-        { "EA028", "다양한 모양을 찾아요" },
-        { "EA029", "자동차를 주차해요" },
-        { "EA024", "무지개 [미디어 아트]" },
-        { "EA019", "풍선을 날려요" },
-        { "BB004", "손발을 뒤집어요" },
-        { "EA004", "다양한 표정을 알아봐요" },
-        { "EA008", "거품목욕놀이" },
-        { "BA005", "샌드위치를 만들어요" },
-        { "EA003", "과일과 야채담기" },
-        { "EA003_E", "과일과 야채담기 [ENG]" },
-        { "EA025", "북극 [미디어 아트]" },
-        { "EA026", "공룡 [미디어 아트]" },
-        { "EA018", "자동차를 꾸며요" },
-        { "EA017", "일하는 자동차가 있어요" },
-        { "EA012", "어떤 자동차 일까요?" },
-        { "EA021", "해변 [미디어 아트]" },
-        { "EA020", "횡단보도를 안전하게 건너요" },
-        { "EA010", "가을 열매를 찾아요" },
-        { "EA022", "코스모스  [미디어 아트]" },
-        { "EA023", "숲속  [미디어 아트]" },
-        { "EA031", "불이 나면 비상구로 대피해요" },
-        { "EA030", "가을 곤충은 어디 있을까요?" }
-    };
-
+ 
     //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작
     public enum ModeType
     {
@@ -374,7 +313,7 @@ public class ContentAdjuster : MonoBehaviour
 
     public void FilterAndPaginateContent(ContentCategory category)
     {
-        var allScenes = XmlManager.Instance.SceneSettings.Values;
+        Dictionary<string,XmlManager.SceneData>.ValueCollection allScenes = XmlManager.Instance.SceneSettings.Values;
 
         string categoryKey = category.ToString();
 
@@ -436,7 +375,7 @@ public class ContentAdjuster : MonoBehaviour
                 continue;
             }
 
-            var data = sceneList[i];
+            XmlManager.SceneData data = sceneList[i];
             buttonObj.SetActive(true); // 반드시 먼저 켜줘야 썸네일이 반영됨
 
             // 썸네일
@@ -455,8 +394,8 @@ public class ContentAdjuster : MonoBehaviour
                 var text = textObj.GetComponent<Text>();
                 if (text != null)
                 {
-                    if (sceneTitles.TryGetValue(data.Id, out string title))
-                        text.text = title;
+                    if (data.Title != null && data.Title.Length > 0)
+                        text.text = data.Title;
                     else
                         text.text = data.Id; // fallback: ID 그대로 표시
                 }
@@ -471,10 +410,12 @@ public class ContentAdjuster : MonoBehaviour
             var btn = buttonObj.GetComponent<Button>();
             if (btn != null)
             {
-                btn.interactable = (data.IsActive || _isTestScene);
+                btn.interactable = data.IsActive || _isTestScene;
                 btn.onClick.RemoveAllListeners();
-                if (data.IsActive  || _isTestScene)
+                if (data.IsActive || _isTestScene)
                 {
+                    #region 씬실행 부분 //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
+
                     //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
                     var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
                     btnImageController.DefaultScale = buttonObj.transform.localScale;
@@ -482,18 +423,17 @@ public class ContentAdjuster : MonoBehaviour
                     string sceneId = data.Id;
                     btn.onClick.AddListener(() =>
                     {
-
-                        //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
                         if (_metaEduLauncherMaster == null)
                             _metaEduLauncherMaster = Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
 
-                        if (sceneTitles.TryGetValue(data.Id, out string title)) _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, title);
+                        _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, data.Title);
 
                         // SceneManager.LoadScene(sceneId);
                     });
+
+                    #endregion
                 }
             }
-
         }
     }
     
