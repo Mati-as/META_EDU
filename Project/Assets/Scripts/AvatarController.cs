@@ -15,12 +15,21 @@ public class AvatarController : Ex_MonoBehaviour
         Crawl,
         
     }
+    
+    public enum LegAnimClip
+    {
+        Idle,
+        Walk,
+    }
+
+
 
     private Dictionary<int, Animator> _controllerMap = new();
     private Dictionary<int, int> tfIdToIndexMap= new();
     private int CHARACTER_ANIM_NUM = Animator.StringToHash("AnimNum");
     private static readonly int ToDefault = Animator.StringToHash("ToDefault");
     private static readonly int IsWalking = Animator.StringToHash("IsWalking");
+    private static readonly int LegAnimNum = Animator.StringToHash("LegAnimNum");
 
     protected override void Init()
     {
@@ -36,6 +45,10 @@ public class AvatarController : Ex_MonoBehaviour
     
     }
 
+    public void SetLegAnim(int animator,int animName)
+    {
+        _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
+    }
     public void SetWalking(int index,bool isWalking =false)
     {
         _controllerMap[index].SetBool(IsWalking, isWalking);

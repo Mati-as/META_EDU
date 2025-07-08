@@ -20,6 +20,9 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
     private enum Objs
     {
+        
+        IntroSmoke,
+        
         ToxicGas,
         SirenAlert,
         IntroAvatarController,
@@ -30,6 +33,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         OnEscapePaths,
         OnEscapeAvatarController,
         OnEscapeAvatar, // 애니메이션과 별개로 Transform 컨트롤
+        
+        OnEndAvatarController,
         
         EscapeDefaultPos,
         PathOutPos,
@@ -46,11 +51,12 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     private AvatarController _introAvatarController;
     private AvatarController _onExitAvatarController;
     private AvatarController  _onEscapeAvatarController;
-
+    private AvatarController _onEndAvatarController;
 
     private ParticleSystem _sirenPs;
     private ParticleSystem _smokePs;
 
+    private Vector3 _defaultStepSize;
     public int CurrentMainMainSeq
     {
         get
@@ -78,7 +84,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     {
                         CurrentMainMainSeq = (int)MainSeq.OnFireAndAlarm;
                     });
-                    
+                    SetSmokeStatus((int)Objs.IntroSmoke);
                     _smokePs.Clear();
                     _smokePs.Stop();
                     _smokePs.Play();
@@ -193,6 +199,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/6_Finish");
                     _uiManager.PopInstructionUIFromScaleZero("두손으로 코와 입을 막고\n비상구로 나가는 것을 기억해요!");
                     Managers.Sound.Play(SoundManager.Sound.Bgm, "Bgm/EA031");
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_FireTruck");
+                    RestartScene(null,10f);
                     break;
             }
         }
@@ -207,9 +215,9 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         GetObject((int)Objs.InducingArrowPath_B).SetActive(true);
         GetObject((int)Objs.InducingArrowPath_C).SetActive(true);
         
-        
-             
         GetObject((int)Objs.OnEscapePaths).transform.GetChild(index).gameObject.SetActive(true);
+        
+        
     }
     private void PlayEscapePathAnim(int pathIndex,float delay =3f)
     {
@@ -244,8 +252,15 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             _onEscapeAvatarController.SetWalking(0, false);
             
             _uiManager.PopInstructionUIFromScaleZero("준비 다 됐으면 차분히 날 따라서 나가자!");
+
+            DOVirtual.DelayedCall(4.5f, () =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("경로를 순서대로 밟아 비상구로 탈출해요!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/FollowPath");
+            });
             Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/Lets");
 
+            BlinkStep(_currentPathIndex,0);
             
         });
 
@@ -310,6 +325,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         _onExitAvatarController = GetObject((int)Objs.OnExitAvataController).GetComponent<AvatarController>();
         _onEscapeAvatarController = GetObject((int)Objs.OnEscapeAvatarController).GetComponent<AvatarController>();
         _introAvatarController = GetObject((int)Objs.IntroAvatarController).GetComponent<AvatarController>();
+        _onEndAvatarController = GetObject((int)Objs.OnEndAvatarController).GetComponent<AvatarController>();
+        
         
         GetObject((int)Objs.TowelToCover).SetActive(false);
         GetObject((int)Objs.OnExitAvataController).SetActive(false);
@@ -343,17 +360,32 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             {
                 _stepsMap[group][step] = GetObject(((int)Objs.EscapeStepsA)+group).transform.GetChild(step);
                 _stepOrderMap.Add(_stepsMap[group][step].GetInstanceID(), step);
+                _defaultStepSize = _stepsMap[group][step].localScale;
             }
 
         }
   
         
-
+        SetSmokeStatus(-1);
         Logger.Log("Init--------------------------------");
         
         
     }
 
+    private void SetSmokeStatus(int smokeObj = -1)
+    {
+        if (smokeObj == -1)
+        {
+            GetObject((int)Objs.IntroSmoke).SetActive(false);
+            return;
+        }
+        else
+        {
+            GetObject(smokeObj).SetActive(true);
+        }
+
+
+    }
     private Sequence _pathAnimSAeq;
     private Base_UIManager _uiManager;
     private Vector3 _towelDefaultScale;
@@ -373,8 +405,20 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
         CurrentMainMainSeq = (int)initialSeq;
 
-     
-     
+        for (int i = 0; i < 6; i++)
+        {
+            _onEndAvatarController.PlayAnimation(i, AvatarController.AnimClip.HideFace);
+            
+            int indexCache = i;
+            DOVirtual.DelayedCall(3.5f + Random.Range(0.1f,0.4f), () =>
+            {
+                _onEndAvatarController.PauseAnimator(indexCache);
+                _onEndAvatarController.SetLegAnim(i, (int)AvatarController.LegAnimClip.Idle);
+            });
+
+        }
+    
+
     }
 
     public override void OnRaySynced()
@@ -441,6 +485,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         GetObject((int)Objs.OnEscapeAvatar).transform
             .DOLocalRotate(new Vector3(thisRotation.x, thisRotation.y + 180, thisRotation.z), 0.5f);
         
+        
+       
         _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.HideFace);
         DOVirtual.DelayedCall(2f, () =>
         {
@@ -465,6 +511,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             DOVirtual.DelayedCall(6f, () =>
             {
                 InitPaths(_currentPathIndex);
+               
                 PlayEscapePathAnim(_currentPathIndex);
             });
         }
@@ -483,6 +530,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         _currentStepOrderToClick = 0;
     }
 
+    private int _currentPathRound = 0;
+
     private void OnRaySyncOnEscape()
     {
         if (!_isClickableForRound) return;
@@ -498,21 +547,47 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                 if (_stepOrderMap[id] == _currentStepOrderToClick && _isClickableMap[id])
                 {
                     char randomChar = (char)Random.Range('A', 'B' + 1);
+                   
                     Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnStep"+randomChar);
                     _isClickableMap[id] = false;
                     hitTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBounce);
                     _currentStepOrderToClick++;
                     //Logger.ContentTestLog($"남은 클릭 개수{STEP_MAX_COUNT-_currentStepOrderToClick}");
 
+                    if (_currentStepOrderToClick < STEP_MAX_COUNT-1)
+                    {
+                        BlinkStep(_currentPathRound, _currentStepOrderToClick);
+                    }
+                    
                     if (_currentStepOrderToClick >= STEP_MAX_COUNT)
                     {
                         _currentStepOrderToClick = 0;
                         _isClickableForRound = false;
                         OnEscapePathSuccess();
+                        
                     }
+
+                    
+                    _stepBlinkSeq?.Kill();
+                 
                 }
 
             Logger.ContentTestLog("there's no animator for this avatar: " + hit.transform.name);
         }
+    }
+    
+
+    private Sequence _stepBlinkSeq;
+    
+    
+    private void BlinkStep(int currentRound , int stepIndex)
+    {
+        if (_stepBlinkSeq != null && _stepBlinkSeq.IsActive())
+            _stepBlinkSeq.Kill();
+        
+        _stepBlinkSeq = DOTween.Sequence();
+        _stepBlinkSeq.Append(_stepsMap[currentRound][stepIndex].DOScale(_defaultStepSize * 0.7f, 0.3f));
+        _stepBlinkSeq.Append(_stepsMap[currentRound][stepIndex].DOScale(_defaultStepSize, 0.3f));
+        _stepBlinkSeq.SetLoops(150,LoopType.Yoyo);
     }
 }
