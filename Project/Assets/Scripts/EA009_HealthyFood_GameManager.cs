@@ -237,6 +237,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                         GetObject(i).gameObject.SetActive(true);
                         GetObject(i).transform.DOScale(_defaultSizeMap[i],0.6f).SetEase(Ease.InOutBack);
                     }
+                    
+                    RestartScene(delay:8f);
                     break;
             }
         }
@@ -983,7 +985,7 @@ private void OnRaySyncOnBadFoodEat()
             }
             
             Messenger.Default.Publish(new EA009_Payload(
-                $"       X {BAD_FOOD_CLICK_TO_COUNT - currentBadFoodClickedCount}", true));
+                $"      X {BAD_FOOD_CLICK_TO_COUNT - currentBadFoodClickedCount}", true));
             Logger.ContentTestLog($" 나쁜음식 클릭 카운트 {currentBadFoodClickedCount}");
         }
     }

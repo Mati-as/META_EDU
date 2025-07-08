@@ -76,7 +76,7 @@ Logger.ContentTestLog("EA009 UI Manager Init ------------------------");
     {
         if (payload.Checksum)
         {
-            PopInstructionUIFromScaleZero($"{payload.Narration}");
+            PopAndChangeUI($"{payload.Narration}");
             return;
         }
         Logger.ContentTestLog($"Get Message ---- {payload.Narration}");

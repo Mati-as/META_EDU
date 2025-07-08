@@ -163,7 +163,7 @@ public class EA012_UIManager : Base_UIManager
                
                     _gm.SetClickableWithDelayOfNar(carInfoNarrationDuration +delayOffset+ waitTimeBeforeTouch);
                     PopInstructionUIFromScaleZero("노랑색 자동차는");
-                Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_FireTruck");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/CarInfo_Taxi");
                 
                 DOVirtual.DelayedCall(carInfoNarrationDuration, () =>
                 {

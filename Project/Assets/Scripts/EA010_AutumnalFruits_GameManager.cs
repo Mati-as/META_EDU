@@ -278,6 +278,8 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                         _uiManager.PopInstructionUIFromScaleZero("가을 열매를 모두 담았어요!");
                         DOVirtual.DelayedCall(2f, () =>  SetColliderStatus(true));
                     });
+                    
+                    RestartScene(delay: 11f);
                     break;
             }
             

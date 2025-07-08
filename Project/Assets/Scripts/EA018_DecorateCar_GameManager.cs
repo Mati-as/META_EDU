@@ -364,6 +364,7 @@ using Random = UnityEngine.Random;
                     _uiManager.PopInstructionUIFromScaleZero("친구들 덕분에 도와줄 수 있었어요!");
      
                     OnFinishInit();
+                    RestartScene(delay:20f);
                     break;
             }
         }

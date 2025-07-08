@@ -210,6 +210,8 @@ public class EA012_GameManager : Ex_BaseGameManager
                         });
 
                     });
+                    
+                    RestartScene(delay:20);
 
                   
         
