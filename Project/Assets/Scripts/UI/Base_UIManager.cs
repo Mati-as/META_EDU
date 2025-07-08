@@ -99,7 +99,7 @@ public class Base_UIManager : UI_PopUp
     ///     애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    public void PopInstructionUIFromScaleZero(string instruction, float duration = 0f, float delay = 10f)
+    public void PopInstructionUIFromScaleZero(string instruction, float duration = 10f, float delay = 0f)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();

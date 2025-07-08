@@ -272,14 +272,19 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                    
                     DOVirtual.DelayedCall(2.5f, () => { SeqMessageEvent?.Invoke("OnTreeScene_A"); });
                     
-                    DOVirtual.DelayedCall(2f, () =>
+                    DOVirtual.DelayedCall(3f, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OnFin");
                         _uiManager.PopInstructionUIFromScaleZero("가을 열매를 모두 담았어요!");
-                        DOVirtual.DelayedCall(2f, () =>  SetColliderStatus(true));
+                        DOVirtual.DelayedCall(4f, () =>  SetColliderStatus(true));
+                        
+                        DOVirtual.DelayedCall(7f, () =>  SetColliderStatus(false));
+                        
+                        DOVirtual.DelayedCall(13f, () =>  SetColliderStatus(false));
+                        RestartScene(delay: 8f);
                     });
                     
-                    RestartScene(delay: 11f);
+                 
                     break;
             }
             
