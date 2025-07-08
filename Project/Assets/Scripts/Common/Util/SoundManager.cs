@@ -354,8 +354,7 @@ public class SoundManager : MonoBehaviour
                     audioSource.Stop();
             });
     }
-
-
+    
     // Sound관련 메소드 (legacy) 가을낙엽 컨텐츠에서 사용중.
     // 추후 가을소풍 전용으로 사용하도록 클래스 구분하거나 리팩토링 필요 12/18/23
     public static void FadeOutSound(AudioSource audioSource, float volumeTarget = 0, float waitTime = 0.5f,
@@ -385,4 +384,34 @@ public class SoundManager : MonoBehaviour
             FadeOutSound(audioSource, 0f, fadeWaitTime, outDuration, rollBack);
         });
     }
+
+
+    #region 페이드인/아웃 관련기능 (영민)
+
+    private Sequence _soundTransitionSeq;
+    public void TransitionAudioClip(Sound type, string path, float outDuration = 1f, float inDuration = 0.8f)
+    {
+        var changeClip =  GetAudioClip(path);
+        var audioSource = audioSources[(int)type];
+        float originalVol = audioSource.volume;
+        
+        _soundTransitionSeq?.Kill();
+        
+        _soundTransitionSeq.Append(audioSource.DOFade(0f, outDuration)
+            .OnComplete(() =>
+            {
+                audioSource.clip = changeClip;
+                audioSource.Play();
+                audioSource.DOFade(originalVol, inDuration);
+            }));
+        _soundTransitionSeq.OnKill(() =>
+        {
+            audioSource.volume = originalVol;
+        });
+    }
+
+    #endregion
+
+ 
+
 }

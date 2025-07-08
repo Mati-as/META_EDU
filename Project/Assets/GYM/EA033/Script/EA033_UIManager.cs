@@ -56,7 +56,6 @@ public class EA033_UIManager : Base_UIManager
        
        GetObject((int)UI.OnRoundUI).SetActive(false);
 
-       //_defaultColor = TMP_Instruction.colorGradient;
        GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
        
        return true;
@@ -98,60 +97,4 @@ public class EA033_UIManager : Base_UIManager
         
    }
    
-//
-//    private VertexGradient _defaultColor;
-//    public void ChangeTextColor(Color color)
-//    {
-//        TMP_Instruction.colorGradient = new VertexGradient(
-//            color, color, color, color
-//        );
-//    }
-//     
-//    public void ResetTextColor()
-//    {
-//        TMP_Instruction.colorGradient = _defaultColor;
-//    }
-//    public void ActivateNextButton(float delay)
-//    {
-//        _nextBtnSeq?.Kill();
-//        _nextBtnSeq = DOTween.Sequence();
-//
-//      
-//        _nextBtnSeq.AppendInterval(delay);
-//        _nextBtnSeq.AppendCallback(() =>
-//        {
-//            GetButton((int)Btns.Btn_Next).transform.localScale = Vector3.zero;
-//            GetButton((int)Btns.Btn_Next).gameObject.SetActive(true);
-//        });
-//        _nextBtnSeq.Append(GetButton((int)Btns.Btn_Next).image.DOFade(1, 0.6f));
-//        _nextBtnSeq.Join(GetButton((int)Btns.Btn_Next).transform.DOScale(Vector3.one, 0.5f)
-//            .SetEase(Ease.OutBack));
-//        
-//    
-//       
-//    }
-//
-//    private Sequence _nextBtnSeq;
-//    public void DeactivateNextButton(float delay=0)
-//    {
-//        _nextBtnSeq?.Kill();
-//        _nextBtnSeq = DOTween.Sequence();
-//
-//        
-//        _nextBtnSeq.AppendInterval(delay);
-//     
-//     
-//        _nextBtnSeq.Append(GetButton((int)Btns.Btn_Next).transform.DOScale(Vector3.one *1.35f, 0.2f)
-//            .SetEase(Ease.OutBack));
-//
-//        _nextBtnSeq.Append(GetButton((int)Btns.Btn_Next).transform.DOScale(Vector3.zero, 0.5f)
-//            .SetEase(Ease.OutBack));
-//        _nextBtnSeq.Join(GetButton((int)Btns.Btn_Next).image.DOFade(0, 0.5f));
-//        _nextBtnSeq.AppendCallback(() =>
-//        {
-//            GetButton((int)Btns.Btn_Next).gameObject.SetActive(false);
-//        });
-//    }
-
-
 }
