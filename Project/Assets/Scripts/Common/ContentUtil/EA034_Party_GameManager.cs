@@ -101,7 +101,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                         Managers.Sound.Play(SoundManager.Sound.Narration,"SortedByScene/EA034/PutCandle");
                         baseUIManager.PopInstructionUIFromScaleZero("초를 터치해 꽂아주세요");
                         _buttonClickEventController.ChangeBtnImage("Runtime/EA034/Candle");
-                        _buttonClickEventController.StartBtnClickAnyOrder();
+                        _buttonClickEventController.StartBtnClickSequential();
                     });
                     
                     _currentClickCount = 0;
@@ -288,7 +288,7 @@ private const float DECO_TIME = 15;
 #endif
     
 
-    private readonly int CANDLE_ROUND_COUNT = 6; // 양초 올리기 라운드 수(갯수) (0부터시작이라 3개 라운드) 
+    private readonly int CANDLE_ROUND_COUNT = 7; // 양초 올리기 라운드 수(갯수) (0부터시작이라 3개 라운드) 
     private int _candleCurrentRound;
 
     private void OnButtonClicked(int clickedButtonIndex)
@@ -305,7 +305,7 @@ private const float DECO_TIME = 15;
                 break;
 
             case (int)MainSeq.OnCandle:
-                OnBtnClickedOnCandle();
+                OnBtnClickedOnCandle(clickedButtonIndex);
                 break;
                 
               
@@ -361,15 +361,15 @@ private const float DECO_TIME = 15;
 
     private bool isCandleRoundFinished = false;
 
-    private void OnBtnClickedOnCandle()
+    private void OnBtnClickedOnCandle(int clickedButtonIndex = -1)
     {
         if(isCandleRoundFinished) return;
-        _currentClickCount++;
-        if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE && _candleCurrentRound >= CANDLE_ROUND_COUNT)
+        
+        PutCandleOnCake(clickedButtonIndex);
+        _candleCurrentRound++;
+        if (_candleCurrentRound >= CANDLE_ROUND_COUNT)
         {
             isCandleRoundFinished = true;
-            _currentClickCount = 0;
-            PutCandleOnCake(_candleCurrentRound);
             _buttonClickEventController.DeactivateAllButtons();
 
             DOVirtual.DelayedCall(1f, () =>
@@ -377,21 +377,40 @@ private const float DECO_TIME = 15;
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Common/Effect/OnSuccess");
             });
           
-          
 
             DOVirtual.DelayedCall(2.5f, () =>
             {
                 CurrentMainMainSeq = (int)MainSeq.OnCelebrate;
             });
         }
-        else if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE)
-        {
-            _currentClickCount = 0;
-            PutCandleOnCake(_candleCurrentRound);
-            _candleCurrentRound++;
-           
-        }
-      
+   
+        // if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE && _candleCurrentRound >= CANDLE_ROUND_COUNT)
+        // {
+        //     isCandleRoundFinished = true;
+        //     _currentClickCount = 0;
+        //     PutCandleOnCake(_candleCurrentRound);
+        //     _buttonClickEventController.DeactivateAllButtons();
+        //
+        //     DOVirtual.DelayedCall(1f, () =>
+        //     {
+        //         Managers.Sound.Play(SoundManager.Sound.Effect, "Common/Effect/OnSuccess");
+        //     });
+        //   
+        //   
+        //
+        //     DOVirtual.DelayedCall(2.5f, () =>
+        //     {
+        //         CurrentMainMainSeq = (int)MainSeq.OnCelebrate;
+        //     });
+        // }
+        // else if (_currentClickCount > COUNT_TO_CLICK_ONCANDLE)
+        // {
+        //     _currentClickCount = 0;
+        //     PutCandleOnCake(_candleCurrentRound);
+        //     _candleCurrentRound++;
+        //    
+        // }
+        //
     }
 
     private void PutCandleOnCake(int candleIndex)
@@ -543,7 +562,7 @@ private const float DECO_TIME = 15;
         var origin = originParent.GetChild(index);
 
         for (int i = 0; i < launchCount; i++) LaunchCandyFrom(origin.position, target.position +
-            new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f)));
+            new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f)));
     }
 
     private float _elapsed;
@@ -591,6 +610,6 @@ private const float DECO_TIME = 15;
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        rb.AddForce(dir * Random.Range(1.8f,3.7f), ForceMode.Impulse);
+        rb.AddForce(dir * Random.Range(1.0f,4f), ForceMode.Impulse);
     }
 }
