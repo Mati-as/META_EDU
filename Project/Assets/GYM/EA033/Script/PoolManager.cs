@@ -21,7 +21,7 @@ public class PoolManager : MonoBehaviour
     [SerializeField] private Transform StageObjectAppearPosition;
     
     [SerializeField] private int totalSpawnCount = 20;
-    [SerializeField] private float spawnInterval = 1f;
+    [SerializeField] private float spawnInterval = 0.8f;
 
     private const int ROW_COUNT = 4;
     private const int COL_COUNT = 5;
@@ -77,10 +77,10 @@ public class PoolManager : MonoBehaviour
         if (emptyCells.Count == 0)
             return;
 
-        SpawnOne(mainType);
+        SpawnDecoration(mainType);
     }
 
-    private void SpawnOne(PoolType mainType)
+    private void SpawnDecoration(PoolType mainType)
     {
         // 빈 셀 찾기
         var emptyCells = GetEmptyCells();
@@ -109,10 +109,17 @@ public class PoolManager : MonoBehaviour
         sack.DOPunchScale(new Vector3(0.5f,0.5f,0),0.8f,12,1.2f)
             .SetEase(Ease.OutElastic);
         sack.DOShakeRotation(0.8f, new Vector3(0,0,30), 15, 90f);
+
+        float k = Random.Range(0.2f, spawnInterval);
         
         obj.transform
-            .DOJump(endPos, 1f, 1, spawnInterval)
-            .OnStart(()=> ToggleColliders(obj, false))
+            .DOJump(endPos, 1f, 1,0.4f)
+            .OnStart(()=>
+            {
+                char randomLetter = (char)('A' + Random.Range(0, 6));
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Click_{randomLetter}");
+                ToggleColliders(obj, false);
+            })
             .OnComplete(() =>
             {
                 ToggleColliders(obj, true);
@@ -141,7 +148,7 @@ public class PoolManager : MonoBehaviour
         {
             for (int c = 0; c < COL_COUNT; c++)
             {
-                Vector3 target = stageObjectAppearPositions[r][c];
+                var target = stageObjectAppearPositions[r][c];
                 bool occupied = pools.Values
                     .SelectMany(list => list)
                     .Any(go => go.activeSelf && Vector3.Distance(go.transform.position, target) < 0.1f);
@@ -162,10 +169,10 @@ public class PoolManager : MonoBehaviour
             .Where(t => t != mainType)
             .ToArray();
         
-        if (r < 0.45f) 
+        if (r < 0.6f) 
             return mainType;
         
-        float rr = (r - 0.45f) / 0.55f;
+        float rr = (r - 0.6f) / 0.4f;
         if (rr < 1f/3f) 
             return others[0];
         if (rr < 2f/3f) 
@@ -198,7 +205,7 @@ public class PoolManager : MonoBehaviour
         obj.GetComponent<Collider>().enabled = enabled;
     }
 
-    public GameObject GetFromPool(PoolType type)
+    private GameObject GetFromPool(PoolType type)
     {
         foreach (var go in pools[type])
         {

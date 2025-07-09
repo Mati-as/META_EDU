@@ -43,6 +43,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         BulbStageTreeGroup,
         CandyStageTreeGroup,
         StarStageTreeGroup,
+        EndStageTreeGroup,
 
     }
 
@@ -62,6 +63,8 @@ public class EA033_GameManager : Ex_BaseGameManager
     [SerializeField] private Transform path2;
     [SerializeField] private Transform path3;
 
+    [SerializeField]private int stageClearCound = 20;
+    
     private Transform bellStageParent;
     private Transform bulbStageParent;
     private Transform candyStageParent;
@@ -169,6 +172,8 @@ public class EA033_GameManager : Ex_BaseGameManager
                 .Cast<PoolType>()
                 .FirstOrDefault(pt => clickedName.Contains(pt.ToString()));
 
+            ClickedSound(go.name);
+            
             if (clickedName.Contains(keyWord))
             {
                 if (i < 9)
@@ -188,8 +193,7 @@ public class EA033_GameManager : Ex_BaseGameManager
 
                 i++;
                 _uiManager.ActivateImageAndUpdateCount(uiImage, i);
-                CorrectClickedSound();
-
+                
                 var startPos = path1.position;
                 var middlePos = path2.position;
                 var endPos = path3.position;
@@ -202,7 +206,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 if (i == 5)
                     Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
 
-                if (i == 10)
+                if (i == stageClearCound)
                 {
                     i = 0;
                     gamePlaying = false;
@@ -228,22 +232,13 @@ public class EA033_GameManager : Ex_BaseGameManager
             else
             {
                 go.SetActive(false);
-                WrongClickedSound();
             }
 
             // 클릭 후 콜라이더 비활성화(중복 클릭 방지)
             hit.collider.enabled = false;
         }
     }
-
-    private void ShowCamera(int cameraToShow)
-    {
-        Get<CinemachineVirtualCamera>((int)Cameras.Camera4).Priority = 10;
-        Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10;
-        
-        Get<CinemachineVirtualCamera>((int)cameraToShow).Priority = 12;
-      
-    }
+    
     private void GameStart()
     {
         //if (_stage == MainSeq.OnStart)
@@ -415,27 +410,57 @@ public class EA033_GameManager : Ex_BaseGameManager
 
     private void OnFinishStage()
     {
-        _uiManager.PopInstructionUIFromScaleZero("트리를 열심히 꾸몄구나 고마워!");
-        Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_11_트리를_열심히_꾸몄구나_고마워_");
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                foreach (Transform child in GetObject((int)Objects.EndStageTreeGroup).transform)
+                {
+                    var originalScale = child.gameObject.transform.localScale;
+                    child.gameObject.transform.DOScale(originalScale, 1f)
+                        .From(child.gameObject.transform.localScale = Vector3.zero)
+                        .OnStart(() =>
+                        {
+                            child.gameObject.SetActive(true);
+                        });
+                }
+            })
+            .AppendInterval(1f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("트리를 열심히 꾸몄구나 고마워!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_11_트리를_열심히_꾸몄구나_고마워_");
+            })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("친구들 메리 크리스마스~!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_10_친구들_메리_크리스마스_");
+            })
+            ;
+    }
 
-        DOVirtual.DelayedCall(4.5f, () =>
+    private void ClickedSound(string keyWord)
+    {
+        switch (keyWord)
         {
-            _uiManager.PopInstructionUIFromScaleZero("친구들 메리 크리스마스~!");
-            Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_10_친구들_메리_크리스마스_");
-        });
+            case "Bell":
+                int randomNum = Random.Range(1, 8);
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Bell_{randomNum}");
+                break;
+            case "Bulb":
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Bulb");
+                break;
+            case "Candy":
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Candy");
+                break;
+            case "Star":
+                Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Star");
+                break;
+
+        }
     }
 
-    private void CorrectClickedSound()
-    {
-        int randomNum = Random.Range(1, 8);
-        Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Bell_{randomNum}");
-    }
 
-    private void WrongClickedSound()
-    {
-        char randomLetter = (char)('A' + Random.Range(0, 6));
-        Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Click_{randomLetter}");
-    }
 
     private void VictorySoundAndEffect()
     {
