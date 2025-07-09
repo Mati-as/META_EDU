@@ -23,7 +23,7 @@ public class EndClickedBox : MonoBehaviour
     {
         manager.endCanClicked = false;
 
-        DG.Tweening.Sequence sequence = DOTween.Sequence();
+        var sequence = DOTween.Sequence();
 
         sequence.AppendCallback(() =>
         {

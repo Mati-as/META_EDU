@@ -139,9 +139,7 @@ public class CrossRoad_GameManager : Base_GameManager
         DOTween.Sequence()
             .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 다함께 횡단보도를 건너야해요", "0_친구들과_다함께_횡단보도를_건너야해요_")))
             .AppendInterval(5.5f)
-            .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("양쪽 보도에서 시작해서\n반대쪽 횡단보도로 건너주세요", "0_양쪽_보도에서_시작해서_반대쪽_횡단보도로_건너주세요_")))
-            .AppendInterval(6f)
-            .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("횡단보도 신호를 보고\n올바른 신호에 건너보도록 해요", "1_횡단보도_신호를_보고_올바른_신호에_건너보도록_해요_")))
+            .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("신호를 보고 올바른 신호에 건너보도록 해요", "1_횡단보도_신호를_보고_올바른_신호에_건너보도록_해요_")))
             .AppendInterval(6f)
             .AppendCallback(() => 
             {

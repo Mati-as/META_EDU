@@ -107,7 +107,7 @@ public class ClickableMover : MonoBehaviour
 
         //transform.position = clampedWorldPos;
         return transform
-        .DOMove(clampedWorldPos, 0.5f)
+        .DOMove(clampedWorldPos, 0.3f)
         .SetEase(Ease.OutSine);
     }
 

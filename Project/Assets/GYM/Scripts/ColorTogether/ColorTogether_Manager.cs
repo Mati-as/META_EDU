@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
@@ -5,6 +6,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ColorTogether_Manager : Base_GameManager
 {
@@ -219,7 +221,7 @@ public class ColorTogether_Manager : Base_GameManager
             if (ColorBox != null && isInStage)
             {
                 ColorBox.OnClicked();
-                if (leftTeamScore >= 50)
+                if (leftTeamScore >= 100)
                 {
                     OnBoxWin(leftFloor.linkedBox);
 
@@ -228,10 +230,9 @@ public class ColorTogether_Manager : Base_GameManager
                         stageLeftTimeValue = 60;
                         TimerObject.gameObject.SetActive(false);
                     });
-
                     return;
                 }
-                else if (rightTeamScore >= 50)
+                else if (rightTeamScore >= 100)
                 {
                     OnBoxWin(rightFloor.linkedBox);
 
@@ -535,7 +536,6 @@ public class ColorTogether_Manager : Base_GameManager
     [SerializeField] private Image targetImage;
     [SerializeField] private Sprite[] sprites; // 길이가 5인 배열
 
-
     private IEnumerator PlaySprites()
     {
         targetImage.gameObject.SetActive(true);
@@ -543,9 +543,10 @@ public class ColorTogether_Manager : Base_GameManager
         for (int i = 0; i < sprites.Length; i++)
         {
             targetImage.sprite = sprites[i];
+            targetImage.gameObject.transform.DOShakeScale(0.8f, 0.4f);
             Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/ColorTogether/audio_{50 + i}");
             yield return new WaitForSeconds(1.5f);
-
+            
         }
 
         targetImage.gameObject.SetActive(false);

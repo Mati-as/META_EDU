@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ShowColorBox : MonoBehaviour
 {
-    public float totalStepstoScale = 10f;
+    public float totalStepstoScale = 100f;
     private Vector3 step;
 
     public Vector3 OriginalScale = new Vector3(2.7f, 2f, 1.8f);
