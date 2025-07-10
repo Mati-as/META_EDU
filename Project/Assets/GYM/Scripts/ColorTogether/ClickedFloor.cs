@@ -33,9 +33,9 @@ public class ClickedFloor : MonoBehaviour
             {
                 clicked_effect_L.Play();
             }
-            if (manager.leftTeamScore > 50)
+            if (manager.leftTeamScore > 100)
             {
-                manager.leftTeamScore = 50;
+                manager.leftTeamScore = 100;
                 manager.leftTeamScoreTmp.text = $"{manager.leftTeamScore}";
             }
             else
@@ -48,9 +48,9 @@ public class ClickedFloor : MonoBehaviour
             {
                 clicked_effect_R.Play();
             }
-            if (manager.rightTeamScore > 50)
+            if (manager.rightTeamScore > 100)
             {
-                manager.rightTeamScore = 50;
+                manager.rightTeamScore = 100;
                 manager.rightTeamScoreTmp.text = $"{manager.rightTeamScore}";
             }
             else

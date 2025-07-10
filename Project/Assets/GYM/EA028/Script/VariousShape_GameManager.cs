@@ -175,7 +175,7 @@ public class VariousShape_GameManager : Base_GameManager
     {
         introSeq = DOTween.Sequence()
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들과 함께 다양한 모양을 찾아봐요!", "audio_0_친구들과_함께_다양한_모양을_찾아봐요_")))
-        .AppendInterval(6f)
+        .AppendInterval(5f)
         .AppendCallback(() => circleImg.transform.DOKill())
         .Append(circleImg.transform.DOMove(_targetPosition, moveSpeed))
         .Join(circleImg.transform.DOScale(_originalCircleSize * 4f, moveSpeed))
@@ -195,7 +195,7 @@ public class VariousShape_GameManager : Base_GameManager
                 .SetEase(Ease.InOutSine)
                 .SetLoops(40, LoopType.Yoyo);
         })
-        .AppendInterval(3f)
+        .AppendInterval(2f)
 
         .AppendCallback(() => squareImg.transform.DOKill())
         .Append(squareImg.transform.DOMove(_targetPosition, moveSpeed))
@@ -216,7 +216,7 @@ public class VariousShape_GameManager : Base_GameManager
                 .SetEase(Ease.InOutSine)
                 .SetLoops(40, LoopType.Yoyo);
         })
-        .AppendInterval(3f)
+        .AppendInterval(0.7f)
 
         .AppendCallback(() => starImg.transform.DOKill())
         .Append(starImg.transform.DOMove(_targetPosition, moveSpeed))
@@ -237,7 +237,7 @@ public class VariousShape_GameManager : Base_GameManager
                 .SetEase(Ease.InOutSine)
                 .SetLoops(40, LoopType.Yoyo);
         })
-        .AppendInterval(2f)
+        .AppendInterval(1.2f)
 
         .AppendCallback(() => flowerImg.transform.DOKill())
         .Append(flowerImg.transform.DOMove(_targetPosition, moveSpeed))
@@ -258,7 +258,7 @@ public class VariousShape_GameManager : Base_GameManager
                 .SetEase(Ease.InOutSine)
                 .SetLoops(40, LoopType.Yoyo);
         })
-        .AppendInterval(2f)
+        .AppendInterval(1.2f)
 
         .AppendCallback(() => triangleImg.transform.DOKill())
         .Append(triangleImg.transform.DOMove(_targetPosition, moveSpeed))
@@ -279,7 +279,7 @@ public class VariousShape_GameManager : Base_GameManager
                 .SetEase(Ease.InOutSine)
                 .SetLoops(40, LoopType.Yoyo);
         })
-        .AppendInterval(2f)
+        .AppendInterval(1f)
 
         .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("이제부터 모양 친구들과 놀아볼까요~", "audio_6_이제부터_모양_친구들과_놀아볼까요_")))
         .AppendInterval(3f)

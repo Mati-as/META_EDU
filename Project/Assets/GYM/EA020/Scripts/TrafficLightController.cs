@@ -13,7 +13,7 @@ public enum LightColor
 
 public class TrafficLightController : MonoBehaviour
 {
-    [SerializeField] private float redDuration = 20f;
+    [SerializeField] private float redDuration = 15f;
     [SerializeField] private float greenDuration = 20f;
 
 
@@ -87,7 +87,9 @@ public class TrafficLightController : MonoBehaviour
         .AppendCallback(() =>
         {
             ChangeTo(LightColor.Green);
-            Messenger.Default.Publish(new NarrationMessage("친구들과 함께 횡단보도를 건너주세요", "0_친구들과_다함께_횡단보도를_건너야해요_", 18));
+            Messenger.Default.Publish(new NarrationMessage("친구들과 함께 횡단보도를 건너주세요", "0_친구들과_다함께_횡단보도를_건너야해요_"));
+            DOVirtual.DelayedCall(8f, () =>
+                Messenger.Default.Publish(new NarrationMessage("손을 들고 건너주세요!", "0_손을_들고_건너주세요_")));
         })
         .AppendInterval(gTime)
         .Join(
