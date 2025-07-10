@@ -30,6 +30,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     private int _currentOrder = 0;
     private const int maxClickCount = 7; // 총 버튼 개수
     private Dictionary<int,Image> _buttonImageMap = new();
+    private bool _btnDisappearModeInSequentialMode = false; // 순서대로 버튼 클릭하는 경우, 클릭 후 버튼이 사라지는지 여부
     
     private bool isClickable = true;
 
@@ -81,11 +82,12 @@ public class ButtonClickEventController : Ex_MonoBehaviour
    
     }
     
-    public void StartBtnClickSequential()
+    public void StartBtnClickSequential(bool isBtnDisappearMode =false)
     {
         transform.localScale = Vector3.one;
         isClickable = true;
         
+        _btnDisappearModeInSequentialMode = isBtnDisappearMode;
         _currentClickMode = ButtonClickMode.Sequential;
         AnimateButton((int)Objs.ButtonA);
      
@@ -118,15 +120,15 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         Transform buttonTransform = GetObject(clickedIndex).transform;
         
         _sequenceMap[(int)clickedIndex]?.Kill();
-        _sequenceMap[(int)clickedIndex] = DOTween.Sequence();
-        
-        _sequenceMap[(int)clickedIndex]
-            .Append(buttonTransform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.InOutBounce));
+        _sequenceMap[clickedIndex] = DOTween.Sequence();
+
+        _sequenceMap[clickedIndex]
+            .Append(buttonTransform
+                .DOScale(_btnDisappearModeInSequentialMode ? Vector3.zero : _defaultSizeMap[clickedIndex], 0.7f)
+                .SetEase(Ease.InOutBounce));
 
         if (_currentOrder < maxClickCount)
-        {
             AnimateButton(_currentOrder);
-        }
         else
         {
             _currentOrder = 0; // Reset for next round

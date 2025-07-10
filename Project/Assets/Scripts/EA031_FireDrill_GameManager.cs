@@ -151,6 +151,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
 
                 case (int)MainSeq.clostMouthAndNoseInstruction:
+                    SetSmokeStatus(-1);
                     _uiManager.PopInstructionUIFromScaleZero("불이 나면 두손으로 코와 입을 막아요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/3_Cover");
                     _introAvatarController.PlayAnimation(3, AvatarController.AnimClip.HideFace);
