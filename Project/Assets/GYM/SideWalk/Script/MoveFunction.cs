@@ -17,6 +17,8 @@ public class MoveFunction : MonoBehaviour
         float duration = showDistance / speed;
         var targetPos = transform.position + transform.forward * showDistance;
 
+          
+        
         transform
             .DOMove(targetPos, duration)
             .SetEase(Ease.Linear)
@@ -24,5 +26,6 @@ public class MoveFunction : MonoBehaviour
             {
                 transform.position = _startPosition;
             });
+            
     }
 }
