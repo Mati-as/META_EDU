@@ -46,7 +46,9 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private EA036_UIManager _uiManager;
     
+    [SerializeField]
     private bool gamePlaying;
+    
     private Vector3 effectPos;
     
     private AudioClip[] _clickClips;
@@ -70,7 +72,8 @@ public class EA036_GameManager : Ex_BaseGameManager
         _uiManager = UIManagerObj.GetComponent<EA036_UIManager>();
             
         _stage = MainSeq.Start;
-
+        gamePlaying = false;
+            
         psResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
 
@@ -119,12 +122,13 @@ public class EA036_GameManager : Ex_BaseGameManager
         UI_InScene_StartBtn.onGameStartBtnShut -= GameStart;
     }
 
+    int index = 0;
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
-        if (_stage == MainSeq.TableStage && gamePlaying)
-        {
+        // if (_stage == MainSeq.TableStage && gamePlaying)
+        // {
             foreach (var hit in GameManager_Hits)
             {
                 var go = hit.collider.gameObject;
@@ -132,16 +136,21 @@ public class EA036_GameManager : Ex_BaseGameManager
                 string clickedName = go.name;
 
                 effectPos = hit.point;
-                //effectPos.y += 0.2f;
                 PlayParticleEffect(effectPos);
                 
                 ClickedSound();
-                
-                // if (clickedName.Contains(keyWord))
-                // {
-                //     
-                // }
-            }
+
+                if (clickedName.Contains("BookCase"))
+                {
+                    go.SetActive(false);
+                    var appearObjTransform =  GetObject((int)Objects.ActivatableObjects).transform.GetChild(index);
+                    appearObjTransform.gameObject.transform
+                        .DOScale(appearObjTransform.localScale, 1f)
+                        .From(Vector3.zero)
+                        .OnStart(() => appearObjTransform.gameObject.SetActive(true));
+                    index++;
+                }
+            // }
         }
         // else if (_stage == MainSeq.TableStage)
         // {
@@ -293,9 +302,13 @@ public class EA036_GameManager : Ex_BaseGameManager
         }
     }
     
-    private void ClickedSound() {
+    private void ClickedSound() 
+    {
         int idx = Random.Range(0, _clickClips.Length);
         Managers.Sound.Play(SoundManager.Sound.Effect, _clickClips[idx]);
+        
+        if (_clickClips[idx] == null)
+            Logger.Log("사운드 경로에 없음");
     }
     
 }
