@@ -6,12 +6,7 @@ using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 public class UI_SecondSemester_ContentSortedByTheme : UI_PopUp
 {
-    public override bool IsBackBtnClickable => true;  
-    
-    
-    
-    
-    
+    public override bool IsBackBtnClickable => true;    
     public enum Btns
     {
       

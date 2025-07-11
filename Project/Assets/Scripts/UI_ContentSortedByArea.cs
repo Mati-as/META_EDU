@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class UI_ContentSortedByArea : UI_PopUp
 {  
+    
+    public override bool IsBackBtnClickable => true;    
     public enum UI
     {
         Btn_PA,
