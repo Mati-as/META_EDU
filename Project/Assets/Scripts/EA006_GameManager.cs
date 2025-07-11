@@ -218,7 +218,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     private MainSeq seq = MainSeq.GrassColorChange;
 #endif
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         DOVirtual.DelayedCall(1f, () =>
         {

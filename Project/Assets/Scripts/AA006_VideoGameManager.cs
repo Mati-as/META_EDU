@@ -2,9 +2,9 @@ using UnityEngine.SceneManagement;
 
 public class AA006_VideoGameManager : VideoContentBaseGameManager
 {
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         initialMessage= "눈꽃을 만들어 펭귄과 놀아볼까요?";
        
         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);

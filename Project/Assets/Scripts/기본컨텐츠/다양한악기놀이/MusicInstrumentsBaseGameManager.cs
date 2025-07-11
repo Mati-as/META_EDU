@@ -42,9 +42,9 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     
     
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         DOVirtual.DelayedCall(6.5f, () =>
         {
             var images = _parrotSlider.GetComponentsInChildren<Image>();

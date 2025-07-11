@@ -210,9 +210,9 @@ public class OctopusBaseGameManager : Base_GameManager
     }
 
     private float _typingSpeed = 0.08f;
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
       
         var seq = DOTween.Sequence();
         seq.AppendCallback(() =>

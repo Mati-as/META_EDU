@@ -4,6 +4,7 @@ using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 /// <summary>
@@ -26,7 +27,7 @@ public class Base_UIManager : UI_PopUp
     {
         TMP_Instruction
     }
-
+        
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
 
@@ -40,7 +41,7 @@ public class Base_UIManager : UI_PopUp
 
     protected Sequence _uiSeq;
 
-
+    
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 
 

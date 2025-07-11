@@ -424,10 +424,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         _uiManager = UIManagerObj.GetComponent<EA009_UIManager>();
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         currentMainSeq = MainSeq.AllFoodIntroduce;
         DOVirtual.DelayedCall(1.25f, () =>
         {

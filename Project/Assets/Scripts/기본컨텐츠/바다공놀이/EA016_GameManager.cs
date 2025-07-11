@@ -137,9 +137,9 @@ public class EA016_GameManager : Ex_BaseGameManager
     }
 
     private readonly string NARRATION_PATH = "Audio/EA016/Narration/";
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         
         currentMainSeq = (int)MainSequence.FreePlay;
         DOVirtual.DelayedCall(1.5f, () =>

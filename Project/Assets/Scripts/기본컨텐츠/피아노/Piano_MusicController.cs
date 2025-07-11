@@ -94,9 +94,9 @@ public class Piano_MusicController : Base_GameManager
         OnSongFinished += PlayNextSong;
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
         var cameraLookAt = GameObject.Find("CameraLookAt").transform.position;
        

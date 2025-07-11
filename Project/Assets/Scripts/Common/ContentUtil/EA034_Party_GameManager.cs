@@ -229,9 +229,9 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 #else
 private const float DECO_TIME = 15;
 #endif
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         CurrentMainMainSeq = (int)_startSeq;
     }
 

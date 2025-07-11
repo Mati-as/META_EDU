@@ -357,9 +357,9 @@ public class EA012_GameManager : Ex_BaseGameManager
 #else
      private MainSeq startSeq = MainSeq.SeatSelection;
 #endif
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         currentMainSeq = startSeq;
     }
 

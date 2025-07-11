@@ -79,7 +79,13 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private const int FALL_IMAGE_COUNT = 5;
     private SpriteRenderer spriteRenderer;
 
-    [Range(0, 5)] public int ROUND_COUNT;//총Max개 ; 
+
+#if UNITY_EDITOR
+    [SerializeField] [Range(0, 5)] private int ROUND_COUNT; //총Max개 ; 
+#else
+    [Range(0, 5)] private const int ROUND_COUNT = 4;
+#endif
+ 
     private int _currentRoundCount =-1; //flag
 
     public int currentRoundCount
@@ -168,9 +174,15 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         }
     }
 
+    #if UNITY_EDITOR
     [Range(0,50)]
     [SerializeField]
     private int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
+    #else
+    private const int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
+    #endif
+    
+    
     private int _currentRemovedWoodBlockCount;
 
     private const int COLUMN_COUNT = 6;
@@ -353,9 +365,9 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     }
     
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         DOVirtual.DelayedCall(1.5f, () => { DOVirtual.DelayedCall(1.5f, () => { currentSeqNum = 1; }); });
     }
 

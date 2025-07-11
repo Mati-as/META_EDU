@@ -31,9 +31,9 @@ public class BB006_WaterPlaygroundGameManager : Base_GameManager
         
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         initialMessage= "공을 구멍에 넣어 돌고래를 불러볼까요?";
          baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");

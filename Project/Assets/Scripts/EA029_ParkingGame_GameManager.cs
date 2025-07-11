@@ -501,9 +501,9 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         
         _uiManager.PopInstructionUIFromScaleZero("차를 도와주세요! 누가 빨리가는지 볼까요?");
         Managers.Sound.Play(SoundManager.Sound.Narration, "EA029/Narration/Story/CarLookingFor");

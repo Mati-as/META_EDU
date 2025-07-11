@@ -36,7 +36,8 @@ public class UI_MetaEduLauncherMaster : UI_Scene
 
         //Btn_Setting,
         Btn_Quit,
-        Btn_Back,UI_LoadInitialScene
+      //  Btn_Back,
+        UI_LoadInitialScene
     }
     
     public UI_LoadInitialScene UILoadInitialScene;
@@ -79,22 +80,22 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         {
             Application.Quit();
         });
-        GetObject((int)UI.Btn_Back).BindEvent(() =>
-        {
-            Logger.ContentTestLog($"{Managers.UI.GetUICounts()}");
-
-
-            if (!(Managers.UI.currentPopupClass is UI_Home))
-            {
-                Managers.UI.ClosePopupUI();
-
-                if (Managers.UI.GetUICounts() <= 0)
-                {
-                    Logger.Log("DEFAULT_UI갯수보다 미만..  홈 UI 활성화");
-                    Managers.UI.ShowPopupUI<UI_Home>();
-                }
-            }
-        });
+        // GetObject((int)UI.Btn_Back).BindEvent(() =>
+        // {
+        //     Logger.ContentTestLog($"{Managers.UI.GetUICounts()}");
+        //
+        //
+        //     if (!(Managers.UI.currentPopupClass is UI_Home))
+        //     {
+        //         Managers.UI.ClosePopupUI();
+        //
+        //         if (Managers.UI.GetUICounts() <= 0)
+        //         {
+        //             Logger.Log("DEFAULT_UI갯수보다 미만..  홈 UI 활성화");
+        //             Managers.UI.ShowPopupUI<UI_Home>();
+        //         }
+        //     }
+        // });
 
 
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
@@ -180,7 +181,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         {
             GetObject((int)UI.Btn_Home).SetActive(false);
             GetObject((int)UI.Btn_Quit).SetActive(true);
-            GetObject((int)UI.Btn_Back).SetActive(false);
+   //         GetObject((int)UI.Btn_Back).SetActive(false);
             //  GetObject((int)UI.Btn_Setting).SetActive(true);
             Logger.CoreClassLog("UI_MetaEduLauncherMaster RefreshUI() - Home UI 활성화");
         }
@@ -188,7 +189,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         {
             GetObject((int)UI.Btn_Home).SetActive(true);
             GetObject((int)UI.Btn_Quit).SetActive(true);
-            GetObject((int)UI.Btn_Back).SetActive(true);
+          //  GetObject((int)UI.Btn_Back).SetActive(true);
             //    GetObject((int)UI.Btn_Setting).SetActive(true);
         }
     }
@@ -198,7 +199,7 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     {
         GetObject((int)UI.Btn_Home).SetActive(false);
         GetObject((int)UI.Btn_Quit).SetActive(false);
-        GetObject((int)UI.Btn_Back).SetActive(false);
+      //  GetObject((int)UI.Btn_Back).SetActive(false);
         //  GetObject((int)UI.Btn_Setting).SetActive(false);
     }
 }

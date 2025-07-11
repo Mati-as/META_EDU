@@ -212,9 +212,9 @@ public class SandwitchBaseGameManager : Base_GameManager
     }
 
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
     
         initialMessage= "5가지 재료를 골라 샌드위치를 완성해보세요!";

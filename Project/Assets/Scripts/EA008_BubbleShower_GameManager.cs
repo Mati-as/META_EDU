@@ -233,7 +233,7 @@ public void OnStart()
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_FlipAllGermController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
@@ -308,8 +308,8 @@ public void OnStart()
 
     protected override void Init()
     {
-        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
-        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
         EA008_BubbleShower_UIManager.onStartUIFinished -= OnStart;
         EA008_BubbleShower_UIManager.onStartUIFinished += OnStart;
@@ -442,9 +442,9 @@ public void OnStart()
 
  
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
       
         initialMessage= "세균팀과 거품팀으로 나눠, 놀이 해볼까요?";
          baseUIManager.PopInstructionUIFromScaleZero(initialMessage);

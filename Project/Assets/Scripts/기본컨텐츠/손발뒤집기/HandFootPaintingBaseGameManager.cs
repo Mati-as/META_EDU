@@ -104,9 +104,9 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
     }
 
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
 
         _glowSeq = DOTween.Sequence();

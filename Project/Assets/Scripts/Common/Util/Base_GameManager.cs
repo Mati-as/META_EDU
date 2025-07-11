@@ -491,8 +491,8 @@ public abstract class Base_GameManager : MonoBehaviour
         On_GmRay_Synced -= OnRaySynced;
         On_GmRay_Synced += OnRaySynced;
 
-        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
-        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
     }
 
     protected virtual void OnDestroy()
@@ -501,14 +501,14 @@ public abstract class Base_GameManager : MonoBehaviour
 
 
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
-        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartStartButtonClicked;
+        UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
         DOTween.KillAll();
         Destroy(gameObject);
     }
 
 
-    protected virtual void OnGameStartStartButtonClicked()
+    protected virtual void OnGameStartButtonClicked()
     {
         // 버튼 클릭시 Ray가 게임로직에 영향미치는 것을 방지하기위한 약간의 Delay 입니다. 
         DOVirtual

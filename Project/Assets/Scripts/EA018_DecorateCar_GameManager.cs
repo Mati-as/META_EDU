@@ -541,9 +541,9 @@ using Random = UnityEngine.Random;
 
 
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
         DOVirtual.DelayedCall(1.5f, () =>
         {

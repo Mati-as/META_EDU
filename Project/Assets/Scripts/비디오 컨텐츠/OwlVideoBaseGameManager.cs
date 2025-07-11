@@ -284,9 +284,9 @@ public class OwlVideoBaseGameManager : InteractableVideoBaseGameManager
     }
 
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         
         var seq = DOTween.Sequence();
         seq.AppendInterval(1.5f);

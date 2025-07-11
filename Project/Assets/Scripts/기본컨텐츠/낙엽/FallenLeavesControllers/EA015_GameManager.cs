@@ -115,9 +115,9 @@ public class EA015_GameManager : Ex_BaseGameManager, IOnClicked
         });
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         Messenger.Default.Publish(new EA015_Payload("낙엽을 밟으며 날려봐요!", true));
         Managers.Sound.Play(SoundManager.Sound.Narration, "EA015/PlayWithLeaves");
     }

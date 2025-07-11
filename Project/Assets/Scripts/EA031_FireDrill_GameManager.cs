@@ -151,7 +151,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
 
                 case (int)MainSeq.clostMouthAndNoseInstruction:
-                    SetSmokeStatus(-1);
+                
                     _uiManager.PopInstructionUIFromScaleZero("불이 나면 두손으로 코와 입을 막아요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/3_Cover");
                     _introAvatarController.PlayAnimation(3, AvatarController.AnimClip.HideFace);
@@ -171,6 +171,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.CloseMouthAndNose:
+                    SetSmokeStatus(-1);
                     _uiManager.PopInstructionUIFromScaleZero("다른 친구들을 터치하여 도와주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/4_Help");
                     GetObject((int)Objs.OnExitAvataController).SetActive(true);
@@ -399,9 +400,9 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 #else
      private MainSeq initialSeq = MainSeq.OnIntro;
 #endif
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
 
         CurrentMainMainSeq = (int)initialSeq;

@@ -309,11 +309,11 @@ public class Manager_Seq_2 : Base_GameManager
 
         }
     }
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         //to start update
         toggle = true;
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
     }
 
     public void ButtonClicked()

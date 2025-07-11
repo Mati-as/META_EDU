@@ -68,11 +68,11 @@ public class BeadsDrumBaseGameManager : Ex_BaseGameManager
         
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         initialMessage = "비즈드럼을 터치해 연주해보세요!";
          baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         
     }
 }
