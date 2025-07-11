@@ -15,7 +15,7 @@ public class Base_UIManager : UI_PopUp
 {
     public enum UI
     {
-        InstructionUI,
+        UI_Instruction,
 
         //Optional Tools
         UI_Ready,
@@ -49,7 +49,7 @@ public class Base_UIManager : UI_PopUp
     {
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
-        UI_Instruction = GetObject((int)UI.InstructionUI);
+        UI_Instruction = GetObject((int)UI.UI_Instruction);
 
         UI_Ready = GetObject((int)UI.UI_Ready).GetComponent<RectTransform>();
         UI_Start = GetObject((int)UI.UI_Start).GetComponent<RectTransform>();

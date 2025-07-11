@@ -212,7 +212,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
         for (int i = 0; i < poolSize; i++)
         {
-            var brushPrefab = Resources.Load<GameObject>("Runtime/EA035/Brush");
+            var brushPrefab = Resources.Load<GameObject>("Runtime/FB_Painting/Brush");
             var poolParent = GameObject.Find("@brushPool")?.transform;
             var brushInstance = Instantiate(brushPrefab, poolParent);
 

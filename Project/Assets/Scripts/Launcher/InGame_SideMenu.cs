@@ -27,7 +27,9 @@ public class InGame_SideMenu : UI_PopUp
         BGMVolume,
         EffectVolume,
         NarrationVolume,
-        SideMenu_ScreenDim
+        SideMenu_ScreenDim,
+        
+        UI_Recommendations
       
     }
 
@@ -87,7 +89,9 @@ public class InGame_SideMenu : UI_PopUp
                 _isUIClickable = true;
             });
         });
-        
+
+
+        GetObject((int)UI.UI_Recommendations).GetComponent<CanvasGroup>().alpha = 0;
         
         _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
         Debug.Assert(_devUIManager!=null);
@@ -95,6 +99,9 @@ public class InGame_SideMenu : UI_PopUp
         {
             _devUIManager.DisableAllImages();
         });
+        
+        //Default Off.
+        _animator.SetBool(IsOn, _isSideMenuOn);
         
         
         GetObject((int)UI.Setting).gameObject.SetActive(false);
