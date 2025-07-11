@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UI_SemesterSelection : UI_PopUp
 {
-    
+    public override bool IsBackBtnClickable => true;   
     public enum UI
     {
         SemesterA,
@@ -15,7 +15,7 @@ public class UI_SemesterSelection : UI_PopUp
 
     public override bool InitEssentialUI()
     {
-        IsBackBtnClickable = true;
+
         
         
         BindObject(typeof(UI));

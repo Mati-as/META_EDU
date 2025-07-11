@@ -6,9 +6,9 @@ namespace MyCustomizedEditor.Common.Util
     public class UI_PopUp : UI_Base
     {
 
-        [SerializeField]
+     
         protected bool isBackBtnClickable = false;
-        public bool IsBackBtnClickable
+        public virtual bool IsBackBtnClickable
         {
             get
             {

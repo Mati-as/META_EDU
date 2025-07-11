@@ -9,6 +9,9 @@ using UnityEngine;
 /// </summary>
 public class UI_FirstSemester_ContentSortedByTheme : UI_PopUp
 {
+    
+    public override bool IsBackBtnClickable => true;   
+    
   public enum Btns
   {
    

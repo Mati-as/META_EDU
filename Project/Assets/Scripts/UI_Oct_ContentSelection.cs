@@ -5,5 +5,5 @@ using UnityEngine;
 
 public class UI_Oct_ContentSelection : UI_PopUp
 {
-
+    public override bool IsBackBtnClickable => true;   
 }
