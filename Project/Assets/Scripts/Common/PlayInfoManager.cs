@@ -54,11 +54,11 @@ public class PlayInfoManager : MonoBehaviour
         Base_GameManager.OnSceneLoad -= OnSceneLoad;
         Base_GameManager.OnSceneLoad += OnSceneLoad;
 
-        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
-        InGame_SideMenu.OnSceneQuit += OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit += OnSceneOrAppQuit;
         
-        InGame_SideMenu.OnAppQuit -= OnSceneOrAppQuit;
-        InGame_SideMenu.OnAppQuit += OnSceneOrAppQuit;
+        UI_SideMenu.OnAppQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnAppQuit += OnSceneOrAppQuit;
         _isInit = true; 
         return true;
     }
@@ -66,7 +66,7 @@ public class PlayInfoManager : MonoBehaviour
     private void OnDestroy()
     {
         Base_GameManager.OnSceneLoad -= OnSceneLoad;
-        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
     }
     public void CheckAndGenerateXmlFile(string fileName,string path)
     {

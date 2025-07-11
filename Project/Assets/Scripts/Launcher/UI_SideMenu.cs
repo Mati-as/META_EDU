@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
-public class InGame_SideMenu : UI_PopUp
+public class UI_SideMenu : UI_PopUp
 {
     private enum Btn_Type
     {
@@ -55,9 +55,12 @@ public class InGame_SideMenu : UI_PopUp
 
     private Image _screenDim;
     private Animator _animator;
+
+  
     // Start is called before the first frame update
-    private void Start()
+    public override bool InitEssentialUI()
     {
+      
         BindButton(typeof(Btn_Type));
         BindObject(typeof(UI));
         
@@ -65,7 +68,6 @@ public class InGame_SideMenu : UI_PopUp
         GetButton((int)Btn_Type.Btn_Home).gameObject.BindEvent(OnHomeBtnClicked);
         _screenDim = GetObject((int)UI.SideMenu_ScreenDim).GetComponent<Image>();
         GetButton((int)Btn_Type.Btn_Quit).gameObject.BindEvent(OnQuit);
-       // GetButton((int)Btn_Type.Btn_SensorRefresh).gameObject.BindEvent(RefreshSensor);
         
         GetButton((int)Btn_Type.Btn_Setting).gameObject.BindEvent(OnSettingBtnClicked,Define.UIEvent.PointerUp);
         GetButton((int)Btn_Type.SettingCloseButton).gameObject.BindEvent(() =>
@@ -91,7 +93,11 @@ public class InGame_SideMenu : UI_PopUp
         });
 
 
-        GetObject((int)UI.UI_Recommendations).GetComponent<CanvasGroup>().alpha = 0;
+        CanvasGroup canvasGroup = GetObject((int)UI.UI_Recommendations).GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0;
+        Logger.ContentTestLog($"canvas group alpha : {canvasGroup.transform.gameObject.name} :{canvasGroup.alpha} InitEssentialUI -----------------------------------------------------------");
+        
+        
         
         _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
         Debug.Assert(_devUIManager!=null);
@@ -105,24 +111,11 @@ public class InGame_SideMenu : UI_PopUp
         
         
         GetObject((int)UI.Setting).gameObject.SetActive(false);
-        
         SetSlider();
-    }
 
-    // private void RefreshSensor()
-    // {
-    //     if (!_isSensorRefreshable) return;
-    //
-    //     StartCoroutine(ResetSensorRefreshable());
-    //     OnRefreshEvent?.Invoke();
-    // }
-    //
-    // private IEnumerator ResetSensorRefreshable()
-    // {
-    //     _isSensorRefreshable = false;
-    //     yield return _wait;
-    //     _isSensorRefreshable = true;
-    // }
+        return true;
+    }
+    
 
     private IEnumerator XMLSaveCo()
     {
@@ -160,7 +153,7 @@ public class InGame_SideMenu : UI_PopUp
     
     private Base_GameManager _gm;
 
-
+  
 
 
     private bool isSettingActive = false;
