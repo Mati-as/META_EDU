@@ -171,6 +171,7 @@ public class VariousShape_GameManager : Base_GameManager
         UI_InScene_StartBtn.onGameStartBtnShut += StartGame;
     }
 
+    
     private void StartGame()
     {
         introSeq = DOTween.Sequence()
@@ -392,6 +393,12 @@ public class VariousShape_GameManager : Base_GameManager
     {
         UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
         base.OnDestroy();
+    }
+    
+    
+    public void ReloadScene()
+    {
+        RestartScene(delay: 8);
     }
 
 }

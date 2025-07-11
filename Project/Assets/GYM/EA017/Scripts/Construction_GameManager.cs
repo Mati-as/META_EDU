@@ -59,7 +59,10 @@ public class Construction_GameManager : Base_GameManager
     public bool canNextBtnClick = false;
 
     public GameObject endBuilding;
-
+    public void ReloadScene()
+    {
+        RestartScene(delay: 8);
+    }
     protected override void Init()
     {
         SensorSensitivity = 0.18f;

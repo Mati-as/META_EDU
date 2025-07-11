@@ -278,6 +278,9 @@ public class SoilCount : MonoBehaviour
             plusMoveDistance = 0f;
             twiceIssue = false;
             _manager.endBuilding.SetActive(true);
+
+
+            _manager.ReloadScene();
         });
     }
 

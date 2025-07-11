@@ -474,6 +474,7 @@ public class ColorTogether_Manager : Base_GameManager
 
     }
 
+    
     public void NarrationALL(int audioPath, int narrationImgPath)
     {
         string AudioPath = "Audio/ColorTogether/audio_";
@@ -611,4 +612,9 @@ public class ColorTogether_Manager : Base_GameManager
         Managers.Sound.Play(SoundManager.Sound.Effect, $"Audio/ColorTogether/Click_{randomChar}");
     }
 
+    public void ReloadScene()
+    {
+        RestartScene(delay: 20);
+    }
+    
 }
