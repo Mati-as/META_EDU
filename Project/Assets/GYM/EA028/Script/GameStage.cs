@@ -613,6 +613,7 @@ public class GameStage : MonoBehaviour
            {
                EndScene.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutSine);
                endStageStart = true;
+               gameManager.ReloadScene();
            });
     }
 }

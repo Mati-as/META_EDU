@@ -462,8 +462,9 @@ public class CrossRoad_GameManager : Base_GameManager
             {
                 character.Walk();
                 Messenger.Default.Publish(new NarrationMessage("지금처럼 신호를 보고 난 후\n좌우도 꼭 살피고 안전하게 건너야해", "7_지금처럼_신호를_보고_난_후_좌우도_꼭_살피고_안전하게_건너야해_"));
-
-            });
+                RestartScene(delay: 8);
+            })
+            ;
 
     }
 

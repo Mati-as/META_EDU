@@ -436,6 +436,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 _uiManager.PopInstructionUIFromScaleZero("친구들 메리 크리스마스~!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_10_친구들_메리_크리스마스_");
+                RestartScene(delay: 15); //재시작 기능
             })
             ;
     }

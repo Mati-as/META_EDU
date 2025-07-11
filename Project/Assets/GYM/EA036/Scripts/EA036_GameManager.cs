@@ -1,19 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA036_GameManager : Ex_BaseGameManager
 {
     private enum MainSeq
     {
         Start,
-        TableStage,
-        ChairStage,
         BookCaseStage,
+        ChairStage,
+        TableStage,
         ToysStage,
-        End
+        End,
+        Default
     }
 
     private MainSeq _stage;
@@ -48,6 +51,8 @@ public class EA036_GameManager : Ex_BaseGameManager
     
     [SerializeField]
     private bool gamePlaying;
+    [SerializeField] 
+    private int index;
     
     private Vector3 effectPos;
     
@@ -71,7 +76,10 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         _uiManager = UIManagerObj.GetComponent<EA036_UIManager>();
             
-        _stage = MainSeq.Start;
+        OnChangeStage += CheckWhenNextStage;
+        
+        _stage = MainSeq.Default;
+        
         gamePlaying = false;
             
         psResourcePath = "SideWalk/Asset/Fx_Click";
@@ -109,6 +117,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         // EA033_UIManager.OnNextButtonClicked +=         ;
     }
 
+
     protected override void OnGameStartButtonClicked()
     {
         base.OnGameStartButtonClicked();
@@ -118,48 +127,72 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     protected override void OnDestroy()
     {
+        OnChangeStage -= CheckWhenNextStage;
+        
         base.OnDestroy();
+        
         UI_InScene_StartBtn.onGameStartBtnShut -= GameStart;
     }
 
-    int index = 0;
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
         // if (_stage == MainSeq.TableStage && gamePlaying)
         // {
-            foreach (var hit in GameManager_Hits)
-            {
-                var go = hit.collider.gameObject;
-                //go.transform.DOKill();
-                string clickedName = go.name;
-
-                effectPos = hit.point;
-                PlayParticleEffect(effectPos);
-                
-                ClickedSound();
-
-                if (clickedName.Contains("BookCase"))
-                {
-                    go.SetActive(false);
-                    var appearObjTransform =  GetObject((int)Objects.ActivatableObjects).transform.GetChild(index);
-                    appearObjTransform.gameObject.transform
-                        .DOScale(appearObjTransform.localScale, 1f)
-                        .From(Vector3.zero)
-                        .OnStart(() => appearObjTransform.gameObject.SetActive(true));
-                    index++;
-                }
-            // }
-        }
+                OnRaySynced_ItemPick();
+        // }
         // else if (_stage == MainSeq.TableStage)
         // {
         //     
         //     
         // }
-        
     }
 
+    private event Action OnChangeStage;
+
+    private void OnRaySynced_ItemPick()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            var hitGameObj = hit.collider.gameObject;
+
+            effectPos = hit.point;
+            PlayParticleEffect(effectPos);
+
+            ClickedSound();
+
+            hitGameObj.SetActive(false);
+                
+            var appearObjTransform = GetObject((int)Objects.ActivatableObjects).transform.GetChild(index);
+            appearObjTransform.gameObject.transform
+                .DOScale(appearObjTransform.localScale, 1f)
+                .From(Vector3.zero)
+                .OnStart(() =>
+                {
+                    index++;
+                    appearObjTransform.gameObject.SetActive(true);
+                })
+                .OnComplete(() => DOVirtual.DelayedCall(1f, () => OnChangeStage?.Invoke()));
+
+        }
+    }
+
+    private void CheckWhenNextStage()
+    {
+        switch (index)
+        {
+            case 6:
+                NextStage(MainSeq.ChairStage);
+                break;
+            case 12:
+                NextStage(MainSeq.TableStage);
+                break;
+            case 18:
+                NextStage(MainSeq.ToysStage);
+                break;
+        }
+    }
 
     private void GameStart()
     {
@@ -170,6 +203,9 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private void NextStage(MainSeq next)
     {
+        if (_stage == next)
+            return;
+        
         _stage = next;
         switch (next)
         {
@@ -186,10 +222,10 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private void OnStartStage()
     {
-        
 
 
-        // DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.OnIntro));
+
+        DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.BookCaseStage));
     }
 
     private Transform originalScale;
@@ -292,13 +328,20 @@ public class EA036_GameManager : Ex_BaseGameManager
     
     private void AppearStageObjects(Objects objs)
     {
-        foreach (Transform appearObjsTransform in GetObject((int)objs).transform)
+        GameObject parent = GetObject((int)objs);
+        
+        foreach (Transform child in parent.transform)
         {
-            originalScale.localScale = appearObjsTransform.localScale;
-            appearObjsTransform.DOScale(originalScale.localScale, 1f).SetEase(Ease.InBounce)
-                .From(Vector3.zero)
-                .OnStart(() => appearObjsTransform.gameObject.SetActive(true));
-            //.OnComplete(() => appearObjsTransform.gameObject.GetComponent<Collider>().enabled = true);
+            Logger.Log($"{child.gameObject.name} 찾음");
+
+            Vector3 targetScale = child.localScale;
+        
+            child.localScale = Vector3.zero;
+            child.gameObject.SetActive(true);
+
+            child.DOScale(targetScale, 1f)
+                .SetEase(Ease.InBounce)
+                .From(Vector3.zero);
         }
     }
     
