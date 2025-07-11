@@ -265,8 +265,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     private void OnGameStart()
     {
         if (_stage == EventStage.Intro)
-            //NextStage(EventStage.Intro);
-         NextStage(EventStage.EndRoad);
+            NextStage(EventStage.Intro);
+         //NextStage(EventStage.EndRoad);
     }
 
     private void NextStage(EventStage next)

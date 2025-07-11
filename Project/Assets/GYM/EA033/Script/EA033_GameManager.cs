@@ -413,6 +413,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
+                Managers.Sound.Play(SoundManager.Sound.Bgm, "EA033/Audio/ChristmasJingleBells");
                 foreach (Transform child in GetObject((int)Objects.EndStageTreeGroup).transform)
                 {
                     var originalScale = child.gameObject.transform.localScale;
