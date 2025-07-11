@@ -106,9 +106,9 @@ public class EA036_GameManager : Ex_BaseGameManager
         // EA033_UIManager.OnNextButtonClicked +=         ;
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
         GameStart();
     }
