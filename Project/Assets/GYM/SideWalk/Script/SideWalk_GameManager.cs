@@ -11,15 +11,24 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 {
     private enum EventStage
     {
-        Intro, CarExample, HumanExample, Road, SideWalk, EndSideWalk, EndRoad, EndScene
+        Intro,
+        CarExample,
+        HumanExample,
+        Road,
+        SideWalk,
+        EndSideWalk,
+        EndRoad,
+        EndScene
     }
+
     private EventStage _stage = EventStage.Intro;
 
     private enum GameStage
     {
-        SideWalk, Road
+        SideWalk,
+        Road
     }
-    
+
     [SerializeField] private List<CinemachineVirtualCamera> cams = new List<CinemachineVirtualCamera>(7);
 
     private MoveFunction[] _movers;
@@ -30,10 +39,10 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     [SerializeField] private Image warningImg;
 
     [SerializeField] private Button nextCarBtn;
-    [SerializeField] private Button nextRoadBtn; 
+    [SerializeField] private Button nextRoadBtn;
     [SerializeField] private Button nextEndSideWalkBtn;
     [SerializeField] private Button nextEndSceneBtn;
-    
+
     [SerializeField] private Transform eventChildSideWalkTransform;
     [SerializeField] private Transform eventCarSideWalkTransform;
 
@@ -46,7 +55,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
     public int puzzleCounter;
     //private int bellSoundCounter = 1;
-    
+
     public Image roadTextBg;
     public Image sidewalkTextBg;
     public TMP_Text roadText;
@@ -62,7 +71,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     public Transform carMidPoint2Tf;
     public Transform carMidPoint3Tf;
     public Transform carEndPosTf;
-    
+
     public Transform childStartPosTf;
     public Transform childMidPoint1Tf;
     public Transform childMidPoint2Tf;
@@ -70,7 +79,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     public Transform childEndPosTf;
 
     private bool canNext;
-    
+
     protected override void Init()
     {
         SensorSensitivity = 0.18f;
@@ -96,15 +105,16 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             v.color = _c;
             v.gameObject.SetActive(false);
         }
+
         foreach (var v in roadImg)
         {
             v.color = _c;
             v.gameObject.SetActive(false);
         }
-        
+
         psResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
-        
+
         //if (mainCamera != null)
         //{
         //    mainCamera.rect = new Rect(
@@ -138,34 +148,34 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     }
 
     private Vector3 effectPos;
-    
+
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync() || !isStartButtonClicked) return;
-        
+
         foreach (var hit in GameManager_Hits)
         {
             if (hit.collider.CompareTag("toWork") && canTouch)
             {
                 var mover = hit.collider.GetComponent<ClickableRandomMover>();
-                
+
                 effectPos = hit.point;
                 effectPos.z -= 0.2f;
                 PlayParticleEffect(effectPos);
-                
+
                 mover.OnMove();
-                
+
                 ClickSound();
-                
+
                 // Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/Bell_" + bellSoundCounter);
                 // bellSoundCounter++;
-                
+
                 if (puzzleCounter == 12)
                 {
                     canTouch = false;
                     //bellSoundCounter = 1;
                     DOTween.Sequence()
-                        .Append(gameStageBg.DOFade(0,0.5f))
+                        .Append(gameStageBg.DOFade(0, 0.5f))
                         .JoinCallback(() =>
                         {
                             Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/audio_Victory");
@@ -179,7 +189,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                         .Join(blackoutRoad.transform.DOLocalRotate(new Vector3(0, 0, 0), 2, RotateMode.FastBeyond360))
                         .AppendCallback(TriggerAllMoves)
                         .AppendInterval(1f)
-                        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("차는 도로로 다녀요!", "audio_9_차는_도로로_다녀요_")))
+                        .AppendCallback(() =>
+                            Messenger.Default.Publish(new NarrationMessage("차는 도로로 다녀요!", "audio_9_차는_도로로_다녀요_")))
                         .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.SideWalk));
                 }
@@ -187,7 +198,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                 {
                     canTouch = false;
                     DOTween.Sequence()
-                        .Append(gameStageBg.DOFade(0,0.5f))
+                        .Append(gameStageBg.DOFade(0, 0.5f))
                         .JoinCallback(() =>
                         {
                             Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/audio_Victory");
@@ -198,10 +209,12 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                         })
                         .AppendInterval(0.5f)
                         .Append(blackoutSideWalk.transform.DOScale(Vector3.one, 2).SetEase(Ease.InQuad))
-                        .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 0, 0), 2, RotateMode.FastBeyond360))
+                        .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 0, 0), 2,
+                            RotateMode.FastBeyond360))
                         .AppendCallback(TriggerAllMoves)
                         .AppendInterval(1f)
-                        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들은 보도로 다녀요!", "audio_12_친구들은_보도로_다녀요_")))
+                        .AppendCallback(() =>
+                            Messenger.Default.Publish(new NarrationMessage("친구들은 보도로 다녀요!", "audio_12_친구들은_보도로_다녀요_")))
                         .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.Road))
                         ;
@@ -212,7 +225,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                     canTouch = false;
                     //bellSoundCounter = 1;
                     DOTween.Sequence()
-                        .Append(gameStageBg.DOFade(0,0.5f))
+                        .Append(gameStageBg.DOFade(0, 0.5f))
                         .JoinCallback(() =>
                         {
                             Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/audio_Victory");
@@ -226,7 +239,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                         .Join(blackoutRoad.transform.DOLocalRotate(new Vector3(0, 0, 0), 2, RotateMode.FastBeyond360))
                         .AppendCallback(TriggerAllMoves)
                         .AppendInterval(1f)
-                        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("차는 도로로 다녀요!", "audio_9_차는_도로로_다녀요_")))
+                        .AppendCallback(() =>
+                            Messenger.Default.Publish(new NarrationMessage("차는 도로로 다녀요!", "audio_9_차는_도로로_다녀요_")))
                         .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.SideWalk));
                 }
@@ -234,7 +248,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                 {
                     canTouch = false;
                     DOTween.Sequence()
-                        .Append(gameStageBg.DOFade(0,0.5f))
+                        .Append(gameStageBg.DOFade(0, 0.5f))
                         .JoinCallback(() =>
                         {
                             Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/audio_Victory");
@@ -245,10 +259,12 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                         })
                         .AppendInterval(0.5f)
                         .Append(blackoutSideWalk.transform.DOScale(Vector3.one, 2).SetEase(Ease.InQuad))
-                        .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 0, 0), 2, RotateMode.FastBeyond360))
+                        .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 0, 0), 2,
+                            RotateMode.FastBeyond360))
                         .AppendCallback(TriggerAllMoves)
                         .AppendInterval(1f)
-                        .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들은 보도로 다녀요!", "audio_12_친구들은_보도로_다녀요_")))
+                        .AppendCallback(() =>
+                            Messenger.Default.Publish(new NarrationMessage("친구들은 보도로 다녀요!", "audio_12_친구들은_보도로_다녀요_")))
                         .AppendInterval(5f)
                         .AppendCallback(() => NextStage(EventStage.EndRoad))
                         ;
@@ -256,7 +272,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             }
         }
     }
-    
+
     private void StartGame()
     {
         OnGameStart();
@@ -266,7 +282,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     {
         if (_stage == EventStage.Intro)
             NextStage(EventStage.Intro);
-         //NextStage(EventStage.EndRoad);
+        //NextStage(EventStage.EndRoad);
     }
 
     private void NextStage(EventStage next)
@@ -287,7 +303,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         Logger.Log($"{next}스테이지로 변경");
     }
 
-   
+
 
     private void StartIntroStage()
     {
@@ -302,7 +318,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             {
                 cams[0].Priority = 9;
                 cams[1].Priority = 11;
-                Messenger.Default.Publish(new NarrationMessage("사람들이 다니는 길과\n차가 다니는길을 알아볼까요?", "audio_1_사람들이_다니는_길과_차가_다니는길을_알아볼까요_"));
+                Messenger.Default.Publish(new NarrationMessage("사람들이 다니는 길과\n차가 다니는길을 알아볼까요?",
+                    "audio_1_사람들이_다니는_길과_차가_다니는길을_알아볼까요_"));
             })
             .AppendInterval(6f)
             .AppendCallback(() => NextStage(EventStage.HumanExample));
@@ -316,7 +333,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         var midPoint2 = childMidPoint2Tf.position;
         var midPoint3 = childMidPoint3Tf.position;
         var endPos = childEndPosTf.position;
-        
+
         Vector3[] pathPoints = new[]
         {
             startPos,
@@ -325,7 +342,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             midPoint3,
             endPos
         };
-        
+
         DOTween.Sequence()
             .AppendCallback(() =>
             {
@@ -352,7 +369,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
             })
             .AppendInterval(2f)
-            
+
             .Append(
                 eventChild.transform
                     .DOPath(
@@ -370,18 +387,21 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                     )
                     .SetEase(Ease.Linear) // 선형 속도
             )
-            
-            .Append(eventChild.transform.DORotateQuaternion(Quaternion.Euler(eventChild.transform.eulerAngles.x, -90f, eventChild.transform.eulerAngles.z), 1f)
-            .SetEase(Ease.Linear))
-            
+
+            .Append(eventChild.transform
+                .DORotateQuaternion(
+                    Quaternion.Euler(eventChild.transform.eulerAngles.x, -90f, eventChild.transform.eulerAngles.z), 1f)
+                .SetEase(Ease.Linear))
+
             .Append(eventChild.transform.DOMoveX(eventChild.transform.position.x - 10f, 1f)
-            .SetEase(Ease.Linear))
-            
+                .SetEase(Ease.Linear))
+
             .AppendCallback(() =>
             {
                 eventCar.transform.DOMoveX(transform.position.x + 10f, 3f).SetEase(Ease.OutQuad);
                 Managers.Sound.Play(SoundManager.Sound.Effect, "SideWalk/Audio/Car_Pass_By_1");
-                nextCarBtn.gameObject.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic).OnStart(() => nextCarBtn.gameObject.SetActive(true));
+                nextCarBtn.gameObject.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic)
+                    .OnStart(() => nextCarBtn.gameObject.SetActive(true));
             })
             .AppendInterval(2f)
             .AppendCallback(() => canNext = true)
@@ -477,33 +497,39 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     private void StartRoadStage()
     {
         DOTween.Sequence()
-        .Append(blackoutRoad.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
-             .Join(blackoutRoad.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
-             .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("자동차가 다니는 길이 없어졌어요!", "audio_5_자동차가_가는_길이_없어졌어요_")))
-             .AppendInterval(4f)
-             //2d조각 생성되면서
-             .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("차도 블럭을 터치해서 차도를 만들어주세요!", "audio_7_차도_블럭을_터치해서_차도를_만들어주세요")))
-             
-             .AppendInterval(4f)
-             .AppendCallback(() => OnGameStage(GameStage.Road));
-        
+            .Append(blackoutRoad.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
+            .Join(blackoutRoad.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("자동차가 다니는 길이 없어졌어요!", "audio_5_자동차가_가는_길이_없어졌어요_")))
+            .AppendInterval(4f)
+            //2d조각 생성되면서
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("차도 블럭을 터치해서 차도를 만들어주세요!",
+                    "audio_7_차도_블럭을_터치해서_차도를_만들어주세요")))
+
+            .AppendInterval(4f)
+            .AppendCallback(() => OnGameStage(GameStage.Road));
+
     }
 
     private void StartSideWalkStage()
     {
         DOTween.Sequence()
-             .Append(blackoutSideWalk.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
-             .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
-             .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("친구들이 다니는 길이 없어졌어요!", "audio_10_친구들이_다니는_길이_없어졌어요_")))
-             .AppendInterval(4f)
-             .AppendCallback(() => Messenger.Default.Publish(new NarrationMessage("보도 블럭을 터치해서\n보도를 만들어주세요!", "audio_11_보도_블럭을_터치해서_보도를_만들어주세요")))
-             .AppendInterval(4f)
-             .AppendCallback(() => OnGameStage(GameStage.SideWalk));
-            
+            .Append(blackoutSideWalk.transform.DOScale(Vector3.zero, 2).SetEase(Ease.InQuad))
+            .Join(blackoutSideWalk.transform.DOLocalRotate(new Vector3(0, 540, 0), 2, RotateMode.FastBeyond360))
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("친구들이 다니는 길이 없어졌어요!", "audio_10_친구들이_다니는_길이_없어졌어요_")))
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+                Messenger.Default.Publish(new NarrationMessage("보도 블럭을 터치해서\n보도를 만들어주세요!",
+                    "audio_11_보도_블럭을_터치해서_보도를_만들어주세요")))
+            .AppendInterval(4f)
+            .AppendCallback(() => OnGameStage(GameStage.SideWalk));
+
     }
 
-    
-    
+
+
     private void EndSceneRoadStage()
     {
         //기존 사람이 지나다니는 1번상황에서 인도를 스케일 조정으로 눈에 띄게 표시
@@ -520,7 +546,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
                 Messenger.Default.Publish(new NarrationMessage("자동차는 차도로 다녀요", "audio_18_자동차는_차도로_다녀요_")))
-            .AppendCallback(() =>HighlightObjects(roadRedLine))
+            .AppendCallback(() => HighlightObjects(roadRedLine))
             .AppendInterval(5f)
             .AppendCallback(() =>
                 nextEndSideWalkBtn.gameObject.transform.DOScale(1, 1f).From(0).SetEase(Ease.OutElastic)
@@ -530,7 +556,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             ;
 
     }
-    
+
     [SerializeField] private GameObject[] roadRedLine;
     [SerializeField] private GameObject[] sideWalkRedLine;
 
@@ -567,7 +593,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
                 Messenger.Default.Publish(new NarrationMessage("친구들은 보도로 다녀요", "audio_17_친구들은_보도로_다녀요_")))
-            .AppendCallback(() =>HighlightObjects(sideWalkRedLine))
+            .AppendCallback(() => HighlightObjects(sideWalkRedLine))
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
@@ -582,8 +608,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .AppendCallback(() => canNext = true)
             ;
     }
-    
-    private void EndSceneStage()        //컨텐츠 종료 
+
+    private void EndSceneStage() //컨텐츠 종료 
     {
         DOTween.Sequence()
             .AppendCallback(() =>
@@ -593,7 +619,8 @@ public class SideWalk_GameManager : Ex_BaseGameManager
 
                 AllMovesIternal();
                 Messenger.Default.Publish(new NarrationMessage("친구들 보도로 다녀야하는 것을 기억해요!", "audio_0_차도와_보도에_대해_알아봤어요_",
-                    3000));
+                    654321));
+                RestartScene(delay: 8);
             })
             ;
     }
@@ -605,7 +632,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .AppendInterval(7f)
             .SetLoops(-1, LoopType.Restart);
     }
-    
+
 
     private void OnGameStage(GameStage stage)
     {
@@ -629,16 +656,17 @@ public class SideWalk_GameManager : Ex_BaseGameManager
                         v.gameObject.SetActive(true);
                         v.DOFade(1, 0.5f);
                     }
+
                     break;
             }
         });
 
     }
-    
+
     public void OnNextCarExampleStage()
     {
         if (!canNext) return;
-        
+
         if (_stage == EventStage.HumanExample)
             NextStage(EventStage.CarExample);
 
@@ -651,10 +679,10 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     public void OnNextRoadStage()
     {
         if (!canNext) return;
-        
+
         if (_stage == EventStage.CarExample)
             NextStage(EventStage.Road);
-        
+
         ClickSound();
         canNext = false;
         nextRoadBtn.gameObject.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic)
@@ -664,7 +692,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
     public void OnNextEndSidWalkStage()
     {
         if (!canNext) return;
-        
+
         if (_stage == EventStage.EndRoad)
             NextStage(EventStage.EndSideWalk);
 
@@ -675,20 +703,20 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             .OnComplete(() => nextEndSideWalkBtn.gameObject.SetActive(false));
     }
 
-    public void  OnNextEndSceneStage()
+    public void OnNextEndSceneStage()
     {
         if (!canNext) return;
-        
+
         if (_stage == EventStage.EndSideWalk)
             NextStage(EventStage.EndScene);
 
         ClickSound();
         canNext = false;
-        
+
         nextEndSceneBtn.gameObject.transform.DOScale(0, 1f).From(1).SetEase(Ease.OutElastic)
             .OnComplete(() => nextEndSceneBtn.gameObject.SetActive(false));
     }
-    
+
 
     private void TriggerAllMoves()
     {
@@ -704,5 +732,6 @@ public class SideWalk_GameManager : Ex_BaseGameManager
         Managers.Sound.Play(SoundManager.Sound.Effect, $"SideWalk/Audio/Click_{click}", 1f);
 
     }
-
+    
 }
+
