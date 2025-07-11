@@ -177,9 +177,9 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     #if UNITY_EDITOR
     [Range(0,50)]
     [SerializeField]
-    private int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
+    private int WOODBLOCK_COUNT_TO_GET_RID_OF = 18;
     #else
-    private const int WOODBLOCK_COUNT_TO_GET_RID_OF = 25;
+    private const int WOODBLOCK_COUNT_TO_GET_RID_OF = 18;
     #endif
     
     
