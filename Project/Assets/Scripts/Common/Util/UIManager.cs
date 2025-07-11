@@ -9,7 +9,7 @@ public class UIManager
     private int _order = -20;
 
     private static readonly Stack<UI_PopUp> _popupStack = new();
-
+    
 
     private readonly Stack<Type> _previousPopupTypeStack = new();
 
@@ -146,17 +146,23 @@ public class UIManager
         return Utils.GetOrAddComponent<T>(go);
     }
 
+    
+    private UI_Master _master;
     public T ShowSceneUI<T>(string name = null) where T : UI_Scene
     {
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
 
-        var go = Managers.Resource.Instantiate($"UI/Scene/{name}");
+        var go = Managers.Resource.Instantiate($"UI/Scene/{name}"); //Awake()실행보장
         var sceneUI = Utils.GetOrAddComponent<T>(go);
         SceneUI = sceneUI;
 
+        
         go.transform.SetParent(Root.transform);
-
+        _master = Utils.GetOrAddComponent<UI_Master>(Root);
+        
+        Debug.Assert(_master!=null,"Master UI Can't be null");
+        
         return sceneUI;
     }
 
@@ -176,7 +182,7 @@ public class UIManager
 
         // 프리팹 로드 및 인스턴스화
         var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
-        var go = Managers.Resource.Instantiate($"UI/Popup/{name}");
+        var go = Managers.Resource.Instantiate($"UI/Popup/{name}");//Awake()실행보장
 
         var popupInstance = Utils.GetOrAddComponent<T>(go);
         _popupStack.Push(popupInstance);
@@ -191,7 +197,6 @@ public class UIManager
         go.transform.localScale = Vector3.one;
         go.transform.localPosition = prefab.transform.position;
 
-        Managers.UI.SceneUI.OnPopupUI();
 
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
@@ -200,6 +205,8 @@ public class UIManager
         if (popupInstance.GetType() != typeof(UI_Confirmation)
             && popupInstance.GetType() != typeof(UI_LoadInitialScene)) currentPopupClass = popupInstance;
 
+        Managers.UI.SceneUI.OnPopupUI();
+        
         Logger.CoreClassLog(
             $"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
         return popupInstance;
@@ -237,6 +244,10 @@ public class UIManager
         PreviousPopup = CurrentPopup;
         CurrentPopup = name;
 
+        if (popupInstance!=null)
+        {
+            _master.SetBtnStatus(UI_Master.UI.Btn_Back,popupInstance.IsBackBtnClickable);
+        }
 
         if (popupInstance.GetType() != typeof(UI_Confirmation)) currentPopupClass = popupInstance;
 
@@ -244,10 +255,7 @@ public class UIManager
     }
 
 
-    private void SetPreviousClass()
-    {
-    }
-
+  
     public void InitOnLauncherLoad()
     {
         _popupStack.Clear();

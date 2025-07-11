@@ -15,6 +15,9 @@ public class UI_SemesterSelection : UI_PopUp
 
     public override bool InitEssentialUI()
     {
+        IsBackBtnClickable = true;
+        
+        
         BindObject(typeof(UI));
         
         GetObject((int)UI.SemesterA).BindEvent(() =>

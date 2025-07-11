@@ -16,6 +16,7 @@ public class UI_FirstSemester_ContentSortedByTheme : UI_PopUp
 
   public override bool InitEssentialUI()
   {
+     
         // BindButton(typeof(Btns));
         // GetButton((int)Btns.Btn_ChuseokAndVehicles).gameObject.BindEvent(() =>
         // {

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class TestOnly_ContentAdjuster : MonoBehaviour
 {
-    UI_MetaEduLauncherMaster _metaEduLauncherMaster;
+    UI_Master _master;
     private readonly Dictionary<string, string> sceneTitles = new Dictionary<string, string>() 
     {
         { "BB002", "사방치기 놀이" },
@@ -331,10 +331,10 @@ public class TestOnly_ContentAdjuster : MonoBehaviour
                     {
                         
                         //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
-                        if(_metaEduLauncherMaster == null)
-                            _metaEduLauncherMaster =  Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
+                        if(_master == null)
+                            _master =  Managers.UI.SceneUI.GetComponent<UI_Master>();
                        
-                        if (sceneTitles.TryGetValue(data.Id, out string title)) _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, title);
+                        if (sceneTitles.TryGetValue(data.Id, out string title)) _master.OnSceneBtnClicked(sceneId, title);
                        
                         // SceneManager.LoadScene(sceneId);
                     });

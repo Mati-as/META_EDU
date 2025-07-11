@@ -21,7 +21,7 @@ public abstract class UI_Base : MonoBehaviour
 
     protected virtual void Awake()
     {
-        InitEssentialUI();
+       InitEssentialUI();
     }
     protected virtual void Start(){}
 

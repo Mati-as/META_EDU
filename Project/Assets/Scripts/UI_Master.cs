@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary>
 ///     ui_Scene 으로, 항시 켜져있는 UI 표출중
 /// </summary>
-public class UI_MetaEduLauncherMaster : UI_Scene
+public class UI_Master : UI_Scene
 {
     private static bool _isLoadFinished;
     private Vector3 screenPosition;
@@ -30,13 +30,13 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         private set;
     }
 
-    private enum UI
+    public enum UI
     {
         Btn_Home,
 
         //Btn_Setting,
         Btn_Quit,
-      //  Btn_Back,
+        Btn_Back,
         UI_LoadInitialScene
     }
     
@@ -80,22 +80,22 @@ public class UI_MetaEduLauncherMaster : UI_Scene
         {
             Application.Quit();
         });
-        // GetObject((int)UI.Btn_Back).BindEvent(() =>
-        // {
-        //     Logger.ContentTestLog($"{Managers.UI.GetUICounts()}");
-        //
-        //
-        //     if (!(Managers.UI.currentPopupClass is UI_Home))
-        //     {
-        //         Managers.UI.ClosePopupUI();
-        //
-        //         if (Managers.UI.GetUICounts() <= 0)
-        //         {
-        //             Logger.Log("DEFAULT_UI갯수보다 미만..  홈 UI 활성화");
-        //             Managers.UI.ShowPopupUI<UI_Home>();
-        //         }
-        //     }
-        // });
+        GetObject((int)UI.Btn_Back).BindEvent(() =>
+        {
+            Logger.ContentTestLog($"{Managers.UI.GetUICounts()}");
+        
+        
+            if (!(Managers.UI.currentPopupClass is UI_Home))
+            {
+                Managers.UI.ClosePopupUI();
+        
+                if (Managers.UI.GetUICounts() <= 0)
+                {
+                    Logger.Log("DEFAULT_UI갯수보다 미만..  홈 UI 활성화");
+                    Managers.UI.ShowPopupUI<UI_Home>();
+                }
+            }
+        });
 
 
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
@@ -179,27 +179,39 @@ public class UI_MetaEduLauncherMaster : UI_Scene
     {
         if (Managers.UI.FindPopup<UI_Home>())
         {
-            GetObject((int)UI.Btn_Home).SetActive(false);
-            GetObject((int)UI.Btn_Quit).SetActive(true);
-   //         GetObject((int)UI.Btn_Back).SetActive(false);
-            //  GetObject((int)UI.Btn_Setting).SetActive(true);
+            SetBtnStatus(UI.Btn_Home, false);
+            SetBtnStatus(UI.Btn_Quit, true);
+            SetBtnStatus(UI.Btn_Back, false);
+            // SetBtnStatus(UI.Btn_Setting, true);
             Logger.CoreClassLog("UI_MetaEduLauncherMaster RefreshUI() - Home UI 활성화");
         }
         else
         {
-            GetObject((int)UI.Btn_Home).SetActive(true);
-            GetObject((int)UI.Btn_Quit).SetActive(true);
-          //  GetObject((int)UI.Btn_Back).SetActive(true);
-            //    GetObject((int)UI.Btn_Setting).SetActive(true);
+            SetBtnStatus(UI.Btn_Home, true);
+            SetBtnStatus(UI.Btn_Quit, true);
+            SetBtnStatus(UI.Btn_Back, Managers.UI.currentPopupClass.IsBackBtnClickable);
+    
+            // SetBtnStatus(UI.Btn_Setting, true);
         }
     }
 
-
     public void UIOff()
     {
-        GetObject((int)UI.Btn_Home).SetActive(false);
-        GetObject((int)UI.Btn_Quit).SetActive(false);
-      //  GetObject((int)UI.Btn_Back).SetActive(false);
-        //  GetObject((int)UI.Btn_Setting).SetActive(false);
+        SetBtnStatus(UI.Btn_Home, false);
+        SetBtnStatus(UI.Btn_Quit, false);
+        SetBtnStatus(UI.Btn_Back, false);
+        // SetBtnStatus(UI.Btn_Setting, false);
+    }
+
+    public void SetBtnStatus(UI btn, bool isActive)
+    {
+        GameObject targetBtnObj = GetObject((int)btn);
+        if (targetBtnObj == null)
+        {
+            Logger.LogError($"SetBtnStatus: {btn} 오브젝트가 존재하지 않습니다.");
+            return;
+        }
+
+        targetBtnObj.SetActive(isActive);
     }
 }

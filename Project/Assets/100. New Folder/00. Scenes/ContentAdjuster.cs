@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class ContentAdjuster : MonoBehaviour
 {
-    UI_MetaEduLauncherMaster _metaEduLauncherMaster;
+    UI_Master _master;
  
     //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작
     public enum ModeType
@@ -422,10 +422,10 @@ public class ContentAdjuster : MonoBehaviour
                     string sceneId = data.Id;
                     btn.onClick.AddListener(() =>
                     {
-                        if (_metaEduLauncherMaster == null)
-                            _metaEduLauncherMaster = Managers.UI.SceneUI.GetComponent<UI_MetaEduLauncherMaster>();
+                        if (_master == null)
+                            _master = Managers.UI.SceneUI.GetComponent<UI_Master>();
 
-                        _metaEduLauncherMaster.OnSceneBtnClicked(sceneId, data.Title);
+                        _master.OnSceneBtnClicked(sceneId, data.Title);
 
                         // SceneManager.LoadScene(sceneId);
                     });

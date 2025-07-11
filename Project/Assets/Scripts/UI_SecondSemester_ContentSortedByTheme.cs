@@ -6,6 +6,7 @@ using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 public class UI_SecondSemester_ContentSortedByTheme : UI_PopUp
 {
+  
     public enum Btns
     {
       
@@ -15,6 +16,9 @@ public class UI_SecondSemester_ContentSortedByTheme : UI_PopUp
 
     public override bool InitEssentialUI()
     {
+     
+        
+        isBackBtnClickable = true;
         BindButton(typeof(Btns));
         GetButton((int)Btns.Btn_ChuseokAndVehicles).gameObject.BindEvent(() =>
         {

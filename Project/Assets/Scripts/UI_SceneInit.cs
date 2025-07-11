@@ -12,7 +12,7 @@ public class UI_SceneInit : MonoBehaviour
         // -PreInit : 이전 UI 선택정보, UI Pool 초기화 
         Managers.UI.InitOnLauncherLoad();
         //1. 씬 마스터 컨트롤용 UI 생성 
-        UI_MetaEduLauncherMaster sceneUI = Managers.UI.ShowSceneUI<UI_MetaEduLauncherMaster>();
+        UI_Master sceneUI = Managers.UI.ShowSceneUI<UI_Master>();
 
 
         sceneUI.UILoadInitialScene.ShowLoadingScene();
