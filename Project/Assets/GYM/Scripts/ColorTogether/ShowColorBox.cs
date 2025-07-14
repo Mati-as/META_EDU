@@ -41,10 +41,19 @@ public class ShowColorBox : MonoBehaviour
         Reset();
     }
 
+    private bool    _hasCachedOriginalPos = false;
+    private Vector3 _originalPos;
+    
     public void ColorClicked()
     {
         _clickCount++;
-
+        
+        if (!_hasCachedOriginalPos)
+        {
+            _originalPos = transform.position;
+            _hasCachedOriginalPos = true;
+        }
+        
         if (_scaleRoutine != null)
             StopCoroutine(_scaleRoutine);
 
@@ -73,15 +82,14 @@ public class ShowColorBox : MonoBehaviour
 
     private IEnumerator ShakePosition(float duration, float magnitude)
     {
-        Vector3 originalPos = transform.position;
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            transform.position = originalPos + (Vector3)Random.insideUnitCircle * magnitude;
+            transform.position = _originalPos + (Vector3)Random.insideUnitCircle * magnitude;
             yield return null;
         }
-        transform.position = originalPos;
+        transform.position = _originalPos;
     }
     private void Flash()
     {

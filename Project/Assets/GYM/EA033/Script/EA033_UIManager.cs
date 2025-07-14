@@ -73,7 +73,7 @@ public class EA033_UIManager : Base_UIManager
        GetObject((int)UI.Image_Star).SetActive(false);
         
        GetObject(ImageToActivate).SetActive(true);
-       GetTMP((int)TMPs.TMP_OnRound).text = $"x {20 - count}";
+       GetTMP((int)TMPs.TMP_OnRound).text = $"x {28 - count}";
         
        var seq = DOTween.Sequence();
        seq?.Kill();
