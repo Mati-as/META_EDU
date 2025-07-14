@@ -21,10 +21,10 @@ public class PoolManager : MonoBehaviour
     [SerializeField] private Transform StageObjectAppearPosition;
     
     [SerializeField] private int totalSpawnCount = 20;
-    [SerializeField] private float spawnInterval = 0.8f;
+    [SerializeField] private float spawnInterval = 0.3f;
 
     private const int ROW_COUNT = 4;
-    private const int COL_COUNT = 5;
+    private const int COL_COUNT = 7;
     private Vector3[][] stageObjectAppearPositions = new Vector3[ROW_COUNT][];
 
     private Dictionary<PoolType, List<GameObject>> pools = new Dictionary<PoolType, List<GameObject>>();
@@ -113,7 +113,7 @@ public class PoolManager : MonoBehaviour
         float k = Random.Range(0.2f, spawnInterval);
         
         obj.transform
-            .DOJump(endPos, 1f, 1,0.4f)
+            .DOJump(endPos, 1f, 1,0.2f)
             .OnStart(()=>
             {
                 char randomLetter = (char)('A' + Random.Range(0, 6));
