@@ -63,7 +63,7 @@ public class EA033_GameManager : Ex_BaseGameManager
     [SerializeField] private Transform path2;
     [SerializeField] private Transform path3;
 
-    [SerializeField]private int stageClearCound = 20;
+    [SerializeField]private int stageClearCount = 20;
     
     private Transform bellStageParent;
     private Transform bulbStageParent;
@@ -206,7 +206,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 if (i == 5)
                     Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
 
-                if (i == stageClearCound)
+                if (i == stageClearCount)
                 {
                     i = 0;
                     gamePlaying = false;
