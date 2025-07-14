@@ -14,19 +14,13 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     }
 
     protected VideoPlayer videoPlayer;
-
-
-    protected Vector3 _defaultPosition
-    {
-        get;
-        set;
-    }
-
+    
     [SerializeField] private float playbackSpeed = 1;
     [SerializeField] private int poolSize = 400;
+    
 #if UNITY_EDITOR
     [SerializeField] [Range(10, 1000)] private int COUNT_TO_BRUSH;
-    #else
+#else
     private int COUNT_TO_BRUSH = 300;
 #endif
  
@@ -40,8 +34,9 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     private int _videoTransformID;
     private bool _isPaintFinished;
 
-    private const int IS_VIDEO_VISIBLE = 1;
-    private const int IS_VIDEO_INVISIBLE = 0;
+    private float _startDelay =0.75f;
+    
+    private Base_UIManager _baseUIManager;
 
     protected override void Init()
     {
@@ -55,8 +50,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
         SketchFinishFilterSet(false);
-        _defaultPosition = new Vector3();
-        _defaultPosition = transform.position;
+       // _defaultPosition = new Vector3();
+        //_defaultPosition = transform.position;
         _baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
     }
 
@@ -78,7 +73,47 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
             GetObject((int)Objs.SketchFinished).transform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.OutSine);
     }
 
-    private Base_UIManager _baseUIManager;
+   
+    
+    
+    protected virtual void SetVideo()
+    {
+        // 비디오 재생관련 세팅.
+        videoPlayer = GetComponent<VideoPlayer>();
+        videoPlayer.playbackSpeed = playbackSpeed;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mp4");
+        string movPath = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mov");
+
+        if (File.Exists(mp4Path))
+            videoPlayer.url = mp4Path;
+        else if (File.Exists(movPath))
+            videoPlayer.url = movPath;
+        else
+        {
+            Debug.LogError($"비디오 파일이 없습니다: {mp4Path} 또는 {movPath}");
+            return;
+        }
+
+        // 필요시, fallback 동작 처리 (예: 대체 화면 활성화 등)
+        videoPlayer.Play();
+
+        videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
+
+        DOVirtual.DelayedCall(_startDelay, () =>
+        {
+            videoPlayer.Pause();
+        });
+        BindEvent();
+    }
+
+    protected override void OnGameStartButtonClicked()
+    {
+        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
+        base.OnGameStartButtonClicked();
+    }
+
 
     public override void OnRaySynced()
     {
@@ -124,74 +159,35 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                     Managers.Sound.Stop(SoundManager.Sound.Bgm);
                     videoPlayer.Play();
                     videoPlayer.SetDirectAudioMute(0, false);
-                    // 트랙 0번을 뮤트
+                   
                     _baseUIManager.PopInstructionUIFromScaleZero("살아있는 그림을 완성시켰어요!", 5f);
 
 
                     Logger.Log("Length of Video: " + videoPlayer.length);
-                    float videoLength = (float)videoPlayer.length - 2;
-                    Logger.Log($"Current Video Length: {videoLength}");
-                    DOVirtual.DelayedCall(videoLength, () =>
-                    {
-                        videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
-                        videoPlayer.Stop();
-                        videoPlayer.Play();
+                    float videoLength = (float)videoPlayer.length - _startDelay;
+             
+                 DOVirtual.DelayedCall(videoLength, () =>
+                 {
+                     videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
+                     videoPlayer.Stop();
+                     videoPlayer.Play();
 
 
-                        DOVirtual.DelayedCall(1.5f, () =>
-                        {
-                            Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
-                            _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
-                            SketchFinishFilterSet(false);
-                            _isPaintFinished = false;
-                            videoPlayer.Pause();
-                        });
-                    });
+                     DOVirtual.DelayedCall(1.5f, () =>
+                     {
+                         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
+                         _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
+                         SketchFinishFilterSet(false);
+                         _isPaintFinished = false;
+                         videoPlayer.Pause();
+                     });
+                 });
                 }
             }
         }
     }
 
-
-    protected virtual void SetVideo()
-    {
-        // 비디오 재생관련 세팅.
-        videoPlayer = GetComponent<VideoPlayer>();
-        videoPlayer.playbackSpeed = playbackSpeed;
-
-        string sceneName = SceneManager.GetActiveScene().name;
-        string mp4Path = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mp4");
-        string movPath = Path.Combine(Application.streamingAssetsPath, $"MediaArt/{sceneName}.mov");
-
-        if (File.Exists(mp4Path))
-            videoPlayer.url = mp4Path;
-        else if (File.Exists(movPath))
-            videoPlayer.url = movPath;
-        else
-        {
-            Debug.LogError($"비디오 파일이 없습니다: {mp4Path} 또는 {movPath}");
-            return;
-        }
-
-        // 필요시, fallback 동작 처리 (예: 대체 화면 활성화 등)
-        videoPlayer.Play();
-
-        videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
-
-        DOVirtual.DelayedCall(0.8f, () =>
-        {
-            videoPlayer.Pause();
-        });
-        BindEvent();
-    }
-
-    protected override void OnGameStartButtonClicked()
-    {
-        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
-        base.OnGameStartButtonClicked();
-    }
-
-
+    
     private void InitializePool()
     {
         _brushPool = new Queue<GameObject>();

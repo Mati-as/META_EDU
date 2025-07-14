@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EA035_WinterFood_GameManager : MonoBehaviour
+public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 {
     // Start is called before the first frame update
     void Start()

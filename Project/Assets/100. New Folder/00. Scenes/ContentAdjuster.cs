@@ -1,8 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class ContentAdjuster : MonoBehaviour
@@ -363,7 +366,7 @@ public class ContentAdjuster : MonoBehaviour
 
         for (int i = 0; i < buttonObjs.Length; i++)
         {
-
+           
 
             GameObject buttonObj = buttonObjs[i];
 
@@ -377,14 +380,7 @@ public class ContentAdjuster : MonoBehaviour
             XmlManager.SceneData data = sceneList[i];
             buttonObj.SetActive(true); // 반드시 먼저 켜줘야 썸네일이 반영됨
 
-            // 썸네일
-            var mask = buttonObj.transform.Find("PictureFrmae_(Mask)");
-            if (mask != null && mask.childCount > 0)
-            {
-                var img = mask.GetChild(0).GetComponent<Image>();
-                if (img != null)
-                    img.sprite = Resources.Load<Sprite>($"Common/Launcher_ThumbnailImage/{data.Id}");
-            }
+            GetThumbnailImage(buttonObj,data);
 
             // 텍스트
             var textObj = buttonObj.transform.GetChild(2);
@@ -436,6 +432,65 @@ public class ContentAdjuster : MonoBehaviour
         }
     }
     
+    private void GetThumbnailImage(GameObject btnObj,XmlManager.SceneData sceneData)
+    {
+        StartCoroutine(LoadThumbnailImage(btnObj, sceneData));
+    }
+    
+    private static Dictionary<string, Sprite> _thumbnailCache = new Dictionary<string, Sprite>();
+
+    public IEnumerator LoadThumbnailImage(GameObject obj, XmlManager.SceneData sceneData)
+    {
+        string sceneId = sceneData.Id;
+
+        // ✅ 1. 캐시에 Sprite가 있는지 먼저 확인
+        if (_thumbnailCache.TryGetValue(sceneId, out Sprite cachedSprite))
+        {
+            ApplyThumbnail(obj, cachedSprite);
+            yield break;
+        }
+
+        // ✅ 2. 경로 구성
+        string thumbnailImagePath = Path.Combine(Application.streamingAssetsPath, $"Thumnail_Image/{sceneId}.png");
+        string thumbnailUri = "file://" + thumbnailImagePath;
+
+        // ✅ 3. 웹 요청 (로컬에서 로딩)
+        using (UnityWebRequest uwrThumb = UnityWebRequestTexture.GetTexture(thumbnailUri))
+        {
+            yield return uwrThumb.SendWebRequest();
+
+            if (uwrThumb.result != UnityWebRequest.Result.Success)
+            {
+                Logger.CoreClassLog($"❌ 썸네일 로딩 실패: {sceneId} - {uwrThumb.error}");
+            }
+            else
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(uwrThumb);
+
+                Sprite sprite = Sprite.Create(texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f),
+                    100f); // Optional: pixelsPerUnit 설정
+
+                // ✅ 4. 캐시에 저장
+                _thumbnailCache[sceneId] = sprite;
+
+                // ✅ 5. 적용
+                ApplyThumbnail(obj, sprite);
+            }
+        }
+    }
+    
+    private void ApplyThumbnail(GameObject obj, Sprite sprite)
+    {
+        var mask = obj.transform.Find("PictureFrmae_(Mask)");
+        if (mask != null && mask.childCount > 0)
+        {
+            var img = mask.GetChild(0).GetComponent<Image>();
+            if (img != null)
+                img.sprite = sprite;
+        }
+    }
     /// <summary>
     /// 테스트 전용 전체 씬 로드 
     /// </summary>

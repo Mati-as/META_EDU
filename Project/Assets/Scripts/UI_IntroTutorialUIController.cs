@@ -73,7 +73,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
     }
     public IEnumerator LoadTutorialImage()
     {
-        string imagePath = Path.Combine(Application.streamingAssetsPath, $"Tutorial_Bg/{SceneManager.GetActiveScene().name}_1.png");
+        string imagePath = Path.Combine(Application.streamingAssetsPath, $"Tutorial_Image/{SceneManager.GetActiveScene().name}_1.png");
         string uri = "file://" + imagePath;
 
         using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(uri))
