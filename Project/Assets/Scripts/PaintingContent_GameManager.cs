@@ -10,7 +10,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 {
     private enum Objs
     {
-        SketchFinished
+        SketchFinished,
+        PaintCompleteDetectionColliders
     }
 
     protected VideoPlayer videoPlayer;
@@ -18,12 +19,11 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     [SerializeField] private float playbackSpeed = 1;
     [SerializeField] private int poolSize = 400;
     
-#if UNITY_EDITOR
+
     [SerializeField] [Range(10, 1000)] private int COUNT_TO_BRUSH;
-#else
-    private int COUNT_TO_BRUSH = 300;
-#endif
+
  
+    
     private int _currentBrushCount;
     private MeshRenderer _sketchMeshRenderer;
 
@@ -48,6 +48,10 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         InitializePool();
         SetVideo();
 
+        COUNT_TO_BRUSH = Mathf.Clamp(COUNT_TO_BRUSH, 400, 500); // Critical Error protection
+        
+        
+        
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
         SketchFinishFilterSet(false);
        // _defaultPosition = new Vector3();
