@@ -451,7 +451,7 @@ public class ContentAdjuster : MonoBehaviour
         }
 
         // ✅ 2. 경로 구성
-        string thumbnailImagePath = Path.Combine(Application.streamingAssetsPath, $"Thumnail_Image/{sceneId}.png");
+        string thumbnailImagePath = Path.Combine(Application.streamingAssetsPath, $"Thumbnail_Image/{sceneId}.png");
         string thumbnailUri = "file://" + thumbnailImagePath;
 
         // ✅ 3. 웹 요청 (로컬에서 로딩)
