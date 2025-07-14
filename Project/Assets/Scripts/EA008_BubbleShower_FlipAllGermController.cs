@@ -7,7 +7,7 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using Random = UnityEngine.Random;
 using Sequence = DG.Tweening.Sequence;
-public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
+public class EA008_BubbleShower_FlipAllGermController : MonoBehaviour
 {
   
     enum PrintType
@@ -44,7 +44,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
         _isClickable = false;
     }
 
-    protected override void Init()
+    protected void Start()
     {
 //        base.Init();
         EA008_BubbleShower_GameManager.onStart -= OnStart;
@@ -56,6 +56,9 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
         
         EA008_BubbleShower_GameManager.roundInit -= RoundInit;
         EA008_BubbleShower_GameManager.roundInit += RoundInit;
+        
+        EA008_BubbleShower_GameManager.On_GmRay_Synced -= OnRaySync;
+        EA008_BubbleShower_GameManager.On_GmRay_Synced += OnRaySync;
         
         _meshRenderers = new MeshRenderer[(int)PrintType.Max];
         _blackPrints = new Transform[transform.childCount];
@@ -83,9 +86,9 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
            
     }
 
-    protected override void OnDestroy()
+    protected void OnDestroy()
     {
-        base.OnDestroy();
+        EA008_BubbleShower_GameManager.On_GmRay_Synced -= OnRaySync;
         EA008_BubbleShower_GameManager.onStart -= OnStart;
         EA008_BubbleShower_GameManager.onRoundFinished -= DisappearOnRestart;
         EA008_BubbleShower_GameManager.roundInit -= RoundInit;
@@ -147,30 +150,17 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
     }
     
     
-    public override void OnRaySynced()
+    public void OnRaySync()
     {
-        if (!PreCheckOnRaySync()) return;
+   
         
-        OnSync(GameManager_Ray);
-    }
-
-     
-    private RaycastHit hit;
-    
-    //검은 손발바닥 카운트시, 이름 비교를 통한 중복방지 
-
-    private void OnSync(Ray ray)
-    {
-        if (Physics.Raycast(ray, out hit))
+        if (!_isClickable)
         {
-            if (!_isClickable)
-            {
-#if UNITY_EDITOR
- //Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
-#endif
-                return;
-            }
-            
+            return;
+        }
+
+        foreach (var hit in _gm.GameManager_Hits)
+        {
             if (hit.transform.gameObject.name.ToLower().Contains("black"))
             {
                 if (!_seqChanged)
@@ -208,7 +198,22 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
                     
                 }
             }
+            Logger.ContentTestLog("black prints clicked");
         }
+
+        Logger.ContentTestLog("Ray On blackPrints");
+
+    }
+
+     
+ 
+    
+    //검은 손발바닥 카운트시, 이름 비교를 통한 중복방지 
+
+    private void OnSync(Ray ray)
+    {
+      
+         
       
     }
 
@@ -229,7 +234,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
             .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(targetColor, duration).SetEase(Ease.Linear))
             .AppendInterval(interval) // 지연 시간 추가
             .Append(_meshRenderers[(int)PrintType.Hand].material.DOColor(_defaultColor, duration).SetEase(Ease.Linear))
-            .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
+            .SetLoops(150, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         // 발에 대한 깜박임 설정
         _blinkSeqs[(int)PrintType.Foot] = DOTween.Sequence();
@@ -237,7 +242,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
             .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(targetColor, duration).SetEase(Ease.Linear))
             .AppendInterval(interval) // 지연 시간 추가
             .Append(_meshRenderers[(int)PrintType.Foot].material.DOColor(_defaultColor, duration).SetEase(Ease.Linear))
-            .SetLoops(-1, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
+            .SetLoops(150, LoopType.Yoyo); // Yoyo 방식으로 무한 반복
 
         _blinkSeqs[(int)PrintType.Hand].Play();
         _blinkSeqs[(int)PrintType.Foot].Play();
@@ -247,8 +252,7 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
 
     private void Disappear()
     {
-        onAllBlackPrintClicked?.Invoke();
-        
+
         DOVirtual.Float(_defaultScale,0, 1,
             scale => { _blackPrints[(int)PrintType.Hand].localScale = Vector3.one * scale; });
 
@@ -256,6 +260,12 @@ public class EA008_BubbleShower_FlipAllGermController : Base_GameManager
         DOVirtual
             .Float(_defaultScale, 0, 1,
                 scale => { _blackPrints[(int)PrintType.Foot].localScale = Vector3.one * scale; });
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            onAllBlackPrintClicked?.Invoke();
+        
+        });
+      
 
     }
     

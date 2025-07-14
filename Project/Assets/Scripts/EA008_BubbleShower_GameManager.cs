@@ -252,7 +252,7 @@ public void OnStart()
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/OnReady", 0.8f);
 
         InitFlip();
-        yield return DOVirtual.Float(0, 0, 3f, _ =>
+        yield return DOVirtual.Float(0, 0, 4f, _ =>
         {
         }).WaitForCompletion();
 
@@ -264,7 +264,7 @@ public void OnStart()
         int count = 0;
 
 
-        yield return DOVirtual.Float(0, 0, 5f, _ =>
+        yield return DOVirtual.Float(0, 0, 1.5f, _ =>
         {
         }).WaitForCompletion();
 
@@ -533,7 +533,11 @@ public void OnStart()
                 })
                 .OnComplete(() =>
                 {
-                    bubbleOrGermData.isCurrentlyFlipping = false;
+                    DOVirtual.DelayedCall(0.25f, () =>
+                    {
+                        bubbleOrGermData.isCurrentlyFlipping = false;
+                    });
+          
 
                     // Flip이 완료된 후 현재 회전 값을 가져옴 (Shake 반영을 위해)
                     Quaternion finalRotation = bubbleOrGermData.printObj.transform.localRotation;
@@ -556,6 +560,11 @@ public void OnStart()
                     bubbleOrGermData.shakeSeq.Play();
                     bubbleOrGermData.shakeRotationSeq.Play();
                 }));
+
+            bubbleOrGermData.flipSeq.OnKill(() =>
+            {
+                  bubbleOrGermData.isCurrentlyFlipping = false;
+            });
 
 // Scale 애니메이션 실행
             bubbleOrGermData.scaleSeq.Join(hit.transform
@@ -640,7 +649,7 @@ public void OnStart()
             int currentInstanceID = print.printObj.GetInstanceID();
 
             if (_PrintMap.TryGetValue(currentInstanceID, out var printData) &&
-                (printData.flipSeq.IsActive() || printData.isCurrentlyFlipping))
+                (printData.isCurrentlyFlipping))
                 return;
 
             printData.flipSeq.Kill();
@@ -649,6 +658,7 @@ public void OnStart()
             printData.flipSeq.Append(print.printObj.transform
                 .DOLocalRotateQuaternion(Quaternion.Euler(_rotateVector) * printData.printObj.transform.localRotation, 0.38f)
                 .SetEase(Ease.InOutQuint)
+                .SetDelay(Random.Range(0.1f,0.5f))
                 .OnStart(() =>
                 {
                     printData.isCurrentlyFlipping = true;
