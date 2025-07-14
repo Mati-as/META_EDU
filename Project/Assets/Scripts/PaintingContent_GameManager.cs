@@ -24,8 +24,12 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
     [SerializeField] private float playbackSpeed = 1;
     [SerializeField] private int poolSize = 400;
-
+#if UNITY_EDITOR
     [SerializeField] [Range(10, 1000)] private int COUNT_TO_BRUSH;
+    #else
+    private int COUNT_TO_BRUSH = 300;
+#endif
+ 
     private int _currentBrushCount;
     private MeshRenderer _sketchMeshRenderer;
 
@@ -47,15 +51,10 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         psResourcePath = string.Empty;
         base.Init();
         InitializePool();
-        //    SensorSensitivity = 0.07f;
         SetVideo();
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
         SketchFinishFilterSet(false);
-        //DoShake시 트위닝 오류로 비디오 객체의 재생위치가
-        //원래 위치에서 벗어나는 것을 방지하기 위한 defaultPosition 설정.
-        //DoShake의 OnComplete에서 원래위치로 돌아가는 로직이 동작 하도록 구성하였습니다. 02/02/24
-
         _defaultPosition = new Vector3();
         _defaultPosition = transform.position;
         _baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
@@ -72,23 +71,11 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                 });
 
             GetObject((int)Objs.SketchFinished).transform.DOScale(_defaultSizeMap[(int)Objs.SketchFinished], 1f)
-                .SetEase(Ease.OutSine);}
-
-        // _sketchMeshRenderer.material.DOFade(IS_VIDEO_INVISIBLE, 0.001f).OnComplete(() =>
-        // {
-        //     _sketchMeshRenderer.transform.gameObject.SetActive(true);
-        //     _sketchMeshRenderer.material.DOFade(IS_VIDEO_VISIBLE, 0.7f);
-        // });
-        //
-        else
-        {
-         
-            GetObject((int)Objs.SketchFinished).transform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.OutSine);
+                .SetEase(Ease.OutSine);
         }
-        // _sketchMeshRenderer.material.DOFade(IS_VIDEO_INVISIBLE, 0.7f).OnComplete(() =>
-        // {
-        //     _sketchMeshRenderer.transform.gameObject.SetActive(false);
-        // });
+
+        else
+            GetObject((int)Objs.SketchFinished).transform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.OutSine);
     }
 
     private Base_UIManager _baseUIManager;
@@ -107,6 +94,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
             if (_brushPool.Count <= 0)
             {
+                
             }
             else
             {
@@ -126,6 +114,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                     _currentBrushCount++;
                 else
                 {
+                    _currentBrushCount = 0;
                     _isPaintFinished = true;
 
                     SketchFinishFilterSet(true);
@@ -139,7 +128,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                     _baseUIManager.PopInstructionUIFromScaleZero("살아있는 그림을 완성시켰어요!", 5f);
 
 
-                    float videoLength = (float)videoPlayer.url.Length - 3;
+                    Logger.Log("Length of Video: " + videoPlayer.length);
+                    float videoLength = (float)videoPlayer.length - 2;
                     Logger.Log($"Current Video Length: {videoLength}");
                     DOVirtual.DelayedCall(videoLength, () =>
                     {
@@ -148,14 +138,12 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                         videoPlayer.Play();
 
 
-                        DOVirtual.DelayedCall(4f, () =>
+                        DOVirtual.DelayedCall(1.5f, () =>
                         {
-                            
                             Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
                             _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
                             SketchFinishFilterSet(false);
                             _isPaintFinished = false;
-                            _currentBrushCount = 0;
                             videoPlayer.Pause();
                         });
                     });
@@ -190,9 +178,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
         videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
 
-        DOVirtual.DelayedCall(5f, () =>
+        DOVirtual.DelayedCall(0.8f, () =>
         {
-            
             videoPlayer.Pause();
         });
         BindEvent();
