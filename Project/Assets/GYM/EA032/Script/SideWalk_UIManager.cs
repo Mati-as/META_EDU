@@ -7,8 +7,8 @@ public class SideWalk_UIManager : Base_UIManager
 {
     private SideWalk_GameManager _manager;
 
-    private Sequence _seq;
-
+    private Sequence seq;
+    
     protected override void Awake()
     {
         base.Awake();
@@ -37,19 +37,22 @@ public class SideWalk_UIManager : Base_UIManager
     {
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
+    
+        AudioClip audioClip = Resources.Load<AudioClip>($"SideWalk/Audio/{audioPath}");
 
-        var audioClip = Resources.Load<AudioClip>($"SideWalk/Audio/{audioPath}");
+        seq?.Kill();
+        seq = DOTween.Sequence();
 
-        // CustomDuration이 유효하면 그걸 아니면 audioClip 길이에 2초 추가
-        float interval = message.CustomDuration ?? (audioClip.length + 2f);
+        seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
+        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
+
+        // CustomDuration이 유효한 값(0보다 큰 값)이면 그걸, 아니면 audioClip 길이에 0.2초 추가한 걸 사용
+        float interval = message.CustomDuration 
+                         ?? (audioClip.length + 0.3f);
         
-        _seq?.Kill();
-        _seq = DOTween.Sequence();
+        seq.AppendInterval(interval);
 
-        _seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
-        _seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
-        _seq.AppendInterval(interval);
-        _seq.AppendCallback(() => ShutInstructionUI(narrationText));
+        seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 
 

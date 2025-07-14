@@ -63,7 +63,7 @@ public class EA033_GameManager : Ex_BaseGameManager
     [SerializeField] private Transform path2;
     [SerializeField] private Transform path3;
 
-    [SerializeField]private int stageClearCount = 20;
+    [SerializeField]private int stageClearCount = 30;
     
     private Transform bellStageParent;
     private Transform bulbStageParent;
