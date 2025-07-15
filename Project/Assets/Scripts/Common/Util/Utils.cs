@@ -203,6 +203,7 @@ public class Utils :MonoBehaviour
             Transform transform = FindChild<Transform>(go, name, recursive);
             if (transform != null)
                 return transform.gameObject;
+            Logger.CoreClassLog($"Failed to find child GameObject with name: {name}");
             return null;
         }
         

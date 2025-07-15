@@ -39,29 +39,30 @@ public class Base_UIManager : UI_PopUp
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
+    
+    
     protected Sequence _uiSeq;
 
-    
+    private UI_ElementsLoader _uiElementsLoader =new();
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 
 
     public override bool InitEssentialUI()
     {
+        return true;
+        // Initialize UI elements here
+    }
+
+    public void Init()
+    {
+        
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
+        
         UI_Instruction = GetObject((int)UI.UI_Instruction);
-
-        UI_Ready = GetObject((int)UI.UI_Ready).GetComponent<RectTransform>();
-        UI_Start = GetObject((int)UI.UI_Start).GetComponent<RectTransform>();
-        UI_Stop = GetObject((int)UI.UI_Stop).GetComponent<RectTransform>();
-
-        UI_Ready.localScale = Vector3.zero;
-        UI_Start.localScale = Vector3.zero;
-        UI_Stop.localScale = Vector3.zero;
-
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
+        
         _objects = new Dictionary<Type, Object[]>();
-
 
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
@@ -72,10 +73,15 @@ public class Base_UIManager : UI_PopUp
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
         Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
 
-        return true;
-        // Initialize UI elements here
+ 
     }
 
+    public void LoadUIElements(GameObject parent)
+    {
+        // Load UI elements using the UI_ElementsLoader
+        _uiElementsLoader.LoadUIElements(parent);
+        
+    }
     /// <summary>
     ///     Base에서는 필수 및 공통요소만 바인드합니다.
     ///     추가로 바인딩 하고싶은경우, override 및 enum 추가선언하여 사용

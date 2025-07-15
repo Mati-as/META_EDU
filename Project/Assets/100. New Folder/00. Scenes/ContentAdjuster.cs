@@ -469,7 +469,10 @@ public class ContentAdjuster : MonoBehaviour
                     new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f),
                     100f); // Optional: pixelsPerUnit 설정
-                
+
+                // ✅ 4. 캐시에 저장
+                Managers.Resource.ThumbnailCache[sceneId] = sprite;
+
                 // ✅ 5. 적용
                 ApplyThumbnail(objRef, sprite);
             }

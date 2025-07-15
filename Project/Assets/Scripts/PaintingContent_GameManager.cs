@@ -52,7 +52,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         InitializePool();
         SetVideo();
 
-        COUNT_TO_BRUSH = isSmallPicture ? 85 : 160; //좌우여백있는 그림의 경우 180회 클릭, 아닌경우 330회 클릭 후 영상재생 
+        COUNT_TO_BRUSH = isSmallPicture ? 110 : 170; //좌우여백있는 그림의 경우 180회 클릭, 아닌경우 330회 클릭 후 영상재생 
 
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");

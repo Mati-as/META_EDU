@@ -30,6 +30,11 @@ public class UI_LoadInitialScene : UI_PopUp
         loadingCompleted = false;
         nextScene = 0;
         
+        
+        //PreLoad 파트. 
+        Managers.Resource.LoadAllThumbnails();
+        
+        
         StartCoroutine(RotateIcon());
  
     }

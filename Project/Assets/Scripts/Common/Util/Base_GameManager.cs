@@ -108,11 +108,8 @@ public abstract class Base_GameManager : MonoBehaviour
         {
             var uiMangager = GameObject.FindWithTag("UIManager");
             Debug.Assert(uiMangager != null, "UIManager not found");
-          //  _uiManagerCommonBehaviorController = uiMangager.GetComponentInChildren<UIManager_CommonBehaviorController>();
         });
-
-    
-       
+        
     }
 
     
@@ -299,12 +296,15 @@ public abstract class Base_GameManager : MonoBehaviour
         SetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
         InitCameraRect();
 
+       
+
+        
         DOTween.Init(useSafeMode: false);
         
     
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
         
-     
+      
     }
 
     private void SetUIManager()
@@ -326,8 +326,7 @@ public abstract class Base_GameManager : MonoBehaviour
             baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
             return;
         }
-
-        baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+     
         
         var mainCamera = Camera.main;
         
@@ -373,6 +372,13 @@ public abstract class Base_GameManager : MonoBehaviour
         }
         else
             Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
+        
+        baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+        
+        baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
+        baseUIManager.Init();
+
+     
     }
 
     protected string initialMessage = String.Empty;

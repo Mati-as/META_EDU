@@ -18,7 +18,7 @@ public class ResourceManager : MonoBehaviour
 
     public void Init()
     {
-        LoadThumbnailImage();
+     
     }
     public void LoadAllThumbnails()
     {
