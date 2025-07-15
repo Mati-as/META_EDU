@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class ContentAdjuster : MonoBehaviour
 {
@@ -64,7 +65,7 @@ public class ContentAdjuster : MonoBehaviour
         pageB = Utils.FindChild(gameObject, "Page_B", true);
         prevButton = Utils.FindChild(gameObject, "Button_Prev", true)?.GetComponent<Button>();
         nextButton = Utils.FindChild(gameObject, "Button_Next", true)?.GetComponent<Button>();
-        pageNavi = Utils.FindChild(gameObject, "PageNavi", true);
+        pageNavis = Utils.FindChild(gameObject, "PageNavi", true);
         
         ApplyContentAdjustments();
         
@@ -189,7 +190,7 @@ public class ContentAdjuster : MonoBehaviour
     public Button prevButton;
     public Button nextButton;
 
-    public GameObject pageNavi; //(중요) 3페이지 이상일 경우 하위 오브젝트 추가 필요
+    [FormerlySerializedAs("pageNavi")] public GameObject pageNavis; //(중요) 3페이지 이상일 경우 하위 오브젝트 추가 필요
 
     private int currentPageIndex = 0;
     private int currentPageSlot = 0; // 0 = A, 1 = B
@@ -247,9 +248,9 @@ public class ContentAdjuster : MonoBehaviour
 
     void UpdateNavigationIndicator(int activePageIndex)
     {
-        for (int i = 0; i < pageNavi.transform.childCount; i++)
+        for (int i = 0; i < pageNavis.transform.childCount; i++)
         {
-            Transform offSlot = pageNavi.transform.GetChild(i);
+            Transform offSlot = pageNavis.transform.GetChild(i);
             Transform onIndicator = offSlot.Find("On");
 
             if (onIndicator != null)
@@ -266,13 +267,14 @@ public class ContentAdjuster : MonoBehaviour
         prevButton.interactable = enableNav && currentPageIndex > 0;
         nextButton.interactable = enableNav && currentPageIndex < pageCount - 1;
 
-        if (pageNavi != null)
+        if (pageNavis != null)
         {
-            pageNavi.gameObject.SetActive(enableNav);
+            pageNavis.gameObject.SetActive(enableNav);
             prevButton.gameObject.SetActive(enableNav);
             nextButton.gameObject.SetActive(enableNav);
         }
     }
+
 
     public void SwitchPage(bool goingNext)
     {
@@ -360,7 +362,7 @@ public class ContentAdjuster : MonoBehaviour
         Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
 
-    void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
+    private void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
     {
         var buttonObjs = slotIndex == 0 ? pageAButtons : pageBButtons;
 
@@ -432,21 +434,28 @@ public class ContentAdjuster : MonoBehaviour
         }
     }
     
-    private void GetThumbnailImage(GameObject btnObj,XmlManager.SceneData sceneData)
+    public void GetThumbnailImage(GameObject obj, XmlManager.SceneData data)
     {
-        StartCoroutine(LoadThumbnailImage(btnObj, sceneData));
+        // 🛠️ 지역 변수에 참조를 고정해서 클로저 이슈 방지
+        GameObject objRef = obj;
+        XmlManager.SceneData dataRef = data;
+
+        StartCoroutine(LoadThumbnailImage(objRef, dataRef));
     }
-    
-    private static Dictionary<string, Sprite> _thumbnailCache = new Dictionary<string, Sprite>();
+
+    private static Dictionary<string, Sprite> _thumbnailCache = new();
 
     public IEnumerator LoadThumbnailImage(GameObject obj, XmlManager.SceneData sceneData)
     {
-        string sceneId = sceneData.Id;
+        XmlManager.SceneData dataRef = sceneData;
+        GameObject objRef = obj;
+        string sceneId = dataRef.Id;
 
+        
         // ✅ 1. 캐시에 Sprite가 있는지 먼저 확인
         if (_thumbnailCache.TryGetValue(sceneId, out Sprite cachedSprite))
         {
-            ApplyThumbnail(obj, cachedSprite);
+            ApplyThumbnail(objRef, cachedSprite);
             yield break;
         }
 
@@ -476,7 +485,7 @@ public class ContentAdjuster : MonoBehaviour
                 _thumbnailCache[sceneId] = sprite;
 
                 // ✅ 5. 적용
-                ApplyThumbnail(obj, sprite);
+                ApplyThumbnail(objRef, sprite);
             }
         }
     }

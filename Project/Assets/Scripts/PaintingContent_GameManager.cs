@@ -18,9 +18,11 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     
     [SerializeField] private float playbackSpeed = 1;
     [SerializeField] private int poolSize = 400;
-    
 
-    [SerializeField] [Range(10, 1000)] private int COUNT_TO_BRUSH;
+
+    [SerializeField] private bool isSmallPicture;
+    
+    [Range(10, 1000)] private int COUNT_TO_BRUSH;
 
  
     
@@ -48,7 +50,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         InitializePool();
         SetVideo();
 
-        COUNT_TO_BRUSH = Mathf.Clamp(COUNT_TO_BRUSH, 400, 500); // Critical Error protection
+        COUNT_TO_BRUSH = isSmallPicture? 180:330; //좌우여백있는 그림의 경우 180회 클릭, 아닌경우 330회 클릭 후 영상재생 
         
         
         
