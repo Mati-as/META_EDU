@@ -61,14 +61,19 @@ public class ContentAdjuster : MonoBehaviour
 
     private void Start()
     {
-        pageA = Utils.FindChild(gameObject, "Page_A", true);
-        pageB = Utils.FindChild(gameObject, "Page_B", true);
+        // pageA = Utils.FindChild(gameObject, "Page_A", true);
+        // pageB = Utils.FindChild(gameObject, "Page_B", true);
         prevButton = Utils.FindChild(gameObject, "Button_Prev", true)?.GetComponent<Button>();
         nextButton = Utils.FindChild(gameObject, "Button_Next", true)?.GetComponent<Button>();
         pageNavis = Utils.FindChild(gameObject, "PageNavi", true);
+
+        _pagePrefab = Resources.Load<GameObject>("UI/Elements/Page");
         
+         Utils.FindChild(gameObject, "PageParent", true)?.TryGetComponent(out _pageParent);
+         Utils.FindChild(gameObject, "IndicatorParent", true)?.TryGetComponent(out _indicatorParent);
+        
+        _indicatorPrefab = Resources.Load<GameObject>("UI/Elements/Indicator");
         ApplyContentAdjustments();
-        
     }
 
     //[주제별]
@@ -182,8 +187,13 @@ public class ContentAdjuster : MonoBehaviour
     //[영역별]
     public ContentCategory selectedCategory = ContentCategory.Science_Exploration;
 
-    public GameObject pageA;
-    public GameObject pageB;
+    private GameObject _pagePrefab; // 페이지 프리팹 (버튼 8개 포함된 비활성화된 상태로 있어야 함)
+    private Transform _pageParent;  // 페이지들이 들어갈 부모 오브젝트
+    private GameObject _indicatorPrefab; // Indicator 한 칸 (On 포함)
+    private Transform _indicatorParent;  // Indicator를 넣을 부모
+    private List<GameObject> pages = new();
+    private List<GameObject[]> pageButtonsList = new();
+    
     private GameObject[] pageAButtons;
     private GameObject[] pageBButtons;
 
@@ -207,56 +217,63 @@ public class ContentAdjuster : MonoBehaviour
 
     public void InitPageNavigation()
     {
-        pageAButtons = new GameObject[8];
-        pageBButtons = new GameObject[8];
+        // 기존 페이지/인디케이터 제거
+        foreach (var p in pages) Destroy(p);
+        pages.Clear();
+        pageButtonsList.Clear();
 
-        for (int i = 0; i < pageA.transform.childCount; i++)
-        {
-            pageAButtons[i] = pageA.transform.GetChild(i).gameObject;
-        }
+        foreach (Transform child in _indicatorParent)
+            Destroy(child.gameObject);
 
-        for (int i = 0; i < pageB.transform.childCount; i++)
-        {
-            pageBButtons[i] = pageB.transform.GetChild(i).gameObject;
-        }
+        int totalPages = pagedSceneData.Count;
 
-        if (pageAButtons.Length != 8 || pageBButtons.Length != 8)
+        for (int i = 0; i < totalPages; i++)
         {
-            Debug.LogError("PageA 또는 PageB에 Button이 정확히 8개씩 있어야 합니다.");
-            return;
+            // 페이지 생성
+            GameObject newPage = Instantiate(_pagePrefab, _pageParent);
+            newPage.name = $"Page_{i}";
+            newPage.SetActive(true);
+
+            RectTransform rect = newPage.GetComponent<RectTransform>();
+            rect.anchoredPosition = (i == 0) ? pageVisiblePos : pageRightOffscreen;
+
+            // 버튼 수집
+            GameObject[] btnArray = new GameObject[8];
+            for (int j = 0; j < newPage.transform.childCount; j++)
+                btnArray[j] = newPage.transform.GetChild(j).gameObject;
+
+            pages.Add(newPage);
+            pageButtonsList.Add(btnArray);
+
+            ApplySceneDataToPage(i, pagedSceneData[i]);
+
+            // Indicator 생성
+            GameObject indicator = Instantiate(_indicatorPrefab, _indicatorParent);
+            indicator.name = $"Indicator_{i}";
+            indicator.transform.Find("On").gameObject.SetActive(i == 0);
         }
 
         currentPageIndex = 0;
-        currentPageSlot = 0;
-        // PageA에 첫 페이지 데이터 채움
-        ApplySceneDataToPage(0, pagedSceneData[0]);
+        isSliding = false;
 
-        // 위치 조정 (PageA만 화면에 보이게, PageB는 바깥으로 이동)
-        pageA.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -193);
-        pageB.GetComponent<RectTransform>().anchoredPosition = new Vector2(1920, -193);
-
-        // 네비게이션/버튼 상태 초기화
-        UpdateNavigationIndicator(0);
-        prevButton.interactable = false;
-        nextButton.interactable = (pagedSceneData.Count > 1);
-
+        prevButton.onClick.RemoveAllListeners();
+        nextButton.onClick.RemoveAllListeners();
         prevButton.onClick.AddListener(() => SwitchPage(false));
         nextButton.onClick.AddListener(() => SwitchPage(true));
 
         UpdateNavigationControls();
     }
 
-    void UpdateNavigationIndicator(int activePageIndex)
+    void UpdateNavigationIndicator(int activeIndex)
     {
-        for (int i = 0; i < pageNavis.transform.childCount; i++)
+        for (int i = 0; i < _indicatorParent.childCount; i++)
         {
-            Transform offSlot = pageNavis.transform.GetChild(i);
-            Transform onIndicator = offSlot.Find("On");
-
-            if (onIndicator != null)
-                onIndicator.gameObject.SetActive(i == activePageIndex);
+            var onObj = _indicatorParent.GetChild(i).Find("On");
+            if (onObj != null)
+                onObj.gameObject.SetActive(i == activeIndex);
         }
     }
+
     private void UpdateNavigationControls()
     {
         int pageCount = pagedSceneData.Count;
@@ -278,41 +295,28 @@ public class ContentAdjuster : MonoBehaviour
 
     public void SwitchPage(bool goingNext)
     {
-        if (isSliding) return; // 애니메이션 중이면 무시
-
-        if (goingNext && currentPageIndex >= pagedSceneData.Count - 1) return;
-        if (!goingNext && currentPageIndex <= 0) return;
-
-        isSliding = true; // 슬라이드 시작
+        if (isSliding) return;
 
         int nextIndex = currentPageIndex + (goingNext ? 1 : -1);
-        int nextSlot = 1 - currentPageSlot;
+        if (nextIndex < 0 || nextIndex >= pages.Count) return;
 
-        var currentPage = currentPageSlot == 0 ? pageA : pageB;
-        var nextPage = nextSlot == 0 ? pageA : pageB;
+        isSliding = true;
 
-        ApplySceneDataToPage(nextSlot, pagedSceneData[nextIndex]);
-
-        var currentRect = currentPage.GetComponent<RectTransform>();
-        var nextRect = nextPage.GetComponent<RectTransform>();
-
-        nextRect.anchoredPosition = goingNext ? pageRightOffscreen : pageLeftOffscreen;
+        var current = pages[currentPageIndex];
+        var next = pages[nextIndex];
 
         Vector2 outTarget = goingNext ? pageLeftOffscreen : pageRightOffscreen;
         Vector2 inTarget = pageVisiblePos;
 
-        currentRect.DOAnchorPos(outTarget, 0.4f).SetEase(Ease.InOutQuad);
-        nextRect.DOAnchorPos(inTarget, 0.4f).SetEase(Ease.InOutQuad).OnComplete(() =>
+        current.GetComponent<RectTransform>().DOAnchorPos(outTarget, 0.4f).SetEase(Ease.InOutQuad);
+        next.GetComponent<RectTransform>().DOAnchorPos(inTarget, 0.4f).SetEase(Ease.InOutQuad).OnComplete(() =>
         {
             currentPageIndex = nextIndex;
-            currentPageSlot = nextSlot;
-
-            UpdateNavigationIndicator(currentPageIndex);
-            prevButton.interactable = (currentPageIndex > 0);
-            nextButton.interactable = (currentPageIndex < pagedSceneData.Count - 1);
-
-            isSliding = false; // 애니메이션 종료 후 잠금 해제
+            isSliding = false;
+            UpdateNavigationControls();
         });
+
+        UpdateNavigationIndicator(nextIndex);
     }
 
     public void FilterAndPaginateContent(ContentCategory category)
@@ -362,16 +366,13 @@ public class ContentAdjuster : MonoBehaviour
         Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
 
-    private void ApplySceneDataToPage(int slotIndex, List<XmlManager.SceneData> sceneList)
+    private void ApplySceneDataToPage(int pageIndex, List<XmlManager.SceneData> sceneList)
     {
-        var buttonObjs = slotIndex == 0 ? pageAButtons : pageBButtons;
+        var buttonObjs = pageButtonsList[pageIndex];
 
         for (int i = 0; i < buttonObjs.Length; i++)
         {
-           
-
             GameObject buttonObj = buttonObjs[i];
-
 
             if (i >= sceneList.Count)
             {
@@ -380,22 +381,16 @@ public class ContentAdjuster : MonoBehaviour
             }
 
             XmlManager.SceneData data = sceneList[i];
-            buttonObj.SetActive(true); // 반드시 먼저 켜줘야 썸네일이 반영됨
+            buttonObj.SetActive(true);
 
-            GetThumbnailImage(buttonObj,data);
+            GetThumbnailImage(buttonObj, data);
 
-            // 텍스트
+            // 텍스트 설정
             var textObj = buttonObj.transform.GetChild(2);
             if (textObj != null)
             {
                 var text = textObj.GetComponent<Text>();
-                if (text != null)
-                {
-                    if (data.Title != null && data.Title.Length > 0)
-                        text.text = data.Title;
-                    else
-                        text.text = data.Id; // fallback: ID 그대로 표시
-                }
+                text.text = !string.IsNullOrEmpty(data.Title) ? data.Title : data.Id;
             }
 
             // 자물쇠
@@ -403,17 +398,15 @@ public class ContentAdjuster : MonoBehaviour
             if (lockFrame != null)
                 lockFrame.gameObject.SetActive(!data.IsActive && !_isTestScene);
 
-            // 버튼 이벤트
+            // 클릭 이벤트
             var btn = buttonObj.GetComponent<Button>();
             if (btn != null)
             {
                 btn.interactable = data.IsActive || _isTestScene;
                 btn.onClick.RemoveAllListeners();
+
                 if (data.IsActive || _isTestScene)
                 {
-                    #region 씬실행 부분 //버튼 씬 실행 기능 수정, 컨펌UI 표출 및 실행 -민석 250619
-
-                    //버튼 관련 효과관련 기능 추가, Active 일때만 동작 -민석 250619
                     var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
                     btnImageController.DefaultScale = buttonObj.transform.localScale;
 
@@ -424,11 +417,7 @@ public class ContentAdjuster : MonoBehaviour
                             _master = Managers.UI.SceneUI.GetComponent<UI_Master>();
 
                         _master.OnSceneBtnClicked(sceneId, data.Title);
-
-                        // SceneManager.LoadScene(sceneId);
                     });
-
-                    #endregion
                 }
             }
         }
@@ -443,7 +432,7 @@ public class ContentAdjuster : MonoBehaviour
         StartCoroutine(LoadThumbnailImage(objRef, dataRef));
     }
 
-    private static Dictionary<string, Sprite> _thumbnailCache = new();
+    
 
     public IEnumerator LoadThumbnailImage(GameObject obj, XmlManager.SceneData sceneData)
     {
@@ -453,7 +442,7 @@ public class ContentAdjuster : MonoBehaviour
 
         
         // ✅ 1. 캐시에 Sprite가 있는지 먼저 확인
-        if (_thumbnailCache.TryGetValue(sceneId, out Sprite cachedSprite))
+        if (Managers.Resource.ThumbnailCache.TryGetValue(sceneId, out Sprite cachedSprite))
         {
             ApplyThumbnail(objRef, cachedSprite);
             yield break;
@@ -480,10 +469,7 @@ public class ContentAdjuster : MonoBehaviour
                     new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f),
                     100f); // Optional: pixelsPerUnit 설정
-
-                // ✅ 4. 캐시에 저장
-                _thumbnailCache[sceneId] = sprite;
-
+                
                 // ✅ 5. 적용
                 ApplyThumbnail(objRef, sprite);
             }

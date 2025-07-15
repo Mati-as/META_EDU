@@ -165,10 +165,16 @@ public class Managers : MonoBehaviour
             Application.runInBackground = true;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
+
+           
+            //코루틴 실행위해 반드시 gameObject에 추가해야합니다.
+            s_resourceManager = Utils.GetOrAddComponent<ResourceManager>(go);
+            s_resourceManager.Init();  // 이제 StartCoroutine 가능
             
             s_soundManager.Init();
             _sInfoManager.Init();
             s_cursorImageManager.Init();
+
             DontDestroyOnLoad(go);
 //            Debug.Log("Managers Set--------");
         }

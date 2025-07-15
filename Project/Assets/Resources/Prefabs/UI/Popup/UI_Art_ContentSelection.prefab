@@ -56,11 +56,13 @@ MonoBehaviour:
   Active_month: {fileID: 0}
   Inactive_month: {fileID: 0}
   selectedCategory: 1
-  pageA: {fileID: 0}
-  pageB: {fileID: 0}
+  pagePrefab: {fileID: 0}
+  pageParent: {fileID: 0}
+  indicatorPrefab: {fileID: 0}
+  indicatorParent: {fileID: 0}
   prevButton: {fileID: 0}
   nextButton: {fileID: 0}
-  pageNavi: {fileID: 0}
+  pageNavis: {fileID: 0}
 --- !u!1 &3372912956955678923
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,6 +331,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2912239474254496532, guid: 01666f135d9e80b4daf3cf4b628d0edc,
+        type: 3}
+      propertyPath: m_Name
+      value: Page
+      objectReference: {fileID: 0}
     - target: {fileID: 3914586040994016032, guid: 01666f135d9e80b4daf3cf4b628d0edc,
         type: 3}
       propertyPath: m_Name
@@ -353,6 +360,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6338994102622944844, guid: 01666f135d9e80b4daf3cf4b628d0edc,
+        type: 3}
+      propertyPath: m_Name
+      value: Page
       objectReference: {fileID: 0}
     - target: {fileID: 6986401460715410748, guid: 01666f135d9e80b4daf3cf4b628d0edc,
         type: 3}
