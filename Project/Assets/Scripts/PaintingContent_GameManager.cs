@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using Random = UnityEngine.Random;
 
 public class PaintingContent_GameManager : Ex_BaseGameManager
 {
@@ -15,17 +17,17 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     }
 
     protected VideoPlayer videoPlayer;
-    
+
     [SerializeField] private float playbackSpeed = 1;
-    [SerializeField] private int poolSize = 400;
+    private readonly int poolSize = 800;
 
 
     [SerializeField] private bool isSmallPicture;
-    
+
+    [SerializeField]
     [Range(10, 1000)] private int COUNT_TO_BRUSH;
 
- 
-    
+
     private int _currentBrushCount;
     private MeshRenderer _sketchMeshRenderer;
 
@@ -36,8 +38,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     private int _videoTransformID;
     private bool _isPaintFinished;
 
-    private float _startDelay =0.75f;
-    
+    private readonly float _startDelay = 0.75f;
+
     private Base_UIManager _baseUIManager;
 
     protected override void Init()
@@ -50,13 +52,12 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         InitializePool();
         SetVideo();
 
-        COUNT_TO_BRUSH = isSmallPicture? 180:330; //좌우여백있는 그림의 경우 180회 클릭, 아닌경우 330회 클릭 후 영상재생 
-        
-        
-        
+        COUNT_TO_BRUSH = isSmallPicture ? 85 : 160; //좌우여백있는 그림의 경우 180회 클릭, 아닌경우 330회 클릭 후 영상재생 
+
+
         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
         SketchFinishFilterSet(false);
-       // _defaultPosition = new Vector3();
+        // _defaultPosition = new Vector3();
         //_defaultPosition = transform.position;
         _baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
     }
@@ -79,9 +80,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
             GetObject((int)Objs.SketchFinished).transform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.OutSine);
     }
 
-   
-    
-    
+
     protected virtual void SetVideo()
     {
         // 비디오 재생관련 세팅.
@@ -121,79 +120,88 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
     }
 
 
+    private bool Precheck()
+    {
+        if (_brushPool.Count < 0) return false;
+        return true;
+    }
+
+    private const string Brush = null;
+
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
+        if (!Precheck()) return;
 
         if (_isPaintFinished) return;
-        //브러쉬 이미지 생성
+        Array.Sort(GameManager_Hits, (a, b) => a.distance.CompareTo(b.distance));
 
         foreach (var hit in GameManager_Hits)
         {
-            int HitID = hit.transform.GetInstanceID(); 
-
-            if (_brushPool.Count <= 0)
+            
+            if (hit.transform.gameObject.name.Contains(nameof(Brush)))
             {
-                
+                Logger.ContentTestLog("브러쉬끼리 중복 X");
+                return;
             }
+            Logger.ContentTestLog("브러쉬 생성 : Colldier: " + hit.transform.gameObject.name);
+            var brush = GetBrushFromPool();
+            if (brush != null)
+            {
+                brush.transform.position = hit.point;
+                //brush.transform.rotation = Quaternion.LookRotation(hit.normal);
+                _meshRendererMap[brush.transform.GetInstanceID()].material.DOFade(1, 1f).SetEase(Ease.OutSine);
+                brush.transform.localScale = _brushDefaultSize * Random.Range(0.8f, 1.2f);
+                brush.transform.localRotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+                brush.transform.DOShakeScale(0.07f, 0.05f);
+                brush.SetActive(true);
+            }
+
+            if (_currentBrushCount < COUNT_TO_BRUSH)
+                _currentBrushCount++;
             else
             {
-                var brush = GetBrushFromPool();
-                if (brush != null)
+                _currentBrushCount = 0;
+                _isPaintFinished = true;
+
+                SketchFinishFilterSet(true);
+                // 브러쉬 개수가 COUNT_TO_BRUSH에 도달하면, 더 이상 생성하지 않음.
+                // 필요시, 브러쉬 개수 조정 로직 추가 가능.
+
+                Managers.Sound.Stop(SoundManager.Sound.Bgm);
+                videoPlayer.Play();
+                videoPlayer.SetDirectAudioMute(0, false);
+
+                _baseUIManager.PopInstructionUIFromScaleZero("살아있는 그림을 완성시켰어요!", 5f);
+
+
+                Logger.Log("Length of Video: " + videoPlayer.length);
+                float videoLength = (float)videoPlayer.length - _startDelay;
+
+                DOVirtual.DelayedCall(videoLength, () =>
                 {
-                    brush.transform.position = hit.point;
-                    //brush.transform.rotation = Quaternion.LookRotation(hit.normal);
-                    _meshRendererMap[brush.transform.GetInstanceID()].material.DOFade(1, 1f).SetEase(Ease.OutSine);
-                    brush.transform.localScale = _brushDefaultSize * Random.Range(0.8f, 1.2f);
-                    brush.transform.localRotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                    brush.transform.DOShakeScale(0.07f, 0.05f);
-                    brush.SetActive(true);
-                }
-
-                if (_currentBrushCount < COUNT_TO_BRUSH)
-                    _currentBrushCount++;
-                else
-                {
-                    _currentBrushCount = 0;
-                    _isPaintFinished = true;
-
-                    SketchFinishFilterSet(true);
-                    // 브러쉬 개수가 COUNT_TO_BRUSH에 도달하면, 더 이상 생성하지 않음.
-                    // 필요시, 브러쉬 개수 조정 로직 추가 가능.
-
-                    Managers.Sound.Stop(SoundManager.Sound.Bgm);
+                    videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
+                    videoPlayer.Stop();
                     videoPlayer.Play();
-                    videoPlayer.SetDirectAudioMute(0, false);
-                   
-                    _baseUIManager.PopInstructionUIFromScaleZero("살아있는 그림을 완성시켰어요!", 5f);
 
 
-                    Logger.Log("Length of Video: " + videoPlayer.length);
-                    float videoLength = (float)videoPlayer.length - _startDelay;
-             
-                 DOVirtual.DelayedCall(videoLength, () =>
-                 {
-                     videoPlayer.SetDirectAudioMute(0, true); // 트랙 0번을 뮤트
-                     videoPlayer.Stop();
-                     videoPlayer.Play();
-
-
-                     DOVirtual.DelayedCall(1.5f, () =>
-                     {
-                         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
-                         _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
-                         SketchFinishFilterSet(false);
-                         _isPaintFinished = false;
-                         videoPlayer.Pause();
-                     });
-                 });
-                }
+                    DOVirtual.DelayedCall(1.5f, () =>
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
+                        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
+                        SketchFinishFilterSet(false);
+                        _isPaintFinished = false;
+                        videoPlayer.Pause();
+                    });
+                });
             }
+
+            return;
         }
     }
 
-    
+
     private void InitializePool()
     {
         _brushPool = new Queue<GameObject>();
