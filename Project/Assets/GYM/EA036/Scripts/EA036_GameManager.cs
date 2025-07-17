@@ -26,7 +26,7 @@ public class EA036_GameManager : Ex_BaseGameManager
     {
         Camera1,
         Camera2,
-        //Camera3,
+        Camera3,
 
         //Camera4
         // Camera5
@@ -39,8 +39,11 @@ public class EA036_GameManager : Ex_BaseGameManager
         ChairStageObjects,
         TableStageObjects,
         StageObjectAppearPosition,
+        ToyPool,
+        StartSpawnPosition,
+        DisAppearPosition,
         TurnOnObjects,
-        BookCases,
+        EndStageObj,
     }
 
     private enum Particle
@@ -69,7 +72,13 @@ public class EA036_GameManager : Ex_BaseGameManager
     //     { PoolType.Star, Objects.StarStageTreeGroup },
     // };
     
-    public GameObject ObjectAppearPositions;
+    public GameObject objectAppearPositions;
+    public GameObject toysPoolParent;
+    public GameObject[] toySpawnPositions;
+
+    private Vector3 endPoint;
+    
+    private int appearBookCaseToyObjNum = 0;
     
     protected override void Init()
     {
@@ -80,7 +89,8 @@ public class EA036_GameManager : Ex_BaseGameManager
         base.Init();
 
         _uiManager = UIManagerObj.GetComponent<EA036_UIManager>();
-        _poolManager = FindObjectOfType<EA036_PoolManager>();    
+        _poolManager = FindObjectOfType<EA036_PoolManager>();
+        toySpawnPositions = new GameObject[2];
         
         OnChangeStage += CheckWhenNextStage;
         
@@ -99,30 +109,33 @@ public class EA036_GameManager : Ex_BaseGameManager
         for (int i = 0; i < _clickClips.Length; i++)
             _clickClips[i] = Resources.Load<AudioClip>($"EA036/Audio/Click_{(char)('A' + i)}");
 
-        ObjectAppearPositions = GetObject((int)Objects.StageObjectAppearPosition);
+        objectAppearPositions = GetObject((int)Objects.StageObjectAppearPosition);
+        endPoint = GetObject((int)Objects.DisAppearPosition).transform.position;
+
+        
+        for (int i = 0; i < GetObject((int)Objects.StartSpawnPosition).transform.childCount; i++)
+        {
+            toySpawnPositions[i] = GetObject((int)Objects.StartSpawnPosition).transform.GetChild(i).gameObject;
+        }
+
+        toysPoolParent = GetObject((int)Objects.ToyPool);
+        foreach (Transform child in toysPoolParent.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
 
 
-        // Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12; //카메라들 우선순위 초기화
-        // for (int i = (int)Cameras.Camera2; i <= (int)Cameras.Camera4; i++)
-        //     Get<CinemachineVirtualCamera>(i).Priority = 10;
+        Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12; //카메라들 우선순위 초기화
+        for (int i = (int)Cameras.Camera2; i <= (int)Cameras.Camera3; i++)
+            Get<CinemachineVirtualCamera>(i).Priority = 10;
 
+        foreach (Transform child in GetObject((int)Objects.DisAppearPosition).transform) //교구장 배치 하는 장난감들 초기화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
         //Managers.Sound.Play(SoundManager.Sound.Bgm, "EA033/Audio/BGM");
 
-        // var stageParents = new[]
-        // {
-        //     GetObject((int)Objects.BellStageTreeGroup).transform,
-        //     GetObject((int)Objects.BulbStageTreeGroup).transform,
-        //     GetObject((int)Objects.CandyStageTreeGroup).transform,
-        //     GetObject((int)Objects.StarStageTreeGroup).transform
-        // };
-        //
-        // foreach (var parent in stageParents)
-        //     foreach (Transform child in parent)
-        //         child.gameObject.SetActive(false);
-
-
-        // EA033_UIManager.OnNextButtonClicked -=         ;
-        // EA033_UIManager.OnNextButtonClicked +=         ;
     }
 
 
@@ -146,14 +159,17 @@ public class EA036_GameManager : Ex_BaseGameManager
     {
         if (!PreCheckOnRaySync()) return;
 
-        if (_stage == MainSeq.TableStage && gamePlaying)
+        if (_stage == MainSeq.BookCaseStage)
+        {
+            OnRaySynced_ItemPick();
+        }
+        else if (_stage == MainSeq.ChairStage)
         {
             OnRaySynced_ItemPick();
         }
         else if (_stage == MainSeq.TableStage)
         {
-
-
+            OnRaySynced_ItemPick();
         }
         else if (_stage == MainSeq.ToysStage)
         {
@@ -162,11 +178,67 @@ public class EA036_GameManager : Ex_BaseGameManager
                 var hitGameObj = hit.collider.gameObject;
                 
                 var info = hitGameObj.GetComponent<CellInfo>();
-                if (info == null) return;
+                if (info == null || !info.canClicked) return;
 
-                info.poolManager.ReleaseCell(info.row, info.col);
+                Tween jump = hitGameObj.transform
+                    .DOJump(
+                        endPoint,
+                        1f,
+                        1,
+                        1f
+                    )
+                    .SetEase(Ease.InSine)
+                    .OnStart(() => info.canClicked = false)
+                    .OnComplete(() =>
+                    {
+                        info.canClicked = true;
+                        hitGameObj.SetActive(false);
+                        if (appearBookCaseToyObjNum < 4)
+                        {
+                            GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum).gameObject
+                                .SetActive(true);
+                            appearBookCaseToyObjNum++;
+                        }
 
-                //PoolManager.Instance.ReturnToPool(gameObject); //pool로 돌아가는 로직
+                        index++;
+                        OnChangeStage?.Invoke();
+                    });
+
+                Sequence seq = DOTween.Sequence();
+                seq.Append(jump);
+                seq.InsertCallback(
+                    atPosition: 0.5f,
+                    callback: () => {
+                        
+                        _poolManager.ReleaseCell(info.row, info.col);
+                    }
+                );
+
+            }
+        }
+        else if (_stage == MainSeq.End)
+        {
+            foreach (var hit in GameManager_Hits)
+            {
+                var hitGameObj = hit.collider.gameObject;
+                string objName = hit.collider.gameObject.name;
+
+                switch (objName)
+                {
+                    case "BookCase":
+                        hitGameObj.transform.DOShakePosition(0.3f);
+                        _uiManager.TouchUIEndStage(1);
+                        break;
+                    case "Table":
+                        hitGameObj.transform.DOShakeScale(0.3f);
+                        _uiManager.TouchUIEndStage(2);
+                        break;
+                    case "Chair":
+                        hitGameObj.transform.DOShakeScale(0.3f);
+                        _uiManager.TouchUIEndStage(3);
+                        break;
+                    
+                }
             }
         }
     }
@@ -226,6 +298,13 @@ public class EA036_GameManager : Ex_BaseGameManager
                 {
                     NextStage(MainSeq.ToysStage);
                     VictorySoundAndEffect();
+                });
+                break;
+            case 38:
+                DOVirtual.DelayedCall(1f, () =>
+                {
+                    NextStage(MainSeq.End);
+                    VictorySoundAndEffect(); //좀 변경 해야됨 기존 카메라 1쪽에 달려있어서 2인 이쪽에 안맞음
                 });
                 break;
         }
@@ -388,6 +467,15 @@ public class EA036_GameManager : Ex_BaseGameManager
             {
                 _uiManager.PopInstructionUIFromScaleZero("책상을 생겼어요");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_12_책상이_생겼어요_");
+
+                foreach (Transform child in GetObject((int)Objects.TurnOnObjects).transform)
+                {
+                    Vector3 origin = child.transform.localScale;
+                    child.gameObject.transform.DOScale(origin, 1f).SetEase(Ease.InBounce)
+                        .From(Vector3.zero)
+                        .OnStart(() => child.gameObject.SetActive(true));
+                }
+                
             })
             .AppendInterval(2f)
             .AppendCallback(() =>
@@ -410,27 +498,93 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private void OnEndStage()
     {
-        // DOTween.Sequence()
-        //     .AppendCallback(() =>
-        //     {
-        //         Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
-        //         Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
-        //
-        //         _uiManager.PopInstructionUIFromScaleZero("이번에는 반짝이는 별장식을 터치해\n트리를 꾸며주세요!");
-        //         Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_2_이번에는_반짝이는_별장식을_터치해_트리를_꾸며주세요_");
-        //     })
-        //     .AppendInterval(5.5f)
-        //     .AppendCallback(() =>
-        //     {
-        //         _uiManager.ShutInstructionUI();
-        //         _uiManager.PlayReadyAndStart();
-        //     })
-        //     .AppendInterval(5f)
-        //     .AppendCallback(() =>
-        //     {
-        //         _uiManager.ActivateImageAndUpdateCount(4, 0);
-        //     })
-        //     ;
+        GameObject EndStageObjParent = GetObject((int)Objects.EndStageObj);
+        
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                _poolManager.spawnSeq.Kill();
+                
+                for (int i = 4; i < GetObject((int)Objects.DisAppearPosition).transform.childCount; i++)
+                {
+                    GetObject((int)Objects.DisAppearPosition).transform.GetChild(i).gameObject.SetActive(true);
+                }
+
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
+
+                _uiManager.PopInstructionUIFromScaleZero("와 친구들 교실이 완성되었어요!");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_15_와_친구들_교실에_완성되었어요_");
+            })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                _uiManager.ShutInstructionUI();
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12;
+            })
+            .AppendInterval(2f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("어떤것들을 놓았는지 알아볼까요?");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_16_어떤것들을_놓았는지_알아볼까요_");
+            })
+            .AppendInterval(2f)
+            .AppendCallback(() =>
+            {
+                EndStageObjParent.transform.GetChild(3).gameObject.transform.DOJump(
+                        EndStageObjParent.transform.GetChild(0).transform.position,
+                        1f,
+                        1,
+                        1f
+                    ).SetEase(ease: Ease.Linear)
+                    .OnStart(() => EndStageObjParent.transform.GetChild(3).gameObject.SetActive(true))
+                    .OnComplete(() =>
+                    {
+                        _uiManager.ActivateUIEndStage(1);
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_19_교구장");
+                        EndStageObjParent.transform.GetChild(3).gameObject.transform.DOShakePosition(0.3f);
+                    });
+            })
+            .AppendInterval(5f)
+            .AppendCallback(() =>
+            {
+                EndStageObjParent.transform.GetChild(4).gameObject.transform.DOJump(
+                        EndStageObjParent.transform.GetChild(1).transform.position,
+                        1f,
+                        1,
+                        1f
+                    ).SetEase(ease: Ease.Linear)
+                    .OnStart(() => EndStageObjParent.transform.GetChild(4).gameObject.SetActive(true))
+                    .OnComplete(() =>
+                    {
+                        _uiManager.ActivateUIEndStage(2);
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_17_책상");
+                        EndStageObjParent.transform.GetChild(4).gameObject.transform.DOShakeScale(0.3f);
+                    });
+            })
+            .AppendInterval(5f)
+            .AppendCallback(() =>
+            {
+                EndStageObjParent.transform.GetChild(5).gameObject.transform.DOJump(
+                        EndStageObjParent.transform.GetChild(2).transform.position,
+                        1f,
+                        1,
+                        1f
+                    ).SetEase(ease: Ease.Linear)
+                    .OnStart(() => EndStageObjParent.transform.GetChild(5).gameObject.SetActive(true))
+                    .OnComplete(() =>
+                    {
+                        _uiManager.ActivateUIEndStage(3);
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_18_의자");
+                        EndStageObjParent.transform.GetChild(5).gameObject.transform.DOShakeScale(0.3f);
+                    });
+            })
+            .AppendCallback(() =>
+            {
+                RestartScene(delay: 20);
+            })
+            ;
     }
 
     private void VictorySoundAndEffect()

@@ -1,13 +1,15 @@
 using System.Collections.Generic;
+using System.Resources;
 using UnityEngine;
 using DG.Tweening;
+using UniRx.Triggers;
+using UnityEditor;
 
 public class EA036_PoolManager : MonoBehaviour
 {
     private EA036_GameManager gameManager;
     
     [SerializeField] private GameObject cellParent;    // 셀 부모
-    [SerializeField] private GameObject prefabToSpawn; // 스폰할 프리팹
     [SerializeField] private float spawnInterval = 1f; // 시퀀스 간격
 
     private const int ROW_COUNT = 5;
@@ -30,7 +32,7 @@ public class EA036_PoolManager : MonoBehaviour
 
     private void Start()
     {
-        cellParent = gameManager.ObjectAppearPositions;
+        cellParent = gameManager.objectAppearPositions;
 
         for (int r = 0; r < ROW_COUNT; r++)
         {
@@ -43,28 +45,12 @@ public class EA036_PoolManager : MonoBehaviour
             }
         }
 
-        isOccupied[(0, 1)] = true;
-        isOccupied[(1, 1)] = true;
-        isOccupied[(2, 1)] = true;
-        isOccupied[(4, 1)] = true;
-        isOccupied[(0, 3)] = true;
-        isOccupied[(1, 3)] = true;
-        isOccupied[(4, 3)] = true;
-
         spawnSeq = DOTween.Sequence()
             .AppendCallback(() =>
             {
                 Logger.Log("행,열 생성 시퀀스 시작");
-                // for (int i = 0; i < 2; i++) //두개씩 생성 가능
-                // {
-                    List<(int r, int c)> emptyCellList = GetEmptyCells();
-                    if (emptyCellList.Count > 0)
-                    {
-                        int randomIndex = Random.Range(0, emptyCellList.Count);
-                        (int randomR, int randomC) = emptyCellList[randomIndex];
-                        SpawnToyAt(randomR, randomC);
-                    }
-               // }
+                StartSpawning();
+                DOVirtual.DelayedCall(0.5f, StartSpawning);
             })
             .AppendInterval(spawnInterval)
             .SetLoops(-1, LoopType.Restart)
@@ -72,7 +58,18 @@ public class EA036_PoolManager : MonoBehaviour
             ;
     }
 
-    public List<(int r, int c)> GetEmptyCells()  // 빈 칸 목록 반환
+    private void StartSpawning()
+    {
+        List<(int r, int c)> emptyCellList = GetEmptyCells();
+        if (emptyCellList.Count > 0)
+        {
+            int randomIndex = Random.Range(0, emptyCellList.Count);
+            (int randomR, int randomC) = emptyCellList[randomIndex];
+            SpawnToyAt(randomR, randomC);
+        }
+    }
+    
+    private List<(int r, int c)> GetEmptyCells()
     {
         List<(int, int)> emptyCells = new List<(int, int)>();
 
@@ -86,7 +83,9 @@ public class EA036_PoolManager : MonoBehaviour
         }
 
         return emptyCells;
-    }
+    }   // 빈 칸 목록 반환
+
+
 
     private void SpawnToyAt(int r, int c)
     {
@@ -94,28 +93,32 @@ public class EA036_PoolManager : MonoBehaviour
 
         Vector3 spawnPosition = spawnPos[(r, c)];
 
-        GameObject instance = poolManager.GetFromPool(prefabToSpawn, spawnPosition); //생성하는 기능 
-        //instance.transform.position = spawnPosition;
-    
-        CellInfo info = instance.GetComponent<CellInfo>();
-        if (info == null)
-        {
-            Debug.LogError($"CellInfo 컴포넌트를 찾을 수 없습니다.");
-        }
-        else
-        {
-            info.row     = r;
-            info.col     = c;
-            info.poolManager = this;
-        }
+        Transform poolParent = gameManager.toysPoolParent.transform;
+        
+        foreach (Transform child in poolParent)
+            if (!child.gameObject.activeSelf)
+            {
+                var obj = child.gameObject;
 
-        isOccupied[(r, c)] = true;
+                CellInfo info = obj.GetComponent<CellInfo>();
+                info.row = r;
+                info.col = c;
+                
+                isOccupied[(r, c)] = true;
+                
+                int i = Random.Range(0, gameManager.toySpawnPositions.Length);
+                obj.SetActive(true);
+                obj.transform.position = gameManager.toySpawnPositions[i].transform.position;
+                obj.transform.DOJump(spawnPosition, 1f, 1, 1f).SetEase(Ease.InOutBack)
+                    .OnComplete(() => info.canClicked = true);
+                
+                return;
+            }
+
     }
 
-    // 외부에서 해당 칸을 해제할 때 호출
     public void ReleaseCell(int r, int c)
     {
         isOccupied[(r, c)] = false;
-    }
-    
+    }       // 해당 위치 bool값 변경
 }
