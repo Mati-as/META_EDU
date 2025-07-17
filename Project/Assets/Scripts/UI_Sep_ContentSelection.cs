@@ -7,9 +7,9 @@ public class UI_Sep_ContentSelection : UI_PopUp
 
 {
     public override bool IsBackBtnClickable => true;   
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
     
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

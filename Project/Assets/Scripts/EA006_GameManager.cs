@@ -161,9 +161,9 @@ public class EA006_GameManager : Ex_BaseGameManager
    
     protected override void Init()
     {
+        base.Init();
         psResourcePath = "Runtime/EA006/FX_leaves";
         BindObject(typeof(Obj));
-        base.Init();
         _uiManager = UIManagerObj.GetComponent<EA006_UIManager>();
 
         _defaultMat = Resources.Load<Material>("Runtime/EA006/EA006_WheatA");

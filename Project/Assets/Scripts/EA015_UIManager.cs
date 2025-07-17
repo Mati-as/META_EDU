@@ -18,9 +18,9 @@ private EA015_GameManager _gm;
         
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        base.InitEssentialUI();
+        base.InitOnLoad();
         InitInstructionUI();
         return true;
 

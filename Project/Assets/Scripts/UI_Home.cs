@@ -12,7 +12,7 @@ public class UI_Home : UI_PopUp
         Btn_TestBuild
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
 

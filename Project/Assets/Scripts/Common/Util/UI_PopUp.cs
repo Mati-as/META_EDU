@@ -21,9 +21,9 @@ namespace MyCustomizedEditor.Common.Util
         }
         
         
-        public override bool InitEssentialUI()
+        public override bool InitOnLoad()
         {
-            if (base.InitEssentialUI() == false)
+            if (base.InitOnLoad() == false)
                 return false;
             
             return true;

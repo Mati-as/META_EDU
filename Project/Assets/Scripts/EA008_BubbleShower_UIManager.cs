@@ -42,7 +42,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
     private float  _intervalBtwStartAndReady =1f;
     private bool _isFirstRound = true;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
         _gm = GameObject.FindWithTag("GameManager").GetComponent<EA008_BubbleShower_GameManager>();

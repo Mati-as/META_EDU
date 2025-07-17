@@ -39,9 +39,9 @@ public class EA016_UIManager : Base_UIManager
     }
 
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        base.InitEssentialUI();
+        base.InitOnLoad();
        // InitInstructionUI();
         Bind();
         GetObject((int)UI.BallImageAndCount).SetActive(false);

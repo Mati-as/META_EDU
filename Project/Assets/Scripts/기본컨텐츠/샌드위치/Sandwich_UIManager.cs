@@ -25,7 +25,7 @@ public class Sandwich_UIManager : UI_PopUp
     private RectTransform _rectAnimalReaction;
     private RectTransform _rectComplete;
     
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
         BindObject(typeof(SandwichUI));

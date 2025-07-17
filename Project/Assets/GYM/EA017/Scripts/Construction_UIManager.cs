@@ -17,9 +17,9 @@ public class Construction_UIManager : Base_UIManager
         Debug.Assert(manager != null, "GameManager not found");
 
     }
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        base.InitEssentialUI();
+        base.InitOnLoad();
         InitInstructionUI();
         return true;
 

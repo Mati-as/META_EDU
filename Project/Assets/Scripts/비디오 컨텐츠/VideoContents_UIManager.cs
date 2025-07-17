@@ -24,7 +24,7 @@ public class VideoContents_UIManager : UI_Base
 
     void Start()
     {
-        InitEssentialUI();
+        InitOnLoad();
         _canvasGroup = GetComponentInChildren<CanvasGroup>();
         _canvasGroup.DOFade(0, 1f).SetDelay(fadeOutDelay)
             .OnComplete(() =>
@@ -33,9 +33,9 @@ public class VideoContents_UIManager : UI_Base
         });
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        if (base.InitEssentialUI() == false)
+        if (base.InitOnLoad() == false)
             return false;
         
         BindTMP(typeof(UI_Type));

@@ -36,9 +36,9 @@ public class EA019_UIManager : Base_UIManager
    private bool _isInvokable = true;
    private TextMeshProUGUI _tmp;
    
-   public override bool InitEssentialUI()
+   public override bool InitOnLoad()
    {
-       base.InitEssentialUI();
+       base.InitOnLoad();
        
        BindButton(typeof(Btns));
        BindObject(typeof(UI));

@@ -22,9 +22,9 @@ public class CrossRoad_UIManager : Base_UIManager
         }
 
     }
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        base.InitEssentialUI();
+        base.InitOnLoad();
         InitInstructionUI();
         return true;
 

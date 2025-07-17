@@ -12,9 +12,9 @@ public class EA006_UIManager : Base_UIManager
         SparrowCount
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        base.InitEssentialUI();
+        base.InitOnLoad();
         BindTMP(typeof(TMP));
 
         EA006_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;

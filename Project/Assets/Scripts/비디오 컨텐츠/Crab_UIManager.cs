@@ -59,7 +59,7 @@ public class Crab_UIManager : UI_PopUp
     private int _currentUiIndex = (int)CrabDialogue.Crab_Dialogue1;
     
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
       

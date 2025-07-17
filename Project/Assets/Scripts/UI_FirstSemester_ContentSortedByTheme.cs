@@ -17,7 +17,7 @@ public class UI_FirstSemester_ContentSortedByTheme : UI_PopUp
    
   }
 
-  public override bool InitEssentialUI()
+  public override bool InitOnLoad()
   {
      
         // BindButton(typeof(Btns));
@@ -32,6 +32,6 @@ public class UI_FirstSemester_ContentSortedByTheme : UI_PopUp
         //     Managers.UI.ClosePopupUI();
         //     Managers.UI.ShowPopupUI<UI_Oct_ContentSelection>();
         // });
-      return base.InitEssentialUI();
+      return base.InitOnLoad();
   }
 }

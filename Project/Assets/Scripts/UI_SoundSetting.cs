@@ -15,7 +15,7 @@ public class UI_SoundSetting : UI_PopUp
         EffectVolume,
         NarrationVolume,
     }
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
            _volumeSliders = new Slider[(int)SoundManager.Sound.Max];
 
@@ -107,6 +107,6 @@ public class UI_SoundSetting : UI_PopUp
         });
 
         
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

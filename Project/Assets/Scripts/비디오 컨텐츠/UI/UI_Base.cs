@@ -11,7 +11,7 @@ public abstract class UI_Base : MonoBehaviour
 
     protected bool _init;
 
-    public virtual bool InitEssentialUI()
+    public virtual bool InitOnLoad()
     {
         if (_init)
             return false;
@@ -21,7 +21,12 @@ public abstract class UI_Base : MonoBehaviour
 
     protected virtual void Awake()
     {
-       InitEssentialUI();
+       InitOnLoad();
+    }
+
+    public virtual void ExplicitInit()
+    {
+        
     }
 
     protected void Bind<T>(Type type) where T : Object

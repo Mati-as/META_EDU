@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class UI_Scene : UI_Base
 {
-	public override bool InitEssentialUI()
+	public override bool InitOnLoad()
 	{
-		if (base.InitEssentialUI() == false)
+		if (base.InitOnLoad() == false)
 			return false;
 
 		//Managers.UI.SetCanvas(gameObject, false);

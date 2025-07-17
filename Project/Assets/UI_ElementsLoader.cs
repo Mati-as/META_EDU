@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+/// <summary>
+/// 프리팹 로드 담당
+/// 2. 추후 Addressable로 변경 예정
+/// </summary>
 public class UI_ElementsLoader : Ex_MonoBehaviour
 {
     public enum UI_Elements

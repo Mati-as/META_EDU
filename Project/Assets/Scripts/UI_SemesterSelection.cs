@@ -13,7 +13,7 @@ public class UI_SemesterSelection : UI_PopUp
     }
     // Start is called before the first frame update
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
         
@@ -29,6 +29,6 @@ public class UI_SemesterSelection : UI_PopUp
         {
             Managers.UI.ShowPopupUI<UI_SecondSemester_ContentSortedByTheme>();
         });
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

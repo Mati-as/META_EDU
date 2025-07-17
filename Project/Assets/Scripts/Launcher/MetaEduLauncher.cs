@@ -378,7 +378,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnLoadFinished()
     {
-        InitEssentialUI();
+        InitOnLoad();
         SetUIEssentials();
 
         // 널방지를 위한 딜레이 입니다.
@@ -392,7 +392,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private UIType currentUITab = UIType.Home;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         return true;
     }

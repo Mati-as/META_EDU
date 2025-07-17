@@ -374,9 +374,9 @@ public abstract class Base_GameManager : MonoBehaviour
             Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
         
         baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
-        
         baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
-        baseUIManager.Init();
+        
+        baseUIManager.ExplicitInit();
 
      
     }

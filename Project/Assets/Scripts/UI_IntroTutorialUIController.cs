@@ -35,7 +35,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
     
     
     
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(Intro_UI));
         BindTMP(typeof(TMPs));

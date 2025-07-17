@@ -13,7 +13,7 @@ public class UI_TopNavigator : UI_PopUp
     
     
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindButton(typeof(Btns));
 
@@ -49,6 +49,6 @@ public class UI_TopNavigator : UI_PopUp
         });
 
 
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

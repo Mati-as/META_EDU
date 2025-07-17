@@ -21,9 +21,9 @@ public class UI_MediaArt : UI_PopUp
         TMP_SmallTitle,
         TMP_Body
     }
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 
     

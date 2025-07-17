@@ -31,10 +31,12 @@ public class EA033_UIManager : Base_UIManager
    private bool _isInvokable = true;
    private TextMeshProUGUI _tmp;
    
-   public override bool InitEssentialUI()
+   public override void ExplicitInit()
    {
-       base.InitEssentialUI();
+       //1.elements load
+       base.ExplicitInit();
 
+       //2. InGamePart UI Init()
        BindButton(typeof(Btns));
        BindObject(typeof(UI));
        BindTMP(typeof(TMPs));
@@ -58,7 +60,7 @@ public class EA033_UIManager : Base_UIManager
 
        GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
        
-       return true;
+       //return true;
    }
    
    

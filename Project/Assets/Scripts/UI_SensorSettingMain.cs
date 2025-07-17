@@ -13,7 +13,7 @@ public class UI_SensorSettingMain : UI_PopUp
     }
 
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
         
@@ -32,6 +32,6 @@ public class UI_SensorSettingMain : UI_PopUp
         {
             Managers.UI.ShowPopupUI<UI_MenuSetting>();
         });
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

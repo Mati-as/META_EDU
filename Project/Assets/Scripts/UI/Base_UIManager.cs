@@ -42,20 +42,21 @@ public class Base_UIManager : UI_PopUp
     
     
     protected Sequence _uiSeq;
+    private bool isInitialized = false;
 
     private UI_ElementsLoader _uiElementsLoader =new();
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
+  
         return true;
-        // Initialize UI elements here
     }
 
-    public void Init()
+    
+    public override void ExplicitInit()
     {
-        
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
         
@@ -72,9 +73,18 @@ public class Base_UIManager : UI_PopUp
 
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
         Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
-
- 
     }
+    
+    // /// <summary>
+    // ///     Event loop아닌 수동초기화임에 주의 
+    // /// </summary>
+    // public virtual void Init()
+    // {
+    //     if (isInitialized)
+    //     {
+    //         Logger.CoreClassLog("중복 초기화 시도 XXXXXXXXX");
+    //     }
+    // }
 
     public void LoadUIElements(GameObject parent)
     {

@@ -37,7 +37,7 @@ public class ScratchPainting_UIManager : UI_PopUp
     private WaitForSeconds _waitForReady;
     private float _waitTIme= 4.5f;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
       //  _gm = GameObject.FindWithTag("GameManager").GetComponent<IGameManager>();

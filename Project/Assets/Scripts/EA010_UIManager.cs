@@ -8,12 +8,12 @@ public class EA010_UIManager : Base_UIManager
        // MessageBox
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
      //   BindTMP(typeof(TMP));
      EA010_AutumnalFruits_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
      EA010_AutumnalFruits_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
-        base.InitEssentialUI();
+        base.InitOnLoad();
     
        // GetTMP((int)TMP.MessageBox).text = string.Empty;
         return true;

@@ -58,7 +58,7 @@ public class UI_SideMenu : UI_PopUp
 
   
     // Start is called before the first frame update
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
       
         BindButton(typeof(Btn_Type));

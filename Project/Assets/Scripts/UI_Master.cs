@@ -46,7 +46,7 @@ public class UI_Master : UI_Scene
    
 
     
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
 
@@ -100,7 +100,7 @@ public class UI_Master : UI_Scene
 
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         RaySynchronizer.OnGetInputFromUser += OnRaySynced;
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 
 
