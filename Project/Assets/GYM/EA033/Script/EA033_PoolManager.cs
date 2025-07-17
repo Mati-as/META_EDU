@@ -13,7 +13,7 @@ public enum PoolType
     Star
 }
 
-public class PoolManager : MonoBehaviour
+public class EA033_PoolManager : MonoBehaviour
 {
     [SerializeField] private Transform[] poolParents = new Transform[4];
 

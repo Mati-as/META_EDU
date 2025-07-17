@@ -54,7 +54,7 @@ public class EA033_GameManager : Ex_BaseGameManager
     }
 
     private EA033_UIManager _uiManager;
-    private PoolManager _poolManager;
+    private EA033_PoolManager PoolManager;
     private bool gamePlaying;
     private int i;
     private Vector3 effectPos;
@@ -87,7 +87,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         base.Init();
 
         _uiManager = UIManagerObj.GetComponent<EA033_UIManager>();
-        _poolManager = FindObjectOfType<PoolManager>();
+        PoolManager = FindObjectOfType<EA033_PoolManager>();
             
         _stage = MainSeq.OnStart;
 
@@ -211,7 +211,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                     i = 0;
                     gamePlaying = false;
                     VictorySoundAndEffect();
-                    _poolManager.StopSpawnPool();
+                    PoolManager.StopSpawnPool();
 
                     DOVirtual.DelayedCall(1f, () =>
                     {
@@ -314,7 +314,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                _poolManager.StartSpawning(PoolType.Bell);
+                PoolManager.StartSpawning(PoolType.Bell);
                 _uiManager.ActivateImageAndUpdateCount(1, 0);
             })
             ;
@@ -343,7 +343,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                _poolManager.StartSpawning(PoolType.Bulb);
+                PoolManager.StartSpawning(PoolType.Bulb);
                 _uiManager.ActivateImageAndUpdateCount(2, 0);
             })
             ;
@@ -372,7 +372,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                _poolManager.StartSpawning(PoolType.Candy);
+                PoolManager.StartSpawning(PoolType.Candy);
                 _uiManager.ActivateImageAndUpdateCount(3, 0);
             })
             ;
@@ -401,7 +401,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             {
                 gamePlaying = true;
 
-                _poolManager.StartSpawning(PoolType.Star);
+                PoolManager.StartSpawning(PoolType.Star);
                 _uiManager.ActivateImageAndUpdateCount(4, 0);
             })
             ;
