@@ -91,12 +91,12 @@ public class EA019_GameManager : Ex_BaseGameManager
  
     public int CurrentMainSeqNum
     {
-        get => CurrentMainMainSequence;
+        get => currentMainMainSequence;
         set
         {
 
             Logger.ContentTestLog($"{nameof(CurrentMainSeqNum)} : {(MainSeq)value}");
-            CurrentMainMainSequence = value;
+            currentMainMainSequence = value;
             ChangeThemeSeqAnim(value);
             
             switch (value)

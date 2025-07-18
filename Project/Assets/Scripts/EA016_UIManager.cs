@@ -39,15 +39,15 @@ public class EA016_UIManager : Base_UIManager
     }
 
 
-    public override bool InitOnLoad()
+    public override void ExplicitInit()
     {
-        base.InitOnLoad();
-       // InitInstructionUI();
+        base.ExplicitInit();
         Bind();
         GetObject((int)UI.BallImageAndCount).SetActive(false);
-        return true;
     }
 
+    
+ 
     protected override void Bind()
     {
         BindTMP(typeof(TMPs));
@@ -81,7 +81,7 @@ public class EA016_UIManager : Base_UIManager
 
 
 
-        if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
+        if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
         {
             GetTMP((int)TMPs.Count).text = _gm.ballCountLeftToPut.ToString();
             switch (_gm.currentBallColorToPut)
@@ -101,7 +101,7 @@ public class EA016_UIManager : Base_UIManager
                     break;
             }
         }
-        else if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.CountMode)
+        else if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.CountMode)
         {
             GetTMP((int)TMPs.Count).text = _gm.BallCountGoal.ToString();
             GetObject((int)UI.AllBalls).SetActive(true);
@@ -118,7 +118,7 @@ public class EA016_UIManager : Base_UIManager
         
         
         int cache = _gm.ballCountLeftToPut;
-        if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
+        if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
         {
             GetTMP((int)TMPs.Count).text = Mathf.Clamp(cache,0,50).ToString();
             GetObject((int)UI.BallImageAndCount).transform.localScale = Vector3.zero;

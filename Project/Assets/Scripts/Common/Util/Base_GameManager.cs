@@ -324,6 +324,9 @@ public abstract class Base_GameManager : MonoBehaviour
             
             UIManagerObj = GameObject.FindWithTag("UIManager");
             baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+            
+            baseUIManager.LoadUIElements(baseUIManager.transform.Find("[Interactable]").gameObject);
+            baseUIManager.ExplicitInit();
             return;
         }
      
@@ -375,7 +378,6 @@ public abstract class Base_GameManager : MonoBehaviour
         
         baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
         baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
-        
         baseUIManager.ExplicitInit();
 
      

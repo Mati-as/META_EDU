@@ -190,7 +190,7 @@ public class MetaEduLauncher : UI_PopUp
             (() =>
             {
                 if(_devUIManager ==null) _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
-                _devUIManager.DisableAllImages();
+                _devUIManager.ToggleAllImages();
             });
         
 

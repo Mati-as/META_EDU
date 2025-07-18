@@ -11,11 +11,14 @@ using UnityEngine.Serialization;
 
 public class ContentAdjuster : MonoBehaviour
 {
+
+    private const string THIS_MONTH = "Sep"; // 현재 월 (테스트용)
     UI_Master _master;
  
     //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작
     public enum ModeType
     {
+        이달의컨텐츠,
         주제별1학기,
         주제별2학기,
         신체활동,
@@ -35,6 +38,7 @@ public class ContentAdjuster : MonoBehaviour
         주제별10월,
         주제별11월,
         주제별12월,
+        미디어아트,
         Test
     }
     public enum ContentCategory
@@ -43,7 +47,8 @@ public class ContentAdjuster : MonoBehaviour
         Art_Expression,
         Science_Exploration,
         Social_Skills,
-        Communication
+        Communication,
+        Media_Art
     }
 
     public ModeType mode; // 인스펙터에서 선택
@@ -85,6 +90,10 @@ public class ContentAdjuster : MonoBehaviour
         
         switch (mode)
         {
+            case ModeType.이달의컨텐츠:
+                FilterAndPaginateContentByMonth(THIS_MONTH);
+                InitPageNavigation();
+                return;
             case ModeType.주제별1학기:
                 monthIndices = new int[] { 2, 3, 4, 5, 6, 7 }; // Mar~Aug
                 break;
@@ -111,6 +120,10 @@ public class ContentAdjuster : MonoBehaviour
                 return;
             case ModeType.의사소통:
                 FilterAndPaginateContent(ContentCategory.Communication);
+                InitPageNavigation();
+                return;
+            case ModeType.미디어아트:
+                FilterAndPaginateContent(ContentCategory.Media_Art);
                 InitPageNavigation();
                 return;
             case ModeType.주제별1월:
@@ -504,4 +517,7 @@ public class ContentAdjuster : MonoBehaviour
 
         Debug.Log($"[Test 모드] 전체 콘텐츠 {allScenes.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
     }
+    
+
+
 }

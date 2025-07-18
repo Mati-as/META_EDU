@@ -17,6 +17,7 @@ public class UI_Master : UI_Scene
     private GraphicRaycaster _launcherGR;
     private RaySynchronizer _raySynchronizer;
 
+    public string currentSeason = null;
 
     public static string GameNameWaitingForConfirmation
     {
@@ -50,8 +51,9 @@ public class UI_Master : UI_Scene
     {
         BindObject(typeof(UI));
 
-        UILoadInitialScene = GetObject((int)UI.UI_LoadInitialScene).GetComponent<UI_LoadInitialScene>();
+        currentSeason = null;
         
+        UILoadInitialScene = GetObject((int)UI.UI_LoadInitialScene).GetComponent<UI_LoadInitialScene>();
         _raySynchronizer = GameObject.FindWithTag("RaySynchronizer").GetComponent<RaySynchronizer>();
         SetUIEssentials();
 

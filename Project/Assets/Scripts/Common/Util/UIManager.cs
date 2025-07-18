@@ -147,7 +147,9 @@ public class UIManager
     }
 
     
-    private UI_Master _master;
+    public UI_Master Master;
+    
+  
     public T ShowSceneUI<T>(string name = null) where T : UI_Scene
     {
         if (string.IsNullOrEmpty(name))
@@ -159,14 +161,14 @@ public class UIManager
 
         
         go.transform.SetParent(Root.transform);
-        _master = Utils.GetOrAddComponent<UI_Master>(Root);
+        Master = Utils.GetOrAddComponent<UI_Master>(Root);
         
-        Debug.Assert(_master!=null,"Master UI Can't be null");
+        Debug.Assert(Master!=null,"Master UI Can't be null");
         
         return sceneUI;
     }
 
-    public T ShowPopupUI<T>(string name = null, Transform parent = null) where T : UI_PopUp
+    public T ShowPopupUI<T>(string name = null, Transform parent = null,string path = null) where T : UI_PopUp
     {
         if (string.IsNullOrEmpty(name))
             name = typeof(T).Name;
@@ -180,10 +182,25 @@ public class UIManager
                 return popup as T;
             }
 
+        GameObject UIPrefab = null;
+        GameObject go = null;
         // 프리팹 로드 및 인스턴스화
-        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
-        var go = Managers.Resource.Instantiate($"UI/Popup/{name}");//Awake()실행보장
+        if (string.IsNullOrEmpty(path))
+        {
+             UIPrefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{name}");
+             go= Managers.Resource.Instantiate($"UI/Popup/{name}");//Awake()실행보장
 
+        }
+        else
+        {
+            string manualPath = "UI/Popup/" + path + $"/{name}";
+            Logger.Log($"[UI] Loading Popup from manual path: {manualPath}");
+            
+             UIPrefab = Managers.Resource.Load<GameObject>("Prefabs/"+manualPath);
+             go= Managers.Resource.Instantiate(manualPath);//Awake()실행보장
+        }
+      
+     
         var popupInstance = Utils.GetOrAddComponent<T>(go);
         _popupStack.Push(popupInstance);
 
@@ -195,7 +212,7 @@ public class UIManager
             go.transform.SetParent(Root.transform);
 
         go.transform.localScale = Vector3.one;
-        go.transform.localPosition = prefab.transform.position;
+        go.transform.localPosition = UIPrefab.transform.position;
 
 
         PreviousPopup = CurrentPopup;
@@ -207,8 +224,8 @@ public class UIManager
 
         Managers.UI.SceneUI.OnPopupUI();
         
-        Logger.CoreClassLog(
-            $"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
+        // Logger.CoreClassLog(
+        //     $"[UI] Popup '{name}' opened. Current Popup: {CurrentPopup}, Previous Popup: {PreviousPopup}");
         return popupInstance;
     }
 
@@ -246,7 +263,7 @@ public class UIManager
 
         if (popupInstance!=null)
         {
-            _master.SetBtnStatus(UI_Master.UI.Btn_Back,popupInstance.IsBackBtnClickable);
+            Master.SetBtnStatus(UI_Master.UI.Btn_Back,popupInstance.IsBackBtnClickable);
         }
 
         if (popupInstance.GetType() != typeof(UI_Confirmation)) currentPopupClass = popupInstance;

@@ -61,11 +61,11 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     {
         get
         {
-            return CurrentMainMainSequence;
+            return currentMainMainSequence;
         }
         set
         {
-            CurrentMainMainSequence = value;
+            currentMainMainSequence = value;
 
             //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
             Logger.ContentTestLog($"Current Sequence: {((MainSeq)CurrentMainMainSeq).ToString()}");

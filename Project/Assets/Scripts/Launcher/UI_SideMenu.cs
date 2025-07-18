@@ -93,9 +93,7 @@ public class UI_SideMenu : UI_PopUp
         });
 
 
-        CanvasGroup canvasGroup = GetObject((int)UI.UI_Recommendations).GetComponent<CanvasGroup>();
-        canvasGroup.alpha = 0;
-        Logger.ContentTestLog($"canvas group alpha : {canvasGroup.transform.gameObject.name} :{canvasGroup.alpha} InitEssentialUI -----------------------------------------------------------");
+   
         
         
         
@@ -103,7 +101,12 @@ public class UI_SideMenu : UI_PopUp
         Debug.Assert(_devUIManager!=null);
         GetButton((int)Btn_Type.Btn_SensorShowGuide).gameObject.BindEvent(() =>
         {
-            _devUIManager.DisableAllImages();
+            _currentClickCountToShowSensorImage++;
+            if (_currentClickCountToShowSensorImage > CLICK_COUNT_TO_SHOW_SENSOR_IMAGE)
+            {
+                _currentClickCountToShowSensorImage = 0;
+                _devUIManager.ToggleAllImages();
+            }
         });
         
         //Default Off.
@@ -112,11 +115,19 @@ public class UI_SideMenu : UI_PopUp
         
         GetObject((int)UI.Setting).gameObject.SetActive(false);
         SetSlider();
-
+        
+        
+        // 애니메이션 Default Clip에서 초기화진행 하위로직 불필요. 
+        //_canvasGroup = GetObject((int)UI.UI_Recommendations).GetComponent<CanvasGroup>();
+        //_canvasGroup.DOFade(0, 0.1f);
+        //Logger.ContentTestLog($"canvas group alpha : {_canvasGroup.transform.gameObject.name} :{_canvasGroup.alpha} InitEssentialUI -----------------------------------------------------------");
         return true;
     }
-    
 
+    private int _currentClickCountToShowSensorImage;
+    private const int CLICK_COUNT_TO_SHOW_SENSOR_IMAGE = 5;
+
+    private CanvasGroup _canvasGroup;
     private IEnumerator XMLSaveCo()
     {
         OnSceneQuit?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);

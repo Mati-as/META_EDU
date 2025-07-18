@@ -171,6 +171,10 @@ public class ColorTogether_Manager : Base_GameManager
 
     }
 
+    protected override void OnDestroy()
+    {
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
+    }
     void AssignCameras()
     {
         CinemachineVirtualCamera[] cams = GetComponentsInChildren<CinemachineVirtualCamera>();

@@ -60,6 +60,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         // _defaultPosition = new Vector3();
         //_defaultPosition = transform.position;
         _baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
+        _baseUIManager.uiMediaArtInScene.InitToUse();
     }
 
     private void SketchFinishFilterSet(bool isActive)

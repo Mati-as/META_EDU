@@ -120,10 +120,10 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
     public int CurrentMainMainSeq
     {
-        get => CurrentMainMainSequence;
+        get => currentMainMainSequence;
         set
         {
-            CurrentMainMainSequence = value;
+            currentMainMainSequence = value;
 
             //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
             Logger.ContentTestLog($"Current Sequence: {((MainSeq)CurrentMainMainSeq).ToString()}");

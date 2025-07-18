@@ -4,6 +4,7 @@ using DG.Tweening;
 using MyCustomizedEditor.Common.Util;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -17,6 +18,8 @@ public class Base_UIManager : UI_PopUp
     {
         UI_Instruction,
 
+        UI_MediaArtInScene,
+        
         //Optional Tools
         UI_Ready,
         UI_Start,
@@ -44,10 +47,17 @@ public class Base_UIManager : UI_PopUp
     protected Sequence _uiSeq;
     private bool isInitialized = false;
 
+    [FormerlySerializedAs("UI_MediaArt")] [FormerlySerializedAs("uiMediaArt")] [FormerlySerializedAs("_uiMediaArt")] public UI_MediaArtInScene uiMediaArtInScene;
     private UI_ElementsLoader _uiElementsLoader =new();
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 
 
+    
+    /// <summary>
+    /// 1.로드시 자동 초기화 함수
+    /// 2.UI_Setting, 등 UIMAnager 로드시 순서를 지정할 필요 없는 나머지 UI는 자동적으로 이벤트함수에서 Init되도록 구현했습니다.
+    /// </summary>
+    /// <returns></returns>
     public override bool InitOnLoad()
     {
   
@@ -55,10 +65,17 @@ public class Base_UIManager : UI_PopUp
     }
 
     
+    /// <summary>
+    /// 1.순서보장형 ExplicitInit() 함수
+    /// 2. GameManager에서 UIManager 호출, 프리팹 로드 후 초기화되어아 햐는 경우 아래 함수를 호출하여 순서보장형 초기화를 진행합니다. 
+    /// </summary>
     public override void ExplicitInit()
     {
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
+        
+        
+        uiMediaArtInScene = GetObject((int)UI.UI_MediaArtInScene).GetComponent<UI_MediaArtInScene>();
         
         UI_Instruction = GetObject((int)UI.UI_Instruction);
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
@@ -109,7 +126,7 @@ public class Base_UIManager : UI_PopUp
     public void InitInstructionUI()
     {
         //  UI_Instruction.SetActive(true);
-        TMP_Instruction.text = string.Empty;
+        if(TMP_Instruction!=null)TMP_Instruction.text = string.Empty;
     }
 
     /// <summary>

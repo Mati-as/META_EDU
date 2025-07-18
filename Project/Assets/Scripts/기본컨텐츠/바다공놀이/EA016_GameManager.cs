@@ -23,22 +23,26 @@ public class EA016_GameManager : Ex_BaseGameManager
    
     public enum MainSequence
     {
+        Default,
         FreePlay,
         ColorMode,
         CountMode,
         OnFinishFreePlay
     }
 
-    
-    public int currentMainSeq
+   
+    public int CurrentMainSeq
     {
-        get => CurrentMainMainSequence;
+        get
+        {
+            return currentMainMainSequence;
+        }
         set
         {
-            Logger.ContentTestLog($"current Mode : {(MainSequence)currentMainSeq}");
-            CurrentMainMainSequence = value;
+            Logger.ContentTestLog($"current Mode : {(MainSequence)CurrentMainSeq}");
+            currentMainMainSequence = value;
 
-            switch (CurrentMainMainSequence)
+            switch (currentMainMainSequence)
             {
                 case (int)MainSequence.ColorMode:
                     RoundSetInColorBallGame(color:BallInfo.BallColor.Pink);
@@ -78,7 +82,7 @@ public class EA016_GameManager : Ex_BaseGameManager
           
         }
     }
-  
+
     public Vector3 particleUpOffset;
 
     protected override void Init()
@@ -92,7 +96,7 @@ public class EA016_GameManager : Ex_BaseGameManager
 
         EA016_BallController.OnBallIsInTheHole -= OnBallInTheHole;
         EA016_BallController.OnBallIsInTheHole += OnBallInTheHole;
-
+        currentMainMainSequence = (int)MainSequence.Default;
         _ea016UIManager = UIManagerObj.GetComponent<EA016_UIManager>();
         Debug.Assert(_ea016UIManager != null, "UIManager not found");
     }
@@ -109,16 +113,16 @@ public class EA016_GameManager : Ex_BaseGameManager
     {
    
         
-        if(currentMainSeq == (int)MainSequence.FreePlay) return;
+        if(CurrentMainSeq == (int)MainSequence.FreePlay) return;
         Logger.ContentTestLog($"현재 공 색깔 : {(BallInfo.BallColor)ballColor}");
 
         if (!isBallCountable)
         {
-            Logger.ContentTestLog($"아직 공 카운팅 준비가 안됬거나 해당 모드 아님 {(MainSequence)currentMainSeq}");
+            Logger.ContentTestLog($"아직 공 카운팅 준비가 안됬거나 해당 모드 아님 {(MainSequence)CurrentMainSeq}");
             return;
         }
 
-        if (currentMainSeq == (int)MainSequence.ColorMode)
+        if (CurrentMainSeq == (int)MainSequence.ColorMode)
         {
             if (currentBallColorToPut == (BallInfo.BallColor)ballColor)
             {
@@ -127,7 +131,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                 Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/EA016/Hole" + randomChar,0.5f);
             }
         } 
-        else if (currentMainSeq == (int)MainSequence.CountMode)
+        else if (CurrentMainSeq == (int)MainSequence.CountMode)
         {
             CurrentBallCountAlreadyPut++;
             Managers.Sound.Play(SoundManager.Sound.Narration, NARRATION_PATH + _currentBallCountAlreadyPut.ToString());
@@ -141,7 +145,7 @@ public class EA016_GameManager : Ex_BaseGameManager
     {
         base.OnGameStartButtonClicked();
         
-        currentMainSeq = (int)MainSequence.FreePlay;
+        CurrentMainSeq = (int)MainSequence.FreePlay;
         DOVirtual.DelayedCall(1.5f, () =>
         {
             Messenger.Default.Publish(new UI_Payload("친구들! 공을 가지고 돌고래와 놀아볼까요?", true, delayAndAutoShutTime: 2.5f));
@@ -173,7 +177,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                 PlayParticle(hit.point + particleUpOffset);//offset
             }
 
-            if (currentMainSeq == (int)MainSequence.ColorMode)
+            if (CurrentMainSeq == (int)MainSequence.ColorMode)
             {
               
                 
@@ -244,7 +248,8 @@ public class EA016_GameManager : Ex_BaseGameManager
 
     private void Update()
     {
-        if (!isStartButtonClicked && currentMainSeq != (int)MainSequence.FreePlay) return;
+        if (!isStartButtonClicked) return; 
+        if (!isStartButtonClicked && CurrentMainSeq != (int)MainSequence.FreePlay) return;
 
         if (_isFreePlayFinished) return; 
         
@@ -253,7 +258,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         {
             _isFreePlayFinished = true;
             _elapsed = 0;
-            currentMainSeq = (int)MainSequence.ColorMode;
+            CurrentMainSeq = (int)MainSequence.ColorMode;
         }
 
     }
@@ -358,7 +363,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         {
             _currentBallCountAlreadyPut = value;
             _ea016UIManager.RefreshText();
-            if (currentMainSeq == (int)MainSequence.ColorMode)
+            if (CurrentMainSeq == (int)MainSequence.ColorMode)
             {
                 if (_currentBallCountAlreadyPut >= BallCountGoal)
                 {
@@ -380,12 +385,12 @@ public class EA016_GameManager : Ex_BaseGameManager
                         else if (currentBallColorToPut == BallInfo.BallColor.Blue)
                         {
                             isBallCountable = false;
-                            currentMainSeq = (int)MainSequence.CountMode;
+                            CurrentMainSeq = (int)MainSequence.CountMode;
                         }
                     });
                 }
             }
-            else if (currentMainSeq == (int)MainSequence.CountMode)
+            else if (CurrentMainSeq == (int)MainSequence.CountMode)
             {
                 
                 if (_currentBallCountAlreadyPut >= BallCountGoal)
@@ -409,7 +414,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                         {
                        
                             _ea016UIManager.ShutBallCountUI();
-                            currentMainSeq = (int)MainSequence.OnFinishFreePlay;
+                            CurrentMainSeq = (int)MainSequence.OnFinishFreePlay;
                         }
                     });
                 }

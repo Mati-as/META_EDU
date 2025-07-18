@@ -36,7 +36,7 @@ public class CursorImageController : MonoBehaviour, IPointerEnterHandler, IPoint
         _buttonScaleSeq = DOTween.Sequence();
         
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Launcher_UI_Click");
-        _buttonScaleSeq.Append(transform.DOScale(DefaultScale* 0.9f, 0.2f).SetEase(Ease.OutBack));
+        _buttonScaleSeq.Append(transform.DOScale(DefaultScale, 0.2f).SetEase(Ease.OutBack));
         
         if (eventData.button == PointerEventData.InputButton.Left)
         {
