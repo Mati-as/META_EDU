@@ -106,11 +106,22 @@ public class EA036_PoolManager : MonoBehaviour
                 
                 isOccupied[(r, c)] = true;
                 
+                var originScale = obj.transform.localScale;
                 int i = Random.Range(0, gameManager.toySpawnPositions.Length);
                 obj.SetActive(true);
                 obj.transform.position = gameManager.toySpawnPositions[i].transform.position;
+                switch (i)
+                {
+                    case 0:
+                        gameManager.ToyBox.GetChild(i).gameObject.transform.DOShakePosition(0.3f);
+                        break;
+                    case 1:
+                        gameManager.ToyBox.GetChild(i).gameObject.transform.DOShakePosition(0.3f);
+                        break;
+                }
                 obj.transform.DOJump(spawnPosition, 1f, 1, 1f).SetEase(Ease.InOutBack)
                     .OnComplete(() => info.canClicked = true);
+                obj.transform.DOScale(originScale, 0.4f).SetEase(Ease.Linear).From(Vector3.zero);
                 
                 return;
             }

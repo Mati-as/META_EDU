@@ -5,6 +5,7 @@ using Cinemachine;
 using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class EA036_GameManager : Ex_BaseGameManager
@@ -19,9 +20,9 @@ public class EA036_GameManager : Ex_BaseGameManager
         End,
         Default
     }
-
+    
     private MainSeq _stage;
-
+    
     private enum Cameras
     {
         Camera1,
@@ -44,6 +45,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         DisAppearPosition,
         TurnOnObjects,
         EndStageObj,
+        ToyBox,
     }
 
     private enum Particle
@@ -64,14 +66,6 @@ public class EA036_GameManager : Ex_BaseGameManager
     
     private AudioClip[] _clickClips;
     
-    // private readonly Dictionary<PoolType, Objects> _groupMap = new Dictionary<PoolType, Objects>
-    // {
-    //     { PoolType.Bell, Objects.BellStageTreeGroup },
-    //     { PoolType.Bulb, Objects.BulbStageTreeGroup },
-    //     { PoolType.Candy, Objects.CandyStageTreeGroup },
-    //     { PoolType.Star, Objects.StarStageTreeGroup },
-    // };
-    
     public GameObject objectAppearPositions;
     public GameObject toysPoolParent;
     public GameObject[] toySpawnPositions;
@@ -79,6 +73,9 @@ public class EA036_GameManager : Ex_BaseGameManager
     private Vector3 endPoint;
     
     private int appearBookCaseToyObjNum = 0;
+    private bool canToundUI = true;
+
+    public Transform ToyBox;
     
     protected override void Init()
     {
@@ -92,11 +89,12 @@ public class EA036_GameManager : Ex_BaseGameManager
         _poolManager = FindObjectOfType<EA036_PoolManager>();
         toySpawnPositions = new GameObject[2];
         
-        OnChangeStage += CheckWhenNextStage;
         
         _stage = MainSeq.Default;
         
         gamePlaying = false;
+
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "EA036/Audio/EA036_BGM");
             
         psResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
@@ -111,7 +109,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         objectAppearPositions = GetObject((int)Objects.StageObjectAppearPosition);
         endPoint = GetObject((int)Objects.DisAppearPosition).transform.position;
-
+        ToyBox = GetObject((int)Objects.ToyBox).transform;
         
         for (int i = 0; i < GetObject((int)Objects.StartSpawnPosition).transform.childCount; i++)
         {
@@ -134,6 +132,16 @@ public class EA036_GameManager : Ex_BaseGameManager
             child.gameObject.SetActive(false);
         }
         
+        foreach (Transform child in GetObject((int)Objects.ActivatableObjects).transform) //각 스테이지 표시 기물들 초기화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.TurnOnObjects).transform) //스테이지 종료 후 나타나는 기물들 초기화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
         //Managers.Sound.Play(SoundManager.Sound.Bgm, "EA033/Audio/BGM");
 
     }
@@ -148,8 +156,6 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     protected override void OnDestroy()
     {
-        OnChangeStage -= CheckWhenNextStage;
-        
         base.OnDestroy();
         
         UI_InScene_StartBtn.onGameStartBtnShut -= GameStart;
@@ -161,33 +167,38 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         if (_stage == MainSeq.BookCaseStage)
         {
-            OnRaySynced_ItemPick();
+            OnRaySynced_ItemPick(MainSeq.ChairStage);
         }
         else if (_stage == MainSeq.ChairStage)
         {
-            OnRaySynced_ItemPick();
+            OnRaySynced_ItemPick(MainSeq.TableStage);
         }
         else if (_stage == MainSeq.TableStage)
         {
-            OnRaySynced_ItemPick();
+            OnRaySynced_ItemPick(MainSeq.ToysStage);
         }
         else if (_stage == MainSeq.ToysStage)
         {
             foreach (var hit in GameManager_Hits)
             {
                 var hitGameObj = hit.collider.gameObject;
-                
+
                 var info = hitGameObj.GetComponent<CellInfo>();
                 if (info == null || !info.canClicked) return;
+
+                effectPos = hit.point;
+                PlayParticleEffect(effectPos);
+
+                PlayClickSound();
 
                 Tween jump = hitGameObj.transform
                     .DOJump(
                         endPoint,
                         1f,
                         1,
-                        1f
+                        2.3f
                     )
-                    .SetEase(Ease.InSine)
+                    .SetEase(Ease.OutExpo)
                     .OnStart(() => info.canClicked = false)
                     .OnComplete(() =>
                     {
@@ -195,28 +206,29 @@ public class EA036_GameManager : Ex_BaseGameManager
                         hitGameObj.SetActive(false);
                         if (appearBookCaseToyObjNum < 4)
                         {
-                            GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum).gameObject
+                            GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum)
+                                .gameObject
                                 .SetActive(true);
                             appearBookCaseToyObjNum++;
                         }
 
                         index++;
-                        OnChangeStage?.Invoke();
                     });
 
                 Sequence seq = DOTween.Sequence();
                 seq.Append(jump);
                 seq.InsertCallback(
                     atPosition: 0.5f,
-                    callback: () => {
-                        
+                    callback: () =>
+                    {
+
                         _poolManager.ReleaseCell(info.row, info.col);
                     }
                 );
 
             }
         }
-        else if (_stage == MainSeq.End)
+        else if (_stage == MainSeq.End && canToundUI)
         {
             foreach (var hit in GameManager_Hits)
             {
@@ -226,26 +238,36 @@ public class EA036_GameManager : Ex_BaseGameManager
                 switch (objName)
                 {
                     case "BookCase":
+                        canToundUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
                         hitGameObj.transform.DOShakePosition(0.3f);
                         _uiManager.TouchUIEndStage(1);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_19_교구장");
                         break;
                     case "Table":
+                        canToundUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
                         _uiManager.TouchUIEndStage(2);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_17_책상");
                         break;
                     case "Chair":
+                        canToundUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
                         _uiManager.TouchUIEndStage(3);
+                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_18_의자");
                         break;
-                    
+
                 }
             }
         }
     }
 
-    private event Action OnChangeStage;
+    [SerializeField] private int currentObjectClickedCount = 0;
+    [SerializeField] private int CHECKCOUNT_TO_NextStage = 6;
 
-    private void OnRaySynced_ItemPick()
+    private void OnRaySynced_ItemPick(MainSeq nextStage)
     {
         foreach (var hit in GameManager_Hits)
         {
@@ -254,59 +276,26 @@ public class EA036_GameManager : Ex_BaseGameManager
             effectPos = hit.point;
             PlayParticleEffect(effectPos);
 
-            ClickedSound();
+            PlayClickSound();
 
-            //hitGameObj.GetComponent<Collider>().enabled = false;
             hitGameObj.SetActive(false);
-                
+
             var appearObjTransform = GetObject((int)Objects.ActivatableObjects).transform.GetChild(index);
             appearObjTransform.gameObject.transform
                 .DOScale(appearObjTransform.localScale, 1f)
                 .From(Vector3.zero)
                 .OnStart(() =>
                 {
-                    index++;
+                    currentObjectClickedCount++;
                     appearObjTransform.gameObject.SetActive(true);
-                    OnChangeStage?.Invoke();
                 });
 
-        }
-    }
-
-
-    private void CheckWhenNextStage()
-    {
-
-        switch (index)
-        {
-            case 6:
-                DOVirtual.DelayedCall(1f, () =>
-                {
-                    NextStage(MainSeq.ChairStage);
-                    VictorySoundAndEffect();
-                });
-                break;
-            case 12:
-                DOVirtual.DelayedCall(1f, () =>
-                {
-                    NextStage(MainSeq.TableStage);
-                    VictorySoundAndEffect();
-                });
-                break;
-            case 18:
-                DOVirtual.DelayedCall(1f, () =>
-                {
-                    NextStage(MainSeq.ToysStage);
-                    VictorySoundAndEffect();
-                });
-                break;
-            case 38:
-                DOVirtual.DelayedCall(1f, () =>
-                {
-                    NextStage(MainSeq.End);
-                    VictorySoundAndEffect(); //좀 변경 해야됨 기존 카메라 1쪽에 달려있어서 2인 이쪽에 안맞음
-                });
-                break;
+            if (currentObjectClickedCount >= CHECKCOUNT_TO_NextStage)
+            {
+                currentObjectClickedCount = 0;
+                PlayVictorySoundAndEffect();
+                ChangeStage(nextStage);
+            }
         }
     }
 
@@ -314,10 +303,10 @@ public class EA036_GameManager : Ex_BaseGameManager
     {
         //if (_stage == MainSeq.Start)
             //NextStage(MainSeq.Start);
-        NextStage(MainSeq.ToysStage);
+        ChangeStage(MainSeq.ToysStage);
     }
 
-    private void NextStage(MainSeq next)
+    private void ChangeStage(MainSeq next)
     {
         if (_stage == next)
             return;
@@ -361,7 +350,7 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 _uiManager.ShutInstructionUI();
-                NextStage(MainSeq.BookCaseStage);
+                ChangeStage(MainSeq.BookCaseStage);
             })
             ;
 
@@ -546,7 +535,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                         EndStageObjParent.transform.GetChild(3).gameObject.transform.DOShakePosition(0.3f);
                     });
             })
-            .AppendInterval(5f)
+            .AppendInterval(4.3f)
             .AppendCallback(() =>
             {
                 EndStageObjParent.transform.GetChild(4).gameObject.transform.DOJump(
@@ -563,7 +552,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                         EndStageObjParent.transform.GetChild(4).gameObject.transform.DOShakeScale(0.3f);
                     });
             })
-            .AppendInterval(5f)
+            .AppendInterval(4.3f)
             .AppendCallback(() =>
             {
                 EndStageObjParent.transform.GetChild(5).gameObject.transform.DOJump(
@@ -582,12 +571,12 @@ public class EA036_GameManager : Ex_BaseGameManager
             })
             .AppendCallback(() =>
             {
-                RestartScene(delay: 20);
+                RestartScene(delay: 14);
             })
             ;
     }
 
-    private void VictorySoundAndEffect()
+    private void PlayVictorySoundAndEffect()
     {
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_Victory");
 
@@ -612,7 +601,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         }
     }
     
-    private void ClickedSound() 
+    private void PlayClickSound() 
     {
         int idx = Random.Range(0, _clickClips.Length);
         

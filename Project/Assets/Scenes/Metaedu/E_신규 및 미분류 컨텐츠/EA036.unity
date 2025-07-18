@@ -2933,6 +2933,39 @@ Transform:
   m_Father: {fileID: 215313096}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &317515629
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 317515630}
+  m_Layer: 0
+  m_Name: ToyBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &317515630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317515629}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.1222838, y: 0.089327335, z: -1.2082682}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7944599204308925689}
+  - {fileID: 2727053880889302911}
+  m_Father: {fileID: 378515699}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &327772259
 GameObject:
   m_ObjectHideFlags: 0
@@ -3452,10 +3485,9 @@ Transform:
   - {fileID: 167021491}
   - {fileID: 115206538}
   - {fileID: 1144896630}
+  - {fileID: 317515630}
   - {fileID: 1167530809}
   - {fileID: 1410450619}
-  - {fileID: 2727053880889302911}
-  - {fileID: 7944599204308925689}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3475,10 +3507,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   gamePlaying: 1
-  index: 28
+  index: 0
   objectAppearPositions: {fileID: 0}
   toysPoolParent: {fileID: 0}
   toySpawnPositions: []
+  ToyBox: {fileID: 0}
 --- !u!114 &378515701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7513,7 +7546,7 @@ PrefabInstance:
     - target: {fileID: 4938095755617958528, guid: f23389ce702ed1944ab64b42eddb7231,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 4938095755617958528, guid: f23389ce702ed1944ab64b42eddb7231,
         type: 3}
@@ -8610,7 +8643,7 @@ PrefabInstance:
     - target: {fileID: 4938095755617958528, guid: f23389ce702ed1944ab64b42eddb7231,
         type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4938095755617958528, guid: f23389ce702ed1944ab64b42eddb7231,
         type: 3}
@@ -12360,12 +12393,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2727053880889590623}
   m_LocalRotation: {x: -0, y: 0.9386706, z: -0, w: -0.3448154}
-  m_LocalPosition: {x: 5.5200987, y: 2.12535, z: -6.058756}
+  m_LocalPosition: {x: 5.3978148, y: 2.0360227, z: -4.8504877}
   m_LocalScale: {x: 1.6337427, y: 1.8186197, z: 1.7428073}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 378515699}
-  m_RootOrder: 14
+  m_Father: {fileID: 317515630}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -499.659, z: 0}
 --- !u!1 &2727053880889590623
 GameObject:
@@ -12380,7 +12413,7 @@ GameObject:
   - component: {fileID: 2727053880891596191}
   - component: {fileID: 2029988992990270665}
   m_Layer: 0
-  m_Name: ToyBox
+  m_Name: ToyBoxRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15771,7 +15804,7 @@ GameObject:
   - component: {fileID: 7944599204306501145}
   - component: {fileID: 4965181591286616053}
   m_Layer: 0
-  m_Name: ToyBox
+  m_Name: ToyBoxLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15785,12 +15818,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7944599204308492505}
   m_LocalRotation: {x: -0, y: -0.993805, z: -0, w: -0.11113855}
-  m_LocalPosition: {x: -4.0199013, y: 2.1433501, z: -6.2587557}
+  m_LocalPosition: {x: -4.142185, y: 2.0540228, z: -5.0504875}
   m_LocalScale: {x: 1.6555774, y: 1.6555774, z: 1.6555774}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 378515699}
-  m_RootOrder: 15
+  m_Father: {fileID: 317515630}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -192.762, z: 0}
 --- !u!23 &8148953268765774956
 MeshRenderer:

@@ -52,7 +52,7 @@ public class EA036_UIManager : Base_UIManager
        //     OnNextButtonClicked?.Invoke();
        // });
        
-       GetObject((int)UI.OnRoundUI).SetActive(false);
+       GetObject((int)UI.OnRoundUI).SetActive(true);
        GetObject((int)UI.EndStageUI_BookCase).SetActive(false);
        GetObject((int)UI.EndStageUI_Table).SetActive(false);
        GetObject((int)UI.EndStageUI_Chair).SetActive(false);
@@ -62,33 +62,6 @@ public class EA036_UIManager : Base_UIManager
        return true;
    }
    
-   
-   public void ActivateImageAndUpdateCount(int imageToActivate,int count)
-   {
-       GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
-        
-       GetObject((int)UI.OnRoundUI).SetActive(true);
-        
-       GetObject(imageToActivate).SetActive(true);
-       GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
-        
-       var seq = DOTween.Sequence();
-       seq?.Kill();
-       seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
-           .SetEase(Ease.InOutBounce));
-   }
-
-   public void DeactivateImageAndUpdateCount()
-   {
-       var seq = DOTween.Sequence();
-       seq?.Kill();
-       seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.zero, 0.15f).From(Vector3.one)
-           .SetEase(Ease.InOutBounce).OnComplete(() =>
-           {
-               GetObject((int)UI.OnRoundUI).SetActive(false);
-           }));
-        
-   }
 
    public void ActivateUIEndStage(int num)
    {
@@ -106,5 +79,34 @@ public class EA036_UIManager : Base_UIManager
        seq.Append(GetObject((int)UI.OnRoundUI + num).transform.DOShakeScale(0.3f)
            .SetEase(Ease.InOutBounce));
    }
+   
+   
+   //
+   // public void ActivateImageAndUpdateCount(int imageToActivate,int count)
+   // {
+   //     GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;
+   //      
+   //     GetObject((int)UI.OnRoundUI).SetActive(true);
+   //      
+   //     GetObject(imageToActivate).SetActive(true);
+   //     GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
+   //      
+   //     var seq = DOTween.Sequence();
+   //     seq?.Kill();
+   //     seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.one, 0.15f)
+   //         .SetEase(Ease.InOutBounce));
+   // }
+   //
+   // public void DeactivateImageAndUpdateCount()
+   // {
+   //     var seq = DOTween.Sequence();
+   //     seq?.Kill();
+   //     seq.Append(GetObject((int)UI.OnRoundUI).transform.DOScale(Vector3.zero, 0.15f).From(Vector3.one)
+   //         .SetEase(Ease.InOutBounce).OnComplete(() =>
+   //         {
+   //             GetObject((int)UI.OnRoundUI).SetActive(false);
+   //         }));
+   //      
+   // }
    
 }
