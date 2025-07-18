@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Resources;
 using UnityEngine;
 using DG.Tweening;
-using UniRx.Triggers;
-using UnityEditor;
 
 public class EA036_PoolManager : MonoBehaviour
 {
@@ -85,8 +82,6 @@ public class EA036_PoolManager : MonoBehaviour
         return emptyCells;
     }   // 빈 칸 목록 반환
 
-
-
     private void SpawnToyAt(int r, int c)
     {
         Logger.Log("빈공간에 생성중");
@@ -106,22 +101,26 @@ public class EA036_PoolManager : MonoBehaviour
                 
                 isOccupied[(r, c)] = true;
                 
-                var originScale = obj.transform.localScale;
-                int i = Random.Range(0, gameManager.toySpawnPositions.Length);
+                var originalScale = obj.transform.localScale;
+                int randomToyBoxIndex = Random.Range(0, gameManager.toySpawnPositions.Length);
                 obj.SetActive(true);
-                obj.transform.position = gameManager.toySpawnPositions[i].transform.position;
-                switch (i)
+                obj.transform.position = gameManager.toySpawnPositions[randomToyBoxIndex].transform.position;
+                
+                float randomRotation = Random.Range(-90, 90);
+                obj.transform.rotation *= Quaternion.Euler(0, randomRotation, 0);
+                
+                switch (randomToyBoxIndex)
                 {
                     case 0:
-                        gameManager.ToyBox.GetChild(i).gameObject.transform.DOShakePosition(0.3f);
+                        gameManager.toyBox.GetChild(randomToyBoxIndex).gameObject.transform.DOShakePosition(0.3f);
                         break;
                     case 1:
-                        gameManager.ToyBox.GetChild(i).gameObject.transform.DOShakePosition(0.3f);
+                        gameManager.toyBox.GetChild(randomToyBoxIndex).gameObject.transform.DOShakePosition(0.3f);
                         break;
                 }
                 obj.transform.DOJump(spawnPosition, 1f, 1, 1f).SetEase(Ease.InOutBack)
                     .OnComplete(() => info.canClicked = true);
-                obj.transform.DOScale(originScale, 0.4f).SetEase(Ease.Linear).From(Vector3.zero);
+                obj.transform.DOScale(originalScale, 0.4f).SetEase(Ease.Linear).From(Vector3.zero);
                 
                 return;
             }

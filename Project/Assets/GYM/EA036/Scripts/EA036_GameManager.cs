@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Cinemachine;
-using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Profiling;
-using Random = UnityEngine.Random;
 
 public class EA036_GameManager : Ex_BaseGameManager
 {
@@ -56,12 +50,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private EA036_UIManager _uiManager;
     private EA036_PoolManager _poolManager;
-    
-    [SerializeField]
-    private bool gamePlaying;
-    [SerializeField] 
-    private int index = 0;
-    
+
     private Vector3 effectPos;
     
     private AudioClip[] _clickClips;
@@ -72,10 +61,12 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private Vector3 endPoint;
     
-    private int appearBookCaseToyObjNum = 0;
+    private int appearBookCaseToyObjNum;
     private bool canToundUI = true;
 
-    public Transform ToyBox;
+    public Transform toyBox;
+    
+    [SerializeField] private int targetTouchToyCount = 20;
     
     protected override void Init()
     {
@@ -89,11 +80,8 @@ public class EA036_GameManager : Ex_BaseGameManager
         _poolManager = FindObjectOfType<EA036_PoolManager>();
         toySpawnPositions = new GameObject[2];
         
-        
         _stage = MainSeq.Default;
         
-        gamePlaying = false;
-
         Managers.Sound.Play(SoundManager.Sound.Bgm, "EA036/Audio/EA036_BGM");
             
         psResourcePath = "SideWalk/Asset/Fx_Click";
@@ -109,7 +97,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         objectAppearPositions = GetObject((int)Objects.StageObjectAppearPosition);
         endPoint = GetObject((int)Objects.DisAppearPosition).transform.position;
-        ToyBox = GetObject((int)Objects.ToyBox).transform;
+        toyBox = GetObject((int)Objects.ToyBox).transform;
         
         for (int i = 0; i < GetObject((int)Objects.StartSpawnPosition).transform.childCount; i++)
         {
@@ -151,16 +139,16 @@ public class EA036_GameManager : Ex_BaseGameManager
     {
         base.OnGameStartButtonClicked();
 
-        GameStart();
+        StartGame();
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         
-        UI_InScene_StartBtn.onGameStartBtnShut -= GameStart;
+        UI_InScene_StartBtn.onGameStartBtnShut -= StartGame;
     }
-
+    
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
@@ -212,7 +200,14 @@ public class EA036_GameManager : Ex_BaseGameManager
                             appearBookCaseToyObjNum++;
                         }
 
-                        index++;
+                        currentObjectClickedCount++;
+
+                        if (currentObjectClickedCount == targetTouchToyCount)
+                        {
+                            currentObjectClickedCount = 0;
+                            PlayVictorySoundAndEffect();
+                            ChangeStage(MainSeq.End);
+                        }
                     });
 
                 Sequence seq = DOTween.Sequence();
@@ -221,11 +216,9 @@ public class EA036_GameManager : Ex_BaseGameManager
                     atPosition: 0.5f,
                     callback: () =>
                     {
-
                         _poolManager.ReleaseCell(info.row, info.col);
                     }
                 );
-
             }
         }
         else if (_stage == MainSeq.End && canToundUI)
@@ -264,15 +257,17 @@ public class EA036_GameManager : Ex_BaseGameManager
         }
     }
 
-    [SerializeField] private int currentObjectClickedCount = 0;
+    [SerializeField] private int currentObjectClickedCount;
     [SerializeField] private int CHECKCOUNT_TO_NextStage = 6;
 
+    private int appearObjNum;
+    
     private void OnRaySynced_ItemPick(MainSeq nextStage)
     {
         foreach (var hit in GameManager_Hits)
         {
             var hitGameObj = hit.collider.gameObject;
-
+            
             effectPos = hit.point;
             PlayParticleEffect(effectPos);
 
@@ -280,30 +275,34 @@ public class EA036_GameManager : Ex_BaseGameManager
 
             hitGameObj.SetActive(false);
 
-            var appearObjTransform = GetObject((int)Objects.ActivatableObjects).transform.GetChild(index);
+            var appearObjTransform = GetObject((int)Objects.ActivatableObjects).transform.GetChild(appearObjNum);
             appearObjTransform.gameObject.transform
-                .DOScale(appearObjTransform.localScale, 1f)
+                .DOScale(appearObjTransform.localScale, 0.5f)
                 .From(Vector3.zero)
                 .OnStart(() =>
                 {
+                    appearObjNum++;
                     currentObjectClickedCount++;
                     appearObjTransform.gameObject.SetActive(true);
+                })
+                .OnComplete(() =>
+                {
+                    if (currentObjectClickedCount >= CHECKCOUNT_TO_NextStage)
+                    {
+                        currentObjectClickedCount = 0;
+                        PlayVictorySoundAndEffect();
+                        ChangeStage(nextStage);
+                    }
                 });
 
-            if (currentObjectClickedCount >= CHECKCOUNT_TO_NextStage)
-            {
-                currentObjectClickedCount = 0;
-                PlayVictorySoundAndEffect();
-                ChangeStage(nextStage);
-            }
         }
     }
 
-    private void GameStart()
+    private void StartGame()
     {
         //if (_stage == MainSeq.Start)
-            //NextStage(MainSeq.Start);
-        ChangeStage(MainSeq.ToysStage);
+            ChangeStage(MainSeq.Start);
+        //ChangeStage(MainSeq.ToysStage);
     }
 
     private void ChangeStage(MainSeq next)
@@ -487,7 +486,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
     private void OnEndStage()
     {
-        GameObject EndStageObjParent = GetObject((int)Objects.EndStageObj);
+        GameObject endStageObjParent = GetObject((int)Objects.EndStageObj);
         
         DOTween.Sequence()
             .AppendCallback(() =>
@@ -521,52 +520,52 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(2f)
             .AppendCallback(() =>
             {
-                EndStageObjParent.transform.GetChild(3).gameObject.transform.DOJump(
-                        EndStageObjParent.transform.GetChild(0).transform.position,
+                endStageObjParent.transform.GetChild(3).gameObject.transform.DOJump(
+                        endStageObjParent.transform.GetChild(0).transform.position,
                         1f,
                         1,
                         1f
                     ).SetEase(ease: Ease.Linear)
-                    .OnStart(() => EndStageObjParent.transform.GetChild(3).gameObject.SetActive(true))
+                    .OnStart(() => endStageObjParent.transform.GetChild(3).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
                         _uiManager.ActivateUIEndStage(1);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_19_교구장");
-                        EndStageObjParent.transform.GetChild(3).gameObject.transform.DOShakePosition(0.3f);
+                        endStageObjParent.transform.GetChild(3).gameObject.transform.DOShakePosition(0.3f);
                     });
             })
             .AppendInterval(4.3f)
             .AppendCallback(() =>
             {
-                EndStageObjParent.transform.GetChild(4).gameObject.transform.DOJump(
-                        EndStageObjParent.transform.GetChild(1).transform.position,
+                endStageObjParent.transform.GetChild(4).gameObject.transform.DOJump(
+                        endStageObjParent.transform.GetChild(1).transform.position,
                         1f,
                         1,
                         1f
                     ).SetEase(ease: Ease.Linear)
-                    .OnStart(() => EndStageObjParent.transform.GetChild(4).gameObject.SetActive(true))
+                    .OnStart(() => endStageObjParent.transform.GetChild(4).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
                         _uiManager.ActivateUIEndStage(2);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_17_책상");
-                        EndStageObjParent.transform.GetChild(4).gameObject.transform.DOShakeScale(0.3f);
+                        endStageObjParent.transform.GetChild(4).gameObject.transform.DOShakeScale(0.3f);
                     });
             })
             .AppendInterval(4.3f)
             .AppendCallback(() =>
             {
-                EndStageObjParent.transform.GetChild(5).gameObject.transform.DOJump(
-                        EndStageObjParent.transform.GetChild(2).transform.position,
+                endStageObjParent.transform.GetChild(5).gameObject.transform.DOJump(
+                        endStageObjParent.transform.GetChild(2).transform.position,
                         1f,
                         1,
                         1f
                     ).SetEase(ease: Ease.Linear)
-                    .OnStart(() => EndStageObjParent.transform.GetChild(5).gameObject.SetActive(true))
+                    .OnStart(() => endStageObjParent.transform.GetChild(5).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
                         _uiManager.ActivateUIEndStage(3);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_18_의자");
-                        EndStageObjParent.transform.GetChild(5).gameObject.transform.DOShakeScale(0.3f);
+                        endStageObjParent.transform.GetChild(5).gameObject.transform.DOShakeScale(0.3f);
                     });
             })
             .AppendCallback(() =>
