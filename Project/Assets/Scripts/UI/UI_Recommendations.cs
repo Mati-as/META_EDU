@@ -13,7 +13,7 @@ public class UI_Recommendations : UI_PopUp
     private readonly List<List<XmlManager.SceneData>> _sceneData = new();
     private readonly List<GameObject[]> pageButtonsList = new();
     private UI_Master _master;
-
+    private const string None = "None";
 
     private enum Btns
     {
@@ -50,20 +50,39 @@ public class UI_Recommendations : UI_PopUp
     
     public void FilterRandomRecommendations()
     {
-        var allScenes = XmlManager.Instance.SceneSettings.Values
-            .Where(x => x.IsActive)
+         var CurrentSceneName = XmlManager.Instance.SceneSettings.Values
+            .Where(x => x.Id == SceneManager.GetActiveScene().name)
             .ToList();
 
-        if (allScenes.Count < 4)
-        {
-            Debug.LogWarning("추천할 콘텐츠가 4개 미만입니다.");
-            return;
-        }
 
-        var randomFour = allScenes.OrderBy(x => Random.value).Take(4).ToList();
+         List<XmlManager.SceneData> filteredScenes = null;
+         
+         //월 설정이 있는 것들 줄 이달의 컨텐츠 추천
+         if (CurrentSceneName[0].Month != nameof(None))
+         {
+             filteredScenes = XmlManager.Instance.SceneSettings.Values
+                 .Where(x => x.IsActive && x.Month == ContentAdjuster.THIS_MONTH)
+                 .ToList();
+         }
+         else //주제별 선택 ==> 월 설정이 없어야함
+         {
+             filteredScenes = XmlManager.Instance.SceneSettings.Values
+                 .Where(x => x.IsActive && CurrentSceneName[0].Month == nameof(None))
+                 .ToList();
+             
+         }
 
-        _sceneData.Clear();
-        _sceneData.Add(randomFour);
+
+         if (filteredScenes.Count < 4)
+         {
+             Debug.LogWarning("추천할 콘텐츠가 4개 미만입니다.");
+             return;
+         }
+
+         var randomFour = filteredScenes.OrderBy(x => Random.value).Take(4).ToList();
+
+         _sceneData.Clear();
+         _sceneData.Add(randomFour);
     }
     private void BindSceneDataToButton(GameObject buttonObj, XmlManager.SceneData data)
     {
@@ -104,63 +123,7 @@ public class UI_Recommendations : UI_PopUp
             }
         }
     }
-
-    private void ApplySceneDataToPage(int pageIndex, List<XmlManager.SceneData> sceneList)
-    {
-        var buttonObjs = pageButtonsList[pageIndex];
-
-        for (int i = 0; i < buttonObjs.Length; i++)
-        {
-            var buttonObj = buttonObjs[i];
-
-            if (i >= sceneList.Count)
-            {
-                buttonObj.SetActive(false);
-                continue;
-            }
-
-            var data = sceneList[i];
-            buttonObj.SetActive(true);
-
-            GetThumbnailImage(buttonObj, data);
-
-            // 텍스트 설정
-            var textObj = buttonObj.transform.GetChild(2);
-            if (textObj != null)
-            {
-                var text = textObj.GetComponent<Text>();
-                text.text = !string.IsNullOrEmpty(data.Title) ? data.Title : data.Id;
-            }
-
-            // 자물쇠
-            var lockFrame = buttonObj.transform.Find("LockFrame");
-            if (lockFrame != null)
-                lockFrame.gameObject.SetActive(!data.IsActive);
-
-            // 클릭 이벤트
-            var btn = buttonObj.GetComponent<Button>();
-            if (btn != null)
-            {
-                btn.interactable = data.IsActive;
-                btn.onClick.RemoveAllListeners();
-
-                if (data.IsActive)
-                {
-                    var btnImageController = Utils.GetOrAddComponent<CursorImageController>(buttonObj);
-                    btnImageController.DefaultScale = buttonObj.transform.localScale;
-
-                    string sceneId = data.Id;
-                    btn.onClick.AddListener(() =>
-                    {
-                        if (_master == null)
-                            _master = Managers.UI.SceneUI.GetComponent<UI_Master>();
-
-                        _master.OnSceneBtnClicked(sceneId, data.Title);
-                    });
-                }
-            }
-        }
-    }
+    
 
     public void GetThumbnailImage(GameObject obj, XmlManager.SceneData data)
     {

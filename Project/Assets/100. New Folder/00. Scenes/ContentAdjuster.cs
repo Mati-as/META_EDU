@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 public class ContentAdjuster : MonoBehaviour
 {
 
-    private const string THIS_MONTH = "Sep"; // 현재 월 (테스트용)
+    public readonly static string THIS_MONTH = "Sep"; // 현재 월 (테스트용)
     UI_Master _master;
  
     //(확인) 적용된 프리팹의 Acitve 부분이 활성화 된 상태에서 시작

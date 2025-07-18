@@ -6,6 +6,7 @@ using MyCustomizedEditor.Common.Util;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class MediaArtTextData
@@ -18,6 +19,9 @@ public class MediaArtTextData
 
     [XmlElement("Body")]
     public string body;
+
+    [XmlElement("Narration")]
+    public string narration;
 }
 public class UI_MediaArtInScene : UI_PopUp
 {
@@ -26,6 +30,8 @@ public class UI_MediaArtInScene : UI_PopUp
     private Animator _animator;
     private bool _isOn = false;
     private static readonly int IsOn = Animator.StringToHash("isOn");
+
+    [FormerlySerializedAs("currentNarration")] public string narration;
 
     private enum UI
     {
@@ -70,6 +76,7 @@ public class UI_MediaArtInScene : UI_PopUp
             {
                 Debug.Log($"[{SceneManager.GetActiveScene().name}]\nTitle: {data.title}\nBody: {data.body}");
                 GetTMP((int)TMPs.TMP_Body).text = RemoveIndentation(data.body);
+                narration = data.narration;
             }
             else
             {

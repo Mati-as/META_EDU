@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UI_SensorSettingMain : UI_PopUp
 {
+    public override bool IsBackBtnClickable => true;
     public enum UI
     {
         Btn_ScreenSetting,

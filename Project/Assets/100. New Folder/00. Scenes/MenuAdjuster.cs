@@ -5,10 +5,9 @@ public class MenuAdjuster : MonoBehaviour
 {
     public GameObject Toggle_Monthly;
     public Toggle[] toggles; // Jan ~ Dec 순서로 12개 연결
-    public Button saveButton;             // 저장 버튼 (인스펙터에 직접 연결)
+    public Button saveButton; // 저장 버튼 (선택적)
 
-    private string[] monthKeys = new string[]
-    {
+    private string[] monthKeys = new string[] {
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
@@ -24,10 +23,20 @@ public class MenuAdjuster : MonoBehaviour
             return;
         }
 
-        // XML에서 초기값 읽어와 토글 설정
+        // 초기화
         InitToggleStates();
 
-        // 저장 버튼 연결
+        // 이벤트 리스너 추가
+        for (int i = 0; i < toggles.Length; i++)
+        {
+            int index = i; // 클로저 문제 방지
+            toggles[i].onValueChanged.AddListener((value) =>
+            {
+                SaveSingleToggleToXml(index, value);
+            });
+        }
+
+        // 저장 버튼 연결 (선택 사항)
         if (saveButton != null)
         {
             saveButton.onClick.AddListener(SaveToggleStatesToXml);
@@ -56,7 +65,14 @@ public class MenuAdjuster : MonoBehaviour
             xml.SetMenuSetting(key, value);
         }
 
-        Debug.Log("메뉴 설정 저장");
+        Debug.Log("모든 토글 상태 저장 완료");
     }
 
+    void SaveSingleToggleToXml(int index, bool value)
+    {
+        string key = monthKeys[index];
+        XmlManager.Instance.SetMenuSetting(key, value);
+
+        Debug.Log($"[{key}] 상태 저장됨: {value}");
+    }
 }
