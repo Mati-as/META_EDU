@@ -52,11 +52,14 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     
     protected override void OnRaySyncedByGameManager()
     {
+        
         foreach (var hit in GameManager.GameManager_Hits)
         {
+            Logger.Log($"ButtonClickEventController : OnRaySyncedByGameManager hit {hit.transform.name}");
             int id = hit.transform.GetInstanceID();
-            if (!_tfIdToEnumMap.ContainsKey(id)) return; 
+            if (!_tfIdToEnumMap.ContainsKey(id)) continue; 
             
+           
             
             int clickedEnum = _tfIdToEnumMap[id];
             

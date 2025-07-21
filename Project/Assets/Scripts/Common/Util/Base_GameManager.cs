@@ -275,6 +275,12 @@ public abstract class Base_GameManager : MonoBehaviour
             return;
         }
 
+        
+#if UNITY_EDITOR
+        DOTween.useSafeMode = false; //원활한 디버깅을 위해 safe mode를 사용하지 않습니다. 
+#endif
+        
+        
         //초기값설정 후 이후에 상속받은 게임매니저에서 민감도 별도 설정
         waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
@@ -486,6 +492,9 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// 공통 이벤트 및 센서 인식을 위한 이벤트 할당
+    /// </summary>
     protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
@@ -502,7 +511,10 @@ public abstract class Base_GameManager : MonoBehaviour
         UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
     }
-
+    
+    /// <summary>
+    /// 공통 이벤트 및 센서 인식을 이벤트 구독해제 필수
+    /// </summary>
     protected virtual void OnDestroy()
     {
         Managers.Sound.Clear();

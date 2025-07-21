@@ -55,6 +55,12 @@ public class UI_Recommendations : UI_PopUp
             .ToList();
 
 
+         if (CurrentSceneName.Count == 0)
+         {
+             Logger.CoreClassLog("추천 콘텐츠 필터링 실패: 현재 씬 정보가 없습니다.");
+             return;
+         }
+         
          List<XmlManager.SceneData> filteredScenes = null;
          
          //월 설정이 있는 것들 줄 이달의 컨텐츠 추천

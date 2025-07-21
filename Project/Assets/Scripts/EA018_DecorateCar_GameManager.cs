@@ -383,9 +383,9 @@ using Random = UnityEngine.Random;
     {
         var SeatTransform = GetObject((int)seat).transform;
 
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
             .SetLoops(-1, LoopType.Yoyo)
@@ -394,7 +394,7 @@ using Random = UnityEngine.Random;
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
 
 
@@ -582,7 +582,7 @@ using Random = UnityEngine.Random;
                 _seatClickedCount++;
 
 
-                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+                _sequencePerEnumMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
                 foreach (int key in isSeatClickedMap.Keys)
                     if (!isSeatClickedMap[key])
@@ -694,19 +694,19 @@ using Random = UnityEngine.Random;
                        
                         currentArrivedSubPartCount++;
 
-                        _sequenceMap[ID]?.Kill();
-                        _sequenceMap[ID] = DOTween.Sequence();
+                        _sequencePerEnumMap[ID]?.Kill();
+                        _sequencePerEnumMap[ID] = DOTween.Sequence();
            
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Join(tf.transform.DOLocalRotate(Vector3.zero, 0.35f));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 0.8f, 0.2f)
+                        _sequencePerEnumMap[ID].Join(tf.transform.DOLocalRotate(Vector3.zero, 0.35f));
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 0.8f, 0.2f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID], 0.5f));
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID], 0.5f));
                        
-                        _sequenceMap[ID].AppendCallback(() =>
+                        _sequencePerEnumMap[ID].AppendCallback(() =>
                         {
                             _isClickableMap[ID] = false;
                             animator.enabled = true;
@@ -742,23 +742,23 @@ using Random = UnityEngine.Random;
 
 
                             
-                            _sequenceMap.TryAdd(ID, DOTween.Sequence());
-                            _sequenceMap[ID]?.Kill();
-                            _sequenceMap[ID] = DOTween.Sequence();
+                            _sequencePerEnumMap.TryAdd(ID, DOTween.Sequence());
+                            _sequencePerEnumMap[ID]?.Kill();
+                            _sequencePerEnumMap[ID] = DOTween.Sequence();
 
 
                             int colorSeqID = ID + 1234;
-                            _sequenceMap.TryAdd(colorSeqID, DOTween.Sequence());
-                            _sequenceMap[colorSeqID]?.Kill();
-                            _sequenceMap[colorSeqID] = DOTween.Sequence();
+                            _sequencePerEnumMap.TryAdd(colorSeqID, DOTween.Sequence());
+                            _sequencePerEnumMap[colorSeqID]?.Kill();
+                            _sequencePerEnumMap[colorSeqID] = DOTween.Sequence();
                             
-                            _sequenceMap[colorSeqID]
+                            _sequencePerEnumMap[colorSeqID]
                                 .Append(_tfIdToSpriteMap[ID].DOColor(_tfIdToSpriteMap[ID].color * 1.5f, 0.28f));
-                            _sequenceMap[colorSeqID]
+                            _sequencePerEnumMap[colorSeqID]
                                 .Append(_tfIdToSpriteMap[ID].DOColor(_tfIdToSpriteMap[ID].color * 0.9f, 0.28f));
-                            _sequenceMap[colorSeqID].SetLoops(1);
-                            _sequenceMap[colorSeqID].Append(_tfIdToSpriteMap[ID].DOColor(defaultColor, 0.1f));
-                            _sequenceMap[colorSeqID].OnKill(() =>
+                            _sequencePerEnumMap[colorSeqID].SetLoops(1);
+                            _sequencePerEnumMap[colorSeqID].Append(_tfIdToSpriteMap[ID].DOColor(defaultColor, 0.1f));
+                            _sequencePerEnumMap[colorSeqID].OnKill(() =>
                             {
                              _tfIdToSpriteMap[ID].DOColor(defaultColor, 0.001f);
                             });
@@ -769,14 +769,14 @@ using Random = UnityEngine.Random;
                             switch (effectType)
                             {
                                 case 0: // Shake
-                                    _sequenceMap[ID]
+                                    _sequencePerEnumMap[ID]
                                         .Append(tf.DOShakePosition(0.5f, new Vector3(Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f))).OnKill(() =>
                                         {
                                             tf.localRotation = _defaultRotationQuatMap[ID];
                                         }));
                                     break;
                                 case 1: // Scale Up & Down
-                                    _sequenceMap[ID].Append(tf.DOScale(_defaultSizeMap[ID] * 1.2f, 0.30f)
+                                    _sequencePerEnumMap[ID].Append(tf.DOScale(_defaultSizeMap[ID] * 1.2f, 0.30f)
                                             .SetLoops(2, LoopType.Yoyo))
                                         .OnKill(() =>
                                         {
@@ -786,7 +786,7 @@ using Random = UnityEngine.Random;
                                 case 2: // Rotate
                                     float angle = Random.Range(-20f, 20f);
 
-                                    _sequenceMap[ID].Append(tf
+                                    _sequencePerEnumMap[ID].Append(tf
                                         .DORotateQuaternion(_defaultRotationQuatMap[ID]* new Quaternion(0, 0, Random.Range(-15,15), 0), 0.25f)
                                         .SetLoops(2, LoopType.Yoyo)
                                         .SetEase(Ease.InOutSine));

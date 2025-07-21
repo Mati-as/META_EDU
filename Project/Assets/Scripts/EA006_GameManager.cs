@@ -401,14 +401,14 @@ public class EA006_GameManager : Ex_BaseGameManager
             GetObject(randoScareCrow).transform.DOScale(_defaultSizeMap[randoScareCrow], 1f);
             
             _isClickableMap[_enumToTfIdMap[randoScareCrow]] = true;
-            _sequenceMap[randoScareCrow]?.Kill();
-            _sequenceMap[randoScareCrow] = DOTween.Sequence();
-            _sequenceMap[randoScareCrow].Append(GetObject(randoScareCrow).transform.DOLocalRotateQuaternion(
+            _sequencePerEnumMap[randoScareCrow]?.Kill();
+            _sequencePerEnumMap[randoScareCrow] = DOTween.Sequence();
+            _sequencePerEnumMap[randoScareCrow].Append(GetObject(randoScareCrow).transform.DOLocalRotateQuaternion(
                 _defaultRotationQuatMap[randoScareCrow] *Quaternion.Euler( Random.Range(-5,-10),0, 0), 0.6f));
 
-            _sequenceMap[randoScareCrow].Append(GetObject(randoScareCrow).transform.DOLocalRotateQuaternion(
+            _sequencePerEnumMap[randoScareCrow].Append(GetObject(randoScareCrow).transform.DOLocalRotateQuaternion(
                 _defaultRotationQuatMap[randoScareCrow] * Quaternion.Euler(Random.Range(-5, 10), 0, 0), 0.6f));
-            _sequenceMap[randoScareCrow].SetLoops(-1, LoopType.Yoyo);
+            _sequencePerEnumMap[randoScareCrow].SetLoops(-1, LoopType.Yoyo);
         }
     }
 
@@ -416,8 +416,8 @@ public class EA006_GameManager : Ex_BaseGameManager
     {
         for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
         {
-            _sequenceMap[i]?.Kill();
-            _sequenceMap[i].Append(GetObject(i).transform.DOScale(Vector3.zero,Random.Range(1,1.5f)));
+            _sequencePerEnumMap[i]?.Kill();
+            _sequencePerEnumMap[i].Append(GetObject(i).transform.DOScale(Vector3.zero,Random.Range(1,1.5f)));
         }
     }
 
@@ -453,11 +453,11 @@ public class EA006_GameManager : Ex_BaseGameManager
         PlayRandomClickSound();
         PlayParticleEffect(hit.point);
         
-        _sequenceMap[_tfIdToEnumMap[id]]?.Kill();
-        _sequenceMap[_tfIdToEnumMap[id]] = DOTween.Sequence();
-        _sequenceMap[_tfIdToEnumMap[id]].Append(_tfidTotransformMap[id].transform.
+        _sequencePerEnumMap[_tfIdToEnumMap[id]]?.Kill();
+        _sequencePerEnumMap[_tfIdToEnumMap[id]] = DOTween.Sequence();
+        _sequencePerEnumMap[_tfIdToEnumMap[id]].Append(_tfidTotransformMap[id].transform.
             DOLocalRotateQuaternion(_defaultRotationQuatMap[_tfIdToEnumMap[id]] *Quaternion.Euler(0, Random.Range(10,180), 0), Random.Range(0.5f, 0.75f)));
-        _sequenceMap[_tfIdToEnumMap[id]].Append(_tfidTotransformMap[id].transform.DOScale(Vector3.zero, Random.Range(0.5f, 0.75f)).OnComplete(
+        _sequencePerEnumMap[_tfIdToEnumMap[id]].Append(_tfidTotransformMap[id].transform.DOScale(Vector3.zero, Random.Range(0.5f, 0.75f)).OnComplete(
             () =>
             {
                 if (_elapsedTime >= FEVER_MODE_TIME)
@@ -501,7 +501,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                         for (int i = (int)Obj.ScareCrowA; i <= (int)Obj.ScareCrowJ; i++)
                             GetObject(i).transform.DOScale(Vector3.zero, 1f).OnComplete(() =>
                             {
-                                _sequenceMap[i]?.Kill();
+                                _sequencePerEnumMap[i]?.Kill();
                                 GetObject(i).SetActive(false);
                             });
                     });
@@ -610,8 +610,8 @@ public class EA006_GameManager : Ex_BaseGameManager
                 _animatorMap[capturedEnum].SetInteger(ANIM_NUM, randomSparrowPos);
                 _animatorMap[capturedEnum].SetInteger(ANIM_ACTION, (int)AnimationAction.Eat);
 
-                _sequenceMap[capturedEnum]?.Kill();
-                _sequenceMap[capturedEnum] = DOTween.Sequence();
+                _sequencePerEnumMap[capturedEnum]?.Kill();
+                _sequencePerEnumMap[capturedEnum] = DOTween.Sequence();
 
               
              
@@ -620,8 +620,8 @@ public class EA006_GameManager : Ex_BaseGameManager
                 if (randomPoss > 60 && !_isFirstAppear)
                 {
                  
-                    _sequenceMap[capturedEnum].AppendInterval(Random.Range(1.5f,2f));
-                    _sequenceMap[capturedEnum].AppendCallback(() =>
+                    _sequencePerEnumMap[capturedEnum].AppendInterval(Random.Range(1.5f,2f));
+                    _sequencePerEnumMap[capturedEnum].AppendCallback(() =>
                     {
                        
                         
@@ -637,21 +637,21 @@ public class EA006_GameManager : Ex_BaseGameManager
                         Logger.ContentTestLog($"🐦 참새 생성가능:  {(Obj)capturedEnum}");
                     });
 
-                    _sequenceMap[capturedEnum].AppendInterval(0.3f);
-                    _sequenceMap[capturedEnum].AppendCallback(() =>
+                    _sequencePerEnumMap[capturedEnum].AppendInterval(0.3f);
+                    _sequencePerEnumMap[capturedEnum].AppendCallback(() =>
                     {
                         _animatorMap[capturedEnum].SetInteger(ANIM_NUM, 0);
                         _animatorMap[capturedEnum].SetInteger(ANIM_NUM, 0);
                        
                     });
 
-                    _sequenceMap[capturedEnum].AppendInterval(1f);
-                    _sequenceMap[capturedEnum].AppendCallback(() =>
+                    _sequencePerEnumMap[capturedEnum].AppendInterval(1f);
+                    _sequencePerEnumMap[capturedEnum].AppendCallback(() =>
                     {
                        
                         AppearSparrow(1);
                     });
-                    _sequenceMap[capturedEnum].OnKill(() =>
+                    _sequencePerEnumMap[capturedEnum].OnKill(() =>
                     {
                         // _animatorMap[capturedEnum].SetInteger(ANIM_NUM,
                         //     Random.Range((int)AnimationName.OutA, (int)AnimationName.OutC + 1));
@@ -740,7 +740,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                     AppearSparrow(1);
                 });
             });
-            _sequenceMap[_tfIdToEnumMap[id]]?.Kill();
+            _sequencePerEnumMap[_tfIdToEnumMap[id]]?.Kill();
             SparrowCountEvent?.Invoke(++_currentSparrowCount);
             
             if(_currentSparrowCount > SPARROW_CATCH_TARGET_COUNT)

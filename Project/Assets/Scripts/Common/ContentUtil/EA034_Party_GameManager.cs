@@ -61,8 +61,6 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     baseUIManager.PopInstructionUIFromScaleZero("친구들! 각자 자리에 앉아 주세요!");
                     DOVirtual.DelayedCall(1f, () =>
                     {
-
-
                         _seatSelectionController.StartSeatSelection();
                     });
                     break;
@@ -454,7 +452,7 @@ private const float DECO_TIME = 15;
         else
         {
             if (_isCakeRoundFinish) return;
-            _sequenceMap.TryAdd((int)Objs.CakeA + _cakeCurrentRound, DOTween.Sequence());
+            _sequencePerEnumMap.TryAdd((int)Objs.CakeA + _cakeCurrentRound, DOTween.Sequence());
 
 
             if (!isCakeRotatable) return;
@@ -468,10 +466,10 @@ private const float DECO_TIME = 15;
 
             var targetRot = t.localRotation * Quaternion.Euler(0, 20, 0);
 
-            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound]?.Kill();
-            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound] = DOTween.Sequence();
+            _sequencePerEnumMap[(int)Objs.CakeA + _cakeCurrentRound]?.Kill();
+            _sequencePerEnumMap[(int)Objs.CakeA + _cakeCurrentRound] = DOTween.Sequence();
 
-            _sequenceMap[(int)Objs.CakeA + _cakeCurrentRound]
+            _sequencePerEnumMap[(int)Objs.CakeA + _cakeCurrentRound]
                 .Append(t.DOLocalRotateQuaternion(targetRot, 0.1f).SetEase(Ease.OutBack));
         }
     }

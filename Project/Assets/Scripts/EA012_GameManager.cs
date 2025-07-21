@@ -595,7 +595,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 _seatClickedCount++;
 
                 
-                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+                _sequencePerEnumMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
                 foreach (int key in isSeatClickedMap.Keys)
                     if (!isSeatClickedMap[key])
@@ -775,8 +775,8 @@ public class EA012_GameManager : Ex_BaseGameManager
         {
             Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
             
-            _sequenceMap[(int)i]?.Kill();
-            _sequenceMap[(int)i] = DOTween.Sequence();
+            _sequencePerEnumMap[(int)i]?.Kill();
+            _sequencePerEnumMap[(int)i] = DOTween.Sequence();
         }
         SetAllHelpCarMoveBtnStatus(false);
     }
@@ -811,13 +811,13 @@ public class EA012_GameManager : Ex_BaseGameManager
 
     private void AnimateSeatLoopSelectively(GameObj seat)
     {
-        if (!_sequenceMap.ContainsKey((int)seat)) return; 
+        if (!_sequencePerEnumMap.ContainsKey((int)seat)) return; 
         
         
         var SeatTransform = GetObject((int)seat).transform;
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*0.9f, 0.35f))
             .SetLoops(-1,LoopType.Yoyo)
@@ -826,15 +826,15 @@ public class EA012_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
     private void AnimateSeatLoop(GameObj seat)
     {
         var SeatTransform = GetObject((int)seat).transform;
         
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*0.9f, 0.35f))
             .SetLoops(-1,LoopType.Yoyo)
@@ -843,14 +843,14 @@ public class EA012_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
         
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
 
     private void DeactivateSeats()
     {
         for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
         {
-            _sequenceMap[i]?.Kill();
+            _sequencePerEnumMap[i]?.Kill();
         
         
         }
@@ -861,8 +861,8 @@ public class EA012_GameManager : Ex_BaseGameManager
             for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
             {
                 var SeatTransform = GetObject(i).transform;
-                _sequenceMap[i] = DOTween.Sequence();
-                _sequenceMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
+                _sequencePerEnumMap[i] = DOTween.Sequence();
+                _sequencePerEnumMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
             }
         };
 
@@ -1031,8 +1031,8 @@ private void OnHelpBtnClicked(GameObj clickedBtn, GameObj currentCar)
 
     Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarMove");
 
-    _sequenceMap[(int)clickedBtn]?.Kill();
-    _sequenceMap[(int)clickedBtn] = DOTween.Sequence();
+    _sequencePerEnumMap[(int)clickedBtn]?.Kill();
+    _sequencePerEnumMap[(int)clickedBtn] = DOTween.Sequence();
 
     DOVirtual.DelayedCall(1f, () =>
     {

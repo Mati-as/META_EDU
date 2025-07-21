@@ -887,19 +887,19 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                             _arrowMap[hitID].gameObject.SetActive(false);
                      
 
-                            _sequenceMap[hitID]?.Kill();
-                            _sequenceMap[hitID] = DOTween.Sequence();
+                            _sequencePerEnumMap[hitID]?.Kill();
+                            _sequencePerEnumMap[hitID] = DOTween.Sequence();
 
-                            _sequenceMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 1.2f, 0.25f)
+                            _sequencePerEnumMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 1.2f, 0.25f)
                                 .SetEase(Ease.OutBounce));
                             //  _sequenceMap[ID].Join(tf.transform.DOLocalRotate(Vector3.zero, 0.35f));
-                            _sequenceMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 0.8f, 0.2f)
+                            _sequencePerEnumMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 0.8f, 0.2f)
                                 .SetEase(Ease.OutBounce));
-                            _sequenceMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 1.2f, 0.25f)
+                            _sequencePerEnumMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE * 1.2f, 0.25f)
                                 .SetEase(Ease.OutBounce));
-                            _sequenceMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE, 0.5f));
+                            _sequencePerEnumMap[hitID].Append(tf.transform.DOScale(DEFAULT_SIZE, 0.5f));
 
-                            _sequenceMap[hitID].AppendCallback(() =>
+                            _sequencePerEnumMap[hitID].AppendCallback(() =>
                             {
                                 _isClickableMap[hitID] = false;
                                 animator.enabled = true;
@@ -943,13 +943,13 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA018/Click_" + randoChar);
                             // Animator 재생
                             animator.enabled = false;
-                            _sequenceMap.TryAdd(hitID, DOTween.Sequence());
-                            _sequenceMap[hitID]?.Kill();
-                            _sequenceMap[hitID] = DOTween.Sequence();
-                            _sequenceMap[hitID].Append(tf.DOScale(DEFAULT_SIZE * 1.45f, 0.15f).SetEase(Ease.OutBounce));
+                            _sequencePerEnumMap.TryAdd(hitID, DOTween.Sequence());
+                            _sequencePerEnumMap[hitID]?.Kill();
+                            _sequencePerEnumMap[hitID] = DOTween.Sequence();
+                            _sequencePerEnumMap[hitID].Append(tf.DOScale(DEFAULT_SIZE * 1.45f, 0.15f).SetEase(Ease.OutBounce));
 
-                            _sequenceMap[hitID].Append(tf.DOScale(DEFAULT_SIZE, 0.06f).SetEase(Ease.OutBounce));
-                            _sequenceMap[hitID].AppendCallback(() =>
+                            _sequencePerEnumMap[hitID].Append(tf.DOScale(DEFAULT_SIZE, 0.06f).SetEase(Ease.OutBounce));
+                            _sequencePerEnumMap[hitID].AppendCallback(() =>
                             {
                                 var randoPoss = Random.Range(0, 100f);
                                 if (randoPoss > 60)
@@ -963,7 +963,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                             });
 
                             float time = 0;
-                            _sequenceMap[hitID].AppendCallback(() =>
+                            _sequencePerEnumMap[hitID].AppendCallback(() =>
                             {
                                 DOVirtual.DelayedCall(0.1f, () =>
                                 {

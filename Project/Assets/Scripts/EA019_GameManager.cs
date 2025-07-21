@@ -333,9 +333,9 @@ public class EA019_GameManager : Ex_BaseGameManager
     private const float BALLOON_RISE_Y_DISTANCE_ONFINISH = 9.5f; // OnFinish에서 풍선이 올라가는 높이
     private void AddFloatingBalloon(int objEnum)
     {
-        _sequenceMap.TryAdd(objEnum, DOTween.Sequence());
-        _sequenceMap[(objEnum)]?.Kill();
-        _sequenceMap[(objEnum)] = DOTween.Sequence();
+        _sequencePerEnumMap.TryAdd(objEnum, DOTween.Sequence());
+        _sequencePerEnumMap[(objEnum)]?.Kill();
+        _sequencePerEnumMap[(objEnum)] = DOTween.Sequence();
 
         
         
@@ -346,7 +346,7 @@ public class EA019_GameManager : Ex_BaseGameManager
         float duration = Random.Range(0.8f,1.2f);
 
         // 처음 한번 쭉 올라감
-        _sequenceMap[objEnum].Join(
+        _sequencePerEnumMap[objEnum].Join(
             tf.DOMoveY(tf.position.y + riseAmount, initRiseduration).SetEase(Ease.OutSine)
         );
 
@@ -427,9 +427,9 @@ public class EA019_GameManager : Ex_BaseGameManager
     {
         var SeatTransform = GetObject((int)seat).transform;
 
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
             .SetLoops(100, LoopType.Yoyo)
@@ -438,7 +438,7 @@ public class EA019_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
 
    
@@ -601,19 +601,19 @@ public class EA019_GameManager : Ex_BaseGameManager
 
             // DOTween 바람 애니메이션
             int id = balloon.transform.GetInstanceID();
-            _sequenceMap.TryAdd(id, DOTween.Sequence());
-            _sequenceMap[id]?.Kill();
-            _sequenceMap[id] = DOTween.Sequence();
+            _sequencePerEnumMap.TryAdd(id, DOTween.Sequence());
+            _sequencePerEnumMap[id]?.Kill();
+            _sequencePerEnumMap[id] = DOTween.Sequence();
             
-            _sequenceMap[id].Append(balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f)
+            _sequencePerEnumMap[id].Append(balloon.transform.DOScale(_defaultSizeMap[balloon.transform.GetInstanceID()], 0.5f)
               
                 .OnStart(()=>{Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/Bappear");})
                 .SetDelay(Random.Range(0.1f, 1f))
                 .SetEase(Ease.OutBack));
            
             //_sequenceMap[id].Append(balloon.transform.DOShakeScale(100f, Random.Range(0.1f, 0.2f),vibrato:2));
-            _sequenceMap[id].Join(balloon.transform.DOShakePosition(100f, Random.Range(0.2f, 0.35f),vibrato:1));
-            _sequenceMap[id].Join(balloon.transform.DOShakeRotation(100f, Random.Range(0.2f, 0.35f),vibrato:1).SetDelay(Random.Range(0.1f,0.2f)));
+            _sequencePerEnumMap[id].Join(balloon.transform.DOShakePosition(100f, Random.Range(0.2f, 0.35f),vibrato:1));
+            _sequencePerEnumMap[id].Join(balloon.transform.DOShakeRotation(100f, Random.Range(0.2f, 0.35f),vibrato:1).SetDelay(Random.Range(0.1f,0.2f)));
             
         }
 
@@ -645,8 +645,8 @@ public class EA019_GameManager : Ex_BaseGameManager
             GameObject balloon = GetBalloonFromPool((int)wrongType);
             
             int id = balloon.transform.GetInstanceID();
-            _sequenceMap.TryAdd(id, DOTween.Sequence());
-            _sequenceMap[id]?.Kill();
+            _sequencePerEnumMap.TryAdd(id, DOTween.Sequence());
+            _sequencePerEnumMap[id]?.Kill();
             
             balloon.transform.position = allPositions[i];
             balloon.transform.localScale = Vector3.zero;
@@ -685,10 +685,10 @@ public class EA019_GameManager : Ex_BaseGameManager
     }
     private void StartBalloonFindRound()
     {
-        foreach (var key in _sequenceMap.Keys.ToArray())
+        foreach (var key in _sequencePerEnumMap.Keys.ToArray())
         {
-            _sequenceMap[key]?.Kill();
-            _sequenceMap[key] = DOTween.Sequence();
+            _sequencePerEnumMap[key]?.Kill();
+            _sequencePerEnumMap[key] = DOTween.Sequence();
         }
         
         
@@ -1149,18 +1149,18 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
             
               
                
-                _sequenceMap.TryAdd(instanceID, DOTween.Sequence());
+                _sequencePerEnumMap.TryAdd(instanceID, DOTween.Sequence());
                 
-               _sequenceMap[instanceID]?.Kill();
-               _sequenceMap[instanceID] = DOTween.Sequence();
+               _sequencePerEnumMap[instanceID]?.Kill();
+               _sequencePerEnumMap[instanceID] = DOTween.Sequence();
                
-               _sequenceMap[instanceID].AppendInterval(isOnClick? 1.1f : 0.15f);
-                _sequenceMap[instanceID].
+               _sequencePerEnumMap[instanceID].AppendInterval(isOnClick? 1.1f : 0.15f);
+                _sequencePerEnumMap[instanceID].
                     Append(child.DOScale(
                         isToZero? Vector3.zero : _defaultSizeMap[child.GetInstanceID()], 0.5f).SetEase(Ease.OutBounce));
-                _sequenceMap[instanceID].Join(child.DOShakePosition(100f, Random.Range(0.1f, 0.1f),vibrato:2));
-                _sequenceMap[instanceID].Join(child.DOShakeRotation(100f, Random.Range(0.1f, 0.1f),vibrato:2));
-                _sequenceMap[instanceID].Append(child.DOShakeScale(100f, Random.Range(0.1f, 0.2f),vibrato:2));
+                _sequencePerEnumMap[instanceID].Join(child.DOShakePosition(100f, Random.Range(0.1f, 0.1f),vibrato:2));
+                _sequencePerEnumMap[instanceID].Join(child.DOShakeRotation(100f, Random.Range(0.1f, 0.1f),vibrato:2));
+                _sequencePerEnumMap[instanceID].Append(child.DOShakeScale(100f, Random.Range(0.1f, 0.2f),vibrato:2));
         
             
         }
@@ -1324,11 +1324,11 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
 
         foreach (int key in introBalloons.Keys.ToArray())
         {
-            _sequenceMap.Add(key, DOTween.Sequence());
+            _sequencePerEnumMap.Add(key, DOTween.Sequence());
 
-            _sequenceMap[key].SetDelay(Random.Range(delay - 0.1f, delay + 0.5f));
+            _sequencePerEnumMap[key].SetDelay(Random.Range(delay - 0.1f, delay + 0.5f));
 
-            _sequenceMap[key].Append(introBalloons[key].DOScale(_defaultSizeMap[key], 1.25f)
+            _sequencePerEnumMap[key].Append(introBalloons[key].DOScale(_defaultSizeMap[key], 1.25f)
                 .OnStart(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA019/BintroAppear");
@@ -1336,17 +1336,17 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
                 .SetEase(Ease.OutBounce)
                 .SetDelay(0.2f * introBalloons.Count));
            
-            _sequenceMap[key].Join(introBalloons[key].DOShakePosition(30f, Random.Range(0.1f, 0.1f),vibrato:3));
-            _sequenceMap[key].Append(introBalloons[key].DOShakeScale(30f, Random.Range(0.1f, 0.2f),vibrato:3));
+            _sequencePerEnumMap[key].Join(introBalloons[key].DOShakePosition(30f, Random.Range(0.1f, 0.1f),vibrato:3));
+            _sequencePerEnumMap[key].Append(introBalloons[key].DOShakeScale(30f, Random.Range(0.1f, 0.2f),vibrato:3));
         }
     }
 
     private void KillIntroBalloonsAnim()
     {
         Logger.ContentTestLog("Kill Intro Balls -----------------");
-        foreach (int key in _sequenceMap.Keys.ToArray())
+        foreach (int key in _sequencePerEnumMap.Keys.ToArray())
         {
-            _sequenceMap[key]?.Kill();
+            _sequencePerEnumMap[key]?.Kill();
         }
     
         foreach (int key in introBalloons.Keys.ToArray())

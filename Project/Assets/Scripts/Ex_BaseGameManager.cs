@@ -65,19 +65,22 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<Type, Object[]> _objects = new();
 
     protected bool _init;
-    protected Animator mainAnimator;
+    protected Animator mainAnimator;//Gamemanager에 부착된 Animator 사용중
     protected int currentMainMainSequence;
 
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
 
 
+    //클릭이펙트 사용을 위한 풀, 현재 경로와 Playeffect로 사용하도록 구현되어있음
     private readonly Stack<ParticleSystem> _particlePool = new();
     private Dictionary<int,Stack<ParticleSystem>> _subParticlePool = new();
     
+    //중복클릭 관련 처리 간소화용
     protected Dictionary<int, bool> _isClickableMap = new();
     protected Dictionary<int,bool> _isClickedMap = new();
     
     
+    //Raycast 판별로직 사용. 현재 주로 hit.transform.getInstanceID()를 통해 판별중, 이를 간략화하고 코드중복을 방지 중
     protected Dictionary<int, Transform> _tfidTotransformMap = new();
     protected Dictionary<int, int> _enumToTfIdMap = new();
     protected Dictionary<int, int> _tfIdToEnumMap = new();
@@ -89,6 +92,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     protected Dictionary<int, Vector3> _defaultSizeMap = new();
     protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
     protected Dictionary<int, Quaternion> _defaultLocalRotationQuatMap = new();
+    protected Dictionary<int, Sequence> _sequencePerEnumMap = new();// 오브젝트에 있는 enum값에 따른 시퀀스 맵핑
     protected Dictionary<int, Sequence> _sequenceMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
     protected Dictionary<int,Vector3> _defaultPosMap = new(); //
@@ -174,7 +178,7 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         _defaultRotationQuatMap.Add(enumIndex, transform.rotation);
         _defaultLocalRotationQuatMap.Add(enumIndex, transform.localRotation);
         _defaultPosMap.Add(enumIndex, transform.position);
-        _sequenceMap.Add(enumIndex, DOTween.Sequence());
+        _sequencePerEnumMap.Add(enumIndex, DOTween.Sequence());
 
         obj.transform.TryGetComponent(out Animator animator);
         if (animator != null) _animatorMap.Add(enumIndex, animator);
@@ -404,6 +408,16 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         ps.Clear();
         ps.gameObject.SetActive(false);
         _subParticlePool[subParticleIndex].Push(ps); // Return the particle system to the pool
+    }
+    
+    /// <summary>
+    /// 1. 7인모드에서 버튼으로 플레이하는 경우 아래 함수를 오버라이드 해서 구현가능
+    /// </summary>
+    /// <param name="btnId"></param>
+    protected virtual void OnBtnClickEvent(int btnId)
+    {
+        // Override this method to handle button click events
+        // Example: Debug.Log($"Button {btnId} clicked");
     }
 
 }
