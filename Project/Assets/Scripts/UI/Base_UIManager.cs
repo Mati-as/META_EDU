@@ -133,7 +133,7 @@ public class Base_UIManager : UI_PopUp
     ///     애니메이션과 함께 텍스트를 바꿔줍니다.
     /// </summary>
     /// <param name="instruction"></param>
-    public void PopInstructionUIFromScaleZero(string instruction, float duration = 10f, float delay = 0f)
+    public void PopInstructionUIFromScaleZero(string instruction, float duration = 10f, float delay = 0f,string narrationPath =null)
     {
         _uiSeq?.Kill();
         _uiSeq = DOTween.Sequence();
@@ -158,7 +158,11 @@ public class Base_UIManager : UI_PopUp
             _uiSeq.Append(UI_Instruction.transform.DOScale(Vector3.zero, 0.15f)
                 .SetEase(Ease.InOutBounce));
         }
-        //duration설정하지 않은경우, 다음 UI 표출실행 전까지 UI 지속--------------
+
+        if(narrationPath != null)
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, narrationPath);
+        }
     }
 
     public void PopAndChangeUI(string instruction, float delayAndShutTme = 0f)
