@@ -277,7 +277,7 @@ public abstract class Base_GameManager : MonoBehaviour
 
         
 #if UNITY_EDITOR
-        DOTween.useSafeMode = false; //원활한 디버깅을 위해 safe mode를 사용하지 않습니다. 
+        DOTween.useSafeMode = true; //원활한 디버깅을 위해 safe mode를 사용하지 않는경우 있음
 #endif
         
         

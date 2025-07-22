@@ -101,31 +101,6 @@ public class ContentAdjuster : MonoBehaviour
             case ModeType.주제별2학기:
                 monthIndices = new int[] { 8, 9, 10, 11, 0, 1 }; // Sep~Feb
                 break;
-
-            case ModeType.신체활동:
-                FilterAndPaginateContent(ContentCategory.Physical_Activity);
-                InitPageNavigation();
-                return;
-            case ModeType.자연탐구:
-                FilterAndPaginateContent(ContentCategory.Science_Exploration);
-                InitPageNavigation();
-                return;
-            case ModeType.예술경험:
-                FilterAndPaginateContent(ContentCategory.Art_Expression);
-                InitPageNavigation();
-                return;
-            case ModeType.사회관계:
-                FilterAndPaginateContent(ContentCategory.Social_Skills);
-                InitPageNavigation();
-                return;
-            case ModeType.의사소통:
-                FilterAndPaginateContent(ContentCategory.Communication);
-                InitPageNavigation();
-                return;
-            case ModeType.미디어아트:
-                FilterAndPaginateContent(ContentCategory.Media_Art);
-                InitPageNavigation();
-                return;
             case ModeType.주제별1월:
                 FilterAndPaginateContentByMonth("Jan");
                 InitPageNavigation();
@@ -174,6 +149,30 @@ public class ContentAdjuster : MonoBehaviour
                 FilterAndPaginateContentByMonth("Dec");
                 InitPageNavigation();
                 return;
+            case ModeType.신체활동:
+                FilterAndPaginateContent(ContentCategory.Physical_Activity);
+                InitPageNavigation();
+                return;
+            case ModeType.자연탐구:
+                FilterAndPaginateContent(ContentCategory.Science_Exploration);
+                InitPageNavigation();
+                return;
+            case ModeType.예술경험:
+                FilterAndPaginateContent(ContentCategory.Art_Expression);
+                InitPageNavigation();
+                return;
+            case ModeType.사회관계:
+                FilterAndPaginateContent(ContentCategory.Social_Skills);
+                InitPageNavigation();
+                return;
+            case ModeType.의사소통:
+                FilterAndPaginateContent(ContentCategory.Communication);
+                InitPageNavigation();
+                return;
+            case ModeType.미디어아트:
+                FilterAndPaginateContent(ContentCategory.Media_Art);
+                InitPageNavigation();
+                return;
             
             case ModeType.Test:
                 _isTestScene = true;
@@ -182,18 +181,21 @@ public class ContentAdjuster : MonoBehaviour
                 return;
         }
 
-
-        for (int i = 0; i < 6; i++)
+        if (mode == ModeType.주제별1학기 || mode == ModeType.주제별2학기)
         {
-            string key = allKeys[monthIndices[i]];
-            bool isActive = XmlManager.Instance.GetMenuSetting(key);
+            for (int i = 0; i < 6; i++)
+            {
+                string key = allKeys[monthIndices[i]];
+                bool isActive = XmlManager.Instance.GetMenuSetting(key);
 
-            Transform activeChild = Active_month.transform.GetChild(i);
-            Transform inactiveChild = Inactive_month.transform.GetChild(i);
+                Transform activeChild = Active_month.transform.GetChild(i);
+                Transform inactiveChild = Inactive_month.transform.GetChild(i);
 
-            activeChild.gameObject.SetActive(isActive);
-            inactiveChild.gameObject.SetActive(!isActive);
+                activeChild.gameObject.SetActive(isActive);
+                inactiveChild.gameObject.SetActive(!isActive);
+            }
         }
+        
     }
 
 

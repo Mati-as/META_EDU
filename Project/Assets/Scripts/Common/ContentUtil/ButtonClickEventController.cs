@@ -55,7 +55,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         
         foreach (var hit in GameManager.GameManager_Hits)
         {
-            Logger.Log($"ButtonClickEventController : OnRaySyncedByGameManager hit {hit.transform.name}");
+//            Logger.Log($"ButtonClickEventController : OnRaySyncedByGameManager hit {hit.transform.name}");
             int id = hit.transform.GetInstanceID();
             if (!_tfIdToEnumMap.ContainsKey(id)) continue; 
             
@@ -66,8 +66,9 @@ public class ButtonClickEventController : Ex_MonoBehaviour
             
             if (!isClickable) return;
             Char randomChar = (char)UnityEngine.Random.Range('A','D'+1);
-
             Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/Common/Click/Click"+randomChar.ToString());
+
+       
             if(_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
             {
                 OnButtonClicked?.Invoke(clickedEnum);
