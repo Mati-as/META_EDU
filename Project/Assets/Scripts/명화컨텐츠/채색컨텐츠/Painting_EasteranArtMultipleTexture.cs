@@ -56,11 +56,11 @@ public class Painting_EasteranArtMultipleTexture : Base_GameManager
      //  Managers.Sound.Play(SoundManager.Sound.Bgm, "Audio/명화컨텐츠/gnossienne",volume:1.2f)
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
         ChangeScene -= OnChangeScene;
         ChangeScene += OnChangeScene;
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
     }
 
     protected override void OnDestroy()

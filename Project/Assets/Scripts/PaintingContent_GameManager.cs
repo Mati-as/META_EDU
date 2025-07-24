@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using Random = UnityEngine.Random;
 
-public class PaintingContent_GameManager : Ex_BaseGameManager
+public class PaintingContent_GameManager : Base_GameManager
 {
     private enum Objs
     {
@@ -47,7 +47,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         BindObject(typeof(Objs));
         _sketchMeshRenderer = GetObject((int)Objs.SketchFinished).GetComponent<MeshRenderer>();
         DOTween.SetTweensCapacity(2000, 2000);
-        psResourcePath = string.Empty;
+        PsResourcePath = string.Empty;
         base.Init();
         InitializePool();
         SetVideo();
@@ -111,7 +111,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         {
             videoPlayer.Pause();
         });
-        BindEvent();
+        SubscribeRayRelatedEvents();
     }
 
     protected override void OnGameStartButtonClicked()

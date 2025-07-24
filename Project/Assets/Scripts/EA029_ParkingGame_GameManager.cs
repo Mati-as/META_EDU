@@ -6,7 +6,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 
-public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
+public class EA029_ParkingGame_GameManager : Base_GameManager
 {
     /// <summary>
     ///     1.
@@ -198,7 +198,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
     protected override void Init()
     {
-        psResourcePath = "Runtime/EA029/Fx_Click";
+        PsResourcePath = "Runtime/EA029/Fx_Click";
         subPsResourcePathMap.Add(0, "Runtime/EA029/OnArrival");
         SetSubPsPool(0);
         

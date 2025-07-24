@@ -6,7 +6,7 @@ using UnityEngine;
 using Sequence = DG.Tweening.Sequence;
 
 
-public class EA019_GameManager : Ex_BaseGameManager
+public class EA019_GameManager : Base_GameManager
 {
     private enum MainSeq
     {
@@ -926,7 +926,7 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
         BindObject(typeof(Objs));
         
         DOTween.SetTweensCapacity(500,1000);
-        psResourcePath = "Runtime/EA019/Fx_Click";
+        PsResourcePath = "Runtime/EA019/Fx_Click";
         base.Init();
         SetBalloonPool(); //zero로 초기화하기 전에 defaultsizemap에 저장 필요 주의 
         

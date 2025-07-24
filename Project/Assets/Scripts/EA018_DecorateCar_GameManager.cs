@@ -4,7 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
- public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
+ public class EA018_DecorateCar_GameManager : Base_GameManager
 {
     private enum Obj
     {
@@ -485,7 +485,7 @@ using Random = UnityEngine.Random;
 
         subPsResourcePathMap.Add(0, "Runtime/EA018/OnComplete");
         SetSubPsPool(0);
-        psResourcePath = "Runtime/EA018/Fx_Click";
+        PsResourcePath = "Runtime/EA018/Fx_Click";
 
         _spriteBgRenderer = GetObject((int)Obj.SpriteBg).GetComponent<SpriteRenderer>();
         _spriteBgRenderer.DOFade(0, 0.0001f);

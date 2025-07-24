@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EA031_FireDrill_GameManager : Ex_BaseGameManager
+public class EA031_FireDrill_GameManager : Base_GameManager
 {
     private enum MainSeq
     {
@@ -314,7 +314,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
     protected override sealed void Init()
     {
-        psResourcePath = "Runtime/EA031/Fx_Click";
+        PsResourcePath = "Runtime/EA031/Fx_Click";
 
         BindObject(typeof(Objs));
         base.Init();

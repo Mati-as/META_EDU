@@ -46,9 +46,9 @@ public class ScratchPaintingBaseGameManager : Base_GameManager
         SensorSensitivity = 0.11f;
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         OnStampingFinished -= OnRoundFinished;
         OnStampingFinished += OnRoundFinished;

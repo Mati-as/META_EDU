@@ -37,9 +37,9 @@ public class AttendanceCheckBaseGameManager : Base_GameManager
     for (var i = 0; i < _nameOnTrains.Length; i++) _nameOnTrains[i].text = string.Empty;
   }
 
-  protected override void BindEvent()
+  protected override void SubscribeRayRelatedEvents()
   {
-    base.BindEvent();
+    base.SubscribeRayRelatedEvents();
     
     AttendanceCheck_UIManager.OnNameInputFinished -= OnNameInputFinished;
     AttendanceCheck_UIManager.OnNameInputFinished += OnNameInputFinished;

@@ -108,7 +108,7 @@ public class VideoContentBaseGameManager : Base_GameManager
         SCENE_NAME = SceneManager.GetActiveScene().name;
 
         SetPool(ref _particlePool);
-        BindEvent();
+        SubscribeRayRelatedEvents();
     }
     
 

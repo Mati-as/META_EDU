@@ -1,18 +1,63 @@
 using System;
 using System.Collections;
-using System.Globalization;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+
+
+/// <summary>
+///     게임내 메세지 호출 관리를 위해 구현하였으나, 현재 미사용중 2025/07/24
+///     UIManager에 텍스트 및 나레이션 전송용 페이로드 입니다.
+///     pub-sub패턴 활용이며 텍스트나 나레이션의 양이 많을경우 활용할 수 있습니다.
+/// </summary>
+public class UI_Payload : IPayload
+{
+    public string Narration //텍스트 내용
+    {
+        get;
+    }
+
+    public bool IsCustom // 조건(Checksum)없이 UI를 사용하고 싶은경우
+    {
+        get;
+    }
+
+    public bool IsPopFromZero // 처음에 size가 제로였다가 커지는 애니메이션을 사용하고 싶은경우활용, false인 경우 original 사이즈에서 애니메이션 재생
+    {
+        get;
+    }
+
+
+    public float DelayAndAutoShutTime //텍스트 내용
+    {
+        get;
+    }
+
+    public string Checksum //텍스트 내용, 메세지필터링
+    {
+        get;
+    }
+
+
+    public UI_Payload(string narration, bool isCustomOn = false, bool isPopFromZero = true,
+        float delayAndAutoShutTime = 0.0f, string Checksum = "")
+    {
+        IsCustom = isCustomOn;
+        Narration = narration;
+        IsPopFromZero = isPopFromZero;
+        DelayAndAutoShutTime = delayAndAutoShutTime;
+        this.Checksum = Checksum;
+    }
+}
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
-public abstract class Base_GameManager : MonoBehaviour
+public abstract class Base_GameManager : Ex_MonoBehaviour
 {
     //20250225 플레이 활동성 체크용 활용변수 
     public int DEV_sensorClick
@@ -102,6 +147,16 @@ public abstract class Base_GameManager : MonoBehaviour
     protected GameObject UIManagerObj;
     protected Base_UIManager baseUIManager;
 
+
+    #region Utils 
+
+    protected FxPoolManager FxPoolManager;
+    protected SequenceAnimationController SequenceAnimationController;
+    protected string PsResourcePath = string.Empty;
+    protected Dictionary<int, string> subPsResourcePathMap = new();
+
+    #endregion
+
     public void LoadUIManagerAndInit()
     {
         DOVirtual.DelayedCall(0.75f, () =>
@@ -112,13 +167,6 @@ public abstract class Base_GameManager : MonoBehaviour
         
     }
 
-    
-    
-    protected virtual void Start()
-    {
-      
-     
-    }
 
     protected float waitForClickableInGameRay
     {
@@ -223,7 +271,6 @@ public abstract class Base_GameManager : MonoBehaviour
     protected virtual void Awake()
     {
         Init();
-      
         Debug.Assert(PrecheckOnInit());
     }
 
@@ -265,13 +312,12 @@ public abstract class Base_GameManager : MonoBehaviour
     }
 
 
-    protected virtual void Init()
+    protected override void Init()
     {
         if (isInitialized)
         {
             Logger.LogWarning("Scene is already initialized.");
-
-
+            
             return;
         }
 
@@ -285,8 +331,8 @@ public abstract class Base_GameManager : MonoBehaviour
         waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
         ManageProjectSettings(SHADOW_MAX_DISTANCE, SensorSensitivity);
-        BindEvent();
-        SetResolution(1920, 1080, TARGET_FRAME);
+        SubscribeRayRelatedEvents();
+        SetResolution(2560, 1440, TARGET_FRAME);
 
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) PlayNarration();
 
@@ -306,11 +352,13 @@ public abstract class Base_GameManager : MonoBehaviour
 
         
         DOTween.Init(useSafeMode: false);
+
         
-    
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
         
-      
+        
+        base.Init();
+        FxPoolManager = new FxPoolManager(this, PsResourcePath, subPsResourcePathMap);
     }
 
     private void SetUIManager()
@@ -455,7 +503,12 @@ public abstract class Base_GameManager : MonoBehaviour
         if (!Utils.IsLauncherScene())
         {
             var gmObjects = GameObject.FindGameObjectsWithTag("GameManager");
-            if (gmObjects.Length > 1) return false;
+            if (gmObjects.Length > 1)
+            {
+                Logger.LogError("GameManager is already initialized in this scene. " +
+                                "There should be only one GameManager per scene.");
+                return false;
+            }
         }
 
         return true;
@@ -495,7 +548,7 @@ public abstract class Base_GameManager : MonoBehaviour
     /// <summary>
     /// 공통 이벤트 및 센서 인식을 위한 이벤트 할당
     /// </summary>
-    protected virtual void BindEvent()
+    protected virtual void SubscribeRayRelatedEvents()
     {
 #if UNITY_EDITOR
         Debug.Log("Ray Sync Subscribed, RayHits being Shared");
@@ -519,7 +572,7 @@ public abstract class Base_GameManager : MonoBehaviour
     {
         Managers.Sound.Clear();
 
-
+        _objects = new Dictionary<Type, UnityEngine.Object[]>();
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
         UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         On_GmRay_Synced -= OnRaySynced;
@@ -645,6 +698,46 @@ public abstract class Base_GameManager : MonoBehaviour
             .OnComplete(() => onComplete?.Invoke());
     }
 
-  
+    protected void ResetClickable(bool isClickable = true)
+    {
+        foreach (int key in _isClickableMapByTfID.Keys.ToArray())
+        {
+            _isClickableMapByTfID[key] = isClickable;
+        }
+    }
 
+    protected void PlayParticleEffect(Vector3 pos)
+    {
+        FxPoolManager.PlayMainParticle(pos);
+    }
+
+    protected void PlaySubParticleEffect(int subParticleIndex, Vector3 pos)
+    {
+        FxPoolManager.PlaySubParticle(subParticleIndex, pos);
+    }
+
+    protected void ChangeThemeSeqAnim(int seqNum = 0)
+    {
+        SequenceAnimationController?.ChangeThemeSequence(seqNum);
+    }
+
+    protected void TriggerFinish()
+    {
+        SequenceAnimationController?.TriggerFinish();
+    }
+
+    
+    /// <summary>
+    /// BaseGameManger 상속시 불필요.
+    /// </summary>
+    protected override sealed void OnRaySyncedByGameManager()
+    {
+        base.OnRaySyncedByGameManager();
+    }
+
+
+    protected virtual void OnBtnClickEvent(int btnId)
+    {
+        // Override this method to handle button click events
+    }
 }

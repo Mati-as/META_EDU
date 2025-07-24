@@ -3,7 +3,7 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-public class EA034_Party_GameManager : Ex_BaseGameManager
+public class EA034_Party_GameManager : Base_GameManager
 {
     private enum MainSeq
     {

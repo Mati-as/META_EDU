@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class EA035_WinterFood_GameManager : Ex_BaseGameManager
+public class EA035_WinterFood_GameManager : Base_GameManager
 {
     // 작업중
     private enum MainSeq
@@ -349,7 +349,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     protected override void Init()
     {
-        psResourcePath = "Runtime/EA035/Fx_Click";
+        PsResourcePath = "Runtime/EA035/Fx_Click";
         base.Init();
         BindObject(typeof(Objs));
         

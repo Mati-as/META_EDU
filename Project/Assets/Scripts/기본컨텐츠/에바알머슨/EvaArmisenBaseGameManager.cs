@@ -76,9 +76,9 @@ public class EvaArmisenBaseGameManager : Base_GameManager
 
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         OnStampingFinished -= OnRoundFinished;
         OnStampingFinished += OnRoundFinished;

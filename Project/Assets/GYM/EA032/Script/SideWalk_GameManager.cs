@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SideWalk_GameManager : Ex_BaseGameManager
+public class SideWalk_GameManager : Base_GameManager
 {
     private enum EventStage
     {
@@ -112,7 +112,7 @@ public class SideWalk_GameManager : Ex_BaseGameManager
             v.gameObject.SetActive(false);
         }
 
-        psResourcePath = "SideWalk/Asset/Fx_Click";
+        PsResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
 
         //if (mainCamera != null)

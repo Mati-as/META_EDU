@@ -87,9 +87,9 @@ public class Piano_MusicController : Base_GameManager
     private SongList _currentSong;
 
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
         OnSongFinished -= PlayNextSong;
         OnSongFinished += PlayNextSong;
     }

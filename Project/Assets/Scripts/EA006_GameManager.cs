@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class EA006_GameManager : Ex_BaseGameManager
+public class EA006_GameManager : Base_GameManager
 {
     public enum MainSeq
     {
@@ -162,7 +162,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     protected override void Init()
     {
         base.Init();
-        psResourcePath = "Runtime/EA006/FX_leaves";
+        PsResourcePath = "Runtime/EA006/FX_leaves";
         BindObject(typeof(Obj));
         _uiManager = UIManagerObj.GetComponent<EA006_UIManager>();
 

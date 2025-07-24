@@ -6,7 +6,7 @@ using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EA033_GameManager : Ex_BaseGameManager
+public class EA033_GameManager : Base_GameManager
 {
     private enum MainSeq
     {
@@ -91,7 +91,7 @@ public class EA033_GameManager : Ex_BaseGameManager
             
         _stage = MainSeq.OnStart;
 
-        psResourcePath = "SideWalk/Asset/Fx_Click";
+        PsResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
 
         Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12; //카메라들 우선순위 초기화

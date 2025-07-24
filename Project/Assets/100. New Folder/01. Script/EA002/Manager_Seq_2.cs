@@ -268,9 +268,9 @@ public class Manager_Seq_2 : Base_GameManager
         base.Init();
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
     }
 
     protected override void OnDestroy()

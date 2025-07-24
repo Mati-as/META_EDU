@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
-public class EA012_GameManager : Ex_BaseGameManager
+public class EA012_GameManager : Base_GameManager
 {
 
     public enum GameObj
@@ -330,7 +330,7 @@ public class EA012_GameManager : Ex_BaseGameManager
     protected override void Init()
     {
         SHADOW_MAX_DISTANCE = 60;
-        psResourcePath = "Runtime/SortedByScene/EA012/Fx_Click";
+        PsResourcePath = "Runtime/SortedByScene/EA012/Fx_Click";
         DOTween.SetTweensCapacity(500,1300);
         base.Init();
         BindObject(typeof(GameObj));

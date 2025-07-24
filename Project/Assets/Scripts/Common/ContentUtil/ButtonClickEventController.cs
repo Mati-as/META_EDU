@@ -123,10 +123,10 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     {
         Transform buttonTransform = GetObject(clickedIndex).transform;
         
-        _sequenceMap[(int)clickedIndex]?.Kill();
-        _sequenceMap[clickedIndex] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)clickedIndex]?.Kill();
+        _sequencePerEnumMap[clickedIndex] = DOTween.Sequence();
 
-        _sequenceMap[clickedIndex]
+        _sequencePerEnumMap[clickedIndex]
             .Append(buttonTransform
                 .DOScale(_btnDisappearModeInSequentialMode ? Vector3.zero : _defaultSizeMap[clickedIndex], 0.7f)
                 .SetEase(Ease.InOutBounce));
@@ -146,21 +146,21 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         
         Transform buttonTransform = GetObject(clickedIndex).transform;
 
-        _sequenceMap[(int)clickedIndex]?.Kill();
-        _sequenceMap[(int)clickedIndex] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)clickedIndex]?.Kill();
+        _sequencePerEnumMap[(int)clickedIndex] = DOTween.Sequence();
         
-        _sequenceMap[(int)clickedIndex].Append(buttonTransform
+        _sequencePerEnumMap[(int)clickedIndex].Append(buttonTransform
             .DOShakeScale(0.25f, 0.05f, 5, 70, true)
             .SetEase(Ease.InOutBack));
 
-        _sequenceMap[(int)clickedIndex].OnKill(() =>
+        _sequencePerEnumMap[(int)clickedIndex].OnKill(() =>
         {
           buttonTransform.localScale =    _defaultSizeMap[(int)clickedIndex] ;
         });
         
         if (isToDisappear)
         {
-            _sequenceMap[(int)clickedIndex]
+            _sequencePerEnumMap[(int)clickedIndex]
                 .Append(buttonTransform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.InOutBounce));
         }
         if (_currentOrder >= maxClickCount)
@@ -180,11 +180,11 @@ public class ButtonClickEventController : Ex_MonoBehaviour
        
         Logger.Log("DeactivateAllButtons called");
 
-        foreach (var key in _sequenceMap.Keys.ToArray())
+        foreach (var key in _sequencePerEnumMap.Keys.ToArray())
         {
 //           Logger.Log($"Killing sequence {key}");
-            _sequenceMap[key]?.Kill();
-            _sequenceMap[key] = DOTween.Sequence();
+            _sequencePerEnumMap[key]?.Kill();
+            _sequencePerEnumMap[key] = DOTween.Sequence();
         }
 
         DOVirtual.DelayedCall(0.5f, () =>
@@ -193,9 +193,9 @@ public class ButtonClickEventController : Ex_MonoBehaviour
             for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
             {
                 var btnTransform = GetObject(i).transform;
-                _sequenceMap[i]?.Kill();
-                _sequenceMap[i] = DOTween.Sequence();
-                _sequenceMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
+                _sequencePerEnumMap[i]?.Kill();
+                _sequencePerEnumMap[i] = DOTween.Sequence();
+                _sequencePerEnumMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
             }
         });
 
@@ -205,9 +205,9 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     {
         Transform buttonTransform = GetObject((int)button).transform;
 
-        _sequenceMap[(int)button]?.Kill();
-        _sequenceMap[(int)button] = DOTween.Sequence();
-        _sequenceMap[(int)button]
+        _sequencePerEnumMap[(int)button]?.Kill();
+        _sequencePerEnumMap[(int)button] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)button]
             .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 1.1f, 0.25f))
             .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 0.9f, 0.35f))
             .SetLoops(100, LoopType.Yoyo)
@@ -216,7 +216,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
               if(_currentClickMode==ButtonClickMode.AnyOrder) buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.15f);
             });
 
-        _sequenceMap[(int)button].Play();
+        _sequencePerEnumMap[(int)button].Play();
     }
 
     public void ChangeBtnImage(string imagePath)

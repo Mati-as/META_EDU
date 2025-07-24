@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class HopscotchBaseGameManager : Ex_BaseGameManager
+public class HopscotchBaseGameManager : Base_GameManager
 {
     [FormerlySerializedAs("videoGameManager")]
     [FormerlySerializedAs("effectController")]
@@ -105,7 +105,7 @@ public class HopscotchBaseGameManager : Ex_BaseGameManager
     protected override void Init()
     {
         
-        psResourcePath = "Runtime/BB002/Fx_Click";
+        PsResourcePath = "Runtime/BB002/Fx_Click";
         
         
         _defaultQuaternionMap = new Dictionary<Transform, Quaternion>();

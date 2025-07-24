@@ -70,9 +70,9 @@ public class EmotionTrafficLightsBaseGameManager : Base_GameManager
     private bool _isInitializing;// 종료시점 - 씬초기화까지
   
     //---------------------------------------------- Init and Event Functions -----------------
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
         FirstStageFinished -= OnFirstStageFinished;
         FirstStageFinished += OnFirstStageFinished;
         

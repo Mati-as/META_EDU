@@ -62,9 +62,9 @@ public class ShootOutBaseGameManager : Base_GameManager
         _ballDefaultPos = _ball.position;
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
         ShootOut_GoalPostController.OnGoal -= OnGoal;
         ShootOut_GoalPostController.OnGoal += OnGoal;
     }

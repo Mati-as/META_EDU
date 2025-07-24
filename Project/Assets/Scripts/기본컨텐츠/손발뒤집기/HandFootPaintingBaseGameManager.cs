@@ -44,9 +44,9 @@ public class HandFootPaintingBaseGameManager : Base_GameManager
         _bgSprite.DOFade(0, 0.00001f).OnComplete(() => { isInit = true; });
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         onRoundFinished -= OnRoundFinished;
         onRoundFinished += OnRoundFinished;

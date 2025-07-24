@@ -128,9 +128,9 @@ public class SandwitchBaseGameManager : Base_GameManager
         //StackCamera();
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         onRoundReady -= OnRoundReady;
         onRoundReady += OnRoundReady;

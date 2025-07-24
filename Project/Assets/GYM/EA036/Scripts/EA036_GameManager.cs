@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
-public class EA036_GameManager : Ex_BaseGameManager
+public class EA036_GameManager : Base_GameManager
 {
     private enum MainSeq
     {
@@ -96,7 +96,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, "EA036/Audio/EA036_BGM");
             
-        psResourcePath = "SideWalk/Asset/Fx_Click";
+        PsResourcePath = "SideWalk/Asset/Fx_Click";
         SetPool();
 
         // for (int i = (int)Objects.ActivatableObjects; i <= (int)Objects.TurnOnObjects; i++)

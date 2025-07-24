@@ -5,7 +5,7 @@ using DefaultNamespace;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class BeadsDrumBaseGameManager : Ex_BaseGameManager
+public class BeadsDrumBaseGameManager : Base_GameManager
 {
     [SerializeField]
     [Range(0,10)]

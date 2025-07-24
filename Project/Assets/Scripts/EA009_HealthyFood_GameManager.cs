@@ -29,7 +29,7 @@ public class EA009_Payload : IPayload
 }
 
 
-public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
+public class EA009_HealthyFood_GameManager : Base_GameManager
 {
     public enum MainSeq
     {
@@ -411,7 +411,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     protected override void Init()
     {
         PoolRoot.transform.SetParent(gameObject.transform);
-        psResourcePath = "Runtime/EA009/Fx_Click";
+        PsResourcePath = "Runtime/EA009/Fx_Click";
         SHADOW_MAX_DISTANCE = 60;
         DOTween.SetTweensCapacity(700,1000);
         base.Init();

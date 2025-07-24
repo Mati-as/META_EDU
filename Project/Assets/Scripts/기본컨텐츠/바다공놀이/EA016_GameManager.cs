@@ -9,7 +9,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-public class EA016_GameManager : Ex_BaseGameManager
+public class EA016_GameManager : Base_GameManager
 {
     private ParticleSystem _clickPs;
     public Queue<ParticleSystem> particlePool;
@@ -90,7 +90,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         SetPool(ref particlePool);
         SensorSensitivity = 0.18f;
         //////BGM_VOLUME = 0.2f;
-        psResourcePath = "SortedByScene/BasicContents/EA016/Fx_Click";
+        PsResourcePath = "SortedByScene/BasicContents/EA016/Fx_Click";
         base.Init();
         ManageProjectSettings(150, 0.15f);
 

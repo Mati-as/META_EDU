@@ -5,7 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
+public class EA010_AutumnalFruits_GameManager : Base_GameManager
 {
     public enum Fruits
     {
@@ -318,7 +318,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
 
     protected sealed override void Init()
     {
-        psResourcePath = "Runtime/EA010/FX_leaves";
+        PsResourcePath = "Runtime/EA010/FX_leaves";
         
         base.Init();
         _uiManager = UIManagerObj.GetComponent<EA010_UIManager>();

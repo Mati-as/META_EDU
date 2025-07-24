@@ -66,11 +66,11 @@ public class Painting_StarryNightMultipleTexture : Base_GameManager
         InitTexture();
     }
     
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
         ChangeScene -= OnChangeScene;
         ChangeScene += OnChangeScene;
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
     }
 
     protected override void OnDestroy()

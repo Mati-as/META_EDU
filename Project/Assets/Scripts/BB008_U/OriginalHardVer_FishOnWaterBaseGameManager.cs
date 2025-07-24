@@ -262,9 +262,9 @@ public class OriginalHardVer_FishOnWaterBaseGameManager : Base_GameManager
         ReInit();
     }
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         OnFishCaught -= PlayPathOnCaught;
         OnFishCaught += PlayPathOnCaught;

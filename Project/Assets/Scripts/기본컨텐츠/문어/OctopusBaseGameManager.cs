@@ -63,9 +63,9 @@ public class OctopusBaseGameManager : Base_GameManager
 
     public static event Action OnReinit;
 
-    protected override void BindEvent()
+    protected override void SubscribeRayRelatedEvents()
     {
-        base.BindEvent();
+        base.SubscribeRayRelatedEvents();
 
         OnReinit -= OnReInit;
         OnReinit += OnReInit;

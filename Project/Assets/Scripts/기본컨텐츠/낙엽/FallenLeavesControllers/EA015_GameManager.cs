@@ -32,7 +32,7 @@ public class EA015_Payload : IPayload
     }
 }
 
-public class EA015_GameManager : Ex_BaseGameManager, IOnClicked
+public class EA015_GameManager : Base_GameManager, IOnClicked
 {
     private ParticleSystem.Particle[] particles;
 
@@ -172,7 +172,7 @@ public class EA015_GameManager : Ex_BaseGameManager, IOnClicked
     protected override void Init()
     {
         SHADOW_MAX_DISTANCE = 60;
-        psResourcePath = "Runtime/EA015/Fx_Click";
+        PsResourcePath = "Runtime/EA015/Fx_Click";
         base.Init();
 
 

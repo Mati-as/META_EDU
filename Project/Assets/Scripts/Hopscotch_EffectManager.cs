@@ -13,7 +13,7 @@ public class Hopscotch_EffectManager : VideoContentBaseGameManager
         SCENE_NAME = SceneManager.GetActiveScene().name;
 
         SetPool(ref _particlePool);
-        BindEvent();
+        SubscribeRayRelatedEvents();
     }
     
 
