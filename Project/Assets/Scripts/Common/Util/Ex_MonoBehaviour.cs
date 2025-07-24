@@ -24,6 +24,7 @@ public class Ex_MonoBehaviour : MonoBehaviour
     protected virtual void Start()
     {
         GameManager = GameObject.FindWithTag("GameManager").GetComponent<Base_GameManager>();
+      
         Base_GameManager.On_GmRay_Synced -= OnRaySyncedByGameManager;
         Base_GameManager.On_GmRay_Synced += OnRaySyncedByGameManager;
         Debug.Assert(GameManager!=null);
@@ -34,8 +35,8 @@ public class Ex_MonoBehaviour : MonoBehaviour
         
     }
     
-    protected Dictionary<int, bool> _isClickableMap = new();
-    protected Dictionary<int,bool> _isClickedMap = new();
+    protected Dictionary<int, bool> _isClickableMapByTfID = new();
+    protected Dictionary<int,bool> _isClickedMapByTfID = new();
     
     
     protected Dictionary<int, Transform> _tfidTotransformMap = new();
@@ -48,7 +49,9 @@ public class Ex_MonoBehaviour : MonoBehaviour
     //protected Dictionary<Type,Sequence> _sequences = new();
     protected Dictionary<int, Vector3> _defaultSizeMap = new();
     protected Dictionary<int, Quaternion> _defaultRotationQuatMap = new();
-    protected Dictionary<int, Sequence> _sequenceMap = new();
+    protected Dictionary<int, Quaternion> _defaultLocalRotationQuatMap = new();
+    
+    protected Dictionary<int, Sequence> _sequencePerEnumMap = new();
     protected Dictionary<int, Animator> _animatorMap = new();
     protected Dictionary<int,Vector3> _defaultPosMap = new(); //
     protected Dictionary<Type, Object[]> _objects = new();
@@ -159,13 +162,13 @@ public class Ex_MonoBehaviour : MonoBehaviour
                     _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
                     _tfIdToEnumMap.Add(transform.GetInstanceID(), i);
                
-                    _isClickableMap.Add(transform.GetInstanceID(), false);
-                    _isClickedMap.Add(transform.GetInstanceID(), false);
+                    _isClickableMapByTfID.Add(transform.GetInstanceID(), false);
+                    _isClickedMapByTfID.Add(transform.GetInstanceID(), false);
                     _enumToTfIdMap.Add(i, transform.GetInstanceID());
                     _defaultSizeMap.Add(i, transform.localScale);
                     _defaultRotationQuatMap.Add(i, transform.rotation);
                     _defaultPosMap.Add(i, transform.position);
-                    _sequenceMap.Add(i, DOTween.Sequence());
+                    _sequencePerEnumMap.Add(i, DOTween.Sequence());
 
                     obj.transform.TryGetComponent(out Animator animator);
                     

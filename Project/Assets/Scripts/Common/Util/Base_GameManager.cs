@@ -12,7 +12,7 @@ using UnityEngine.UI;
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
-public abstract class Base_GameManager : MonoBehaviour
+public abstract class Base_GameManager : Ex_MonoBehaviour
 {
     //20250225 플레이 활동성 체크용 활용변수 
     public int DEV_sensorClick

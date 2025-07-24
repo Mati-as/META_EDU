@@ -78,9 +78,9 @@ public class SeatSelectionController : Ex_MonoBehaviour
     {
         var SeatTransform = GetObject((int)seat).transform;
 
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
             .SetLoops(100, LoopType.Yoyo)
@@ -89,20 +89,20 @@ public class SeatSelectionController : Ex_MonoBehaviour
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
 
     private void DeactivateAllSeats()
     {
-        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) _sequenceMap[i]?.Kill();
+        for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++) _sequencePerEnumMap[i]?.Kill();
 
         TweenCallback _scaleCallback = () =>
         {
             for (int i = (int)Objs.Seat_A; i <= (int)Objs.Seat_G; i++)
             {
                 var SeatTransform = GetObject(i).transform;
-                _sequenceMap[i] = DOTween.Sequence();
-                _sequenceMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
+                _sequencePerEnumMap[i] = DOTween.Sequence();
+                _sequencePerEnumMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
             }
         };
 
@@ -148,7 +148,7 @@ public class SeatSelectionController : Ex_MonoBehaviour
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Seat_" + _seatClickedCount);
 
 
-        _sequenceMap[clickedSeat]?.Kill();
+        _sequencePerEnumMap[clickedSeat]?.Kill();
 
         bool isAllSeatClicked = true;
         
