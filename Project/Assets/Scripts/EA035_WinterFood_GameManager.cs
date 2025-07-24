@@ -178,7 +178,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             bun.rotation = Quaternion.Euler(0,Random.Range(0, 360), 0); // 랜덤 회전
                             // 균등 분산 각도
                             float angleInRad = Mathf.Deg2Rad * (i * goldenAngle);
-                            float radius = 0.65f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
+                            float radius = 0.65f + Random.Range(-0.5f, 0.00f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
                             
@@ -623,9 +623,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         {
             
             _flourKneadingSeq?.Kill();
-            GetObject((int)Objs.FlourInBowl_Whole).transform
-                .DOScale(  _defaultSizeMap[(int)Objs.FlourInBowl_Whole]*1.2f,0.85f)
-                .SetEase(Ease.OutBack);
+        
             
             _isClickableForRound = false;
             
@@ -636,6 +634,13 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
             _buttonClickEventController.DeactivateAllButtons();
             _currentFlourClickedCount = 0;
             mainAnimator.enabled = true;
+
+            DOVirtual.DelayedCall(0.55f, () =>
+            {
+                GetObject((int)Objs.FlourInBowl_Whole).transform
+                    .DOScale(_defaultSizeMap[(int)Objs.FlourInBowl_Whole] * 1.2f, 0.85f)
+                    .SetEase(Ease.OutBack);
+            });
             DOVirtual.DelayedCall(3.5f, () =>
             {
                 CurrentMainMainSeq = (int)nextSeq;
@@ -706,11 +711,16 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     DOScale(_defaultSizeMap[(int)Objs.RedBeanInsideFishA] * (_beanCount / (float)MAX_BEAN_COUNT),0.3f));
                 _flourKneadingSeq.Join(GetObject((int)Objs.RedBeanInsideFishA).transform.
                     DOShakeScale(0.10f, 0.05f, 5, 70));
+                _flourKneadingSeq.Join(GetObject((int)Objs.UnCookedFishA).transform.DOShakeScale(0.1f, 0.05f, 5, 70)
+                    .SetEase(Ease.InOutBack));
+                
                 
                 _flourKneadingSeqB.Append(GetObject((int)Objs.RedBeanInsideFishB).transform.
                     DOScale(_defaultSizeMap[(int)Objs.RedBeanInsideFishB] * (_beanCount / (float)MAX_BEAN_COUNT),0.3f));
                 _flourKneadingSeqB.Join(GetObject((int)Objs.RedBeanInsideFishB).transform.
                     DOShakeScale(0.10f, 0.05f, 5, 70));
+                _flourKneadingSeq.Join(GetObject((int)Objs.RedBeanInsideFishB).transform.DOShakeScale(0.1f, 0.05f, 5, 70)
+                    .SetEase(Ease.InOutBack));
 
 
                 if (_beanCount >= MAX_BEAN_COUNT && _isClickableForRound)
