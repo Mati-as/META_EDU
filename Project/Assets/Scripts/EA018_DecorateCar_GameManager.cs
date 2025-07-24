@@ -63,12 +63,12 @@ using Random = UnityEngine.Random;
             {
                 if (obj == (int)Obj.CarName_Police)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_Police, true);
-                    if (!_isClickableMap[(int)Obj.CarName_Police]) return;
-                    _isClickableMap[(int)Obj.CarName_Police] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_Police, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_Police]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_Police] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_Police] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_Police] = true;
                     });
                     
                     
@@ -101,12 +101,12 @@ using Random = UnityEngine.Random;
                 }
                 if (obj == (int)Obj.CarName_FireTruck)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_FireTruck, true);
-                    if (!_isClickableMap[(int)Obj.CarName_FireTruck]) return;
-                    _isClickableMap[(int)Obj.CarName_FireTruck] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_FireTruck, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_FireTruck]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_FireTruck] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_FireTruck] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_FireTruck] = true;
                     });
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Name_FireTruck");
@@ -135,12 +135,12 @@ using Random = UnityEngine.Random;
                 }
                 if (obj == (int)Obj.CarName_Ambulance)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_Ambulance, true);
-                    if (!_isClickableMap[(int)Obj.CarName_Ambulance]) return;
-                    _isClickableMap[(int)Obj.CarName_Ambulance] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_Ambulance, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_Ambulance]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_Ambulance] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_Ambulance] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_Ambulance] = true;
                     });
                     
                     
@@ -649,14 +649,14 @@ using Random = UnityEngine.Random;
             int ID = hit.transform.GetInstanceID();
 
 
-            _isClickableMap.TryAdd(ID, true);
-            if (_isClickableMap[ID] == false) continue;
-            _isClickableMap[ID] = false;
+            _isClickableMapByTfID.TryAdd(ID, true);
+            if (_isClickableMapByTfID[ID] == false) continue;
+            _isClickableMapByTfID[ID] = false;
             
             DOVirtual.DelayedCall(0.12f, () =>
             {
                 if (!isArrivedMap.ContainsKey(ID) || !isArrivedMap[ID])
-                    _isClickableMap[ID] = true;
+                    _isClickableMapByTfID[ID] = true;
             });
 
             // 현재 진행도 저장 및 증가
@@ -708,7 +708,7 @@ using Random = UnityEngine.Random;
                        
                         _sequencePerEnumMap[ID].AppendCallback(() =>
                         {
-                            _isClickableMap[ID] = false;
+                            _isClickableMapByTfID[ID] = false;
                             animator.enabled = true;
                             _tfIdToSpriteMap[ID].DOFade(0.7f, 0.75f);
                         });

@@ -182,14 +182,14 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
         foreach (var key in _sequenceMap.Keys.ToArray())
         {
-           Logger.Log($"Killing sequence {key}");
+//           Logger.Log($"Killing sequence {key}");
             _sequenceMap[key]?.Kill();
             _sequenceMap[key] = DOTween.Sequence();
         }
 
         DOVirtual.DelayedCall(0.5f, () =>
         {
-           Logger.Log("Running delayed hide");
+           //Logger.Log("Running delayed hide");
             for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
             {
                 var btnTransform = GetObject(i).transform;

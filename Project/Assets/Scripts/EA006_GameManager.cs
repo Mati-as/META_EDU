@@ -268,8 +268,8 @@ public class EA006_GameManager : Ex_BaseGameManager
         
         var clickedWheatGroup = (Obj)_tfIdToEnumMap[id];
         
-        if (!_isClickableMap[id]) return;
-        _isClickableMap[id] = false;
+        if (!_isClickableMapByTfID[id]) return;
+        _isClickableMapByTfID[id] = false;
         
         switch (clickedWheatGroup)
         {
@@ -293,7 +293,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         PlayRandomClickSound();
         PlayParticleEffect(hit.point);
         
-        _isClickableMap[id] = false;
+        _isClickableMapByTfID[id] = false;
     }
 
     private void ApplyMaterialTween(Obj group)
@@ -400,7 +400,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             GetObject(randoScareCrow).SetActive(true);
             GetObject(randoScareCrow).transform.DOScale(_defaultSizeMap[randoScareCrow], 1f);
             
-            _isClickableMap[_enumToTfIdMap[randoScareCrow]] = true;
+            _isClickableMapByTfID[_enumToTfIdMap[randoScareCrow]] = true;
             _sequencePerEnumMap[randoScareCrow]?.Kill();
             _sequencePerEnumMap[randoScareCrow] = DOTween.Sequence();
             _sequencePerEnumMap[randoScareCrow].Append(GetObject(randoScareCrow).transform.DOLocalRotateQuaternion(
@@ -442,12 +442,12 @@ public class EA006_GameManager : Ex_BaseGameManager
             return;
         }
 
-        if (!_isClickableMap[id])
+        if (!_isClickableMapByTfID[id])
         {
             Logger.ContentTestLog("isAlready Clicked");
             return;
         }
-        _isClickableMap[id] = false;
+        _isClickableMapByTfID[id] = false;
         
               
         PlayRandomClickSound();
@@ -557,7 +557,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             int tfId = _enumToTfIdMap[i];
 
             // 클릭 가능 상태(false)
-            if (!_isClickableMap[tfId])
+            if (!_isClickableMapByTfID[tfId])
                 availableSparrowsEnum.Add(i);
         }
 
@@ -590,7 +590,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             } while (randomSparrowPos == previousSparrowPos
                      || !_isPositionAvailMap[randomSparrowPos]
                      || _sparrowCurrentPosMap[sparrowEnumToActivate] == randomSparrowPos
-                     ||_isClickableMap[_enumToTfIdMap[sparrowEnumToActivate]]
+                     ||_isClickableMapByTfID[_enumToTfIdMap[sparrowEnumToActivate]]
                      );
 
             
@@ -598,7 +598,7 @@ public class EA006_GameManager : Ex_BaseGameManager
            // _isPositionAvailMap[sparrowEnumToActivate] = false; //해당 위치는 사용불가로 변경
             _isPositionAvailMap[randomSparrowPos] = false; // ✅ 위치 기준으로 차
             previousSparrowPos = randomSparrowPos;
-            _isClickableMap[_enumToTfIdMap[sparrowEnumToActivate]] = true;
+            _isClickableMapByTfID[_enumToTfIdMap[sparrowEnumToActivate]] = true;
 
             _animatorMap[sparrowEnumToActivate].SetInteger(ANIM_NUM, -1); //animator 초기화 
             
@@ -633,7 +633,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                         _sparrowCurrentPosMap[capturedEnum] = -1; //해당 참새의 위치를 초기화
                          //_isClickableMap[_enumToTfIdMap[capturedEnum]] = false;
                          
-                         _isClickableMap[_enumToTfIdMap[sparrowEnumToActivate]] = false; //Available List에 넣기위해
+                         _isClickableMapByTfID[_enumToTfIdMap[sparrowEnumToActivate]] = false; //Available List에 넣기위해
                         Logger.ContentTestLog($"🐦 참새 생성가능:  {(Obj)capturedEnum}");
                     });
 
@@ -691,7 +691,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         
 
 
-        if (!_isClickableMap.ContainsKey(id))
+        if (!_isClickableMapByTfID.ContainsKey(id))
         {
             Logger.ContentTestLog($"❗ isClickableMap에 ID 없음: {id}");
             return;
@@ -714,7 +714,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             PlayRandomClickSound();
             PlayParticleEffect(hit.point);
             
-            if (!_isClickableMap[id])
+            if (!_isClickableMapByTfID[id])
             {
                 Logger.ContentTestLog("isAlready Clicked");
                 return; 
@@ -747,7 +747,7 @@ public class EA006_GameManager : Ex_BaseGameManager
             {
                 OnSparrowSectionFinished();
             }
-            _isClickableMap[id] = false;
+            _isClickableMapByTfID[id] = false;
         }
   
 

@@ -823,10 +823,10 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
             Transform tf = hit.transform;
             int id = tf.GetInstanceID();
 
-            _isClickableMap.TryAdd(id, true);
-            if (!_isClickableMap[id]) continue;
-            _isClickableMap[id] = false; // 클릭 후 더 이상 클릭 불가
-            DOVirtual.DelayedCall(0.3f, () => _isClickableMap[id] = true); // 0.1초 후 다시 클릭 가능
+            _isClickableMapByTfID.TryAdd(id, true);
+            if (!_isClickableMapByTfID[id]) continue;
+            _isClickableMapByTfID[id] = false; // 클릭 후 더 이상 클릭 불가
+            DOVirtual.DelayedCall(0.3f, () => _isClickableMapByTfID[id] = true); // 0.1초 후 다시 클릭 가능
             
             
             // 이미 사라진 풍선은 무시
@@ -1176,9 +1176,9 @@ private  int BALLOON_COUNT_TO_FIND =10 ; // 풍선 찾기 라운드에서 찾을
 
         int instanceID = parent.transform.GetInstanceID();
         int thisInstanceID = clickedGameObj.transform.GetInstanceID(); //자식초기화를 위해 
-        _isClickableMap.TryAdd(instanceID, true);
-        if (_isClickableMap[instanceID] == false) return; // 이미 클릭된 풍선은 무시
-        DOVirtual.DelayedCall(0.5f, () => _isClickableMap[instanceID] = true); // 0.5초 후 다시 클릭 가능
+        _isClickableMapByTfID.TryAdd(instanceID, true);
+        if (_isClickableMapByTfID[instanceID] == false) return; // 이미 클릭된 풍선은 무시
+        DOVirtual.DelayedCall(0.5f, () => _isClickableMapByTfID[instanceID] = true); // 0.5초 후 다시 클릭 가능
         
         parent.transform.DOShakeScale(0.5f, 2).SetEase(Ease.OutQuad);
 

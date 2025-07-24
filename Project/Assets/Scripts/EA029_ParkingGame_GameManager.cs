@@ -566,9 +566,9 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
         private void InitCarsPerRound()
         {
 
-            foreach (var key in _isClickableMap.Keys.ToArray())
+            foreach (var key in _isClickableMapByTfID.Keys.ToArray())
             {
-                _isClickableMap[key] = true; // 클릭 가능 상태로 초기화
+                _isClickableMapByTfID[key] = true; // 클릭 가능 상태로 초기화
             }
             _CarIntroduceSequence?.Kill();
             _CarIntroduceSequence = DOTween.Sequence();
@@ -834,14 +834,14 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                 int hitID = hit.transform.GetInstanceID();
                 
                 Logger.ContentTestLog("hit : " + hit.transform.name + $":{hitID}");
-                _isClickableMap.TryAdd(hitID, true);
-                if (!_isClickableMap[hitID])
+                _isClickableMapByTfID.TryAdd(hitID, true);
+                if (!_isClickableMapByTfID[hitID])
                 {
                     Logger.ContentTestLog("클릭 불가.. 리턴");
                     return;
                 }
              
-                _isClickableMap[hitID] = false;
+                _isClickableMapByTfID[hitID] = false;
        
 
                 
@@ -901,7 +901,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
 
                             _sequencePerEnumMap[hitID].AppendCallback(() =>
                             {
-                                _isClickableMap[hitID] = false;
+                                _isClickableMapByTfID[hitID] = false;
                                 animator.enabled = true;
                                 
                                 int arrivalHash;
@@ -967,7 +967,7 @@ public class EA029_ParkingGame_GameManager : Ex_BaseGameManager
                             {
                                 DOVirtual.DelayedCall(0.1f, () =>
                                 {
-                                    _isClickableMap[hitID] = true;
+                                    _isClickableMapByTfID[hitID] = true;
                                     animator.enabled = false;
                                 }).OnUpdate(() =>
                                 {

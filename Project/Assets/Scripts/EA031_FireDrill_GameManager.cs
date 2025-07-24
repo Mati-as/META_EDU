@@ -446,11 +446,11 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         foreach (var hit in GameManager_Hits)
         {
             int id = hit.transform.GetInstanceID();
-            _isClickableMap.TryAdd(id, true);
+            _isClickableMapByTfID.TryAdd(id, true);
             
-            if (_onExitAvatarController.IsTransIDValid(id) && _isClickableMap.ContainsKey(id) && _isClickableMap[id])
+            if (_onExitAvatarController.IsTransIDValid(id) && _isClickableMapByTfID.ContainsKey(id) && _isClickableMapByTfID[id])
             {
-                _isClickableMap[id] = false; 
+                _isClickableMapByTfID[id] = false; 
                 _currentAvatarHelpCount++;
                 _onExitAvatarController.PlayAnimationByTransID(id, AvatarController.AnimClip.HideFace);
            
@@ -542,16 +542,16 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         {
             int id = hit.transform.GetInstanceID();
             var hitTransform = hit.transform;
-            _isClickableMap.TryAdd(id, true);
+            _isClickableMapByTfID.TryAdd(id, true);
 
             if (_stepOrderMap.ContainsKey(id))
                 
-                if (_stepOrderMap[id] == _currentStepOrderToClick && _isClickableMap[id])
+                if (_stepOrderMap[id] == _currentStepOrderToClick && _isClickableMapByTfID[id])
                 {
                     char randomChar = (char)Random.Range('A', 'B' + 1);
                    
                     Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/OnStep"+randomChar);
-                    _isClickableMap[id] = false;
+                    _isClickableMapByTfID[id] = false;
                     hitTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutBounce);
                     _currentStepOrderToClick++;
                     //Logger.ContentTestLog($"남은 클릭 개수{STEP_MAX_COUNT-_currentStepOrderToClick}");

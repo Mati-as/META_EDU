@@ -650,7 +650,7 @@ private void OnRaysyncOnPuzzeGame()
                 var block = GetObject((int)Obj.WoodBlocks).transform.GetChild(col).GetChild(row);
                 allWoodblocks[col][row] = block;
                 _woodSpriteRendererMap.Add(block.GetInstanceID(),block.GetComponent<SpriteRenderer>());
-                _isClickableMap.Add(block.GetInstanceID(), true);
+                _isClickableMapByTfID.Add(block.GetInstanceID(), true);
             }
              
         }

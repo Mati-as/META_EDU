@@ -76,8 +76,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     private Dictionary<int,Stack<ParticleSystem>> _subParticlePool = new();
     
     //중복클릭 관련 처리 간소화용
-    protected Dictionary<int, bool> _isClickableMap = new();
-    protected Dictionary<int,bool> _isClickedMap = new();
+    protected Dictionary<int, bool> _isClickableMapByTfID = new();
+    protected Dictionary<int,bool> _isClickedMapByTfID = new();
     
     
     //Raycast 판별로직 사용. 현재 주로 hit.transform.getInstanceID()를 통해 판별중, 이를 간략화하고 코드중복을 방지 중
@@ -169,8 +169,8 @@ public abstract class Ex_BaseGameManager : Base_GameManager
         _tfidTotransformMap.Add(transform.GetInstanceID(), transform);
         _tfIdToEnumMap.Add(transform.GetInstanceID(), enumIndex);
                
-        _isClickableMap.Add(transform.GetInstanceID(), false);
-        _isClickedMap.Add(transform.GetInstanceID(), false);
+        _isClickableMapByTfID.Add(transform.GetInstanceID(), false);
+        _isClickedMapByTfID.Add(transform.GetInstanceID(), false);
            
         _enumToTfIdMap.Add(enumIndex, transform.GetInstanceID());
         _defaultSizeMap.Add(enumIndex, transform.localScale);
@@ -185,10 +185,10 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     }
     protected void ResetClickable(bool isClickable = true)
     {
-        foreach (int key in _isClickableMap.Keys.ToArray())
+        foreach (int key in _isClickableMapByTfID.Keys.ToArray())
         {
 //            Logger.ContentTestLog($"{key} : {isClickable}");
-            _isClickableMap[key] = isClickable;
+            _isClickableMapByTfID[key] = isClickable;
         }
     }
 

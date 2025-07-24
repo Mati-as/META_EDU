@@ -325,11 +325,11 @@ private const float DECO_TIME = 15;
 
             if (hit.transform.gameObject.name.Contains(nameof(Candle)))
             {
-                _isClickableMap.TryAdd(hit.transform.GetInstanceID(), true);
-                if(!_isClickableMap[hit.transform.GetInstanceID()]) return;
+                _isClickableMapByTfID.TryAdd(hit.transform.GetInstanceID(), true);
+                if(!_isClickableMapByTfID[hit.transform.GetInstanceID()]) return;
        
                 
-                _isClickableMap[hit.transform.GetInstanceID()] = false;
+                _isClickableMapByTfID[hit.transform.GetInstanceID()] = false;
                 Managers.Sound.PlayRandomEffect("Common/Effect/OnMove", 'B');
                 
                 

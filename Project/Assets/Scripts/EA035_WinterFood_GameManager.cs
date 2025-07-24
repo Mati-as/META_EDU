@@ -38,8 +38,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         FishBreadSet,
         SteamedBunSet,
 
-        FlourInBowl_HalfA,
-        FlourInBowl_HalfB,
+      //  FlourInBowl_HalfA,
+        //FlourInBowl_HalfB,
         FlourInBowl_Whole,
 
         ReadBeanInKnead,
@@ -95,8 +95,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     _currentFlourClickedCount = 0;
                     
                     
-                    baseUIManager.PopInstructionUIFromScaleZero("먼저 호빵을 만들어 볼까요?");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsMakeBun");
+                    baseUIManager.PopInstructionUIFromScaleZero("먼저 호빵을 만들어 볼까요?",narrationPath:"EA035/LetsMakeBun");
+                 
                     
                     Logger.ContentTestLog("Main Plate Active -------");
                     GetObject((int)Objs.MainPlate).transform.localScale = Vector3.zero;
@@ -118,8 +118,13 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Bread_Flour:
-                    baseUIManager.PopInstructionUIFromScaleZero("이제 반죽을 할까요?");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsKnead");
+                    baseUIManager.PopInstructionUIFromScaleZero("이제 반죽을 할까요?",narrationPath:"EA035/LetsKnead");
+                    
+                    GetObject((int)Objs.FlourInBowl_Whole).SetActive(true);
+                    GetObject((int)Objs.FlourInBowl_Whole).transform.localScale = Vector3.zero;
+                    GetObject((int)Objs.FlourInBowl_Whole).transform.DOScale(_defaultSizeMap[(int)Objs.FlourInBowl_Whole], 0.35f).SetEase(Ease.OutBack);
+                    
+                    
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
                         _isClickableForRound = true;
@@ -128,15 +133,18 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                         baseUIManager.PopInstructionUIFromScaleZero("반죽을 터치해주세요!");
                         Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/KneadDough");
                     });
+                    
+                    
+                    var doughInstanceID = GetObject((int)Objs.FlourInBowl_Whole).transform.GetInstanceID();
+                    _isClickableMapByTfID[doughInstanceID]= true;
                     break;
 
                 case (int)MainSeq.Bread_Bean:
                     GetObject((int)Objs.MainPlate).SetActive(true);
                    
                     
-                    baseUIManager.PopInstructionUIFromScaleZero("반죽안에 맛있는 팥을 넣어요!");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsPutRedBean");
-                    
+                    baseUIManager.PopInstructionUIFromScaleZero("반죽안에 맛있는 팥을 넣어요!",narrationPath:"EA035/LetsPutRedBean");
+  
                     GetObject((int)Objs.ReadBeanInKnead).transform.localScale = Vector3.zero;
                     GetObject((int)Objs.ReadBeanInKnead).SetActive(true);
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA035/RedBean");
@@ -144,8 +152,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     {
                         _isClickableForRound = true;
                         _buttonClickEventController.StartBtnClickAnyOrder();
-                        baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 팥을 터치해주세요!");
-                        Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/TouchRedBean");
+                        baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 팥을 터치해주세요!",narrationPath:"EA035/TouchRedBean");
                         
                     });
                     break;
@@ -153,12 +160,12 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.Bread_Eat:
                     GetObject((int)Objs.MainPlate).SetActive(true);
                     
-                    baseUIManager.PopInstructionUIFromScaleZero("따끈따끈한 호빵을 먹어요!");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsEatBun");
+                    baseUIManager.PopInstructionUIFromScaleZero("따끈따끈한 호빵을 먹어요!",narrationPath:"EA035/LetsEatBun");
+                    _isClickableForRound = false;
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
-                        baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 호빵을 터치해서 먹어요!");
-                        Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsEatBunB");
+                        _isClickableForRound = true;
+                        baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 호빵을 터치해서 먹어요!",narrationPath:"EA035/LetsEatBunB");
                         
                         int count = 0;
                         var centerPos = GetObject((int)Objs.BeanTargetPos).transform.position;
@@ -177,20 +184,21 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             
                             var targetPos = centerPos + offset;
 
+                            float delay = i * Random.Range(0.1f, 0.3f);
+                            DOVirtual.DelayedCall(delay-0.1f, () =>
+                            {
+                                Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Pop");
+                            });
                             bun.transform.DOJump(targetPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
                                 .SetEase(Ease.OutQuad)
-                                .OnStart(() =>
-                                {
-                                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Pop");
-                                })
-                                .SetDelay(i * Random.Range(0.1f, 0.3f))
+                                .SetDelay(delay)
                                 .JoinCallback(() =>
                                 {
                                     bun.transform.DOShakeScale(0.15f, 0.1f, 5, 70);
                                     bun.transform.DOShakeRotation(0.15f, 0.1f, 5, 70);
                                 });
                         }
-                        DOVirtual.DelayedCall(2f,()=>
+                        DOVirtual.DelayedCall(3f,()=>
                         {
                             _isClickableForRound = true;
                         });
@@ -199,41 +207,45 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Bread_Finish:
-                    baseUIManager.PopInstructionUIFromScaleZero("와~! 호빵 다 먹었다!",narrationPath:"EA035/YayAteAllBun");
-                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/YayAteAllBun");
+                    GetObject((int)Objs.FlourInBowl_Whole).SetActive(false);
                     break;
 
                 case (int)MainSeq.Fish_Intro:
                     baseUIManager.PopInstructionUIFromScaleZero("이번엔 붕어빵을 만들어 볼까요?",narrationPath:"EA035/LetsMakeFishBread");
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA035/Flour");
                     _currentFlourClickedCount = 0;
-                   
+                    GetObject((int)Objs.FlourInBowl_Whole).transform.localScale = Vector3.zero;
                     //음성 로직 here
 
                     //2.5f -> sound.length
                     //2.5f -> sound.length
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
-                        baseUIManager.PopInstructionUIFromScaleZero("그릇을 터치해서 밀가루를 담아주세요!");
-                        Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/TouchBowlForFlour");
+                        baseUIManager.PopInstructionUIFromScaleZero("그릇을 터치해서 밀가루를 담아주세요!",narrationPath:"EA035/TouchBowlForFlour");
                         
                         _buttonClickEventController.StartBtnClickSequential();
                     });
                     break;
 
                 case (int)MainSeq.Fish_Flour:
+                    _kneadCount = 0;
+                    mainAnimator.enabled = false;
                     GetObject((int)Objs.FlourBowl).SetActive(true);
                     GetObject((int)Objs.MainPlate).SetActive(true);
+                    GetObject((int)Objs.FlourInBowl_Whole).SetActive(true);
+                    GetObject((int)Objs.FlourInBowl_Whole).transform.localScale = Vector3.zero;
+                    GetObject((int)Objs.FlourInBowl_Whole).transform.DOScale(_defaultSizeMap[(int)Objs.FlourInBowl_Whole], 0.35f).SetEase(Ease.OutBack);
                     baseUIManager.PopInstructionUIFromScaleZero("이제 반죽을 할까요?");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/LetsKnead");
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
                         _isClickableForRound = true;
+                        var doughInstanceID = GetObject((int)Objs.FlourInBowl_Whole).transform.GetInstanceID();
+                        _isClickableMapByTfID[doughInstanceID]= true;
                         _buttonClickEventController.ChangeBtnImage("Runtime/EA035/Bowl");
                        // _buttonClickEventController.StartBtnClickAnyOrder();
-                        baseUIManager.PopInstructionUIFromScaleZero("반죽을 터치해주세요!");
-                        Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/KneadDough");
+                        baseUIManager.PopInstructionUIFromScaleZero("반죽을 터치해주세요!",narrationPath:"EA035/KneadDough");
+                       
                     });
                     break;
 
@@ -249,15 +261,15 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     GetObject((int)Objs.UnCookedFishB).SetActive(true);
                     
                     GetObject((int)Objs.UnCookedFishA).transform.DOScale(_defaultSizeMap[(int)Objs.UnCookedFishA], 0.5f)
-                        .SetEase(Ease.OutBounce);
+                        .SetEase(Ease.OutBounce).SetDelay(1f);
                     
                     GetObject((int)Objs.UnCookedFishB).transform.DOScale(_defaultSizeMap[(int)Objs.UnCookedFishB], 0.5f)
-                        .SetEase(Ease.OutBounce);
+                        .SetEase(Ease.OutBounce).SetDelay(1f);
                   //  GetObject((int)Objs.ReadBeanInKnead).transform.localScale = Vector3.zero;
                  //   GetObject((int)Objs.ReadBeanInKnead).SetActive(true);
                     
-                    baseUIManager.PopInstructionUIFromScaleZero("반죽안에 맛있는 팥을 넣어요!");
-                    Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/KneadDough");
+                    baseUIManager.PopInstructionUIFromScaleZero("반죽안에 맛있는 팥을 넣어요!",narrationPath:"EA035/LetsPutRedBean");
+
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA035/RedBean");
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
@@ -269,9 +281,10 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.Fish_Eat:
                     baseUIManager.PopInstructionUIFromScaleZero("따끈따끈한 붕어빵을 먹어요!",narrationPath:"EA035/LetsEatFishBread");
-                    DOVirtual.DelayedCall(2.5f, () =>
+                    _isClickableForRound = false;
+                    DOVirtual.DelayedCall(4.0f, () =>
                     {
-                      
+                     
                       
                         int count = 0;
                         var centerPos = GetObject((int)Objs.BeanTargetPos).transform.position;
@@ -284,22 +297,22 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             fish.rotation = Quaternion.Euler(Random.Range(85f,95f), Random.Range(0, 360), 0); // 랜덤 회전
                             // 균등 분산 각도
                             float angleInRad = Mathf.Deg2Rad * (i * goldenAngle);
-                            float radius = 0.65f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
+                            float radius = 0.75f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
                             var targetPos = centerPos + offset;
-
+                            float delay = i * Random.Range(0.1f, 0.3f);
+                            DOVirtual.DelayedCall(delay-0.1f, () =>
+                            {
+                                Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Pop");
+                            });
                             fish.transform.DOJump(targetPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
                                 .SetEase(Ease.OutQuad)
-                                .SetDelay(i * Random.Range(0.1f, 0.3f))
-                                .OnStart(() =>
-                                {
-                                    Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Pop");
-                                })
+                                .SetDelay(delay)
                                 .JoinCallback(() =>
                                 {
-                                    fish.transform.DOShakeScale(0.15f, 0.1f, 5, 70);
-                                    fish.transform.DOShakeRotation(0.15f, 0.1f, 5, 70);
+                                    fish.transform.DOShakeScale(0.15f, 0.01f, 5, 70);
+                                    fish.transform.DOShakeRotation(0.15f, 0.01f, 5, 70);
                                 });
                         }
                         DOVirtual.DelayedCall(2f,()=>
@@ -309,7 +322,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                         
                     });
                     
-                    DOVirtual.DelayedCall(2.5f, () =>
+                    DOVirtual.DelayedCall(3.0f, () =>
                     {
                         baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 붕어빵을 터치해서 먹어요!",narrationPath:"EA035/LetsEatFishBreadB");
                     });
@@ -318,10 +331,15 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.Fish_Finish:
                     baseUIManager.PopInstructionUIFromScaleZero("와~! 붕어빵 다 먹었다!",narrationPath:"EA035/YayAteAllFish");
                     Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
+                    GetObject((int)Objs.FlourInBowl_Whole).SetActive(false);
                     break;
 
 
                 case (int)MainSeq.OnFinish:
+                    GetObject((int)Objs.UnCookedFishA).SetActive(false);
+                    GetObject((int)Objs.UnCookedFishA).transform.localScale = Vector3.zero;
+                    GetObject((int)Objs.UnCookedFishB).SetActive(false);
+                    GetObject((int)Objs.UnCookedFishB).transform.localScale = Vector3.zero;
                     baseUIManager.PopInstructionUIFromScaleZero("(마무리텍스트 필요)붕어빵, 호빵을 모두 만들어서 먹어봤어요!");
                     break;
             }
@@ -331,25 +349,29 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     protected override void Init()
     {
+        psResourcePath = "Runtime/EA035/Fx_Click";
         base.Init();
         BindObject(typeof(Objs));
         
         InitializeRedBeanPrefabs();
         InitializePool();
         
+        //GetObject((int)Objs.FlourInBowl_HalfA).SetActive(false);
+       // GetObject((int)Objs.FlourInBowl_HalfB).SetActive(false);
         
         GetObject((int)Objs.FlourBowl).SetActive(false);
         GetObject((int)Objs.UnCookedFishA).SetActive(false);
+        GetObject((int)Objs.UnCookedFishA).transform.localScale = Vector3.zero;
         GetObject((int)Objs.UnCookedFishB).SetActive(false);
+        GetObject((int)Objs.UnCookedFishB).transform.localScale = Vector3.zero;
         GetObject((int)Objs.FishBreadSet).SetActive(false);
         GetObject((int)Objs.SteamedBunSet).SetActive(false);
         GetObject((int)Objs.FlourInBowl_Whole).SetActive(false);
-        GetObject((int)Objs.FlourInBowl_HalfA).SetActive(false);
-        GetObject((int)Objs.FlourInBowl_HalfB).SetActive(false);
         GetObject((int)Objs.MainPlate).SetActive(false);
         GetObject((int)Objs.ReadBeanInKnead).SetActive(false);
         GetObject((int)Objs.ReadBeanInKnead).transform.localScale = Vector3.zero;
-        
+        GetObject((int)Objs.RedBeanInsideFishA).transform.localScale = Vector3.zero;
+        GetObject((int)Objs.RedBeanInsideFishB).transform.localScale = Vector3.zero;
         GetObject((int)Objs.Flour).SetActive(false);
         GetObject((int)Objs.Flour).transform.localScale = Vector3.zero;
         buns = new Transform[GetObject((int)Objs.Buns).transform.childCount];
@@ -476,6 +498,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 {
                     OnKneadDough(CurrentMainMainSeq==(int)MainSeq.Bread_Flour ? MainSeq.Bread_Bean : MainSeq.Fish_Bean);
                     Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                    PlayParticleEffect(hit.point);
+                 
                 }
             }
         }
@@ -488,20 +512,25 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 string Bread;
                 if (hitCache.transform.gameObject.name.Contains(nameof(Bread)))
                 {
-                    _isClickableMap.TryAdd(id,true);
-                    if (_isClickableMap[id] == false) continue;
-                    _isClickableMap[id] = false;
-                    
+                    _isClickableMapByTfID.TryAdd(id,true);
+                    if (_isClickableMapByTfID[id] == false) continue;
+                    _isClickableMapByTfID[id] = false;
+                    PlayParticleEffect(hit.point);
                     _currentBunCount++;
                     
+                    int randomPoss = Random.Range(0, 100);
+                    if (randomPoss > 50) Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
                     Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                    
                     hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f,0.4f)).SetEase(Ease.InElastic);
                     
                     if(_currentBunCount >= BUN_COUNT_TO_EAT)
                     {
                         _currentBunCount = 0;
                         _isClickableForRound = false;
+                        
                         baseUIManager.PopInstructionUIFromScaleZero("와! 호빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllBun");
+                        CurrentMainMainSeq = (int)MainSeq.Bread_Finish;
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
                         DOVirtual.DelayedCall(5f, () =>
                         {
@@ -521,19 +550,24 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 string Fish;
                 if (hitCache.transform.gameObject.name.Contains(nameof(Fish)))
                 {
-                    _isClickableMap.TryAdd(id,true);
-                    if (_isClickableMap[id] == false) continue;
-                    _isClickableMap[id] = false;
+                    PlayParticleEffect(hit.point);
+                    _isClickableMapByTfID.TryAdd(id,true);
+                    if (_isClickableMapByTfID[id] == false) continue;
+                    _isClickableMapByTfID[id] = false;
                     
                     _currentFishCount++;
                     
+                    int randomPoss = Random.Range(0, 100);
+                    if (randomPoss > 50) Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
                     Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                    
                     hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f,0.4f)).SetEase(Ease.InElastic);
                     
                     if(_currentFishCount>= FISH_COUNT_TO_EAT)
                     {
                         _currentFishCount = 0;
                         _isClickableForRound = false;
+                        CurrentMainMainSeq = (int)MainSeq.Fish_Finish;
                         baseUIManager.PopInstructionUIFromScaleZero("와! 붕어빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllFish");
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
                         DOVirtual.DelayedCall(5f, () =>
@@ -551,7 +585,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     private Sequence _flourKneadingSeq;
     private int _kneadCount;
-    private const int MAX_KNEAD_COUNT = 20;
+    private const int MAX_KNEAD_COUNT = 25;
 
     private Sequence _redBeanSeq;
     private int _beanCount;
@@ -561,15 +595,23 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     private void OnKneadDough(MainSeq nextSeq)
     {
-        
+        var doughInstanceID = GetObject((int)Objs.FlourInBowl_Whole).transform.GetInstanceID();
+        if (!_isClickableMapByTfID[doughInstanceID]) return;
+            _isClickableMapByTfID[doughInstanceID]= false;
+      
         _kneadCount++;
-        
+        Logger.ContentTestLog("OnKneadDough: " + _kneadCount);
         _flourKneadingSeq?.Kill();
         _flourKneadingSeq = DOTween.Sequence();
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            _isClickableMapByTfID[doughInstanceID] = true;
+        });
 
         _flourKneadingSeq.Append(GetObject((int)Objs.FlourInBowl_Whole).transform
-            .DOShakeScale(1f, 0.45f, 5, 70)
+            .DOShakeScale(1f, 0.35f, 5, 70)
             .SetEase(Ease.InOutBack));
+        
         _flourKneadingSeq.OnKill(() =>
         {
             GetObject((int)Objs.FlourInBowl_Whole).transform.localScale =
@@ -579,12 +621,21 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
         if (_kneadCount >= MAX_KNEAD_COUNT && _isClickableForRound)
         {
+            
+            _flourKneadingSeq?.Kill();
+            GetObject((int)Objs.FlourInBowl_Whole).transform
+                .DOScale(  _defaultSizeMap[(int)Objs.FlourInBowl_Whole]*1.2f,0.85f)
+                .SetEase(Ease.OutBack);
+            
             _isClickableForRound = false;
-            baseUIManager.PopInstructionUIFromScaleZero("와! 호빵 반죽이 완성되었어요!",narrationPath:"EA035/YayBunKnead");
+            
+            baseUIManager.PopInstructionUIFromScaleZero(nextSeq == MainSeq.Bread_Flour?
+                "와! 호빵 반죽이 완성되었어요!":"와! 붕어빵 반죽이 완성되었어요!",
+                narrationPath:nextSeq == MainSeq.Bread_Flour?"EA035/YayBunKnead": "EA035/YayFishKnead");
             Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
             _buttonClickEventController.DeactivateAllButtons();
             _currentFlourClickedCount = 0;
-
+            mainAnimator.enabled = true;
             DOVirtual.DelayedCall(3.5f, () =>
             {
                 CurrentMainMainSeq = (int)nextSeq;
@@ -654,12 +705,12 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                 _flourKneadingSeq.Append(GetObject((int)Objs.RedBeanInsideFishA).transform.
                     DOScale(_defaultSizeMap[(int)Objs.RedBeanInsideFishA] * (_beanCount / (float)MAX_BEAN_COUNT),0.3f));
                 _flourKneadingSeq.Join(GetObject((int)Objs.RedBeanInsideFishA).transform.
-                    DOShakeScale(0.10f, 0.15f, 5, 70));
+                    DOShakeScale(0.10f, 0.05f, 5, 70));
                 
                 _flourKneadingSeqB.Append(GetObject((int)Objs.RedBeanInsideFishB).transform.
                     DOScale(_defaultSizeMap[(int)Objs.RedBeanInsideFishB] * (_beanCount / (float)MAX_BEAN_COUNT),0.3f));
                 _flourKneadingSeqB.Join(GetObject((int)Objs.RedBeanInsideFishB).transform.
-                    DOShakeScale(0.10f, 0.15f, 5, 70));
+                    DOShakeScale(0.10f, 0.05f, 5, 70));
 
 
                 if (_beanCount >= MAX_BEAN_COUNT && _isClickableForRound)
@@ -730,7 +781,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     public void LaunchBeans(int index)
     {
-        int launchCount = 2;
+        int launchCount = 1;
 
         var originParent = originalPosMap[index];
         var target = GetObject((int)Objs.BeanTargetPos).transform;
@@ -786,11 +837,9 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         {
             _currentFlourClickedCount = 0;
             
-         
-            
             
             GetObject((int)Objs.FlourBowl).transform.localScale = Vector3.zero;
-            GetObject((int)Objs.FlourInBowl_Whole).SetActive(true);
+         //   GetObject((int)Objs.FlourInBowl_Whole).SetActive(true);
             GetObject((int)Objs.FlourBowl).SetActive(true);
             GetObject((int)Objs.FlourBowl).transform.DOScale(_defaultSizeMap[(int)Objs.FlourBowl], 0.7f)
                 .SetEase(Ease.OutExpo);

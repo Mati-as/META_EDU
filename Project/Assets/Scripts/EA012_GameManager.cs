@@ -495,7 +495,7 @@ public class EA012_GameManager : Ex_BaseGameManager
             {
                 var tirePrefab = Instantiate(prefab).transform;
                 
-                _isClickedMap.Add(tirePrefab.transform.GetInstanceID(), false);
+                _isClickedMapByTfID.Add(tirePrefab.transform.GetInstanceID(), false);
                 tireGroupMap[i].Add(tire, tirePrefab);
                 tireSeqMap[i].Add(tirePrefab.transform.GetInstanceID(),DOTween.Sequence());
                 tirePrefab.gameObject.SetActive(false);
@@ -642,13 +642,13 @@ public class EA012_GameManager : Ex_BaseGameManager
                 int clickedTransformID = clickedTire.GetInstanceID();
 
                 // 🔐 Prevent duplicate clicks
-                if (!_isClickedMap.TryGetValue(clickedTransformID, out bool wasClicked) || wasClicked)
+                if (!_isClickedMapByTfID.TryGetValue(clickedTransformID, out bool wasClicked) || wasClicked)
                 {
                     Logger.ContentTestLog($"이미 클릭된 타이어이거나 ID가 존재하지 않음: clicked? {wasClicked} :{clickedTransformID}");
                     continue;
                 }
 
-                _isClickedMap[clickedTransformID] = true;
+                _isClickedMapByTfID[clickedTransformID] = true;
                 currentRemovedTireCount++;
 
                 // 🔥 Kill and remove existing sequence
