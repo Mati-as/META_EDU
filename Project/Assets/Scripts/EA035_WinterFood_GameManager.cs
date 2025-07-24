@@ -207,6 +207,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Bread_Finish:
+                    GetObject((int)Objs.ReadBeanInKnead).transform.localScale = Vector3.zero;
+                    GetObject((int)Objs.ReadBeanInKnead).SetActive(false);
                     GetObject((int)Objs.FlourInBowl_Whole).SetActive(false);
                     break;
 
@@ -273,6 +275,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA035/RedBean");
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
+                        _beanCount = 0;
                         _isClickableForRound = true;
                         _buttonClickEventController.StartBtnClickAnyOrder();
                         baseUIManager.PopInstructionUIFromScaleZero("그릇에 있는 팥을 터치해주세요!",narrationPath:"EA035/TouchRedBean");
@@ -676,6 +679,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
                 if (_beanCount >= MAX_BEAN_COUNT && _isClickableForRound)
                 {
+                    _beanCount = 0;
                     _isClickableForRound = true;
                     _buttonClickEventController.DeactivateAllButtons();
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA035/BunReadBean");
