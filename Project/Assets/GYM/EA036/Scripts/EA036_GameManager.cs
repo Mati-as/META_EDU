@@ -220,9 +220,14 @@ public class EA036_GameManager : Ex_BaseGameManager
                         hitGameObj.SetActive(false);
                         if (appearBookCaseToyObjNum < 8)
                         {
-                            GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum)
-                                .gameObject
-                                .SetActive(true);
+                            Transform target = GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum);
+
+                            Vector3 childOriginScale = target.localScale;
+                            target.localScale = Vector3.zero;
+                            target.gameObject.SetActive(true);
+                            target.DOScale(childOriginScale, 1f)
+                                .SetEase(Ease.OutBounce); 
+                            
                             appearBookCaseToyObjNum++;
                         }
 

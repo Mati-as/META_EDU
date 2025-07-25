@@ -176,34 +176,51 @@ public class EA033_GameManager : Ex_BaseGameManager
             
             if (clickedName.Contains(keyWord))
             {
-                if (i < 9)
+                // 매핑된 Objects enum 가져오기
+                var treeGroup = _groupMap[poolType];
+                int currentIndex = i;
+
+                if (i < 13)
                 {
-                    int currentIndex = i;
+                    go.transform
+                        .DOJump(GetObject((int)treeGroup).transform.GetChild(currentIndex).position, 1.5f, 1, 1f)
+                        .SetEase(Ease.OutQuad)
+                        .OnComplete(() => go.SetActive(false));
+
+                    var Obj = GetObject((int)treeGroup)
+                        .transform
+                        .GetChild(currentIndex)
+                        .gameObject;
+
+                    var originScale = Obj.transform;
+
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
-                        // 매핑된 Objects enum 가져오기
-                        var treeGroup = _groupMap[poolType];
-                        GetObject((int)treeGroup)
+                        Obj
                             .transform
-                            .GetChild(currentIndex)
-                            .gameObject
-                            .SetActive(true);
+                            .DOScale(originScale.localScale, 0.5f)
+                            .From(Vector3.zero)
+                            .OnStart(() => Obj.SetActive(true));
                     });
                 }
 
+                if (i >= 13)
+                {
+                    var startPos = path1.position;
+                    var middlePos = path2.position;
+                    var endPos = path3.position;
+                    Vector3[] pathPoints = { startPos, middlePos, endPos };
+                    
+                    go.transform
+                        .DOPath(pathPoints, 1.5f)
+                        .SetEase(Ease.OutQuad)
+                        .OnComplete(() => go.SetActive(false));
+                }
+                
                 i++;
                 _uiManager.ActivateImageAndUpdateCount(uiImage, i);
                 
-                var startPos = path1.position;
-                var middlePos = path2.position;
-                var endPos = path3.position;
-                Vector3[] pathPoints = { startPos, middlePos, endPos };
-
-                go.transform
-                    .DOPath(pathPoints, 1.5f)
-                    .OnComplete(() => go.SetActive(false));
-
-                if (i == 5)
+                if (i == 10)
                     Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
 
                 if (i == stageClearCount)
@@ -213,6 +230,11 @@ public class EA033_GameManager : Ex_BaseGameManager
                     VictorySoundAndEffect();
                     PoolManager.StopSpawnPool();
 
+                    foreach (Transform child in GetObject((int)treeGroup).transform)
+                    {
+                        child.gameObject.SetActive(true);
+                    }
+                    
                     DOVirtual.DelayedCall(1f, () =>
                     {
                         _uiManager.DeactivateImageAndUpdateCount();

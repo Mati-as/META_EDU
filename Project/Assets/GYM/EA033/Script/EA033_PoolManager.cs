@@ -20,11 +20,11 @@ public class EA033_PoolManager : MonoBehaviour
     [SerializeField] private Transform stageObjectSpawnStartPosition;
     [SerializeField] private Transform StageObjectAppearPosition;
     
-    [SerializeField] private int totalSpawnCount = 20;
+    [SerializeField] private int totalSpawnCount = 24;
     [SerializeField] private float spawnInterval = 0.3f;
 
     private const int ROW_COUNT = 4;
-    private const int COL_COUNT = 7;
+    private const int COL_COUNT = 6;
     private Vector3[][] stageObjectAppearPositions = new Vector3[ROW_COUNT][];
 
     private Dictionary<PoolType, List<GameObject>> pools = new Dictionary<PoolType, List<GameObject>>();
@@ -32,6 +32,7 @@ public class EA033_PoolManager : MonoBehaviour
 
     [SerializeField] private GameObject SantaSacks;
     [SerializeField] private GameObject OriginalLocalScale;
+    [SerializeField] private Transform[] SantaSacksOriginalVector3;
     
     private void Awake()
     {
@@ -106,9 +107,17 @@ public class EA033_PoolManager : MonoBehaviour
         obj.transform.position = stageObjectSpawnStartPosition.transform.GetChild(i).gameObject.transform.position;
         
         var sack = SantaSacks.transform.GetChild(i);
-        sack.DOPunchScale(new Vector3(0.5f,0.5f,0),0.8f,12,1.2f)
+
+        sack.DOKill(true);
+
+        sack.localPosition = SantaSacksOriginalVector3[i].transform.localPosition;
+        sack.localRotation = SantaSacksOriginalVector3[i].transform.localRotation;
+        sack.localScale = Vector3.one * 2.31f;
+
+        sack.DOPunchScale(new Vector3(0.5f, 0.5f, 0), 0.8f, 12, 1.2f)
             .SetEase(Ease.OutElastic);
-        sack.DOShakeRotation(0.8f, new Vector3(0,0,30), 15, 90f);
+
+        sack.DOShakeRotation(0.8f, new Vector3(0, 0, 30), 15, 90f);
 
         float k = Random.Range(0.2f, spawnInterval);
         
@@ -119,6 +128,9 @@ public class EA033_PoolManager : MonoBehaviour
                 char randomLetter = (char)('A' + Random.Range(0, 6));
                 Managers.Sound.Play(SoundManager.Sound.Effect, $"EA033/Audio/Click_{randomLetter}");
                 ToggleColliders(obj, false);
+                
+                float randomRotation = Random.Range(-90, 90);
+                obj.transform.Rotate(0f, randomRotation, 0f, Space.World);
             })
             .OnComplete(() =>
             {

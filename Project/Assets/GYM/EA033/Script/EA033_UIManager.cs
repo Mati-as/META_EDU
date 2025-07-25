@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -6,11 +5,6 @@ using UnityEngine;
 
 public class EA033_UIManager : Base_UIManager
 {
-   private enum Btns
-   {
-       Btn_Next
-   }
-   
    public enum UI
    {
        OnRoundUI,
@@ -27,8 +21,6 @@ public class EA033_UIManager : Base_UIManager
         TMP_OnRound
     }
    
-   public static event Action OnNextButtonClicked;
-   private bool _isInvokable = true;
    private TextMeshProUGUI _tmp;
    
    public override void ExplicitInit()
@@ -37,30 +29,11 @@ public class EA033_UIManager : Base_UIManager
        base.ExplicitInit();
 
        //2. InGamePart UI Init()
-       BindButton(typeof(Btns));
        BindObject(typeof(UI));
        BindTMP(typeof(TMPs));
        
-       GetButton((int)Btns.Btn_Next).image.DOFade(0, 0.00001f);
-       _tmp = GetButton((int)Btns.Btn_Next).GetComponentInChildren<TextMeshProUGUI>();
-       GetButton((int)Btns.Btn_Next).gameObject.SetActive(false);
-       GetButton((int)Btns.Btn_Next).gameObject.BindEvent(() =>
-       {
-           if (!_isInvokable) return;
-           _isInvokable = false;
-           Managers.Sound.Play(SoundManager.Sound.Effect, "EA033/Audio/OnNextBtn");
-           DOVirtual.DelayedCall(3f, () =>
-           {
-               _isInvokable = true;
-           });
-           OnNextButtonClicked?.Invoke();
-       });
-       
        GetObject((int)UI.OnRoundUI).SetActive(false);
 
-       GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
-       
-       //return true;
    }
    
    
@@ -75,7 +48,7 @@ public class EA033_UIManager : Base_UIManager
        GetObject((int)UI.Image_Star).SetActive(false);
         
        GetObject(ImageToActivate).SetActive(true);
-       GetTMP((int)TMPs.TMP_OnRound).text = $"x {28 - count}";
+       GetTMP((int)TMPs.TMP_OnRound).text = $"x {24 - count}";
         
        var seq = DOTween.Sequence();
        seq?.Kill();
