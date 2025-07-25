@@ -4,6 +4,7 @@ using System.Linq;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EA038_GameManager : Ex_BaseGameManager
 {
@@ -39,7 +40,7 @@ public class EA038_GameManager : Ex_BaseGameManager
         Victory2
     }
 
-    private EA036_UIManager _uiManager;
+    private EA038_UIManager _uiManager;
     
     private Vector3 effectPos;
 
@@ -59,7 +60,7 @@ public class EA038_GameManager : Ex_BaseGameManager
 
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponent<EA036_UIManager>();
+        _uiManager = UIManagerObj.GetComponent<EA038_UIManager>();
             
         _stage = MainSeq.OnStart;
 
@@ -152,8 +153,25 @@ public class EA038_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.OnIntro));
     }
     
+    private AudioClip[] _clickClips;
     
+    private void PlayClickSound() 
+    {
+        int idx = Random.Range(0, _clickClips.Length);
+        
+        if (_clickClips[idx] == null)
+            Logger.Log("사운드 경로에 없음");
+        
+        Managers.Sound.Play(SoundManager.Sound.Effect, _clickClips[idx]);
+        
+    }
     
-    
+    private void PlayVictorySoundAndEffect()
+    {
+        Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_Victory");
+
+        Get<ParticleSystem>((int)Particle.Victory1).Play();
+        Get<ParticleSystem>((int)Particle.Victory2).Play();
+    }
     
 }
