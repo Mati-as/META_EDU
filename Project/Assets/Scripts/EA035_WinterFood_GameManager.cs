@@ -630,9 +630,9 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
             
             _isClickableForRound = false;
             
-            baseUIManager.PopInstructionUIFromScaleZero(nextSeq == MainSeq.Bread_Flour?
+            baseUIManager.PopInstructionUIFromScaleZero(nextSeq == MainSeq.Bread_Bean?
                 "와! 호빵 반죽이 완성되었어요!":"와! 붕어빵 반죽이 완성되었어요!",
-                narrationPath:nextSeq == MainSeq.Bread_Flour?"EA035/YayBunKnead": "EA035/YayFishKnead");
+                narrationPath:nextSeq == MainSeq.Bread_Bean?"EA035/YayBunKnead": "EA035/YayFishKnead");
             Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
             _buttonClickEventController.DeactivateAllButtons();
             _currentFlourClickedCount = 0;
