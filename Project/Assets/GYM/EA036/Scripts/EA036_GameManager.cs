@@ -40,6 +40,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         TurnOnObjects,
         EndStageObj,
         ToyBox,
+        BookCases,
     }
 
     private enum Particle
@@ -62,7 +63,7 @@ public class EA036_GameManager : Ex_BaseGameManager
     private Vector3 endPoint;
     
     private int appearBookCaseToyObjNum;
-    private bool canToundUI = true;
+    private bool canTouchUI = true;
 
     public Transform toyBox;
     
@@ -115,17 +116,42 @@ public class EA036_GameManager : Ex_BaseGameManager
         for (int i = (int)Cameras.Camera2; i <= (int)Cameras.Camera3; i++)
             Get<CinemachineVirtualCamera>(i).Priority = 10;
 
-        foreach (Transform child in GetObject((int)Objects.DisAppearPosition).transform) //교구장 배치 하는 장난감들 초기화
+        foreach (Transform child in GetObject((int)Objects.DisAppearPosition).transform) //교구장 배치 하는 장난감들 비활성화
         {
             child.gameObject.SetActive(false);
         }
         
-        foreach (Transform child in GetObject((int)Objects.ActivatableObjects).transform) //각 스테이지 표시 기물들 초기화
+        foreach (Transform child in GetObject((int)Objects.ActivatableObjects).transform) //각 스테이지 표시 기물들 비활성화
         {
             child.gameObject.SetActive(false);
         }
         
-        foreach (Transform child in GetObject((int)Objects.TurnOnObjects).transform) //스테이지 종료 후 나타나는 기물들 초기화
+        foreach (Transform child in GetObject((int)Objects.TurnOnObjects).transform) //스테이지 종료 후 나타나는 기물들 비활성화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.ToyBox).transform) //장난감 스테이지 장난감 주머니 비활성화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.BookCases).transform) // 장난감스테이지 교구장 비활성화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.BookCaseStageObjects).transform) // 교구장 스테이지 교구장 비활성화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.ChairStageObjects).transform) // 의자 스테이지 의자 비활성화
+        {
+            child.gameObject.SetActive(false);
+        }
+        
+        foreach (Transform child in GetObject((int)Objects.TableStageObjects).transform) // 책상 스테이지 책상 비활성화
         {
             child.gameObject.SetActive(false);
         }
@@ -192,7 +218,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                     {
                         info.canClicked = true;
                         hitGameObj.SetActive(false);
-                        if (appearBookCaseToyObjNum < 4)
+                        if (appearBookCaseToyObjNum < 8)
                         {
                             GetObject((int)Objects.DisAppearPosition).transform.GetChild(appearBookCaseToyObjNum)
                                 .gameObject
@@ -221,7 +247,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                 );
             }
         }
-        else if (_stage == MainSeq.End && canToundUI)
+        else if (_stage == MainSeq.End && canTouchUI)
         {
             foreach (var hit in GameManager_Hits)
             {
@@ -231,22 +257,22 @@ public class EA036_GameManager : Ex_BaseGameManager
                 switch (objName)
                 {
                     case "BookCase":
-                        canToundUI = false;
-                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
+                        canTouchUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakePosition(0.3f);
                         _uiManager.TouchUIEndStage(1);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_19_교구장");
                         break;
                     case "Table":
-                        canToundUI = false;
-                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
+                        canTouchUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
                         _uiManager.TouchUIEndStage(2);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_17_책상");
                         break;
                     case "Chair":
-                        canToundUI = false;
-                        DOVirtual.DelayedCall(0.5f, () => canToundUI = true);
+                        canTouchUI = false;
+                        DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
                         _uiManager.TouchUIEndStage(3);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_18_의자");
@@ -273,6 +299,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
             PlayClickSound();
 
+            hitGameObj.transform.DOKill();
             hitGameObj.SetActive(false);
 
             var appearObjTransform = GetObject((int)Objects.ActivatableObjects).transform.GetChild(appearObjNum);
@@ -464,10 +491,33 @@ public class EA036_GameManager : Ex_BaseGameManager
                         .OnStart(() => child.gameObject.SetActive(true));
                 }
                 
+                foreach (Transform child in GetObject((int)Objects.BookCases).transform)
+                {
+                    Vector3 origin = child.transform.localScale;
+                    child.gameObject.transform.DOScale(origin, 1f).SetEase(Ease.InBounce)
+                        .From(Vector3.zero)
+                        .OnStart(() => child.gameObject.SetActive(true));
+                }
+                
+                foreach (Transform child in GetObject((int)Objects.ToyBox).transform)
+                {
+                    Vector3 origin = child.transform.localScale;
+                    child.gameObject.transform.DOScale(origin, 1f).SetEase(Ease.InBounce)
+                        .From(Vector3.zero)
+                        .OnStart(() => child.gameObject.SetActive(true));
+                }
+                
             })
             .AppendInterval(2f)
             .AppendCallback(() =>
             {
+                for (int i = 6; i < GetObject((int)Objects.ActivatableObjects).transform.childCount; i++)
+                {
+                    Transform child = GetObject((int)Objects.ActivatableObjects).transform.GetChild(i).transform;
+                    child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InBounce)
+                        .OnComplete(() => child.gameObject.SetActive(false));
+                }
+                
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 12;
                 
@@ -487,12 +537,18 @@ public class EA036_GameManager : Ex_BaseGameManager
     private void OnEndStage()
     {
         GameObject endStageObjParent = GetObject((int)Objects.EndStageObj);
-        
+
         DOTween.Sequence()
             .AppendCallback(() =>
             {
                 _poolManager.spawnSeq.Kill();
-                
+
+                foreach (Transform child in GetObject((int)Objects.ToyPool).transform)
+                {
+                    child.DOScale(Vector3.zero, 1f).SetEase(Ease.InBounce)
+                        .OnComplete(() => child.gameObject.SetActive(false));
+                }
+
                 for (int i = 4; i < GetObject((int)Objects.DisAppearPosition).transform.childCount; i++)
                 {
                     GetObject((int)Objects.DisAppearPosition).transform.GetChild(i).gameObject.SetActive(true);
@@ -514,6 +570,14 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(2f)
             .AppendCallback(() =>
             {
+                for (int i = 6; i < GetObject((int)Objects.ActivatableObjects).transform.childCount; i++)
+                {
+                    Transform child = GetObject((int)Objects.ActivatableObjects).transform.GetChild(i).transform;
+                    child.gameObject.transform.DOScale(Vector3.one, 1f).SetEase(Ease.InBounce)
+                        .From(Vector3.zero)
+                        .OnStart(() => child.gameObject.SetActive(true));
+                }
+                
                 _uiManager.PopInstructionUIFromScaleZero("어떤것들을 놓았는지 알아볼까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_16_어떤것들을_놓았는지_알아볼까요_");
             })
@@ -596,7 +660,9 @@ public class EA036_GameManager : Ex_BaseGameManager
 
             child.DOScale(targetScale, 1f)
                 .SetEase(Ease.InBounce)
-                .From(Vector3.zero);
+                .From(Vector3.zero)
+                .OnComplete(() =>
+                    child.DOScale(targetScale * 1.1f, 0.5f).SetLoops(54321, LoopType.Yoyo));
         }
     }
     
