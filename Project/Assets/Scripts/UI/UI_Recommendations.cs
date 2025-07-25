@@ -62,7 +62,11 @@ public class UI_Recommendations : UI_PopUp
          }
          
          List<XmlManager.SceneData> filteredScenes = null;
-         
+         if (CurrentSceneName.Count <= 0)
+         {
+             Logger.CoreClassLog($"{SceneManager.GetActiveScene().name} : 해당 컨텐츠 menuXml에 할당 필요.");
+             return;
+         }
          //월 설정이 있는 것들 줄 이달의 컨텐츠 추천
          if (CurrentSceneName[0].Month != nameof(None))
          {
