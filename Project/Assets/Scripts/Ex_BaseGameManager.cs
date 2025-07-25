@@ -56,18 +56,23 @@ public class UI_Payload : IPayload
 ///     기본적으로 카메라 무빙, 애니메이션을 총괄할 수 있는 메인 애니메이션 컨트롤러 추가
 /// </summary>
 public abstract class Ex_BaseGameManager : Base_GameManager
-
 {
     protected Dictionary<Type, Object[]> _objects = new();
+
+
+    #region (GameManager 부착) 메인 애니메이션 컨트롤 관리
 
     protected bool _init;
     protected Animator mainAnimator; //Gamemanager에 부착된 Animator 사용중
     protected int currentMainMainSequence;
 
     protected readonly int SEQ_NUM = Animator.StringToHash("seqNum");
+    private static readonly int Finish = Animator.StringToHash("Finish");
 
-
-    //클릭이펙트 사용을 위한 풀, 현재 경로와 Playeffect로 사용하도록 구현되어있음
+    #endregion
+    
+    #region 클릭 및 각종 Fx이펙트 풀 관리
+    //클릭이펙트 사용을 위한 풀, 현재 경로와 Playeffect로 사용하도록 구현되어있음 subEffect 사용으로 모든 이펙트 사용가능.
     private readonly Stack<ParticleSystem> _particlePool = new();
     private readonly Dictionary<int, Stack<ParticleSystem>> _subParticlePool = new();
 
@@ -75,6 +80,9 @@ public abstract class Ex_BaseGameManager : Base_GameManager
 
     protected Dictionary<int, string> subPsResourcePathMap = new();
     private const int MAX_SUB_PS_COUNT = 5;
+
+    #endregion
+
 
 
     protected virtual new void Awake()
@@ -111,7 +119,13 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     }
 
 
-    protected void SetPool()
+    protected override sealed void OnRaySyncedByGameManager()
+    {
+        base.OnRaySyncedByGameManager();
+    }
+
+
+    protected void  SetPool()
     {
         if (psResourcePath.IsNullOrEmpty())
         {
@@ -147,7 +161,6 @@ public abstract class Ex_BaseGameManager : Base_GameManager
     }
 
     protected WaitForSeconds _poolReturnWait;
-    private static readonly int Finish = Animator.StringToHash("Finish");
 
     protected IEnumerator ReturnToPoolAfterDelay(ParticleSystem ps)
     {

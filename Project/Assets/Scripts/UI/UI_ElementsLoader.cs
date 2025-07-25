@@ -39,9 +39,7 @@ public class UI_ElementsLoader : Ex_MonoBehaviour
         
         
         var obj = InstantiateUI(UI_Elements.UI_ReadyAndStart);
-        if (obj != null)
-            obj.transform.localScale = Vector3.zero;
-        
+ 
         base.Init();
     }
     

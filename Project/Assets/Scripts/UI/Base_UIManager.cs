@@ -20,12 +20,13 @@ public class Base_UIManager : UI_PopUp
 
         UI_MediaArtInScene,
         
-        //Optional Tools
-        UI_Ready,
-        UI_Start,
-        UI_Stop
+        //Optional Tools-------------------------------
+        UI_ReadyAndStart,
+            Ready,
+            Start,
+            Stop
     }
-
+    
     public enum TMPs
     {
         TMP_Instruction
@@ -34,25 +35,28 @@ public class Base_UIManager : UI_PopUp
     protected TextMeshProUGUI TMP_Instruction;
     protected GameObject UI_Instruction;
 
-    protected RectTransform UI_Ready;
-    protected RectTransform UI_Start;
-    protected RectTransform UI_Stop;
 
     protected readonly Vector3 DEFAULT_SIZE = Vector3.one;
     protected RectTransform _bgRectTransform;
     protected float _originalHeight;
 
-    
-    
     protected Sequence _uiSeq;
     private bool isInitialized = false;
-
-    [FormerlySerializedAs("UI_MediaArt")] [FormerlySerializedAs("uiMediaArt")] [FormerlySerializedAs("_uiMediaArt")] public UI_MediaArtInScene uiMediaArtInScene;
+    
+    
     private UI_ElementsLoader _uiElementsLoader =new();
+    
+    
+    public UI_MediaArtInScene uiMediaArtInScene;
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 
 
-    
+    private Dictionary<int, GameObject> _uiObjects= new();
+
+    protected RectTransform UI_Ready;
+    protected RectTransform UI_Start;
+    protected RectTransform UI_Stop;
+
     /// <summary>
     /// 1.로드시 자동 초기화 함수
     /// 2.UI_Setting, 등 UIMAnager 로드시 순서를 지정할 필요 없는 나머지 UI는 자동적으로 이벤트함수에서 Init되도록 구현했습니다.
@@ -60,10 +64,8 @@ public class Base_UIManager : UI_PopUp
     /// <returns></returns>
     public override bool InitOnLoad()
     {
-  
         return true;
     }
-
     
     /// <summary>
     /// 1.순서보장형 ExplicitInit() 함수
@@ -76,12 +78,11 @@ public class Base_UIManager : UI_PopUp
         
         
         uiMediaArtInScene = GetObject((int)UI.UI_MediaArtInScene).GetComponent<UI_MediaArtInScene>();
-        
         UI_Instruction = GetObject((int)UI.UI_Instruction);
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
-        
-        _objects = new Dictionary<Type, Object[]>();
 
+        InitOptionalTools();
+        
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
 
@@ -90,18 +91,30 @@ public class Base_UIManager : UI_PopUp
 
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
         Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
+        
+        
+        _objects = new Dictionary<Type, Object[]>();
+        
+        
     }
-    
-    // /// <summary>
-    // ///     Event loop아닌 수동초기화임에 주의 
-    // /// </summary>
-    // public virtual void Init()
-    // {
-    //     if (isInitialized)
-    //     {
-    //         Logger.CoreClassLog("중복 초기화 시도 XXXXXXXXX");
-    //     }
-    // }
+    private void InitOptionalTools()
+    {
+        UIReadyAndStartInit();
+    }
+    private void UIReadyAndStartInit()
+    {
+        _uiObjects.Add((int)UI.UI_ReadyAndStart,GetObject((int)UI.UI_ReadyAndStart));
+        _uiObjects[(int)UI.UI_ReadyAndStart].SetActive(false);
+        
+        UI_Ready = _uiObjects[(int)UI.UI_ReadyAndStart].transform.Find(UI.Ready.ToString()).GetComponent<RectTransform>();
+        UI_Stop = _uiObjects[(int)UI.UI_ReadyAndStart].transform.Find(UI.Stop.ToString()).GetComponent<RectTransform>();
+        UI_Start = _uiObjects[(int)UI.UI_ReadyAndStart].transform.Find(UI.Start.ToString()).GetComponent<RectTransform>();
+        
+        UI_Ready.localScale = Vector3.zero;
+        UI_Start.localScale = Vector3.zero;
+        UI_Stop.localScale = Vector3.zero;
+    }
+
 
     public void LoadUIElements(GameObject parent)
     {
@@ -230,6 +243,8 @@ public class Base_UIManager : UI_PopUp
 
     public void PlayReadyAndStart(Action OnStart = null, float intervalBtwStartAndReady = 1f)
     {
+        _uiObjects[(int)UI.UI_ReadyAndStart].SetActive(true);
+        
         _timerRelatedAnimSeq?.Kill();
         _timerRelatedAnimSeq = DOTween.Sequence();
 
@@ -306,9 +321,9 @@ public class Base_UIManager : UI_PopUp
 
     public void PlayTimerRelatedAnimationByEnum(UI ui)
     {
-        if (ui == UI.UI_Start) PlayTimerRelatedAnimation(UI_Start);
-        if (ui == UI.UI_Ready) PlayTimerRelatedAnimation(UI_Ready);
-        if (ui == UI.UI_Stop) PlayTimerRelatedAnimation(UI_Stop);
+        if (ui == UI.Start) PlayTimerRelatedAnimation(UI_Start);
+        if (ui == UI.Ready) PlayTimerRelatedAnimation(UI_Ready);
+        if (ui == UI.Stop) PlayTimerRelatedAnimation(UI_Stop);
     }
 
     private void PlayTimerRelatedAnimation(RectTransform rect, float interval = 1.25f)

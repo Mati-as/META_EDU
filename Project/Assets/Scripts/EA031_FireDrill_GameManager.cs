@@ -48,10 +48,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         EscapeStepsC,
     }
 
-    private AvatarController _introAvatarController;
-    private AvatarController _onExitAvatarController;
-    private AvatarController  _onEscapeAvatarController;
-    private AvatarController _onEndAvatarController;
+    private AvatarAnimationController _introAvatarAnimationController;
+    private AvatarAnimationController _onExitAvatarAnimationController;
+    private AvatarAnimationController  _onEscapeAvatarAnimationController;
+    private AvatarAnimationController _onEndAvatarAnimationController;
 
     private ParticleSystem _sirenPs;
     private ParticleSystem _smokePs;
@@ -142,7 +142,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                         int i1 = i;
                         DOVirtual.DelayedCall(Random.Range(0.2f * i1, 0.4f * i1), () =>
                         {
-                            _introAvatarController.PlayAnimation(i1, AvatarController.AnimClip.LookOver);
+                            _introAvatarAnimationController.PlayAnimation(i1, AvatarAnimationController.AnimClip.LookOver);
                         });
                     }
 
@@ -154,10 +154,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                 
                     _uiManager.PopInstructionUIFromScaleZero("불이 나면 두손으로 코와 입을 막아요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/3_Cover");
-                    _introAvatarController.PlayAnimation(3, AvatarController.AnimClip.HideFace);
+                    _introAvatarAnimationController.PlayAnimation(3, AvatarAnimationController.AnimClip.HideFace);
                     DOVirtual.DelayedCall(3.5f, () =>
                     {
-                        _introAvatarController.PauseAnimator(3);
+                        _introAvatarAnimationController.PauseAnimator(3);
                         GetObject((int)Objs.TowelToCover).transform.localScale = Vector3.zero;
                         GetObject((int)Objs.TowelToCover).SetActive(true);
                         GetObject((int)Objs.TowelToCover).transform.DOScale(_towelDefaultScale, 0.5f)
@@ -223,8 +223,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     }
     private void PlayEscapePathAnim(int pathIndex,float delay =3f)
     {
-        _onEscapeAvatarController.SetWalking(0, true);
-        _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.HideFace);
+        _onEscapeAvatarAnimationController.SetWalking(0, true);
+        _onEscapeAvatarAnimationController.PlayAnimation(0, AvatarAnimationController.AnimClip.HideFace);
         GetObject((int)Objs.OnEscapeAvatar).transform.localRotation = _defaultLocalRotationQuatMap[(int)Objs.OnEscapeAvatar];
         
         
@@ -250,8 +250,8 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             var thisRotation = GetObject((int)Objs.OnEscapeAvatar).transform.localRotation.eulerAngles;
             GetObject((int)Objs.OnEscapeAvatar).transform
                 .DOLocalRotate(new Vector3(thisRotation.x, thisRotation.y + 180, thisRotation.z), 0.5f);
-            _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.Wave);
-            _onEscapeAvatarController.SetWalking(0, false);
+            _onEscapeAvatarAnimationController.PlayAnimation(0, AvatarAnimationController.AnimClip.Wave);
+            _onEscapeAvatarAnimationController.SetWalking(0, false);
             
             _uiManager.PopInstructionUIFromScaleZero("준비 다 됐으면 차분히 날 따라서 나가자!");
 
@@ -324,10 +324,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
 
         _towelDefaultScale = GetObject((int)Objs.TowelToCover).transform.localScale;
-        _onExitAvatarController = GetObject((int)Objs.OnExitAvataController).GetComponent<AvatarController>();
-        _onEscapeAvatarController = GetObject((int)Objs.OnEscapeAvatarController).GetComponent<AvatarController>();
-        _introAvatarController = GetObject((int)Objs.IntroAvatarController).GetComponent<AvatarController>();
-        _onEndAvatarController = GetObject((int)Objs.OnEndAvatarController).GetComponent<AvatarController>();
+        _onExitAvatarAnimationController = GetObject((int)Objs.OnExitAvataController).GetComponent<AvatarAnimationController>();
+        _onEscapeAvatarAnimationController = GetObject((int)Objs.OnEscapeAvatarController).GetComponent<AvatarAnimationController>();
+        _introAvatarAnimationController = GetObject((int)Objs.IntroAvatarController).GetComponent<AvatarAnimationController>();
+        _onEndAvatarAnimationController = GetObject((int)Objs.OnEndAvatarController).GetComponent<AvatarAnimationController>();
         
         
         GetObject((int)Objs.TowelToCover).SetActive(false);
@@ -409,13 +409,13 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
         for (int i = 0; i < 6; i++)
         {
-            _onEndAvatarController.PlayAnimation(i, AvatarController.AnimClip.HideFace);
+            _onEndAvatarAnimationController.PlayAnimation(i, AvatarAnimationController.AnimClip.HideFace);
             
             int indexCache = i;
             DOVirtual.DelayedCall(3.5f + Random.Range(0.1f,0.4f), () =>
             {
-                _onEndAvatarController.PauseAnimator(indexCache);
-                _onEndAvatarController.SetLegAnim(i, (int)AvatarController.LegAnimClip.Idle);
+                _onEndAvatarAnimationController.PauseAnimator(indexCache);
+                _onEndAvatarAnimationController.SetLegAnim(i, (int)AvatarAnimationController.LegAnimClip.Idle);
             });
 
         }
@@ -448,18 +448,18 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             int id = hit.transform.GetInstanceID();
             _isClickableMapByTfID.TryAdd(id, true);
             
-            if (_onExitAvatarController.IsTransIDValid(id) && _isClickableMapByTfID.ContainsKey(id) && _isClickableMapByTfID[id])
+            if (_onExitAvatarAnimationController.IsTransIDValid(id) && _isClickableMapByTfID.ContainsKey(id) && _isClickableMapByTfID[id])
             {
                 _isClickableMapByTfID[id] = false; 
                 _currentAvatarHelpCount++;
-                _onExitAvatarController.PlayAnimationByTransID(id, AvatarController.AnimClip.HideFace);
+                _onExitAvatarAnimationController.PlayAnimationByTransID(id, AvatarAnimationController.AnimClip.HideFace);
            
                 PlayParticleEffect(hit.point);
                 
                 int idCache = id;
                 DOVirtual.DelayedCall(2.5f, () =>
                 {
-                    _onExitAvatarController.PauseAnimatorByID(idCache);
+                    _onExitAvatarAnimationController.PauseAnimatorByID(idCache);
                 });
 
                 if (_currentAvatarHelpCount >= AVATART_COUNT_TO_HELP)
@@ -489,10 +489,10 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
         
         
        
-        _onEscapeAvatarController.PlayAnimation(0, AvatarController.AnimClip.HideFace);
+        _onEscapeAvatarAnimationController.PlayAnimation(0, AvatarAnimationController.AnimClip.HideFace);
         DOVirtual.DelayedCall(2f, () =>
         {
-            _onEscapeAvatarController.SetWalking(0, true);
+            _onEscapeAvatarAnimationController.SetWalking(0, true);
             GetObject((int)Objs.OnEscapeAvatar).transform.DOMove(GetObject((int)Objs.PathOutPos).transform.position,1.0f);
         });
       

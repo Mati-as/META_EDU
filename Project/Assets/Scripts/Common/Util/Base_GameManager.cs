@@ -1,20 +1,18 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>
 ///     각 씬별 GameManager는 IGameManager를 상속받아 구현됩니다.
 /// </summary>
 public abstract class Base_GameManager : Ex_MonoBehaviour
 {
-    //20250225 플레이 활동성 체크용 활용변수 
+    #region 센서 및 Ray관련
+
     public int DEV_sensorClick
     {
         get;
@@ -61,11 +59,14 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         }
     }
 
-    /// <summary>
-    ///     08/13/2024
-    ///     1.Click빈도수를 유니티상에서 제어할때 사용합니다.
-    ///     2.물체가 많은경우 정확도 이슈로 센서자체를 필터링 하는것은 권장되지 않다고 판단하고 있습니다.
-    /// </summary>
+    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY = 0.08f;
+    protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
+    protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
+
+    #endregion
+
+    #region 게임 실행 및 초기화 관련
+
     public bool isStartButtonClicked
     {
         get;
@@ -78,9 +79,14 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         private set;
     }
 
+    #endregion
+
+    #region 프레임, 사운드등 각종 세팅 관련
+
     private const int TARGET_FRAME = 60; //
 
     private float _bgmVolume = 0.8f; // BGM 볼륨은 0.7f ~ 1f 사이로 설정합니다.
+
     protected float bgmVolume
     {
         get
@@ -91,14 +97,12 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         {
             _bgmVolume = Mathf.Lerp(0f, 1f, Managers.Setting.BGM_VOLUME_SETTING_VALUE); // BGM 볼륨은 0.7f ~ 1f 사이로 설정합니다.
         }
-    } 
+    }
 
-    protected const float DEFAULT_CLICKABLE_IN_GAME_DELAY = 0.08f;
-    protected const float CLICKABLE_IN_GAME_DELAY_MIN = 0.035f;
-    protected float waitForClickableInGameRayRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
+    #endregion
 
-    
-    
+    #region UI 관련
+
     protected GameObject UIManagerObj;
     protected Base_UIManager baseUIManager;
 
@@ -109,15 +113,13 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             var uiMangager = GameObject.FindWithTag("UIManager");
             Debug.Assert(uiMangager != null, "UIManager not found");
         });
-        
     }
 
-    
-    
-    protected virtual void Start()
+    #endregion
+
+
+    protected virtual new void Start()
     {
-      
-     
     }
 
     protected float waitForClickableInGameRay
@@ -223,7 +225,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
     protected virtual void Awake()
     {
         Init();
-      
+
         Debug.Assert(PrecheckOnInit());
     }
 
@@ -236,36 +238,31 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
     private void InitCameraRect()
     {
         if (Camera.main != null)
-        {
-          //  Logger.CoreClassLog($"camera_rect :{Camera.main.rect.width} : {Camera.main.rect.height}");
+            //  Logger.CoreClassLog($"camera_rect :{Camera.main.rect.width} : {Camera.main.rect.height}");
             Camera.main.rect = new Rect(
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
                 XmlManager.Instance.ScreenSize,
                 XmlManager.Instance.ScreenSize
             );
-        }
         else
             Logger.LogError("Main camera not found.");
 
         //송하맹호도 같은 경우 현재 UIcamera가 없어도 동작 할 수 있기때문에 TryGetcomponent으로 처리
         GameObject.FindWithTag("UICamera").TryGetComponent(out UICamera);
         if (UICamera != null)
-        {
             UICamera.rect = new Rect(
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetX - 0.5f),
                 0.5f - XmlManager.Instance.ScreenSize / 2f + (XmlManager.Instance.ScreenPositionOffsetY - 0.5f),
                 XmlManager.Instance.ScreenSize,
                 XmlManager.Instance.ScreenSize
             );
-            
-        }
         else
             Logger.LogError("UICamera not found.");
     }
 
 
-    protected virtual void Init()
+    protected virtual new void Init()
     {
         if (isInitialized)
         {
@@ -275,12 +272,12 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             return;
         }
 
-        
+
 #if UNITY_EDITOR
         DOTween.useSafeMode = true; //원활한 디버깅을 위해 safe mode를 사용하지 않는경우 있음
 #endif
-        
-        
+
+
         //초기값설정 후 이후에 상속받은 게임매니저에서 민감도 별도 설정
         waitForClickableInGameRay = DEFAULT_CLICKABLE_IN_GAME_DELAY;
 
@@ -294,26 +291,22 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
 
         Logger.Log("scene is initialzied");
         OnSceneLoad?.Invoke(SceneManager.GetActiveScene().name, DateTime.Now);
-       
+
 
         InitValidClickCount();
         isInitialized = true;
 
-        SetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
+        LoadAndSetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
         InitCameraRect();
 
-       
 
-        
         DOTween.Init(useSafeMode: false);
-        
-    
+
+
         if (!SceneManager.GetActiveScene().name.Contains("LAUNCHER")) LoadUIManagerAndInit();
-        
-      
     }
 
-    private void SetUIManager()
+    private void LoadAndSetUIManager()
     {
         if (Utils.IsLauncherScene())
         {
@@ -327,24 +320,23 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         if (!isUIManagerLoadedOnRuntime)
         {
             Logger.CoreClassLog("UIManager가 로드되지 않았습니다. 이미 씬 깔려있는지 확인 필요");
-            
+
             UIManagerObj = GameObject.FindWithTag("UIManager");
             baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
-            
+
             baseUIManager.LoadUIElements(baseUIManager.transform.Find("[Interactable]").gameObject);
             baseUIManager.ExplicitInit();
             return;
         }
-     
-        
+
+
         var mainCamera = Camera.main;
-        
+
         // UIManager가 로드된 경우, UICamera를 MainCamera의 Stack에 추가
         var uiCameraObj = GameObject.FindGameObjectWithTag("UICamera");
-      
-        
-        
-        Canvas canvas = uiCameraObj.GetComponentInChildren<Canvas>();
+
+
+        var canvas = uiCameraObj.GetComponentInChildren<Canvas>();
 
         if (canvas != null && uiCameraObj != null)
         {
@@ -355,16 +347,15 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             Logger.CoreClassLog("UICamera assigned to Canvas successfully.");
         }
         else
-        {
             Logger.LogError("Canvas or Camera not found on UICamera object.");
-        }
+
         if (uiCameraObj != null)
         {
             var uiCamera = uiCameraObj.GetComponent<Camera>();
             if (uiCamera != null)
             {
-               uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
-            
+                uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
+
                 if (mainCamera != null && mainCamera.cameraType == CameraType.Game)
                 {
                     if (!mainCamera.GetUniversalAdditionalCameraData().cameraStack.Contains(uiCamera))
@@ -381,15 +372,14 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         }
         else
             Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
-        
+
         baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
         baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
         baseUIManager.ExplicitInit();
-
-     
     }
 
-    protected string initialMessage = String.Empty;
+    protected string initialMessage = string.Empty;
+
     protected virtual void SetLayerMask()
     {
         int uiLayer = LayerMask.NameToLayer("UI");
@@ -493,12 +483,12 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
 
 
     /// <summary>
-    /// 공통 이벤트 및 센서 인식을 위한 이벤트 할당
+    ///     공통 이벤트 및 센서 인식을 위한 이벤트 할당
     /// </summary>
     protected virtual void BindEvent()
     {
 #if UNITY_EDITOR
-        Debug.Log("Ray Sync Subscribed, RayHits being Shared");
+        Logger.Log("Ray Sync Subscribed, RayHits being Shared");
 #endif
         //1차적으로 하드웨어에서 동기화된 Ray를 GameManger에서 읽어옵니다.
         RaySynchronizer.OnGetInputFromUser -= OnOriginallyRaySynced;
@@ -511,9 +501,9 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
     }
-    
+
     /// <summary>
-    /// 공통 이벤트 및 센서 인식을 이벤트 구독해제 필수
+    ///     공통 이벤트 및 센서 인식을 이벤트 구독해제 필수
     /// </summary>
     protected virtual void OnDestroy()
     {
@@ -602,7 +592,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             Managers.Sound.Play(SoundManager.Sound.Narration, "Common/Narration/OnRestart");
             baseUIManager.PopInstructionUIFromScaleZero("놀이가 끝났어요! 놀이가 곧 다시시작 해요!");
         });
-        
+
         _restartSequence.AppendInterval(7f);
 
         _restartSequence.AppendCallback(() =>
@@ -624,11 +614,10 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
                     callback?.Invoke();
                     SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 });
-
         });
     }
-    
-    protected void StartCountdown(float duration, Action onComplete =null)
+
+    protected void StartCountdown(float duration, Action onComplete = null)
     {
         int previousSecond = -1;
 
@@ -644,7 +633,4 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             .SetEase(Ease.Linear)
             .OnComplete(() => onComplete?.Invoke());
     }
-
-  
-
 }
