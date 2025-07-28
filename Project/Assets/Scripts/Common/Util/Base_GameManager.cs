@@ -325,7 +325,8 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
 
             baseUIManager.LoadUIElements(baseUIManager.transform.Find("[Interactable]").gameObject);
-            baseUIManager.ExplicitInit();
+            //순서주의
+            baseUIManager.ExplicitInitInGame();
             return;
         }
 
@@ -373,9 +374,10 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         else
             Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
 
+        UIManagerObj = GameObject.FindWithTag("UIManager");
         baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
         baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
-        baseUIManager.ExplicitInit();
+        baseUIManager.ExplicitInitInGame();
     }
 
     protected string initialMessage = string.Empty;

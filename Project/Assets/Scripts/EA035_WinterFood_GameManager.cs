@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using UnityEngine;
 
@@ -56,7 +57,10 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         UnCookedFishB,
         RedBeanInsideFishA,
         RedBeanInsideFishB,
-        Flour
+        Flour,
+        
+        
+        BunGeneratePos
         // FlourBag
     }
 
@@ -66,6 +70,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     private Transform[] buns; 
     private Transform[] fishes; 
+    private Vector3[] bunGeneratePos;
+    private bool _clickableForIntro;
     public int CurrentMainMainSeq
     {
         get
@@ -181,8 +187,9 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             float radius = 0.65f + Random.Range(-0.5f, 0.00f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
-                            
-                            var targetPos = centerPos + offset;
+
+                            int randomPos = Random.Range(0, bunGeneratePos.Length);
+                            var targetPos = bunGeneratePos[i < bunGeneratePos.Length ? i : randomPos] + offset;
 
                             float delay = i * Random.Range(0.1f, 0.3f);
                             DOVirtual.DelayedCall(delay-0.1f, () =>
@@ -253,6 +260,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.Fish_Bean:
 
+                    GetObject((int)Objs.MainPlate).transform.DOScale(Vector3.zero,1f).SetEase(Ease.OutBack);
                     GetObject((int)Objs.FlourInBowl_Whole).transform.DOScale(Vector3.zero, 0.35f).SetEase(Ease.OutBack);
 
                     
@@ -303,8 +311,11 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             float radius = 0.75f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
-                            var targetPos = centerPos + offset;
+                            int randomPos = Random.Range(0, bunGeneratePos.Length);
+                            var targetPos =  bunGeneratePos[i < bunGeneratePos.Length ? i : randomPos] + offset;
                             float delay = i * Random.Range(0.1f, 0.3f);
+                            
+                            
                             DOVirtual.DelayedCall(delay-0.1f, () =>
                             {
                                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Pop");
@@ -344,6 +355,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     GetObject((int)Objs.UnCookedFishB).SetActive(false);
                     GetObject((int)Objs.UnCookedFishB).transform.localScale = Vector3.zero;
                     baseUIManager.PopInstructionUIFromScaleZero("(마무리텍스트 필요)붕어빵, 호빵을 모두 만들어서 먹어봤어요!");
+                    OnOutro();
                     break;
             }
         }
@@ -406,6 +418,12 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         {
             originalPosMap.Add(i, GetObject((int)Objs.OriginPosParent).transform.GetChild(i).position);
         }
+        
+        bunGeneratePos = new Vector3[GetObject((int)Objs.BunGeneratePos).transform.childCount];
+        for (int i = 0; i < GetObject((int)Objs.BunGeneratePos).transform.childCount; i++)
+        {
+            bunGeneratePos[i] = GetObject((int)Objs.BunGeneratePos).transform.GetChild(i).position;
+        }
     }
 
     protected override void OnDestroy()
@@ -463,19 +481,56 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         {
             baseUIManager.PopInstructionUIFromScaleZero("이 두가지 음식을 만들어 볼까요?",narrationPath:"EA035/LetsMakeThoseTwo");
         });
-        introSeq.AppendInterval(1.0f);
+        introSeq.AppendInterval(3.5f);
+        introSeq.AppendCallback(() =>
+        {
+            baseUIManager.PopInstructionUIFromScaleZero("호빵과 붕어빵을 터치해보세요!");
+            DOVirtual.DelayedCall(2f, () =>
+            {
+                _clickableForIntro = true;
+            });
+
+        });
+        introSeq.AppendInterval(10.5f);
+        introSeq.AppendCallback(() =>
+        {
+            _clickableForIntro = false;
+            _introClickSeqBun?.Kill();
+            _introClickSeqFish?.Kill();
+        });
         introSeq.Append(
             GetObject((int)Objs.SteamedBunSet).transform.DOScale(Vector3.zero, 0.7f)
                 .SetEase(Ease.OutExpo));
         introSeq.Append(
             GetObject((int)Objs.FishBreadSet).transform.DOScale(Vector3.zero, 0.7f)
                 .SetEase(Ease.OutExpo));
-        introSeq.AppendInterval(1.5f);
         introSeq.AppendCallback(() =>
         {
+         
+            
             CurrentMainMainSeq = (int)MainSeq.Bread_Intro;
+       
         });
 
+
+    }
+
+    private void OnOutro()
+    {
+        GetObject((int)Objs.FishBreadSet).transform.localScale = Vector3.zero;
+        GetObject((int)Objs.SteamedBunSet).transform.localScale = Vector3.zero;
+
+        GetObject((int)Objs.FishBreadSet).SetActive(true);
+        GetObject((int)Objs.SteamedBunSet).SetActive(true);
+        
+        var introSeq = DOTween.Sequence();
+        introSeq.AppendInterval(1.0f);
+        introSeq.Append(
+            GetObject((int)Objs.SteamedBunSet).transform.DOScale(_defaultSizeMap[(int)Objs.SteamedBunSet], 0.7f)
+                .SetEase(Ease.OutExpo));
+        introSeq.Join(
+            GetObject((int)Objs.FishBreadSet).transform.DOScale(_defaultSizeMap[(int)Objs.FishBreadSet], 0.7f)
+                .SetEase(Ease.OutExpo));
 
     }
 
@@ -487,103 +542,189 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
 
     private int FISH_COUNT_TO_EAT;
     private int _currentFishCount;
+    
+    private Sequence _introClickSeqBun;
+    private Sequence _introClickSeqFish;
 
     public override void OnRaySynced()
     {
         base.OnRaySynced();
 
-        if ((CurrentMainMainSeq == (int)MainSeq.Bread_Flour || CurrentMainMainSeq == (int)MainSeq.Fish_Flour) 
-            && _isClickableForRound)
+        switch ((MainSeq)CurrentMainMainSeq)
         {
-            foreach (var hit in GameManager_Hits)
-            {
-                if (_tfIdToEnumMap.TryGetValue(hit.transform.GetInstanceID(), out int _))
+            case MainSeq.Intro:
+                if (!_clickableForIntro) return;
+                foreach (var hit in GameManager_Hits)
                 {
-                    OnKneadDough(CurrentMainMainSeq==(int)MainSeq.Bread_Flour ? MainSeq.Bread_Bean : MainSeq.Fish_Bean);
-                    Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
-                    PlayParticleEffect(hit.point);
-                 
-                }
-            }
-        }
-        else if (CurrentMainMainSeq == (int)MainSeq.Bread_Eat)
-        {
-            foreach (var hit in GameManager_Hits)
-            {
-                RaycastHit hitCache = hit;
-                int id = hitCache.transform.GetInstanceID();
-                string Bread;
-                if (hitCache.transform.gameObject.name.Contains(nameof(Bread)))
-                {
-                    _isClickableMapByTfID.TryAdd(id,true);
-                    if (_isClickableMapByTfID[id] == false) continue;
-                    _isClickableMapByTfID[id] = false;
-                    PlayParticleEffect(hit.point);
-                    _currentBunCount++;
-                    
-                    int randomPoss = Random.Range(0, 100);
-                    if (randomPoss > 50) Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
-                    Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
-                    
-                    hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f,0.4f)).SetEase(Ease.InElastic);
-                    
-                    if(_currentBunCount >= BUN_COUNT_TO_EAT)
+                    string name = hit.transform.gameObject.name;
+                    if (name.Contains("SteamedBun"))
                     {
-                        _currentBunCount = 0;
-                        _isClickableForRound = false;
+                        baseUIManager.PopInstructionUIFromScaleZero("호빵", narrationPath: "EA035/BunName");
                         
-                        baseUIManager.PopInstructionUIFromScaleZero("와! 호빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllBun");
-                        CurrentMainMainSeq = (int)MainSeq.Bread_Finish;
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
-                        DOVirtual.DelayedCall(3f, () =>
+                        _introClickSeqBun?.Kill();
+                        _introClickSeqBun = DOTween.Sequence();
+                        
+                        _introClickSeqBun.Append(GetObject((int)Objs.SteamedBunSet).transform.DOShakeScale(0.35f, 0.4f, 15, 70)
+                            .SetEase(Ease.InOutBack)
+                            .OnStart(() =>
+                            {
+                                GetObject((int)Objs.SteamedBunSet).transform.position =
+                                    _defaultPosMap[(int)Objs.SteamedBunSet];
+                            }));
+
+                        _introClickSeqBun.OnKill(() =>
                         {
-                            CurrentMainMainSeq = (int)MainSeq.Fish_Intro;
+                            GetObject((int)Objs.SteamedBunSet).transform.position =
+                                _defaultPosMap[(int)Objs.SteamedBunSet];
+                            GetObject((int)Objs.SteamedBunSet).transform.localScale =
+                                _defaultSizeMap[(int)Objs.SteamedBunSet];
                         });
                     }
-                }
-
-            }
-        }
-        else if (CurrentMainMainSeq == (int)MainSeq.Fish_Eat)
-        {
-            foreach (var hit in GameManager_Hits)
-            {
-                RaycastHit hitCache = hit;
-                int id = hitCache.transform.GetInstanceID();
-                string Fish;
-                if (hitCache.transform.gameObject.name.Contains(nameof(Fish)))
-                {
-                    PlayParticleEffect(hit.point);
-                    _isClickableMapByTfID.TryAdd(id,true);
-                    if (_isClickableMapByTfID[id] == false) continue;
-                    _isClickableMapByTfID[id] = false;
-                    
-                    _currentFishCount++;
-                    
-                    int randomPoss = Random.Range(0, 100);
-                    if (randomPoss > 50) Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
-                    Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
-                    
-                    hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f,0.4f)).SetEase(Ease.InElastic);
-                    
-                    if(_currentFishCount>= FISH_COUNT_TO_EAT)
+                    else if (name.Contains("Fish"))
                     {
-                        _currentFishCount = 0;
-                        _isClickableForRound = false;
-                        CurrentMainMainSeq = (int)MainSeq.Fish_Finish;
-                        baseUIManager.PopInstructionUIFromScaleZero("와! 붕어빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllFish");
-                        Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
-                        DOVirtual.DelayedCall(3f, () =>
+                        baseUIManager.PopInstructionUIFromScaleZero("붕어빵", narrationPath: "EA035/FishBreadName");
+                        
+                        _introClickSeqFish?.Kill();
+                        _introClickSeqFish = DOTween.Sequence();
+                        
+                        _introClickSeqFish.Append(GetObject((int)Objs.FishBreadSet).transform.DOShakeScale(0.35f, 0.4f, 15, 70)
+                            .SetEase(Ease.InOutBack).OnStart(() =>
+                            {
+                                GetObject((int)Objs.FishBreadSet).transform.position =
+                                    _defaultPosMap[(int)Objs.FishBreadSet];
+                            }));
+                        _introClickSeqFish.OnKill(() =>
                         {
-                            CurrentMainMainSeq = (int)MainSeq.OnFinish;
+                            GetObject((int)Objs.FishBreadSet).transform.position =
+                                _defaultPosMap[(int)Objs.FishBreadSet];
+                            GetObject((int)Objs.FishBreadSet).transform.localScale =
+                                _defaultSizeMap[(int)Objs.FishBreadSet];
                         });
                     }
                 }
 
-            }
+                break;
+
+            case MainSeq.Bread_Flour:
+                if (_isClickableForRound)
+                {
+                    foreach (var hit in GameManager_Hits)
+                    {
+                        if (_tfIdToEnumMap.TryGetValue(hit.transform.GetInstanceID(), out int _))
+                        {
+                            var nextSeq = ((MainSeq)CurrentMainMainSeq == MainSeq.Bread_Flour)
+                                ? MainSeq.Bread_Bean
+                                : MainSeq.Fish_Bean;
+                            OnKneadDough(nextSeq);
+                            Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                            PlayParticleEffect(hit.point);
+                        }
+                    }
+                }
+                break;
+            case MainSeq.Fish_Flour:
+                if (_isClickableForRound)
+                {
+                    foreach (var hit in GameManager_Hits)
+                    {
+                        if (_tfIdToEnumMap.TryGetValue(hit.transform.GetInstanceID(), out int _))
+                        {
+                            var nextSeq = ((MainSeq)CurrentMainMainSeq == MainSeq.Bread_Flour)
+                                ? MainSeq.Bread_Bean
+                                : MainSeq.Fish_Bean;
+                            OnKneadDough(nextSeq);
+                            Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                            PlayParticleEffect(hit.point);
+                        }
+                    }
+                }
+
+                break;
+
+            case MainSeq.Bread_Eat:
+                foreach (var hit in GameManager_Hits)
+                {
+                    RaycastHit hitCache = hit;
+                    int id = hitCache.transform.GetInstanceID();
+                    string Bread;
+                    if (hitCache.transform.gameObject.name.Contains(nameof(Bread)))
+                    {
+                        _isClickableMapByTfID.TryAdd(id, true);
+                        if (_isClickableMapByTfID[id] == false) continue;
+                        _isClickableMapByTfID[id] = false;
+
+                        PlayParticleEffect(hit.point);
+                        _currentBunCount++;
+
+                        if (Random.Range(0, 100) > 50)
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
+
+                        Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                        hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f, 0.4f)).SetEase(Ease.InElastic);
+
+                        if (_currentBunCount >= BUN_COUNT_TO_EAT)
+                        {
+                            _currentBunCount = 0;
+                            _isClickableForRound = false;
+
+                            baseUIManager.PopInstructionUIFromScaleZero("와! 호빵을 다 먹었어요!",
+                                narrationPath: "EA035/YayAteAllBun");
+                            CurrentMainMainSeq = (int)MainSeq.Bread_Finish;
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
+
+                            DOVirtual.DelayedCall(3f, () =>
+                            {
+                                CurrentMainMainSeq = (int)MainSeq.Fish_Intro;
+                            });
+                        }
+                    }
+                }
+
+                break;
+
+            case MainSeq.Fish_Eat:
+                foreach (var hit in GameManager_Hits)
+                {
+                    RaycastHit hitCache = hit;
+                    int id = hitCache.transform.GetInstanceID();
+                    if (hitCache.transform.gameObject.name.Contains(nameof(Fish)))
+                    {
+                        _isClickableMapByTfID.TryAdd(id, true);
+                        if (_isClickableMapByTfID[id] == false) continue;
+                        _isClickableMapByTfID[id] = false;
+
+                        PlayParticleEffect(hit.point);
+                        _currentFishCount++;
+
+                        if (Random.Range(0, 100) > 50)
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Yum");
+
+                        Managers.Sound.PlayRandomEffect("Audio/Common/Click/Click", 'D');
+                        hitCache.transform.DOScale(Vector3.zero, Random.Range(0.3f, 0.4f)).SetEase(Ease.InElastic);
+
+                        if (_currentFishCount >= FISH_COUNT_TO_EAT)
+                        {
+                            _currentFishCount = 0;
+                            _isClickableForRound = false;
+                            CurrentMainMainSeq = (int)MainSeq.Fish_Finish;
+
+                            baseUIManager.PopInstructionUIFromScaleZero("와! 붕어빵을 다 먹었어요!",
+                                narrationPath: "EA035/YayAteAllFish");
+                            Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
+
+                            DOVirtual.DelayedCall(3f, () =>
+                            {
+                                CurrentMainMainSeq = (int)MainSeq.OnFinish;
+                            });
+                        }
+                    }
+                }
+
+                break;
+
         }
     }
-    
+
 
 
     private Sequence _flourKneadingSeq;
@@ -839,13 +980,18 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         //rb.AddForce(dir * Random.Range(1.0f, 4f), ForceMode.Impulse);
     }
 
+    private Sequence _flourSeq;
     private void OnBtnClickedOnFlour()
     {
         _currentFlourClickedCount++;
         GetObject((int)Objs.Flour).SetActive(true);
-        GetObject((int)Objs.Flour).transform.DOScale(_defaultSizeMap[(int)Objs.Flour] *
+        _flourSeq.Append(GetObject((int)Objs.Flour).transform.DOScale(_defaultSizeMap[(int)Objs.Flour] *
                 _currentFlourClickedCount /(float) CLICK_COUNT_ON_FLOUR, 0.7f)
-            .SetEase(Ease.OutExpo);
+            .SetEase(Ease.InOutBounce));
+        
+        _flourSeq.Join(GetObject((int)Objs.Flour).transform.DOShakeScale(0.15f, 0.1f, 5, 70)
+            .SetEase(Ease.InOutBack));
+        
         
         if (_currentFlourClickedCount >= CLICK_COUNT_ON_FLOUR)
         {

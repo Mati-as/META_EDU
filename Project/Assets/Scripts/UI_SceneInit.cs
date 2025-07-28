@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class UI_SceneInit : MonoBehaviour
 {
-    void Start()
+    private void Start()
     {
         //순서주의------------------------
         // -PreInit : 이전 UI 선택정보, UI Pool 초기화 

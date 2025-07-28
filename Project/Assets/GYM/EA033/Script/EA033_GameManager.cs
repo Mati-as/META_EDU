@@ -86,7 +86,8 @@ public class EA033_GameManager : Ex_BaseGameManager
 
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponent<EA033_UIManager>();
+        _uiManager = UIManagerObj.GetComponentInChildren<EA033_UIManager>();
+        Debug.Assert(_uiManager != null, "EA033_UIManager not found");
         PoolManager = FindObjectOfType<EA033_PoolManager>();
             
         _stage = MainSeq.OnStart;

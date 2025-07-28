@@ -17,13 +17,12 @@ public class Construction_UIManager : Base_UIManager
         Debug.Assert(manager != null, "GameManager not found");
 
     }
-    public override bool InitOnLoad()
-    {
-        base.InitOnLoad();
-        InitInstructionUI();
-        return true;
 
+    public override void ExplicitInitInGame()
+    {
+        base.ExplicitInitInGame();
     }
+
 
     private void OnDestroy()
     {

@@ -23,20 +23,17 @@ public class EA033_UIManager : Base_UIManager
    
    private TextMeshProUGUI _tmp;
    
-   public override void ExplicitInit()
-   {
-       //1.elements load
-       base.ExplicitInit();
 
+
+   public override void ExplicitInitInGame()
+   {
+       base.ExplicitInitInGame();
        //2. InGamePart UI Init()
        BindObject(typeof(UI));
        BindTMP(typeof(TMPs));
-       
        GetObject((int)UI.OnRoundUI).SetActive(false);
-
    }
-   
-   
+
    public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
    {
        GetObject((int)UI.OnRoundUI).transform.localScale = Vector3.zero;

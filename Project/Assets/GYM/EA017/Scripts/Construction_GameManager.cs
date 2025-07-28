@@ -146,7 +146,7 @@ public class Construction_GameManager : Base_GameManager
         {
             startVirtualCamera.Priority = 10;
             introVirtualCamera.Priority = 20;
-            Messenger.Default.Publish(new NarrationMessage("공사장에서 일하는 자동차들이 건물을 짓고있어요", "0_공사장에서_일하는_자동차들이_건물을_짓고있어요_"));
+            Messenger.Default.Publish(new NarrationMessage("일하는 자동차들이 건물을 짓고있어요", "0_공사장에서_일하는_자동차들이_건물을_짓고있어요_"));
         });
         introSeq.AppendInterval(6f);
         introSeq.AppendCallback(() =>

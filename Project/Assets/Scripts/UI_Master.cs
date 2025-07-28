@@ -47,8 +47,9 @@ public class UI_Master : UI_Scene
    
 
     
-    public override bool InitOnLoad()
+    public new void Awake()
     {
+       
         BindObject(typeof(UI));
 
         currentSeason = null;
@@ -102,7 +103,7 @@ public class UI_Master : UI_Scene
 
         RaySynchronizer.OnGetInputFromUser -= OnRaySynced;
         RaySynchronizer.OnGetInputFromUser += OnRaySynced;
-        return base.InitOnLoad();
+         base.InitOnLoad();
     }
 
 

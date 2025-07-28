@@ -39,12 +39,14 @@ public class EA016_UIManager : Base_UIManager
     }
 
 
-    public override void ExplicitInit()
+
+    public override void ExplicitInitInGame()
     {
-        base.ExplicitInit();
+        base.ExplicitInitInGame();
         Bind();
         GetObject((int)UI.BallImageAndCount).SetActive(false);
     }
+
 
     
  

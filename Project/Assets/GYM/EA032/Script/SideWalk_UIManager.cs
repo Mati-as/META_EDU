@@ -27,7 +27,7 @@ public class SideWalk_UIManager : Base_UIManager
         return true;
 
     }
-
+    
     private void OnDestroy()
     {
         Messenger.Default.Unsubscribe<NarrationMessage>(OnNarrationFromGm);

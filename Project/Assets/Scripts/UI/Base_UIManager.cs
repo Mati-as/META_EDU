@@ -58,6 +58,7 @@ public class Base_UIManager : UI_PopUp
     protected RectTransform UI_Stop;
 
     /// <summary>
+    /// [런처 UI 에서 호출]
     /// 1.로드시 자동 초기화 함수
     /// 2.UI_Setting, 등 UIMAnager 로드시 순서를 지정할 필요 없는 나머지 UI는 자동적으로 이벤트함수에서 Init되도록 구현했습니다.
     /// </summary>
@@ -68,20 +69,21 @@ public class Base_UIManager : UI_PopUp
     }
     
     /// <summary>
+    /// [런처가 아닌 반드시 게임매니저가 있는 씬에서만 호출]
     /// 1.순서보장형 ExplicitInit() 함수
     /// 2. GameManager에서 UIManager 호출, 프리팹 로드 후 초기화되어아 햐는 경우 아래 함수를 호출하여 순서보장형 초기화를 진행합니다. 
     /// </summary>
-    public override void ExplicitInit()
+    public override void ExplicitInitInGame()
     {
+      
         BindTMP(typeof(TMPs));
         BindObject(typeof(UI));
-        
         
         uiMediaArtInScene = GetObject((int)UI.UI_MediaArtInScene).GetComponent<UI_MediaArtInScene>();
         UI_Instruction = GetObject((int)UI.UI_Instruction);
         TMP_Instruction = GetTMP((int)TMPs.TMP_Instruction);
 
-        InitOptionalTools();
+       
         
         _bgRectTransform = UI_Instruction.GetComponent<RectTransform>();
         _originalHeight = _bgRectTransform.sizeDelta.y;
@@ -92,6 +94,7 @@ public class Base_UIManager : UI_PopUp
         Debug.Assert(TMP_Instruction != null, "TMP_Instruction is null");
         Debug.Assert(UI_Instruction != null, "UI_Instruction is null");
         
+        InitOptionalTools();
         
         _objects = new Dictionary<Type, Object[]>();
         

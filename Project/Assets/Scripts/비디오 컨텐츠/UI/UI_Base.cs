@@ -24,7 +24,7 @@ public abstract class UI_Base : MonoBehaviour
        InitOnLoad();
     }
 
-    public virtual void ExplicitInit()
+    public virtual void ExplicitInitInGame()
     {
         
     }

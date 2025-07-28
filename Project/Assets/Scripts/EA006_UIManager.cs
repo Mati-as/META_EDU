@@ -12,19 +12,16 @@ public class EA006_UIManager : Base_UIManager
         SparrowCount
     }
 
-    public override bool InitOnLoad()
+    public override void ExplicitInitInGame()
     {
-        base.InitOnLoad();
-        BindTMP(typeof(TMP));
-
+        base.ExplicitInitInGame();
         EA006_GameManager.SeqMessageEvent -= OnGetMessageEventFromGm;
         EA006_GameManager.SeqMessageEvent += OnGetMessageEventFromGm;
         
         EA006_GameManager.SparrowCountEvent -= SparrowCountEvent;
         EA006_GameManager.SparrowCountEvent += SparrowCountEvent;
-        //GetTMP((int)TMP.MessageBox).text = string.Empty;
-        return true;
     }
+    
 
 
     private void OnGetMessageEventFromGm(int message)
@@ -53,7 +50,7 @@ public class EA006_UIManager : Base_UIManager
             case (int)EA006_GameManager.MainSeq.FindScarecrow:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SortedByScene/EA006/ThereScareCrow");
                 
-                PopInstructionUIFromScaleZero( "숨어있는 허수아비 아저씨를 찾아 터치해주세요 ");
+                PopInstructionUIFromScaleZero( "숨은 허수아비 아저씨를 찾아 터치해주세요 ");
                 float dealyAmountB = Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length;
                 DOVirtual.DelayedCall(dealyAmountB, () =>
                 {
