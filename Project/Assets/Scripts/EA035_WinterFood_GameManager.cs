@@ -24,6 +24,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         Fish_Finish,
       
         OnFinish
+        
+        
     }
 
 
@@ -52,6 +54,8 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         Fishes,
         GeneratePosOnOven,
         GeneratePosOnMould,
+        
+        Fx_Flower,
  
         UnCookedFishA,
         UnCookedFishB,
@@ -184,7 +188,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             bun.rotation = Quaternion.Euler(0,Random.Range(0, 360), 0); // 랜덤 회전
                             // 균등 분산 각도
                             float angleInRad = Mathf.Deg2Rad * (i * goldenAngle);
-                            float radius = 0.65f + Random.Range(-0.5f, 0.00f); // 반지름에 약간의 변동
+                            float radius = 0.25f + Random.Range(-0.5f, 0.00f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
 
@@ -308,7 +312,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                             fish.rotation = Quaternion.Euler(Random.Range(85f,95f), Random.Range(0, 360), 0); // 랜덤 회전
                             // 균등 분산 각도
                             float angleInRad = Mathf.Deg2Rad * (i * goldenAngle);
-                            float radius = 0.75f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
+                            float radius = 0.25f + Random.Range(-0.4f, 0.10f); // 반지름에 약간의 변동
                             Vector3 offset = new Vector3(Mathf.Cos(angleInRad), 0, Mathf.Sin(angleInRad)) * radius;
 
                             int randomPos = Random.Range(0, bunGeneratePos.Length);
@@ -367,7 +371,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         psResourcePath = "Runtime/EA035/Fx_Click";
         base.Init();
         BindObject(typeof(Objs));
-        
+        _flourParticle = GetObject((int)Objs.Fx_Flower).GetComponent<ParticleSystem>();
         InitializeRedBeanPrefabs();
         InitializePool();
         
@@ -546,14 +550,9 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
     private Sequence _introClickSeqBun;
     private Sequence _introClickSeqFish;
 
-    public override void OnRaySynced()
+    private void ClickOnIntroAndOutro()
     {
-        base.OnRaySynced();
-
-        switch ((MainSeq)CurrentMainMainSeq)
-        {
-            case MainSeq.Intro:
-                if (!_clickableForIntro) return;
+                   if (!_clickableForIntro) return;
                 foreach (var hit in GameManager_Hits)
                 {
                     string name = hit.transform.gameObject.name;
@@ -602,6 +601,16 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                         });
                     }
                 }
+    }
+
+    public override void OnRaySynced()
+    {
+        base.OnRaySynced();
+
+        switch ((MainSeq)CurrentMainMainSeq)
+        {
+            case MainSeq.Intro:
+                ClickOnIntroAndOutro();
 
                 break;
 
@@ -720,6 +729,15 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     }
                 }
 
+                break;
+            
+            case MainSeq.OnFinish:
+                ClickOnIntroAndOutro();
+                DOVirtual.DelayedCall(2f, () =>
+                {
+                    _clickableForIntro = true;
+                });
+             
                 break;
 
         }
@@ -981,6 +999,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
     }
 
     private Sequence _flourSeq;
+    private ParticleSystem _flourParticle;
     private void OnBtnClickedOnFlour()
     {
         _currentFlourClickedCount++;
@@ -991,12 +1010,13 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
         
         _flourSeq.Join(GetObject((int)Objs.Flour).transform.DOShakeScale(0.15f, 0.1f, 5, 70)
             .SetEase(Ease.InOutBack));
-        
+        _flourParticle.Play();
         
         if (_currentFlourClickedCount >= CLICK_COUNT_ON_FLOUR)
         {
             _currentFlourClickedCount = 0;
             
+          
             
             GetObject((int)Objs.FlourBowl).transform.localScale = Vector3.zero;
          //   GetObject((int)Objs.FlourInBowl_Whole).SetActive(true);
