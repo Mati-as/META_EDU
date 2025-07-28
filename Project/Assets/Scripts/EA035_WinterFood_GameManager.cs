@@ -111,7 +111,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     //2.5f -> sound.length
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
-                        _buttonClickEventController.StartBtnClickSequential();
+                        _buttonClickEventController.StartBtnClickSequential(isBtnDisappearMode:true);
                         baseUIManager.PopInstructionUIFromScaleZero("그릇을 터치해서 밀가루를 담아주세요!");
                         Managers.Sound.Play(SoundManager.Sound.Narration,"EA035/TouchBowlForFlour");
                     });
@@ -535,7 +535,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                         baseUIManager.PopInstructionUIFromScaleZero("와! 호빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllBun");
                         CurrentMainMainSeq = (int)MainSeq.Bread_Finish;
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
-                        DOVirtual.DelayedCall(5f, () =>
+                        DOVirtual.DelayedCall(3f, () =>
                         {
                             CurrentMainMainSeq = (int)MainSeq.Fish_Intro;
                         });
@@ -573,7 +573,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                         CurrentMainMainSeq = (int)MainSeq.Fish_Finish;
                         baseUIManager.PopInstructionUIFromScaleZero("와! 붕어빵을 다 먹었어요!",narrationPath:"EA035/YayAteAllFish");
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA035/Success");
-                        DOVirtual.DelayedCall(5f, () =>
+                        DOVirtual.DelayedCall(3f, () =>
                         {
                             CurrentMainMainSeq = (int)MainSeq.OnFinish;
                         });
@@ -685,7 +685,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA035/BunReadBean");
                     
                     
-                    DOVirtual.DelayedCall(5.5f, () =>
+                    DOVirtual.DelayedCall(3.5f, () =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.Bread_Eat;
                     });
@@ -735,7 +735,7 @@ public class EA035_WinterFood_GameManager : Ex_BaseGameManager
                     
                     
                     
-                    DOVirtual.DelayedCall(5.5f, () =>
+                    DOVirtual.DelayedCall(3.5f, () =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.Fish_Eat;
                     });

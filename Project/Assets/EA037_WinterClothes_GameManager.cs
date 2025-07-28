@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 {
@@ -209,9 +210,13 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 
     #region 이미지 스프라이트 관리
 
+    private int _currentIndex = -1;
     private void SetAnswerClothes()
     {
+        int buttonCount = 7;
+        _currentIndex = UnityEngine.Random.Range(0,buttonCount);
         
+        _buttonClickEventController.ChangeBtnImage("",_currentIndex);
     }
 
     private void OnAnswer()
