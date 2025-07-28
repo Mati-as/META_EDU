@@ -18,14 +18,6 @@ private EA015_GameManager _gm;
         
     }
 
-    public override bool InitOnLoad()
-    {
-        base.InitOnLoad();
-        InitInstructionUI();
-        return true;
-
-    }
-
     private void OnDestroy()
     {
         // 구독 해제

@@ -35,14 +35,14 @@ public class EA019_UIManager : Base_UIManager
    public static event Action onNextButtonClicked;
    private bool _isInvokable = true;
    private TextMeshProUGUI _tmp;
-   
-   public override bool InitOnLoad()
+
+   public override void ExplicitInitInGame()
    {
-       base.InitOnLoad();
+       base.ExplicitInitInGame();
        
        BindButton(typeof(Btns));
        BindObject(typeof(UI));
-         BindTMP(typeof(TMPs));
+        BindTMP(typeof(TMPs));
        
        GetButton((int)Btns.Btn_Next).image.DOFade(0, 0.00001f);
        _tmp = GetButton((int)Btns.Btn_Next).GetComponentInChildren<TextMeshProUGUI>();
@@ -63,8 +63,8 @@ public class EA019_UIManager : Base_UIManager
 
        _defaultColor = TMP_Instruction.colorGradient;
        GetButton((int)Btns.Btn_Next).gameObject.GetComponent<CursorImageController>().DefaultScale = Vector3.one;
-       
-       return true;
+
+       return;
    }
 
 

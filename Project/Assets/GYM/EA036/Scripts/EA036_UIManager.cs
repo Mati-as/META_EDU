@@ -27,9 +27,9 @@ public class EA036_UIManager : Base_UIManager
    //private bool _isInvokable = true;
    //private TextMeshProUGUI _tmp;
 
-   public override bool InitOnLoad()
+   public override void ExplicitInitInGame()
    {
-       base.InitOnLoad();
+       base.ExplicitInitInGame();
 
        BindObject(typeof(UI));
        
@@ -39,9 +39,10 @@ public class EA036_UIManager : Base_UIManager
        GetObject((int)UI.EndStageUI_Chair).SetActive(false);
 
        Logger.CoreClassLog("EA036_UIManager Init ---------------");
-       return true;
+       return;
    }
 
+ 
  
 
    public void ActivateUIEndStage(int num)
