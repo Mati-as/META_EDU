@@ -21,9 +21,9 @@ public class EA038_UIManager : Base_UIManager
 
     private EA038_GameManager gameManager;
     
-    public override void ExplicitInit()
+    public override void ExplicitInitInGame()
     {
-        base.ExplicitInit();
+        base.ExplicitInitInGame();
 
         gameManager = FindAnyObjectByType<EA038_GameManager>();
         
