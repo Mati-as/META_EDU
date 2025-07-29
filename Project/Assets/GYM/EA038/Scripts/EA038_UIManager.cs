@@ -49,34 +49,60 @@ public class EA038_UIManager : Base_UIManager
     public void OnSelectAge3()
     {
         gameManager.gamePlayAge = 3;
-        foreach (Transform child in GetObject((int)UI.EA038).transform)
+        var Btn3 = GetObject((int)UI.EA038).transform.GetChild(0).transform;
+        Btn3.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() => Btn3.DOShakePosition(0.2f, 40f));
+        Btn3.DOScale(Vector3.one * 2f, 1f);
+
+        DOVirtual.DelayedCall(2f, () =>
         {
-            child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
-                .OnComplete(() => child.gameObject.SetActive(false));
-        }
-        DOVirtual.DelayedCall(1f, () => gameManager.ChangeStage(MainSeq.CardGameStageSequence));
+            foreach (Transform child in GetObject((int)UI.EA038).transform)
+            {
+                child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
+                    .OnComplete(() => child.gameObject.SetActive(false));
+            }
+        });
+        
+        DOVirtual.DelayedCall(4f, () => gameManager.ChangeStage(EA038_MainSeq.CardGameStageSequence));
     }
  
     public void OnSelectAge4()
     {
         gameManager.gamePlayAge = 4;
-        foreach (Transform child in GetObject((int)UI.EA038).transform)
+        
+        var Btn4 = GetObject((int)UI.EA038).transform.GetChild(1).transform;
+        Btn4.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() => Btn4.DOShakePosition(0.2f, 40f));
+        Btn4.DOScale(Vector3.one * 2f, 1f);
+
+        DOVirtual.DelayedCall(2f, () =>
         {
-            child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
-                .OnComplete(() => child.gameObject.SetActive(false));
-        }
-        DOVirtual.DelayedCall(1f, () => gameManager.ChangeStage(MainSeq.CardGameStageSequence));
+            foreach (Transform child in GetObject((int)UI.EA038).transform)
+            {
+                child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
+                    .OnComplete(() => child.gameObject.SetActive(false));
+            }
+        });
+            
+        DOVirtual.DelayedCall(4f, () => gameManager.ChangeStage(EA038_MainSeq.CardGameStageSequence));
     }
     
     public void OnSelectAge5()
     {
         gameManager.gamePlayAge = 5;
-        foreach (Transform child in GetObject((int)UI.EA038).transform)
+        
+        var Btn5 = GetObject((int)UI.EA038).transform.GetChild(2).transform;
+        Btn5.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() => Btn5.DOShakePosition(0.2f, 40f));
+        Btn5.DOScale(Vector3.one * 2f, 1f);
+
+        DOVirtual.DelayedCall(2f, () =>
         {
-            child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
-                .OnComplete(() => child.gameObject.SetActive(false));
-        }
-        DOVirtual.DelayedCall(1f, () => gameManager.ChangeStage(MainSeq.CardGameStageSequence));
+            foreach (Transform child in GetObject((int)UI.EA038).transform)
+            {
+                child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
+                    .OnComplete(() => child.gameObject.SetActive(false));
+            }
+        });
+        
+        DOVirtual.DelayedCall(4f, () => gameManager.ChangeStage(EA038_MainSeq.CardGameStageSequence));
     }
     
     

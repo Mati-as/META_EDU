@@ -7,17 +7,17 @@ public class EA038_Card : MonoBehaviour
 {
     public int cardValue;
     public bool canClicked = true;
-    
+
     private Sequence _shakeSeq;
-    
-    private TextMeshPro cardValueText;
+
+    private TextMeshPro valueText;
 
     private void Start()
     {
-        cardValueText = GetComponentInChildren<TextMeshPro>();
+        valueText = GetComponentInChildren<TextMeshPro>();
         transform.localScale = Vector3.zero;
     }
-
+    
     public void SetValue(int newValue)
     {
         cardValue = newValue;
@@ -28,11 +28,11 @@ public class EA038_Card : MonoBehaviour
         _shakeSeq?.Kill();
 
         _shakeSeq = DOTween.Sequence()
-            .SetLink(gameObject)  // 이 게임 오브젝트와 연결
+            .SetLink(gameObject) // 이 게임 오브젝트와 연결
             .SetDelay(Random.Range(0f, 0.5f))
             .Append(transform.DOShakeRotation(
                 duration: 0.5f,
-                strength: new Vector3(10f, 0, 10f),
+                strength: new Vector3(20f, 0, 20f),
                 vibrato: 10,
                 randomness: 90f
             ))
@@ -49,9 +49,9 @@ public class EA038_Card : MonoBehaviour
         }
     }
 
-    public void ChangeCardValueTMP(int newValue)
+    public void ChangeValueTMP(int newValue)
     {
-        cardValueText.text = newValue.ToString();
+        valueText.text = newValue.ToString();
     }
-    
+
 }
