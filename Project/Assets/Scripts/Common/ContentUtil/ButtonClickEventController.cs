@@ -32,9 +32,18 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     private readonly Dictionary<int, Image> _buttonImageMap = new();
     private readonly Dictionary<int, SpriteRenderer> _buttonBgImageMap = new();
     private bool _btnDisappearModeInSequentialMode; // 순서대로 버튼 클릭하는 경우, 클릭 후 버튼이 사라지는지 여부
+    private bool _isClickable = true;
 
-
-    private bool isClickable = true;
+    private float _clickableDelay=0.5f;
+    public float ClickableDelay
+    {
+        get => _clickableDelay;
+        set
+        {
+            var processedVal = Mathf.Clamp(value, 0.1f, 5f);
+            _clickableDelay = processedVal;
+        }
+    }
 
     public event Action<int> OnButtonClicked;
     public event Action OnAllBtnClicked;
@@ -44,6 +53,16 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         base.Init();
         BindObject(typeof(Objs));
 
+        _defaultSizeMap = new Dictionary<int, Vector3>
+        {
+            {(int)Objs.ButtonA, GetObject((int)Objs.ButtonA).transform.localScale},
+            {(int)Objs.ButtonB, GetObject((int)Objs.ButtonB).transform.localScale},
+            {(int)Objs.ButtonC, GetObject((int)Objs.ButtonC).transform.localScale},
+            {(int)Objs.ButtonD, GetObject((int)Objs.ButtonD).transform.localScale},
+            {(int)Objs.ButtonE, GetObject((int)Objs.ButtonE).transform.localScale},
+            {(int)Objs.ButtonF, GetObject((int)Objs.ButtonF).transform.localScale},
+            {(int)Objs.ButtonG, GetObject((int)Objs.ButtonG).transform.localScale}
+        };
         for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
         {
             GetObject(i).transform.localScale = Vector3.zero;
@@ -53,47 +72,65 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         }
     }
 
+    private Sequence _clickableSeq;
+
+    private void SetClickable()
+    {
+        _isClickable = false;
+        
+        _clickableSeq?.Kill();
+        _clickableSeq = DOTween.Sequence();
+        _clickableSeq.AppendInterval(ClickableDelay)
+            .OnComplete(() => _isClickable = true);
+    }
     protected override void OnRaySyncedByGameManager()
     {
-        foreach (var hit in GameManager.GameManager_Hits)
+        if (_isClickable)
         {
-//            Logger.Log($"ButtonClickEventController : OnRaySyncedByGameManager hit {hit.transform.name}");
-            int id = hit.transform.GetInstanceID();
-            if (!_tfIdToEnumMap.ContainsKey(id)) continue;
-
-
-            int clickedEnum = _tfIdToEnumMap[id];
-
-
-            if (!isClickable) return;
-            char randomChar = (char)Random.Range('A', 'D' + 1);
-            Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Click/Click" + randomChar);
-
-
-            if (_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
+           
+            SetClickable();
+            
+            foreach (var hit in GameManager.GameManager_Hits)
             {
-                OnButtonClicked?.Invoke(clickedEnum);
-                _currentOrder++;
-                OnButtonClickedOnSequentialMode(clickedEnum);
-            }
-            else if (_currentClickMode == ButtonClickMode.AnyOrder)
-            {
-                OnButtonClicked?.Invoke(clickedEnum);
-                OnButtonClickedOnAnyOrderMode(clickedEnum);
-            }
+                int id = hit.transform.GetInstanceID();
+                if (!_tfIdToEnumMap.ContainsKey(id)) continue;
 
-            else if (_currentClickMode == ButtonClickMode.OneClickMode)
-            {
-                OnButtonClicked?.Invoke(clickedEnum);
-                OnBtnClickedOnOneTimeClickMode(clickedEnum);
+
+                int clickedEnum = _tfIdToEnumMap[id];
+
+
+                
+                char randomChar = (char)Random.Range('A', 'D' + 1);
+                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Click/Click" + randomChar);
+
+
+                if (_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
+                {
+                    OnButtonClicked?.Invoke(clickedEnum);
+                    _currentOrder++;
+                    OnButtonClickedOnSequentialMode(clickedEnum);
+                }
+                else if (_currentClickMode == ButtonClickMode.AnyOrder)
+                {
+                    OnButtonClicked?.Invoke(clickedEnum);
+                    OnButtonClickedOnAnyOrderMode(clickedEnum);
+                }
+
+                else if (_currentClickMode == ButtonClickMode.OneClickMode)
+                {
+                    OnButtonClicked?.Invoke(clickedEnum);
+                    OnBtnClickedOnOneTimeClickMode(clickedEnum);
+                }
             }
         }
+      
+
+       
     }
 
     public void StartBtnClickSequential(bool isBtnDisappearMode = false)
     {
-        transform.localScale = Vector3.one;
-        isClickable = true;
+        CommoninitOnStart();
 
         _btnDisappearModeInSequentialMode = isBtnDisappearMode;
         _currentClickMode = ButtonClickMode.Sequential;
@@ -102,11 +139,16 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
     public void StartBtnClickAnyOrder()
     {
-        transform.localScale = Vector3.one;
-        isClickable = true;
-
+        CommoninitOnStart();
         _currentClickMode = ButtonClickMode.AnyOrder;
         AnimateButtonsAll();
+    }
+
+    private void CommoninitOnStart()
+    {
+        transform.localScale = Vector3.one;
+        _isClickable = true;
+
     }
 
 
@@ -146,7 +188,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         {
             _currentOrder = 0; // Reset for next round
             OnAllBtnClicked?.Invoke();
-            isClickable = false;
+            _isClickable = false;
         }
     }
 
@@ -177,7 +219,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         {
             _currentOrder = 0; // Reset for next round
             OnAllBtnClicked?.Invoke();
-            isClickable = false;
+            _isClickable = false;
         }
     }
 
@@ -185,7 +227,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
     public void DeactivateAllButtons()
     {
-        isClickable = false;
+        _isClickable = false;
 
         Logger.Log("DeactivateAllButtons called");
 
@@ -211,21 +253,29 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
     private void AnimateButtonLoop(Objs button)
     {
+        Logger.ContentTestLog($"button default size :  {_defaultSizeMap[(int)button]}");
         var buttonTransform = GetObject((int)button).transform;
 
-        _sequencePerEnumMap[(int)button]?.Kill();
-        _sequencePerEnumMap[(int)button] = DOTween.Sequence();
-        _sequencePerEnumMap[(int)button]
-            .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 1.1f, 0.25f))
-            .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 0.9f, 0.35f))
-            .SetLoops(100, LoopType.Yoyo)
-            .OnKill(() =>
-            {
-                if (_currentClickMode == ButtonClickMode.AnyOrder)
-                    buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.15f);
-            });
+        buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.55f).SetEase(Ease.OutBounce);
 
-        _sequencePerEnumMap[(int)button].Play();
+        DOVirtual.DelayedCall(0.75f, () =>
+        {
+            _sequencePerEnumMap[(int)button]?.Kill();
+            _sequencePerEnumMap[(int)button] = DOTween.Sequence();
+            _sequencePerEnumMap[(int)button]
+                .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 1.1f, 0.25f))
+                .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 0.9f, 0.35f))
+                .SetLoops(100, LoopType.Yoyo)
+                .OnKill(() =>
+                {
+                    if (_currentClickMode == ButtonClickMode.AnyOrder)
+                        buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.15f);
+                });
+
+            _sequencePerEnumMap[(int)button].Play();
+        });
+
+
     }
 
     public void ChangeBtnImage(string imagePath)
@@ -274,9 +324,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
     public void StartBtnOnTimeClickMode()
     {
-        transform.localScale = Vector3.one;
-        isClickable = true;
-
+        CommoninitOnStart();
 
         _currentClickMode = ButtonClickMode.OneClickMode;
         AnimateButtonsAll();

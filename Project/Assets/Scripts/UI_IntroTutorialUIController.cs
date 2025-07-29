@@ -82,7 +82,7 @@ public class UI_IntroTutorialUIController : UI_PopUp
 
             if (uwr.result != UnityWebRequest.Result.Success)
             {
-                GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().sprite = null;
+                GetObject((int)Intro_UI.TutorialImageA).GetComponent<Image>().enabled = false;
                 Logger.CoreClassLog("tutorial 이미지 없음 ---------확인필요");
             }
             else
