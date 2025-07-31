@@ -56,7 +56,7 @@ public class EA038_UIManager : Base_UIManager
                 Btn3.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_17_3살");
-                    PopAndChangeUI("3살!", 4f);
+                    PopInstructionUIFromScaleZero("3살!", 4f);
                     
                     Btn3.DOShakePosition(0.2f, 40f);
                 });
@@ -75,14 +75,14 @@ public class EA038_UIManager : Base_UIManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_3_형님이_되어_3살이_되었어요_");
-                PopAndChangeUI("형님이 되어 3살이 되었어요!", 3f);
+                PopInstructionUIFromScaleZero("형님이 되어 3살이 되었어요!", 3f);
                 
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_6_이제부터_나이와_관련된_놀이를_시작할거에요_");
-                PopAndChangeUI("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
+                PopInstructionUIFromScaleZero("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
                 
             })
             .AppendInterval(5f)
@@ -104,7 +104,7 @@ public class EA038_UIManager : Base_UIManager
                 Btn3.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_18_4살");
-                    PopAndChangeUI("4살!", 4f);
+                    PopInstructionUIFromScaleZero("4살!", 4f);
                     
                     Btn3.DOShakePosition(0.2f, 40f);
                 });
@@ -123,14 +123,14 @@ public class EA038_UIManager : Base_UIManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_4_형님이_되어_4살이_되었어요_");
-                PopAndChangeUI("형님이 되어 4살이 되었어요!", 3f);
+                PopInstructionUIFromScaleZero("형님이 되어 4살이 되었어요!", 3f);
                 
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_6_이제부터_나이와_관련된_놀이를_시작할거에요_");
-                PopAndChangeUI("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
+                PopInstructionUIFromScaleZero("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
                 
             })
             .AppendInterval(5f)
@@ -151,7 +151,7 @@ public class EA038_UIManager : Base_UIManager
                 Btn3.DOLocalMove(Vector2.zero, 1f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_19_5살");
-                    PopAndChangeUI("5살!", 4f);
+                    PopInstructionUIFromScaleZero("5살!", 4f);
                     
                     Btn3.DOShakePosition(0.2f, 40f);
                 });
@@ -170,14 +170,14 @@ public class EA038_UIManager : Base_UIManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_5_형님이_되어_5살이_되었어요_");
-                PopAndChangeUI("형님이 되어 5살이 되었어요!", 3f);
+                PopInstructionUIFromScaleZero("형님이 되어 5살이 되었어요!", 3f);
                 
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_6_이제부터_나이와_관련된_놀이를_시작할거에요_");
-                PopAndChangeUI("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
+                PopInstructionUIFromScaleZero("이제부터 나이와 관련된 놀이를\n시작할거에요!", 4f);
                 
             })
             .AppendInterval(5f)
