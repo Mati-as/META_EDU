@@ -28,9 +28,8 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         ButtonController,
         Fx_OnAnswer,
         AvatarControllerOnFinish,
-        OutroClothes
-        
-        ,CenterPos
+        OutroClothes,
+        CenterPos
     }
 
     private enum Clothes
@@ -43,14 +42,14 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         Default_Upper,
         Pants_Default
     }
-    
+
     private enum OutroClothesOrder
     {
         Top,
         Pants,
         Outwear,
         Gloves,
-        Hat,
+        Hat
     }
 
 
@@ -72,12 +71,13 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 
     protected override void Init()
     {
+        SHADOW_MAX_DISTANCE = 30;
         base.Init();
         BindObject(typeof(Objs));
 
         _buttonClickEventController = GetObject((int)Objs.ButtonController).GetComponent<ButtonClickEventController>();
         _buttonClickEventController.ClickableDelay = 1f;
-        
+
         _avatarAnimationController = GetObject((int)Objs.Avatars).GetComponent<AvatarAnimationController>();
         _avatarControllerOnFinish =
             GetObject((int)Objs.AvatarControllerOnFinish).GetComponent<AvatarAnimationController>();
@@ -95,16 +95,13 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 
         InitClothesOnAvatar();
         _fxOnAnswer = GetObject((int)Objs.Fx_OnAnswer).GetComponent<ParticleSystem>();
-       
+
         GetObject((int)Objs.OutroClothes).SetActive(false);
         _outroClothes = new Transform[GetObject((int)Objs.OutroClothes).transform.childCount];
-        
-        for(int i= 0; i < GetObject((int)Objs.OutroClothes).transform.childCount; i++)
-        {
+
+        for (int i = 0; i < GetObject((int)Objs.OutroClothes).transform.childCount; i++)
             _outroClothes[i] = GetObject((int)Objs.OutroClothes).transform.GetChild(i);
-            
-        }
-        
+
         _buttonClickEventController.OnButtonClicked -= OnBtnClicked;
         _buttonClickEventController.OnButtonClicked += OnBtnClicked;
     }
@@ -136,6 +133,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.Main_Into:
 
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA037/OnStartBtn");
+                    baseUIManager.PopInstructionUIFromScaleZero("따뜻하게 입어요");
                     DOVirtual.DelayedCall(8f, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA037/TooCold");
@@ -173,26 +171,22 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Main_Outro:
-                    foreach (var clothe in _outroClothes)
-                    {
-                        clothe.localScale = Vector3.zero;
-                    }
+                    foreach (var clothe in _outroClothes) clothe.localScale = Vector3.zero;
                     GetObject((int)Objs.OutroClothes).SetActive(true);
-                    
-                    Sequence OutroSeq = DOTween.Sequence();
+
+                    var OutroSeq = DOTween.Sequence();
                     OutroSeq.AppendCallback(() =>
                     {
                         baseUIManager.PopInstructionUIFromScaleZero("친구들! 입은옷을 다시 살펴볼까요?",
                             narrationPath: "EA037/Nar/LookClothesAgain");
-
                     });
                     OutroSeq.AppendInterval(4f);
                     int currentIndex = 0;
                     foreach (var clothe in _outroClothes)
                     {
                         int indexCache = currentIndex;
-                        Vector3 originalPos = clothe.position;
-                        OutroSeq.Append(clothe.DOScale(Vector3.one*1.25f, 0.3f).SetEase(Ease.OutBounce));
+                        var originalPos = clothe.position;
+                        OutroSeq.Append(clothe.DOScale(Vector3.one * 1.25f, 0.3f).SetEase(Ease.OutBounce));
                         OutroSeq.AppendInterval(0.2f);
                         OutroSeq.AppendCallback(() =>
                         {
@@ -224,7 +218,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                         var targetPos = GetObject((int)Objs.CenterPos).transform.position;
                         OutroSeq.Join(clothe.DOJump(targetPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
                             .SetEase(Ease.OutQuad));
-                        OutroSeq.Join(clothe.DOShakeScale(0.5f, 0.2f, 10, 90)
+                        OutroSeq.Join(clothe.DOShakeScale(0.5f, 0.2f)
                             .SetEase(Ease.OutQuad));
                         OutroSeq.AppendInterval(3f);
                         OutroSeq.Append(clothe.DOJump(originalPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
@@ -232,23 +226,25 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                         OutroSeq.AppendInterval(2f);
                         currentIndex++;
                     }
-                    
+
                     OutroSeq.AppendInterval(2f);
                     OutroSeq.AppendCallback(() =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.OnFinish;
                     });
-                   
+
                     break;
-                
+
                 case (int)MainSeq.OnFinish:
-                   
+
                     TriggerFinish();
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA037/OnFinish");
                     GetObject((int)Objs.AvatarControllerOnFinish).SetActive(true);
                     _avatarControllerOnFinish.PlayAnimation(0, AvatarAnimationController.AnimClip.SitAndPoint);
                     _avatarControllerOnFinish.PlayAnimation(1, AvatarAnimationController.AnimClip.Wave);
                     baseUIManager.PopInstructionUIFromScaleZero("겨울은 따뜻하게 옷을입어요!");
+
+                    RestartScene();
                     break;
             }
         }
@@ -323,15 +319,15 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                 baseUIManager.PopInstructionUIFromScaleZero("장갑을 터치해주세요!");
                 break;
             case (int)MainSeq.Main_Outro:
-                
-               // CurrentMainMainSeq = (int)MainSeq.OnFinish;
+
+                // CurrentMainMainSeq = (int)MainSeq.OnFinish;
                 break;
             case (int)MainSeq.OnFinish:
                 baseUIManager.PopInstructionUIFromScaleZero("겨울은 따뜻하게 옷을입어요!");
                 break;
         }
     }
-    
+
 
     #region 아바타 옷입히기 관리
 
@@ -358,7 +354,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
     private void OnBtnClicked(int index)
     {
         if (index == _currentAnswerIndex)
-            OnAnswerClick();
+            OnAnswerClick(true);
         else
             OnWrongAnswerClick();
     }
@@ -438,7 +434,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
             {
                 // 타이머 종료 시 처리
                 baseUIManager.PopInstructionUIFromScaleZero("시간 종료!");
-                OnAnswerClick();
+                OnAnswerClick(false);
             });
 
 
@@ -491,58 +487,63 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 
     private bool isAnswerAlreadyClicked;
 
-    private void OnAnswerClick()
+    private void OnAnswerClick(bool isCorrect)
     {
         if (isAnswerAlreadyClicked) return;
         isAnswerAlreadyClicked = true;
-        _fxOnAnswer.Play();
+
 
         Managers.Sound.Play(SoundManager.Sound.Effect, "Common/Effect/OnSuccess");
         _answerTimerSeq?.Kill();
         _answerTimerSeq = DOTween.Sequence();
 
-
-        switch (CurrentMainMainSeq)
+        if (isCorrect)
         {
-            case (int)MainSeq.Top:
-                baseUIManager.PopInstructionUIFromScaleZero("긴팔 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnTop");
+            _fxOnAnswer.Play();
 
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Top].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Top].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Default_Upper].SetActive(false);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Default_Upper].SetActive(false);
+            switch (CurrentMainMainSeq)
+            {
+                case (int)MainSeq.Top:
+                    baseUIManager.PopInstructionUIFromScaleZero("긴팔 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnTop");
 
-                break;
-            case (int)MainSeq.Botton:
-                baseUIManager.PopInstructionUIFromScaleZero("긴바지를 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnPants");
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Top].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Top].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Default_Upper].SetActive(false);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Default_Upper].SetActive(false);
 
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Pants].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Pants].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Pants_Default].SetActive(false);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Pants_Default].SetActive(false);
+                    break;
+                case (int)MainSeq.Botton:
+                    baseUIManager.PopInstructionUIFromScaleZero("긴바지를 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnPants");
 
-                break;
-            case (int)MainSeq.Outwear:
-                baseUIManager.PopInstructionUIFromScaleZero("외투를 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnOuter");
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Outwear].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Outwear].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Top].SetActive(false);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Top].SetActive(false);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Pants].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Pants].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Pants_Default].SetActive(false);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Pants_Default].SetActive(false);
 
-                break;
-            case (int)MainSeq.Gloves:
-                baseUIManager.PopInstructionUIFromScaleZero("장갑을 끼우니 손이 시렵지 않아요!", narrationPath: "EA037/Nar/OnGlove");
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Gloves].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Gloves].SetActive(true);
+                    break;
+                case (int)MainSeq.Outwear:
+                    baseUIManager.PopInstructionUIFromScaleZero("외투를 입으니 따뜻해요!", narrationPath: "EA037/Nar/OnOuter");
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Outwear].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Outwear].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Top].SetActive(false);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Top].SetActive(false);
 
-                break;
+                    break;
+                case (int)MainSeq.Gloves:
+                    baseUIManager.PopInstructionUIFromScaleZero("장갑을 끼우니 손이 시렵지 않아요!",
+                        narrationPath: "EA037/Nar/OnGlove");
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Gloves].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Gloves].SetActive(true);
 
-            case (int)MainSeq.Hat:
-                baseUIManager.PopInstructionUIFromScaleZero("모자를 쓰니 더 따뜻해요!", narrationPath: "EA037/Nar/OnHat");
-                _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Hat].SetActive(true);
-                _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Hat].SetActive(true);
+                    break;
 
-                break;
+                case (int)MainSeq.Hat:
+                    baseUIManager.PopInstructionUIFromScaleZero("모자를 쓰니 더 따뜻해요!", narrationPath: "EA037/Nar/OnHat");
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Girl][(int)Clothes.Hat].SetActive(true);
+                    _clothesOnAvatarMap[(int)Objs.Avatar_Boy][(int)Clothes.Hat].SetActive(true);
+
+                    break;
+            }
         }
 
 
