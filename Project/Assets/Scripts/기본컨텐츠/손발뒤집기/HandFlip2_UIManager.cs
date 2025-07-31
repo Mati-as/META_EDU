@@ -42,7 +42,7 @@ public class HandFlip2_UIManager : UI_PopUp
 
     private float  _intervalBtwStartAndReady =1f;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
         _gm = GameObject.Find("GameManager").GetComponent<HandFlip2BaseGameManager>();

@@ -190,7 +190,7 @@ public class MetaEduLauncher : UI_PopUp
             (() =>
             {
                 if(_devUIManager ==null) _devUIManager = GameObject.FindWithTag("LidarMenu").GetComponent<DevelopmentUIManager>();
-                _devUIManager.DisableAllImages();
+                _devUIManager.ToggleAllImages();
             });
         
 
@@ -363,7 +363,7 @@ public class MetaEduLauncher : UI_PopUp
             })
             .OnComplete(() =>
             {
-                Managers.isGameStopped = false;
+                Managers.IsGameStopped = false;
             });
     }
 
@@ -378,7 +378,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private void OnLoadFinished()
     {
-        InitEssentialUI();
+        InitOnLoad();
         SetUIEssentials();
 
         // 널방지를 위한 딜레이 입니다.
@@ -392,7 +392,7 @@ public class MetaEduLauncher : UI_PopUp
 
     private UIType currentUITab = UIType.Home;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         return true;
     }

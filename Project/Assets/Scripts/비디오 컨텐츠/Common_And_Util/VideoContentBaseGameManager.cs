@@ -58,7 +58,13 @@ public class VideoContentBaseGameManager : Base_GameManager
         }
     }
     
-
+    protected override void OnGameStartButtonClicked()
+    {
+        base.OnGameStartButtonClicked();
+        //initialMessage= "밤하늘을 터치하면 반딧불이가 나타나요!";
+      //  baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+        Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
+    }
     protected override void Init()
     {
         base.Init();
@@ -81,7 +87,7 @@ public class VideoContentBaseGameManager : Base_GameManager
 
         var mp4Path =
             Path.Combine(Application.streamingAssetsPath,
-                $"{SceneManager.GetActiveScene().name}.mp4");
+                $"MediaArt/{SceneManager.GetActiveScene().name}.mp4");
 
         if (File.Exists(mp4Path))
         {
@@ -92,7 +98,7 @@ public class VideoContentBaseGameManager : Base_GameManager
             // MP4 파일이 없으면 MOV 파일 재생
             var movPath =
                 Path.Combine(Application.streamingAssetsPath,
-                    $"{SceneManager.GetActiveScene().name}.mov");
+                    $"MediaArt/{SceneManager.GetActiveScene().name}.mov");
             videoPlayer.url = movPath;
         }
 

@@ -1,13 +1,10 @@
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 using Random = UnityEngine.Random;
-
-public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
+ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 {
     private enum Obj
     {
@@ -41,10 +38,22 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
     private Dictionary<int, Vector3> _defaultPosMap = new();
     private Vector3 strenth = new Vector3(8f, 8f, 8f);
     private bool _isClickableOnFinish = false;
+
+    private bool _isDefalutRotationRefreshed;
     
     private void OnRaySyncedOnFinish()
     {
-        if (!_isClickableOnFinish) return; 
+        if (!_isClickableOnFinish) return;
+
+        if (!_isDefalutRotationRefreshed)
+        {
+            _isDefalutRotationRefreshed = true;
+            
+            _defaultRotationQuatMap[(int)Obj.Car_FireTruck] = GetObject((int)Obj.Car_FireTruck).transform.rotation;
+            _defaultRotationQuatMap[(int)Obj.Car_PoliceCar] = GetObject((int)Obj.Car_PoliceCar).transform.rotation;
+            _defaultRotationQuatMap[(int)Obj.Car_Ambulance] = GetObject((int)Obj.Car_Ambulance).transform.rotation;
+            
+        }
         
         foreach (var hit in GameManager_Hits)
         {
@@ -54,12 +63,12 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
             {
                 if (obj == (int)Obj.CarName_Police)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_Police, true);
-                    if (!_isClickableMap[(int)Obj.CarName_Police]) return;
-                    _isClickableMap[(int)Obj.CarName_Police] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_Police, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_Police]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_Police] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_Police] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_Police] = true;
                     });
                     
                     
@@ -92,12 +101,12 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                 }
                 if (obj == (int)Obj.CarName_FireTruck)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_FireTruck, true);
-                    if (!_isClickableMap[(int)Obj.CarName_FireTruck]) return;
-                    _isClickableMap[(int)Obj.CarName_FireTruck] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_FireTruck, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_FireTruck]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_FireTruck] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_FireTruck] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_FireTruck] = true;
                     });
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Name_FireTruck");
@@ -126,12 +135,12 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                 }
                 if (obj == (int)Obj.CarName_Ambulance)
                 {
-                    _isClickableMap.TryAdd((int)Obj.CarName_Ambulance, true);
-                    if (!_isClickableMap[(int)Obj.CarName_Ambulance]) return;
-                    _isClickableMap[(int)Obj.CarName_Ambulance] = false;
+                    _isClickableMapByTfID.TryAdd((int)Obj.CarName_Ambulance, true);
+                    if (!_isClickableMapByTfID[(int)Obj.CarName_Ambulance]) return;
+                    _isClickableMapByTfID[(int)Obj.CarName_Ambulance] = false;
                     DOVirtual.DelayedCall(0.7f, () =>
                     {
-                        _isClickableMap[(int)Obj.CarName_Ambulance] = true;
+                        _isClickableMapByTfID[(int)Obj.CarName_Ambulance] = true;
                     });
                     
                     
@@ -192,7 +201,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         GetObject((int)Obj.Car_FireTruck).GetComponent<Collider>().enabled =true;
         GetObject((int)Obj.Car_Ambulance).GetComponent<Collider>().enabled =true;
 
-        DOVirtual.DelayedCall(6, () =>
+        DOVirtual.DelayedCall(5, () =>
         {
             _isClickableOnFinish = true;
             mainAnimator.enabled = false;
@@ -248,11 +257,11 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
     {
         get
         {
-            return CurrentMainMainSequence;
+            return currentMainMainSequence;
         }
         set
         {
-            CurrentMainMainSequence = value;
+            currentMainMainSequence = value;
 
             //  Messenger.Default.Publish(new EA012Payload(_currentMainSequence.ToString()));
             Logger.ContentTestLog($"Current Sequence: {CurrentMainMainSeq.ToString()}");
@@ -285,7 +294,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
                     
-                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 구급차를 완성시켜요!");
+                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 구급차를 완성시켜요!");
                    
                     DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 1,
                         () =>
@@ -294,13 +303,15 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         });
 ;                    break;
                 case (int)MainSeq.Ambulance_Outro:
-                    _uiManager.PopFromZeroInstructionUI("구급차 완성! 출동!");
+                    _uiManager.PopInstructionUIFromScaleZero("구급차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
           
                     
                     OnOutro((int)Obj.Sprites_Ambulance);
+                    
+                    
                     break;
                 
                 
@@ -316,11 +327,11 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                         {
                             Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/PutTogether_PoliceCar");   
                         });
-                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 경찰차를 완성시켜요!");
+                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 경찰차를 완성시켜요!");
                     break;
                 case (int)MainSeq.PoliceCar_Outro:
                     
-                    _uiManager.PopFromZeroInstructionUI("경찰차 완성! 출동!");
+                    _uiManager.PopInstructionUIFromScaleZero("경찰차 완성! 출동!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_PoliceCar");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_PoliceCar");
                     OnOutro((int)Obj.Sprites_PoliceCar);
@@ -328,7 +339,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
                 
                 case (int)MainSeq.FireTruck_Intro:
-                    _uiManager.PopFromZeroInstructionUI("각 부품을 터치해서 소방차를 완성시켜요!");
+                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 소방차를 완성시켜요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
                     OnCarIntro((int)Obj.Sprites_FireTruck);
@@ -341,7 +352,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                     
                     break;
                 case (int)MainSeq.FireTruck_Outro:
-                    _uiManager.PopFromZeroInstructionUI("소방차 완성! 출동!");
+                    _uiManager.PopInstructionUIFromScaleZero("소방차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
@@ -350,9 +361,10 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/OnFinish");
-                    _uiManager.PopFromZeroInstructionUI("친구들 덕분에 도와줄 수 있었어요!");
+                    _uiManager.PopInstructionUIFromScaleZero("친구들 덕분에 도와줄 수 있었어요!");
      
                     OnFinishInit();
+                    RestartScene(delay:20f);
                     break;
             }
         }
@@ -371,9 +383,9 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
     {
         var SeatTransform = GetObject((int)seat).transform;
 
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat] * 0.9f, 0.35f))
             .SetLoops(-1, LoopType.Yoyo)
@@ -382,7 +394,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
 
 
@@ -527,15 +539,16 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
             sprite.enabled = isActive;
     }
 
-    
-    protected override void OnGameStartStartButtonClicked()
+
+
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
         DOVirtual.DelayedCall(1.5f, () =>
         {
             initialMessage = "각자 표시된 자리에 앉아주세요!";
-            _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+             baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
 
             CurrentMainMainSeq = (int)MainSeq.SeatSelection;
 
@@ -569,7 +582,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                 _seatClickedCount++;
 
 
-                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+                _sequencePerEnumMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
                 foreach (int key in isSeatClickedMap.Keys)
                     if (!isSeatClickedMap[key])
@@ -581,7 +594,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
                     // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
-                    _uiManager.PopFromZeroInstructionUI("다 앉았구나! 이제 자동차들을 보러가자!");
+                    _uiManager.PopInstructionUIFromScaleZero("다 앉았구나! 이제 자동차들을 보러가자!");
                     DOVirtual.DelayedCall(4, () =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.Ambulance_Intro;
@@ -626,7 +639,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         currentArrivedSubPartCount = 0;
     }
 
-    private void MoveTowardToCompletion()
+    private void MovePuzzlePartTowardToCompletion()
     {
         if (!isClickable) return;
 
@@ -636,14 +649,14 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
             int ID = hit.transform.GetInstanceID();
 
 
-            _isClickableMap.TryAdd(ID, true);
-            if (_isClickableMap[ID] == false) continue;
-            _isClickableMap[ID] = false;
+            _isClickableMapByTfID.TryAdd(ID, true);
+            if (_isClickableMapByTfID[ID] == false) continue;
+            _isClickableMapByTfID[ID] = false;
             
             DOVirtual.DelayedCall(0.12f, () =>
             {
                 if (!isArrivedMap.ContainsKey(ID) || !isArrivedMap[ID])
-                    _isClickableMap[ID] = true;
+                    _isClickableMapByTfID[ID] = true;
             });
 
             // 현재 진행도 저장 및 증가
@@ -681,23 +694,23 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                        
                         currentArrivedSubPartCount++;
 
-                        _sequenceMap[ID]?.Kill();
-                        _sequenceMap[ID] = DOTween.Sequence();
+                        _sequencePerEnumMap[ID]?.Kill();
+                        _sequencePerEnumMap[ID] = DOTween.Sequence();
            
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Join(tf.transform.DOLocalRotate(Vector3.zero, 0.35f));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 0.8f, 0.2f)
+                        _sequencePerEnumMap[ID].Join(tf.transform.DOLocalRotate(Vector3.zero, 0.35f));
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 0.8f, 0.2f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID] * 1.2f, 0.25f)
                             .SetEase(Ease.OutBounce));
-                        _sequenceMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID], 0.5f));
+                        _sequencePerEnumMap[ID].Append(tf.transform.DOScale(_defaultSizeMap[ID], 0.5f));
                        
-                        _sequenceMap[ID].AppendCallback(() =>
+                        _sequencePerEnumMap[ID].AppendCallback(() =>
                         {
-                            _isClickableMap[ID] = false;
+                            _isClickableMapByTfID[ID] = false;
                             animator.enabled = true;
-                            _tfIdToSpriteMap[ID].DOFade(0.8f, 0.75f);
+                            _tfIdToSpriteMap[ID].DOFade(0.7f, 0.75f);
                         });
 
                   
@@ -729,23 +742,23 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
 
 
                             
-                            _sequenceMap.TryAdd(ID, DOTween.Sequence());
-                            _sequenceMap[ID]?.Kill();
-                            _sequenceMap[ID] = DOTween.Sequence();
+                            _sequencePerEnumMap.TryAdd(ID, DOTween.Sequence());
+                            _sequencePerEnumMap[ID]?.Kill();
+                            _sequencePerEnumMap[ID] = DOTween.Sequence();
 
 
                             int colorSeqID = ID + 1234;
-                            _sequenceMap.TryAdd(colorSeqID, DOTween.Sequence());
-                            _sequenceMap[colorSeqID]?.Kill();
-                            _sequenceMap[colorSeqID] = DOTween.Sequence();
+                            _sequencePerEnumMap.TryAdd(colorSeqID, DOTween.Sequence());
+                            _sequencePerEnumMap[colorSeqID]?.Kill();
+                            _sequencePerEnumMap[colorSeqID] = DOTween.Sequence();
                             
-                            _sequenceMap[colorSeqID]
+                            _sequencePerEnumMap[colorSeqID]
                                 .Append(_tfIdToSpriteMap[ID].DOColor(_tfIdToSpriteMap[ID].color * 1.5f, 0.28f));
-                            _sequenceMap[colorSeqID]
+                            _sequencePerEnumMap[colorSeqID]
                                 .Append(_tfIdToSpriteMap[ID].DOColor(_tfIdToSpriteMap[ID].color * 0.9f, 0.28f));
-                            _sequenceMap[colorSeqID].SetLoops(1);
-                            _sequenceMap[colorSeqID].Append(_tfIdToSpriteMap[ID].DOColor(defaultColor, 0.1f));
-                            _sequenceMap[colorSeqID].OnKill(() =>
+                            _sequencePerEnumMap[colorSeqID].SetLoops(1);
+                            _sequencePerEnumMap[colorSeqID].Append(_tfIdToSpriteMap[ID].DOColor(defaultColor, 0.1f));
+                            _sequencePerEnumMap[colorSeqID].OnKill(() =>
                             {
                              _tfIdToSpriteMap[ID].DOColor(defaultColor, 0.001f);
                             });
@@ -756,14 +769,14 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                             switch (effectType)
                             {
                                 case 0: // Shake
-                                    _sequenceMap[ID]
+                                    _sequencePerEnumMap[ID]
                                         .Append(tf.DOShakePosition(0.5f, new Vector3(Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f), Random.Range(0.1f,0.5f))).OnKill(() =>
                                         {
                                             tf.localRotation = _defaultRotationQuatMap[ID];
                                         }));
                                     break;
                                 case 1: // Scale Up & Down
-                                    _sequenceMap[ID].Append(tf.DOScale(_defaultSizeMap[ID] * 1.2f, 0.30f)
+                                    _sequencePerEnumMap[ID].Append(tf.DOScale(_defaultSizeMap[ID] * 1.2f, 0.30f)
                                             .SetLoops(2, LoopType.Yoyo))
                                         .OnKill(() =>
                                         {
@@ -773,7 +786,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                                 case 2: // Rotate
                                     float angle = Random.Range(-20f, 20f);
 
-                                    _sequenceMap[ID].Append(tf
+                                    _sequencePerEnumMap[ID].Append(tf
                                         .DORotateQuaternion(_defaultRotationQuatMap[ID]* new Quaternion(0, 0, Random.Range(-15,15), 0), 0.25f)
                                         .SetLoops(2, LoopType.Yoyo)
                                         .SetEase(Ease.InOutSine));
@@ -841,7 +854,7 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
         {
             OnRaySyncedOnFinish();
         }
-        else MoveTowardToCompletion();
+        else MovePuzzlePartTowardToCompletion();
     }
 
     #region AmbulancePart
@@ -868,17 +881,43 @@ public class EA018_DecorateCar_GameManager : Ex_BaseGameManager
                     }
                 });
         
-            _spritesMap[introCar][0].DOFade(0.10f, 2f);
+            _spritesMap[introCar][0].DOFade(0.20f, 2f);
         });
 
 
-        DOVirtual.DelayedCall(1f, () =>
+   
+        
+        DOVirtual.DelayedCall(2.25f, () =>
         {
-            _elapsed = 0; 
-            _isRoundFinished = false;
+        
+            DOVirtual.DelayedCall(1f, () =>
+            {
+                _elapsed = 0; 
+                _isRoundFinished = false;
+            });
+            
+            int count = 0;
+            foreach (var sprite in _spritesMap[introCar])
+            {
+                if (count != 0)
+                {
+                    Logger.ContentTestLog("Intro Scale Event -------------------");
+
+                    int ID = sprite.transform.GetInstanceID();
+                    Vector3 defaultScale = sprite.transform.localScale;
+                    Sequence seq = DOTween.Sequence();
+                    seq.Append(sprite.transform.DOScale(defaultScale * 1.1f, 0.35f).SetEase(Ease.OutBounce));
+                    seq.Append(sprite.transform.DOScale(defaultScale * 0.9f, 0.35f).SetEase(Ease.OutBounce));
+                    seq.SetLoops(4);
+                }
+
+                count++;
+
+            }
+      
         });
 
-        Logger.ContentTestLog("OnPoliceCarIntro -------------------");
+    
         //   _isPartsClickable = true;
     }
 

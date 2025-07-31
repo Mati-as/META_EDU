@@ -68,7 +68,7 @@ public class SandwitchBaseGameManager : Base_GameManager
     //중복클릭방지
     private bool _isClickable = true;
     private bool _isScalingUp;
-    private readonly float _clickableDelay = 1.0f;
+    private readonly float _clickableDelay = 1.2f;
 
     private readonly float RESTART_DELAY = 1.5f;
 
@@ -154,14 +154,11 @@ public class SandwitchBaseGameManager : Base_GameManager
 
     private bool _isRoundFinished;
     private readonly int NO_VALID_OBJECT = -1;
-    private RaycastHit[] _raycastHits;
 
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
-
-        _raycastHits = Physics.RaycastAll(GameManager_Ray);
 
         if (_isRoundFinished) return;
         if (!isGameStart) return;
@@ -174,7 +171,7 @@ public class SandwitchBaseGameManager : Base_GameManager
             return;
         }
 
-        foreach (var hit in _raycastHits)
+        foreach (var hit in GameManager_Hits)
         {
             Logger.Log($"작은접시생성위치 갱신: 클릭오브젝트 이름: {hit.transform.gameObject.name}, " +
                        $"클릭오브젝트 위치: {hit.transform.position}" +
@@ -212,16 +209,16 @@ public class SandwitchBaseGameManager : Base_GameManager
     }
 
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
 
     
-        initialMessage= "재료를 골라 샌드위치를 완성시켜보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+        initialMessage= "5가지 재료를 골라 샌드위치를 완성해보세요!";
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
-        DOVirtual.DelayedCall(6f, () =>
+        DOVirtual.DelayedCall(4.5f, () =>
         {
             MoveOutSandwich();
         });
@@ -304,7 +301,7 @@ public class SandwitchBaseGameManager : Base_GameManager
             .OnComplete(() =>
             {
                 //deactivate delay..다시 생성시 로직을 위해서 약간의 딜레이를 줍니다. 
-                DOVirtual.Float(0, 0, 0.5f, _ => { }).OnComplete(() =>
+                DOVirtual.Float(0, 0, 0.3f, _ => { }).OnComplete(() =>
                 {
                     obj.gameObject.SetActive(false);
 
@@ -640,6 +637,10 @@ public class SandwitchBaseGameManager : Base_GameManager
     /// </summary>
     public void ScaleUpSingleIng(float delay = 1.88f)
     {
+
+        var PrevPosCache = _previousShrinkingPoint;
+        
+        
         var obj = _selectableIngredientsOnSmallPlates.FirstOrDefault(x =>
             !x.gameObject.gameObject.name.Contains("Bread")
             && !x.gameObject.activeSelf);
@@ -677,11 +678,12 @@ public class SandwitchBaseGameManager : Base_GameManager
             return;
         }
 
-        AppendAnim(obj);
+        AppendAnim(obj,PrevPosCache);
     }
 
-    private void AppendAnim(Transform obj)
+    private void AppendAnim(Transform obj, Vector3 prevPos)
     {
+        
         obj.gameObject.SetActive(true);
         obj.localScale = Vector3.zero;
 
@@ -701,14 +703,14 @@ public class SandwitchBaseGameManager : Base_GameManager
         // Ensure this is the starting position you want
 
 
-        Logger.Log($"Animation starting point: {_previousShrinkingPoint}");
+        Logger.Log($"Animation starting point: {prevPos}");
 
         _pathTwMap[obj].Kill();
 
         // Set the object's position to the start of the path immediately
         var newPath = new Vector3[2];
-        newPath[0] = _previousShrinkingPoint + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
-        newPath[1] = _previousShrinkingPoint + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
+        newPath[0] = prevPos + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
+        newPath[1] = prevPos + new Vector3(Random.Range(-0.05f, 0.05f), 0, Random.Range(-0.05f, 0.05f));
         obj.position = newPath[0];
 
 

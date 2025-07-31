@@ -40,8 +40,9 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
     private RectTransform _rectRedWin;
 
     private float  _intervalBtwStartAndReady =1f;
+    private bool _isFirstRound = true;
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
 
         _gm = GameObject.FindWithTag("GameManager").GetComponent<EA008_BubbleShower_GameManager>();
@@ -110,7 +111,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
     {
         
        
-        yield return DOVirtual.Float(0, 0, 5, _ => { }).WaitForCompletion();
+        yield return DOVirtual.Float(0, 0, _isFirstRound?5.5f:2.5f, _ => { }).WaitForCompletion();
         _ready.gameObject.SetActive(true);
         Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/BasicContents/HandFlip2/Ready",1.0f);
         yield return DOVirtual.Float(0, 1, 0.2f, scale => { _rectReady.localScale = Vector3.one * scale; }).WaitForCompletion();
@@ -134,6 +135,8 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
         _start.gameObject.SetActive(false);
         
         onStartUIFinished?.Invoke();
+        
+        _isFirstRound =false;
     }
 
     private void OnRoundFinish()
@@ -160,7 +163,7 @@ public class EA008_BubbleShower_UIManager : UI_PopUp
         
         if (_wait == null)
         {
-            _wait = new WaitForSeconds(4.5f);
+            _wait = new WaitForSeconds(3.5f);
         }
         if (_gm.isATeamWin)
         {

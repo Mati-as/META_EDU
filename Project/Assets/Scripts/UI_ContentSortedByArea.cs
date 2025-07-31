@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class UI_ContentSortedByArea : UI_PopUp
 {  
+    
+    public override bool IsBackBtnClickable => true;    
     public enum UI
     {
         Btn_PA,
@@ -18,7 +20,7 @@ public class UI_ContentSortedByArea : UI_PopUp
         Btn_Social,
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
         
@@ -42,6 +44,6 @@ public class UI_ContentSortedByArea : UI_PopUp
         {
             Managers.UI.ShowPopupUI<UI_Social_ContentSelection>();
         });
-        return base.InitEssentialUI();
+        return base.InitOnLoad();
     }
 }

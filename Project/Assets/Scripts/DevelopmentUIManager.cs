@@ -43,7 +43,7 @@ public class DevelopmentUIManager : MonoBehaviour
             _textPool.Push(text);
         }
         //각 콘텐츠 별로 처음에 안보이게 하기위해 남김
-        DisableAllImages();
+        ToggleAllImages();
     }
 
 
@@ -51,16 +51,13 @@ public class DevelopmentUIManager : MonoBehaviour
     private void DisableImageWithSpaceKey()
     {
         //버튼으로 대체만하면 이건 해결
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            DisableAllImages();
-        }
-    
+            ToggleAllImages();
     }
     
+ //  2026.06.22 스페이스바 관련 비활성화. 버튼으로만 동작
     private void Update()
     {
-        DisableImageWithSpaceKey();
+        if (Input.GetKeyDown(KeyCode.Space)&& SceneManager.GetActiveScene().name.Contains("LAUNCHER"))DisableImageWithSpaceKey();
     }
 
 
@@ -76,7 +73,7 @@ public class DevelopmentUIManager : MonoBehaviour
     /// 실제로 개별 FP_real,New이미지를 컨트롤 하는변수는 SensorImage에 있음
     /// SensorRelatedDevMenu.cs 참고
     /// </summary>
-    public void DisableAllImages()
+    public void ToggleAllImages()
     {
         Debug.Log($"DAI Clicked {_currentStatus}");
       
@@ -106,10 +103,7 @@ public class DevelopmentUIManager : MonoBehaviour
         {
             text.enabled = _currentStatus;
         }
-        
-       //_fpsCounter.enabled = _currentStatus;
 
-        // _developerMenu.SetActive(_currentStatus);
 
     }
 }

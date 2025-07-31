@@ -1,12 +1,29 @@
-using UnityEngine.SceneManagement;
+
+using UnityEngine;
 
 namespace MyCustomizedEditor.Common.Util
 {
     public class UI_PopUp : UI_Base
     {
-        public override bool InitEssentialUI()
+
+     
+        protected bool isBackBtnClickable = false;
+        public virtual bool IsBackBtnClickable
         {
-            if (base.InitEssentialUI() == false)
+            get
+            {
+                return isBackBtnClickable;
+            }
+            set
+            {
+                isBackBtnClickable = value;
+            }
+        }
+        
+        
+        public override bool InitOnLoad()
+        {
+            if (base.InitOnLoad() == false)
                 return false;
             
             return true;

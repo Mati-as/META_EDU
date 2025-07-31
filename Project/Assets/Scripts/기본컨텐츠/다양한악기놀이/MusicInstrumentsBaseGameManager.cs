@@ -42,9 +42,9 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
     
     
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         DOVirtual.DelayedCall(6.5f, () =>
         {
             var images = _parrotSlider.GetComponentsInChildren<Image>();
@@ -63,7 +63,7 @@ public class MusicInstrumentsBaseGameManager : Base_GameManager
         });
 
         initialMessage= "악기를 연주해 앵무새를 춤추게 해보세요!";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 

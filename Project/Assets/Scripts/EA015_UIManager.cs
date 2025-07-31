@@ -18,14 +18,6 @@ private EA015_GameManager _gm;
         
     }
 
-    public override bool InitEssentialUI()
-    {
-        base.InitEssentialUI();
-        InitInstructionUI();
-        return true;
-
-    }
-
     private void OnDestroy()
     {
         // 구독 해제
@@ -38,7 +30,7 @@ private EA015_GameManager _gm;
     {
         if (payload.IsCustom)
         {
-            if(payload.IsPopFromZero) PopFromZeroInstructionUI($"{payload.Narration}");
+            if(payload.IsPopFromZero) PopInstructionUIFromScaleZero($"{payload.Narration}");
             else PopAndChangeUI(payload.Narration);
             return;
         }
@@ -46,12 +38,12 @@ private EA015_GameManager _gm;
         switch (payload.Narration)
         {
             case nameof(EA009_HealthyFood_GameManager.GameObj.FishA):
-                PopFromZeroInstructionUI("생선");
+                PopInstructionUIFromScaleZero("생선");
                 Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Fish");
                 break;
 
             case nameof(EA009_HealthyFood_GameManager.GameObj.AppleA):
-                PopFromZeroInstructionUI("사과");
+                PopInstructionUIFromScaleZero("사과");
                 Managers.Sound.Play(SoundManager.Sound.Narration,_foodNarPath + "Apple");
                 break;
             

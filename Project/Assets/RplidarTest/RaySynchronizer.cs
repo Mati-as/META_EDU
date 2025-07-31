@@ -132,7 +132,7 @@ public class RaySynchronizer : MonoBehaviour
 
         if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
         {
-            Logger.Log($"런처에서는 센서동작하지 않음 ------------------{Managers.UserInfo.CurrentActiveSceneName}");
+      //      Logger.Log($"런처에서는 센서동작하지 않음 ------------------{Managers.UserInfo.CurrentActiveSceneName}");
             return;
         }
         

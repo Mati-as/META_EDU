@@ -30,7 +30,7 @@ public class Hopscotch_UIManager : UI_Base
 
     void Start()
     {
-        InitEssentialUI();
+        InitOnLoad();
         _canvasGroup = GetComponentInChildren<CanvasGroup>();
         _canvasGroup.alpha = 1;
         _InplayCanvasGroup.alpha = 0;
@@ -51,9 +51,9 @@ public class Hopscotch_UIManager : UI_Base
         
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
-        if (base.InitEssentialUI() == false)
+        if (base.InitOnLoad() == false)
             return false;
         
         BindTMP(typeof(UI_Type));

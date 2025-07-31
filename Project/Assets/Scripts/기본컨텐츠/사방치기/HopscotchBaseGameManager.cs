@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class HopscotchBaseGameManager : Base_GameManager
+public class HopscotchBaseGameManager : Ex_BaseGameManager
 {
     [FormerlySerializedAs("videoGameManager")]
     [FormerlySerializedAs("effectController")]
@@ -104,6 +104,10 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     protected override void Init()
     {
+        
+        psResourcePath = "Runtime/BB002/Fx_Click";
+        
+        
         _defaultQuaternionMap = new Dictionary<Transform, Quaternion>();
         _defaultSizeMap = new Dictionary<Transform, Vector3>();
         _uiDefaultSizeMap = new Dictionary<RectTransform, Vector3>();
@@ -138,7 +142,12 @@ public class HopscotchBaseGameManager : Base_GameManager
     {
         if (!PreCheckOnRaySync()) return;
 
-
+        foreach (var hit in GameManager_Hits)
+        {
+            PlayParticleEffect(hit.point);
+        }
+       
+        
         if (isStageClearUIOn) return;
 #if UNITY_EDITOR
         if (!isChecked)
@@ -428,9 +437,9 @@ public class HopscotchBaseGameManager : Base_GameManager
 
     private void DoIntroMove()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         initialMessage= "숫자를 차례대로 밟아 10까지 가볼까요?";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
         

@@ -1,3 +1,4 @@
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,8 +25,10 @@ public class Managers : MonoBehaviour
     private static SettingManager s_SettingManager = new SettingManager();
     
     public static float PROJECTOR_SCREEN_HEIGHT; 
-    public static bool isGameStopped { get; set; }
-
+   
+    public static bool IsGameStopped { get; set; }
+    public static bool IsAlreadyFirstTimeHomeOpened = false;
+    public static bool IsInited= false;
 
     public static SettingManager Setting
     {  
@@ -88,13 +91,58 @@ public class Managers : MonoBehaviour
     }
 
 
+    private static Mutex mutex;
+
 
 
     private void Awake()
     {
+        if (IsInited)
+        {
+            Logger.CoreClassLog("이미 초기화 되었음");
+            return;
+        }
+        IsInited = true;
+        CheckSingleInstance();
         Init();
     }
 
+
+
+    void OnApplicationQuit()
+    {
+        RemoveMutex();
+    }
+    
+    
+    
+    
+    /// <summary>
+    /// 소프트웨어 중복실행 방지로직입니다. 
+    /// </summary>
+    private void CheckSingleInstance()
+    {
+        bool isNewInstance;
+        string mutexName = "META_EDU"; // 시스템 전체에서 유일한 이름 사용
+
+        mutex = new Mutex(true, mutexName, out isNewInstance);
+
+        if (!isNewInstance)
+        {
+            Debug.Log("앱이 이미 실행 중입니다.");
+            Application.Quit(); // 실행 중인 인스턴스가 있으면 종료
+        }
+    }
+
+    private void RemoveMutex()
+    {
+        if (mutex != null)
+        {
+            mutex.ReleaseMutex();
+            mutex.Close();
+            mutex = null;
+        }
+    }
     
     /// <summary>
     /// Manager별 순서 바뀌지않도록 주의합니다.
@@ -117,14 +165,20 @@ public class Managers : MonoBehaviour
             Application.runInBackground = true;
             // s_launcher.Init(); 
             // s_launcher = Utils.GetOrAddComponent<MetaEduLauncher>(launcher);
+
+           
+            //코루틴 실행위해 반드시 gameObject에 추가해야합니다.
+            s_resourceManager = Utils.GetOrAddComponent<ResourceManager>(go);
+            s_resourceManager.Init();  // 이제 StartCoroutine 가능
             
             s_soundManager.Init();
             _sInfoManager.Init();
             s_cursorImageManager.Init();
+
             DontDestroyOnLoad(go);
 //            Debug.Log("Managers Set--------");
         }
     }
     
-    
+
 }

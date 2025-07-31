@@ -20,14 +20,23 @@ public class UI_LoadInitialScene : UI_PopUp
     public static event Action onInitialLoadComplete;
 
 
-    void Start()
+    private void Init()
     {
        // StartCoroutine(LoadScene());
-        StartCoroutine(RotateIcon());
+    }
 
+    public void ShowLoadingScene()
+    {
         loadingCompleted = false;
         nextScene = 0;
         
+        
+        //PreLoad 파트. 
+        Managers.Resource.LoadAllThumbnails();
+        
+        
+        StartCoroutine(RotateIcon());
+ 
     }
 
 
@@ -35,6 +44,8 @@ public class UI_LoadInitialScene : UI_PopUp
     IEnumerator RotateIcon()
     {
         float timer = 0f;
+        gameObject.SetActive(true);
+        
         while (true)
         {
 
@@ -52,9 +63,8 @@ public class UI_LoadInitialScene : UI_PopUp
                 onInitialLoadComplete?.Invoke();
                 gameObject.SetActive(false);
                 StopAllCoroutines();
-              
 
-                Managers.UI.ShowPopupUI<UI_Home>();
+                Managers.UI.LoadPopUp();
             }
             
         }

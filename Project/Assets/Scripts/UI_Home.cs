@@ -9,10 +9,13 @@ public class UI_Home : UI_PopUp
         Btn_SensorSettings,
         Btn_ContentSortedByArea,
         Btn_ContentSortedByTheme,
+        
+        Btn_ThisMonth,
+        Btn_MediaArt,
         Btn_TestBuild
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
 
@@ -27,7 +30,7 @@ public class UI_Home : UI_PopUp
         GetObject((int)UI.Btn_ContentSortedByTheme).BindEvent(() =>
         {
             Managers.UI.ClosePopupUI();
-            Managers.UI.ShowPopupUI<UI_SemesterSelection>();
+            Managers.UI.ShowPopupUI<UI_SeasonSelection>();
         });
         GetObject((int)UI.Btn_SensorSettings).BindEvent(() =>
         {
@@ -38,6 +41,18 @@ public class UI_Home : UI_PopUp
         {
             Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_TestBuild>();
+        });
+        
+        GetObject((int)UI.Btn_ThisMonth).BindEvent(() =>
+        {
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_ThisMonth>();
+        });
+        
+        GetObject((int)UI.Btn_MediaArt).BindEvent(() =>
+        {
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_MediaArt>();
         });
         return true;
     }

@@ -40,8 +40,10 @@ public class Truck : MonoBehaviour
 
     public void StartSoilDumping()
     {
+        manager.ClickSound();
+
         float move = moveDistance + soilCountClass.plusMoveDistance;
-        audioSource.clip = manager.HeavyMachinerySound;
+        audioSource.clip = manager.heavyMachinerySound;
 
         if (!btnTwiceIssue)
         {
@@ -59,23 +61,23 @@ public class Truck : MonoBehaviour
                     audioSource.Play();
                     truckAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position + transform.forward * (move);
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => truckAni.SetBool("Move", false));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.3f);
 
                 seq.AppendCallback(() => soil.SetActive(true));
                 seq.AppendCallback(() => soilCountClass.SoilDecreaseStep(VehicleType.Truck));
 
-                seq.AppendInterval(1f);
+                seq.AppendInterval(0.3f);
 
                 seq.AppendCallback(() =>
                 {
                     truckAni.SetBool("Move", true);
                     Vector3 targetPos = transform.position - transform.forward * (move);
-                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.Linear);
+                    transform.DOMove(targetPos, moveDuration).SetEase(Ease.OutQuad);
                 });
                 seq.AppendInterval(moveDuration);
                 seq.AppendCallback(() => truckAni.SetBool("Move", false));

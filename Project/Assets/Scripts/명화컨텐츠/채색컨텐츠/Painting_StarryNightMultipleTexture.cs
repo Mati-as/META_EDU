@@ -34,7 +34,7 @@ public class Painting_StarryNightMultipleTexture : Base_GameManager
      private bool _isSceneChanging;
     protected override void Init()
     {
-        BGM_VOLUME = bgmVol;
+        //BGM_VOLUME = bgmVol;
         SensorSensitivity = 0.5f; 
         
         Camera.main.TryGetComponent<Volume>(out vol);

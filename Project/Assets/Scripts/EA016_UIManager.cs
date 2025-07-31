@@ -39,15 +39,17 @@ public class EA016_UIManager : Base_UIManager
     }
 
 
-    public override bool InitEssentialUI()
+
+    public override void ExplicitInitInGame()
     {
-        base.InitEssentialUI();
-       // InitInstructionUI();
+        base.ExplicitInitInGame();
         Bind();
         GetObject((int)UI.BallImageAndCount).SetActive(false);
-        return true;
     }
 
+
+    
+ 
     protected override void Bind()
     {
         BindTMP(typeof(TMPs));
@@ -60,7 +62,7 @@ public class EA016_UIManager : Base_UIManager
         Logger.ContentTestLog($"Get Message ---- {payload.Narration}");
         if (payload.IsCustom)
         {
-            if (payload.IsPopFromZero) PopFromZeroInstructionUI($"{payload.Narration}", payload.DelayAndAutoShutTime);
+            if (payload.IsPopFromZero) PopInstructionUIFromScaleZero($"{payload.Narration}", payload.DelayAndAutoShutTime);
             else PopAndChangeUI(payload.Narration, payload.DelayAndAutoShutTime);
         }
     }
@@ -81,7 +83,7 @@ public class EA016_UIManager : Base_UIManager
 
 
 
-        if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
+        if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
         {
             GetTMP((int)TMPs.Count).text = _gm.ballCountLeftToPut.ToString();
             switch (_gm.currentBallColorToPut)
@@ -101,7 +103,7 @@ public class EA016_UIManager : Base_UIManager
                     break;
             }
         }
-        else if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.CountMode)
+        else if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.CountMode)
         {
             GetTMP((int)TMPs.Count).text = _gm.BallCountGoal.ToString();
             GetObject((int)UI.AllBalls).SetActive(true);
@@ -118,7 +120,7 @@ public class EA016_UIManager : Base_UIManager
         
         
         int cache = _gm.ballCountLeftToPut;
-        if (_gm.currentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
+        if (_gm.CurrentMainSeq == (int)EA016_GameManager.MainSequence.ColorMode)
         {
             GetTMP((int)TMPs.Count).text = Mathf.Clamp(cache,0,50).ToString();
             GetObject((int)UI.BallImageAndCount).transform.localScale = Vector3.zero;

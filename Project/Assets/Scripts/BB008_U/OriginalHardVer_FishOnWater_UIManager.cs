@@ -239,7 +239,7 @@ public class OriginalHardVer_FishOnWater_UIManager : UI_PopUp
         });
     }
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady -= OnReadyAndStart;
         OriginalHardVer_FishOnWaterBaseGameManager.OnReady += OnReadyAndStart;

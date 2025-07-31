@@ -202,7 +202,18 @@ public class EA012_GameManager : Ex_BaseGameManager
                     {
                         _carAnimator.enabled = true;
                         _carAnimator.SetInteger(CAR_NUM ,(int)CarAnimSeq.Finished);
+                        
+                        DOVirtual.DelayedCall(12f, () =>
+                        {
+                            isClickableOnFinish = true;
+                            _carAnimator.enabled = false;
+                        });
+
                     });
+                    
+                    RestartScene(delay:20);
+
+                  
         
                     break;
                 case MainSeq.SeatSelection:
@@ -340,11 +351,18 @@ public class EA012_GameManager : Ex_BaseGameManager
         }
     }
 
-    protected override void OnGameStartStartButtonClicked()
+#if UNITY_EDITOR
+    [SerializeField]
+    private MainSeq startSeq;
+#else
+     private MainSeq startSeq = MainSeq.SeatSelection;
+#endif
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
-        currentMainSeq = MainSeq.SeatSelection;
+        base.OnGameStartButtonClicked();
+        currentMainSeq = startSeq;
     }
+
 
     public override void OnRaySynced()
     {
@@ -395,8 +413,65 @@ public class EA012_GameManager : Ex_BaseGameManager
         {
             OnRaySyncOnHelpCarMovePart(GameObj.Car_Bus);
         }
+            
+        else if (currentMainSeq == MainSeq.Finished)
+        {
+            OnRaySyncOnFinish();
+            //_carAnimator.enabled = false;
+           
+        }
     }
 
+    private bool isClickableOnFinish = false;
+    private Base_UIManager _uiManager;
+    private void OnRaySyncOnFinish()
+    {
+
+        if (!isClickableOnFinish) return;
+
+        if (_uiManager == null)
+            _uiManager = UIManagerObj.GetComponent<Base_UIManager>();
+        foreach (var hit in GameManager_Hits)
+        {
+            int id = hit.transform.GetInstanceID();
+
+
+            switch (_tfIdToEnumMap[id])
+            {
+                case (int)GameObj.Car_Ambulance:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Ambulance");
+                    GetObject((int)GameObj.Car_Ambulance).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Ambulance];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    _uiManager.PopInstructionUIFromScaleZero("구급차");
+                    break;
+                case (int)GameObj.Car_PoliceCar:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_PoliceCar");
+                        GetObject((int)GameObj.Car_PoliceCar).transform.localScale =_defaultSizeMap[(int)GameObj.Car_PoliceCar];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    _uiManager.PopInstructionUIFromScaleZero("경찰차");
+                    break;
+                case (int)GameObj.Car_FireTruck:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_FireTruck");
+                        GetObject((int)GameObj.Car_FireTruck).transform.localScale =_defaultSizeMap[(int)GameObj.Car_FireTruck];
+                    _uiManager.PopInstructionUIFromScaleZero("소방차");
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+                case (int)GameObj.Car_Bus:
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Bus");
+                        GetObject((int)GameObj.Car_Bus).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Bus];
+                    _uiManager.PopInstructionUIFromScaleZero("버스");
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+                case (int)GameObj.Car_Taxi:
+                    _uiManager.PopInstructionUIFromScaleZero("택시");
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA012/Narration/Name_Taxi");
+                        GetObject((int)GameObj.Car_Taxi).transform.localScale =_defaultSizeMap[(int)GameObj.Car_Taxi];
+                    hit.transform.DOShakeScale(1, 0.4f);
+                    break;
+            }
+         
+        }
+    }
     #region Seat Selection Part
     
     int TIRE_GROUPCOUNT = 5;
@@ -420,7 +495,7 @@ public class EA012_GameManager : Ex_BaseGameManager
             {
                 var tirePrefab = Instantiate(prefab).transform;
                 
-                _isClickedMap.Add(tirePrefab.transform.GetInstanceID(), false);
+                _isClickedMapByTfID.Add(tirePrefab.transform.GetInstanceID(), false);
                 tireGroupMap[i].Add(tire, tirePrefab);
                 tireSeqMap[i].Add(tirePrefab.transform.GetInstanceID(),DOTween.Sequence());
                 tirePrefab.gameObject.SetActive(false);
@@ -434,8 +509,11 @@ public class EA012_GameManager : Ex_BaseGameManager
     {
         if (!tireSeqMap.ContainsKey(currentTireGroup))
             tireSeqMap[currentTireGroup] = new Dictionary<int, Sequence>();
-
-        _isTireRemovalFinished = false;
+        DOVirtual.DelayedCall(2f, () =>
+        {
+            _isTireRemovalFinished = false;
+        });
+      
         Managers.Sound.Play(SoundManager.Sound.Effect,"EA012/TireRoll");
         for (int i = 0; i < WHEEL_COUNT_TO_REMOVE; i++)
         {
@@ -517,7 +595,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 _seatClickedCount++;
 
                 
-                _sequenceMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
+                _sequencePerEnumMap[_tfIdToEnumMap[hitTransformID]]?.Kill();
 
                 foreach (int key in isSeatClickedMap.Keys)
                     if (!isSeatClickedMap[key])
@@ -526,7 +604,10 @@ public class EA012_GameManager : Ex_BaseGameManager
                 if (isAllSeatClicked)
                 {
                     Logger.ContentTestLog("모든 자리가 선택되었습니다--------");
+
+                    DeactivateSeats();
                     
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Common/OnAllSeatSelected");
                     Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
 
                     DOVirtual.DelayedCall(4, () =>
@@ -561,13 +642,13 @@ public class EA012_GameManager : Ex_BaseGameManager
                 int clickedTransformID = clickedTire.GetInstanceID();
 
                 // 🔐 Prevent duplicate clicks
-                if (!_isClickedMap.TryGetValue(clickedTransformID, out bool wasClicked) || wasClicked)
+                if (!_isClickedMapByTfID.TryGetValue(clickedTransformID, out bool wasClicked) || wasClicked)
                 {
                     Logger.ContentTestLog($"이미 클릭된 타이어이거나 ID가 존재하지 않음: clicked? {wasClicked} :{clickedTransformID}");
                     continue;
                 }
 
-                _isClickedMap[clickedTransformID] = true;
+                _isClickedMapByTfID[clickedTransformID] = true;
                 currentRemovedTireCount++;
 
                 // 🔥 Kill and remove existing sequence
@@ -601,8 +682,8 @@ public class EA012_GameManager : Ex_BaseGameManager
 
         if (!_isTireRemovalFinished && currentRemovedTireCount >= WHEEL_COUNT_TO_REMOVE )
         {
-            _isTireRemovalFinished = true;
-         
+          
+            currentRemovedTireCount = 0;
            // CurrentSeq = Seq.WheelSelectFinished;
            //group*2는단순 수적관계임 주의 ---------------------------------
             Logger.ContentTestLog($"모든 타이어 제거됨--------------------Caranim:{(currentTireGroup*2)+1}{(CarAnimSeq)(currentTireGroup*2)+1}------");
@@ -614,8 +695,9 @@ public class EA012_GameManager : Ex_BaseGameManager
            
             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/OnCarAppear");
           
-            DOVirtual.DelayedCall(0.5f,()=>
+            DOVirtual.DelayedCall(0.2f,()=>
             {
+                _isTireRemovalFinished = true;
                 Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarArrival");
             });
             
@@ -626,7 +708,7 @@ public class EA012_GameManager : Ex_BaseGameManager
                 Logger.ContentTestLog($"current seq -> {currentMainSeq} -------------------");
                 OnTireRemovalFinished();
             });
-            currentRemovedTireCount = 0;
+           
         }
         else
         {
@@ -693,8 +775,8 @@ public class EA012_GameManager : Ex_BaseGameManager
         {
             Logger.ContentTestLog($"AnimateAllBtns :Animating seat {(GameObj)i}");
             
-            _sequenceMap[(int)i]?.Kill();
-            _sequenceMap[(int)i] = DOTween.Sequence();
+            _sequencePerEnumMap[(int)i]?.Kill();
+            _sequencePerEnumMap[(int)i] = DOTween.Sequence();
         }
         SetAllHelpCarMoveBtnStatus(false);
     }
@@ -729,13 +811,13 @@ public class EA012_GameManager : Ex_BaseGameManager
 
     private void AnimateSeatLoopSelectively(GameObj seat)
     {
-        if (!_sequenceMap.ContainsKey((int)seat)) return; 
+        if (!_sequencePerEnumMap.ContainsKey((int)seat)) return; 
         
         
         var SeatTransform = GetObject((int)seat).transform;
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*0.9f, 0.35f))
             .SetLoops(-1,LoopType.Yoyo)
@@ -744,15 +826,15 @@ public class EA012_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
 
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
     }
     private void AnimateSeatLoop(GameObj seat)
     {
         var SeatTransform = GetObject((int)seat).transform;
         
-        _sequenceMap[(int)seat]?.Kill();
-        _sequenceMap[(int)seat] = DOTween.Sequence();
-        _sequenceMap[(int)seat]
+        _sequencePerEnumMap[(int)seat]?.Kill();
+        _sequencePerEnumMap[(int)seat] = DOTween.Sequence();
+        _sequencePerEnumMap[(int)seat]
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*1.1f, 0.25f))
             .Append(SeatTransform.DOScale(_defaultSizeMap[(int)seat]*0.9f, 0.35f))
             .SetLoops(-1,LoopType.Yoyo)
@@ -761,7 +843,31 @@ public class EA012_GameManager : Ex_BaseGameManager
                 SeatTransform.DOScale(_defaultSizeMap[(int)seat], 1);
             });
         
-        _sequenceMap[(int)seat].Play();
+        _sequencePerEnumMap[(int)seat].Play();
+    }
+
+    private void DeactivateSeats()
+    {
+        for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
+        {
+            _sequencePerEnumMap[i]?.Kill();
+        
+        
+        }
+
+
+        TweenCallback _scaleCallback = () =>
+        {
+            for (int i = (int)GameObj.Seat_A; i <= (int)GameObj.Seat_G; i++)
+            {
+                var SeatTransform = GetObject(i).transform;
+                _sequencePerEnumMap[i] = DOTween.Sequence();
+                _sequencePerEnumMap[i].Append(SeatTransform.DOScale(Vector3.zero, 0.75f));
+            }
+        };
+
+        DOVirtual.DelayedCall(1f, _scaleCallback);
+
     }
 
     private CarAnimSeq currentCarAnimSeq;
@@ -825,27 +931,34 @@ public class EA012_GameManager : Ex_BaseGameManager
                         case CarAnimSeq.Ambulance_Leave :
                              Messenger.Default.Publish(new EA012Payload("Arrival","구급차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Ambulance_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_Ambulance");
+                            
                             break;
                         
                         case CarAnimSeq.PoliceCar_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","경찰차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/PoliceCar_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_PoliceCar");
+                             
                             break;
                         
                         case CarAnimSeq.FireTruck_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","소방차"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/FireTruck_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_FireTruck");
                              break;
                       
                         case CarAnimSeq.Taxi_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","택시"));
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Taxi_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Taxi_Honk");
                              break;
                         
                         case CarAnimSeq.Bus_Leave:
                              Messenger.Default.Publish(new EA012Payload("Arrival","버스"));
                              isLastCar = true;
                              Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Narration/Bus_Arrival");
+                             Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Bus_Honk");
                              break;
                     }
 
@@ -918,8 +1031,13 @@ private void OnHelpBtnClicked(GameObj clickedBtn, GameObj currentCar)
 
     Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/CarMove");
 
-    _sequenceMap[(int)clickedBtn]?.Kill();
-    _sequenceMap[(int)clickedBtn] = DOTween.Sequence();
+    _sequencePerEnumMap[(int)clickedBtn]?.Kill();
+    _sequencePerEnumMap[(int)clickedBtn] = DOTween.Sequence();
+
+    DOVirtual.DelayedCall(1f, () =>
+    {
+        GetObject((int)clickedBtn).transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InOutElastic);
+    });
     AnimateSeatLoopSelectively(clickedBtn + 1);
 
 

@@ -54,11 +54,11 @@ public class PlayInfoManager : MonoBehaviour
         Base_GameManager.OnSceneLoad -= OnSceneLoad;
         Base_GameManager.OnSceneLoad += OnSceneLoad;
 
-        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
-        InGame_SideMenu.OnSceneQuit += OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit += OnSceneOrAppQuit;
         
-        InGame_SideMenu.OnAppQuit -= OnSceneOrAppQuit;
-        InGame_SideMenu.OnAppQuit += OnSceneOrAppQuit;
+        UI_SideMenu.OnAppQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnAppQuit += OnSceneOrAppQuit;
         _isInit = true; 
         return true;
     }
@@ -66,7 +66,7 @@ public class PlayInfoManager : MonoBehaviour
     private void OnDestroy()
     {
         Base_GameManager.OnSceneLoad -= OnSceneLoad;
-        InGame_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
+        UI_SideMenu.OnSceneQuit -= OnSceneOrAppQuit;
     }
     public void CheckAndGenerateXmlFile(string fileName,string path)
     {
@@ -93,7 +93,7 @@ public class PlayInfoManager : MonoBehaviour
             newXml.Save(path);
             Logger.Log(fileName + ".xml FILE NOT EXIST, new file's been created at " + path);
         }
-        Logger.Log("History Checker Active");
+        Logger.Log("[UTIL] ---------  유저 씬 플레이정보 기록 활성화 ---------------------");
     }
     
     

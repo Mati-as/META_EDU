@@ -81,7 +81,7 @@ public class SensorManager : MonoBehaviour
                 if (Math.Abs(value - sensorSensitivity) < SENSOR_SENTSITIVITY_TOLERANCE) return;
                 _poolReturnWait = new WaitForSeconds(sensorSensitivity);
                 _sensorSensitivity = value;
-                Logger.Log($"current sensitivity {value}");
+//                Logger.Log($"current sensitivity {value}");
             }
         }
     }
@@ -519,7 +519,7 @@ public class SensorManager : MonoBehaviour
         List<Vector2> detectedPoints = new List<Vector2>(); // 감지된 포인트 리스트
 
         if (!isMoterStarted) return;
-        if (Managers.isGameStopped) return;
+        if (Managers.IsGameStopped) return;
         _timer = 0f;
 
         if (m_datachanged)
@@ -795,22 +795,22 @@ public class SensorManager : MonoBehaviour
     private void FixedUpdate()
     {
 
-   
+        GenerateDectectedPos();
 
-        if (isSensorSensitivityFilterModeOn)
-        {
-            _timer += Time.deltaTime;
-          
-            if (_timer > sensorSensitivity)
-            {
-                _timer = 0;
-                GenerateDectectedPos();
-            }
-        }
-        else
-        {
-            GenerateDectectedPos();
-        }
+        // if (isSensorSensitivityFilterModeOn)
+        // {
+        //     _timer += Time.deltaTime;
+        //   
+        //     if (_timer > sensorSensitivity)
+        //     {
+        //         _timer = 0;
+        //         GenerateDectectedPos();
+        //     }
+        // }
+        // else
+        // {
+        //     GenerateDectectedPos();
+        // }
 
 
     }

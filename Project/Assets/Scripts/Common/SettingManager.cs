@@ -16,7 +16,7 @@ public class SettingManager : MonoBehaviour
     public  float SCREEN_PROJECTOER_HEIGHT_FROM_XML{get;private set;}
     public  float MAIN_VOLIUME{get;private set;}
     public  float EFFECT_VOLUME{get;private set;}
-    public  float BGM_VOLUME{get;private set;}
+    public  float BGM_VOLUME_SETTING_VALUE{get;private set;}
     public  float NARRATION_VOLUME{get;private set;}
 
     private string BgmSettingData;
@@ -44,7 +44,7 @@ public class SettingManager : MonoBehaviour
 
     private void OnSceneLoad(string _, DateTime __)
     {
-        XmlManager.Instance.LoadSettings();
+        XmlManager.Instance.LoadGameSettings();
         Logger.Log("센서관련 XML데이터 로드완료----------------------------------");
     }
 #region  XML을 통한 세팅 초기화 및 저장
@@ -81,7 +81,7 @@ public class SettingManager : MonoBehaviour
             MAIN_VOLIUME = float.Parse(mainVol);
             
             var bgmVol = node.Attributes["bgmvol"].Value;
-            BGM_VOLUME= float.Parse(bgmVol);
+            BGM_VOLUME_SETTING_VALUE= float.Parse(bgmVol);
             
             var effectVol = node.Attributes["effectvol"].Value;
             EFFECT_VOLUME = float.Parse(effectVol);

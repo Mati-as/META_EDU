@@ -237,6 +237,8 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                         GetObject(i).gameObject.SetActive(true);
                         GetObject(i).transform.DOScale(_defaultSizeMap[i],0.6f).SetEase(Ease.InOutBack);
                     }
+                    
+                    RestartScene(delay:8f);
                     break;
             }
         }
@@ -422,10 +424,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         _uiManager = UIManagerObj.GetComponent<EA009_UIManager>();
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         currentMainSeq = MainSeq.AllFoodIntroduce;
         DOVirtual.DelayedCall(1.25f, () =>
         {
@@ -785,7 +787,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 allObj[transId] = badClone;
                 _tfIdToEnumMap[transId] = badIndex;
                 _clickedCountMap[transId] = 0;
-                _isClickableMap[transId] = true;
+                _isClickableMapByTfID[transId] = true;
                 _defaultSizeMap.TryAdd(transId, GetObject(badIndex).transform.localScale);
 
                 _isPosEmptyMap[posKey] = false;
@@ -871,10 +873,10 @@ private void OnRaySyncOnBadFoodEat()
 
         int clickedFoodID = hit.transform.GetInstanceID();
 
-        _isClickableMap.TryAdd(clickedFoodID, true);
+        _isClickableMapByTfID.TryAdd(clickedFoodID, true);
         _clickedCountMap.TryAdd(clickedFoodID, 0);
 
-        if (!_isClickableMap[clickedFoodID])
+        if (!_isClickableMapByTfID[clickedFoodID])
         {
             Logger.ContentTestLog($" 이미 클릭됨 {currentBadFoodClickGameCategory}");
             continue;
@@ -924,7 +926,7 @@ private void OnRaySyncOnBadFoodEat()
         {
             Managers.Sound.Play(SoundManager.Sound.Effect,"Audio/SortedByScene/EA009/OnBadFoodDisappear");
         });
-        _isClickableMap[clickedFoodID] = false;
+        _isClickableMapByTfID[clickedFoodID] = false;
 
         if (_tfIdToEnumMap.TryGetValue(clickedFoodID, out var foodEnum))
         {
@@ -983,7 +985,7 @@ private void OnRaySyncOnBadFoodEat()
             }
             
             Messenger.Default.Publish(new EA009_Payload(
-                $"       X {BAD_FOOD_CLICK_TO_COUNT - currentBadFoodClickedCount}", true));
+                $"      X {BAD_FOOD_CLICK_TO_COUNT - currentBadFoodClickedCount}", true));
             Logger.ContentTestLog($" 나쁜음식 클릭 카운트 {currentBadFoodClickedCount}");
         }
     }
@@ -1093,7 +1095,7 @@ private void OnRaySyncOnBadFoodEat()
         _clickedCountMap[badClone.transform.GetInstanceID()] = 0;
 
         badClone.transform.DOScale(_defaultSizeMap[badClone.transform.GetInstanceID()], 0.25f);
-        _isClickableMap[badClone.transform.GetInstanceID()] = true;
+        _isClickableMapByTfID[badClone.transform.GetInstanceID()] = true;
         _isPosEmptyMap[key] = false;
 
         placedFoodIds.Add(badClone.transform.GetInstanceID());
@@ -1154,7 +1156,7 @@ private void OnRaySyncOnBadFoodRemoval()
     foreach (var hit in GameManager_Hits)
     {
         var id = hit.transform.GetInstanceID();
-        _isClickableMap.TryAdd(id, true);
+        _isClickableMapByTfID.TryAdd(id, true);
 
         string hitName = hit.transform.gameObject.name;
 
@@ -1194,7 +1196,7 @@ private void OnRaySyncOnBadFoodRemoval()
         else
         {
             // ✅ 3회 클릭 → 제거 + 좋은 음식 랜덤 생성
-            _isClickableMap[id] = false;
+            _isClickableMapByTfID[id] = false;
             if (_badFoodClickMoveSeqMap.ContainsKey(id))
                 _badFoodClickMoveSeqMap[id]?.Kill();
             PlayParticleEffect(hit.point);

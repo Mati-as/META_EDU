@@ -49,7 +49,7 @@ public class SensorRelatedDevMenu : UI_PopUp
         _sensorClickSeq.AppendInterval(0.5f);
         _sensorClickSeq.AppendCallback(() => _clickable = true);
     }
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         
         _animator = GetComponent<Animator>();

@@ -25,17 +25,17 @@ public class BB006_WaterPlaygroundGameManager : Base_GameManager
     {
       SetPool(ref particlePool);
       SensorSensitivity = 0.18f;
-      BGM_VOLUME = 0.2f;
+      //BGM_VOLUME = 0.2f;
       base.Init();
       ManageProjectSettings(150,0.15f);
         
     }
 
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
         initialMessage= "공을 구멍에 넣어 돌고래를 불러볼까요?";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 

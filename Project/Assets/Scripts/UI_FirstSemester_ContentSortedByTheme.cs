@@ -9,19 +9,29 @@ using UnityEngine;
 /// </summary>
 public class UI_FirstSemester_ContentSortedByTheme : UI_PopUp
 {
+    
+    public override bool IsBackBtnClickable => true;   
+    
   public enum Btns
   {
-      Btn_ChuseokAndVehicles,
+   
   }
 
-  public override bool InitEssentialUI()
+  public override bool InitOnLoad()
   {
-        BindButton(typeof(Btns));
-        GetButton((int)Btns.Btn_ChuseokAndVehicles).gameObject.BindEvent(() =>
-        {
-            Managers.UI.ClosePopupUI();
-            Managers.UI.ShowPopupUI<UI_ChuseokAndVehicles_ContentSortedByTheme>();
-        });
-      return base.InitEssentialUI();
+     
+        // BindButton(typeof(Btns));
+        // GetButton((int)Btns.Btn_ChuseokAndVehicles).gameObject.BindEvent(() =>
+        // {
+        //     Managers.UI.ClosePopupUI();
+        //     Managers.UI.ShowPopupUI<UI_Sep_ContentSelection>();
+        // });
+        //
+        // GetButton((int)Btns.Btn_Fall).gameObject.BindEvent(() =>
+        // {
+        //     Managers.UI.ClosePopupUI();
+        //     Managers.UI.ShowPopupUI<UI_Oct_ContentSelection>();
+        // });
+      return base.InitOnLoad();
   }
 }

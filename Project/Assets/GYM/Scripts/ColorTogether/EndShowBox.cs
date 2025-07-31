@@ -68,5 +68,8 @@ public class EndShowBox : MonoBehaviour
         sequence.AppendCallback(() => manager.narrationBG.sizeDelta = new Vector2(1050, 143));
         sequence.AppendCallback(() => manager.NarrationALL(36, 36));
         sequence.AppendCallback(() => manager.endCanClicked = true);
+        sequence.AppendCallback(manager.ReloadScene);
+            ;
     }
+
 }

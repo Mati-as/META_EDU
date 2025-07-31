@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 /// <summary>
 ///     사운드 재생과 사운드관련 파라미터를 관리합니다.
@@ -23,9 +24,9 @@ public class SoundManager : MonoBehaviour
     public float[] VOLUME_MAX = new float[(int)Sound.Max];
 
     private readonly float VOLUME_MAX_MAIN = 1f;
-    private readonly float VOLUME_MAX_BGM = 0.5f;
-    private readonly float VOLUME_MAX_EFFECT = 1f;
-    private readonly float VOLUME_MAX_NARRATION = 1f;
+    private readonly float VOLUME_MAX_BGM = 1f;
+    private readonly float VOLUME_MAX_EFFECT = 0.4f;
+    private readonly float VOLUME_MAX_NARRATION =0.8f;
 
 
     public static readonly float VOLUME_INITVALUE_MAIN = 0.5f;
@@ -79,7 +80,7 @@ public class SoundManager : MonoBehaviour
                 {
                     volumes[(int)Sound.Main] = Managers.Setting.MAIN_VOLIUME;
                     volumes[(int)Sound.Bgm] = Managers.Setting.EFFECT_VOLUME;
-                    volumes[(int)Sound.Effect] = Managers.Setting.BGM_VOLUME;
+                    volumes[(int)Sound.Effect] = Managers.Setting.BGM_VOLUME_SETTING_VALUE;
                     volumes[(int)Sound.Narration] = Managers.Setting.NARRATION_VOLUME;
                 }
 
@@ -179,6 +180,31 @@ public class SoundManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// </summary>
+    /// <param name="path">재생경로</param>
+    /// <param name="randomCharMax">랜덤으로 재생할 파일중 문자열 오름차순상 가장 마지막 파일 (에시, A부터시작해 D까지있을떄 D)</param>
+    /// <returns></returns>
+    public bool PlayRandomEffect(string path, char randomCharMax)
+    {
+        if (path.Contains("Audio/") == false) path = string.Format("Audio/{0}", path);
+
+        char randomChar = (char)Random.Range('A', randomCharMax + 1);
+
+        var audioSource = audioSources[(int)Sound.Effect];
+
+        var audioClip = GetAudioClip(path + randomChar);
+        if (audioClip == null)
+        {
+            Logger.LogWarning($"audio clip is null : path: {path + randomChar}");
+            return false;
+        }
+
+        audioSource.volume = volumes[(int)Sound.Effect];
+
+        audioSource.PlayOneShot(audioClip);
+        return true;
+    }
     public bool Play(Sound type, string path, float volume = 1.0f, float pitch = 1.0f)
     {
         if (string.IsNullOrEmpty(path))
@@ -317,7 +343,11 @@ public class SoundManager : MonoBehaviour
         var audioSource = audioSources[(int)type];
         audioSource.Stop();
     }
-
+    public void Pause(Sound type)
+    {
+        var audioSource = audioSources[(int)type];
+        audioSource.Pause();
+    }
     public float GetAudioClipLength(string path)
     {
         var audioClip = GetAudioClip(path);
@@ -354,8 +384,7 @@ public class SoundManager : MonoBehaviour
                     audioSource.Stop();
             });
     }
-
-
+    
     // Sound관련 메소드 (legacy) 가을낙엽 컨텐츠에서 사용중.
     // 추후 가을소풍 전용으로 사용하도록 클래스 구분하거나 리팩토링 필요 12/18/23
     public static void FadeOutSound(AudioSource audioSource, float volumeTarget = 0, float waitTime = 0.5f,
@@ -385,4 +414,34 @@ public class SoundManager : MonoBehaviour
             FadeOutSound(audioSource, 0f, fadeWaitTime, outDuration, rollBack);
         });
     }
+
+
+    #region 페이드인/아웃 관련기능 (영민)
+
+    private Sequence _soundTransitionSeq;
+    public void TransitionAudioClip(Sound type, string path, float outDuration = 1f, float inDuration = 0.8f)
+    {
+        var changeClip =  GetAudioClip(path);
+        var audioSource = audioSources[(int)type];
+        float originalVol = audioSource.volume;
+        
+        _soundTransitionSeq?.Kill();
+        
+        _soundTransitionSeq.Append(audioSource.DOFade(0f, outDuration)
+            .OnComplete(() =>
+            {
+                audioSource.clip = changeClip;
+                audioSource.Play();
+                audioSource.DOFade(originalVol, inDuration);
+            }));
+        _soundTransitionSeq.OnKill(() =>
+        {
+            audioSource.volume = originalVol;
+        });
+    }
+
+    #endregion
+
+ 
+
 }

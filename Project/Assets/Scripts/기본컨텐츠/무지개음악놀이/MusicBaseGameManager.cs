@@ -7,12 +7,12 @@ using UnityEngine.SceneManagement;
 
 public class MusicBaseGameManager : Base_GameManager
 {
-    protected override void OnGameStartStartButtonClicked()
+    protected override void OnGameStartButtonClicked()
     {
         initialMessage= "무지개 건반을 눌러 연주해보세요";
-        _uiManagerCommonBehaviorController.ShowInitialMessage(initialMessage);
+         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
-        base.OnGameStartStartButtonClicked();
+        base.OnGameStartButtonClicked();
     }
 
     public override void OnRaySynced()

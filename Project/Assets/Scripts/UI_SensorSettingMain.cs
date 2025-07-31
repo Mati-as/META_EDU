@@ -5,15 +5,16 @@ using UnityEngine;
 
 public class UI_SensorSettingMain : UI_PopUp
 {
-
+    public override bool IsBackBtnClickable => true;
     public enum UI
     {
         Btn_ScreenSetting,
         Btn_SensorSetting,
+        Btn_MenuSetting,
     }
 
 
-    public override bool InitEssentialUI()
+    public override bool InitOnLoad()
     {
         BindObject(typeof(UI));
         
@@ -27,6 +28,11 @@ public class UI_SensorSettingMain : UI_PopUp
         {
             Managers.UI.ShowPopupUI<UI_SensorSetting>();
         });
-        return base.InitEssentialUI();
+
+        GetObject((int)UI.Btn_MenuSetting).BindEvent(() =>
+        {
+            Managers.UI.ShowPopupUI<UI_MenuSetting>();
+        });
+        return base.InitOnLoad();
     }
 }

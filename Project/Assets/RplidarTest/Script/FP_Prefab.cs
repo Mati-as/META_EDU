@@ -111,7 +111,7 @@ public class FP_Prefab : RaySynchronizer
     {
         if (!isRayEnabled) return; //Raycast 작동 여부 제어
 
-        if (Managers.isGameStopped || _rectTransform == null) return;
+        if (Managers.IsGameStopped || _rectTransform == null) return;
         if (Managers.UserInfo.CurrentActiveSceneName.Contains("LAUNCHER"))
         {
             return;
@@ -151,7 +151,7 @@ public class FP_Prefab : RaySynchronizer
         }
 
         // 🚨 최적화
-        if (SceneManager.GetActiveScene().name.Contains("METAEDU"))
+        if (Utils.IsLauncherScene())
         {
             if (_launcher == null)
             {
