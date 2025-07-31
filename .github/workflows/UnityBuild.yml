@@ -24,6 +24,16 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      # ✅ 디스크 정리 (중요!)
+      - name: Free Up Disk Space
+        run: |
+          echo "🧹 Cleaning up disk space..."
+          sudo docker image prune -af
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
       - name: Cache Library
         uses: actions/cache@v4
         with: 
@@ -40,10 +50,10 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: StandaloneWindows64
-          projectPath: Project   # ✅ Unity 프로젝트가 있는 폴더로 수정
+          projectPath: Project   # ✅ Unity 프로젝트 경로
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Build-Windows
-          path: Project/build/StandaloneWindows64  # ✅ 경로 수정
+          path: Project/build/StandaloneWindows64
