@@ -1,25 +1,24 @@
-name: UnityBuild
+name: UnityBuildTest
 
 on:
   workflow_dispatch:
 
 permissions: write-all
-  
+
 jobs:
-  #Job 설정
-  buildForAndroid: 
-    name: Build Android🛸🛸🛸
+  buildForWindows: 
+    name: Build Windows 🪟🛠️
     runs-on: ubuntu-latest
     steps:
 
-      # Step1 - Check Out
+      # Step 1 - Check Out
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      # Step2 - Cache Library
+      # Step 2 - Cache Library
       - name: Cache Library
         uses: actions/cache@v4.0.2
         with: 
@@ -28,19 +27,19 @@ jobs:
           restore-keys: |
             Library-
 
-      # Step3 - Unity Build
-      - name: Unity Build
+      # Step 3 - Unity Build (Windows)
+      - name: Unity Build (Windows)
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: Android
-      
-      # Step4 - Upload Build File
-      - name: Upload Build File
-      - uses: actions/upload-artifact@v3
+          targetPlatform: StandaloneWindows64
+
+      # Step 4 - Upload Windows Build
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: Build-Android
-          path: build
+          name: Build-Windows
+          path: build/StandaloneWindows64
