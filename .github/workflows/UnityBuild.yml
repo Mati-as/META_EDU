@@ -4,30 +4,27 @@ on:
   workflow_dispatch:
 
 permissions: write-all
-
+ 
 jobs:
   buildForWindows: 
     name: Build Windows 🪟🛠️
     runs-on: ubuntu-latest
     steps:
-
-      # Step 1 - Check Out
+#1.checkOut
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      # Step 2 - Cache Library
       - name: Cache Library
-        uses: actions/cache@v4
+        uses: actions/cache@v4.0.2
         with: 
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Step 3 - Unity Build (Windows)
       - name: Unity Build (Windows)
         uses: game-ci/unity-builder@v4
         env:
@@ -37,9 +34,8 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
 
-      # Step 4 - Upload Windows Build
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Build-Windows
           path: build/StandaloneWindows64
