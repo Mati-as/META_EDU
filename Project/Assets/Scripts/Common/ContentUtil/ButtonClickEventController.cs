@@ -34,7 +34,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     private bool _btnDisappearModeInSequentialMode; // 순서대로 버튼 클릭하는 경우, 클릭 후 버튼이 사라지는지 여부
     private bool _isClickable = true;
 
-    private float _clickableDelay=0.5f;
+    private float _clickableDelay=0.05f;
     public float ClickableDelay
     {
         get => _clickableDelay;
