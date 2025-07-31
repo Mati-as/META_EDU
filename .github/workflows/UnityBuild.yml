@@ -2,7 +2,7 @@ name: UnityBuildTest
 
 on:
   workflow_dispatch:       # ✅ 수동 실행 허용
-  push:                    # ✅ 자동 실행도 허용
+  push:                    # ✅ 자동 실행 허용 (develop, main)
     branches:
       - develop
       - main
@@ -27,8 +27,8 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with: 
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: Project/Library
+          key: Library-${{ hashFiles('Project/Assets/**', 'Project/Packages/**', 'Project/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
@@ -40,9 +40,10 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: StandaloneWindows64
+          projectPath: Project   # ✅ Unity 프로젝트가 있는 폴더로 수정
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Build-Windows
-          path: build/StandaloneWindows64
+          path: Project/build/StandaloneWindows64  # ✅ 경로 수정
