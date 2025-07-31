@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
 
 permissions: write-all
-
+ 
 jobs:
   buildForWindows: 
     name: Build Windows 🪟🛠️
     runs-on: ubuntu-latest
     steps:
-
+#1.checkOut
       - name: Check Out
         uses: actions/checkout@v4
         with:
