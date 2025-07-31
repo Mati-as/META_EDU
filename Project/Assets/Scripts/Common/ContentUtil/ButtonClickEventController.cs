@@ -34,7 +34,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     private bool _btnDisappearModeInSequentialMode; // 순서대로 버튼 클릭하는 경우, 클릭 후 버튼이 사라지는지 여부
     private bool _isClickable = true;
 
-    private float _clickableDelay=0.05f;
+    private float _clickableDelay=0f;
     public float ClickableDelay
     {
         get => _clickableDelay;
@@ -85,11 +85,11 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     }
     protected override void OnRaySyncedByGameManager()
     {
-        if (_isClickable)
+        if (_isClickable && !_isDeactivating)
         {
            
             SetClickable();
-            
+
             foreach (var hit in GameManager.GameManager_Hits)
             {
                 int id = hit.transform.GetInstanceID();
@@ -99,28 +99,36 @@ public class ButtonClickEventController : Ex_MonoBehaviour
                 int clickedEnum = _tfIdToEnumMap[id];
 
 
-                
-                char randomChar = (char)Random.Range('A', 'D' + 1);
-                Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Click/Click" + randomChar);
-
+                bool isButtonClicked = false;
 
                 if (_currentClickMode == ButtonClickMode.Sequential && clickedEnum == _currentOrder)
                 {
                     OnButtonClicked?.Invoke(clickedEnum);
                     _currentOrder++;
                     OnButtonClickedOnSequentialMode(clickedEnum);
+
+                    isButtonClicked = true;
                 }
                 else if (_currentClickMode == ButtonClickMode.AnyOrder)
                 {
                     OnButtonClicked?.Invoke(clickedEnum);
                     OnButtonClickedOnAnyOrderMode(clickedEnum);
+                    isButtonClicked = true;
                 }
 
                 else if (_currentClickMode == ButtonClickMode.OneClickMode)
                 {
                     OnButtonClicked?.Invoke(clickedEnum);
                     OnBtnClickedOnOneTimeClickMode(clickedEnum);
+                    isButtonClicked = true;
                 }
+
+                if (isButtonClicked)
+                {
+                    char randomChar = (char)Random.Range('A', 'D' + 1);
+                    Managers.Sound.Play(SoundManager.Sound.Effect, "Audio/Common/Click/Click" + randomChar);
+                }
+
             }
         }
       
@@ -148,6 +156,7 @@ public class ButtonClickEventController : Ex_MonoBehaviour
     {
         transform.localScale = Vector3.one;
         _isClickable = true;
+        _isDeactivating = false;
 
     }
 
@@ -196,59 +205,63 @@ public class ButtonClickEventController : Ex_MonoBehaviour
 
     #region 무작위 버튼 클릭하는(순서없음) 경우의 모드
 
+    private bool _isDeactivating;
+
     private void OnButtonClickedOnAnyOrderMode(int clickedIndex, bool isToDisappear = false)
     {
         var buttonTransform = GetObject(clickedIndex).transform;
 
         _sequencePerEnumMap[clickedIndex]?.Kill();
         _sequencePerEnumMap[clickedIndex] = DOTween.Sequence();
+        _sequencePerEnumMap[clickedIndex].AppendCallback(() =>
+        {
+            if(!_isDeactivating) buttonTransform.localScale = _defaultSizeMap[clickedIndex];
+        });
 
         _sequencePerEnumMap[clickedIndex].Append(buttonTransform
             .DOShakeScale(0.25f, 0.05f, 5, 70)
             .SetEase(Ease.InOutBack));
 
-        _sequencePerEnumMap[clickedIndex].OnKill(() =>
-        {
-            buttonTransform.localScale = _defaultSizeMap[clickedIndex];
-        });
 
         if (isToDisappear)
             _sequencePerEnumMap[clickedIndex]
                 .Append(buttonTransform.DOScale(Vector3.zero, 0.7f).SetEase(Ease.InOutBounce));
-        if (_currentOrder >= maxClickCount)
-        {
-            _currentOrder = 0; // Reset for next round
-            OnAllBtnClicked?.Invoke();
-            _isClickable = false;
-        }
+        
+        
+        // if (_currentOrder >= maxClickCount)
+        // {
+        //     _currentOrder = 0; // Reset for next round
+        //     OnAllBtnClicked?.Invoke();
+        //     _isClickable = false;
+        // }
     }
 
     #endregion
 
     public void DeactivateAllButtons()
     {
+        _clickableSeq?.Kill();
+        _isDeactivating = true;
         _isClickable = false;
 
         Logger.Log("DeactivateAllButtons called");
-
+        
         foreach (int key in _sequencePerEnumMap.Keys.ToArray())
         {
-//           Logger.Log($"Killing sequence {key}");
-            _sequencePerEnumMap[key]?.Kill();
+            _sequencePerEnumMap[key]?.Kill(true); // OnKill 방지
             _sequencePerEnumMap[key] = DOTween.Sequence();
         }
+        
 
-        DOVirtual.DelayedCall(0.5f, () =>
+        //Logger.Log("Running delayed hide");
+        for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
         {
-            //Logger.Log("Running delayed hide");
-            for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
-            {
-                var btnTransform = GetObject(i).transform;
-                _sequencePerEnumMap[i]?.Kill();
-                _sequencePerEnumMap[i] = DOTween.Sequence();
-                _sequencePerEnumMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
-            }
-        });
+            var btnTransform = GetObject(i).transform;
+            _sequencePerEnumMap[i]?.Kill();
+            _sequencePerEnumMap[i] = DOTween.Sequence();
+            _sequencePerEnumMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
+            _sequencePerEnumMap[i].AppendInterval(0.5f);
+        }
     }
 
     private void AnimateButtonLoop(Objs button)
@@ -257,23 +270,22 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         var buttonTransform = GetObject((int)button).transform;
 
         buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.55f).SetEase(Ease.OutBounce);
+        _sequencePerEnumMap[(int)button]?.Kill();
+        _sequencePerEnumMap[(int)button] = DOTween.Sequence();
+        
+        _sequencePerEnumMap[(int)button].AppendInterval(0.75f);
+        _sequencePerEnumMap[(int)button]
+            .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 1.1f, 0.25f))
+            .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 0.9f, 0.35f))
+            .SetLoops(100, LoopType.Yoyo)
+            .OnKill(() =>
+            {
+                if (_currentClickMode == ButtonClickMode.AnyOrder)
+                    buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.15f);
+            });
 
-        DOVirtual.DelayedCall(0.75f, () =>
-        {
-            _sequencePerEnumMap[(int)button]?.Kill();
-            _sequencePerEnumMap[(int)button] = DOTween.Sequence();
-            _sequencePerEnumMap[(int)button]
-                .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 1.1f, 0.25f))
-                .Append(buttonTransform.DOScale(_defaultSizeMap[(int)button] * 0.9f, 0.35f))
-                .SetLoops(100, LoopType.Yoyo)
-                .OnKill(() =>
-                {
-                    if (_currentClickMode == ButtonClickMode.AnyOrder)
-                        buttonTransform.DOScale(_defaultSizeMap[(int)button], 0.15f);
-                });
-
-            _sequencePerEnumMap[(int)button].Play();
-        });
+        _sequencePerEnumMap[(int)button].Play();
+   
 
 
     }
