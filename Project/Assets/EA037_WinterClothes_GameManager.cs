@@ -27,7 +27,10 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         Avatars,
         ButtonController,
         Fx_OnAnswer,
-        AvatarControllerOnFinish
+        AvatarControllerOnFinish,
+        OutroClothes
+        
+        ,CenterPos
     }
 
     private enum Clothes
@@ -40,6 +43,16 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         Default_Upper,
         Pants_Default
     }
+    
+    private enum OutroClothesOrder
+    {
+        Top,
+        Pants,
+        Outwear,
+        Gloves,
+        Hat,
+    }
+
 
     #region 이펙트 관리
 
@@ -55,6 +68,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
 
     private ParticleSystem _fxOnAnswer;
     private readonly float ROUND_DELAY = 6;
+    private Transform[] _outroClothes;
 
     protected override void Init()
     {
@@ -82,7 +96,15 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         InitClothesOnAvatar();
         _fxOnAnswer = GetObject((int)Objs.Fx_OnAnswer).GetComponent<ParticleSystem>();
        
-
+        GetObject((int)Objs.OutroClothes).SetActive(false);
+        _outroClothes = new Transform[GetObject((int)Objs.OutroClothes).transform.childCount];
+        
+        for(int i= 0; i < GetObject((int)Objs.OutroClothes).transform.childCount; i++)
+        {
+            _outroClothes[i] = GetObject((int)Objs.OutroClothes).transform.GetChild(i);
+            
+        }
+        
         _buttonClickEventController.OnButtonClicked -= OnBtnClicked;
         _buttonClickEventController.OnButtonClicked += OnBtnClicked;
     }
@@ -151,12 +173,72 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.Main_Outro:
-                    baseUIManager.PopInstructionUIFromScaleZero("친구들! 입은옷을 다시 살펴볼까요?",narrationPath: "EA037/Nar/LookClothesAgain");
-                   
-                    DOVirtual.DelayedCall(5f,()=>
+                    foreach (var clothe in _outroClothes)
+                    {
+                        clothe.localScale = Vector3.zero;
+                    }
+                    GetObject((int)Objs.OutroClothes).SetActive(true);
+                    
+                    Sequence OutroSeq = DOTween.Sequence();
+                    OutroSeq.AppendCallback(() =>
+                    {
+                        baseUIManager.PopInstructionUIFromScaleZero("친구들! 입은옷을 다시 살펴볼까요?",
+                            narrationPath: "EA037/Nar/LookClothesAgain");
+
+                    });
+                    OutroSeq.AppendInterval(4f);
+                    int currentIndex = 0;
+                    foreach (var clothe in _outroClothes)
+                    {
+                        int indexCache = currentIndex;
+                        Vector3 originalPos = clothe.position;
+                        OutroSeq.Append(clothe.DOScale(Vector3.one*1.25f, 0.3f).SetEase(Ease.OutBounce));
+                        OutroSeq.AppendInterval(0.2f);
+                        OutroSeq.AppendCallback(() =>
+                        {
+                            clothe.gameObject.SetActive(true);
+                            switch (indexCache)
+                            {
+                                case (int)OutroClothesOrder.Top:
+                                    baseUIManager.PopInstructionUIFromScaleZero("윗옷",
+                                        narrationPath: "EA037/Nar/NameTop");
+                                    break;
+                                case (int)OutroClothesOrder.Pants:
+                                    baseUIManager.PopInstructionUIFromScaleZero("긴바지",
+                                        narrationPath: "EA037/Nar/NamePants");
+                                    break;
+                                case (int)OutroClothesOrder.Outwear:
+                                    baseUIManager.PopInstructionUIFromScaleZero("외투",
+                                        narrationPath: "EA037/Nar/NameOuter");
+                                    break;
+                                case (int)OutroClothesOrder.Gloves:
+                                    baseUIManager.PopInstructionUIFromScaleZero("장갑",
+                                        narrationPath: "EA037/Nar/NameGlove");
+                                    break;
+                                case (int)OutroClothesOrder.Hat:
+                                    baseUIManager.PopInstructionUIFromScaleZero("모자",
+                                        narrationPath: "EA037/Nar/NameHat");
+                                    break;
+                            }
+                        });
+                        var targetPos = GetObject((int)Objs.CenterPos).transform.position;
+                        OutroSeq.Join(clothe.DOJump(targetPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
+                            .SetEase(Ease.OutQuad));
+                        OutroSeq.Join(clothe.DOShakeScale(0.5f, 0.2f, 10, 90)
+                            .SetEase(Ease.OutQuad));
+                        OutroSeq.AppendInterval(3f);
+                        OutroSeq.Append(clothe.DOJump(originalPos, 0.5f, 1, Random.Range(0.2f, 0.25f))
+                            .SetEase(Ease.OutQuad));
+                        OutroSeq.AppendInterval(2f);
+                        currentIndex++;
+                    }
+                    
+                    OutroSeq.AppendInterval(2f);
+                    OutroSeq.AppendCallback(() =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.OnFinish;
                     });
+                   
                     break;
                 
                 case (int)MainSeq.OnFinish:
