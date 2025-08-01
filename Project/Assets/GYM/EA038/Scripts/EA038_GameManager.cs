@@ -7,35 +7,44 @@ using UnityEngine;
 using System.Linq;
 using Random = UnityEngine.Random;
 
-public enum MainSeq
+public enum EA038_MainSeq
 {
     StartSequence,
     SelectAgeStageSequence,
     CardGameStageSequence,
     ObjectGameStageSequence,
-    ChangeStageSequence,
     EndSequence
 }
 
 public class EA038_GameManager : Ex_BaseGameManager
 {
-     
-
-    private MainSeq _currentSequence;
+    private EA038_MainSeq _currentSequence;
 
     private enum Cameras
     {
-        Camera1,
-        Camera2,
+        CM_CardGame,
+        CM_ObjectGame,
     }
 
     private enum Objects
     {
-        CorrectCardPositions,
-        SetCardPositions,
+        CorrectObjectPositions,
+        SetObjectPositions,
         CardPool,
-        
-        
+        CarPool,
+        FruitPool,
+        BlockPool,
+
+    }
+
+    private enum Cars
+    {
+        Ban,
+        Truck,
+        Taxi,
+        FireTruck,
+        Ambulance,
+        PoliceCar,
     }
 
     private enum Particle
@@ -47,60 +56,70 @@ public class EA038_GameManager : Ex_BaseGameManager
     public int gamePlayAge;
     [SerializeField] private int wrongCardClickedCount = 0;
     [SerializeField] private int correctCardClickedCount = 0;
-    
+
     private EA038_UIManager _uiManager;
     private Vector3 clickEffectPos;
     private List<int> numbers;
-    
-    public List<EA038_Card> _cards;
-    private Dictionary<Collider, EA038_Card> _cardByCollider;
-    
-    private Vector3 correctCardtargetPos;
 
-    private Sequence cardShakeSeq;
+    public List<EA038_Card> ea038_Cards;
+
+    private Dictionary<Collider, EA038_Card> _cardByCollider;
+
+    private Vector3 correctObjtargetPos;
+
     private Vector3 originalCardScale;
+    private Vector3 originalCarScale;
+    private Vector3 originalBlockScale;
+
+    [SerializeField] private int totalTargetClickCount = 15;
+
+    private int clickNarrationCount = 0;
+
+    private readonly string[] _clickNarrationClips =
+    {
+        "EA038/Audio/audio_20_하나",
+        "EA038/Audio/audio_21_둘",
+        "EA038/Audio/audio_22_셋",
+        "EA038/Audio/audio_23_넷",
+        "EA038/Audio/audio_24_다섯"
+    };
+
+
     protected override void Init()
     {
-        //Bind<CinemachineVirtualCamera>(typeof(Cameras));
         BindObject(typeof(Objects));
         Bind<ParticleSystem>(typeof(Particle));
+        Bind<CinemachineVirtualCamera>(typeof(Cameras));
 
         base.Init();
 
         _uiManager = UIManagerObj.GetComponent<EA038_UIManager>();
-        _currentSequence = MainSeq.StartSequence;
+        _currentSequence = EA038_MainSeq.StartSequence;
 
         psResourcePath = "EA038/Asset/Fx_Click";
         SetPool(); //클릭 이펙트 용 풀
 
-        gamePlayAge = 3; //컨텐츠 기본 설정 나이 (3세)
+        gamePlayAge = 5; //컨텐츠 기본 설정 나이 (3세)
 
         numbers = Enumerable.Range(2, 6).ToList();
-        
+
         _cardByCollider = FindObjectsOfType<EA038_Card>()
             .ToDictionary(card => card.GetComponent<Collider>(), card => card);
 
-        cardShakeSeq = DOTween.Sequence();
 
         originalCardScale = new Vector3(0.04224154f, 0.004107093f, 0.03364548f);
+        originalCarScale = Vector3.one * 0.0936f;
 
-        // Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12; //카메라들 우선순위 초기화
-        // for (int i = (int)Cameras.Camera2; i <= (int)Cameras.Camera4; i++)
-        //     Get<CinemachineVirtualCamera>(i).Priority = 10;
-        //
-        // Managers.Sound.Play(SoundManager.Sound.Bgm, "EA033/Audio/BGM");
-        //
-        // var stageParents = new[]
-        // {
-        //     GetObject((int)Objects.BellStageTreeGroup).transform,
-        //     GetObject((int)Objects.BulbStageTreeGroup).transform,
-        //     GetObject((int)Objects.CandyStageTreeGroup).transform,
-        //     GetObject((int)Objects.StarStageTreeGroup).transform
-        // };
-
-        // GetObject((int)Objs.Intro_Triangles).gameObject.SetActive(false);
-        // GetObject((int)Objs.Intro_Stars).gameObject.SetActive(false);
-
+        Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
+        for (int i = 1; i <= 1; i++)
+            Get<CinemachineVirtualCamera>(i).Priority = 10;
+        
+        Managers.Sound.Play(SoundManager.Sound.Bgm, "EA038/Audio/BGM");
+        
+        _clickClips = new AudioClip[5]; //오디오 char 캐싱 
+        for (int i = 0; i < _clickClips.Length; i++)
+            _clickClips[i] = Resources.Load<AudioClip>($"EA038/Audio/Click_{(char)('A' + i)}");
+        
     }
 
     protected override void OnGameStartButtonClicked()
@@ -115,169 +134,706 @@ public class EA038_GameManager : Ex_BaseGameManager
         base.OnDestroy();
         UI_InScene_StartBtn.onGameStartBtnShut -= GameStart;
     }
-    
+
     private void GameStart()
     {
         //if (_stage == MainSeq.OnStart)
-        ChangeStage(MainSeq.StartSequence);
-        //NextStage(MainSeq.OnFinish);
+        ChangeStage(EA038_MainSeq.StartSequence);
+        //ChangeStage(EA038_MainSeq.ObjectGameStageSequence);
     }
 
-    public void ChangeStage(MainSeq next)
+    public void ChangeStage(EA038_MainSeq next)
     {
         _currentSequence = next;
         switch (next)
         {
-            case MainSeq.StartSequence: OnStartStage(); break;
-            case MainSeq.SelectAgeStageSequence: OnSelectAgeStage(); break;
-            case MainSeq.CardGameStageSequence: OnCardGameStage(); break;
-            case MainSeq.ObjectGameStageSequence: OnObjectGameStage(); break;
-            case MainSeq.ChangeStageSequence: OnChangeStage(); break;
-            case MainSeq.EndSequence: OnEndStage(); break;
-            
+            case EA038_MainSeq.StartSequence: OnStartStage(); break;
+            case EA038_MainSeq.SelectAgeStageSequence: OnSelectAgeStage(); break;
+            case EA038_MainSeq.CardGameStageSequence: OnCardGameStage(); break;
+            case EA038_MainSeq.ObjectGameStageSequence: OnObjectGameStage(); break;
+            case EA038_MainSeq.EndSequence: OnEndStage(); break;
+
         }
-        
+
         Logger.Log($"{next}스테이지로 변경");
     }
+
+    private int cardGamePlayCount = 0;
 
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
-        if (_currentSequence == MainSeq.CardGameStageSequence)
-            foreach (var hit in GameManager_Hits)
+        if (_currentSequence == EA038_MainSeq.CardGameStageSequence)
+            OnRayCardStage();
+        else if (_currentSequence == EA038_MainSeq.ObjectGameStageSequence)
+        {
+            OnRayBlockObjStage();
+            OnRayFruitObjStage();
+            OnRayCarObjStage();
+        }
+    }
+
+    private void OnRayCardStage()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            var clickedObj = hit.collider.gameObject;
+
+            clickEffectPos = hit.point;
+            clickEffectPos.y += 0.2f;
+            PlayParticleEffect(clickEffectPos);
+            PlayClickSound();
+
+            if (_cardByCollider.TryGetValue(hit.collider, out var card))
             {
-                var clickedObj = hit.collider.gameObject;
-                //clickedObj.transform.DOKill();
-
-                // clickEffectPos = hit.point;
-                // //clickEffectPos.y += 0.2f;
-                // PlayParticleEffect(clickEffectPos);
-                // PlayClickSound();
-
-                if (_cardByCollider.TryGetValue(hit.collider, out var card))
+                if (card.cardValue == gamePlayAge && card.canClicked)
                 {
-                    if (card.cardValue == gamePlayAge && card.canClicked)
+                    correctCardClickedCount++;
+                    Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
+
+                    card.canClicked = false;
+                    card.KillShake();
+
+                    PlayClickCountNarration();
+
+                    switch (gamePlayAge)
                     {
-                        correctCardClickedCount++;
-                        Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
-
-                        card.canClicked = false;
-                        card.KillShake();
-
-                        //정답 나레이션 순서대로 재생 (하나 - 둘 - 셋 - ...)
-
-                        switch (gamePlayAge)
-                        {
-                            case 3:
-                                correctCardtargetPos = GetObject((int)Objects.CorrectCardPositions).transform
-                                    .GetChild(0).GetChild(correctCardClickedCount - 1).transform.position;
-                                break;
-                            case 4:
-                                correctCardtargetPos = GetObject((int)Objects.CorrectCardPositions).transform
-                                    .GetChild(1).GetChild(correctCardClickedCount - 1).transform.position;
-                                break;
-                            case 5:
-                                correctCardtargetPos = GetObject((int)Objects.CorrectCardPositions).transform
-                                    .GetChild(2).GetChild(correctCardClickedCount - 1).transform.position;
-                                break;
-                        }
-
-                        Vector3 targetScale = originalCardScale * 0.8f;
-
-                        card.transform.DOJump(correctCardtargetPos, 0.5f, 1, 1f);
-                        card.transform.DOScale(targetScale, 0.5f);
-                        card.transform.DORotate(new Vector3(0, 38, 0), 1f);
-
-                        if (correctCardClickedCount == gamePlayAge) //게임 종료 
-                        {
-                            switch (gamePlayAge)
-                            {
-                                case 3:
-                                    Logger.Log("다 찾았어요! 세살!");
-                                    break;
-                                case 4:
-                                    Logger.Log("다 찾았어요! 네살!");
-                                    break;
-                                case 5:
-                                    Logger.Log("다 찾았어요! 다섯살!");
-                                    break;
-                            }
-
-                            foreach (var cards in _cards)
-                            {
-                                cards.canClicked = false;
-                            }
-
-                            //카드게임 초기화
-                            DOVirtual.DelayedCall(4f, () =>
-                            {
-                                wrongCardClickedCount = 0;
-                                correctCardClickedCount = 0;
-
-                                foreach (Transform child in GetObject((int)Objects.CardPool).transform)
-                                {
-                                    child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
-                                }
-
-                                DOVirtual.DelayedCall(2f, () =>
-                                {
-                                    SettingCardGame();
-                                    
-                                    for (int i = 0; i < GetObject((int)Objects.CardPool).transform.childCount; i++)
-                                    {
-                                        GetObject((int)Objects.CardPool).transform.GetChild(i).gameObject
-                                                .transform.localPosition
-                                            = GetObject((int)Objects.SetCardPositions).transform.GetChild(i).gameObject
-                                                .transform.localPosition;
-
-                                    }
-                                });
-                            });
-                        }
+                        case 3:
+                            correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                                .GetChild(0).GetChild(correctCardClickedCount - 1).transform.position;
+                            break;
+                        case 4:
+                            correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                                .GetChild(1).GetChild(correctCardClickedCount - 1).transform.position;
+                            break;
+                        case 5:
+                            correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                                .GetChild(2).GetChild(correctCardClickedCount - 1).transform.position;
+                            break;
                     }
-                    else if (card.cardValue != gamePlayAge && card.canClicked)
+
+                    Vector3 targetScale = originalCardScale * 0.8f;
+
+                    card.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
+                    card.transform.DOScale(targetScale, 0.5f);
+                    card.transform.DORotate(new Vector3(0, 38, 0), 1f);
+
+                    if (correctCardClickedCount == gamePlayAge)
                     {
-                        wrongCardClickedCount++;
-                        if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
+                        cardGamePlayCount++;
+
+                        foreach (var cards in ea038_Cards)
                         {
-                            Logger.Log("아니야! 잘 생각해봐!");
+                            cards.canClicked = false;
                         }
-                        
-                        card.canClicked = false;
-                        clickedObj.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
-                        
+
+                        DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
+
+                        //카드게임 초기화
+                        DOVirtual.DelayedCall(4f, () =>
+                        {
+                            wrongCardClickedCount = 0;
+                            correctCardClickedCount = 0;
+
+                            foreach (Transform child in GetObject((int)Objects.CardPool).transform)
+                            {
+                                child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
+                            }
+
+                            DOVirtual.DelayedCall(2f, () =>
+                            {
+                                if (cardGamePlayCount == 2)
+                                {
+                                    ChangeStage(EA038_MainSeq.ObjectGameStageSequence);
+                                }
+                                else
+                                {
+                                    DOTween.Sequence()
+                                        .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration,
+                                            "EA038/Audio/audio_9_친구들_다시_한_번_해볼까요_"))
+                                        .AppendInterval(3f)
+                                        .AppendCallback(() =>
+                                        {
+                                            _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 3f,
+                                                narrationPath: "EA038/Audio/audio_8_내_나이_숫자에_맞는_카드를_뒤집어주세요_");
+                                        })
+                                        .AppendInterval(4f)
+                                        .AppendCallback(() =>
+                                        {
+                                            _uiManager.PlayReadyAndStart();
+                                        })
+                                        .AppendInterval(5f)
+                                        .AppendCallback(() =>
+                                        {
+                                            for (int i = 0;
+                                                 i < GetObject((int)Objects.CardPool).transform.childCount;
+                                                 i++)
+                                            {
+                                                GetObject((int)Objects.CardPool).transform.GetChild(i).gameObject
+                                                        .transform.localPosition
+                                                    = GetObject((int)Objects.SetObjectPositions).transform.GetChild(i)
+                                                        .gameObject
+                                                        .transform.localPosition;
+
+                                            }
+
+                                            SettingCardGame();
+                                        })
+                                        ;
+                                }
+                            });
+                        });
                     }
                 }
+                else if (card.cardValue != gamePlayAge && card.canClicked)
+                {
+                    wrongCardClickedCount++;
+                    if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
+                    {
+                        Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
+                        _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                    }
+                    
+                    card.canClicked = false;
+                    clickedObj.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
+
+                }
             }
+        }
     }
+
+    private void PlayClickCountNarration()
+    {
+        _uiManager.ShutInstructionUI();
+        
+        Managers.Sound.Play(SoundManager.Sound.Narration, _clickNarrationClips[clickNarrationCount]);
+        clickNarrationCount++;
+
+        if (clickNarrationCount == gamePlayAge)
+            clickNarrationCount = 0;
+    }
+
+    private int objGameStageCount = 0;
+    
+    private void OnRayCarObjStage()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            var clickedObj = hit.collider.gameObject;
+            
+            var obj = clickedObj.GetComponent<EA038_Car>();
+            if (obj == null)
+            {
+                Logger.Log("자동차 클래스가 null 입니다");
+                return;
+            }
+            
+
+            clickEffectPos = hit.point;
+            clickEffectPos.y += 0.2f;
+            PlayParticleEffect(clickEffectPos);
+            PlayClickSound();
+
+            if (obj.carValue == gamePlayAge && obj.canClicked)
+            {
+                correctCardClickedCount++;
+                Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
+
+                obj.canClicked = false;
+                obj.KillShake();
+
+                PlayClickCountNarration();
+
+                switch (gamePlayAge)
+                {
+                    case 3:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(0).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 4:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(1).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 5:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(2).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                }
+
+                Vector3 targetScale = originalCarScale * 0.9f;
+
+                obj.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
+                obj.transform.DOScale(targetScale, 0.5f);
+                obj.transform.DORotate(new Vector3(0, 0, 0), 1f);
+
+                if (correctCardClickedCount == gamePlayAge) //게임 종료 
+                {
+                    DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
+
+                    objGameStageCount++;
+
+                    Transform carPool = GetObject((int)Objects.CarPool).transform;
+
+                    for (int i = 0; i < carPool.childCount; i++)
+                    {
+                        var typeParent = carPool.GetChild(i);
+
+                        for (int j = 0; j < typeParent.childCount; j++)
+                        {
+                            typeParent.GetChild(j).gameObject.GetComponent<EA038_Car>().canClicked = false;
+                        }
+                    }
+
+                    //자동차 게임 초기화
+                    DOVirtual.DelayedCall(4f, () =>
+                    {
+                        wrongCardClickedCount = 0;
+                        correctCardClickedCount = 0;
+
+                        for (int i = 0; i < GetObject((int)Objects.CarPool).transform.childCount; i++)
+                        {
+                            var typeParent = GetObject((int)Objects.CarPool).transform.GetChild(i);
+                            for (int j = 0; j < typeParent.childCount; j++)
+                            {
+                                typeParent.GetChild(j).gameObject.transform.DOScale(Vector3.zero, 1f)
+                                    .SetEase(Ease.OutCubic).OnComplete(() =>
+                                        typeParent.GetChild(j).gameObject.SetActive(false));
+                            }
+                        }
+
+                        if (objGameStageCount == 2)
+                        {
+                            DOVirtual.DelayedCall(2f, StartSecondObjectGame);
+                        }
+                        else if (objGameStageCount == 4)
+                        {
+                            ChangeStage(EA038_MainSeq.EndSequence);
+                        }
+                        else
+                        {
+                            DOTween.Sequence()
+                                .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration,
+                                    "EA038/Audio/audio_9_친구들_다시_한_번_해볼까요_"))
+                                .AppendInterval(3f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 자동차를 터치해주세요!", 3f,
+                                        narrationPath: "EA038/Audio/audio_13_내_나이_숫자가_써진_자동차를_터치해주세요_");
+                                })
+                                .AppendInterval(4f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PlayReadyAndStart();
+                                })
+                                .AppendInterval(5f)
+                                .AppendCallback(SettingCarObject)
+                                ;
+                        }
+
+                    });
+                }
+            }
+            else if (obj.carValue != gamePlayAge && obj.canClicked)
+            {
+                wrongCardClickedCount++;
+                if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
+                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                }
+
+                obj.canClicked = false;
+                clickedObj.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
+
+            }
+        }
+    }
+
+    private void OnRayFruitObjStage()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            var clickedObj = hit.collider.gameObject;
+            
+            var _objEA038 = clickedObj.GetComponent<EA038_Fruit>();
+            if (_objEA038 == null)
+            {
+                Logger.Log("과일 클래스가 null 입니다");
+                return;
+            }
+            
+            
+            clickEffectPos = hit.point;
+            clickEffectPos.y += 0.2f;
+            PlayParticleEffect(clickEffectPos);
+            PlayClickSound();
+
+            
+
+            if (_objEA038.Value == gamePlayAge && _objEA038.canClicked)
+            {
+                correctCardClickedCount++;
+                Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
+
+                _objEA038.canClicked = false;
+                _objEA038.KillShake();
+                
+                PlayClickCountNarration();
+
+                switch (gamePlayAge)
+                {
+                    case 3:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(0).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 4:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(1).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 5:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(2).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                }
+
+                Vector3 targetScale = _objEA038.originalScale * 0.9f;
+
+                _objEA038.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
+                _objEA038.transform.DOScale(targetScale, 0.5f);
+                //obj.transform.DORotate(new Vector3(0, 0, 0), 1f);
+
+                if (correctCardClickedCount == gamePlayAge) //게임 종료 
+                {
+                    DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
+
+                    objGameStageCount++;
+
+                    Transform fruitPool = GetObject((int)Objects.FruitPool).transform;
+
+                    for (int i = 0; i < fruitPool.childCount; i++)
+                    {
+                        var typeParent = fruitPool.GetChild(i);
+
+                        for (int j = 0; j < typeParent.childCount; j++)
+                        {
+                            typeParent.GetChild(j).gameObject.GetComponent<EA038_Fruit>().canClicked = false;
+                        }
+                    }
+
+                    //과일 게임 초기화
+                    DOVirtual.DelayedCall(4f, () =>
+                    {
+                        wrongCardClickedCount = 0;
+                        correctCardClickedCount = 0;
+
+                        for (int i = 0; i < GetObject((int)Objects.FruitPool).transform.childCount; i++)
+                        {
+                            var typeParent = GetObject((int)Objects.FruitPool).transform.GetChild(i);
+                            for (int j = 0; j < typeParent.childCount; j++)
+                            {
+                                typeParent.GetChild(j).gameObject.transform.DOScale(Vector3.zero, 1f)
+                                    .SetEase(Ease.OutCubic).OnComplete(() =>
+                                        typeParent.GetChild(j).gameObject.SetActive(false));
+                            }
+                        }
+
+                        if (objGameStageCount == 2)
+                        {
+                            DOVirtual.DelayedCall(2f, StartSecondObjectGame);
+                        }
+                        else if (objGameStageCount == 4)
+                        {
+                            ChangeStage(EA038_MainSeq.EndSequence);
+                        }
+                        else
+                        {
+                            DOTween.Sequence()
+                                .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration,
+                                    "EA038/Audio/audio_9_친구들_다시_한_번_해볼까요_"))
+                                .AppendInterval(3f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 과일을 터치해주세요!", 3f,
+                                        narrationPath: "EA038/Audio/audio_12_내_나이_숫자가_써진_과일을_터치해주세요_");
+                                })
+                                .AppendInterval(4f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PlayReadyAndStart();
+                                })
+                                .AppendInterval(5f)
+                                .AppendCallback(SettingFruitGame)
+                                ;
+                        }
+                    });
+                }
+            }
+            else if (_objEA038.Value != gamePlayAge && _objEA038.canClicked)
+            {
+                wrongCardClickedCount++;
+                if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
+                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                }
+
+                _objEA038.canClicked = false;
+                clickedObj.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
+
+            }
+        }
+    }
+
+    private void OnRayBlockObjStage()
+    {
+        foreach (var hit in GameManager_Hits)
+        {
+            var clickedObj = hit.collider.gameObject;
+            
+            var _objEA038 = clickedObj.GetComponent<EA038_Block>();
+            if (_objEA038 == null)
+            {
+                Logger.Log("블럭 클래스가 null 입니다");
+                return;
+            }
+            
+            clickEffectPos = hit.point;
+            clickEffectPos.y += 0.2f;
+            PlayParticleEffect(clickEffectPos);
+            PlayClickSound();
+
+            if (_objEA038.Value == gamePlayAge && _objEA038.canClicked)
+            {
+                correctCardClickedCount++;
+                Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
+
+                _objEA038.canClicked = false;
+                _objEA038.KillShake();
+                
+                PlayClickCountNarration();
+
+                switch (gamePlayAge)
+                {
+                    case 3:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(0).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 4:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(1).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                    case 5:
+                        correctObjtargetPos = GetObject((int)Objects.CorrectObjectPositions).transform
+                            .GetChild(2).GetChild(correctCardClickedCount - 1).transform.position;
+                        break;
+                }
+
+                Vector3 targetScale = _objEA038.originalScale * 0.9f;
+
+                _objEA038.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
+                _objEA038.transform.DOScale(targetScale, 0.5f);
+                _objEA038.transform.DORotate(new Vector3(0, 38.623f, 0), 1f);
+
+                if (correctCardClickedCount == gamePlayAge) //게임 종료 
+                {
+                    DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
+
+                    objGameStageCount++;
+
+                    Transform blockPool = GetObject((int)Objects.BlockPool).transform;
+
+                    for (int i = 0; i < blockPool.childCount; i++)
+                    {
+                        var typeParent = blockPool.GetChild(i);
+
+                        for (int j = 0; j < typeParent.childCount; j++)
+                        {
+                            typeParent.GetChild(j).gameObject.GetComponent<EA038_Block>().canClicked = false;
+                        }
+                    }
+
+                    //과일 게임 초기화
+                    DOVirtual.DelayedCall(4f, () =>
+                    {
+                        wrongCardClickedCount = 0;
+                        correctCardClickedCount = 0;
+
+                        for (int i = 0; i < GetObject((int)Objects.BlockPool).transform.childCount; i++)
+                        {
+                            var typeParent = GetObject((int)Objects.BlockPool).transform.GetChild(i);
+                            for (int j = 0; j < typeParent.childCount; j++)
+                            {
+                                typeParent.GetChild(j).gameObject.transform.DOScale(Vector3.zero, 1f)
+                                    .SetEase(Ease.OutCubic).OnComplete(() =>
+                                        typeParent.GetChild(j).gameObject.SetActive(false));
+                            }
+                        }
+
+                        if (objGameStageCount == 2)
+                        {
+                            DOVirtual.DelayedCall(2f, StartSecondObjectGame);
+                        }
+                        else if (objGameStageCount == 4)
+                        {
+                            ChangeStage(EA038_MainSeq.EndSequence);
+                        }
+                        else
+                        {
+                            DOTween.Sequence()
+                                .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration,
+                                    "EA038/Audio/audio_9_친구들_다시_한_번_해볼까요_"))
+                                .AppendInterval(3f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 블럭을 터치해주세요!", 3f,
+                                        narrationPath: "EA038/Audio/audio_14_내_나이_숫자가_써진_블럭을_터치해주세요_");
+                                })
+                                .AppendInterval(4f)
+                                .AppendCallback(() =>
+                                {
+                                    _uiManager.PlayReadyAndStart();
+                                })
+                                .AppendInterval(5f)
+                                .AppendCallback(SettingBlockGame)
+                                ;
+                        }
+                    });
+                }
+            }
+            else if (_objEA038.Value != gamePlayAge && _objEA038.canClicked)
+            {
+                wrongCardClickedCount++;
+                if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
+                {
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
+                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                }
+
+                _objEA038.canClicked = false;
+                clickedObj.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
+
+            }
+        }
+    }
+
+    private void ShowNarrationGamePlayAge()
+    {
+        switch (gamePlayAge)
+        {
+            case 3:
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_27_다_찾았어요__세살_");
+                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 3살!", 3f);
+                break;
+            case 4:
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_28_다_찾았어요__네살_");
+                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 4살!", 3f);
+                break;
+            case 5:
+                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
+                break;
+        }
+    }
+
 
     private void OnStartStage()
     {
-        DOVirtual.DelayedCall(2f, () => ChangeStage(MainSeq.SelectAgeStageSequence));
+        DecidePlayObjGame();
+        
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_0_형님이_된_나이만큼_숫자를_알아봐요_");
+            })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_1_내_나이를_찾아볼까요_");
+                _uiManager.PopInstructionUIFromScaleZero("내 나이를 찾아볼까요?", 4f);
+            })
+            .AppendInterval(3.5f)
+            .AppendCallback(() =>
+            {
+                ChangeStage(EA038_MainSeq.SelectAgeStageSequence);
+            })
+            ;
 
     }
-    
+
     private void OnSelectAgeStage()
     {
-        //먼저 나이를 설정해주세요!
-        
-        // 화면 중앙에 3,4,5세 버튼이 있고 해당 버튼을 터치하면 해당 나이로 설정된 게임 진행
-        // _gamePlayAge
-        //터치하면 해당 버튼이 화면 중앙으로 크게 이동한 뒤 n살 나레이션 재생
-        
-        //테스트용
-        _uiManager.ShowSelectAgeBtn();
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_2_먼저_나이를_설정해주세요_");
+                _uiManager.PopInstructionUIFromScaleZero("먼저 나이를 설정해주세요!", 12345);
+
+                _uiManager.ShowSelectAgeBtn();
+            });
+
     }
 
     private void OnCardGameStage()
     {
-        SettingCardGame();
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_7_내_나이_카드를_뒤집어요_");
+            })
+            .AppendInterval(3f)
+            .AppendCallback(() =>
+            {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_8_내_나이_숫자에_맞는_카드를_뒤집어주세요_");
+                _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 3.5f);
+            })
+            .AppendInterval(4.5f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PlayReadyAndStart();
+            })
+            .AppendInterval(5f)
+            .AppendCallback(SettingCardGame)
+            ;
+
     }
+
+
+
+    private void OnObjectGameStage()
+    {
+        Get<CinemachineVirtualCamera>((int)Cameras.CM_CardGame).Priority = 10;
+        Get<CinemachineVirtualCamera>((int)Cameras.CM_ObjectGame).Priority = 12;
+
+        DOVirtual.DelayedCall(2f, StartFirstObjectGame); 
+
+    }
+
+
+    private void OnEndStage()
+    {
+        DOTween.Sequence()
+            .AppendCallback(() =>
+            {
+                _uiManager.ShowSelectAgeBtn(); //버튼 화면 송출
+                Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_15_내_나이를_알아봤어요_");
+            })
+            .AppendInterval(2.5f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("친구들 나이를 잘 기억해요~!", 12345f,
+                    narrationPath: "EA038/Audio/audio_16_친구들_나이를_잘_기억해요_");
+
+                RestartScene();
+            })
+            ;
+    }
+
+    
+    #region 카드게임 기능
 
     private void SettingCardGame()
     {
-        int total = _cards.Count;
+        int total = totalTargetClickCount;
 
         List<int> values = new List<int>(total);
 
@@ -303,11 +859,11 @@ public class EA038_GameManager : Ex_BaseGameManager
 
         for (int i = 0; i < total; i++)
         {
-            _cards[i].SetValue(values[i]);
-            _cards[i].ChangeCardValueTMP(values[i]);
+            ea038_Cards[i].SetValue(values[i]);
+            ea038_Cards[i].ChangeValueTMP(values[i]);
         }
 
-        foreach (var card in _cards)
+        foreach (var card in ea038_Cards)
             card.gameObject.transform.DOScale(originalCardScale, 1f).SetEase(Ease.OutBack)
                 .OnComplete(() =>
                 {
@@ -318,36 +874,321 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     }
 
-    private void OnObjectGameStage()
+
+    #endregion
+
+    #region 자동차 게임 기능
+
+    private Dictionary<int, Cars> _CarMapping = new Dictionary<int, Cars>();
+
+    private void SettingCarObject()
     {
-        
+        for (int i = 0; i < GetObject((int)Objects.CarPool).transform.childCount; i++)
+        {
+            var typeParent = GetObject((int)Objects.CarPool).transform.GetChild(i);
+            for (int j = 0; j < typeParent.childCount; j++)
+            {
+                typeParent.GetChild(j).gameObject.SetActive(false);
+            }
+        }
+
+        Cars[] carArray = (Cars[])Enum.GetValues(typeof(Cars));
+
+        // 셔플
+        for (int i = carArray.Length - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1); // 0 <= j <= i
+            Cars tmp = carArray[i];
+            carArray[i] = carArray[j];
+            carArray[j] = tmp;
+        }
+
+        _CarMapping.Clear();
+
+        for (int i = 0; i < carArray.Length; i++)
+        {
+            int key = i + 2;
+            _CarMapping.Add(key, carArray[i]);
+        }
+
+
+        int total = totalTargetClickCount;
+
+        List<int> values = new List<int>(total);
+
+        numbers.Remove(gamePlayAge);
+
+        for (int i = 0; i < gamePlayAge; i++)
+            values.Add(gamePlayAge);
+
+        values.AddRange(numbers);
+
+        int leftValueCount = gamePlayAge + numbers.Count;
+        for (int i = leftValueCount; i < total; i++)
+            values.Add(numbers[Random.Range(0, numbers.Count)]);
+
+        // 셔플
+        for (int i = 0; i < values.Count; i++)
+        {
+            int j = Random.Range(0, total);
+            int tmp = values[i];
+            values[i] = values[j];
+            values[j] = tmp;
+        }
+
+        Dictionary<Cars, int> reverseMap = _CarMapping
+            .ToDictionary(pair => pair.Value, pair => pair.Key);
+
+        Transform carPool = GetObject((int)Objects.CarPool).transform;
+
+        for (int i = 0; i < carPool.childCount; i++)
+        {
+            var typeParent = carPool.GetChild(i);
+            Cars carType = (Cars)i;
+
+            int key = reverseMap[carType];
+
+            for (int j = 0; j < typeParent.childCount; j++)
+            {
+                var car = typeParent.GetChild(j)
+                    .GetComponent<EA038_Car>();
+                car.SetValue(key);
+                car.ChangeValueTMP(key);
+            }
+        }
+
+        for (int i = 0; i < total; i++) //values[] 대로 딕셔너리에서 뽑아와서 해당 자동차 생성하는 로직
+        {
+            GetDeactiveChild(GetObject((int)Objects.CarPool).transform.GetChild((int)_CarMapping[values[i]]).transform)
+                    .transform.position
+                = GetObject((int)Objects.SetObjectPositions).transform.GetChild(i).transform.position;
+
+            EA038_Car car =
+                GetDeactiveChild(GetObject((int)Objects.CarPool).transform.GetChild((int)_CarMapping[values[i]])
+                        .transform)
+                    .transform.gameObject.GetComponent<EA038_Car>();
+
+            GameObject carObj = GetDeactiveChild(GetObject((int)Objects.CarPool).transform
+                .GetChild((int)_CarMapping[values[i]]).transform);
+
+            carObj.SetActive(true);
+            carObj.transform.DOScale(originalCarScale, 1f).SetEase(Ease.OutBack)
+                .From(Vector3.zero)
+                .OnComplete(() =>
+                {
+                    car.canClicked = true;
+                    if (car.carValue == gamePlayAge)
+                        car.Shake();
+                });
+        }
     }
 
-    private void OnChangeStage()
+    #endregion
+
+    #region 과일 게임 기능
+
+    private List<int> codePool = Enumerable.Range(2, 6).ToList();
+    public Dictionary<FruitType, int> fruitCodeMap;
+
+    private void SettingFruitGame()
     {
-        
+        shuffleFruit();
+
+        for (int i = 0; i < GetObject((int)Objects.FruitPool).transform.childCount; i++)
+        {
+            var typeParent = GetObject((int)Objects.FruitPool).transform.GetChild(i);
+            for (int j = 0; j < typeParent.childCount; j++)
+            {
+                typeParent.GetChild(j).gameObject.SetActive(false);
+            }
+        }
+
+        for (int i = 0; i < GetObject((int)Objects.FruitPool).transform.childCount; i++)
+        for (int j = 0; j < GetObject((int)Objects.FruitPool).transform.GetChild(i).childCount; j++)
+        {
+            var fruit = GetObject((int)Objects.FruitPool).transform.GetChild(i).GetChild(j).GetComponent<EA038_Fruit>();
+            fruit.settingFruit();
+            //fruit.gameObject.transform.localScale = fruit.originalScale;
+        }
+
+        List<int> Pos = ShuffleSpawnOne();
+
+        Dictionary<int, FruitType> reverseMap = fruitCodeMap
+            .ToDictionary(pair => pair.Value, pair => pair.Key);
+
+        for (int i = 0; i < 15; i++)
+        {
+            GetDeactiveChild(GetObject((int)Objects.FruitPool).transform.GetChild((int)reverseMap[Pos[i]]).transform)
+                    .transform.position
+                = GetObject((int)Objects.SetObjectPositions).transform.GetChild(i).transform.position;
+
+
+            EA038_Fruit fruit = GetDeactiveChild(GetObject((int)Objects.FruitPool).transform
+                .GetChild((int)reverseMap[Pos[i]]).transform).transform.gameObject.GetComponent<EA038_Fruit>();
+
+            GameObject fruitObj = GetDeactiveChild(GetObject((int)Objects.FruitPool).transform
+                .GetChild((int)reverseMap[Pos[i]]).transform);
+
+            fruitObj.SetActive(true);
+            fruitObj.transform.DOScale(Vector3.one * 0.6f, 1f).SetEase(Ease.OutBack)
+                .From(Vector3.zero)
+                .OnComplete(() =>
+                {
+                    fruit.canClicked = true;
+                    if (fruit.Value == gamePlayAge)
+                        fruit.Shake();
+                });
+        }
+
     }
 
-    private void OnEndStage()
+    public void shuffleFruit()
     {
-        
+        for (int i = codePool.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            var tmp = codePool[i];
+            codePool[i] = codePool[j];
+            codePool[j] = tmp;
+        }
+
+        FruitType[] types = Enum.GetValues(typeof(FruitType))
+            .Cast<FruitType>()
+            .ToArray();
+
+        fruitCodeMap = new Dictionary<FruitType, int>();
+        for (int i = 0; i < types.Length; i++)
+            fruitCodeMap[types[i]] = codePool[i];
+
     }
-    
-    
-    
+
+    #endregion
+
+
+    private List<int> ShuffleSpawnOne()
+    {
+        int total = totalTargetClickCount;
+
+        List<int> values = new List<int>(total);
+
+        numbers.Clear();
+        numbers = Enumerable.Range(2, 6).ToList();
+
+        numbers.Remove(gamePlayAge);
+
+        for (int i = 0; i < gamePlayAge; i++)
+            values.Add(gamePlayAge);
+
+        values.AddRange(numbers);
+
+        int leftValueCount = gamePlayAge + numbers.Count;
+        for (int i = leftValueCount; i < total; i++)
+            values.Add(numbers[Random.Range(0, numbers.Count)]);
+
+        // 셔플
+        for (int i = values.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+
+            int tmp = values[i];
+            values[i] = values[j];
+            values[j] = tmp;
+        }
+
+        return values;
+    }
+
+
+
+    private List<int> blockRandomList = Enumerable.Range(2, 6).ToList();
+    public Dictionary<BlockType, int> blockCodeMap;
+
+    private void SettingBlockGame()
+    {
+        shuffleBlock();
+
+        for (int i = 0; i < GetObject((int)Objects.BlockPool).transform.childCount; i++)
+        {
+            var typeParent = GetObject((int)Objects.BlockPool).transform.GetChild(i);
+            for (int j = 0; j < typeParent.childCount; j++)
+            {
+                typeParent.GetChild(j).gameObject.SetActive(false);
+            }
+        }
+
+        for (int i = 0; i < GetObject((int)Objects.BlockPool).transform.childCount; i++)
+        for (int j = 0; j < GetObject((int)Objects.BlockPool).transform.GetChild(i).childCount; j++)
+        {
+            var block = GetObject((int)Objects.BlockPool).transform.GetChild(i).GetChild(j).GetComponent<EA038_Block>();
+            block.settingBlock();
+            //fruit.gameObject.transform.localScale = fruit.originalScale;
+        }
+
+        List<int> Pos = ShuffleSpawnOne();
+
+        Dictionary<int, BlockType> reverseMap = blockCodeMap
+            .ToDictionary(pair => pair.Value, pair => pair.Key);
+
+        for (int i = 0; i < 15; i++)
+        {
+            GetDeactiveChild(GetObject((int)Objects.BlockPool).transform.GetChild((int)reverseMap[Pos[i]]).transform)
+                    .transform.position
+                = GetObject((int)Objects.SetObjectPositions).transform.GetChild(i).transform.position;
+
+
+            EA038_Block block = GetDeactiveChild(GetObject((int)Objects.BlockPool).transform
+                .GetChild((int)reverseMap[Pos[i]]).transform).transform.gameObject.GetComponent<EA038_Block>();
+
+            GameObject blockObj = GetDeactiveChild(GetObject((int)Objects.BlockPool).transform
+                .GetChild((int)reverseMap[Pos[i]]).transform);
+
+            blockObj.SetActive(true);
+            blockObj.transform.DOScale(block.originalScale, 1f).SetEase(Ease.OutBack)
+                .From(Vector3.zero)
+                .OnComplete(() =>
+                {
+                    block.canClicked = true;
+                    if (block.Value == gamePlayAge)
+                        block.Shake();
+                });
+        }
+
+    }
+
+    public void shuffleBlock()
+    {
+        for (int i = blockRandomList.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            var tmp = blockRandomList[i];
+            blockRandomList[i] = blockRandomList[j];
+            blockRandomList[j] = tmp;
+        }
+
+        BlockType[] types = Enum.GetValues(typeof(BlockType))
+            .Cast<BlockType>()
+            .ToArray();
+
+        blockCodeMap = new Dictionary<BlockType, int>();
+        for (int i = 0; i < types.Length; i++)
+            blockCodeMap[types[i]] = blockRandomList[i];
+
+    }
+
+
     private AudioClip[] _clickClips;
-    
-    private void PlayClickSound() 
+
+    private void PlayClickSound()
     {
         int idx = Random.Range(0, _clickClips.Length);
-        
+
         if (_clickClips[idx] == null)
             Logger.Log("사운드 경로에 없음");
-        
+
         Managers.Sound.Play(SoundManager.Sound.Effect, _clickClips[idx]);
-        
+
     }
-    
+
     private void PlayVictorySoundAndEffect()
     {
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA038/Audio/audio_Victory");
@@ -355,5 +1196,134 @@ public class EA038_GameManager : Ex_BaseGameManager
         Get<ParticleSystem>((int)Particle.Victory1).Play();
         Get<ParticleSystem>((int)Particle.Victory2).Play();
     }
+
+
+    private GameObject GetDeactiveChild(Transform parent)
+    {
+        foreach (Transform child in parent)
+            if (!child.gameObject.activeSelf)
+                return child.gameObject;
+        return null;
+    }
+
+
+    #region 사물 게임 순서 정하는 기능
+
+    private enum ObjGameType
+    {
+        Car,
+        Fruit,
+        Block
+    }
+
+    private List<ObjGameType> objGameTypes = new List<ObjGameType>
+    {
+        ObjGameType.Car,
+        ObjGameType.Fruit,
+        ObjGameType.Block
+    };
+
+    private ObjGameType firstStage;
+    private ObjGameType secondStage;
+
+    private void DecidePlayObjGame()
+    {
+        int i = Random.Range(0, objGameTypes.Count);
+        firstStage = objGameTypes[i];
+
+        objGameTypes.RemoveAt(i);
+
+        int j = Random.Range(0, objGameTypes.Count);
+        secondStage = objGameTypes[j];
+
+    }
+    
+    #endregion
+    
+    private void StartFirstObjectGame()
+    {
+        string promptText;
+        string narrationKey;
+        TweenCallback spawnAction;
+
+        switch (firstStage)
+        {
+            case ObjGameType.Car:
+                promptText = "내 나이 숫자가 써진 자동차를 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_13_내_나이_숫자가_써진_자동차를_터치해주세요_";
+                spawnAction = SettingCarObject;
+                break;
+            case ObjGameType.Fruit:
+                promptText = "내 나이 숫자가 써진 과일을 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_12_내_나이_숫자가_써진_과일을_터치해주세요_";
+                spawnAction = SettingFruitGame;
+                break;
+            case ObjGameType.Block:
+                promptText = "내 나이 숫자가 써진 블럭을 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_14_내_나이_숫자가_써진_블럭을_터치해주세요_";
+                spawnAction = SettingBlockGame;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        DOTween.Sequence()
+            .AppendCallback(() =>
+                _uiManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f, narrationPath: "EA038/Audio/audio_10_이번엔_다른_놀이를_해볼까요_"))
+            .AppendInterval(3f)
+            .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_11_내_나이_개수만큼_제시된_사물을_모아주세요_"))
+            .AppendInterval(4.8f)
+            .AppendCallback(() => _uiManager.PopInstructionUIFromScaleZero(promptText,4f, narrationPath: narrationKey))
+            .AppendInterval(5f)
+            .AppendCallback(() => _uiManager.PlayReadyAndStart())
+            .AppendInterval(5f)
+            .AppendCallback(spawnAction)
+            ;
+    }
+
+    private void StartSecondObjectGame()
+    {
+        string promptText;
+        string narrationKey;
+        TweenCallback spawnAction;
+
+        switch (secondStage)
+        {
+            case ObjGameType.Car:
+                promptText = "내 나이 숫자가 써진 자동차를 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_13_내_나이_숫자가_써진_자동차를_터치해주세요_";
+                spawnAction = SettingCarObject;
+                break;
+            case ObjGameType.Fruit:
+                promptText = "내 나이 숫자가 써진 과일을 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_12_내_나이_숫자가_써진_과일을_터치해주세요_";
+                spawnAction = SettingFruitGame;
+                break;
+            case ObjGameType.Block:
+                promptText = "내 나이 숫자가 써진 블럭을 터치해주세요!";
+                narrationKey = "EA038/Audio/audio_14_내_나이_숫자가_써진_블럭을_터치해주세요_";
+                spawnAction = SettingBlockGame;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        DOTween.Sequence()
+            .AppendCallback(() => _uiManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f, narrationPath: "EA038/Audio/audio_10_이번엔_다른_놀이를_해볼까요_"))
+            .AppendInterval(3f)
+            .AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_11_내_나이_개수만큼_제시된_사물을_모아주세요_"))
+            .AppendInterval(4.8f)
+            .AppendCallback(() => _uiManager.PopInstructionUIFromScaleZero(promptText, 4f, narrationPath: narrationKey))
+            .AppendInterval(5f)
+            .AppendCallback(() => _uiManager.PlayReadyAndStart())
+            .AppendInterval(5f)
+            .AppendCallback(spawnAction)
+            ;
+    }
+
+    
+
+    
+
 
 }
