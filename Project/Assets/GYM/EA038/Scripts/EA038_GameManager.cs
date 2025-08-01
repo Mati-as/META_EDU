@@ -68,7 +68,6 @@ public class EA038_GameManager : Ex_BaseGameManager
     private Vector3 correctObjtargetPos;
 
     private Vector3 originalCardScale;
-    private Vector3 originalCarScale;
     private Vector3 originalBlockScale;
 
     [SerializeField] private int totalTargetClickCount = 15;
@@ -84,7 +83,8 @@ public class EA038_GameManager : Ex_BaseGameManager
         "EA038/Audio/audio_24_다섯"
     };
 
-
+    private Vector3 randomEuler;
+    
     protected override void Init()
     {
         BindObject(typeof(Objects));
@@ -108,7 +108,6 @@ public class EA038_GameManager : Ex_BaseGameManager
 
 
         originalCardScale = new Vector3(0.04224154f, 0.004107093f, 0.03364548f);
-        originalCarScale = Vector3.one * 0.0936f;
 
         Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
         for (int i = 1; i <= 1; i++)
@@ -180,15 +179,15 @@ public class EA038_GameManager : Ex_BaseGameManager
         {
             var clickedObj = hit.collider.gameObject;
 
-            clickEffectPos = hit.point;
-            clickEffectPos.y += 0.2f;
-            PlayParticleEffect(clickEffectPos);
-            PlayClickSound();
-
             if (_cardByCollider.TryGetValue(hit.collider, out var card))
             {
                 if (card.cardValue == gamePlayAge && card.canClicked)
                 {
+                    clickEffectPos = hit.point;
+                    clickEffectPos.y += 0.2f;
+                    PlayParticleEffect(clickEffectPos);
+                    PlayClickSound();
+                    
                     correctCardClickedCount++;
                     Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
 
@@ -228,6 +227,8 @@ public class EA038_GameManager : Ex_BaseGameManager
                             cards.canClicked = false;
                         }
 
+                        PlayVictorySoundAndEffect();
+                        
                         DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
 
                         //카드게임 초기화
@@ -288,11 +289,16 @@ public class EA038_GameManager : Ex_BaseGameManager
                 }
                 else if (card.cardValue != gamePlayAge && card.canClicked)
                 {
+                    clickEffectPos = hit.point;
+                    clickEffectPos.y += 0.2f;
+                    PlayParticleEffect(clickEffectPos);
+                    PlayClickSound();
+                    
                     wrongCardClickedCount++;
                     if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
-                        _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                        //_uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
                     }
                     
                     card.canClicked = false;
@@ -305,8 +311,6 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     private void PlayClickCountNarration()
     {
-        _uiManager.ShutInstructionUI();
-        
         Managers.Sound.Play(SoundManager.Sound.Narration, _clickNarrationClips[clickNarrationCount]);
         clickNarrationCount++;
 
@@ -329,14 +333,13 @@ public class EA038_GameManager : Ex_BaseGameManager
                 return;
             }
             
-
-            clickEffectPos = hit.point;
-            clickEffectPos.y += 0.2f;
-            PlayParticleEffect(clickEffectPos);
-            PlayClickSound();
-
             if (obj.carValue == gamePlayAge && obj.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 correctCardClickedCount++;
                 Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
 
@@ -361,14 +364,16 @@ public class EA038_GameManager : Ex_BaseGameManager
                         break;
                 }
 
-                Vector3 targetScale = originalCarScale * 0.9f;
+                Vector3 targetScale = obj.originalScale * 0.9f;
 
                 obj.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
                 obj.transform.DOScale(targetScale, 0.5f);
-                obj.transform.DORotate(new Vector3(0, 0, 0), 1f);
+                obj.transform.DORotate(new Vector3(0, -15.675f, 0), 1f);
 
                 if (correctCardClickedCount == gamePlayAge) //게임 종료 
                 {
+                    PlayVictorySoundAndEffect();
+                    
                     DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
 
                     objGameStageCount++;
@@ -436,11 +441,16 @@ public class EA038_GameManager : Ex_BaseGameManager
             }
             else if (obj.carValue != gamePlayAge && obj.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 wrongCardClickedCount++;
                 if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
-                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                    //_uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
                 }
 
                 obj.canClicked = false;
@@ -463,16 +473,13 @@ public class EA038_GameManager : Ex_BaseGameManager
                 return;
             }
             
-            
-            clickEffectPos = hit.point;
-            clickEffectPos.y += 0.2f;
-            PlayParticleEffect(clickEffectPos);
-            PlayClickSound();
-
-            
-
             if (_objEA038.Value == gamePlayAge && _objEA038.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 correctCardClickedCount++;
                 Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
 
@@ -505,6 +512,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
                 if (correctCardClickedCount == gamePlayAge) //게임 종료 
                 {
+                    PlayVictorySoundAndEffect();
+                    
                     DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
 
                     objGameStageCount++;
@@ -571,11 +580,16 @@ public class EA038_GameManager : Ex_BaseGameManager
             }
             else if (_objEA038.Value != gamePlayAge && _objEA038.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 wrongCardClickedCount++;
                 if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
-                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                    //_uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
                 }
 
                 _objEA038.canClicked = false;
@@ -597,14 +611,14 @@ public class EA038_GameManager : Ex_BaseGameManager
                 Logger.Log("블럭 클래스가 null 입니다");
                 return;
             }
-            
-            clickEffectPos = hit.point;
-            clickEffectPos.y += 0.2f;
-            PlayParticleEffect(clickEffectPos);
-            PlayClickSound();
 
             if (_objEA038.Value == gamePlayAge && _objEA038.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 correctCardClickedCount++;
                 Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
 
@@ -637,6 +651,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
                 if (correctCardClickedCount == gamePlayAge) //게임 종료 
                 {
+                    PlayVictorySoundAndEffect();
+                    
                     DOVirtual.DelayedCall(1f, ShowNarrationGamePlayAge);
 
                     objGameStageCount++;
@@ -703,11 +719,16 @@ public class EA038_GameManager : Ex_BaseGameManager
             }
             else if (_objEA038.Value != gamePlayAge && _objEA038.canClicked)
             {
+                clickEffectPos = hit.point;
+                clickEffectPos.y += 0.2f;
+                PlayParticleEffect(clickEffectPos);
+                PlayClickSound();
+                
                 wrongCardClickedCount++;
                 if (wrongCardClickedCount % 2 == 1) //2회에 한번 오답 안내 나레이션
                 {
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_25_아니야__잘생각해봐_");
-                    _uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
+                    //_uiManager.PopInstructionUIFromScaleZero("아니야! 잘 생각해봐!", 3f);
                 }
 
                 _objEA038.canClicked = false;
@@ -804,7 +825,7 @@ public class EA038_GameManager : Ex_BaseGameManager
         Get<CinemachineVirtualCamera>((int)Cameras.CM_CardGame).Priority = 10;
         Get<CinemachineVirtualCamera>((int)Cameras.CM_ObjectGame).Priority = 12;
 
-        DOVirtual.DelayedCall(2f, StartFirstObjectGame); 
+        DOVirtual.DelayedCall(0.5f, StartFirstObjectGame); 
 
     }
 
@@ -814,7 +835,7 @@ public class EA038_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.ShowSelectAgeBtn(); //버튼 화면 송출
+                _uiManager.ShowEndSelectAgeBtn(); //버튼 화면 송출
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_15_내_나이를_알아봤어요_");
             })
             .AppendInterval(2.5f)
@@ -833,6 +854,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     private void SettingCardGame()
     {
+        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 12345f);
+        
         int total = totalTargetClickCount;
 
         List<int> values = new List<int>(total);
@@ -883,6 +906,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     private void SettingCarObject()
     {
+        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 자동차를 터치해주세요!", 12345f);
+        
         for (int i = 0; i < GetObject((int)Objects.CarPool).transform.childCount; i++)
         {
             var typeParent = GetObject((int)Objects.CarPool).transform.GetChild(i);
@@ -971,8 +996,12 @@ public class EA038_GameManager : Ex_BaseGameManager
             GameObject carObj = GetDeactiveChild(GetObject((int)Objects.CarPool).transform
                 .GetChild((int)_CarMapping[values[i]]).transform);
 
+            float randomValue = Random.Range(-45f, 45f);
+            randomEuler = new Vector3(0f, randomValue, 0f);
+            
             carObj.SetActive(true);
-            carObj.transform.DOScale(originalCarScale, 1f).SetEase(Ease.OutBack)
+            carObj.transform.localEulerAngles  = randomEuler;
+            carObj.transform.DOScale(car.originalScale, 1f).SetEase(Ease.OutBack)
                 .From(Vector3.zero)
                 .OnComplete(() =>
                 {
@@ -992,6 +1021,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     private void SettingFruitGame()
     {
+        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 과일을 터치해주세요!", 12345f);
+        
         shuffleFruit();
 
         for (int i = 0; i < GetObject((int)Objects.FruitPool).transform.childCount; i++)
@@ -1105,6 +1136,8 @@ public class EA038_GameManager : Ex_BaseGameManager
 
     private void SettingBlockGame()
     {
+        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 블럭을 터치해주세요!", 12345f);        
+        
         shuffleBlock();
 
         for (int i = 0; i < GetObject((int)Objects.BlockPool).transform.childCount; i++)
@@ -1142,7 +1175,11 @@ public class EA038_GameManager : Ex_BaseGameManager
             GameObject blockObj = GetDeactiveChild(GetObject((int)Objects.BlockPool).transform
                 .GetChild((int)reverseMap[Pos[i]]).transform);
 
+            float randomValue = Random.Range(-45f, 45f);
+            randomEuler = new Vector3(0f, randomValue, 0f);
+            
             blockObj.SetActive(true);
+            blockObj.transform.localEulerAngles = randomEuler;
             blockObj.transform.DOScale(block.originalScale, 1f).SetEase(Ease.OutBack)
                 .From(Vector3.zero)
                 .OnComplete(() =>

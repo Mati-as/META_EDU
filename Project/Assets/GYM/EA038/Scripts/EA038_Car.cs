@@ -12,12 +12,20 @@ public class EA038_Car : MonoBehaviour
 
     private TextMeshPro valueText;
 
+    public Vector3 originalScale;
+    
     private void Start()
     {
         valueText = GetComponentInChildren<TextMeshPro>();
+        originalScale = transform.localScale;
         transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
     }
+    
+    // private void OnEnable()
+    // {
+    //     transform.localScale = originalScale;
+    // }
 
     public void SetValue(int newValue)
     {
