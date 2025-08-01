@@ -39,7 +39,7 @@ public class EA038_UIManager : Base_UIManager
         foreach (Transform child in GetObject((int)UI.EA038).transform) //버튼 초기화
             child.gameObject.SetActive(false);
         
-        centerPos = new Vector3(0, -77, 0);
+        centerPos = new Vector3(0, -114, 0);
 
         Logger.CoreClassLog("EA038_UIManager Init ---------------");
     }
@@ -53,7 +53,7 @@ public class EA038_UIManager : Base_UIManager
                 .OnStart(() => child.gameObject.SetActive(true));
         }
     }
-
+    
     public void ShowEndSelectAgeBtn()
     {
         foreach (Transform child in GetObject((int)UI.EA038).transform)
@@ -70,6 +70,12 @@ public class EA038_UIManager : Base_UIManager
             .AppendCallback(() =>
             {
                 gameManager.gamePlayAge = 3;
+                
+                for (int i = 0; i < 3; i++)
+                {
+                    GetButton(i).interactable = false;
+                }
+                
                 var Btn3 = GetObject((int)UI.EA038).transform.GetChild(0).transform;
 
                 GetButton((int)Btns.Btn_4).image.DOFade(0f, 1f).OnComplete(() =>
@@ -97,11 +103,6 @@ public class EA038_UIManager : Base_UIManager
                 {
                     child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
                         .OnComplete(() => child.gameObject.SetActive(false));
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    GetButton(i).interactable = false;
                 }
 
             })
@@ -135,6 +136,11 @@ public class EA038_UIManager : Base_UIManager
             {
                 gameManager.gamePlayAge = 4;
 
+                for (int i = 0; i < 3; i++)
+                {
+                    GetButton(i).interactable = false;
+                }
+                
                 GetButton((int)Btns.Btn_3).image.DOFade(0f, 1f).OnComplete(() =>
                     GetObject((int)UI.EA038).transform.GetChild(0).gameObject.SetActive(false));
                 ;
@@ -162,12 +168,6 @@ public class EA038_UIManager : Base_UIManager
                     child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
                         .OnComplete(() => child.gameObject.SetActive(false));
                 }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    GetButton(i).interactable = false;
-                }
-
             })
             .AppendInterval(2f)
             .AppendCallback(() =>
@@ -197,6 +197,11 @@ public class EA038_UIManager : Base_UIManager
             .AppendCallback(() =>
             {
                 gameManager.gamePlayAge = 5;
+                
+                for (int i = 0; i < 3; i++)
+                {
+                    GetButton(i).interactable = false;
+                }
 
                 GetButton((int)Btns.Btn_3).image.DOFade(0f, 1f).OnComplete(() =>
                     GetObject((int)UI.EA038).transform.GetChild(0).gameObject.SetActive(false));
@@ -223,11 +228,6 @@ public class EA038_UIManager : Base_UIManager
                 {
                     child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(ease: Ease.InOutQuint)
                         .OnComplete(() => child.gameObject.SetActive(false));
-                }
-
-                for (int i = 0; i < 3; i++)
-                {
-                    GetButton(i).interactable = false;
                 }
 
             })
