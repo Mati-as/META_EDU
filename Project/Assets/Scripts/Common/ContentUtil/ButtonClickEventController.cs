@@ -243,25 +243,28 @@ public class ButtonClickEventController : Ex_MonoBehaviour
         _clickableSeq?.Kill();
         _isDeactivating = true;
         _isClickable = false;
-
-        Logger.Log("DeactivateAllButtons called");
-        
-        foreach (int key in _sequencePerEnumMap.Keys.ToArray())
+        DOVirtual.DelayedCall(1.25f, () =>
         {
-            _sequencePerEnumMap[key]?.Kill(true); // OnKill 방지
-            _sequencePerEnumMap[key] = DOTween.Sequence();
-        }
+            Logger.Log("DeactivateAllButtons called");
+        
+            foreach (int key in _sequencePerEnumMap.Keys.ToArray())
+            {
+                _sequencePerEnumMap[key]?.Kill(true); // OnKill 방지
+                _sequencePerEnumMap[key] = DOTween.Sequence();
+            }
         
 
-        //Logger.Log("Running delayed hide");
-        for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
-        {
-            var btnTransform = GetObject(i).transform;
-            _sequencePerEnumMap[i]?.Kill();
-            _sequencePerEnumMap[i] = DOTween.Sequence();
-            _sequencePerEnumMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
-            _sequencePerEnumMap[i].AppendInterval(0.5f);
-        }
+            //Logger.Log("Running delayed hide");
+            for (int i = (int)Objs.ButtonA; i <= (int)Objs.ButtonG; i++)
+            {
+                var btnTransform = GetObject(i).transform;
+                _sequencePerEnumMap[i]?.Kill();
+                _sequencePerEnumMap[i] = DOTween.Sequence();
+                _sequencePerEnumMap[i].Append(btnTransform.DOScale(Vector3.zero, 0.55f));
+                _sequencePerEnumMap[i].AppendInterval(0.5f);
+            }
+        });
+
     }
 
     private void AnimateButtonLoop(Objs button)

@@ -66,8 +66,8 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     break;
 
                 case (int)MainSeq.OnCream:
-                  
-                  
+
+                    isClikableInGameRay = true;
                     _buttonClickEventController.ChangeBtnImage("Runtime/EA034/CreamImage");
                     DOVirtual.DelayedCall(1.5f, () =>
                     {
@@ -270,7 +270,7 @@ private const float DECO_TIME = 15;
     }
 
 
-    private const int COUNT_TO_CLICK_ONCREAM = 21;
+    private const int COUNT_TO_CLICK_ONCREAM = 8;
     private int _currentClickCount;
     private bool isCakeRotatable = true;
     private bool _isCakeRoundFinish;
@@ -427,7 +427,14 @@ private const float DECO_TIME = 15;
 
     private void OnBtnClickedOnCream()
     {
+        if (!isClikableInGameRay) return;
+        isClikableInGameRay = false;
+        DOVirtual.DelayedCall(0.35f, () =>
+        {
+            isClikableInGameRay = true;
+        });
         _currentClickCount++;
+        Logger.Log($"{_currentClickCount} / {COUNT_TO_CLICK_ONCREAM}");
         if (_currentClickCount > COUNT_TO_CLICK_ONCREAM && _cakeCurrentRound >= ROUND_COUNT_ONCREAM)
         {
             ChangeCakeToCreamOne(_cakeCurrentRound); //마지막 케이크
