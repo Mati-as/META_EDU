@@ -186,13 +186,9 @@ public class Construction_GameManager : Base_GameManager
            .OnComplete(() =>
            {
                btnExcavatorIntro.transform.DOShakeScale(0.2f, 0.2f, 10, 90f);
+               canNextBtnClick = true;
            });
             Messenger.Default.Publish(new NarrationMessage("동작 버튼을 눌러 포크레인을 움직여주세요!", "1_동작_버튼을_눌러_포크레인을_움직여주세요"));
-        });
-        introSeq.AppendInterval(3f);
-        introSeq.AppendCallback(() =>
-        {
-            canNextBtnClick = true;
         });
     }
 
