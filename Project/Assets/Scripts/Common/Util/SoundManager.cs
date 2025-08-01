@@ -416,6 +416,25 @@ public class SoundManager : MonoBehaviour
     }
 
 
+    public float GetAudioLength(int type)
+    {
+        if (type < 0 || type >= audioSources.Length)
+        {
+            Debug.LogError("Invalid audio source type");
+            return 0f;
+        }
+
+        var audioSource = audioSources[type];
+        if (audioSource.clip == null)
+        {
+            Debug.LogWarning("Audio source clip is null");
+            return 0f;
+        }
+
+        return audioSource.clip.length;
+    }
+
+
     #region 페이드인/아웃 관련기능 (영민)
 
     private Sequence _soundTransitionSeq;
