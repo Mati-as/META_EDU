@@ -122,7 +122,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 #if UNITY_EDITOR
     [SerializeField] private MainSeq START_SEQ;
 #else
-    private MainSeq START_SEQ = START_SEQ;
+    private MainSeq START_SEQ = MainSeq.MainIntro;
 #endif
     protected override void OnGameStartButtonClicked()
     {
