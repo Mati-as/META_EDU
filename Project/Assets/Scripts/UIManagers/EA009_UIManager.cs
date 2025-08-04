@@ -35,18 +35,15 @@ public class EA009_UIManager : Base_UIManager
         
     }
 
-    public override bool InitOnLoad()
+    public override void ExplicitInitInGame()
     {
-      
-        base.InitOnLoad();
+        base.ExplicitInitInGame();
         InitInstructionUI();
-        
         BindObject(typeof(EA009_UI));
-
-Logger.ContentTestLog("EA009 UI Manager Init ------------------------");
+        Logger.ContentTestLog("EA009 UI Manager Init ------------------------");
         TurnOffAllFoodSprite();
-        return true;
     }
+
 
     public void TurnOffAllFoodSprite()
     {

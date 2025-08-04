@@ -136,11 +136,11 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
                     foreach (var key in _fireOnCandleTransformMap.Keys.ToArray())
                     {
                         var originalScale = _fireOnCandleTransformMap[key].localScale;
-                        var targetScale = originalScale * 1.4f;
+                        var targetScale = originalScale * 1.85f;
                         Sequence fireScaleSeq = DOTween.Sequence();
                         fireScaleSeq.Append(_fireOnCandleTransformMap[key].DOScale(targetScale, 0.25f).SetEase(Ease.InOutSine));
                         fireScaleSeq.Append(_fireOnCandleTransformMap[key].DOScale(originalScale, 0.25f).SetEase(Ease.InOutSine));
-                        fireScaleSeq.SetLoops(2,LoopType.Yoyo);
+                        fireScaleSeq.SetLoops(30,LoopType.Yoyo);
                     }
                     Managers.Sound.Play(SoundManager.Sound.Narration,
                         "SortedByScene/EA034/audio_9_초에_불을_꺼볼까요__초에_있는_불을_터치해_주세요_");
@@ -163,7 +163,7 @@ public class EA034_Party_GameManager : Ex_BaseGameManager
 
     private SeatSelectionController _seatSelectionController;
     private ButtonClickEventController _buttonClickEventController;
-
+ //   private Transform[] _flameOnCandles;
 
     private Dictionary<int, Transform> _candleTransformMap = new();
     private Dictionary<int, Transform> _fireOnCandleTransformMap = new();
