@@ -281,7 +281,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
         GetResultTMPs();
-        _UIManager = GameObject.Find("HandFootFlip_UIManager").GetComponent<HandFlip2_UIManager>();
+        _UIManager = GameObject.FindWithTag("UIManager").GetComponent<HandFlip2_UIManager>();
 
 
         Debug.Log($"(start)color option length: {colorOptions.Length}");

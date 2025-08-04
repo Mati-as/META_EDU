@@ -5,7 +5,7 @@ using System;
 using DG.Tweening;
 
 
-public class HandFlip2_UIManager : UI_PopUp
+public class HandFlip2_UIManager : Base_UIManager
 {
 
 
@@ -42,9 +42,9 @@ public class HandFlip2_UIManager : UI_PopUp
 
     private float  _intervalBtwStartAndReady =1f;
 
-    public override bool InitOnLoad()
+    public override void ExplicitInitInGame()
     {
-
+        base.ExplicitInitInGame();
         _gm = GameObject.Find("GameManager").GetComponent<HandFlip2BaseGameManager>();
         
         BindObject(typeof(HandFlip_UI_Type));
@@ -87,9 +87,9 @@ public class HandFlip2_UIManager : UI_PopUp
         
         HandFlip2BaseGameManager.restart -= OnGameStartStart;
         HandFlip2BaseGameManager.restart += OnGameStartStart;
-        return true;
-        
     }
+
+
 
     private void OnDestroy()
     {

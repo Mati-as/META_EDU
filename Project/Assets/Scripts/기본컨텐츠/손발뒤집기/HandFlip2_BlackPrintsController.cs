@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using Random = UnityEngine.Random;
 using Sequence = DG.Tweening.Sequence;
 
-public class HandFlip2_BlackPrintsController : Base_GameManager
+public class HandFlip2_BlackPrintsController : Ex_MonoBehaviour
 {
   
     enum PrintType
@@ -84,7 +84,7 @@ public class HandFlip2_BlackPrintsController : Base_GameManager
            
     }
 
-    protected override void OnDestroy()
+    protected void OnDestroy()
     {
         base.OnDestroy();
         HandFlip2BaseGameManager.onStart -= OnStart;
@@ -146,28 +146,30 @@ public class HandFlip2_BlackPrintsController : Base_GameManager
 
         Blink();
     }
-    
-    
-    public override void OnRaySynced()
+
+    protected override void OnRaySyncedByGameManager()
     {
-        if (!PreCheckOnRaySync()) return;
-        
-        OnSync(GameManager_Ray);
+        OnSync();
+      
     }
+
+
 
      
     private RaycastHit hit;
     
     //검은 손발바닥 카운트시, 이름 비교를 통한 중복방지 
 
-    private void OnSync(Ray ray)
+    private void OnSync()
     {
-        if (Physics.Raycast(ray, out hit))
+
+        foreach (var hit in _gm.GameManager_Hits)
         {
+           
             if (!_isClickable)
             {
 #if UNITY_EDITOR
- //Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
+                //Debug.Log("Black Print isn't currently Clickable!-----------------------------------");
 #endif
                 return;
             }
@@ -209,6 +211,7 @@ public class HandFlip2_BlackPrintsController : Base_GameManager
                     
                 }
             }
+         
         }
       
     }
