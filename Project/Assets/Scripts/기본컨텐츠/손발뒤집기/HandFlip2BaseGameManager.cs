@@ -24,7 +24,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
     private Vector3 _rotateVector;
    
     
-    private HandFlip2_UIManager _UIManager;
+    private HandFlip2InGameUIManager _inGameUIManager;
 
 
     //쌍이되는 컬러를  String으로 할당하여, 색상이름(string)에 따라 제어.
@@ -75,7 +75,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
     {
         if (_isRoundFinished) return;
         if (!isStartButtonClicked) return;
-        if (!_UIManager.isStart) return;
+        if (!_inGameUIManager.isStart) return;
         
       
         _remainTime = TIME_LIMIT - _elapsed;
@@ -115,7 +115,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
            
         }
 
-        if (!_UIManager.isStart) _remainTime = TIME_LIMIT;
+        if (!_inGameUIManager.isStart) _remainTime = TIME_LIMIT;
     }
 
     private void OnRoundFinished()
@@ -181,7 +181,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
     {
         base.OnDestroy();
         UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
-        HandFlip2_UIManager.onStartUIFinished -= OnStart;
+        HandFlip2InGameUIManager.onStartUIFinished -= OnStart;
         HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
         onRoundFinished -= OnRoundFinished;
     }
@@ -260,8 +260,8 @@ public class HandFlip2BaseGameManager : Base_GameManager
         UI_InScene_StartBtn.onGameStartBtnShut -= OnGameStartButtonClicked;
         UI_InScene_StartBtn.onGameStartBtnShut += OnGameStartButtonClicked;
 
-        HandFlip2_UIManager.onStartUIFinished -= OnStart;
-        HandFlip2_UIManager.onStartUIFinished += OnStart;
+        HandFlip2InGameUIManager.onStartUIFinished -= OnStart;
+        HandFlip2InGameUIManager.onStartUIFinished += OnStart;
 
         HandFlip2_BlackPrintsController.onAllBlackPrintClicked -= FlipAll;
         HandFlip2_BlackPrintsController.onAllBlackPrintClicked += FlipAll;
@@ -281,7 +281,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
         _tmp = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         _tmp.text = string.Empty;
         GetResultTMPs();
-        _UIManager = GameObject.FindWithTag("UIManager").GetComponent<HandFlip2_UIManager>();
+        _inGameUIManager = GameObject.FindWithTag("UIManager").GetComponent<HandFlip2InGameUIManager>();
 
 
         Debug.Log($"(start)color option length: {colorOptions.Length}");
@@ -373,7 +373,7 @@ public class HandFlip2BaseGameManager : Base_GameManager
          3. 라운드 끝난경우
          
          */
-        if (!_UIManager.isStart) return;
+        if (!_inGameUIManager.isStart) return;
         if (_isRoundFinished) return;
 
 

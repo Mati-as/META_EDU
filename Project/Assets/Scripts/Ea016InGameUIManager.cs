@@ -2,7 +2,7 @@ using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
 
-public class EA016_UIManager : Base_UIManager
+public class Ea016InGameUIManager : Base_InGameUIManager
 {
     private EA016_GameManager _gm;
 

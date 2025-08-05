@@ -4,7 +4,7 @@ using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
 
-public class EA012_UIManager : Base_UIManager
+public class Ea012InGameUIManager : Base_InGameUIManager
 {   
     private EA012_GameManager _gm;
 

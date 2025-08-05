@@ -3,7 +3,7 @@ using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
 
-public class Construction_UIManager : Base_UIManager
+public class ConstructionInGameUIManager : Base_InGameUIManager
 {
     private Construction_GameManager manager;
 

@@ -5,7 +5,7 @@ using System;
 using DG.Tweening;
 
 
-public class HandFlip2_UIManager : Base_UIManager
+public class HandFlip2InGameUIManager : Base_InGameUIManager
 {
 
 

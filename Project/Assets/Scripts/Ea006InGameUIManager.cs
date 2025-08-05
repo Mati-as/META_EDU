@@ -4,7 +4,7 @@ using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class EA006_UIManager : Base_UIManager
+public class Ea006InGameUIManager : Base_InGameUIManager
 {
     public enum TMP
     {

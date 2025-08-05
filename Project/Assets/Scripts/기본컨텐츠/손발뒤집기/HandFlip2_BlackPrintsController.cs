@@ -163,7 +163,7 @@ public class HandFlip2_BlackPrintsController : Ex_MonoBehaviour
     private void OnSync()
     {
 
-        foreach (var hit in _gm.GameManager_Hits)
+        foreach (var raycastHit in _gm.GameManager_Hits)
         {
            
             if (!_isClickable)
@@ -174,12 +174,12 @@ public class HandFlip2_BlackPrintsController : Ex_MonoBehaviour
                 return;
             }
             
-            if (hit.transform.gameObject.name.ToLower().Contains("black"))
+            if (raycastHit.transform.gameObject.name.ToLower().Contains("black"))
             {
                 if (!_seqChanged)
                 {
                   
-                    _firstClickedID = hit.transform.gameObject.GetInstanceID();
+                    _firstClickedID = raycastHit.transform.gameObject.GetInstanceID();
 
                     for (var i = 0; i < 2; i++)
                     {
@@ -197,10 +197,10 @@ public class HandFlip2_BlackPrintsController : Ex_MonoBehaviour
                 }
                 else
                 {
-                    if (!_isDisappearing && hit.transform.gameObject.GetInstanceID() != _firstClickedID&&_firstClickedID!=0)
+                    if (!_isDisappearing && raycastHit.transform.gameObject.GetInstanceID() != _firstClickedID&&_firstClickedID!=0)
                     {
                         _isDisappearing = true;
-                        Debug.Log($"disAppear! current Clicked ID{hit.transform.gameObject.GetInstanceID()}");
+                        Debug.Log($"disAppear! current Clicked ID{raycastHit.transform.gameObject.GetInstanceID()}");
                         Disappear();
 
                         //사라지는 사운드 추가

@@ -97,11 +97,11 @@ public class EA016_GameManager : Ex_BaseGameManager
         EA016_BallController.OnBallIsInTheHole -= OnBallInTheHole;
         EA016_BallController.OnBallIsInTheHole += OnBallInTheHole;
         currentMainMainSequence = (int)MainSequence.Default;
-        _ea016UIManager = UIManagerObj.GetComponent<EA016_UIManager>();
-        Debug.Assert(_ea016UIManager != null, "UIManager not found");
+        _ea016InGameUIManager = UIManagerObj.GetComponent<Ea016InGameUIManager>();
+        Debug.Assert(_ea016InGameUIManager != null, "UIManager not found");
     }
 
-    private EA016_UIManager _ea016UIManager;
+    private Ea016InGameUIManager _ea016InGameUIManager;
     protected override void OnDestroy()
     {
         base.OnDestroy();
@@ -330,7 +330,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         DOVirtual.DelayedCall(4f, () =>
         {
             //Logger.ContentTestLog($"현재 목표 공 색상: {currentBallColorToPut}");
-            _ea016UIManager.ShowBallImageAndCountWithRefresh();
+            _ea016InGameUIManager.ShowBallImageAndCountWithRefresh();
             isBallCountable = true;
         });
      
@@ -362,7 +362,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         private set
         {
             _currentBallCountAlreadyPut = value;
-            _ea016UIManager.RefreshText();
+            _ea016InGameUIManager.RefreshText();
             if (CurrentMainSeq == (int)MainSequence.ColorMode)
             {
                 if (_currentBallCountAlreadyPut >= BallCountGoal)
@@ -375,7 +375,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                     });
                     
 
-                    _ea016UIManager.ShutBallCountUI();
+                    _ea016InGameUIManager.ShutBallCountUI();
                     DOVirtual.DelayedCall(3f, () =>
                     {
                         if (currentBallColorToPut == BallInfo.BallColor.Pink)
@@ -413,7 +413,7 @@ public class EA016_GameManager : Ex_BaseGameManager
                         else
                         {
                        
-                            _ea016UIManager.ShutBallCountUI();
+                            _ea016InGameUIManager.ShutBallCountUI();
                             CurrentMainSeq = (int)MainSequence.OnFinishFreePlay;
                         }
                     });
@@ -456,7 +456,7 @@ public class EA016_GameManager : Ex_BaseGameManager
         _currentBallCountAlreadyPut = 0;
         DOVirtual.DelayedCall(4f, () =>
         {
-            _ea016UIManager.ShowBallImageAndCountWithRefresh();
+            _ea016InGameUIManager.ShowBallImageAndCountWithRefresh();
             isBallCountable = true;
         });
     }

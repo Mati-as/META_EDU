@@ -20,14 +20,19 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
     {
         Cars,
         Blocks,
+        Balls,
         Shoes,
         ColorShoes,
 
         AnimalEffect,
 
         AnimalMovePos,
-        MiscellaneousTargetPos
+        MiscellaneousTargetPos,
+        
+        Fx_OnSuccessA
     }
+
+    private ParticleSystem _fxOnSuccessA;
 
     private Vector3[] _miscellaneousTargetPositions;
 
@@ -35,11 +40,14 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
     {
         Car,
         Block,
+        Ball,
+            
         Shoes,
         ColorShoes
     }
 
     private bool _isClickableForRound;
+    private EA039_InGameUIManager _uiManager;
 
     public int CurrentMainMainSeq
     {
@@ -61,7 +69,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
                     break;
                 case (int)MainSeq.MainIntro:
-                    baseUIManager.PopInstructionUIFromScaleZero("친구들과 같이 교실 정리를 해볼까요?");
+                    BaseInGameUIManager.PopInstructionUIFromScaleZero("친구들과 같이 교실 정리를 해볼까요?");
 
                     DOVirtual.DelayedCall(3f, () =>
                     {
@@ -72,7 +80,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
 
                 case (int)MainSeq.SortOut_Miscellanous:
-                    animalEffectTriggerCount = Random.Range(4, 10);
+                    animalEffectTriggerCount = Random.Range(4, 8);
                     ResetClickable();
 
 
@@ -80,11 +88,12 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
                     DOVirtual.DelayedCall(
                         Managers.Sound.GetAudioLength((int)SoundManager.Sound.Narration) + 0.5f, () =>
                         {
-                            baseUIManager.PopInstructionUIFromScaleZero("정리해야할 장난감을 찾아 터치해주세요!");
+                            BaseInGameUIManager.PopInstructionUIFromScaleZero("정리해야할 장난감을 찾아 터치해주세요!");
 
                             DOVirtual.DelayedCall(5f, () =>
                             {
-                                baseUIManager.PlayReadyAndStart(() =>
+                                _uiManager.ActivateImageAndUpdateCount(0,_totalCountToClickOnMisellaneous -_currentCountClickedOnMiscellaneous);
+                                BaseInGameUIManager.PlayReadyAndStart(() =>
                                 {
                                     _isClickableForRound = true;
                                 });
@@ -93,7 +102,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
                     break;
                 case (int)MainSeq.SortOut_Shoes:
-                    baseUIManager.PopInstructionUIFromScaleZero("이제 신발장으로 가서 정리해볼까요?");
+                    BaseInGameUIManager.PopInstructionUIFromScaleZero("이제 신발장으로 가서 정리해볼까요?");
                     GetObject((int)Objs.AnimalEffect).SetActive(false);
 
                     ResetClickable();
@@ -133,6 +142,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
     // 행동양식 다른부분 별도 클래스 선언없이 Pool형태로 관리
     private readonly Dictionary<int, MiscellaneousType> _carPool = new();
     private readonly Dictionary<int, MiscellaneousType> _blockPool = new();
+    private readonly Dictionary<int, MiscellaneousType> _ballPool = new();
     private readonly Dictionary<int, MiscellaneousType> _shoesPool = new();
     private readonly Dictionary<int, MiscellaneousType> _colorShoesPool = new();
 
@@ -156,10 +166,11 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
         psResourcePath = "EA039/OnArrive";
         base.Init();
         BindObject(typeof(Objs));
-
+        _uiManager = UIManagerObj.GetComponent<EA039_InGameUIManager>();
         InitializePool(GetObject((int)Objs.Cars), _carPool, MiscellaneousType.Car);
         InitializePool(GetObject((int)Objs.Blocks), _blockPool, MiscellaneousType.Block);
         InitializePool(GetObject((int)Objs.Shoes), _shoesPool, MiscellaneousType.Shoes);
+        InitializePool(GetObject((int)Objs.Balls), _shoesPool, MiscellaneousType.Ball);
         InitializePool(GetObject((int)Objs.ColorShoes), _colorShoesPool, MiscellaneousType.ColorShoes);
 
         _miscellaneousTargetPositions = new Vector3[GetObject((int)Objs.MiscellaneousTargetPos).transform.childCount];
@@ -176,6 +187,8 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
 
         _totalCountToClickOnMisellaneous = _carPool.Count + _blockPool.Count;
+
+        _fxOnSuccessA = GetObject((int)Objs.Fx_OnSuccessA).GetComponent<ParticleSystem>();
     }
 
     private Sequence _animalMoveSeq;
@@ -183,6 +196,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
     private void PlayAnimalEffectAndReset()
     {
+        _isClickableForRound = false;
         GetObject((int)Objs.AnimalEffect).SetActive(true);
 
         _animalMoveSeq?.Kill();
@@ -207,6 +221,12 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
             .AppendInterval(1f)
             .OnComplete(() =>
             {
+                _uiManager.PopInstructionUIFromScaleZero("동물친구들이 어지럽혔어! 다시 정리 해보자!",1.3f);
+                DOVirtual.DelayedCall(1.5f, () =>
+                {
+                    _uiManager.ActivateImageAndUpdateCount(0,_totalCountToClickOnMisellaneous -_currentCountClickedOnMiscellaneous);
+                    _isClickableForRound = true;
+                });
                 GetObject((int)Objs.AnimalEffect).SetActive(false);
                 _animalMoveSeq = null;
             });
@@ -254,9 +274,14 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
             case (int)MainSeq.SortOut_Miscellanous:
                 foreach (var hit in GameManager_Hits)
                 {
+                    
                     int clickedID = hit.transform.GetInstanceID();
+             
+                    _isClickableMapByTfID.TryAdd(clickedID, true); // 클릭 가능 상태 초기화
                     if (!_isClickableMapByTfID[clickedID]) continue; // 이미 클릭된 오브젝트는 무시
                     _isClickableMapByTfID[clickedID] = false;
+                    
+                    
                     _currentCountClickedOnMiscellaneous++;
 
                     if (_currentCountClickedOnMiscellaneous == animalEffectTriggerCount && !_isAnimalEffectAnimated)
@@ -272,17 +297,26 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
                     if (_carPool.ContainsKey(clickedID))
                         OnCarClicked();
                     else if (_blockPool.ContainsKey(clickedID)) OnBlockOrBallClicked();
-                }
-
-                if (_currentCountClickedOnMiscellaneous >= _totalCountToClickOnMisellaneous)
-                {
-                    baseUIManager.PopInstructionUIFromScaleZero("친구들이 정리를 잘 해서 교실이 깨끗해졌어요!");
-
-                    DOVirtual.DelayedCall(5f, () =>
+                    
+                    
+                    //수량판단, 시퀀스 이동 관련 기준점
+                    if (_currentCountClickedOnMiscellaneous >= _totalCountToClickOnMisellaneous && _isAnimalEffectAnimated)
                     {
-                        CurrentMainMainSeq = (int)MainSeq.SortOut_Shoes;
-                    });
+                        _isClickableForRound = false;
+                        BaseInGameUIManager.PopInstructionUIFromScaleZero("정리를 잘 해서 교실이 깨끗해졌어요!");
+                        _fxOnSuccessA.Play();
+                        DOVirtual.DelayedCall(5f, () =>
+                        {
+                            CurrentMainMainSeq = (int)MainSeq.SortOut_Shoes;
+                        });
+                    }
+                    else
+                    {
+                        _uiManager.ActivateImageAndUpdateCount(0,_totalCountToClickOnMisellaneous -_currentCountClickedOnMiscellaneous);
+                    }
                 }
+
+
 
 
                 break;

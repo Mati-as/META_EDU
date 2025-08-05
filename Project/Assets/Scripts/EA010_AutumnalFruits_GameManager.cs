@@ -72,7 +72,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
     private Color _targetColor;
     
 
-    private EA010_UIManager _uiManager;
+    private Ea010InGameUIManager _inGameUIManager;
 
     private Transform _basket;
     
@@ -245,7 +245,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     {
                         SeqMessageEvent?.Invoke("OnTreeScene_A");
                         _isFruitOnTreeAlreadyClicked = false;
-                        _uiManager.PopInstructionUIFromScaleZero("열매를 터치해 주세요!");
+                        _inGameUIManager.PopInstructionUIFromScaleZero("열매를 터치해 주세요!");
                     });
                     break;
                 case SeqName.OnTreeScene_B:
@@ -287,7 +287,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
                     DOVirtual.DelayedCall(3f, () =>
                     {
                         Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OnFin");
-                        _uiManager.PopInstructionUIFromScaleZero("가을 열매를 모두 담았어요!");
+                        _inGameUIManager.PopInstructionUIFromScaleZero("가을 열매를 모두 담았어요!");
                         DOVirtual.DelayedCall(4f, () =>  SetColliderStatus(true));
                         
                         DOVirtual.DelayedCall(7f, () =>  SetColliderStatus(false));
@@ -321,7 +321,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
         psResourcePath = "Runtime/EA010/FX_leaves";
         
         base.Init();
-        _uiManager = UIManagerObj.GetComponent<EA010_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea010InGameUIManager>();
         
         LoadSpriteImage();
         _mainAnimator = GetComponent<Animator>();
@@ -409,7 +409,7 @@ public class EA010_AutumnalFruits_GameManager : Ex_BaseGameManager
 
         DOVirtual.DelayedCall(7.2f, () =>
         {
-            _uiManager.PopInstructionUIFromScaleZero("네모 칸을 터치해주세요");
+            _inGameUIManager.PopInstructionUIFromScaleZero("네모 칸을 터치해주세요");
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/TouchBlock");
             
             foreach (int key in _woodSpriteRendererMap.Keys.ToArray())
@@ -729,7 +729,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
+            _inGameUIManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -751,7 +751,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
+            _inGameUIManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -773,7 +773,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
+            _inGameUIManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {
@@ -795,7 +795,7 @@ private void OnRaysyncOnPuzzeGame()
                        DOVirtual.DelayedCall(3f, () =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/EA010/Nar/OtherFruit");
-            _uiManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
+            _inGameUIManager.PopInstructionUIFromScaleZero("다른 열매도 알아볼까요?");
         });
                     DOVirtual.DelayedCall(nextSeqDelay, () =>
                     {

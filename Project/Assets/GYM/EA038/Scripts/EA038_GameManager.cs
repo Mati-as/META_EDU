@@ -58,7 +58,7 @@ public class EA038_GameManager : Ex_BaseGameManager
     [SerializeField] private int wrongCardClickedCount = 0;
     [SerializeField] private int correctCardClickedCount = 0;
 
-    private EA038_UIManager _uiManager;
+    private Ea038InGameUIManager _inGameUIManager;
     private Vector3 clickEffectPos;
     private List<int> numbers;
 
@@ -93,7 +93,7 @@ public class EA038_GameManager : Ex_BaseGameManager
 
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponent<EA038_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea038InGameUIManager>();
         _currentSequence = EA038_MainSeq.StartSequence;
 
         psResourcePath = "EA038/Asset/Fx_Click";
@@ -308,7 +308,7 @@ public class EA038_GameManager : Ex_BaseGameManager
 
                                             }
 
-                                            _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 12345f,
+                                            _inGameUIManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 12345f,
                                                 narrationPath: "EA038/Audio/audio_8_내_나이_숫자에_맞는_카드를_뒤집어주세요_");
 
                                             SettingCardGame();
@@ -317,7 +317,7 @@ public class EA038_GameManager : Ex_BaseGameManager
                                         .AppendInterval(4f)
                                         .AppendCallback(() =>
                                         {
-                                            _uiManager.PlayReadyAndStart();
+                                            _inGameUIManager.PlayReadyAndStart();
                                         })
                                         .AppendInterval(5f)
                                         .AppendCallback(() =>
@@ -502,14 +502,14 @@ public class EA038_GameManager : Ex_BaseGameManager
                                         .AppendInterval(3f)
                                         .AppendCallback(() =>
                                         {
-                                            _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 자동차를 터치해주세요!", 3f,
+                                            _inGameUIManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 자동차를 터치해주세요!", 3f,
                                                 narrationPath: "EA038/Audio/audio_13_내_나이_숫자가_써진_자동차를_터치해주세요_");
                                             SettingCarObject();
                                         })
                                         .AppendInterval(4f)
                                         .AppendCallback(() =>
                                         {
-                                            _uiManager.PlayReadyAndStart();
+                                            _inGameUIManager.PlayReadyAndStart();
                                         })
                                         .AppendInterval(5f)
                                         .AppendCallback(() => canPlayGame = true)
@@ -677,14 +677,14 @@ public class EA038_GameManager : Ex_BaseGameManager
                                     .AppendInterval(3f)
                                     .AppendCallback(() =>
                                     {
-                                        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 과일을 터치해주세요!", 3f,
+                                        _inGameUIManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 과일을 터치해주세요!", 3f,
                                             narrationPath: "EA038/Audio/audio_12_내_나이_숫자가_써진_과일을_터치해주세요_");
                                         SettingFruitGame();
                                     })
                                     .AppendInterval(4f)
                                     .AppendCallback(() =>
                                     {
-                                        _uiManager.PlayReadyAndStart();
+                                        _inGameUIManager.PlayReadyAndStart();
                                     })
                                     .AppendInterval(5f)
                                     .AppendCallback(() => canPlayGame = true)
@@ -851,14 +851,14 @@ public class EA038_GameManager : Ex_BaseGameManager
                                     .AppendInterval(3f)
                                     .AppendCallback(() =>
                                     {
-                                        _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 블럭을 터치해주세요!", 3f,
+                                        _inGameUIManager.PopInstructionUIFromScaleZero("내 나이 숫자가 써진 블럭을 터치해주세요!", 3f,
                                             narrationPath: "EA038/Audio/audio_14_내_나이_숫자가_써진_블럭을_터치해주세요_");
                                         SettingBlockGame();
                                     })
                                     .AppendInterval(4f)
                                     .AppendCallback(() =>
                                     {
-                                        _uiManager.PlayReadyAndStart();
+                                        _inGameUIManager.PlayReadyAndStart();
                                     })
                                     .AppendInterval(5f)
                                     .AppendCallback(() => canPlayGame = true)
@@ -894,14 +894,14 @@ public class EA038_GameManager : Ex_BaseGameManager
         {
             case 3:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_27_다_찾았어요__세살_");
-                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 3살!", 3f);
+                _inGameUIManager.PopInstructionUIFromScaleZero("다 찾았어요! 3살!", 3f);
                 break;
             case 4:
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_28_다_찾았어요__네살_");
-                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 4살!", 3f);
+                _inGameUIManager.PopInstructionUIFromScaleZero("다 찾았어요! 4살!", 3f);
                 break;
             case 5:
-                _uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
+                _inGameUIManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
                 break;
         }
     }
@@ -920,7 +920,7 @@ public class EA038_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_1_내_나이를_찾아볼까요_");
-                _uiManager.PopInstructionUIFromScaleZero("내 나이를 찾아볼까요?", 4f);
+                _inGameUIManager.PopInstructionUIFromScaleZero("내 나이를 찾아볼까요?", 4f);
             })
             .AppendInterval(3.5f)
             .AppendCallback(() =>
@@ -937,9 +937,9 @@ public class EA038_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_2_먼저_나이를_설정해주세요_");
-                _uiManager.PopInstructionUIFromScaleZero("먼저 나이를 설정해주세요!", 12345);
+                _inGameUIManager.PopInstructionUIFromScaleZero("먼저 나이를 설정해주세요!", 12345);
 
-                _uiManager.ShowSelectAgeBtn();
+                _inGameUIManager.ShowSelectAgeBtn();
             });
 
     }
@@ -955,14 +955,14 @@ public class EA038_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_8_내_나이_숫자에_맞는_카드를_뒤집어주세요_");
-                _uiManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 12345f);
+                _inGameUIManager.PopInstructionUIFromScaleZero("내 나이 숫자에 맞는 카드를 뒤집어주세요", 12345f);
 
                 SettingCardGame();
             })
             .AppendInterval(4.5f)
             .AppendCallback(() =>
             {
-                _uiManager.PlayReadyAndStart();
+                _inGameUIManager.PlayReadyAndStart();
             })
             .AppendInterval(5f)
             .AppendCallback(() => canPlayGame = true)
@@ -987,13 +987,13 @@ public class EA038_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.ShowEndSelectAgeBtn(); //버튼 화면 송출
+                _inGameUIManager.ShowEndSelectAgeBtn(); //버튼 화면 송출
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA038/Audio/audio_15_내_나이를_알아봤어요_");
             })
             .AppendInterval(2.5f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("친구들 나이를 잘 기억해요~!", 12345f,
+                _inGameUIManager.PopInstructionUIFromScaleZero("친구들 나이를 잘 기억해요~!", 12345f,
                     narrationPath: "EA038/Audio/audio_16_친구들_나이를_잘_기억해요_");
 
                 RestartScene();
@@ -1059,7 +1059,7 @@ public class EA038_GameManager : Ex_BaseGameManager
     private void SettingCarObject()
     {
         correctObjectList.Clear();
-        _uiManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 자동차를 터치해주세요!", 12345f);
+        _inGameUIManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 자동차를 터치해주세요!", 12345f);
         
         for (int i = 0; i < GetObject((int)Objects.CarPool).transform.childCount; i++)
         {
@@ -1175,7 +1175,7 @@ public class EA038_GameManager : Ex_BaseGameManager
     private void SettingFruitGame()
     {
         correctObjectList.Clear();
-        _uiManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 과일을 터치해주세요!", 12345f);
+        _inGameUIManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 과일을 터치해주세요!", 12345f);
         
         shuffleFruit();
 
@@ -1291,7 +1291,7 @@ public class EA038_GameManager : Ex_BaseGameManager
     private void SettingBlockGame()
     {
         correctObjectList.Clear();
-        _uiManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 블럭을 터치해주세요!", 12345f);        
+        _inGameUIManager.PopInstructionUIFromScaleZero($"내 나이 {gamePlayAge}살이 써진 블럭을 터치해주세요!", 12345f);        
         
         shuffleBlock();
 
@@ -1461,7 +1461,7 @@ public class EA038_GameManager : Ex_BaseGameManager
 
         DOTween.Sequence()
             .AppendCallback(() =>
-                _uiManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f,
+                _inGameUIManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f,
                     narrationPath: "EA038/Audio/audio_10_이번엔_다른_놀이를_해볼까요_"))
             .AppendInterval(3f)
             .AppendCallback(() =>
@@ -1470,10 +1470,10 @@ public class EA038_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 spawnAction();
-                _uiManager.PopInstructionUIFromScaleZero(promptText, 12345f, narrationPath: narrationKey);
+                _inGameUIManager.PopInstructionUIFromScaleZero(promptText, 12345f, narrationPath: narrationKey);
             })
             .AppendInterval(5f)
-            .AppendCallback(() => _uiManager.PlayReadyAndStart())
+            .AppendCallback(() => _inGameUIManager.PlayReadyAndStart())
             .AppendInterval(5f)
             .AppendCallback(() => canPlayGame = true)
             ;
@@ -1507,7 +1507,7 @@ public class EA038_GameManager : Ex_BaseGameManager
         }
 
         DOTween.Sequence()
-            .AppendCallback(() => _uiManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f,
+            .AppendCallback(() => _inGameUIManager.PopInstructionUIFromScaleZero("이번엔 다른 놀이를 해볼까요?", 4f,
                 narrationPath: "EA038/Audio/audio_10_이번엔_다른_놀이를_해볼까요_"))
             .AppendInterval(3f)
             .AppendCallback(() =>
@@ -1516,10 +1516,10 @@ public class EA038_GameManager : Ex_BaseGameManager
             .AppendCallback(() =>
             {
                 spawnAction();
-                _uiManager.PopInstructionUIFromScaleZero(promptText, 12345f, narrationPath: narrationKey);
+                _inGameUIManager.PopInstructionUIFromScaleZero(promptText, 12345f, narrationPath: narrationKey);
             })
             .AppendInterval(5f)
-            .AppendCallback(() => _uiManager.PlayReadyAndStart())
+            .AppendCallback(() => _inGameUIManager.PlayReadyAndStart())
             .AppendInterval(5f)
             .AppendCallback(() => canPlayGame = true)
             ;

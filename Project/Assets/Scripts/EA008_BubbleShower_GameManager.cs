@@ -447,7 +447,7 @@ public void OnStart()
         base.OnGameStartButtonClicked();
       
         initialMessage= "세균팀과 거품팀으로 나눠, 놀이 해볼까요?";
-         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+         BaseInGameUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
         
         DOVirtual.DelayedCall(4f, () =>

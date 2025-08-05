@@ -4,6 +4,7 @@ using DG.Tweening;
 using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Construction_GameManager : Base_GameManager
@@ -54,7 +55,7 @@ public class Construction_GameManager : Base_GameManager
 
     public AudioClip heavyMachinerySound; //지워야함 오류생겨서 일단 살린것임
 
-    public Construction_UIManager constructionUIManager;
+    [FormerlySerializedAs("constructionUIManager")] public ConstructionInGameUIManager constructionInGameUIManager;
 
     public bool canNextBtnClick = false;
 
@@ -248,7 +249,7 @@ public class Construction_GameManager : Base_GameManager
     {
         if (canNextBtnClick)
         {
-            constructionUIManager.ForceCloseNarration();
+            constructionInGameUIManager.ForceCloseNarration();
             ClickSound();
 
             if (_btnTwiceIssue)
@@ -294,7 +295,7 @@ public class Construction_GameManager : Base_GameManager
         if (canNextBtnClick)
         {
             ClickSound();
-            constructionUIManager.ForceCloseNarration();
+            constructionInGameUIManager.ForceCloseNarration();
             if (_btnTwiceIssue)
             {
                 _btnTwiceIssue = false;
@@ -329,7 +330,7 @@ public class Construction_GameManager : Base_GameManager
         if (canNextBtnClick)
         {
             ClickSound();
-            constructionUIManager.ForceCloseNarration();
+            constructionInGameUIManager.ForceCloseNarration();
             if (_btnTwiceIssue)
             {
                 _btnTwiceIssue = false;

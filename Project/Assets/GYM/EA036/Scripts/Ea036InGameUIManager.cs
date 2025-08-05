@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 
 
-public class EA036_UIManager : Base_UIManager
+public class Ea036InGameUIManager : Base_InGameUIManager
 {
    // private enum Btns
    // {

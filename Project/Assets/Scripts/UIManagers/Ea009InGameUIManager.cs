@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// 좋은음식을 먹어요 UIManager-------------------------------------
 /// </summary>
-public class EA009_UIManager : Base_UIManager
+public class Ea009InGameUIManager : Base_InGameUIManager
 {
 
     

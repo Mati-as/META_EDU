@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EA033_UIManager : Base_UIManager
+public class Ea033InGameUIManager : Base_InGameUIManager
 {
    public enum UI
    {

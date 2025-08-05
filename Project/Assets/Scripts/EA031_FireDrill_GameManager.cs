@@ -94,7 +94,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                 case (int)MainSeq.OnFireAndAlarm:
                     GetObject((int)Objs.ToxicGas).SetActive(true);
                     GetObject((int)Objs.SirenAlert).SetActive(true);
-                    _uiManager.PopInstructionUIFromScaleZero("검정 연기가 보여~무슨 냄새지?");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("검정 연기가 보여~무슨 냄새지?");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/Smoke");
                 
                     DOVirtual.DelayedCall(0.5f, () =>
@@ -112,7 +112,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                     {
                         float playTime = 0;
 
-                        _uiManager.PopInstructionUIFromScaleZero("친구들~ 불이 났어요! 모두 대피 해야해요!");
+                        _inGameUIManager.PopInstructionUIFromScaleZero("친구들~ 불이 났어요! 모두 대피 해야해요!");
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/2_Fire");
                         DOVirtual.DelayedCall(4f, () =>
                         {
@@ -152,7 +152,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.clostMouthAndNoseInstruction:
                 
-                    _uiManager.PopInstructionUIFromScaleZero("불이 나면 두손으로 코와 입을 막아요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("불이 나면 두손으로 코와 입을 막아요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/3_Cover");
                     _introAvatarAnimationController.PlayAnimation(3, AvatarAnimationController.AnimClip.HideFace);
                     DOVirtual.DelayedCall(3.5f, () =>
@@ -172,14 +172,14 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.CloseMouthAndNose:
                     SetSmokeStatus(-1);
-                    _uiManager.PopInstructionUIFromScaleZero("다른 친구들을 터치하여 도와주세요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("다른 친구들을 터치하여 도와주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/4_Help");
                     GetObject((int)Objs.OnExitAvataController).SetActive(true);
                     break;
 
 
                 case (int)MainSeq.TakeExit:
-                    _uiManager.PopInstructionUIFromScaleZero("친구를 따라 비상구로 기어서 이동해주세요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("친구를 따라 비상구로 기어서 이동해주세요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/5_TakeExit");
                     DOVirtual.DelayedCall(2f, () =>
                     {
@@ -199,7 +199,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/6_Finish");
-                    _uiManager.PopInstructionUIFromScaleZero("두손으로 코와 입을 막고\n비상구로 나가는 것을 기억해요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("두손으로 코와 입을 막고\n비상구로 나가는 것을 기억해요!");
                     Managers.Sound.Play(SoundManager.Sound.Bgm, "Bgm/EA031");
                     Managers.Sound.Play(SoundManager.Sound.Effect, "EA012/Siren_FireTruck");
                     RestartScene(null,10f);
@@ -253,11 +253,11 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
             _onEscapeAvatarAnimationController.PlayAnimation(0, AvatarAnimationController.AnimClip.Wave);
             _onEscapeAvatarAnimationController.SetWalking(0, false);
             
-            _uiManager.PopInstructionUIFromScaleZero("준비 다 됐으면 차분히 날 따라서 나가자!");
+            _inGameUIManager.PopInstructionUIFromScaleZero("준비 다 됐으면 차분히 날 따라서 나가자!");
 
             DOVirtual.DelayedCall(4.5f, () =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("경로를 순서대로 밟아 비상구로 탈출해요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("경로를 순서대로 밟아 비상구로 탈출해요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/FollowPath");
             });
             Managers.Sound.Play(SoundManager.Sound.Narration, "EA031/Lets");
@@ -318,7 +318,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
         BindObject(typeof(Objs));
         base.Init();
-        _uiManager = UIManagerObj.GetComponent<Base_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Base_InGameUIManager>();
         _smokePs = GetObject((int)Objs.ToxicGas).GetComponent<ParticleSystem>();
         _sirenPs = GetObject((int)Objs.SirenAlert).GetComponent<ParticleSystem>();
 
@@ -389,7 +389,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
 
     }
     private Sequence _pathAnimSAeq;
-    private Base_UIManager _uiManager;
+    private Base_InGameUIManager _inGameUIManager;
     private Vector3 _towelDefaultScale;
     private Sequence _arrowAnimSeq;
     
@@ -465,7 +465,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
                 if (_currentAvatarHelpCount >= AVATART_COUNT_TO_HELP)
                 {
                     _currentAvatarHelpCount = 0;
-                    _uiManager.PopInstructionUIFromScaleZero("모든 친구를 도와줬어!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("모든 친구를 도와줬어!");
 
                     DOVirtual.DelayedCall(3f, () =>
                     {
@@ -525,7 +525,7 @@ public class EA031_FireDrill_GameManager : Ex_BaseGameManager
     private void InitForNewEscapePath()
     {
       
-        _uiManager.PopInstructionUIFromScaleZero("잘했어! 다음친구도 어서 대피하자!");
+        _inGameUIManager.PopInstructionUIFromScaleZero("잘했어! 다음친구도 어서 대피하자!");
         Managers.Sound.Play(SoundManager.Sound.Effect, "EA031/GoodJob");
        // _arrowAnimSeq?.Kill();
         _pathAnimSAeq?.Kill();

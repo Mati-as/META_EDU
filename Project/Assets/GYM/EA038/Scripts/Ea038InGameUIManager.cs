@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class EA038_UIManager : Base_UIManager
+public class Ea038InGameUIManager : Base_InGameUIManager
 {
     private enum UI
     {

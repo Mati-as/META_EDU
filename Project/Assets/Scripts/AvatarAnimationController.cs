@@ -13,7 +13,6 @@ public class AvatarAnimationController : Ex_MonoBehaviour
         HideFace,
         Wave,
         Crawl,
-        
     }
     
     public enum LegAnimClip
@@ -22,47 +21,67 @@ public class AvatarAnimationController : Ex_MonoBehaviour
         Walk,
     }
 
+    public enum ExpressionAnimClip
+    {
+        Default,
+        Happy,
+        Surprised,
+        Sad_Cry,
+        Angry,
+        Happy_Heart,
+        Kiss,
+    }
 
 
     private Dictionary<int, Animator> _controllerMap = new();
     private Dictionary<int, int> tfIdToIndexMap= new();
     private int CHARACTER_ANIM_NUM = Animator.StringToHash("AnimNum");
-    private static readonly int ToDefault = Animator.StringToHash("ToDefault");
-    private static readonly int IsWalking = Animator.StringToHash("IsWalking");
-    private static readonly int LegAnimNum = Animator.StringToHash("LegAnimNum");
+    private static readonly int TO_DEFAULT = Animator.StringToHash("ToDefault");
+    private static readonly int IS_WALKING = Animator.StringToHash("IsWalking");
+    private static readonly int LEG_ANIM = Animator.StringToHash("LegAnimNum");
+    private static readonly int EXPRESSION_ANIM = Animator.StringToHash("ExpressionAnimNum");
+    private static readonly int TO_DEFAULT_EXPRESSION = Animator.StringToHash("ToDefault_Expression");
 
     protected override void Init()
     {
         base.Init();
-        
         for(int i = 0 ;i < transform.childCount; i++)
         {
             _controllerMap.Add(i,transform.GetChild(i).GetComponent<Animator>());
             tfIdToIndexMap.Add(transform.GetChild(i).GetInstanceID(),i);
             SetDefault(i);
         }
+    }
 
+    public void SetLegAnim(int animatorIdx,int animName)
+    {
+        _controllerMap[animatorIdx].SetInteger(LEG_ANIM,(int)animName);
+    }
     
-    }
-
-    public void SetLegAnim(int animator,int animName)
+    public void SetExpression(int animatorIdx,int animName)
     {
-        _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
+        InitExpression(animatorIdx);
+        _controllerMap[animatorIdx].SetInteger(EXPRESSION_ANIM,(int)animName);
     }
-    public void SetWalking(int index,bool isWalking =false)
+    public void InitExpression(int animatorIdx)
     {
-        _controllerMap[index].SetBool(IsWalking, isWalking);
+        _controllerMap[animatorIdx].SetTrigger(TO_DEFAULT_EXPRESSION);
+        _controllerMap[animatorIdx].SetInteger(EXPRESSION_ANIM,-1);
     }
-    public void PlayAnimation(int animator,AnimClip animName)
+    public void SetWalking(int animatorIdx,bool isWalking =false)
+    {
+        _controllerMap[animatorIdx].SetBool(IS_WALKING, isWalking);
+    }
+    public void PlayAnimation(int animatorIdx,AnimClip animName)
     {
         
-        _controllerMap[animator].SetTrigger(ToDefault);
-        _controllerMap[animator].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
+        _controllerMap[animatorIdx].SetTrigger(TO_DEFAULT);
+        _controllerMap[animatorIdx].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
     }
     
     public void PlayAnimationByTransID(int transID,AnimClip animName)
     {
-        _controllerMap[tfIdToIndexMap[transID]].SetTrigger(ToDefault);
+        _controllerMap[tfIdToIndexMap[transID]].SetTrigger(TO_DEFAULT);
         _controllerMap[tfIdToIndexMap[transID]].SetInteger(CHARACTER_ANIM_NUM,(int)animName);
     }
 

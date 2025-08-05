@@ -104,7 +104,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
     #region UI 관련
 
     protected GameObject UIManagerObj;
-    protected Base_UIManager baseUIManager;
+    protected Base_InGameUIManager BaseInGameUIManager;
 
     public void LoadUIManagerAndInit()
     {
@@ -322,11 +322,11 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             Logger.CoreClassLog("UIManager가 로드되지 않았습니다. 이미 씬 깔려있는지 확인 필요");
 
             UIManagerObj = GameObject.FindWithTag("UIManager");
-            baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
+            BaseInGameUIManager = Utils.GetOrAddComponent<Base_InGameUIManager>(UIManagerObj);
 
-            baseUIManager.LoadUIElements(baseUIManager.transform.Find("[Interactable]").gameObject);
+            BaseInGameUIManager.LoadUIElements(BaseInGameUIManager.transform.Find("[Interactable]").gameObject);
             //순서주의
-            baseUIManager.ExplicitInitInGame();
+            BaseInGameUIManager.ExplicitInitInGame();
             return;
         }
 
@@ -375,9 +375,9 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
             Logger.LogError("UICamera 태그를 가진 오브젝트를 찾을 수 없습니다.");
 
         UIManagerObj = GameObject.FindWithTag("UIManager");
-        baseUIManager = Utils.GetOrAddComponent<Base_UIManager>(UIManagerObj);
-        baseUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
-        baseUIManager.ExplicitInitInGame();
+        BaseInGameUIManager = Utils.GetOrAddComponent<Base_InGameUIManager>(UIManagerObj);
+        BaseInGameUIManager.LoadUIElements(canvas.transform.Find("[Interactable]").gameObject);
+        BaseInGameUIManager.ExplicitInitInGame();
     }
 
     protected string initialMessage = string.Empty;
@@ -588,7 +588,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
         _restartSequence.AppendCallback(() =>
         {
             Managers.Sound.Play(SoundManager.Sound.Narration, "Common/Narration/OnRestart");
-            baseUIManager.PopInstructionUIFromScaleZero("놀이가 끝났어요! 놀이가 곧 다시시작 해요!");
+            BaseInGameUIManager.PopInstructionUIFromScaleZero("놀이가 끝났어요! 놀이가 곧 다시시작 해요!");
         });
 
         _restartSequence.AppendInterval(7f);
@@ -603,7 +603,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
                     if (remainingSeconds != previousSecond)
                     {
                         previousSecond = remainingSeconds;
-                        baseUIManager.PopAndChangeUI("놀이를 곧 다시 시작해요!" + $" ({remainingSeconds.ToString()})");
+                        BaseInGameUIManager.PopAndChangeUI("놀이를 곧 다시 시작해요!" + $" ({remainingSeconds.ToString()})");
                     }
                 })
                 .SetEase(Ease.Linear)
@@ -625,7 +625,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
                 if (remainingSeconds != previousSecond)
                 {
                     previousSecond = remainingSeconds;
-                    baseUIManager.PopAndChangeUI("({remainingSeconds.ToString()})");
+                    BaseInGameUIManager.PopAndChangeUI("({remainingSeconds.ToString()})");
                 }
             })
             .SetEase(Ease.Linear)

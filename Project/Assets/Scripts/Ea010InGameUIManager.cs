@@ -1,6 +1,6 @@
 using DG.Tweening;
 
-public class EA010_UIManager : Base_UIManager
+public class Ea010InGameUIManager : Base_InGameUIManager
 {
 
     public enum TMP

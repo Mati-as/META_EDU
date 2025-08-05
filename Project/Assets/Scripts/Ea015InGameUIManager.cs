@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SuperMaxim.Messaging;
 using UnityEngine;
 
-public class EA015_UIManager : Base_UIManager
+public class Ea015InGameUIManager : Base_InGameUIManager
 {
 private EA015_GameManager _gm;
 

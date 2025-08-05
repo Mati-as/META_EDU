@@ -69,6 +69,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private bool _isDevMode;
     private float delayForDevMode = 0.0f;
 
+    private AvatarAnimationController _avatarAnimationController;
     public enum GameObj
     {
         // 좋은 음식
@@ -189,9 +190,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                 case MainSeq.BadFoodEatIntro:
                    // Messenger.Default.Publish(new EA009_Payload("",true));
                     OnBadFoodEatIntro();
-                   _uiManager.TurnOffAllFoodSprite();
+                   _inGameUIManager.TurnOffAllFoodSprite();
                     break;
                 case MainSeq.BadFoodEat_RoundA:
+                    _avatarAnimationController.InitExpression(0);
                     OnBadFoodEat_RoundA();
                     PlayNarrationSound(_currentBadFoodToClick);
                     break;
@@ -205,8 +207,9 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     PlayNarrationSound(_currentBadFoodToClick);
                     break;
                 case MainSeq.Stomachache:
-                    _uiManager.TurnOffAllFoodSprite();
+                    _inGameUIManager.TurnOffAllFoodSprite();
                     Messenger.Default.Publish(new EA009_Payload($"나쁜음식을 너무 많이먹어\n배가 아픈 것 같아요",true));
+                    _avatarAnimationController.SetExpression(0,(int)AvatarAnimationController.ExpressionAnimClip.Sad_Cry);
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "HavingStomachache");
                     mainAnimator.SetInteger(SeqNum, 1 );
                     OnStomachache();
@@ -221,6 +224,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
                     break;
                 case MainSeq.OnFinish:
                     Messenger.Default.Publish(new EA009_Payload("친구들! 몸에 좋은 음식을 먹고 튼튼해져요!",true));
+                    _avatarAnimationController.SetExpression(0,(int)AvatarAnimationController.ExpressionAnimClip.Happy);
                     Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatGoodFood");
                     int finish = 123;
                     mainAnimator.SetInteger(SeqNum, finish );
@@ -421,7 +425,10 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         currentMainSeq = MainSeq.Default;
         _currentMasterSequence = DOTween.Sequence();
 
-        _uiManager = UIManagerObj.GetComponent<EA009_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea009InGameUIManager>();
+        
+        _avatarAnimationController = GetComponentInChildren<AvatarAnimationController>();
+       // _avatarAnimationController.SetExpression(0,(int)AvatarAnimationController.ExpressionAnimClip.Happy);
     }
 
     protected override void OnGameStartButtonClicked()
@@ -663,6 +670,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
         {
             Logger.ContentTestLog("모든 음식이 나쁜 음식으로 변신 완료!");
             Managers.Sound.Play(SoundManager.Sound.Narration, _foodNarrationPath + "LetsEatAllBadFood");
+            _avatarAnimationController.SetExpression(0,(int)AvatarAnimationController.ExpressionAnimClip.Happy_Heart);
             currentMainSeq = MainSeq.BadFoodEatIntro;
         });
     }
@@ -850,7 +858,7 @@ public class EA009_HealthyFood_GameManager : Ex_BaseGameManager
     private Dictionary<int, int> _clickedCountMap = new();
     
 private Dictionary<int, Sequence> _badFoodClickMoveSeqMap = new(); // 도망 애니메이션 전용
-private EA009_UIManager _uiManager;
+private Ea009InGameUIManager _inGameUIManager;
 private void OnRaySyncOnBadFoodEat()
 {
     if (!isBadFoodClickable)
@@ -951,7 +959,7 @@ private void OnRaySyncOnBadFoodEat()
                     : MainSeq.Stomachache;
             });
 
-            _uiManager.TurnOffAllFoodSprite();
+            _inGameUIManager.TurnOffAllFoodSprite();
             isBadFoodClickable = false;
             Messenger.Default.Publish(
                 new EA009_Payload($"{currentBadFoodClickGameCategoryKorean} 다 먹었어요!", true));
@@ -962,25 +970,25 @@ private void OnRaySyncOnBadFoodEat()
             switch (_badFoodToKorean[currentBadFoodClickGameCategory])
             {
                 case "콜라":
-                    _uiManager.TurnOnSprite((int)EA009_UIManager.EA009_UI.Sprite_Cola);
+                    _inGameUIManager.TurnOnSprite((int)Ea009InGameUIManager.EA009_UI.Sprite_Cola);
                     break;
                 case "쿠키":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Cookie);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_Cookie);
                     break;
                 case "아이스크림":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_IceCream);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_IceCream);
                     break;
                 case "피자":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Pizza);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_Pizza);
                     break;
                 case "초콜릿":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Chocolate);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_Chocolate);
                     break;
                 case "케이크":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Cake);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_Cake);
                     break;
                 case "도넛":
-                    _uiManager.TurnOnSprite((int)(int)EA009_UIManager.EA009_UI.Sprite_Donut);
+                    _inGameUIManager.TurnOnSprite((int)(int)Ea009InGameUIManager.EA009_UI.Sprite_Donut);
                     break;
             }
             

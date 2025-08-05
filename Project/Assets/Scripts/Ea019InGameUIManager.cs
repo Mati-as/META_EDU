@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EA019_UIManager : Base_UIManager
+public class Ea019InGameUIManager : Base_InGameUIManager
 {
    private enum Btns
    {

@@ -40,7 +40,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
     private readonly float _startDelay = 0.75f;
 
-    private Base_UIManager _baseUIManager;
+    private Base_InGameUIManager _baseInGameUIManager;
 
     protected override void Init()
     {
@@ -59,8 +59,8 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
         SketchFinishFilterSet(false);
         // _defaultPosition = new Vector3();
         //_defaultPosition = transform.position;
-        _baseUIManager = UIManagerObj.GetComponent<Base_UIManager>();
-        _baseUIManager.uiMediaArtInScene.InitToUse();
+        _baseInGameUIManager = UIManagerObj.GetComponent<Base_InGameUIManager>();
+        _baseInGameUIManager.uiMediaArtInScene.InitToUse();
     }
 
     private void SketchFinishFilterSet(bool isActive)
@@ -116,7 +116,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
 
     protected override void OnGameStartButtonClicked()
     {
-        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
+        _baseInGameUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
         Managers.Sound.Play(SoundManager.Sound.Narration, "Painting/OnGameStart");
         base.OnGameStartButtonClicked();
     }
@@ -176,7 +176,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                 videoPlayer.SetDirectAudioMute(0, false);
 
                 Managers.Sound.Play(SoundManager.Sound.Narration,$"Painting/{SceneManager.GetActiveScene().name}");
-                _baseUIManager.PopInstructionUIFromScaleZero($"{_baseUIManager.uiMediaArtInScene.narration}", 5f);
+                _baseInGameUIManager.PopInstructionUIFromScaleZero($"{_baseInGameUIManager.uiMediaArtInScene.narration}", 5f);
                 
 
                 Logger.Log("Length of Video: " + videoPlayer.length);
@@ -193,7 +193,7 @@ public class PaintingContent_GameManager : Ex_BaseGameManager
                     {
                         Managers.Sound.Play(SoundManager.Sound.Bgm, "Common/Bgm/Paint");
                         
-                        _baseUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
+                        _baseInGameUIManager.PopInstructionUIFromScaleZero("그림을 터치해 완성시켜보세요!", 5f);
                         SketchFinishFilterSet(false);
                         _isPaintFinished = false;
                         videoPlayer.Pause();

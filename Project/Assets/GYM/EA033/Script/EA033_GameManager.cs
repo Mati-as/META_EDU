@@ -53,7 +53,7 @@ public class EA033_GameManager : Ex_BaseGameManager
         Victory2
     }
 
-    private EA033_UIManager _uiManager;
+    private Ea033InGameUIManager _inGameUIManager;
     private EA033_PoolManager PoolManager;
     private bool gamePlaying;
     private int i;
@@ -86,8 +86,8 @@ public class EA033_GameManager : Ex_BaseGameManager
 
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponentInChildren<EA033_UIManager>();
-        Debug.Assert(_uiManager != null, "EA033_UIManager not found");
+        _inGameUIManager = UIManagerObj.GetComponentInChildren<Ea033InGameUIManager>();
+        Debug.Assert(_inGameUIManager != null, "EA033_UIManager not found");
         PoolManager = FindObjectOfType<EA033_PoolManager>();
             
         _stage = MainSeq.OnStart;
@@ -219,7 +219,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 }
                 
                 i++;
-                _uiManager.ActivateImageAndUpdateCount(uiImage, i);
+                _inGameUIManager.ActivateImageAndUpdateCount(uiImage, i);
                 
                 if (i == 10)
                     Managers.Sound.Play(SoundManager.Sound.Narration, $"EA033/Audio/audio_중간알림_{uiImage}");
@@ -238,7 +238,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                     
                     DOVirtual.DelayedCall(1f, () =>
                     {
-                        _uiManager.DeactivateImageAndUpdateCount();
+                        _inGameUIManager.DeactivateImageAndUpdateCount();
                         Get<CinemachineVirtualCamera>((int)Cameras.Camera4).Priority = 12;
                         Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10;
                     });
@@ -288,7 +288,7 @@ public class EA033_GameManager : Ex_BaseGameManager
 
     private void OnStartStage()
     {
-        _uiManager.PopInstructionUIFromScaleZero("친구와 함께 크리스마스 트리를 꾸며요!");
+        _inGameUIManager.PopInstructionUIFromScaleZero("친구와 함께 크리스마스 트리를 꾸며요!");
         Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_0_친구와_함께_크리스마스_트리를_꾸며요_");
 
         DOVirtual.DelayedCall(4.5f, () => NextStage(MainSeq.OnIntro));
@@ -296,7 +296,7 @@ public class EA033_GameManager : Ex_BaseGameManager
 
     private void OnIntroStage()
     {
-        _uiManager.PopInstructionUIFromScaleZero("산타할아버지가 선물을 놓고 가실 수 있도록\n크리스마스 트리를 꾸며볼까요?");
+        _inGameUIManager.PopInstructionUIFromScaleZero("산타할아버지가 선물을 놓고 가실 수 있도록\n크리스마스 트리를 꾸며볼까요?");
         Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_1_산타할아버지가_선물을_놓고_가실_수_있도록_크리스마스_트리를~");
 
         Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
@@ -323,14 +323,14 @@ public class EA033_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-                _uiManager.PopInstructionUIFromScaleZero("떨어진 방울장식을 터치해\n트리를 꾸며주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("떨어진 방울장식을 터치해\n트리를 꾸며주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_2_떨어진_방울장식을_터치해_트리를_꾸며주세요_");
             })
             .AppendInterval(5.5f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
-                _uiManager.PlayReadyAndStart();
+                _inGameUIManager.ShutInstructionUI();
+                _inGameUIManager.PlayReadyAndStart();
             })
             .AppendInterval(5f)
             .AppendCallback(() =>
@@ -338,7 +338,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 gamePlaying = true;
 
                 PoolManager.StartSpawning(PoolType.Bell);
-                _uiManager.ActivateImageAndUpdateCount(1, 0);
+                _inGameUIManager.ActivateImageAndUpdateCount(1, 0);
             })
             ;
     }
@@ -352,14 +352,14 @@ public class EA033_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-                _uiManager.PopInstructionUIFromScaleZero("이번에는 반짝이는 전구장식을 터치해\n트리를 꾸며주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("이번에는 반짝이는 전구장식을 터치해\n트리를 꾸며주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_0_이번에는_반짝이는_전구장식을_터치해__트리를_꾸며주세요_");
             })
             .AppendInterval(5.5f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
-                _uiManager.PlayReadyAndStart();
+                _inGameUIManager.ShutInstructionUI();
+                _inGameUIManager.PlayReadyAndStart();
             })
             .AppendInterval(5f)
             .AppendCallback(() =>
@@ -367,7 +367,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 gamePlaying = true;
 
                 PoolManager.StartSpawning(PoolType.Bulb);
-                _uiManager.ActivateImageAndUpdateCount(2, 0);
+                _inGameUIManager.ActivateImageAndUpdateCount(2, 0);
             })
             ;
     }
@@ -381,14 +381,14 @@ public class EA033_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-                _uiManager.PopInstructionUIFromScaleZero("이번에는 맛있는 사탕장식을 터치해\n트리를 꾸며주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("이번에는 맛있는 사탕장식을 터치해\n트리를 꾸며주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_1_이번에는_맛있는_사탕장식을_터치해__트리를_꾸며주세요_");
             })
             .AppendInterval(5.5f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
-                _uiManager.PlayReadyAndStart();
+                _inGameUIManager.ShutInstructionUI();
+                _inGameUIManager.PlayReadyAndStart();
             })
             .AppendInterval(5f)
             .AppendCallback(() =>
@@ -396,7 +396,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 gamePlaying = true;
 
                 PoolManager.StartSpawning(PoolType.Candy);
-                _uiManager.ActivateImageAndUpdateCount(3, 0);
+                _inGameUIManager.ActivateImageAndUpdateCount(3, 0);
             })
             ;
     }
@@ -410,14 +410,14 @@ public class EA033_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-                _uiManager.PopInstructionUIFromScaleZero("이번에는 반짝이는 별장식을 터치해\n트리를 꾸며주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("이번에는 반짝이는 별장식을 터치해\n트리를 꾸며주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_2_이번에는_반짝이는_별장식을_터치해_트리를_꾸며주세요_");
             })
             .AppendInterval(5.5f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
-                _uiManager.PlayReadyAndStart();
+                _inGameUIManager.ShutInstructionUI();
+                _inGameUIManager.PlayReadyAndStart();
             })
             .AppendInterval(5f)
             .AppendCallback(() =>
@@ -425,7 +425,7 @@ public class EA033_GameManager : Ex_BaseGameManager
                 gamePlaying = true;
 
                 PoolManager.StartSpawning(PoolType.Star);
-                _uiManager.ActivateImageAndUpdateCount(4, 0);
+                _inGameUIManager.ActivateImageAndUpdateCount(4, 0);
             })
             ;
         
@@ -451,13 +451,13 @@ public class EA033_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("트리를 열심히 꾸몄구나 고마워!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("트리를 열심히 꾸몄구나 고마워!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_11_트리를_열심히_꾸몄구나_고마워_");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("친구들 메리 크리스마스~!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("친구들 메리 크리스마스~!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA033/Audio/audio_10_친구들_메리_크리스마스_");
                 RestartScene(delay: 15); //재시작 기능
             })

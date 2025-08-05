@@ -439,7 +439,7 @@ public class HopscotchBaseGameManager : Ex_BaseGameManager
     {
         base.OnGameStartButtonClicked();
         initialMessage= "숫자를 차례대로 밟아 10까지 가볼까요?";
-         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+         BaseInGameUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
 
         

@@ -5,7 +5,7 @@ using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
 
-public class CrossRoad_UIManager : Base_UIManager
+public class CrossRoadInGameUIManager : Base_InGameUIManager
 {
     private CrossRoad_GameManager manager;
 

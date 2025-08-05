@@ -294,7 +294,7 @@ using Random = UnityEngine.Random;
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
                     
-                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 구급차를 완성시켜요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 구급차를 완성시켜요!");
                    
                     DOVirtual.DelayedCall(Managers.Sound.audioSources[(int)SoundManager.Sound.Narration].clip.length + 1,
                         () =>
@@ -303,7 +303,7 @@ using Random = UnityEngine.Random;
                         });
 ;                    break;
                 case (int)MainSeq.Ambulance_Outro:
-                    _uiManager.PopInstructionUIFromScaleZero("구급차 완성! 출동!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("구급차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_Ambulance");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_Ambulance");
@@ -327,11 +327,11 @@ using Random = UnityEngine.Random;
                         {
                             Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/PutTogether_PoliceCar");   
                         });
-                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 경찰차를 완성시켜요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 경찰차를 완성시켜요!");
                     break;
                 case (int)MainSeq.PoliceCar_Outro:
                     
-                    _uiManager.PopInstructionUIFromScaleZero("경찰차 완성! 출동!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("경찰차 완성! 출동!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_PoliceCar");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_PoliceCar");
                     OnOutro((int)Obj.Sprites_PoliceCar);
@@ -339,7 +339,7 @@ using Random = UnityEngine.Random;
 
                 
                 case (int)MainSeq.FireTruck_Intro:
-                    _uiManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 소방차를 완성시켜요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("각 부품을 터치해서 소방차를 완성시켜요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Intro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
                     OnCarIntro((int)Obj.Sprites_FireTruck);
@@ -352,7 +352,7 @@ using Random = UnityEngine.Random;
                     
                     break;
                 case (int)MainSeq.FireTruck_Outro:
-                    _uiManager.PopInstructionUIFromScaleZero("소방차 완성! 출동!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("소방차 완성! 출동!");
                     
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/Outro_FireTruck");
                     Managers.Sound.Play(SoundManager.Sound.Effect,"EA018/Siren_FireTruck");
@@ -361,7 +361,7 @@ using Random = UnityEngine.Random;
 
                 case (int)MainSeq.OnFinish:
                     Managers.Sound.Play(SoundManager.Sound.Narration,"EA018/Narration/OnFinish");
-                    _uiManager.PopInstructionUIFromScaleZero("친구들 덕분에 도와줄 수 있었어요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("친구들 덕분에 도와줄 수 있었어요!");
      
                     OnFinishInit();
                     RestartScene(delay:20f);
@@ -491,7 +491,7 @@ using Random = UnityEngine.Random;
         _spriteBgRenderer.DOFade(0, 0.0001f);
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponent<EA018_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea018InGameUIManager>();
 
         for (int i = (int)Obj.Seat_A; i < (int)Obj.Seat_A + SEAT_COUNT; i++) isSeatClickedMap.Add(i, false);
         
@@ -548,7 +548,7 @@ using Random = UnityEngine.Random;
         DOVirtual.DelayedCall(1.5f, () =>
         {
             initialMessage = "각자 표시된 자리에 앉아주세요!";
-             baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+             BaseInGameUIManager.PopInstructionUIFromScaleZero(initialMessage);
 
             CurrentMainMainSeq = (int)MainSeq.SeatSelection;
 
@@ -594,7 +594,7 @@ using Random = UnityEngine.Random;
 
                     // Messenger.Default.Publish(new EA012Payload("OnSeatSelectFinished"));
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA018/Narration/OnSeatSelectFinished");
-                    _uiManager.PopInstructionUIFromScaleZero("다 앉았구나! 이제 자동차들을 보러가자!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("다 앉았구나! 이제 자동차들을 보러가자!");
                     DOVirtual.DelayedCall(4, () =>
                     {
                         CurrentMainMainSeq = (int)MainSeq.Ambulance_Intro;
@@ -840,7 +840,7 @@ using Random = UnityEngine.Random;
  
     }
 
-    private EA018_UIManager _uiManager;
+    private Ea018InGameUIManager _inGameUIManager;
 
     #endregion
 

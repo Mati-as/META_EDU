@@ -6,7 +6,7 @@ public class AA005_VideoGameManager : VideoContentBaseGameManager
     {
         base.OnGameStartButtonClicked();
         initialMessage= "코스모스를 터치하면 나비가 나타나요!";
-        baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+        BaseInGameUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 }

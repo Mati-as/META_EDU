@@ -49,7 +49,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         Victory2
     }
 
-    private EA036_UIManager _uiManager;
+    private Ea036InGameUIManager _inGameUIManager;
     private EA036_PoolManager _poolManager;
 
     private Vector3 effectPos;
@@ -77,7 +77,7 @@ public class EA036_GameManager : Ex_BaseGameManager
 
         base.Init();
 
-        _uiManager = UIManagerObj.GetComponent<EA036_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea036InGameUIManager>();
         _poolManager = FindObjectOfType<EA036_PoolManager>();
         toySpawnPositions = new GameObject[2];
         
@@ -265,21 +265,21 @@ public class EA036_GameManager : Ex_BaseGameManager
                         canTouchUI = false;
                         DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakePosition(0.3f);
-                        _uiManager.TouchUIEndStage(1);
+                        _inGameUIManager.TouchUIEndStage(1);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_19_교구장");
                         break;
                     case "Table":
                         canTouchUI = false;
                         DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
-                        _uiManager.TouchUIEndStage(2);
+                        _inGameUIManager.TouchUIEndStage(2);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_17_책상");
                         break;
                     case "Chair":
                         canTouchUI = false;
                         DOVirtual.DelayedCall(0.5f, () => canTouchUI = true);
                         hitGameObj.transform.DOShakeScale(0.3f);
-                        _uiManager.TouchUIEndStage(3);
+                        _inGameUIManager.TouchUIEndStage(3);
                         Managers.Sound.Play(SoundManager.Sound.Effect, "EA036/Audio/audio_18_의자");
                         break;
 
@@ -362,25 +362,25 @@ public class EA036_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("교실을 꾸며요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("교실을 꾸며요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_0_교실을_꾸며요");
             })
             .AppendInterval(2.7f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
+                _inGameUIManager.ShutInstructionUI();
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_1_교실이_텅_비어있어요");
             })
             .AppendInterval(3.4f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("친구들 우리 교실을 같이 꾸며볼까요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("친구들 우리 교실을 같이 꾸며볼까요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_2_친구들_우리_교실을_같이_꾸며볼까요_");
             })
             .AppendInterval(4.5f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
+                _inGameUIManager.ShutInstructionUI();
                 ChangeStage(MainSeq.BookCaseStage);
             })
             ;
@@ -396,13 +396,13 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("교실에는 무엇이 필요할까요?");
+                _inGameUIManager.PopInstructionUIFromScaleZero("교실에는 무엇이 필요할까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_3_교실에는_무엇이_필요할까요_");
             })
             .AppendInterval(3.5f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("교구장부터 교실에 놓아줄까요?");
+                _inGameUIManager.PopInstructionUIFromScaleZero("교구장부터 교실에 놓아줄까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_4_교구장부터_교실에_놓아줄까요_");
             })
             .AppendInterval(3f)
@@ -410,7 +410,7 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("교구장을 터치해주세요");
+                _inGameUIManager.PopInstructionUIFromScaleZero("교구장을 터치해주세요");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_5_교구장을_터치해주세요");
             })
             ;
@@ -421,19 +421,19 @@ public class EA036_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("교구장이 생겼어요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("교구장이 생겼어요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_6_교구장이_생겼어요");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("친구들이 앉을 의자가 필요해요");
+                _inGameUIManager.PopInstructionUIFromScaleZero("친구들이 앉을 의자가 필요해요");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_7_친구들이_앉을_의자가_필요해요_");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("의자를 터치해 놓아줄까요?");
+                _inGameUIManager.PopInstructionUIFromScaleZero("의자를 터치해 놓아줄까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_8_의자를_터치해_놓아줄까요_");
             })
             .AppendInterval(3f)
@@ -441,7 +441,7 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("의자를 터치해주세요");
+                _inGameUIManager.PopInstructionUIFromScaleZero("의자를 터치해주세요");
                 //Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_0_의자을_터치해주세요");
             })
             
@@ -454,19 +454,19 @@ public class EA036_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("의자가 생겼어요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("의자가 생겼어요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_9_의자가__생겼어요_");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("의자 앞에 놓을 책상이 필요해요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("의자 앞에 놓을 책상이 필요해요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_10_의자_앞에_놓을_책상이_필요해요");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("책상을 터치해 놓아주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("책상을 터치해 놓아주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_11_책상을_터치해_놓아주세요");
             })
             .AppendInterval(3f)
@@ -474,7 +474,7 @@ public class EA036_GameManager : Ex_BaseGameManager
             .AppendInterval(1f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("책상을 터치해주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("책상을 터치해주세요!");
                 //Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_1_책상을_터치해주세요");
             })
             ;
@@ -485,7 +485,7 @@ public class EA036_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("책상을 생겼어요");
+                _inGameUIManager.PopInstructionUIFromScaleZero("책상을 생겼어요");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_12_책상이_생겼어요_");
 
                 foreach (Transform child in GetObject((int)Objects.TurnOnObjects).transform)
@@ -526,13 +526,13 @@ public class EA036_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 12;
                 
-                _uiManager.PopInstructionUIFromScaleZero("이제 교구장에 장난감들을 넣어볼까요?");
+                _inGameUIManager.PopInstructionUIFromScaleZero("이제 교구장에 장난감들을 넣어볼까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_13_이제_교구장에_장난감들을_넣어볼까요_");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("마음에 드는 장난감을 터치해 놓아주세요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("마음에 드는 장난감을 터치해 놓아주세요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_14_마음에_드는_장난감을_마음껏_터치해_놓아주세요");
                 _poolManager.spawnSeq.Play();
             })
@@ -562,13 +562,13 @@ public class EA036_GameManager : Ex_BaseGameManager
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
 
-                _uiManager.PopInstructionUIFromScaleZero("와 친구들 교실이 완성되었어요!");
+                _inGameUIManager.PopInstructionUIFromScaleZero("와 친구들 교실이 완성되었어요!");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_15_와_친구들_교실에_완성되었어요_");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                _uiManager.ShutInstructionUI();
+                _inGameUIManager.ShutInstructionUI();
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 10;
                 Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12;
             })
@@ -583,7 +583,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                         .OnStart(() => child.gameObject.SetActive(true));
                 }
                 
-                _uiManager.PopInstructionUIFromScaleZero("어떤것들을 놓았는지 알아볼까요?");
+                _inGameUIManager.PopInstructionUIFromScaleZero("어떤것들을 놓았는지 알아볼까요?");
                 Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_16_어떤것들을_놓았는지_알아볼까요_");
             })
             .AppendInterval(2f)
@@ -598,7 +598,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                     .OnStart(() => endStageObjParent.transform.GetChild(3).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
-                        _uiManager.ActivateUIEndStage(1);
+                        _inGameUIManager.ActivateUIEndStage(1);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_19_교구장");
                         endStageObjParent.transform.GetChild(3).gameObject.transform.DOShakePosition(0.3f);
                     });
@@ -615,7 +615,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                     .OnStart(() => endStageObjParent.transform.GetChild(4).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
-                        _uiManager.ActivateUIEndStage(2);
+                        _inGameUIManager.ActivateUIEndStage(2);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_17_책상");
                         endStageObjParent.transform.GetChild(4).gameObject.transform.DOShakeScale(0.3f);
                     });
@@ -632,7 +632,7 @@ public class EA036_GameManager : Ex_BaseGameManager
                     .OnStart(() => endStageObjParent.transform.GetChild(5).gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
-                        _uiManager.ActivateUIEndStage(3);
+                        _inGameUIManager.ActivateUIEndStage(3);
                         Managers.Sound.Play(SoundManager.Sound.Narration, "EA036/Audio/audio_18_의자");
                         endStageObjParent.transform.GetChild(5).gameObject.transform.DOShakeScale(0.3f);
                     });

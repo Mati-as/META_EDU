@@ -79,7 +79,7 @@ public class BB003_HandFootFlipBaseGameManager : Base_GameManager
     {
         base.OnGameStartButtonClicked();
         initialMessage= "손발을 터치해 뒤집어 보세요!";
-         baseUIManager.PopInstructionUIFromScaleZero(initialMessage);
+         BaseInGameUIManager.PopInstructionUIFromScaleZero(initialMessage);
         Managers.Sound.Play(SoundManager.Sound.Narration, "OnGameStartNarration/" + SceneManager.GetActiveScene().name + "_intronarration");
     }
 

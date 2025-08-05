@@ -3,20 +3,20 @@ using SuperMaxim.Messaging;
 using UnityEngine;
 using MyGame.Messages;
 
-public class VariousShape_UIManager : Base_UIManager
+public class SideWalkInGameUIManager : Base_InGameUIManager
 {
-    private VariousShape_GameManager manager;
+    private SideWalk_GameManager _manager;
 
     private Sequence seq;
-
+    
     protected override void Awake()
     {
         base.Awake();
         Messenger.Default.Subscribe<NarrationMessage>(OnNarrationFromGm);
-        if (manager == null)
+        if (_manager == null)
         {
-            manager = GameObject.FindWithTag("GameManager").GetComponent<VariousShape_GameManager>();
-            Debug.Assert(manager != null, "GameManager가 씬에 없습니다");
+            _manager = GameObject.FindWithTag("GameManager").GetComponent<SideWalk_GameManager>();
+            Debug.Assert(_manager != null, "GameManager가 씬에 없습니다");
         }
 
     }
@@ -27,7 +27,7 @@ public class VariousShape_UIManager : Base_UIManager
         return true;
 
     }
-
+    
     private void OnDestroy()
     {
         Messenger.Default.Unsubscribe<NarrationMessage>(OnNarrationFromGm);
@@ -37,15 +37,21 @@ public class VariousShape_UIManager : Base_UIManager
     {
         string narrationText = message.Narration;
         string audioPath = message.AudioPath;
-
-        AudioClip audioClip = Resources.Load<AudioClip>($"VariousShape/Audio/{audioPath}");
+    
+        AudioClip audioClip = Resources.Load<AudioClip>($"SideWalk/Audio/{audioPath}");
 
         seq?.Kill();
         seq = DOTween.Sequence();
 
         seq.AppendCallback(() => PopInstructionUIFromScaleZero(narrationText));
-        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"VariousShape/Audio/{audioPath}"));
-        seq.AppendInterval(audioClip.length + 1f);
+        seq.AppendCallback(() => Managers.Sound.Play(SoundManager.Sound.Narration, $"SideWalk/Audio/{audioPath}"));
+
+        // CustomDuration이 유효한 값(0보다 큰 값)이면 그걸, 아니면 audioClip 길이에 0.2초 추가한 걸 사용
+        float interval = message.CustomDuration 
+                         ?? (audioClip.length + 0.3f);
+        
+        seq.AppendInterval(interval);
+
         seq.AppendCallback(() => ShutInstructionUI(narrationText));
     }
 

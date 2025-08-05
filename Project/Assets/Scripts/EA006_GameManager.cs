@@ -66,7 +66,7 @@ public class EA006_GameManager : Ex_BaseGameManager
 
     public static event Action<int> SeqMessageEvent;
     public static event Action<int> SparrowCountEvent;
-    private EA006_UIManager _uiManager;
+    private Ea006InGameUIManager _inGameUIManager;
 
     public int CurrentThemeMainSequence
     {
@@ -162,7 +162,7 @@ public class EA006_GameManager : Ex_BaseGameManager
     protected override void Init()
     {
         base.Init();
-        _uiManager = UIManagerObj.GetComponent<EA006_UIManager>();
+        _inGameUIManager = UIManagerObj.GetComponent<Ea006InGameUIManager>();
         psResourcePath = "Runtime/EA006/FX_leaves";
         BindObject(typeof(Obj));
 
@@ -506,7 +506,7 @@ public class EA006_GameManager : Ex_BaseGameManager
                             });
                     });
             
-                    _uiManager.PopInstructionUIFromScaleZero("허수아비 아저씨를 다 찾았어요!");
+                    _inGameUIManager.PopInstructionUIFromScaleZero("허수아비 아저씨를 다 찾았어요!");
                     Managers.Sound.Play(SoundManager.Sound.Narration,"Audio/SortedByScene/EA006/Narration/FoundAllScarecrow");
 
                     DOVirtual.DelayedCall(4f, () =>
@@ -761,7 +761,7 @@ public class EA006_GameManager : Ex_BaseGameManager
         if (_isSparrowSectionFinished) return; 
         _isSparrowSectionFinished = true;
         //baseUIManager.ShutInstructionUI();
-        baseUIManager.PopInstructionUIFromScaleZero("참새를 모두 잡았어요!");
+        BaseInGameUIManager.PopInstructionUIFromScaleZero("참새를 모두 잡았어요!");
         _currentSparrowCount = 0;
         CurrentThemeMainSequence = (int)MainSeq.OnFinish;
                 
