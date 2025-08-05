@@ -107,7 +107,7 @@ public class EA038_GameManager : Ex_BaseGameManager
             .ToDictionary(card => card.GetComponent<Collider>(), card => card);
 
 
-        originalCardScale = new Vector3(0.04224154f, 0.004107093f, 0.03364548f);
+        originalCardScale = new Vector3(0.003750216f, 0.0006125633f, 0.003357493f);
 
         Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
         for (int i = 1; i <= 1; i++)
@@ -221,7 +221,7 @@ public class EA038_GameManager : Ex_BaseGameManager
                     correctObjectList.Add(card.gameObject);
                     card.transform.DOJump(correctObjtargetPos, 0.5f, 1, 1f);
                     card.transform.DOScale(targetScale, 0.5f);
-                    card.transform.DORotate(new Vector3(0, 38, 0), 1f);
+                    card.transform.DORotate(new Vector3(0, -51.3f, 0), 1f);
 
                     if (correctCardClickedCount == gamePlayAge)
                     {

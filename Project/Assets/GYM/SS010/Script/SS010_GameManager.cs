@@ -1,10 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cinemachine;
 using DG.Tweening;
+using UnityEditor;
 using UnityEngine;
-using System.Linq;
 using Random = UnityEngine.Random;
 
 public class SS010_GameManager : Ex_BaseGameManager
@@ -29,7 +29,10 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     private enum Objects
     {
-
+        LogBridge,
+        Water,
+        WaterClickEffect,
+        Crocodile,
 
     }
 
@@ -42,8 +45,23 @@ public class SS010_GameManager : Ex_BaseGameManager
     private SS010_UIManager _uiManager;
     private Vector3 _clickEffectPos;
     private AudioClip[] _clickClips;
-    private string _victorySound;
+    private AudioClip _victorySound;
 
+    private int footStepAudioCount = 0;
+    private int woodCreakAudioCount = 0;
+    private AudioClip[] _footStepAudioClips;
+    private AudioClip[] _woodCreakAudioClips;
+
+    public float gameTimer = 30;
+    public bool playingGame = false;
+
+    private GameObject logBridge;
+    private GameObject water;
+
+    private Transform waterEffectPoolTransform;
+
+    private GameObject crocodile;
+    
     protected override void Init()
     {
         BindObject(typeof(Objects));
@@ -55,20 +73,39 @@ public class SS010_GameManager : Ex_BaseGameManager
         _uiManager = UIManagerObj.GetComponent<SS010_UIManager>();
 
         psResourcePath = "SS010/Asset/Fx_Click"; //주소변경
-        SetPool(); //클릭 이펙트 용 풀
 
-        Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
-        for (int i = 1; i <= 1; i++)
-            Get<CinemachineVirtualCamera>(i).Priority = 10;
+        SetPool(); //나무 클릭 이펙트 용 풀
 
-        Managers.Sound.Play(SoundManager.Sound.Bgm, "");
+        // Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
+        // for (int i = 1; i <= 1; i++)
+        //     Get<CinemachineVirtualCamera>(i).Priority = 10;
 
-        _clickClips = new AudioClip[5]; //오디오 char 캐싱 
+        Managers.Sound.Play(SoundManager.Sound.Bgm, ""); //배경음 추후 삽입
+
+        _clickClips = new AudioClip[5]; //클릭 오디오 캐싱 
         for (int i = 0; i < _clickClips.Length; i++)
             _clickClips[i] = Resources.Load<AudioClip>($"SS010/Audio/Click_{(char)('A' + i)}");
 
-        _victorySound = "EA038/Audio/audio_Victory";
+        _footStepAudioClips = new AudioClip[11]; //발자국 오디오 캐싱 
+        for (int i = 0; i < _footStepAudioClips.Length; i++)
+            _footStepAudioClips[i] = Resources.Load<AudioClip>($"SS010/Audio/FootStepSound{i + 1}");
 
+        _woodCreakAudioClips = new AudioClip[8]; //나무 삐걱거리는 오디오 캐싱
+        for (int i = 0; i < _woodCreakAudioClips.Length; i++)
+            _woodCreakAudioClips[i] = Resources.Load<AudioClip>($"SS010/Audio/WoodCreak{i + 1}");
+
+        _victorySound = Resources.Load<AudioClip>("SS010/Audio/audio_Victory");
+
+        logBridge = GetObject((int)Objects.LogBridge);
+        water = GetObject((int)Objects.Water);
+
+        waterEffectPoolTransform = GetObject((int)Objects.WaterClickEffect).transform;
+
+        for (int i = 0; i < waterEffectPoolTransform.childCount; i++)
+            waterEffectPoolTransform.GetChild(i).gameObject.SetActive(false);
+
+        crocodile = GetObject((int)Objects.Crocodile);
+        crocodile.transform.position = new Vector3(-11, -7f, 9);
     }
 
     protected override void OnGameStartButtonClicked()
@@ -87,8 +124,8 @@ public class SS010_GameManager : Ex_BaseGameManager
     private void StartContent()
     {
         //if (_stage == MainSeq.OnStart)
-        ChangeStage(GameSequence.Intro);
-        //ChangeStage(EA038_MainSeq.ObjectGameStageSequence);
+        //ChangeStage(GameSequence.Intro);
+        ChangeStage(GameSequence.FirstGamePlay);
     }
 
     private void ChangeStage(GameSequence next)
@@ -152,18 +189,19 @@ public class SS010_GameManager : Ex_BaseGameManager
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                //준비~시작
+                _uiManager.PlayReadyAndStart(() =>
+                {
+                    _uiManager.StartTimer(() => ChangeStage(GameSequence.FirstGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
+                    playingGame = true;
+                });
             })
-            .AppendInterval(4f)
-            .AppendCallback(() =>
-            {
-                // 게임 시작
-                // 이때 부터 시간 초 스타트
-                //다음으로 넘어가는 기능은 시간제에 있음 
+            ;
 
-                // (친구들 한줄로 천천히 외나무 다리를 건너주세요) > 해당 텍스트 중간중간 재생
+        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
+        // {
+        //     // (친구들 한줄로 천천히 외나무 다리를 건너주세요) > 해당 텍스트 중간중간 재생
+        // }
 
-            });
 
     }
 
@@ -217,12 +255,21 @@ public class SS010_GameManager : Ex_BaseGameManager
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                // 게임 시작
-                // 이때 부터 시간 초 스타트
-                //다음으로 넘어가는 기능은 시간제에 있음 
+                _uiManager.PlayReadyAndStart(() =>
+                {
+                    _uiManager.StartTimer(() => ChangeStage(GameSequence.SecondGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
+                    playingGame = true;
+                });
+            })
+            ;
 
-                // (친구들 한줄로 천천히 외나무 다리를 건너주세요) > 해당 텍스트 중간중간 재생
-            });
+
+        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
+        // {
+        //     // (친구들 한줄로 천천히 징검다리를 건너주세요) > 해당 텍스트 중간중간 재생
+        // }
+
+
 
     }
 
@@ -238,7 +285,7 @@ public class SS010_GameManager : Ex_BaseGameManager
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                ChangeStage(GameSequence.SecondGamePlay);
+                ChangeStage(GameSequence.ThirdGamePlay);
             })
             ;
 
@@ -266,12 +313,19 @@ public class SS010_GameManager : Ex_BaseGameManager
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                // 게임 시작
-                // 이때 부터 시간 초 스타트
-                //다음으로 넘어가는 기능은 시간제에 있음 
+                _uiManager.PlayReadyAndStart(() =>
+                {
+                    _uiManager.StartTimer(() => ChangeStage(GameSequence.Outro)); //타이머 등장 연출관련 시간 문제 이슈
+                    playingGame = true;
+                });
+            })
+            ;
 
-                // (친구들 한줄로 천천히 외나무 다리를 건너주세요) > 해당 텍스트 중간중간 재생
-            });
+
+        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
+        // {
+        //     // (친구들 한줄로 천천히 징검다리를 건너주세요) > 해당 텍스트 중간중간 재생
+        // }
 
     }
 
@@ -299,291 +353,164 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     #endregion
 
+    [SerializeField] private int logBridgeClickedCount = 0;
+    private int waterClickedCount = 0;
 
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
 
-        if (_currentSequence == GameSequence.FirstGamePlay)
+        if (_currentSequence == GameSequence.FirstGamePlay && playingGame)
         {
-            foreach (var hit in GameManager_Hits)
-            {
-                var clickedObj = hit.collider.gameObject;
+            var hit = GameManager_Hits[0];
+            var clickedObj = hit.collider.gameObject;
+            var clickedPos = hit.point;
 
-                // if (_cardByCollider.TryGetValue(hit.collider, out var card))
-                // {
-                //     if (card.cardValue == gamePlayAge && card.canClicked)
-                //     {
-                //         clickEffectPos = hit.point;
-                //         clickEffectPos.y += 0.2f;
-                //         PlayParticleEffect(clickEffectPos);
-                //         PlayClickSound();
-                //
-                //         correctCardClickedCount++;
-                //         Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
-                //
-                //         card.canClicked = false;
-                //         card.KillShake();
-                //
-                //         if (correctCardClickedCount == gamePlayAge)
-                //         {
-                //             cardGamePlayCount++;
-                //             canPlayGame = false;
-                //
-                //             foreach (var cards in ea038_Cards)
-                //             {
-                //                 cards.canClicked = false;
-                //             }
-                //
-                //             PlayVictorySoundAndEffect();
-                //
-                //             float delaySeq = gamePlayAge;
-                //
-                //             DOTween.Sequence()
-                //                 .AppendInterval(1f)
-                //                 .AppendCallback(ShowNarrationGamePlayAge)
-                //                 .AppendInterval(3f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     wrongCardClickedCount = 0;
-                //                     correctCardClickedCount = 0;
-                //
-                //                     foreach (Transform child in GetObject((int)Objects.CardPool).transform)
-                //                     {
-                //                         child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
-                //                     }
-                //                 })
-                //                 .AppendInterval(2f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         int idx = i; // 클로저 이슈 방지
-                //                         float delay = idx;
-                //
-                //                         DOVirtual.DelayedCall(delay, () =>
-                //                         {
-                //                             var obj = correctObjectList[idx];
-                //                             // 위치 세팅
-                //                             obj.transform.position =
-                //                                 GetObject((int)Objects.ShowCorrectObjectPositions)
-                //                                     .transform.GetChild(gamePlayAge - 3)
-                //                                     .GetChild(idx).position;
-                //                             // 활성화 & 스케일 트윈
-                //                             obj.SetActive(true);
-                //                             obj.transform.DOScale(originalCardScale * 2f, 1f);
-                //                         });
-                //                     }
-                //                 })
-                //                 .AppendInterval(delaySeq)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         correctObjectList[i].transform.DOScale(0, 1f);
-                //                     }
-                //                 })
-                //                 ;
-                //         }
-                //     }
-                // }
+            if (clickedObj == logBridge)
+            {
+                logBridgeClickedCount++;
+
+                clickedPos.y += 0.6f;
+                PlayParticleEffect(clickedPos);
+                PlayClickSound();
+
+                if (logBridgeClickedCount % 2 == 0)
+                {
+                    PlayFootstepSound();
+                }
+
+                if (logBridgeClickedCount % 6 == 0)
+                {
+                    PlayWoodCreakSound();
+                }
+
+                if (logBridgeClickedCount % 8 == 0)
+                {
+                    ShakeLogBridge();
+                }
+            }
+
+            else if (clickedObj == water)
+            {
+                waterClickedCount++;
+
+                clickedPos.y += 0.7f;
+                PlayWaterClickParticle(clickedPos);
+
+                if (waterClickedCount == 2)
+                {
+                    crocodile.transform.DOMoveY(-3, 2f);
+                    //강이 2번 이상 클릭시 악어가 숨어있다가 얼굴을 들어냄 그리고 악어 등장 나레이션
+                }
+
+                if (logBridgeClickedCount % 3 == 0)
+                {
+                    //물에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동(악어랑 닿은부분에 클릭되면 어떻게 할지?)
+                }
+
             }
         }
+    }
+
+    private void PlayWaterClickParticle(Vector3 spawnPosition)
+    {
+        foreach (Transform child in waterEffectPoolTransform)
+        {
+            var go = child.gameObject;
+            if (!go.activeSelf)
+            {
+                child.position = spawnPosition;
             
-        if (_currentSequence == GameSequence.SecondGamePlay)
-        {
-            foreach (var hit in GameManager_Hits)
-            {
-                var clickedObj = hit.collider.gameObject;
+                go.SetActive(true);
+                var ps = go.GetComponent<ParticleSystem>();
+                ps.Play();
 
-                // if (_cardByCollider.TryGetValue(hit.collider, out var card))
-                // {
-                //     if (card.cardValue == gamePlayAge && card.canClicked)
-                //     {
-                //         clickEffectPos = hit.point;
-                //         clickEffectPos.y += 0.2f;
-                //         PlayParticleEffect(clickEffectPos);
-                //         PlayClickSound();
-                //
-                //         correctCardClickedCount++;
-                //         Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
-                //
-                //         card.canClicked = false;
-                //         card.KillShake();
-                //
-                //         if (correctCardClickedCount == gamePlayAge)
-                //         {
-                //             cardGamePlayCount++;
-                //             canPlayGame = false;
-                //
-                //             foreach (var cards in ea038_Cards)
-                //             {
-                //                 cards.canClicked = false;
-                //             }
-                //
-                //             PlayVictorySoundAndEffect();
-                //
-                //             float delaySeq = gamePlayAge;
-                //
-                //             DOTween.Sequence()
-                //                 .AppendInterval(1f)
-                //                 .AppendCallback(ShowNarrationGamePlayAge)
-                //                 .AppendInterval(3f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     wrongCardClickedCount = 0;
-                //                     correctCardClickedCount = 0;
-                //
-                //                     foreach (Transform child in GetObject((int)Objects.CardPool).transform)
-                //                     {
-                //                         child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
-                //                     }
-                //                 })
-                //                 .AppendInterval(2f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         int idx = i; // 클로저 이슈 방지
-                //                         float delay = idx;
-                //
-                //                         DOVirtual.DelayedCall(delay, () =>
-                //                         {
-                //                             var obj = correctObjectList[idx];
-                //                             // 위치 세팅
-                //                             obj.transform.position =
-                //                                 GetObject((int)Objects.ShowCorrectObjectPositions)
-                //                                     .transform.GetChild(gamePlayAge - 3)
-                //                                     .GetChild(idx).position;
-                //                             // 활성화 & 스케일 트윈
-                //                             obj.SetActive(true);
-                //                             obj.transform.DOScale(originalCardScale * 2f, 1f);
-                //                         });
-                //                     }
-                //                 })
-                //                 .AppendInterval(delaySeq)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         correctObjectList[i].transform.DOScale(0, 1f);
-                //                     }
-                //                 })
-                //                 ;
-                //         }
-                //     }
-                // }
+                StartCoroutine(ParticleDone(ps, go));
+
+                break;
             }
         }
-        
-        if (_currentSequence == GameSequence.ThirdGamePlay)
-        {
-            foreach (var hit in GameManager_Hits)
-            {
-                var clickedObj = hit.collider.gameObject;
-
-                // if (_cardByCollider.TryGetValue(hit.collider, out var card))
-                // {
-                //     if (card.cardValue == gamePlayAge && card.canClicked)
-                //     {
-                //         clickEffectPos = hit.point;
-                //         clickEffectPos.y += 0.2f;
-                //         PlayParticleEffect(clickEffectPos);
-                //         PlayClickSound();
-                //
-                //         correctCardClickedCount++;
-                //         Logger.Log($"정답 클릭 됨 : ${correctCardClickedCount}개");
-                //
-                //         card.canClicked = false;
-                //         card.KillShake();
-                //
-                //         if (correctCardClickedCount == gamePlayAge)
-                //         {
-                //             cardGamePlayCount++;
-                //             canPlayGame = false;
-                //
-                //             foreach (var cards in ea038_Cards)
-                //             {
-                //                 cards.canClicked = false;
-                //             }
-                //
-                //             PlayVictorySoundAndEffect();
-                //
-                //             float delaySeq = gamePlayAge;
-                //
-                //             DOTween.Sequence()
-                //                 .AppendInterval(1f)
-                //                 .AppendCallback(ShowNarrationGamePlayAge)
-                //                 .AppendInterval(3f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     wrongCardClickedCount = 0;
-                //                     correctCardClickedCount = 0;
-                //
-                //                     foreach (Transform child in GetObject((int)Objects.CardPool).transform)
-                //                     {
-                //                         child.gameObject.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.OutCubic);
-                //                     }
-                //                 })
-                //                 .AppendInterval(2f)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         int idx = i; // 클로저 이슈 방지
-                //                         float delay = idx;
-                //
-                //                         DOVirtual.DelayedCall(delay, () =>
-                //                         {
-                //                             var obj = correctObjectList[idx];
-                //                             // 위치 세팅
-                //                             obj.transform.position =
-                //                                 GetObject((int)Objects.ShowCorrectObjectPositions)
-                //                                     .transform.GetChild(gamePlayAge - 3)
-                //                                     .GetChild(idx).position;
-                //                             // 활성화 & 스케일 트윈
-                //                             obj.SetActive(true);
-                //                             obj.transform.DOScale(originalCardScale * 2f, 1f);
-                //                         });
-                //                     }
-                //                 })
-                //                 .AppendInterval(delaySeq)
-                //                 .AppendCallback(() =>
-                //                 {
-                //                     for (int i = 0; i < correctObjectList.Count; i++)
-                //                     {
-                //                         correctObjectList[i].transform.DOScale(0, 1f);
-                //                     }
-                //                 })
-                //                 ;
-                //         }
-                //     }
-                // }
-            }
-        }
-        
+    }
+    
+    private IEnumerator ParticleDone(ParticleSystem ps, GameObject go)
+    {
+        // 파티클 재생 완료를 기다렸다가
+        yield return new WaitUntil(() => !ps.IsAlive(true));
+        go.SetActive(false);
     }
 
     
     private void PlayClickSound()
     {
-        int idx = Random.Range(0, _clickClips.Length);
+        if (_clickClips.Length <= 0)
+            Logger.Log("클릭 효과음 없음");
 
-        if (_clickClips[idx] == null)
-            Logger.Log("사운드 경로에 없음");
+        int idx = Random.Range(0, _clickClips.Length);
 
         Managers.Sound.Play(SoundManager.Sound.Effect, _clickClips[idx]);
 
     }
 
-    private void PlayVictorySoundAndEffect()
+    public void PlayVictorySoundAndEffect()
     {
+        if (_victorySound == null)
+            Logger.Log("승리 사운드 없음");
+
         Managers.Sound.Play(SoundManager.Sound.Effect, _victorySound);
 
         Get<ParticleSystem>((int)Particle.Victory1).Play();
         Get<ParticleSystem>((int)Particle.Victory2).Play();
     }
 
+    private void PlayFootstepSound()
+    {
+        footStepAudioCount++;
 
+        if (footStepAudioCount > 11)
+            footStepAudioCount = 1;
 
+        Managers.Sound.Play(SoundManager.Sound.Effect, _footStepAudioClips[footStepAudioCount - 1]);
+    }
+
+    private void PlayWoodCreakSound()
+    {
+        woodCreakAudioCount++;
+
+        if (woodCreakAudioCount > 8)
+            woodCreakAudioCount = 1;
+
+        Managers.Sound.Play(SoundManager.Sound.Effect, _woodCreakAudioClips[woodCreakAudioCount - 1]);
+    }
+
+    private void ShakeLogBridge()
+    {
+        DOTween.Kill(logBridge);
+
+        DOTween.Sequence()
+            .Append(logBridge.transform.DOLocalRotate
+                (
+                    new Vector3(0f, 0f, 7f),
+                    0.3f,
+                    RotateMode.LocalAxisAdd
+                )
+                .SetEase(Ease.InOutSine)
+            )
+            .Append(logBridge.transform.DOLocalRotate
+                (
+                    new Vector3(0f, 0f, -14f),
+                    0.6f,
+                    RotateMode.LocalAxisAdd
+                )
+                .SetEase(Ease.InOutSine)
+            )
+            .Append(logBridge.transform.DOLocalRotate
+                (
+                    new Vector3(0f, 0f, 7f),
+                    0.3f,
+                    RotateMode.LocalAxisAdd
+                )
+                .SetEase(Ease.InOutSine)
+            );
+    }
+    
 }
