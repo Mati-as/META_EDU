@@ -24,16 +24,23 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     private enum Cameras
     {
-
+        Camera1,
+        Camera2,
     }
 
     private enum Objects
     {
         LogBridge,
-        Water,
+        Water1,
+        Water2,
         WaterClickEffect,
+        Lava,
+        LavaClickEffect,
         Crocodile,
-
+        Avatar,
+        Rocks1,
+        Rocks2,
+        
     }
 
     private enum Particle
@@ -56,11 +63,22 @@ public class SS010_GameManager : Ex_BaseGameManager
     public bool playingGame = false;
 
     private GameObject logBridge;
-    private GameObject water;
+    private GameObject water1;
+    private GameObject water2;
+
+    private List<GameObject> rocks1 = new(8);
+    private List<GameObject> rocks2 = new(8);
+    
+    private GameObject lava;
 
     private Transform waterEffectPoolTransform;
 
     private GameObject crocodile;
+
+    private Vector3 RightStartPos;
+    private Vector3 LeftStartPos;
+    private GameObject rightChild;
+    private Animator rightChildAnimator;
     
     protected override void Init()
     {
@@ -97,7 +115,22 @@ public class SS010_GameManager : Ex_BaseGameManager
         _victorySound = Resources.Load<AudioClip>("SS010/Audio/audio_Victory");
 
         logBridge = GetObject((int)Objects.LogBridge);
-        water = GetObject((int)Objects.Water);
+        water1 = GetObject((int)Objects.Water1);
+        water2 = GetObject((int)Objects.Water2);
+
+        var rocksParent1 = GetObject((int)Objects.Rocks1).transform;
+        foreach (GameObject obj in rocksParent1)
+        {
+            rocks1.Add(obj);
+        }
+        
+        var rocksParent2 = GetObject((int)Objects.Rocks2).transform;
+        foreach (GameObject obj in rocksParent2)
+        {
+            rocks2.Add(obj);
+        }
+        
+        lava = GetObject((int)Objects.Lava);
 
         waterEffectPoolTransform = GetObject((int)Objects.WaterClickEffect).transform;
 
@@ -106,6 +139,15 @@ public class SS010_GameManager : Ex_BaseGameManager
 
         crocodile = GetObject((int)Objects.Crocodile);
         crocodile.transform.position = new Vector3(-11, -7f, 9);
+
+        RightStartPos = GetObject((int)Objects.Avatar).transform.GetChild(0).position;
+        LeftStartPos = GetObject((int)Objects.Avatar).transform.GetChild(1).position;
+
+        rightChild = GetObject((int)Objects.Avatar).transform.GetChild(2).gameObject;
+        rightChildAnimator = rightChild.GetComponent<Animator>();
+        rightChild.SetActive(false);
+        
+        
     }
 
     protected override void OnGameStartButtonClicked()
@@ -144,7 +186,7 @@ public class SS010_GameManager : Ex_BaseGameManager
 
         Logger.Log($"{next}스테이지로 변경");
     }
-
+    
 
     #region 각 스테이지 별 진행 시퀀스
 
@@ -153,14 +195,17 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //형님처럼 할 수 잇어요
+                _uiManager.PopInstructionUIFromScaleZero("형님처럼 할 수 잇어요!", 3f, narrationPath: "SS010/Audio/audio_0_형님처럼_할_수_잇어요");
             })
-            .AppendInterval(4f)
+            .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                //(다리를 건너야 해요~)
-                //형님처럼 씩씩하게 외나무 다리를 건너볼까요?
+                _uiManager.PopInstructionUIFromScaleZero("다리를 건너야 해요!", 3f, narrationPath: "SS010/Audio/audio_1_다리를_건너야_해요");
+            })
+            .AppendInterval(3f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("형님처럼 씩씩하게 외나무 다리를 건너볼까요?", 3f, narrationPath: "SS010/Audio/audio_2_형님처럼_씩씩하게_외나무_다리를_건너볼까요_");
                 //아이 아바타가 화면에 한명 등장하고 화면을 올려다보며 손을 흔드는 구도
             })
             .AppendInterval(4f)
@@ -177,14 +222,21 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //형님을 따라 두판을 벌리고 외나무 다리를 건너주세요
-                //(형님이 먼저 외나무 다리를 건너는 것을 보여줄 거에요)
+                _uiManager.PopInstructionUIFromScaleZero("형님을 따라 두 팔을 벌리고 외나무 다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_3_형님을_따라_두_팔을_벌리고_외나무_다리를_건너주세요");
+            })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("형님이 먼저 외나무 다리를 건너는 것을 보여줄 거에요!", 3f, narrationPath: "SS010/Audio/audio_4_형님이_먼저_외나무_다리를_건너는_것을_보여줄거에요");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
                 //형님 아바타가 길을 건너감 
+                rightChild.SetActive(true);
+                rightChild.transform.position = RightStartPos;
+                rightChild.transform.DOMove(LeftStartPos, 4f).OnComplete(() => rightChild.SetActive(false));
+                //rightChildAnimator.SetBool("");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
@@ -197,11 +249,10 @@ public class SS010_GameManager : Ex_BaseGameManager
             })
             ;
 
-        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
-        // {
-        //     // (친구들 한줄로 천천히 외나무 다리를 건너주세요) > 해당 텍스트 중간중간 재생
-        // }
-
+        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0)        //위치 수정 예정
+        {
+              Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_5_친구들_한줄로_천천히_외나무_다리를_건너주세요");
+        }
 
     }
 
@@ -210,18 +261,23 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
+                logBridgeClickedCount = 0;
+                waterClickedCount = 0;
+                
+                
                 //용암 게임 장소로 이동
-
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //다 건넜어요! 형님처럼 잘 할 수 있어요!
+                _uiManager.PopInstructionUIFromScaleZero("다 건넜어요! 형님처럼 잘 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_7_다_건넜어요__형님처럼_잘_할_수_있어요_");
                 //아바타 성공 애니메이션 재생
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                //(바닥에 용암이 흐르고 있어요!)
-                //다시 한번 형님처럼 씩씩하게 징검다리를 건너볼까요?
-
+                _uiManager.PopInstructionUIFromScaleZero("바닥에 용암이 흐르고 있어요!", 3f, narrationPath: "SS010/Audio/audio_8_바닥에_용암이_흐르고_있어요_");
+            })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                _uiManager.PopInstructionUIFromScaleZero("다시 한번 형님처럼 씩씩하게 징검다리를 건너볼까요?", 3f, narrationPath: "SS010/Audio/audio_9_다시_한번_형님처럼_씩씩하게_징검다리를_건너_볼까요_");
                 //아이 아바타가 화면에 한명 등장하고 화면을 올려다보며 손을 흔드는 구도
             })
             .AppendInterval(4f)
@@ -238,13 +294,13 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //(형님을 따라) 이번엔 두발을 모아 점프해 징검다리를 건너주세요
+                _uiManager.PopInstructionUIFromScaleZero("이번엔 두발을 모아 점프해 징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_10_형님을_따라_이번엔_두발을_모아_점프해_징검_다리를_건너주세요_");
                 //(형님이 먼저 징검 다리를 건너는 것을 보여줄 거에요)
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
+                _uiManager.PopInstructionUIFromScaleZero("형님이 먼저 징검 다리를 건너는 것을 보여줄 거에요!", 3f, narrationPath: "SS010/Audio/audio_11_형님이_먼저_징검다리를_건너는_것을_보여줄거에요_");
                 //형님 아바타가 길을 건너감 두발을 모아 점프하며
             })
             .AppendInterval(4f)
@@ -264,12 +320,10 @@ public class SS010_GameManager : Ex_BaseGameManager
             ;
 
 
-        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
-        // {
-        //     // (친구들 한줄로 천천히 징검다리를 건너주세요) > 해당 텍스트 중간중간 재생
-        // }
-
-
+        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0) //위치 수정 예정
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_12_친구들_한줄로_천천히_징검_다리를_건너주세요");
+        }
 
     }
 
@@ -278,8 +332,10 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //다 건넜어요! 형님처럼 잘 할 수 있어요!
+                rocksClickedCount = 0;
+                lavaClickedCount = 0;
+                
+                _uiManager.PopInstructionUIFromScaleZero("다 건넜어요! 형님처럼 잘 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_13_다_건넜어요__형님처럼_잘_할_수_있어요_");
                 //아바타 성공 애니메이션 재생
             })
             .AppendInterval(4f)
@@ -296,13 +352,12 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //(형님을 따라) 이번엔 한발로 점프해 징검다리를 건너주세요
-                //(형님이 먼저 징검 다리를 건너는 것을 보여줄 거에요)
+                _uiManager.PopInstructionUIFromScaleZero("이번엔 한발로 점프해 징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_14_형님을_따라_이번엔_한발로_점프해_징건마디를_건너주세요_");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
+                Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_15_형님이_먼저_징검다리를_건너는_것을_보여줄거에요_");
                 //형님 아바타가 길을 건너감 한발로 점프하며
             })
             .AppendInterval(4f)
@@ -322,10 +377,10 @@ public class SS010_GameManager : Ex_BaseGameManager
             ;
 
 
-        // if (_uiManager._currentGameTimer > 0)      //시간을 게임시간 / 3아니면 4 해서 게임하는 중간 한 두번정도 나오게 끔
-        // {
-        //     // (친구들 한줄로 천천히 징검다리를 건너주세요) > 해당 텍스트 중간중간 재생
-        // }
+        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0)      //추후 수정 예정
+        {
+            Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_16_친구들_한줄로_천천히_징검다리를_건너주세요_");
+        }
 
     }
 
@@ -335,16 +390,15 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                //_uiManager.PopInstructionUIFromScaleZero("다 찾았어요! 5살!", 3f, narrationPath: "EA038/Audio/audio_26_다_찾았어요__다섯살_");
-                //다 건넜어요!
+                _uiManager.PopInstructionUIFromScaleZero("다 건넜어요!", 3f, narrationPath: "SS010/Audio/audio_17_다_건넜어요_");
             })
-            .AppendInterval(4f)
+            .AppendInterval(2f)
             .AppendCallback(() =>
             {
-                //와 이제부터 우리 친구들도 형님처럼 뭐든 할 수 있어요!
+                _uiManager.PopInstructionUIFromScaleZero("와 이제부터 우리 친구들도 형님처럼 뭐든 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_18_와___이제부터_우리_친구들도_형님처럼_뭐든_할_수_있어요_");
                 //강 끝나는 지점에 아바타 3명이 같이 있고 카메라를 조금 더 가까이 확대 해 마무리 하는 애니메이션 재생
             })
-            .AppendInterval(4f)
+            .AppendInterval(5f)
             .AppendCallback(() =>
             {
                 RestartScene(delay: 10);
@@ -353,9 +407,14 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     #endregion
 
+    
     [SerializeField] private int logBridgeClickedCount = 0;
     private int waterClickedCount = 0;
 
+    [SerializeField] private int rocksClickedCount = 0;
+    private int lavaClickedCount = 0;
+    
+    
     public override void OnRaySynced()
     {
         if (!PreCheckOnRaySync()) return;
@@ -374,23 +433,23 @@ public class SS010_GameManager : Ex_BaseGameManager
                 PlayParticleEffect(clickedPos);
                 PlayClickSound();
 
-                if (logBridgeClickedCount % 2 == 0)
+                if (logBridgeClickedCount % 2 == 0 && logBridgeClickedCount != 0)
                 {
                     PlayFootstepSound();
                 }
 
-                if (logBridgeClickedCount % 6 == 0)
+                if (logBridgeClickedCount % 6 == 0 && logBridgeClickedCount != 0)
                 {
                     PlayWoodCreakSound();
                 }
 
-                if (logBridgeClickedCount % 8 == 0)
+                if (logBridgeClickedCount % 8 == 0 && logBridgeClickedCount != 0)
                 {
                     ShakeLogBridge();
                 }
             }
 
-            else if (clickedObj == water)
+            else if (clickedObj == water1)
             {
                 waterClickedCount++;
 
@@ -400,12 +459,99 @@ public class SS010_GameManager : Ex_BaseGameManager
                 if (waterClickedCount == 2)
                 {
                     crocodile.transform.DOMoveY(-3, 2f);
-                    //강이 2번 이상 클릭시 악어가 숨어있다가 얼굴을 들어냄 그리고 악어 등장 나레이션
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_1_강에_떨어지면_악어가_나타나요_떨어지지_않게_조심해요_");
                 }
 
-                if (logBridgeClickedCount % 3 == 0)
+                if (waterClickedCount % 3 == 0 && waterClickedCount != 0)
                 {
-                    //물에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동(악어랑 닿은부분에 클릭되면 어떻게 할지?)
+                    //물에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
+                }
+
+            }
+        }
+        else if (_currentSequence == GameSequence.SecondGamePlay && playingGame)
+        {
+            var hit = GameManager_Hits[0];
+            var clickedObj = hit.collider.gameObject;
+            var clickedPos = hit.point;
+
+            if (rocks1.Contains(clickedObj)) //O(n)이라 느림 딕셔너리로 바꾸면 좋을것같음
+            {
+                rocksClickedCount++;
+
+                clickedPos.y += 0.6f;
+                PlayParticleEffect(clickedPos);
+                PlayClickSound();
+
+                //각돌이 두번씩 눌리면 잠깐 잠기는 기능
+                
+                if (rocksClickedCount % 2 == 0)
+                {
+                    PlayFootstepSound();
+                }
+
+            }
+
+            else if (clickedObj == lava)
+            {
+                lavaClickedCount++;
+                
+                clickedPos.y += 0.7f;
+                //PlayWaterClickParticle(clickedPos); 용암이 튀는 이펙트로 대체
+
+                if (lavaClickedCount == 2)
+                {
+                    //crocodile.transform.DOMoveY(-3, 2f);
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_0_용암에_떨어지면_용암_악어가_나타나요__떨어지지_않게_조심해요_");
+                }
+
+                if (lavaClickedCount % 3 == 0 && lavaClickedCount != 0)
+                {
+                    //용암에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
+                }
+
+            }
+        }
+        else if (_currentSequence == GameSequence.ThirdGamePlay && playingGame)
+        {
+            var hit = GameManager_Hits[0];
+            var clickedObj = hit.collider.gameObject;
+            var clickedPos = hit.point;
+
+            if (rocks2.Contains(clickedObj)) //O(n)이라 느림 딕셔너리로 바꾸면 좋을것같음
+            {
+                rocksClickedCount++;
+
+                clickedPos.y += 0.6f;
+                PlayParticleEffect(clickedPos);
+                PlayClickSound();
+
+                //각돌이 두번씩 눌리면 잠깐 잠기는 기능
+                
+                if (rocksClickedCount % 2 == 0)
+                {
+                    PlayFootstepSound();
+                }
+
+            }
+
+            else if (clickedObj == water2)
+            {
+                waterClickedCount++;
+
+                clickedPos.y += 0.7f;
+                PlayWaterClickParticle(clickedPos);
+
+                if (waterClickedCount == 2)
+                {
+                    //crocodile.transform.DOMoveY(-3, 2f); //세번째 악어로 변경해야됨
+                    Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_1_강에_떨어지면_악어가_나타나요_떨어지지_않게_조심해요_");
+                }
+
+                if (waterClickedCount % 3 == 0 && waterClickedCount != 0)
+                {
+                    //물에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
+                    //세번째 게임은 악어가 더욱 적극적으로 움직여야함
                 }
 
             }
