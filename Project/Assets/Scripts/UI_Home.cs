@@ -9,6 +9,7 @@ public class UI_Home : UI_PopUp
         Btn_SensorSettings,
         Btn_ContentSortedByArea,
         Btn_ContentSortedByTheme,
+        Btn_ContentGuide,
         
         Btn_ThisMonth,
         Btn_MediaArt,
@@ -32,6 +33,23 @@ public class UI_Home : UI_PopUp
             Managers.UI.ClosePopupUI();
             Managers.UI.ShowPopupUI<UI_SeasonSelection>();
         });
+        
+        GetObject((int)UI.Btn_MediaArt).BindEvent(() =>
+        {
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_MediaArt>();
+        });
+        
+        
+        GetObject((int)UI.Btn_ContentGuide).BindEvent(() =>
+        {
+            Managers.UI.ClosePopupUI();
+            Managers.UI.ShowPopupUI<UI_ContentGuide>();
+        });
+        
+        
+        
+        
         GetObject((int)UI.Btn_SensorSettings).BindEvent(() =>
         {
             Managers.UI.ClosePopupUI();
@@ -49,11 +67,7 @@ public class UI_Home : UI_PopUp
             Managers.UI.ShowPopupUI<UI_ThisMonth>();
         });
         
-        GetObject((int)UI.Btn_MediaArt).BindEvent(() =>
-        {
-            Managers.UI.ClosePopupUI();
-            Managers.UI.ShowPopupUI<UI_MediaArt>();
-        });
+
         return true;
     }
 }

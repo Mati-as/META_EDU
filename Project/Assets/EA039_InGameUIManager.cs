@@ -5,10 +5,21 @@ using UnityEngine;
 
 public class EA039_InGameUIManager : Base_InGameUIManager
 {
-    private enum UI
+    public enum UI
     {
         Image_Miscellaneous,
-        OnRoundUI
+        Image_Shoes,
+        
+        Image_Red,
+        Image_Orange,
+        Image_Yellow,
+        Image_Green,
+        Image_Blue,
+        Image_Purple,
+        
+        OnRoundUI,
+        Max
+        
     }
     private Sequence _ea039UISeq;
 
@@ -27,12 +38,16 @@ public class EA039_InGameUIManager : Base_InGameUIManager
         GetObject((int)UI.OnRoundUI).SetActive(false);
     }
     
-    public void ActivateImageAndUpdateCount(int ImageToActivate,int count)
+    public void ActivateImageAndUpdateCount(int imageToActivate,int count)
     {
-         
+        for (int i = 0; i < (int)UI.Max; i++) GetObject(i).SetActive(false);
+
+       GetObject(imageToActivate).SetActive(true);
+
+        
         GetObject((int)UI.OnRoundUI).SetActive(true);
 
-        GetObject(ImageToActivate).SetActive(true);
+        GetObject(imageToActivate).SetActive(true);
         GetTMP((int)TMPs.TMP_OnRound).text = $"x {count}";
 
 

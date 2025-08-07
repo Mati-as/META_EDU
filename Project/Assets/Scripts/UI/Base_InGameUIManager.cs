@@ -47,7 +47,7 @@ public class Base_InGameUIManager : UI_PopUp,IInGameUIManager
     
     private UI_ElementsLoader _uiElementsLoader =new();
     
-    
+    [HideInInspector]
     public UI_MediaArtInScene uiMediaArtInScene;
     // protected bool isInitialChecksumPassed = false; // UIManager가 적절한 GameManager와 초기화 되었는지 체크하는 변수
 

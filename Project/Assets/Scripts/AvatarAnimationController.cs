@@ -23,7 +23,7 @@ public class AvatarAnimationController : Ex_MonoBehaviour
 
     public enum ExpressionAnimClip
     {
-        Default,
+        Idle,
         Happy,
         Surprised,
         Sad_Cry,
@@ -61,12 +61,14 @@ public class AvatarAnimationController : Ex_MonoBehaviour
     public void SetExpression(int animatorIdx,int animName)
     {
         InitExpression(animatorIdx);
+        
+        
         _controllerMap[animatorIdx].SetInteger(EXPRESSION_ANIM,(int)animName);
     }
     public void InitExpression(int animatorIdx)
     {
         _controllerMap[animatorIdx].SetTrigger(TO_DEFAULT_EXPRESSION);
-        _controllerMap[animatorIdx].SetInteger(EXPRESSION_ANIM,-1);
+        _controllerMap[animatorIdx].SetInteger(EXPRESSION_ANIM,(int)ExpressionAnimClip.Idle);
     }
     public void SetWalking(int animatorIdx,bool isWalking =false)
     {

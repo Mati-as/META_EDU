@@ -21,6 +21,8 @@ namespace MyCustomizedEditor.Common.Util
         }
         
         
+        
+        
         public override bool InitOnLoad()
         {
             if (base.InitOnLoad() == false)
@@ -32,6 +34,11 @@ namespace MyCustomizedEditor.Common.Util
         public virtual void ClosePopupUI()
         {
             Managers.UI.ClosePopupUI(this);
+        }
+
+        public virtual void OnClose()
+        {
+            
         }
     }
 }

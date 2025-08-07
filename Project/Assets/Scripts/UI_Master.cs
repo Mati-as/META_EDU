@@ -19,10 +19,18 @@ public class UI_Master : UI_Scene
 
     public string currentSeason = null;
 
+    private static string _gameNameWaitingForConfirmation = "None";
     public static string GameNameWaitingForConfirmation
     {
-        get;
-        private set;
+        get
+        {
+            return _gameNameWaitingForConfirmation;
+        }
+        set
+        {
+            Logger.CoreClassLog($"GameNameWaitingForConfirmation set{value}");
+            _gameNameWaitingForConfirmation = value;
+        }
     }
 
     public static string GameKoreanName
@@ -211,7 +219,7 @@ public class UI_Master : UI_Scene
         GameObject targetBtnObj = GetObject((int)btn);
         if (targetBtnObj == null)
         {
-            Logger.LogError($"SetBtnStatus: {btn} 오브젝트가 존재하지 않습니다.");
+//            Logger.LogError($"SetBtnStatus: {btn} 오브젝트가 존재하지 않습니다.");
             return;
         }
 

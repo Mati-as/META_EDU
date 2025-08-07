@@ -128,7 +128,8 @@ public class UI_Recommendations : UI_PopUp
                 string sceneId = data.Id;
                 btn.onClick.AddListener(() =>
                 {
-                    SceneManager.LoadSceneAsync(sceneId);
+                    UI_Master.GameNameWaitingForConfirmation = sceneId;
+                    SceneManager.LoadSceneAsync("Loading");
                 });
             }
         }

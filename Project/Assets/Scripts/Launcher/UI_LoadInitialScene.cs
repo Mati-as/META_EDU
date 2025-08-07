@@ -45,7 +45,8 @@ public class UI_LoadInitialScene : UI_PopUp
     {
         float timer = 0f;
         gameObject.SetActive(true);
-        
+        Cursor.visible = false; // 커서 숨김
+
         while (true)
         {
 
@@ -65,6 +66,7 @@ public class UI_LoadInitialScene : UI_PopUp
                 StopAllCoroutines();
 
                 Managers.UI.LoadPopUp();
+                Cursor.visible = true;  // 커서 보이기
             }
             
         }

@@ -79,6 +79,7 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         _buttonClickEventController.ClickableDelay = 1f;
 
         _avatarAnimationController = GetObject((int)Objs.Avatars).GetComponent<AvatarAnimationController>();
+        
         _avatarControllerOnFinish =
             GetObject((int)Objs.AvatarControllerOnFinish).GetComponent<AvatarAnimationController>();
         GetObject((int)Objs.AvatarControllerOnFinish).SetActive(false);
@@ -497,6 +498,24 @@ public class EA037_WinterClothes_GameManager : Ex_BaseGameManager
         _answerTimerSeq?.Kill();
         _answerTimerSeq = DOTween.Sequence();
 
+
+        int ranndomPoss = Random.Range(0, 2);
+
+        _avatarAnimationController.SetExpression(0, ranndomPoss == 0
+            ? (int)AvatarAnimationController.ExpressionAnimClip.Happy
+            : (int)AvatarAnimationController.ExpressionAnimClip.Happy_Heart);
+
+
+        _avatarAnimationController.SetExpression(1, ranndomPoss == 0
+            ? (int)AvatarAnimationController.ExpressionAnimClip.Happy
+            : (int)AvatarAnimationController.ExpressionAnimClip.Happy_Heart);
+
+        DOVirtual.DelayedCall(3f, () =>
+        {
+            _avatarAnimationController.InitExpression(0);
+            _avatarAnimationController.InitExpression(1);
+        });
+        
         if (isCorrect)
         {
             _fxOnAnswer.Play();
