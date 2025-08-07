@@ -40,7 +40,7 @@ public class UI_LoadingOnSceneChange : MonoBehaviour
         {
             fakeTimer += Time.deltaTime;
 
-            progressBar.value = Mathf.Lerp(progressBar.value, 100f, fakeTimer/6);
+            progressBar.value = Mathf.Lerp(progressBar.value, 100f, fakeTimer/5);
             loadingIcon.rectTransform.Rotate(new Vector3(0, 0, 100 * Time.deltaTime));
             loadingPercent.text = Mathf.RoundToInt(progressBar.value).ToString();
 
@@ -48,7 +48,7 @@ public class UI_LoadingOnSceneChange : MonoBehaviour
         }
 
         // 3. 실제 로딩이 완료됐는지 기다림
-        while (async.progress < 0.9f)
+        while (async.progress < 0.89f)
         {
             yield return null; // 아직 로딩 중
         }
@@ -56,7 +56,7 @@ public class UI_LoadingOnSceneChange : MonoBehaviour
         // 4. 1.5초도 지났고, 로딩도 완료 → 씬 전환 허용
         onInitialLoadComplete?.Invoke();
         async.allowSceneActivation = true;
-        Cursor.visible = true;  // 커서 보이기
+        
     }
 
     

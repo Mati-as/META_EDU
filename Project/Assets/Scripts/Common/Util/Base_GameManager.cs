@@ -295,7 +295,7 @@ public abstract class Base_GameManager : Ex_MonoBehaviour
 
         InitValidClickCount();
         isInitialized = true;
-
+        Cursor.visible = true;  // 커서 보이기
         LoadAndSetUIManager(); // UIcamera 로드를 먼저하고, base.Init에서 카메라 Rect조정.
         InitCameraRect();
 

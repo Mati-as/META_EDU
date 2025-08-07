@@ -50,6 +50,7 @@ public class UIManager
         }
 
         Managers.IsAlreadyFirstTimeHomeOpened = true;
+        Cursor.visible = true;  
     }
 
     /// <summary>
