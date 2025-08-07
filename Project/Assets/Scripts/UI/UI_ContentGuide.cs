@@ -35,11 +35,15 @@ public class UI_ContentGuide : UI_PopUp
         BindObject(typeof(Btns));
 
         for (int i = (int)Btns.Btn_CtInfo1; i < (int)Btns.Max; i++)
+        {
+            var i1 = i;
             GetObject(i).BindEvent(() =>
             {
-                UI_ContentGuideImage.MonthOfImageToShow = i +1;
+                int iCache = i1;
+                UI_ContentGuideImage.MonthOfImageToShow = iCache +1;
                 Managers.UI.ShowPopupUI<UI_ContentGuideImage>();
             });
+        }
 
 
         return true;

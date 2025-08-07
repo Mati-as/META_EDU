@@ -35,7 +35,7 @@ public class UIManager
     {
         if (Managers.IsAlreadyFirstTimeHomeOpened)
         {
-            Logger.Log("저장된 씬");
+            Logger.CoreClassLog("저장된 씬");
 
             foreach (var uiType in _previousPopupTypeStack)
             {
@@ -45,7 +45,7 @@ public class UIManager
         }
         else
         {
-            Logger.Log("첫 로드씬 ---- 첫 로드씬인지 반드시 확인해야함 ");
+            Logger.CoreClassLog("첫 로드씬 ---- 첫 로드씬인지 반드시 확인해야함 ");
             ShowPopupUI<UI_Home>();
         }
 
@@ -332,60 +332,60 @@ public class UIManager
     }
 
 
-    public UI_PopUp ShowPopupUI(string className, Transform parent = null)
-    {
-        if (string.IsNullOrEmpty(className))
-        {
-            Debug.LogError("className is null or empty.");
-            return null;
-        }
-
-        // 프리팹 로드
-        var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{className}");
-        if (prefab == null)
-        {
-            Debug.LogError($"Prefab for {className} not found.");
-            return null;
-        }
-
-        var go = Managers.Resource.Instantiate($"UI/Popup/{className}");
-
-        // 문자열로 타입 가져오기
-        var popupType = Type.GetType(className);
-        if (popupType == null)
-        {
-            Debug.LogError($"Type {className} could not be found.");
-            return null;
-        }
-
-        // Component 붙이기
-        var popup = go.AddComponent(popupType) as UI_PopUp;
-        if (popup == null)
-        {
-            Debug.LogError($"Type {className} is not a UI_PopUp.");
-            return null;
-        }
-
-        _popupStack.Push(popup);
-
-        // 부모 설정
-        if (parent != null)
-            go.transform.SetParent(parent);
-        else if (SceneUI != null)
-            go.transform.SetParent(SceneUI.transform);
-        else
-            go.transform.SetParent(Root.transform);
-
-        go.transform.localScale = Vector3.one;
-        go.transform.localPosition = prefab.transform.position;
-
-        Managers.UI.SceneUI.OnPopupUI();
-
-        PreviousPopup = CurrentPopup;
-        CurrentPopup = className;
-
-        return popup;
-    }
+    // public UI_PopUp ShowPopupUI(string className, Transform parent = null)
+    // {
+    //     if (string.IsNullOrEmpty(className))
+    //     {
+    //         Debug.LogError("className is null or empty.");
+    //         return null;
+    //     }
+    //
+    //     // 프리팹 로드
+    //     var prefab = Managers.Resource.Load<GameObject>($"Prefabs/UI/Popup/{className}");
+    //     if (prefab == null)
+    //     {
+    //         Debug.LogError($"Prefab for {className} not found.");
+    //         return null;
+    //     }
+    //
+    //     var go = Managers.Resource.Instantiate($"UI/Popup/{className}");
+    //
+    //     // 문자열로 타입 가져오기
+    //     var popupType = Type.GetType(className);
+    //     if (popupType == null)
+    //     {
+    //         Debug.LogError($"Type {className} could not be found.");
+    //         return null;
+    //     }
+    //
+    //     // Component 붙이기
+    //     var popup = go.AddComponent(popupType) as UI_PopUp;
+    //     if (popup == null)
+    //     {
+    //         Debug.LogError($"Type {className} is not a UI_PopUp.");
+    //         return null;
+    //     }
+    //
+    //     _popupStack.Push(popup);
+    //
+    //     // 부모 설정
+    //     if (parent != null)
+    //         go.transform.SetParent(parent);
+    //     else if (SceneUI != null)
+    //         go.transform.SetParent(SceneUI.transform);
+    //     else
+    //         go.transform.SetParent(Root.transform);
+    //
+    //     go.transform.localScale = Vector3.one;
+    //     go.transform.localPosition = prefab.transform.position;
+    //
+    //     Managers.UI.SceneUI.OnPopupUI();
+    //
+    //     PreviousPopup = CurrentPopup;
+    //     CurrentPopup = className;
+    //
+    //     return popup;
+    // }
 
 
     public T FindPopup<T>() where T : UI_PopUp
