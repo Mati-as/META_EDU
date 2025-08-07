@@ -26,17 +26,21 @@ public class SS010_GameManager : Ex_BaseGameManager
     {
         Camera1,
         Camera2,
+        Camera3,
     }
 
     private enum Objects
     {
+        Cameras,
         LogBridge,
         Water1,
         Water2,
         WaterClickEffect,
         Lava,
         LavaClickEffect,
-        Crocodile,
+        Crocodile1,
+        Crocodile2,
+        Crocodile3,
         Avatar,
         Rocks1,
         Rocks2,
@@ -73,12 +77,17 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     private Transform waterEffectPoolTransform;
 
-    private GameObject crocodile;
-
+    private GameObject crocodile1;
+    private GameObject crocodile2;
+    private GameObject crocodile3;
+    
     private Vector3 RightStartPos;
     private Vector3 LeftStartPos;
     private GameObject rightChild;
     private Animator rightChildAnimator;
+    
+    
+    Dictionary<int, SS010_Crocodile> crocodiles = new Dictionary<int, SS010_Crocodile>();
     
     protected override void Init()
     {
@@ -89,14 +98,18 @@ public class SS010_GameManager : Ex_BaseGameManager
         base.Init();
 
         _uiManager = UIManagerObj.GetComponent<SS010_UIManager>();
-
+            
         psResourcePath = "SS010/Asset/Fx_Click"; //주소변경
 
         SetPool(); //나무 클릭 이펙트 용 풀
+        
+        _currentSequence =  GameSequence.Intro;
 
-        // Get<CinemachineVirtualCamera>(0).Priority = 12; //카메라들 우선순위 초기화
-        // for (int i = 1; i <= 1; i++)
-        //     Get<CinemachineVirtualCamera>(i).Priority = 10;
+        Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 12;
+        for (int i = 1; i < GetObject((int)Objects.Cameras).transform.childCount;  i++)
+        {
+            Get<CinemachineVirtualCamera>(i).Priority = 10;
+        }
 
         Managers.Sound.Play(SoundManager.Sound.Bgm, ""); //배경음 추후 삽입
 
@@ -119,15 +132,15 @@ public class SS010_GameManager : Ex_BaseGameManager
         water2 = GetObject((int)Objects.Water2);
 
         var rocksParent1 = GetObject((int)Objects.Rocks1).transform;
-        foreach (GameObject obj in rocksParent1)
+        foreach (Transform obj in rocksParent1)
         {
-            rocks1.Add(obj);
+            rocks1.Add(obj.gameObject);
         }
         
         var rocksParent2 = GetObject((int)Objects.Rocks2).transform;
-        foreach (GameObject obj in rocksParent2)
+        foreach (Transform obj in rocksParent2)
         {
-            rocks2.Add(obj);
+            rocks2.Add(obj.gameObject);
         }
         
         lava = GetObject((int)Objects.Lava);
@@ -137,8 +150,14 @@ public class SS010_GameManager : Ex_BaseGameManager
         for (int i = 0; i < waterEffectPoolTransform.childCount; i++)
             waterEffectPoolTransform.GetChild(i).gameObject.SetActive(false);
 
-        crocodile = GetObject((int)Objects.Crocodile);
-        crocodile.transform.position = new Vector3(-11, -7f, 9);
+        crocodile1 = GetObject((int)Objects.Crocodile1);
+        crocodile1.transform.position = new Vector3(-11, -7f, 9);
+        
+        crocodile2 = GetObject((int)Objects.Crocodile2);
+        crocodile2.transform.position = new Vector3(72, -7f, 9);
+        
+        crocodile3 = GetObject((int)Objects.Crocodile3);
+        crocodile3.transform.position = new Vector3(32, -7f, -70);
 
         RightStartPos = GetObject((int)Objects.Avatar).transform.GetChild(0).position;
         LeftStartPos = GetObject((int)Objects.Avatar).transform.GetChild(1).position;
@@ -146,8 +165,10 @@ public class SS010_GameManager : Ex_BaseGameManager
         rightChild = GetObject((int)Objects.Avatar).transform.GetChild(2).gameObject;
         rightChildAnimator = rightChild.GetComponent<Animator>();
         rightChild.SetActive(false);
-        
-        
+
+        crocodiles[0] = GetObject((int)Objects.Crocodile1).GetComponent<SS010_Crocodile>();
+        crocodiles[1] = GetObject((int)Objects.Crocodile2).GetComponent<SS010_Crocodile>();
+        crocodiles[2] = GetObject((int)Objects.Crocodile3).GetComponent<SS010_Crocodile>();
     }
 
     protected override void OnGameStartButtonClicked()
@@ -166,8 +187,8 @@ public class SS010_GameManager : Ex_BaseGameManager
     private void StartContent()
     {
         //if (_stage == MainSeq.OnStart)
-        //ChangeStage(GameSequence.Intro);
-        ChangeStage(GameSequence.FirstGamePlay);
+        ChangeStage(GameSequence.Intro);
+        //ChangeStage(GameSequence.ThirdGamePlay);
     }
 
     private void ChangeStage(GameSequence next)
@@ -195,7 +216,7 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("형님처럼 할 수 잇어요!", 3f, narrationPath: "SS010/Audio/audio_0_형님처럼_할_수_잇어요");
+                _uiManager.PopInstructionUIFromScaleZero("형님처럼 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_0_형님처럼_할_수_잇어요");
             })
             .AppendInterval(3f)
             .AppendCallback(() =>
@@ -205,10 +226,10 @@ public class SS010_GameManager : Ex_BaseGameManager
             .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("형님처럼 씩씩하게 외나무 다리를 건너볼까요?", 3f, narrationPath: "SS010/Audio/audio_2_형님처럼_씩씩하게_외나무_다리를_건너볼까요_");
+                _uiManager.PopInstructionUIFromScaleZero("형님처럼 씩씩하게\n외나무 다리를 건너볼까요?", 3f, narrationPath: "SS010/Audio/audio_2_형님처럼_씩씩하게_외나무_다리를_건너볼까요_");
                 //아이 아바타가 화면에 한명 등장하고 화면을 올려다보며 손을 흔드는 구도
             })
-            .AppendInterval(4f)
+            .AppendInterval(5f)
             .AppendCallback(() =>
             {
                 ChangeStage(GameSequence.FirstGamePlay);
@@ -222,37 +243,31 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("형님을 따라 두 팔을 벌리고 외나무 다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_3_형님을_따라_두_팔을_벌리고_외나무_다리를_건너주세요");
+                _uiManager.PopInstructionUIFromScaleZero("형님을 따라 두 팔을 벌리고\n외나무 다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_3_형님을_따라_두_팔을_벌리고_외나무_다리를_건너주세요");
             })
-            .AppendInterval(4f)
+            .AppendInterval(6f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("형님이 먼저 외나무 다리를 건너는 것을 보여줄 거에요!", 3f, narrationPath: "SS010/Audio/audio_4_형님이_먼저_외나무_다리를_건너는_것을_보여줄거에요");
+                Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_4_형님이_먼저_외나무_다리를_건너는_것을_보여줄거에요");
             })
-            .AppendInterval(4f)
+            .AppendInterval(3f)
             .AppendCallback(() =>
             {
-                //형님 아바타가 길을 건너감 
                 rightChild.SetActive(true);
                 rightChild.transform.position = RightStartPos;
-                rightChild.transform.DOMove(LeftStartPos, 4f).OnComplete(() => rightChild.SetActive(false));
+                rightChild.transform.DOMove(LeftStartPos, 6f).OnComplete(() => rightChild.SetActive(false));
                 //rightChildAnimator.SetBool("");
             })
-            .AppendInterval(4f)
+            .AppendInterval(7f)
             .AppendCallback(() =>
             {
                 _uiManager.PlayReadyAndStart(() =>
                 {
-                    _uiManager.StartTimer(() => ChangeStage(GameSequence.FirstGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
+                    _uiManager.StartTimer(1, () => ChangeStage(GameSequence.FirstGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
                     playingGame = true;
                 });
             })
             ;
-
-        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0)        //위치 수정 예정
-        {
-              Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_5_친구들_한줄로_천천히_외나무_다리를_건너주세요");
-        }
 
     }
 
@@ -263,24 +278,43 @@ public class SS010_GameManager : Ex_BaseGameManager
             {
                 logBridgeClickedCount = 0;
                 waterClickedCount = 0;
+
+                crocodile1.transform.DOMoveY(-7, 2f).OnComplete(() =>
+                {
+                    crocodile1.transform.DOKill();
+                });
+
+                _uiManager.PopInstructionUIFromScaleZero("다 건넜어요!\n형님처럼 잘 할 수 있어요!", 3f,
+                    narrationPath: "SS010/Audio/audio_7_다_건넜어요__형님처럼_잘_할_수_있어요_");
                 
+            })
+            // .AppendInterval(4f)
+            // .AppendCallback(() =>
+            // {
+            //     //아바타 성공 애니메이션 재생
+            // })
+            .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera1).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 12;
+            })
+            .AppendInterval(2f)
+            .AppendCallback(() =>
+            {
+                //용암 흐르는 사운드
                 
-                //용암 게임 장소로 이동
-                _uiManager.PopInstructionUIFromScaleZero("다 건넜어요! 형님처럼 잘 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_7_다_건넜어요__형님처럼_잘_할_수_있어요_");
-                //아바타 성공 애니메이션 재생
+                _uiManager.PopInstructionUIFromScaleZero("바닥에 용암이 흐르고 있어요!", 3f,
+                    narrationPath: "SS010/Audio/audio_8_바닥에_용암이_흐르고_있어요_");
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("바닥에 용암이 흐르고 있어요!", 3f, narrationPath: "SS010/Audio/audio_8_바닥에_용암이_흐르고_있어요_");
-            })
-            .AppendInterval(4f)
-            .AppendCallback(() =>
-            {
-                _uiManager.PopInstructionUIFromScaleZero("다시 한번 형님처럼 씩씩하게 징검다리를 건너볼까요?", 3f, narrationPath: "SS010/Audio/audio_9_다시_한번_형님처럼_씩씩하게_징검다리를_건너_볼까요_");
+                _uiManager.PopInstructionUIFromScaleZero("다시 한번 형님처럼 씩씩하게\n징검다리를 건너볼까요?", 3f,
+                    narrationPath: "SS010/Audio/audio_9_다시_한번_형님처럼_씩씩하게_징검다리를_건너_볼까요_");
                 //아이 아바타가 화면에 한명 등장하고 화면을 올려다보며 손을 흔드는 구도
             })
-            .AppendInterval(4f)
+            .AppendInterval(6f)
             .AppendCallback(() =>
             {
                 ChangeStage(GameSequence.SecondGamePlay);
@@ -294,36 +328,28 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("이번엔 두발을 모아 점프해 징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_10_형님을_따라_이번엔_두발을_모아_점프해_징검_다리를_건너주세요_");
-                //(형님이 먼저 징검 다리를 건너는 것을 보여줄 거에요)
+                _uiManager.PopInstructionUIFromScaleZero("이번엔 두발을 모아 점프해\n징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_10_형님을_따라_이번엔_두발을_모아_점프해_징검_다리를_건너주세요_");
             })
-            .AppendInterval(4f)
+            .AppendInterval(6f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("형님이 먼저 징검 다리를 건너는 것을 보여줄 거에요!", 3f, narrationPath: "SS010/Audio/audio_11_형님이_먼저_징검다리를_건너는_것을_보여줄거에요_");
-                //형님 아바타가 길을 건너감 두발을 모아 점프하며
+                Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_11_형님이_먼저_징검다리를_건너는_것을_보여줄거에요_");
             })
-            .AppendInterval(4f)
-            .AppendCallback(() =>
-            {
-                //준비~시작
-            })
-            .AppendInterval(4f)
+            // .AppendInterval(2f)
+            // .AppendCallback(() =>
+            // {
+            //     //형님 아바타가 길을 건너감 두발을 모아 점프하며
+            // })
+            .AppendInterval(6f)
             .AppendCallback(() =>
             {
                 _uiManager.PlayReadyAndStart(() =>
                 {
-                    _uiManager.StartTimer(() => ChangeStage(GameSequence.SecondGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
+                    _uiManager.StartTimer(2, () => ChangeStage(GameSequence.SecondGameTransition)); //타이머 등장 연출관련 시간 문제 이슈
                     playingGame = true;
                 });
             })
             ;
-
-
-        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0) //위치 수정 예정
-        {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_12_친구들_한줄로_천천히_징검_다리를_건너주세요");
-        }
 
     }
 
@@ -335,10 +361,19 @@ public class SS010_GameManager : Ex_BaseGameManager
                 rocksClickedCount = 0;
                 lavaClickedCount = 0;
                 
+                crocodile2.transform.DOKill();
+                crocodile2.transform.DOMoveY(-7, 2f);
+                
                 _uiManager.PopInstructionUIFromScaleZero("다 건넜어요! 형님처럼 잘 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_13_다_건넜어요__형님처럼_잘_할_수_있어요_");
                 //아바타 성공 애니메이션 재생
             })
             .AppendInterval(4f)
+            .AppendCallback(() =>
+            {
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera2).Priority = 10;
+                Get<CinemachineVirtualCamera>((int)Cameras.Camera3).Priority = 12;
+            })
+            .AppendInterval(1f)
             .AppendCallback(() =>
             {
                 ChangeStage(GameSequence.ThirdGamePlay);
@@ -352,35 +387,29 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("이번엔 한발로 점프해 징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_14_형님을_따라_이번엔_한발로_점프해_징건마디를_건너주세요_");
+                _uiManager.PopInstructionUIFromScaleZero("이번엔 한발로 점프해\n징검다리를 건너주세요!", 3f, narrationPath: "SS010/Audio/audio_14_형님을_따라_이번엔_한발로_점프해_징건마디를_건너주세요_");
             })
-            .AppendInterval(4f)
+            .AppendInterval(6f)
             .AppendCallback(() =>
             {
                 Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_15_형님이_먼저_징검다리를_건너는_것을_보여줄거에요_");
-                //형님 아바타가 길을 건너감 한발로 점프하며
             })
-            .AppendInterval(4f)
+            .AppendInterval(2f)
             .AppendCallback(() =>
             {
-                //준비~시작
+                //형님 아바타가 길을 건너감 한발로 점프하며
             })
             .AppendInterval(4f)
             .AppendCallback(() =>
             {
                 _uiManager.PlayReadyAndStart(() =>
                 {
-                    _uiManager.StartTimer(() => ChangeStage(GameSequence.Outro)); //타이머 등장 연출관련 시간 문제 이슈
+                    _uiManager.StartTimer(3, () => ChangeStage(GameSequence.Outro)); //타이머 등장 연출관련 시간 문제 이슈
                     playingGame = true;
                 });
             })
             ;
 
-
-        if (_uiManager._currentGameTimer % 11 == 0 && _uiManager._currentGameTimer != 0)      //추후 수정 예정
-        {
-            Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_16_친구들_한줄로_천천히_징검다리를_건너주세요_");
-        }
 
     }
 
@@ -390,12 +419,15 @@ public class SS010_GameManager : Ex_BaseGameManager
         DOTween.Sequence()
             .AppendCallback(() =>
             {
+                crocodile3.transform.DOKill();
+                crocodile3.transform.DOMoveY(-7, 2f);
+                
                 _uiManager.PopInstructionUIFromScaleZero("다 건넜어요!", 3f, narrationPath: "SS010/Audio/audio_17_다_건넜어요_");
             })
             .AppendInterval(2f)
             .AppendCallback(() =>
             {
-                _uiManager.PopInstructionUIFromScaleZero("와 이제부터 우리 친구들도 형님처럼 뭐든 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_18_와___이제부터_우리_친구들도_형님처럼_뭐든_할_수_있어요_");
+                _uiManager.PopInstructionUIFromScaleZero("와 이제부터 우리 친구들도\n형님처럼 뭐든 할 수 있어요!", 3f, narrationPath: "SS010/Audio/audio_18_와___이제부터_우리_친구들도_형님처럼_뭐든_할_수_있어요_");
                 //강 끝나는 지점에 아바타 3명이 같이 있고 카메라를 조금 더 가까이 확대 해 마무리 하는 애니메이션 재생
             })
             .AppendInterval(5f)
@@ -409,10 +441,10 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     
     [SerializeField] private int logBridgeClickedCount = 0;
-    private int waterClickedCount = 0;
+    [SerializeField] private int waterClickedCount = 0;
 
     [SerializeField] private int rocksClickedCount = 0;
-    private int lavaClickedCount = 0;
+    [SerializeField] private int lavaClickedCount = 0;
     
     
     public override void OnRaySynced()
@@ -458,13 +490,13 @@ public class SS010_GameManager : Ex_BaseGameManager
 
                 if (waterClickedCount == 2)
                 {
-                    crocodile.transform.DOMoveY(-3, 2f);
+                    crocodile1.transform.DOMoveY(-3, 2f).OnComplete(() => crocodiles[0].PatrolRandom());
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_1_강에_떨어지면_악어가_나타나요_떨어지지_않게_조심해요_");
                 }
 
-                if (waterClickedCount % 3 == 0 && waterClickedCount != 0)
+                if (waterClickedCount % 3 == 0 && waterClickedCount > 3)
                 {
-                    //물에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
+                    crocodiles[0].MoveCrocodile(clickedPos);
                 }
 
             }
@@ -483,34 +515,34 @@ public class SS010_GameManager : Ex_BaseGameManager
                 PlayParticleEffect(clickedPos);
                 PlayClickSound();
 
-                //각돌이 두번씩 눌리면 잠깐 잠기는 기능
-                
                 if (rocksClickedCount % 2 == 0)
                 {
                     PlayFootstepSound();
                 }
 
-            }
-
-            else if (clickedObj == lava)
-            {
-                lavaClickedCount++;
+                clickedObj.GetComponent<SS010_Rock>().ClickedRock();
                 
-                clickedPos.y += 0.7f;
-                //PlayWaterClickParticle(clickedPos); 용암이 튀는 이펙트로 대체
-
-                if (lavaClickedCount == 2)
-                {
-                    //crocodile.transform.DOMoveY(-3, 2f);
-                    Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_0_용암에_떨어지면_용암_악어가_나타나요__떨어지지_않게_조심해요_");
-                }
-
-                if (lavaClickedCount % 3 == 0 && lavaClickedCount != 0)
-                {
-                    //용암에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
-                }
-
             }
+
+            // else if (clickedObj == lava)
+            // {
+            //     lavaClickedCount++;
+            //     
+            //     clickedPos.y += 0.7f;
+            //     //PlayWaterClickParticle(clickedPos); 용암이 튀는 이펙트로 대체
+            //
+            //     if (lavaClickedCount == 2)
+            //     {
+            //         //crocodile2.transform.DOMoveY(-3, 2f);
+            //         Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_0_용암에_떨어지면_용암_악어가_나타나요__떨어지지_않게_조심해요_");
+            //     }
+            //
+            //     if (lavaClickedCount % 3 == 0 && lavaClickedCount != 0)
+            //     {
+            //         //용암에 터치가 지속적으로 되면 악어가 해당 지점으로 천천히 이동
+            //     }
+            //
+            // }
         }
         else if (_currentSequence == GameSequence.ThirdGamePlay && playingGame)
         {
@@ -526,13 +558,13 @@ public class SS010_GameManager : Ex_BaseGameManager
                 PlayParticleEffect(clickedPos);
                 PlayClickSound();
 
-                //각돌이 두번씩 눌리면 잠깐 잠기는 기능
-                
                 if (rocksClickedCount % 2 == 0)
                 {
                     PlayFootstepSound();
                 }
 
+                clickedObj.GetComponent<SS010_Rock>().ClickedRock();
+                
             }
 
             else if (clickedObj == water2)
@@ -544,7 +576,7 @@ public class SS010_GameManager : Ex_BaseGameManager
 
                 if (waterClickedCount == 2)
                 {
-                    //crocodile.transform.DOMoveY(-3, 2f); //세번째 악어로 변경해야됨
+                    crocodile3.transform.DOMoveY(-3, 2f);
                     Managers.Sound.Play(SoundManager.Sound.Narration, "SS010/Audio/audio_1_강에_떨어지면_악어가_나타나요_떨어지지_않게_조심해요_");
                 }
 
@@ -610,6 +642,8 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     private void PlayFootstepSound()
     {
+        Logger.Log("발자국 소리");
+        
         footStepAudioCount++;
 
         if (footStepAudioCount > 11)
@@ -620,6 +654,8 @@ public class SS010_GameManager : Ex_BaseGameManager
 
     private void PlayWoodCreakSound()
     {
+        Logger.Log("나무 삐걱이는 소리");
+        
         woodCreakAudioCount++;
 
         if (woodCreakAudioCount > 8)
