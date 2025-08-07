@@ -17,8 +17,8 @@ public class SS011_UIManager : Base_InGameUIManager
 
     public enum ColorType
     {
-        Red,
         Pink,
+        Red,
         Orange,
         Yellow,
         Green,
@@ -28,7 +28,7 @@ public class SS011_UIManager : Base_InGameUIManager
         Max
     }
 
-    private readonly List<ColorType> shapeList = new() {
+    private readonly List<ColorType> _colorList = new() {
         ColorType.Pink,
         ColorType.Red,
         ColorType.Orange,
@@ -58,6 +58,7 @@ public class SS011_UIManager : Base_InGameUIManager
         {
             SpinWheel();
         });
+        InitWheel();
     }
 
     private float sliceAngle; // 45도 (8조각 기준)
@@ -78,23 +79,25 @@ public class SS011_UIManager : Base_InGameUIManager
         spinSequence?.Kill();
         spinSequence = DOTween.Sequence();
 
-        spinSequence.Append(GetObject((int)UI.Wheel).transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.OutBack));
+        spinSequence.Append(GetObject((int)UI.SpinParent).transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.OutBack));
         spinSequence.OnComplete(() =>
         {
             ResetSpin();
-            GetObject((int)UI.Wheel).SetActive(false);
+            GetObject((int)UI.SpinParent).SetActive(false);
         });
     }
 
 
     public void TurnOnWheel()
     {
+        GetObject((int)UI.SpinParent).SetActive(true);
+        GetObject((int)UI.Btn_StartSpin).SetActive(true);
         GetObject((int)UI.Wheel).SetActive(true);
 
-        GetObject((int)UI.Wheel).transform.localScale = Vector3.zero;
+        GetObject((int)UI.SpinParent).transform.localScale = Vector3.zero;
         spinSequence.Kill();
         spinSequence = DOTween.Sequence();
-        spinSequence.Append(GetObject((int)UI.Wheel).transform.DOScale(_uiDefaultSizeMap[(int)UI.Wheel], 0.5f)
+        spinSequence.Append(GetObject((int)UI.SpinParent).transform.DOScale(_uiDefaultSizeMap[(int)UI.SpinParent], 0.5f)
             .SetEase(Ease.InBack));
     }
 
@@ -108,7 +111,7 @@ public class SS011_UIManager : Base_InGameUIManager
         Managers.Sound.Play(SoundManager.Sound.Effect, "");
 
 
-        int randomTargetIndex = (int)shapeList[Random.Range(0, shapeList.Count)];
+        int randomTargetIndex = (int)_colorList[Random.Range(0, _colorList.Count)];
         selectedColorType = (ColorType)randomTargetIndex;
 
         float targetAngle = randomTargetIndex * sliceAngle;

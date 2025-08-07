@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using DG.Tweening;
 
-public class SS010_UIManager : Base_UIManager
+public class SS010_UIManager : Base_InGameUIManager
 {
     private enum UI
     {

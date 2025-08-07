@@ -228,6 +228,7 @@ public class ContentAdjuster : MonoBehaviour
     private Vector2 pageRightOffscreen = new Vector2(1920f, -193f);
 
     private bool isSliding = false;
+    private const int CONTENT_COUNT_PER_PAGE = 8; // 페이지당 콘텐츠 수
 
 
     public void InitPageNavigation()
@@ -253,7 +254,7 @@ public class ContentAdjuster : MonoBehaviour
             rect.anchoredPosition = (i == 0) ? pageVisiblePos : pageRightOffscreen;
 
             // 버튼 수집
-            GameObject[] btnArray = new GameObject[8];
+            GameObject[] btnArray = new GameObject[CONTENT_COUNT_PER_PAGE];
             for (int j = 0; j < newPage.transform.childCount; j++)
                 btnArray[j] = newPage.transform.GetChild(j).gameObject;
 
@@ -277,6 +278,29 @@ public class ContentAdjuster : MonoBehaviour
         nextButton.onClick.AddListener(() => SwitchPage(true));
 
         UpdateNavigationControls();
+        
+        bool isBelowNine = (pagedSceneData.Count == 1 && pagedSceneData[0].Count < CONTENT_COUNT_PER_PAGE +1);
+
+        if (isBelowNine)
+        {
+            if (pageNavis != null)
+                pageNavis.SetActive(false);
+    
+            if (prevButton != null)
+                prevButton.gameObject.SetActive(false);
+
+            if (nextButton != null)
+                nextButton.gameObject.SetActive(false);
+
+            if (_indicatorParent != null)
+                _indicatorParent.gameObject.SetActive(false); // 인디케이터 전체 꺼버리기
+        }
+        else
+        {
+            // 8개 이상이면 인디케이터 다시 켜기
+            if (_indicatorParent != null)
+                _indicatorParent.gameObject.SetActive(true);
+        }
     }
 
     void UpdateNavigationIndicator(int activeIndex)
@@ -348,9 +372,9 @@ public class ContentAdjuster : MonoBehaviour
 
         pagedSceneData.Clear();
 
-        for (int i = 0; i < filtered.Count; i += 8)
+        for (int i = 0; i < filtered.Count; i += CONTENT_COUNT_PER_PAGE)
         {
-            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
+            pagedSceneData.Add(filtered.Skip(i).Take(CONTENT_COUNT_PER_PAGE).ToList());
         }
 
         Debug.Log($"[{categoryKey}] 영역 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
@@ -373,9 +397,9 @@ public class ContentAdjuster : MonoBehaviour
             .Where(x => x.Month == monthKey).ToList();
 
         pagedSceneData.Clear();
-        for (int i = 0; i < filtered.Count; i += 8)
+        for (int i = 0; i < filtered.Count; i += CONTENT_COUNT_PER_PAGE)
         {
-            pagedSceneData.Add(filtered.Skip(i).Take(8).ToList());
+            pagedSceneData.Add(filtered.Skip(i).Take(CONTENT_COUNT_PER_PAGE).ToList());
         }
 
         Debug.Log($"{monthKey} 콘텐츠 {filtered.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
@@ -512,9 +536,9 @@ public class ContentAdjuster : MonoBehaviour
         var allScenes = XmlManager.Instance.SceneSettings.Values.ToList();
 
         pagedSceneData.Clear();
-        for (int i = 0; i < allScenes.Count; i += 8)
+        for (int i = 0; i < allScenes.Count; i += CONTENT_COUNT_PER_PAGE)
         {
-            pagedSceneData.Add(allScenes.Skip(i).Take(8).ToList());
+            pagedSceneData.Add(allScenes.Skip(i).Take(CONTENT_COUNT_PER_PAGE).ToList());
         }
 
         Debug.Log($"[Test 모드] 전체 콘텐츠 {allScenes.Count}개 → {pagedSceneData.Count}페이지 구성 완료");
