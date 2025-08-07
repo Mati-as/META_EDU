@@ -10,11 +10,11 @@ public class EA038_Card : MonoBehaviour
 
     private Sequence _shakeSeq;
 
-    private TextMeshPro valueText;
+    private TextMeshPro[] valueTexts;
 
     private void Start()
     {
-        valueText = GetComponentInChildren<TextMeshPro>();
+        valueTexts = GetComponentsInChildren<TextMeshPro>();
         transform.localScale = Vector3.zero;
     }
     
@@ -51,7 +51,8 @@ public class EA038_Card : MonoBehaviour
 
     public void ChangeValueTMP(int newValue)
     {
-        valueText.text = newValue.ToString();
+        foreach (var tmp in valueTexts)
+            tmp.text = newValue.ToString();
     }
 
 }
