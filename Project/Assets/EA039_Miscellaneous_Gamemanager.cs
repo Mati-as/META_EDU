@@ -78,12 +78,17 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
                     break;
                 case (int)MainSeq.MainIntro:
-                    _uiManager.PopInstructionUIFromScaleZero("친구들과 같이 교실 정리를 해볼까요?");
 
                     DOVirtual.DelayedCall(3f, () =>
                     {
-                        CurrentMainMainSeq = (int)MainSeq.SortOut_Miscellanous;
+                        _uiManager.PopInstructionUIFromScaleZero("친구들과 같이 교실 정리를 해볼까요?");
+                        DOVirtual.DelayedCall(Managers.Sound.GetNarrationClipLength()+0.5f, () =>
+                        {
+                            CurrentMainMainSeq = (int)MainSeq.SortOut_Miscellanous;
+                        });
                     });
+
+                 
 
                     break;
 
@@ -95,7 +100,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
 
                     Managers.Sound.Play(SoundManager.Sound.Narration, "EA039/FindAndSortOut");
                     DOVirtual.DelayedCall(
-                        Managers.Sound.GetAudioLength((int)SoundManager.Sound.Narration) + 0.5f, () =>
+                        Managers.Sound.GetNarrationClipLength()+ 0.5f, () =>
                         {
                             _uiManager.PopInstructionUIFromScaleZero("정리해야할 장난감을 찾아 터치해주세요!");
 
@@ -160,6 +165,7 @@ public class EA039_Miscellaneous_Gamemanager : Ex_BaseGameManager
                     break;
                 case (int)MainSeq.OnFinish:
                     _uiManager.PopInstructionUIFromScaleZero("우리 정리 잘하기로 약속해요!");
+                    RestartScene();
                    
                     break;
             }

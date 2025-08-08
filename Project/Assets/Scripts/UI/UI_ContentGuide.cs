@@ -37,6 +37,7 @@ public class UI_ContentGuide : UI_PopUp
         for (int i = (int)Btns.Btn_CtInfo1; i < (int)Btns.Max; i++)
         {
             var i1 = i;
+            if (GetObject(i) == null) continue;
             GetObject(i).BindEvent(() =>
             {
                 int iCache = i1;

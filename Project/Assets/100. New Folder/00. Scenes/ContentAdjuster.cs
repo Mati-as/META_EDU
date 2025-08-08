@@ -430,8 +430,17 @@ public class ContentAdjuster : MonoBehaviour
             {
                 var text = textObj.GetComponent<Text>();
                 text.text = !string.IsNullOrEmpty(data.Title) ? data.Title : data.Id;
+                
             }
+            
+            var Description = buttonObj.transform.GetChild(3);
+            if (textObj != null)
+            {
+                var text = Description.GetComponent<Text>();
+                text.text = data.Description;
 
+            }
+            
             // 자물쇠
             var lockFrame = buttonObj.transform.Find("LockFrame");
             if (lockFrame != null)

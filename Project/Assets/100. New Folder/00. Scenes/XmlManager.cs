@@ -209,6 +209,7 @@ public class XmlManager
         public string Category;
         public string Month;
         public string Title;
+        public string Description; // ✅ 2025 08 07추가 hash태그 내용 들어감
     }
 
     private static string menuSettingPath = Path.Combine(Application.streamingAssetsPath, "MenuSettingData.xml");
@@ -256,14 +257,16 @@ public class XmlManager
             bool value = bool.Parse(node.Attributes["value"].Value);
             string category = node.Attributes["category"]?.Value ?? "";
             string month = node.Attributes["month"]?.Value ?? ""; 
-            string title = node.Attributes["title"]?.Value ?? ""; // ✅ 추가
+            string title = node.Attributes["title"]?.Value ?? ""; 
+            string descrription = node.Attributes["description"]?.Value ?? ""; 
             SceneData data = new SceneData
             {
                 Id = id,
                 IsActive = value,
                 Category = category,
                 Month = month,
-                Title = title // ✅ 추가
+                Title = title, 
+                 Description = descrription // 2025 08 07 ✅ 추가
             };
 
             SceneSettings[id] = data;

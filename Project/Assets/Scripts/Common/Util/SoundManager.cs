@@ -433,6 +433,18 @@ public class SoundManager : MonoBehaviour
 
         return audioSource.clip.length;
     }
+    public float GetNarrationClipLength()
+    {
+   
+        var audioSource = audioSources[(int)Sound.Narration];
+        if (audioSource.clip == null)
+        {
+            Debug.LogWarning("Audio source clip is null");
+            return 0f;
+        }
+
+        return audioSource.clip.length;
+    }
 
 
     #region 페이드인/아웃 관련기능 (영민)
